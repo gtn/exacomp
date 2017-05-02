@@ -1,0 +1,979 @@
+<style>
+		table {
+			border-collapse: collapse;
+		}
+		td {
+			border: 1px solid black;
+			padding: 2px 5px;
+		}
+	</style><h2>block_exacomp_get_courses</h2><div>Get courses with exacomp block instances.
+get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+    {
+        "courseid": "int null (id of course)",
+        "fullname": "text null (fullname of course)",
+        "shortname": "raw null (shortname of course)"
+    },
+    "..."
+]</pre><h2>block_exacomp_get_examples_for_subject</h2><div>Get examples for subtopic
+Get examples</div><div>type: read</div>Params: <table><tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+    {
+        "topicid": "int null (id of topic)",
+        "title": "text null (title of topic)",
+        "requireaction": "bool null (trainer action required or not)",
+        "examples": [
+            {
+                "exampleid": "int null (id of example)",
+                "example_title": "text null (title of example)",
+                "example_item": "int null (current item id)",
+                "example_status": "int null (status of current item)",
+                "example_creatorid": "int null (creator of example)"
+            },
+            "..."
+        ],
+        "quizes": [
+            {
+                "quizid": "int null (id of quiz)",
+                "quiz_title": "text null (title of quiz)",
+                "quiz_grade": "float null (sum grade of quiz)"
+            },
+            "..."
+        ]
+    },
+    "..."
+]</pre><h2>block_exacomp_get_example_by_id</h2><div>Get example
+Get example</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+    "title": "text null (title of example)",
+    "description": "text null (description of example)",
+    "taskfileurl": "text null (task fileurl)",
+    "taskfilename": "text null (task filename)",
+    "externalurl": "text null (externalurl of example)",
+    "task": "text null (@deprecated)",
+    "solution": "text null (solution(url\/description) of example)",
+    "timeframe": "int null (timeframe in minutes)",
+    "hassubmissions": "bool null (true if example has already submissions)"
+}</pre><h2>block_exacomp_get_descriptors_for_example</h2><div>Get desciptors for example
+Get descriptors for example</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "title": "text null (title of descriptor)",
+        "evaluation": "int null (evaluation of descriptor)"
+    },
+    "..."
+]</pre><h2>block_exacomp_get_descriptors_for_quiz</h2><div>Get desciptors for quiz
+Get descriptors for quiz</div><div>type: read</div>Params: <table><tr><td>quizid<td>int<td>null<td>required<td><td>id of quiz<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "title": "text null (title of descriptor)",
+        "evaluation": "int null (evaluation of descriptor)"
+    },
+    "..."
+]</pre><h2>block_exacomp_get_user_role</h2><div>Get role for user: 1=trainer 2=student</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "role": "int null (1=trainer, 2=student)"
+}</pre><h2>block_exacomp_get_external_trainer_students</h2><div>Get external trainer's students
+Get all students for an external trainer</div><div>type: read</div>Params: <table></table>Returns:<pre>[
+    {
+        "userid": "int null (id of user)",
+        "name": "text null (name of user)",
+        "cohorts": [
+            {
+                "cohortid": "int null (id of cohort)",
+                "name": "text null (title of cohort)"
+            },
+            "..."
+        ],
+        "requireaction": "bool null (trainer action required or not)",
+        "examples": {
+            "total": "int null ()",
+            "submitted": "int null ()",
+            "reached": "int null ()"
+        }
+    },
+    "..."
+]</pre><h2>block_exacomp_get_subjects_for_user</h2><div>Get Subjects
+get subjects from one user for all his courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+    {
+        "subjectid": "int null (id of subject)",
+        "title": "text null (title of subject)",
+        "courseid": "int null (id of course)",
+        "requireaction": "bool null (whether example in this subject has been edited or not by the selected student)"
+    },
+    "..."
+]</pre><h2>block_exacomp_delete_item</h2><div>delete a submitted and wrong item
+Deletes one user item if it is not graded already</div><div>type: write</div>Params: <table><tr><td>itemid<td>int<td>null<td>required<td><td>id of item</table>Returns:<pre>{
+    "success": "bool null (status)"
+}</pre><h2>block_exacomp_set_competence</h2><div>Set a student evaluation for a particular competence
+Set student evaluation</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of descriptor<tr><td>value<td>int<td>null<td>required<td><td>evaluation value</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>block_exacomp_get_item_for_example</h2><div>Get Item
+get subjects from one user for all his courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>itemid<td>int<td>null<td>required<td><td>id of item</table>Returns:<pre>{
+    "id": "int null (id of item)",
+    "name": "text null (title of item)",
+    "type": "text null (type of item (note,file,link))",
+    "url": "text null (url)",
+    "effort": "raw null (description of the effort)",
+    "filename": "text null (title of item)",
+    "file": "url null (file url)",
+    "isimage": "bool null (true if file is image)",
+    "status": "int null (status of the submission)",
+    "teachervalue": "int null (teacher grading)",
+    "studentvalue": "int null (student grading)",
+    "teachercomment": "text null (teacher comment)",
+    "studentcomment": "text null (student comment)"
+}</pre><h2>block_exacomp_get_competencies_for_upload</h2><div>Get competencetree
+Get all available competencies</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+    {
+        "subjectid": "int null (id of topic)",
+        "subjecttitle": "text null (title of topic)",
+        "topics": [
+            {
+                "topicid": "int null (id of example)",
+                "topictitle": "text null (title of example)",
+                "descriptors": [
+                    {
+                        "descriptorid": "int null (id of example)",
+                        "descriptortitle": "text null (title of example)"
+                    },
+                    "..."
+                ]
+            },
+            "..."
+        ]
+    },
+    "..."
+]</pre><h2>block_exacomp_submit_example</h2><div>Submit example
+Add item</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>exampleid<tr><td>studentvalue<td>int<td>null<td>required<td><td>studentvalue<tr><td>url<td>url<td>null<td>required<td><td>url<tr><td>effort<td>text<td>null<td>required<td><td>effort<tr><td>filename<td>text<td>null<td>required<td><td>filename, used to look up file and create a new one in the exaport file area<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid, used to look up file and create a new one in the exaport file area<tr><td>studentcomment<td>text<td>null<td>required<td><td>studentcomment<tr><td>title<td>text<td>null<td>required<td><td>title<tr><td>itemid<td>int<td>null<td>required<td><td>itemid<tr><td>courseid<td>int<td>null<td>required<td><td>courseid</table>Returns:<pre>{
+    "success": "bool null (status)",
+    "itemid": "int null (itemid)"
+}</pre><h2>block_exacomp_create_example</h2><div>Create an example
+create example</div><div>type: write</div>Params: <table><tr><td>name<td>text<td>null<td>required<td><td>title of example<tr><td>description<td>text<td>null<td>required<td><td>description of example<tr><td>externalurl<td>text<td>null<td>required<td><td><tr><td>comps<td>text<td>null<td>required<td><td>list of competencies, seperated by comma<tr><td>filename<td>text<td>null<td>required<td><td>filename, used to look up file and create a new one in the exaport file area<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid</table>Returns:<pre>{
+    "exampleid": "int null (id of created example)"
+}</pre><h2>block_exacomp_grade_item</h2><div>Grade an item
+grade an item</div><div>type: write</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>value<td>int<td>null<td>required<td><td>value for grading<tr><td>status<td>int<td>null<td>required<td><td>status<tr><td>comment<td>text<td>null<td>required<td><td>comment of grading<tr><td>itemid<td>int<td>null<td>required<td><td>id of item<tr><td>comps<td>text<td>null<td>required<td><td>comps for example - positive grading<tr><td>courseid<td>int<td>null<td>required<td><td>if of course</table>Returns:<pre>{
+    "success": "bool null (true if grading was successful)"
+}</pre><h2>block_exacomp_get_user_examples</h2><div>get examples created by a specific user
+grade an item</div><div>type: read</div>Params: <table></table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of example)",
+        "exampletitle": "text null (title of example)",
+        "example_status": "int null (status of example)",
+        "exampletopicid": "int null (topic id where example belongs to)"
+    },
+    "..."
+]</pre><h2>block_exacomp_get_user_profile</h2><div>get a list of courses with their competencies</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>{
+    "user": {
+        "competencies": {
+            "total": "int null (amount of total competencies)",
+            "reached": "int null (amount of reached competencies)"
+        },
+        "examples": {
+            "total": "int null (amount of total competencies)",
+            "reached": "int null (amount of reached competencies)"
+        }
+    },
+    "subjects": [
+        {
+            "title": "text null (subject title)",
+            "data": {
+                "competencies": {
+                    "total": "int null (amount of total competencies)",
+                    "reached": "int null (amount of reached competencies)"
+                },
+                "examples": {
+                    "total": "int null (amount of total competencies)",
+                    "reached": "int null (amount of reached competencies)"
+                }
+            },
+            "topics": [
+                {
+                    "title": "text null (topic title)",
+                    "data": {
+                        "competencies": {
+                            "total": "int null (amount of total competencies)",
+                            "reached": "int null (amount of reached competencies)"
+                        },
+                        "examples": {
+                            "total": "int null (amount of total competencies)",
+                            "reached": "int null (amount of reached competencies)"
+                        }
+                    }
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
+}</pre><h2>block_exacomp_update_example</h2><div>update an example</div><div>type: write</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>name<td>text<td>null<td>required<td><td>title of example<tr><td>description<td>text<td>null<td>required<td><td>description of example<tr><td>externalurl<td>text<td>null<td>required<td><td><tr><td>comps<td>text<td>null<td>required<td><td>list of competencies, seperated by comma<tr><td>filename<td>text<td>null<td>required<td><td>filename, used to look up file and create a new one in the exaport file area<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid</table>Returns:<pre>{
+    "success": "bool null (true if successful)"
+}</pre><h2>block_exacomp_delete_example</h2><div>delete a custom item
+delete example</div><div>type: write</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+    "success": "bool null (true if successful)"
+}</pre><h2>block_exacomp_get_competencies_by_topic</h2><div>get competencies for a specific topic
+Get all available competencies</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of example)",
+        "descriptortitle": "text null (title of example)"
+    },
+    "..."
+]</pre><h2>dakora_set_competence</h2><div>set competence for student
+Set a competence for a user</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>compid<td>int<td>null<td>required<td><td>competence id<tr><td>comptype<td>int<td>null<td>required<td><td>type of competence: descriptor, topic, subject<tr><td>role<td>int<td>null<td>required<td><td>user role (0 == student, 1 == teacher)<tr><td>value<td>int<td>null<td>required<td><td>evaluation value, only set for TK (0 to 3)<tr><td>additionalinfo<td>float<td>null<td>required<td><td>decimal between 1 and 6<tr><td>evalniveauid<td>int<td>null<td>required<td><td>evaluation niveau (-1, 1, 2, 3)</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_get_courses</h2><div>get courses for user for dakora app
+get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+    {
+        "courseid": "int null (id of course)",
+        "fullname": "text null (fullname of course)",
+        "shortname": "raw null (shortname of course)"
+    },
+    "..."
+]</pre><h2>dakora_get_topics_by_course</h2><div>get topics for course for dakora app associated with examples
+get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td><td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td><td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "topicid": "int null (id of topic)",
+        "topictitle": "text null (title of topic)",
+        "numbering": "text null (numbering for topic)",
+        "subjectid": "int null (id of subject)",
+        "subjecttitle": "text null (title of subject)",
+        "visible": "int null (visibility of topic in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_all_topics_by_course</h2><div>get topics for course for dakora app
+get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td><td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td><td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "topicid": "int null (id of topic)",
+        "topictitle": "text null (title of topic)",
+        "numbering": "text null (numbering for topic)",
+        "subjectid": "int null (id of subject)",
+        "subjecttitle": "text null (title of subject)",
+        "visible": "int null (visibility of topic in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_descriptors</h2><div>get descriptors for topic for dakora app associated with examples
+get descriptors for one topic, considering the visibility</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "descriptortitle": "text null (title of descriptor)",
+        "numbering": "text null (numbering for descriptor)",
+        "niveautitle": "text null (title of niveau)",
+        "niveauid": "int null (id of niveau)",
+        "visible": "int null (visibility of topic in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_all_descriptors</h2><div>get descriptors for topic for dakora app
+get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "descriptortitle": "text null (title of descriptor)",
+        "numbering": "text null (numbering for descriptor)",
+        "niveautitle": "text null (title of niveau)",
+        "niveauid": "int null (id of niveau)",
+        "visible": "int null (visibility of topic in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_descriptor_children</h2><div>get children (childdescriptor and examples) for descriptor for dakora app (only childs associated with examples)
+get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>{
+    "children": [
+        {
+            "descriptorid": "int null (id of child)",
+            "descriptortitle": "text null (title of child)",
+            "numbering": "text null (numbering for child)",
+            "teacherevaluation": "int null (grading of child)",
+            "evalniveauid": "int null (evaluation niveau id)",
+            "timestampteacher": "int null (timestamp of teacher evaluation)",
+            "studentevaluation": "int null (self evaluation of child)",
+            "timestampstudent": "int null (timestamp of student evaluation)",
+            "examplestotal": "int null (total number of material)",
+            "examplesvisible": "int null (visible number of material)",
+            "examplesinwork": "int null (edited number of material)",
+            "visible": "int null (visibility of child)",
+            "used": "int null (used in current context)"
+        },
+        "..."
+    ],
+    "examples": [
+        {
+            "exampleid": "int null (id of example)",
+            "exampletitle": "text null (title of example)",
+            "examplestate": "int null (state of example, always 0 if for all students)",
+            "visible": "int null (visibility of example)",
+            "used": "int null (used in current context)"
+        },
+        "..."
+    ],
+    "examplestotal": "int null (number of total examples)",
+    "examplesvisible": "int null (number of visible examples)",
+    "examplesinwork": "int null (number of examples in work)"
+}</pre><h2>dakora_get_examples_for_descriptor</h2><div>get examples for descriptor for dakora app</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of descriptor)",
+        "exampletitle": "text null (title of descriptor)",
+        "examplestate": "int null (state of example, always 0 if for all students)",
+        "visible": "int null (visibility of example in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_examples_for_descriptor_with_grading</h2><div>get examples for descriptor with additional grading information</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of descriptor)",
+        "exampletitle": "text null (title of descriptor)",
+        "examplestate": "int null (state of example, always 0 if for all students)",
+        "visible": "int null (visibility of example in current context)",
+        "used": "int null (used in current context)",
+        "teacherevaluation": "int null (example evaluation of teacher)",
+        "studentevaluation": "int null (example evaluation of student)",
+        "evalniveauid": "int null (evaluation niveau id)",
+        "timestampteacher": "int null (timestamp for teacher evaluation)",
+        "timestampstudent": "int null (timestamp for student evaluation)"
+    },
+    "..."
+]</pre><h2>dakora_get_examples_for_descriptor_for_crosssubject</h2><div>get examples for descriptor for dakora app</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of descriptor)",
+        "exampletitle": "text null (title of descriptor)",
+        "examplestate": "int null (state of example, always 0 if for all students)",
+        "visible": "int null (visibility of example in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_examples_for_descriptor_for_crosssubject_with_grading</h2><div>get examples for descriptor with additional grading information</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of descriptor)",
+        "exampletitle": "text null (title of descriptor)",
+        "examplestate": "int null (state of example, always 0 if for all students)",
+        "visible": "int null (visibility of example in current context)",
+        "used": "int null (used in current context)",
+        "teacherevaluation": "int null (example evaluation of teacher)",
+        "studentevaluation": "int null (example evaluation of student)",
+        "evalniveauid": "int null (evaluation niveau id)",
+        "timestampteacher": "int null (timestamp for teacher evaluation)",
+        "timestampstudent": "int null (timestamp for student evaluation)"
+    },
+    "..."
+]</pre><h2>dakora_get_example_overview</h2><div>get example overview for dakora app</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+    "title": "text null (title of example)",
+    "description": "text null (description of example)",
+    "taskfileurl": "text null (task fileurl)",
+    "taskfilename": "text null (task filename)",
+    "externalurl": "text null (externalurl of example)",
+    "task": "text null (@deprecated)",
+    "solution": "text null (solution(url\/description) of example)",
+    "timeframe": "int null (timeframe in minutes)",
+    "hassubmissions": "bool null (true if example has already submissions)",
+    "solution_visible": "bool null (visibility for example solution in current context)"
+}</pre><h2>dakora_add_example_to_learning_calendar</h2><div>add example to learning calendar for dakora
+get courses</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>creatorid<td>int<td>null<td>required<td><td>id of creator<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_get_descriptors_for_example</h2><div>get descriptors where example is associated
+Get descriptors for example</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "title": "text null (title of descriptor)",
+        "evaluation": "int null (evaluation of descriptor)",
+        "topicid": "int null (id of topic)",
+        "numbering": "text null (descriptor numbering)",
+        "child": "bool null (true: child, false: parent)",
+        "parentid": "int null (parentid if child, 0 otherwise)"
+    },
+    "..."
+]</pre><h2>dakora_get_example_grading</h2><div>get student and teacher evaluation for example
+Get example grading for user</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+    "teacherevaluation": "int null (teacher evaluation for student and example)",
+    "studentevaluation": "int null (self evaluation for example)",
+    "evalniveauid": "int null (evaluation niveau id)"
+}</pre><h2>dakora_get_topic_grading</h2><div>get student and teacher evaluation for topic
+Get topic grading for user</div><div>type: read</div>Params: <table><tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+    "teacherevaluation": "int null (teacher evaluation for student and topic)",
+    "additionalinfo": "float null (teacher additional info for student and topic)",
+    "studentevaluation": "int null (self evaluation for topic)",
+    "evalniveauid": "int null (evaluation niveau id)",
+    "timestampteacher": "int null (timestamp for teacher evaluation)",
+    "timestampstudent": "int null (timestamp for student evaluation)"
+}</pre><h2>dakora_get_subject_grading</h2><div>get student and teacher evaluation for subject
+Get subject grading for user</div><div>type: read</div>Params: <table><tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+    "teacherevaluation": "int null (teacher evaluation for student and subject)",
+    "additionalinfo": "float null (teacher additional info for student and subject)",
+    "studentevaluation": "int null (self evaluation for subject)",
+    "evalniveauid": "int null (evaluation niveau id)",
+    "timestampteacher": "int null (timestamp for teacher evaluation)",
+    "timestampstudent": "int null (timestamp for student evaluation)"
+}</pre><h2>dakora_get_user_role</h2><div>get user role 1= trainer, 2= student
+return 1 for trainer
+2 for student
+0 if false</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "role": "int null (1=trainer, 2=student)"
+}</pre><h2>dakora_get_students_for_course</h2><div>get list of students for course</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+    {
+        "studentid": "int null (id of student)",
+        "firstname": "text null (firstname of student)",
+        "lastname": "text null (lastname of student)",
+        "profilepicture": "text null (link to  profile picture)"
+    },
+    "..."
+]</pre><h2>dakora_get_examples_pool</h2><div>get list of examples for weekly schedule pool
+Get examples for pool</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of example)",
+        "title": "text null (title of example)",
+        "student_evaluation": "int null (self evaluation of student)",
+        "teacher_evaluation": "int null (evaluation of teacher)",
+        "evalniveauid": "int null (evaluation niveau id)",
+        "courseid": "int null (example course)",
+        "state": "int null (state of example)",
+        "scheduleid": "int null (id in schedule context)",
+        "courseshortname": "text null (shortname of example course)",
+        "coursefullname": "text null (full name of example course)"
+    },
+    "..."
+]</pre><h2>dakora_get_examples_trash</h2><div>get examples for trash bin
+Get examples for trash</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of example)",
+        "title": "text null (title of example)",
+        "student_evaluation": "int null (self evaluation of student)",
+        "teacher_evaluation": "int null (evaluation of teacher)",
+        "evalniveauid": "int null (evaluation niveau id)",
+        "courseid": "int null (example course)",
+        "state": "int null (state of example)",
+        "scheduleid": "int null (id in schedule context)",
+        "courseshortname": "text null (shortname of example course)",
+        "coursefullname": "text null (full name of example course)"
+    },
+    "..."
+]</pre><h2>dakora_set_example_time_slot</h2><div>set start and end time for example
+set example time slot</div><div>type: write</div>Params: <table><tr><td>scheduleid<td>int<td>null<td>required<td><td>id in schedule context<tr><td>start<td>int<td>null<td>required<td><td>start timestamp<tr><td>end<td>int<td>null<td>required<td><td>end timestamp<tr><td>deleted<td>int<td>null<td>required<td><td>delete item</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_remove_example_from_schedule</h2><div>remove example from weekly schedule
+remove example from time slot</div><div>type: write</div>Params: <table><tr><td>scheduleid<td>int<td>null<td>required<td><td>id of schedule entry</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_add_examples_to_schedule_for_all</h2><div>add examples to the schedules of all course students
+remove example from time slot</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_get_examples_for_time_slot</h2><div>get examples for a special start to end period (e.g. day)
+Get examples for time slot</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>start<td>int<td>null<td>required<td><td>start timestamp<tr><td>end<td>int<td>null<td>required<td><td>end timestamp</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of example)",
+        "title": "text null (title of example)",
+        "start": "int null (start of event)",
+        "end": "int null (end of event)",
+        "student_evaluation": "int null (self evaluation of student)",
+        "teacher_evaluation": "int null (evaluation of teacher)",
+        "evalniveauid": "int null (evaluation niveau id)",
+        "courseid": "int null (example course)",
+        "state": "int null (state of example)",
+        "scheduleid": "int null (id in schedule context)",
+        "courseshortname": "text null (shortname of example course)",
+        "coursefullname": "text null (full name of example course)"
+    },
+    "..."
+]</pre><h2>dakora_get_cross_subjects_by_course</h2><div>get cross subjects for an user in course context (allways all crosssubjs, even if not associated)
+Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "id": "int null (id of cross subject)",
+        "title": "text null (title of cross subject)",
+        "description": "text null (description of cross subject)",
+        "subjectid": "int null (subject id, cross subject is associated with)",
+        "visible": "int null (visibility of crosssubject for selected student)"
+    },
+    "..."
+]</pre><h2>dakora_get_descriptors_by_cross_subject</h2><div>get descriptors for a cross subject associated with examples
+Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "descriptortitle": "text null (title of descriptor)",
+        "numbering": "text null (numbering for descriptor)",
+        "niveautitle": "text null (title of nivaue)",
+        "niveauid": "int null (id of niveau)",
+        "visible": "int null (visibility of example in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_all_descriptors_by_cross_subject</h2><div>get descriptors for a cross subject
+Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "descriptortitle": "text null (title of descriptor)",
+        "numbering": "text null (numbering for descriptor)",
+        "niveautitle": "text null (title of nivaue)",
+        "niveauid": "int null (id of niveau)",
+        "visible": "int null (visibility of example in current context)",
+        "used": "int null (used in current context)"
+    },
+    "..."
+]</pre><h2>dakora_get_descriptor_children_for_cross_subject</h2><div>get children in context of cross subject, associated with examples
+get children for descriptor in cross subject context</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject</table>Returns:<pre>{
+    "children": [
+        {
+            "descriptorid": "int null (id of child)",
+            "descriptortitle": "text null (title of child)",
+            "numbering": "text null (numbering for child)",
+            "teacherevaluation": "int null (grading of children)",
+            "evalniveauid": "int null (evaluation niveau id)",
+            "timestampteacher": "int null (timestamp of teacher evaluation)",
+            "studentevaluation": "int null (self evaluation of children)",
+            "timestampstudent": "int null (timestamp of student evaluation)",
+            "examplestotal": "int null (total number of material)",
+            "examplesvisible": "int null (visible number of material)",
+            "examplesinwork": "int null (edited number of material)",
+            "visible": "int null (visibility of child in current context)",
+            "used": "int null (used in current context)"
+        },
+        "..."
+    ],
+    "examples": [
+        {
+            "exampleid": "int null (id of example)",
+            "exampletitle": "text null (title of example)",
+            "examplestate": "int null (state of example, always 0 if for all students)",
+            "visible": "int null (visibility of example in current context)",
+            "used": "int null (used in current context)"
+        },
+        "..."
+    ],
+    "examplestotal": "int null (number of total examples)",
+    "examplesvisible": "int null (number of visible examples)",
+    "examplesinwork": "int null (number of examples in work)"
+}</pre><h2>dakora_get_all_descriptor_children_for_cross_subject</h2><div>get children in context of cross subject
+get children for descriptor in cross subject context</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject</table>Returns:<pre>{
+    "children": [
+        {
+            "descriptorid": "int null (id of child)",
+            "descriptortitle": "text null (title of child)",
+            "numbering": "text null (numbering for child)",
+            "teacherevaluation": "int null (grading of children)",
+            "evalniveauid": "int null (evaluation niveau id)",
+            "timestampteacher": "int null (timestamp of teacher evaluation)",
+            "studentevaluation": "int null (self evaluation of children)",
+            "timestampstudent": "int null (timestamp of student evaluation)",
+            "hasmaterial": "bool null (true or false if child has materials)",
+            "examplestotal": "int null (total number of material)",
+            "examplesvisible": "int null (visible number of material)",
+            "examplesinwork": "int null (edited number of material)",
+            "visible": "int null (visibility of children in current context)",
+            "used": "int null (used in current context)"
+        },
+        "..."
+    ],
+    "examples": [
+        {
+            "exampleid": "int null (id of example)",
+            "exampletitle": "text null (title of example)",
+            "examplestate": "int null (state of example, always 0 if for all students)",
+            "visible": "int null (visibility of example in current context)",
+            "used": "int null (used in current context)"
+        },
+        "..."
+    ],
+    "examplestotal": "int null (number of total examples)",
+    "examplesvisible": "int null (number of visible examples)",
+    "examplesinwork": "int null (number of examples in work)"
+}</pre><h2>dakora_get_schedule_config</h2><div>get configuration options for schedule units
+get children for descriptor in cross subject context</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "units": "int null (number of units per day)",
+    "interval": "text null (duration of unit in minutes)",
+    "begin": "text null (begin time for the first unit, format hh:mm)",
+    "periods": [
+        {
+            "title": "text null (id of example)"
+        },
+        "..."
+    ]
+}</pre><h2>dakora_get_pre_planning_storage_examples</h2><div>get examples for pre planning storage
+get pre planning storage examples for current teacher</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of example)",
+        "title": "text null (title of example)",
+        "courseid": "int null (example course)",
+        "state": "int null (state of example)",
+        "scheduleid": "int null (id in schedule context)"
+    },
+    "..."
+]</pre><h2>dakora_get_pre_planning_storage_students</h2><div>get students for pre planning storage
+get pre planning storage students for current teacher</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+    {
+        "studentid": "int null (id of student)",
+        "firstname": "text null (firstname of student)",
+        "lastname": "text null (lastname of student)",
+        "has_examples": "bool null (already has examples from current pre planning storage)"
+    },
+    "..."
+]</pre><h2>dakora_has_items_in_pre_planning_storage</h2><div>return 0 if no items, 1 otherwise
+get pre planning storage students for current teacher</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_empty_pre_planning_storage</h2><div>delte all items from current pre planning storage
+empty pre planning storage for current teacher</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_add_example_to_pre_planning_storage</h2><div>add example to current pre planning storage
+add example to current pre planning storage</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+    "success": "bool null (status of success)"
+}</pre><h2>dakora_add_examples_to_students_schedule</h2><div>add examples from current pre planning storage to students weekly schedule
+add example to current pre planning storage</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>examples<td>text<td>null<td>required<td><td>json array of examples<tr><td>students<td>text<td>null<td>required<td><td>json array of students</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_submit_example</h2><div>submit example solution
+Add student submission to example.</div><div>type: write</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>exampleid<tr><td>studentvalue<td>int<td>null<td><td>default: -1<td>studentvalue<tr><td>url<td>url<td>null<td>required<td><td>url<tr><td>filename<td>text<td>null<td>required<td><td>filename, used to look up file and create a new one in the exaport file area<tr><td>studentcomment<td>text<td>null<td>required<td><td>studentcomment<tr><td>itemid<td>int<td>null<td>required<td><td>itemid (0 for insert, >0 for update)<tr><td>courseid<td>int<td>null<td>required<td><td>courseid<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid</table>Returns:<pre>{
+    "success": "bool null (status)",
+    "itemid": "int null (itemid)"
+}</pre><h2>dakora_grade_example</h2><div>grade example solution
+Add student submission to example.</div><div>type: write</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>userid<tr><td>courseid<td>int<td>null<td>required<td><td>courseid<tr><td>exampleid<td>int<td>null<td>required<td><td>exampleid<tr><td>examplevalue<td>int<td>null<td>required<td><td>examplevalue<tr><td>exampleevalniveauid<td>int<td>null<td>required<td><td>example evaluation niveau id<tr><td>itemid<td>int<td>null<td><td>default: -1<td>itemid<tr><td>itemvalue<td>int<td>null<td><td>default: -1<td>itemvalue<tr><td>comment<td>text<td>null<td><td><td>teachercomment</table>Returns:<pre>{
+    "success": "bool null (status)",
+    "exampleid": "int null (exampleid)"
+}</pre><h2>dakora_get_descriptor_details</h2><div>get descriptor details incl. grading and children</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>courseid<tr><td>descriptorid<td>int<td>null<td>required<td><td>descriptorid<tr><td>userid<td>int<td>null<td>required<td><td>userid<tr><td>forall<td>bool<td>null<td>required<td><td>forall<tr><td>crosssubjid<td>int<td>null<td>required<td><td>crosssubjid</table>Returns:<pre>{
+    "descriptorid": "int null (id of descriptor)",
+    "descriptortitle": "text null (title of descriptor)",
+    "teacherevaluation": "int null (teacher evaluation of descriptor)",
+    "studentevaluation": "int null (student evaluation of descriptor)",
+    "additionalinfo": "float null (additional grading for descriptor)",
+    "timestampteacher": "int null (timestamp for teacher evaluation)",
+    "timestampstudent": "int null (timestamp for student evaluation)",
+    "evalniveauid": "int null (evaluation niveau id)",
+    "numbering": "text null (numbering)",
+    "niveauid": "int null (id of niveau)",
+    "niveautitle": "text null (title of niveau)",
+    "hasmaterial": "bool null (true or false if descriptor has material)",
+    "children": [
+        {
+            "descriptorid": "int null (id of descriptor)",
+            "descriptortitle": "text null (title of descriptor)",
+            "teacherevaluation": "int null (teacher evaluation of descriptor)",
+            "evalniveauid": "int null (evaluation niveau id)",
+            "timestampteacher": "int null (timestamp of teacher evaluation)",
+            "studentevaluation": "int null (student evaluation of descriptor)",
+            "timestampstudent": "int null (timestamp of student evaluation)",
+            "numbering": "text null (numbering)",
+            "hasmaterial": "bool null (true or false if descriptor has material)",
+            "examples": [
+                {
+                    "exampleid": "int null (id of example)",
+                    "exampletitle": "text null (title of example)",
+                    "examplestate": "int null (state of example, always 0 if for all students)",
+                    "visible": "int null (visibility of example in current context)",
+                    "used": "int null (used in current context)",
+                    "teacherevaluation": "int null (example evaluation of teacher)",
+                    "studentevaluation": "int null (example evaluation of student)",
+                    "timestampteacher": "int null (timestamp of teacher evaluation)",
+                    "timestampstudent": "int null (timestamp of student evaluation)",
+                    "evalniveauid": "int null (evaluation niveau id)",
+                    "solution_visible": "bool null (visibility for example solution in current context)"
+                },
+                "..."
+            ],
+            "examplestotal": "int null (total number of material)",
+            "examplesvisible": "int null (visible number of material)",
+            "examplesinwork": "int null (number of material in work)",
+            "visible": "int null (visibility of children in current context)",
+            "used": "int null (used in current context)",
+            "examplesedited": "int null (number of edited material)",
+            "examplegradings": {
+                "teacher": [
+                    {
+                        "evalniveauid": "int null (niveau id to according number)",
+                        "value": "int null (grading value)",
+                        "sum": "int null (number of gradings)"
+                    },
+                    "..."
+                ],
+                "student": [
+                    {
+                        "sum": "int null (number of gradings)"
+                    },
+                    "..."
+                ]
+            }
+        },
+        "..."
+    ],
+    "childrengradings": {
+        "teacher": [
+            {
+                "evalniveauid": "int null (niveau id to according number)",
+                "value": "int null (grading value)",
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ],
+        "student": [
+            {
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ]
+    },
+    "examples": [
+        {
+            "exampleid": "int null (id of example)",
+            "exampletitle": "text null (title of example)",
+            "examplestate": "int null (state of example, always 0 if for all students)",
+            "visible": "int null (visibility of example in current context)",
+            "used": "int null (used in current context)",
+            "teacherevaluation": "int null (example evaluation of teacher)",
+            "studentevaluation": "int null (example evaluation of student)",
+            "evalniveauid": "int null (evaluation niveau id)",
+            "timestampteacher": "int null (timestamp of teacher evaluation)",
+            "timestampstudent": "int null (timestamp of student evaluation)",
+            "solution_visible": "bool null (visibility for example solution in current context)"
+        },
+        "..."
+    ],
+    "examplestotal": "int null (total number of material)",
+    "examplesvisible": "int null (visible number of material)",
+    "examplesinwork": "int null (number of material in work)",
+    "examplesedited": "int null (number of edited material)",
+    "examplegradings": {
+        "teacher": [
+            {
+                "evalniveauid": "int null (niveau id to according number)",
+                "value": "int null (grading value)",
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ],
+        "student": [
+            {
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ]
+    },
+    "visible": "int null (visibility of example in current context)",
+    "used": "int null (used in current context)"
+}</pre><h2>dakora_get_example_information</h2><div>get information and submission for example
+get example with all submission details and gradings</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+    "itemid": "int null (id of item)",
+    "status": "int null (status of the submission (-1 == no submission; 0 == not graded; 1 == graded)",
+    "name": "text null (title of item)",
+    "type": "text null (type of item (note,file,link))",
+    "url": "text null (url)",
+    "filename": "text null (title of item)",
+    "file": "url null (file url)",
+    "mimetype": "text null (mime type for file)",
+    "teachervalue": "int null (teacher grading)",
+    "studentvalue": "int null (student grading)",
+    "evalniveauid": "int null (evaluation niveau id)",
+    "timestampteacher": "int null (timestamp for teacher evaluation)",
+    "timestampstudent": "int null (timestamp for student evaluation)",
+    "teachercomment": "text null (teacher comment)",
+    "teacherfile": "text null ()",
+    "studentcomment": "text null (student comment)",
+    "teacheritemvalue": "int null (item teacher grading)",
+    "resubmission": "bool null (resubmission is allowed\/not allowed)"
+}</pre><h2>dakora_get_user_information</h2><div>get information about current user
+get example with all submission details and gradings</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "id": "int null (ID of the user)",
+    "username": "raw null (The username)",
+    "firstname": "notags null (The first name(s) of the user)",
+    "lastname": "notags null (The family name of the user)",
+    "fullname": "notags null (The fullname of the user)",
+    "email": "text null (An email address - allow email as root@localhost)",
+    "firstaccess": "int null (first access to the site (0 if never))",
+    "lastaccess": "int null (last access to the site (0 if never))",
+    "auth": "plugin null (Auth plugins include manual, ldap, imap, etc)",
+    "confirmed": "int null (Active user: 1 if confirmed, 0 otherwise)",
+    "lang": "safedir null (Language code such as \"en\", must exist on server)",
+    "url": "url null (URL of the user)",
+    "profileimageurlsmall": "url null (User image profile URL - small version)",
+    "profileimageurl": "url null (User image profile URL - big version)"
+}</pre><h2>dakora_create_blocking_event</h2><div>create a blocking event
+Create a new blocking event</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>title<td>text<td>null<td>required<td><td>title of new blocking event<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>preplanningstorage<td>bool<td>null<td>required<td><td>in pre planning storage or for specific student</table>Returns:<pre>{
+    "success": "bool null (status)"
+}</pre><h2>dakora_get_examples_by_descriptor_and_grading</h2><div>returns examples for given descriptor and grading
+Create a new blocking event</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>descriptorid<td>text<td>null<td>required<td><td>id of descriptor<tr><td>grading<td>int<td>null<td>required<td><td>grading value</table>Returns:<pre>[
+    {
+        "exampleid": "int null (id of topic)",
+        "exampletitle": "text null (title of topic)"
+    },
+    "..."
+]</pre><h2>dakora_allow_example_resubmission</h2><div>allow student to resubmit example
+Create a new blocking event</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_get_competence_grid_for_profile</h2><div>get grid for profile
+Get competence grid for profile</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject</table>Returns:<pre>{
+    "rows": [
+        {
+            "columns": [
+                {
+                    "text": "text null (cell text)",
+                    "evaluation": "float null (evaluation)",
+                    "evaluation_text": "text null (evaluation text)",
+                    "evaluation_mapped": "int null (mapped evaluation)",
+                    "evalniveauid": "int null (evaluation niveau id)",
+                    "show": "bool null (show cell)",
+                    "visible": "bool null (cell visibility)",
+                    "topicid": "int null (topic id)",
+                    "span": "int null (colspan)",
+                    "timestamp": "int null (evaluation timestamp, 0 if not set)"
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
+}</pre><h2>dakora_get_competence_profile_statistic</h2><div>get statistic in user and subject context
+Get competence statistic for profile</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject<tr><td>start_timestamp<td>int<td>null<td>required<td><td>start timestamp for evaluation range<tr><td>end_timestamp<td>int<td>null<td>required<td><td>end timestamp for evaluation range</table>Returns:<pre>{
+    "descriptor_evaluations": {
+        "niveaus": [
+            {
+                "id": "int null (evalniveauid)",
+                "evaluations": [
+                    {
+                        "value": "int null (value of evaluation)",
+                        "sum": "int null (sum of evaluations of current gradings)"
+                    },
+                    "..."
+                ]
+            },
+            "..."
+        ]
+    },
+    "child_evaluations": {
+        "niveaus": [
+            {
+                "id": "int null (evalniveauid)",
+                "evaluations": [
+                    {
+                        "value": "int null (value of evaluation)",
+                        "sum": "int null (sum of evaluations of current gradings)"
+                    },
+                    "..."
+                ]
+            },
+            "..."
+        ]
+    },
+    "example_evaluations": {
+        "niveaus": [
+            {
+                "id": "int null (evalniveauid)",
+                "evaluations": [
+                    {
+                        "value": "int null (value of evaluation)",
+                        "sum": "int null (sum of evaluations of current gradings)"
+                    },
+                    "..."
+                ]
+            },
+            "..."
+        ]
+    }
+}</pre><h2>dakora_get_competence_profile_comparison</h2><div>get list for student and teacher comparison
+Get competence comparison for profile</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>topicid<td>int<td>null<td>required<td><td>id of subject</table>Returns:<pre>{
+    "descriptors": [
+        {
+            "descriptorid": "int null (descriptorid)",
+            "title": "text null (title of descriptor)",
+            "numbering": "text null (descriptor numbering)",
+            "teacherevaluation": "int null (teacher evaluation)",
+            "additionalinfo": "float null (additional grading of descriptor)",
+            "evalniveauid": "int null (teacher evaluation niveau id)",
+            "timestampteacher": "int null (timestamp for teacher descriptor evaluation)",
+            "studentevaluation": "int null (student evaluation)",
+            "timestampstudent": "int null (timestamp for student descriptor evaluation)",
+            "examples": [
+                {
+                    "example": "bool null (indicates if sub is example or grouping statement)",
+                    "exampleid": "int null (id of example)",
+                    "title": "text null (title of sub)",
+                    "teacherevaluation": "int null (teacher evaluation)",
+                    "evalniveauid": "int null (teacher evaluation niveau id)",
+                    "timestampteacher": "int null (timestamp for teacher example evaluation)",
+                    "studentevaluation": "int null (student evaluation)",
+                    "timestampstudent": "int null (timestamp for student example evaluation)"
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
+}</pre><h2>dakora_get_competence_profile_topic_statistic</h2><div>get data for 3D graph
+Get competence statistic for topic in profile for 3D graph</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>topicid<td>int<td>null<td>required<td><td>id of subject<tr><td>start_timestamp<td>int<td>null<td>required<td><td>start timestamp for evaluation range<tr><td>end_timestamp<td>int<td>null<td>required<td><td>end timestamp for evaluation range</table>Returns:<pre>{
+    "descriptor_evaluation": {
+        "niveaus": [
+            {
+                "title": "text null (evalniveauid)",
+                "teacherevaluation": "int null (evaluation value of current lfs)",
+                "evalniveauid": "int null (evaluation niveau id)",
+                "studentevaluation": "int null (student evaluation)"
+            },
+            "..."
+        ]
+    }
+}</pre><h2>block_exacomp_is_elove_student_self_assessment_enabled</h2><div>check the corresponding config setting</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "enabled": "bool null ()"
+}</pre><h2>dakora_get_evaluation_config</h2><div>get evaluation configuration
+get admin evaluation configurations</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "use_evalniveau": "bool null (use evaluation niveaus)",
+    "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
+    "evalniveaus": {
+        "1": "text null (evaluation title for id = 1)",
+        "2": "text null (evaluation title for id = 2)",
+        "3": "text null (evaluation title for id = 3)"
+    },
+    "values": [
+        "text null (value title for id = 0)",
+        "text null (value title for id = 1)",
+        "text null (value title for id = 2)",
+        "text null (value title for id = 3)"
+    ]
+}</pre><h2>dakora_get_config</h2><div></div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "use_evalniveau": "bool null (use evaluation niveaus)",
+    "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
+    "evalniveaus": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
+        },
+        "..."
+    ],
+    "values": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
+        },
+        "..."
+    ],
+    "version": "int null ()",
+    "release": "text null ()"
+}</pre><h2>dakora_set_descriptor_visibility</h2><div>set visibility for descriptor</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for descriptor in current context</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_set_example_visibility</h2><div>set visibility for example</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for example in current context</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_set_topic_visibility</h2><div>set visibility for topic</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for topic in current context</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_set_example_solution_visibility</h2><div>set visibility for example solutions</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for example in current context</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_create_cross_subject</h2><div>create new crosssubject</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>title<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>description<td>text<td>null<td>required<td><td>description of crosssubject<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject crosssubject is assigned to<tr><td>draftid<td>int<td>null<td><td><td>id of draft</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_delete_cross_subject</h2><div>delete cross subject</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_edit_cross_subject</h2><div>edit existing crosssubject</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject<tr><td>title<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>description<td>text<td>null<td>required<td><td>description of crosssubject<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject crosssubject is assigned to</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_get_cross_subject_drafts</h2><div>get available drafts</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+    {
+        "id": "int null (id of crosssubjet draft)",
+        "title": "text null (title of draft)",
+        "description": "text null (description of draft)"
+    },
+    "..."
+]</pre><h2>dakora_get_subjects</h2><div>get subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+    {
+        "id": "int null (id of subject)",
+        "title": "text null (title of subject)"
+    },
+    "..."
+]</pre><h2>dakora_get_students_for_cross_subject</h2><div>get_students_for_crosssubject</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crossssubj</table>Returns:<pre>{
+    "students": [
+        {
+            "id": "int null (id of student)",
+            "firstname": "text null (firstname of student)",
+            "lastname": "text null (lastname of student)",
+            "visible": "int null (visibility of crosssubject to student)"
+        },
+        "..."
+    ],
+    "visible_forall": "int null (visibility of crosssubject to all students)"
+}</pre><h2>dakora_set_cross_subject_student</h2><div>set visibility for crosssubject and student</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject<tr><td>userid<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>forall<td>int<td>null<td>required<td><td>0 or 1<tr><td>value<td>int<td>null<td>required<td><td>value 0 or 1</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre><h2>dakora_set_cross_subject_descriptor</h2><div>set descriptor crosssubject association</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject<tr><td>descriptorid<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>value<td>int<td>null<td>required<td><td>value 0 or 1</table>Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
