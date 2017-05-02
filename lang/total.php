@@ -162,7 +162,7 @@ return [
 	],
 	'tab_cross_subjects' => [
 		'Themen',
-		'Cross-Subjects',
+		'Interdisciplinary Subjects',
 	],
 	'tab_cross_subjects_overview' => [
 		'Übersicht',
@@ -170,7 +170,7 @@ return [
 	],
 	'tab_cross_subjects_course' => [
 		'Kursthemen',
-		'Course Cross-Subjects',
+		'Course Interdisciplinary Subjects',
 	],
 	'tab_weekly_schedule' => [
 		'Wochenplan',
@@ -178,11 +178,11 @@ return [
 	],
 	'assign_descriptor_to_crosssubject' => [
 		'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:',
-		'Assign the competence "{$a}" to the following Cross-Subjects:',
+		'Assign the competence "{$a}" to the following interdisciplinary subjects:',
 	],
 	'assign_descriptor_no_crosssubjects_available' => [
 		'Es sind keine Themen vorhanden, legen Sie welche an.',
-		'No Cross-Subjects are available.',
+		'No interdisciplinary subjects are available.',
 	],
 	'first_configuration_step' => [
 		'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Kompetenzraster Modul zu importieren.',
@@ -289,15 +289,15 @@ return [
 	],
 	'settings_admin_scheme' => [
 		'Globales Bewertungsniveau',
-		'Global grading level',
+		'Global difficulty level',
 	],
 	'settings_admin_scheme_description' => [
 		'Beurteilungen können auf unterschiedlichem Niveau erfolgen.',
-		'Grading can be done on different levels.',
+		'Grading can be done on different difficulty levels.',
 	],
 	'settings_admin_scheme_none' => [
 		'keine Niveaus',
-		'no global levels',
+		'no global difficulty levels',
 	],
 	'settings_additional_grading' => [
 		'Angepasste Bewertung',
@@ -820,7 +820,7 @@ return [
 	],
 	'allniveaus' => [
 		'Alle Lernfortschritte',
-		'All levels',
+		'All difficulty levels',
 	],
 	'choosesubject' => [
 		'Kompetenzbereich auswählen',
@@ -1017,11 +1017,11 @@ return [
 	],
 	'niveau' => [
 		'Lernfortschritt',
-		'Level',
+		'Difficulty Level',
 	],
 	'competence_grid_niveau' => [
 		'Niveau',
-		'Level',
+		'Difficulty Level',
 	],
 	'descriptor' => [
 		'Kompetenz',
@@ -1079,7 +1079,7 @@ return [
 	],
 	'niveau_filter' => [
 		'Niveaus filtern',
-		'Filter levels',
+		'Filter difficulty levels',
 	],
 	'module_filter' => [
 		'Aktivitäten filtern',
@@ -1108,10 +1108,6 @@ return [
 	'all_modules' => [
 		'Alle Aktivitäten',
 		'all activities',
-	],
-	'all_niveaus' => [
-		'Alle Niveaustufen',
-		'All levels',
 	],
 	'tick_some' => [
 		'Bitte treffen Sie eine Auswahl!',
@@ -1275,7 +1271,7 @@ return [
 	],
 	'crosssubject' => [
 		'Thema',
-		'Cross-Subject',
+		'Interdisciplinary Subject',
 	],
 	'help_crosssubject' => [
 		'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.',
@@ -1295,7 +1291,7 @@ return [
 	],
 	'save_as_draft' => [
 		'Thema als Vorlage speichern',
-		'Save Cross-Subject as draft',
+		'Save interdisciplinary subject as draft',
 	],
 	'comps_and_material' => [
 		'Kompetenzen und Lernmaterial',
@@ -1303,7 +1299,7 @@ return [
 	],
 	'no_crosssubjs' => [
 		'In diesem Kurs gibt es noch kein Thema.',
-		'No Cross-Subjects available.',
+		'No interdisciplinary subjects available.',
 	],
 	'delete_drafts' => [
 		'Ausgewählte Vorlagen löschen',
@@ -1311,43 +1307,43 @@ return [
 	],
 	'share_crosssub' => [
 		'Thema für Kursteilnehmer/innen freigeben',
-		'Share Cross-Subject with participants',
+		'Share interdisciplinary subject with participants',
 	],
 	'share_crosssub_with_students' => [
 		'Das Thema "{$a}" für folgende Kursteilnehmer/innen freigeben: ',
-		'Share Cross-Subject "{$a}" with the following participants: ',
+		'Share interdisciplinary subject "{$a}" with the following participants: ',
 	],
 	'share_crosssub_with_all' => [
 		'Das Thema "{$a}" für <b>alle</b> Kursteilnehmer/innen freigeben: ',
-		'Share Cross-Subject "{$a}" with all participants: ',
+		'Share interdisciplinary subject "{$a}" with all participants: ',
 	],
 	'new_crosssub' => [
 		'Eigenes Thema erstellen',
-		'Create new Cross-Subject',
+		'Create new interdisciplinary subject',
 	],
 	'add_crosssub' => [
 		'Thema erstellen',
-		'Create Cross-Subject',
+		'Create interdisciplinary subject',
 	],
 	'nocrosssubsub' => [
 		'Allgemeine Themen',
-		'General Cross-Subjects',
+		'General Interdisciplinary Subjects',
 	],
 	'delete_crosssub' => [
 		'Thema löschen',
-		'Delete Cross-Subject',
+		'Delete interdisciplinary subject',
 	],
 	'confirm_delete' => [
 		'Soll dieses Thema wirklich gelöscht werden?',
-		'Do you really want to delete this Cross-Subject?',
+		'Do you really want to delete this interdisciplinary subject?',
 	],
 	'no_students_crosssub' => [
 		'Es sind keine Kursteilnehmer/innen zu diesem Thema zugeteilt.',
-		'No students are assigend to this Cross-Subject.',
+		'No students are assigend to this interdisciplinary subject.',
 	],
 	'use_available_crosssub' => [
 		'Ein Thema aus einer Vorlage erstellen:',
-		'Use draft for creating new Cross-Subject:',
+		'Use draft for creating new interdisciplinary subject:',
 	],
 	'save_crosssub' => [
 		'Thema aktualisieren',
@@ -1355,11 +1351,11 @@ return [
 	],
 	'add_content_to_crosssub' => [
 		'Das Thema ist noch nicht befüllt.',
-		'The Cross-Subject is still empty.',
+		'The interdisciplinary subject is still empty.',
 	],
 	'add_descriptors_to_crosssub' => [
 		'Kompetenzen mit Thema verknüpfen',
-		'Add descriptor to Cross-Subject',
+		'Add descriptor to interdisciplinary subject',
 	],
 	'manage_crosssubs' => [
 		'Zurück zur Übersicht',
@@ -1367,7 +1363,7 @@ return [
 	],
 	'show_course_crosssubs' => [
 		'Kurs-Themen ansehen',
-		'Show used Cross-Subjects',
+		'Show used interdisciplinary subjects',
 	],
 	'existing_crosssub' => [
 		'Vorhandene Themen in diesem Kurs',
@@ -1375,11 +1371,11 @@ return [
 	],
 	'create_new_crosssub' => [
 		'Neues Thema erstellen',
-		'Create new Cross-Subject',
+		'Create new interdisciplinary subject',
 	],
 	'share_crosssub_for_further_use' => [
 		'Geben Sie das Thema an Kursteilnehmer/innen frei, um volle Funktionalität zu erhalten.',
-		'Share the Cross-Subject with students.',
+		'Share the interdisciplinary subject with students.',
 	],
 	'available_crosssubjects' => [
 		'Vorhandene Kursthemen',
@@ -1387,7 +1383,7 @@ return [
 	],
 	'crosssubject_drafts' => [
 		'Themenvorlagen',
-		'Cross-Subject Drafts',
+		'Interdisciplinary Subject Drafts',
 	],
 	'de:Freigegebene Kursthemen' => [
 		null,
@@ -1634,7 +1630,7 @@ return [
 	],
 	'eventscrosssubjectadded' => [
 		'Thema freigegeben',
-		'Cross-Subject added',
+		'Interdisciplinary subject added',
 	],
 
 	// === Message ===
