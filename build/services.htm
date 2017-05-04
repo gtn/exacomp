@@ -7,7 +7,7 @@
 			padding: 2px 5px;
 		}
 	</style><h2>block_exacomp_get_courses</h2><div>Get courses with exacomp block instances.
-get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td><td><td>id of user</table>Returns:<pre>[
     {
         "courseid": "int null (id of course)",
         "fullname": "text null (fullname of course)",
@@ -218,7 +218,7 @@ Get all available competencies</div><div>type: read</div>Params: <table><tr><td>
 Set a competence for a user</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>compid<td>int<td>null<td>required<td><td>competence id<tr><td>comptype<td>int<td>null<td>required<td><td>type of competence: descriptor, topic, subject<tr><td>role<td>int<td>null<td>required<td><td>user role (0 == student, 1 == teacher)<tr><td>value<td>int<td>null<td>required<td><td>evaluation value, only set for TK (0 to 3)<tr><td>additionalinfo<td>float<td>null<td>required<td><td>decimal between 1 and 6<tr><td>evalniveauid<td>int<td>null<td>required<td><td>evaluation niveau (-1, 1, 2, 3)</table>Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre><h2>dakora_get_courses</h2><div>get courses for user for dakora app
-get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td><td><td>id of user</table>Returns:<pre>[
     {
         "courseid": "int null (id of course)",
         "fullname": "text null (fullname of course)",
@@ -773,7 +773,8 @@ get example with all submission details and gradings</div><div>type: read</div>P
     "lang": "safedir null (Language code such as \"en\", must exist on server)",
     "url": "url null (URL of the user)",
     "profileimageurlsmall": "url null (User image profile URL - small version)",
-    "profileimageurl": "url null (User image profile URL - big version)"
+    "profileimageurl": "url null (User image profile URL - big version)",
+    "exarole": "int null (1=trainer, 2=student)"
 }</pre><h2>dakora_create_blocking_event</h2><div>create a blocking event
 Create a new blocking event</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>title<td>text<td>null<td>required<td><td>title of new blocking event<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>preplanningstorage<td>bool<td>null<td>required<td><td>in pre planning storage or for specific student</table>Returns:<pre>{
     "success": "bool null (status)"
@@ -925,7 +926,14 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
         },
         "..."
     ],
-    "values": [
+    "teacher_eval_items": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
+        },
+        "..."
+    ],
+    "student_eval_items": [
         {
             "id": "int null (id)",
             "name": "text null (name)"
@@ -934,6 +942,51 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
     ],
     "version": "int null ()",
     "release": "text null ()"
+}</pre><h2>block_exacomp_login</h2><div></div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "user": {
+        "id": "int null (ID of the user)",
+        "username": "raw null (The username)",
+        "firstname": "notags null (The first name(s) of the user)",
+        "lastname": "notags null (The family name of the user)",
+        "fullname": "notags null (The fullname of the user)",
+        "email": "text null (An email address - allow email as root@localhost)",
+        "firstaccess": "int null (first access to the site (0 if never))",
+        "lastaccess": "int null (last access to the site (0 if never))",
+        "auth": "plugin null (Auth plugins include manual, ldap, imap, etc)",
+        "confirmed": "int null (Active user: 1 if confirmed, 0 otherwise)",
+        "lang": "safedir null (Language code such as \"en\", must exist on server)",
+        "url": "url null (URL of the user)",
+        "profileimageurlsmall": "url null (User image profile URL - small version)",
+        "profileimageurl": "url null (User image profile URL - big version)",
+        "exarole": "int null (1=trainer, 2=student)"
+    },
+    "config": {
+        "use_evalniveau": "bool null (use evaluation niveaus)",
+        "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
+        "evalniveaus": [
+            {
+                "id": "int null (id)",
+                "name": "text null (name)"
+            },
+            "..."
+        ],
+        "teacher_eval_items": [
+            {
+                "id": "int null (id)",
+                "name": "text null (name)"
+            },
+            "..."
+        ],
+        "student_eval_items": [
+            {
+                "id": "int null (id)",
+                "name": "text null (name)"
+            },
+            "..."
+        ],
+        "version": "int null ()",
+        "release": "text null ()"
+    }
 }</pre><h2>dakora_set_descriptor_visibility</h2><div>set visibility for descriptor</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for descriptor in current context</table>Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre><h2>dakora_set_example_visibility</h2><div>set visibility for example</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for example in current context</table>Returns:<pre>{

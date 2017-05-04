@@ -36,7 +36,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function get_courses_parameters() {
 		return new external_function_parameters (array(
-			'userid' => new external_value (PARAM_INT, 'id of user', VALUE_OPTIONAL),
+			'userid' => new external_value (PARAM_INT, 'id of user', VALUE_DEFAULT),
 		));
 	}
 
