@@ -4307,7 +4307,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param array|null $attributes
 	 * @return string
 	 */
-	function select(array $options, $name, $selected = '', $nothing = array('' => 'choosedots'), array $attributes = null) {
+	function select(array $options, $name, $selected = '', $nothing = array('' => 'choosedots'), array $attributes = []) {
 		if (empty($attributes['disabled'])) {
 			unset($attributes['disabled']);
 		}
