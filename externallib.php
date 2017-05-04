@@ -5860,6 +5860,7 @@ class block_exacomp_external extends external_api {
 	 * get evaluation configuration
 	 * get admin evaluation configurations
 	 *
+	 * @deprecated use dakora_get_config instead
 	 * @ws-type-read
 	 */
 	public static function dakora_get_evaluation_config() {
