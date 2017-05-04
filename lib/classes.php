@@ -1201,16 +1201,19 @@ class global_config {
 	/**
 	 * Returns all evaluation niveaus, specified by the admin
 	 */
-	static function get_evalniveaus() {
+	static function get_evalniveaus($include_empty = false) {
 		static $values;
 
-		if ($values !== null) {
-			return $values;
+		if ($values === null) {
+			$values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, null, '', 'id,title');
 		}
-		$values = array(-1 => ' ');
-		$values += g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, null, '', 'id,title');
 
-		return $values;
+		$ret = $values;
+		if ($include_empty) {
+			$ret = [0 => ''] + $ret;
+		}
+
+		return $ret;
 	}
 
 	/**

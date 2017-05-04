@@ -48,8 +48,6 @@ if (!block_exacomp_use_eval_niveau()) {
 }
 
 
-//	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
-//	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/3dchart.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
@@ -84,11 +82,9 @@ $graph_options->xLabels = array_map(function($label) {
 $graph_options->xLabel = block_exacomp_get_string('niveau_short');
 $xlabels_long = array_keys(['' => ''] + $evaluation);
 
-$evalniveau_titles = array_filter(\block_exacomp\global_config::get_evalniveaus(), function($k) {
-	return $k > 0;
-}, ARRAY_FILTER_USE_KEY);
-$graph_options->yLabels = array_values([0 => ''] + $evalniveau_titles);
-$y_id_to_index = array_combine(array_keys([0 => ''] + $evalniveau_titles), array_keys($graph_options->yLabels));
+$evalniveau_titles = \block_exacomp\global_config::get_evalniveaus(true);
+$graph_options->yLabels = array_values($evalniveau_titles);
+$y_id_to_index = array_combine(array_keys($evalniveau_titles), array_keys($graph_options->yLabels));
 $ylabels_long = $graph_options->yLabels;
 
 end($graph_options->yLabels);

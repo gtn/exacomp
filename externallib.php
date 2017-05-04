@@ -5863,14 +5863,13 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 */
 	public static function dakora_get_evaluation_config() {
-		global $DB;
 		// TODO: fjungwirth: What if scheme > 4 is selected in a course? WS & Dakora need to be adapted to that I think
 
 		static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
 
 		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
-			'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(),
+			'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(true),
 			'values' => \block_exacomp\global_config::get_teacher_eval_items(),
 		);
 	}
@@ -5930,7 +5929,7 @@ class block_exacomp_external extends external_api {
 		return array(
 			'use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
-			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus()),
+			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
 			'teacher_eval_items' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items()),
 			'student_eval_items' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items()),
 			'version' => $info->versiondb,

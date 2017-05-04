@@ -2235,7 +2235,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $USER, $DB;
 
 		if (block_exacomp_use_eval_niveau()) {
-			$options = \block_exacomp\global_config::get_evalniveaus();
+			$options = \block_exacomp\global_config::get_evalniveaus(true);
 
 			$attributes = array();
 			if ($disabled) {
@@ -3178,7 +3178,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	function subject_statistic_table($courseid, $stat, $stat_title) {
 		$content = '';
 
-		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
+		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
 		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, true);
 		$value_titles_long = \block_exacomp\global_config::get_teacher_eval_items($courseid, false);
 
@@ -3220,7 +3220,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach ($stat as $niveau => $data) {
 			$row = new html_table_row();
 			$cell = new html_table_cell();
-			$cell->text = (block_exacomp_use_eval_niveau()) ? $evaluation_niveaus[$niveau] : '';
+			$cell->text = (block_exacomp_use_eval_niveau()) ? @$evaluation_niveaus[$niveau] : '';
 			$cell->attributes['class'] = 'cell-th';
 			$row->cells[] = $cell;
 

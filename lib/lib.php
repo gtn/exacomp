@@ -6189,7 +6189,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$table_content->subject_evalniveau =
 		(($use_evalniveau) ?
 			((isset($user->subjects->niveau[$subject->id]))
-				? $evaluationniveau_items[$user->subjects->niveau[$subject->id]].' ' : '')
+				? @$evaluationniveau_items[$user->subjects->niveau[$subject->id]].' ' : '')
 			: '');
 
 	$table_content->subject_evalniveauid = (($use_evalniveau) ?
@@ -6261,7 +6261,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		$data->niveaus[$niveau->title] = new stdClass();
 
 		if ($use_evalniveau && $evaluation && $evaluation->evalniveauid) {
-			$data->niveaus[$niveau->title]->evalniveau = $evaluationniveau_items[$evaluation->evalniveauid];
+			$data->niveaus[$niveau->title]->evalniveau = @$evaluationniveau_items[$evaluation->evalniveauid];
 			$data->niveaus[$niveau->title]->evalniveauid = $evaluation->evalniveauid ?: -1;
 		} else {
 			$data->niveaus[$niveau->title]->evalniveau = '';
