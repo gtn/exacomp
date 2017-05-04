@@ -735,18 +735,10 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		block_exacomp_require_teacher($courseid);
 	}
 
-	$id = -1;
-
-	if ($record = block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid)) {
-		$record->value = ($value != -1) ? $value : null;
-		$record->timestamp = time();
-		$record->reviewerid = $USER->id;
-		$record->evalniveauid = $evalniveauid;
-		$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
-		$id = $record->id;
-	} else {
-		$id = $DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time(), "evalniveauid" => $evalniveauid));
-	}
+	block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $compid, [
+		'value' => $value,
+		'evalniveauid' => $evalniveauid,
+	]);
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid);
@@ -756,47 +748,39 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 
 	\block_exacomp\event\competence_assigned::log(['objecttable' => ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 
-	return $id;
+	return true;
 }
 
 function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null) {
-	global $DB, $USER;
+	global $USER;
 
 	$updateEvaluation = new stdClass();
-	if ($evalniveauid !== null && $evalniveauid < 1) {
+	if ($evalniveauid < 1) {
 		$evalniveauid = null;
 	}
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_require_teacher($courseid);
-		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
-		$updateEvaluation->teacher_reviewerid = $USER->id;
-		$updateEvaluation->timestamp_teacher = time();
-		$updateEvaluation->evalniveauid = $evalniveauid;
-		$updateEvaluation->resubmission = ($value != -1) ? false : true;
+
+		$data = [
+			'value' => $value,
+			'reviewerid' => $USER->id,
+			'timestamp' => time(),
+			'evalniveauid' => $evalniveauid,
+			'resubmission' => ($value >= 0) ? false : true,
+		];
 	} elseif ($userid != $USER->id) {
 		// student can only assess himself
 		return;
 	} else {
-		$updateEvaluation->timestamp_student = time();
-		if ($value !== null) {
-			$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
-		}
-	}
-	if ($record = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
-		$updateEvaluation->id = $record->id;
-		$DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $updateEvaluation);
-
-		return $record->id;
-	} else {
-		$updateEvaluation->courseid = $courseid;
-		$updateEvaluation->exampleid = $exampleid;
-		$updateEvaluation->studentid = $userid;
-
-		return $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $updateEvaluation);
+		$data = [
+			'timestamp' => time(),
+			'value' => $value
+		];
 	}
 
-	// TODO: unreachable statement?!?
+	block_exacomp_set_comp_eval($courseid, $role, $userid, BLOCK_EXACOMP_TYPE_EXAMPLE, $exampleid, $data);
+
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		\block_exacomp\event\competence_assigned::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 	}
@@ -1475,6 +1459,7 @@ function block_exacomp_get_students_by_course($courseid) {
 	$context = context_course::instance($courseid);
 
 	$students = get_users_by_capability($context, 'block/exacomp:student', '', 'lastname,firstname');
+
 	// TODO ggf user mit exacomp:teacher hier filtern?
 	return $students;
 }
@@ -6120,8 +6105,8 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
 	}
 
 	return html_writer::empty_tag('img', array('src' => new moodle_url($image1), 'width' => '25', 'height' => '25')).
-	html_writer::empty_tag('img', array('src' => new moodle_url($image2), 'width' => '25', 'height' => '25')).
-	html_writer::empty_tag('img', array('src' => new moodle_url($image3), 'width' => '25', 'height' => '25'));
+		html_writer::empty_tag('img', array('src' => new moodle_url($image2), 'width' => '25', 'height' => '25')).
+		html_writer::empty_tag('img', array('src' => new moodle_url($image3), 'width' => '25', 'height' => '25'));
 }
 
 /**
@@ -7186,12 +7171,21 @@ function block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $comp
 				unset($data['timestamp']);
 			}
 			if (array_key_exists('value', $data)) {
-				$data['teacher_evaluation'] = $data['value'] < 0 ? null : $data['value'];
+				$data['teacher_evaluation'] = $data['value'];
 				unset($data['value']);
 			}
-			if (array_key_exists('evalniveauid', $data)) {
-				$data['evalniveauid'] = $data['evalniveauid'] < 0 ? null : $data['evalniveauid'];
+
+			if (isset($data['teacher_evaluation']) && $data['teacher_evaluation'] < 0) {
+				// teacher:
+				// 0 = nicht erreicht
+				// null = nicht gesetzt
+				// -1 = => auf null setzen
+				$data['teacher_evaluation'] = null;
 			}
+			if (isset($data['evalniveauid']) && $data['evalniveauid'] <= 0) {
+				$data['evalniveauid'] = null;
+			}
+
 			// resubmission: as is
 		} else {
 			if (array_key_exists('timestamp', $data)) {
@@ -7199,9 +7193,16 @@ function block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $comp
 				unset($data['timestamp']);
 			}
 			if (array_key_exists('value', $data)) {
-				$data['student_evaluation'] = $data['value'] < 0 ? null : $data['value'];
+				$data['student_evaluation'] = $data['value'];
 				unset($data['value']);
 			}
+
+			if (isset($data['student_evaluation']) && $data['student_evaluation'] <= 0) {
+				// teacher:
+				// 0, null, -1 = nicht gesetzt => auf null setzen
+				$data['student_evaluation'] = null;
+			}
+
 			unset($data['resubmission']);
 			unset($data['evalniveauid']);
 			unset($data['reviewerid']);
@@ -7213,6 +7214,22 @@ function block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $comp
 			'exampleid' => $compid,
 		]);
 	} else {
+		if (isset($data['value'])) {
+			if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+				if ($data['value'] < 0) {
+					$data['value'] = null;
+				}
+			} else {
+				if ($data['value'] <= 0) {
+					$data['value'] = null;
+				}
+			}
+
+			if (isset($data['evalniveauid']) && $data['evalniveauid'] <= 0) {
+				$data['evalniveauid'] = null;
+			}
+		}
+
 		g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
 			'courseid' => $courseid,
 			'userid' => $userid,

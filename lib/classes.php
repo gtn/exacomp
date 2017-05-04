@@ -1168,7 +1168,7 @@ class global_config {
 					1 => '😓',
 				*/
 				return [
-					-1 => ' ',
+					0 => '',
 					3 => ':-)',
 					2 => ':-|',
 					1 => ':-(',
@@ -1178,7 +1178,7 @@ class global_config {
 				// TODO: add settings to g::$COURSE?
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 
-				$values = array(-1 => ' ');
+				$values = array(0 => '');
 				$values += range(1, $course_grading);
 
 				return $values;
