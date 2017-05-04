@@ -337,7 +337,6 @@ $string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Moodle-Aktiv
 $string['no_activities_selected_student'] = 'In diesem Bereich sind derzeit keine Daten vorhanden.';
 $string['no_course_activities'] = 'In diesem Kurs wurden noch keine Moodle-Aktivitäten erstellt, klicken Sie hier um dies nun zu tun.';
 $string['all_modules'] = 'Alle Aktivitäten';
-$string['all_niveaus'] = 'Alle Niveaustufen';
 $string['tick_some'] = 'Bitte treffen Sie eine Auswahl!';
 
 
