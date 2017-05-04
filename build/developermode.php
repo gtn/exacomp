@@ -12,7 +12,7 @@ call_user_func(function() {
 		}
 		if (filemtime($servicesFile) == ($time = filemtime(__DIR__.'/../externallib.php'))) {
 			// no change required
-			// return;
+			return;
 		}
 	}
 
