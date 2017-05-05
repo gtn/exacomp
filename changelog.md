@@ -1,14 +1,14 @@
-Version 4.6.0
+v4.6.0
 * backup/restore of all reviews in course
 * bugfixes
 
-Version 4.5.1
+v4.5.1
 * new edit activities logic
 * ui improvements
 * bugfixes
 * Period select dropdown
 
-Version 4.5.0
+v4.5.0
 * 3d charts in reports
 * ui improvements
 * webservice udpates for dakora
