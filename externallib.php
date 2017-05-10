@@ -2212,8 +2212,9 @@ class block_exacomp_external extends external_api {
 			// force additional info to be stored with a dot as decimal mark
 			$additionalinfo = str_replace(",", ".", $additionalinfo);
 			
-			if($additionalinfo == '' || empty($additionalinfo || $additionalinfo == 0))
-				$additionalinfo = NULL;
+			if (!$additionalinfo) {
+				$additionalinfo = null;
+			}
 	
 			$value =  block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 			if(block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1)
