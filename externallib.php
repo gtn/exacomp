@@ -5910,10 +5910,16 @@ class block_exacomp_external extends external_api {
 			'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
 			'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
-			'teacher_eval_items' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-			'student_eval_items' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-			'version' => new external_value (PARAM_INT),
-			'release' => new external_value (PARAM_TEXT),
+			'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+			'studentevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+			'gradingperiods' => new external_multiple_structure (new external_single_structure ([
+				'id' => new external_value (PARAM_INT, 'id'),
+				'description' => new external_value (PARAM_TEXT, 'name'),
+				'starttime' => new external_value (PARAM_INT, 'active from'),
+				'endtime' => new external_value (PARAM_INT, 'active to'),
+			]), 'grading periods from exastud'),
+			'version' => new external_value (PARAM_FLOAT, 'mooodle version number in YYYYMMDDXX format'),
+			'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
 		));
 	}
 
@@ -5927,19 +5933,26 @@ class block_exacomp_external extends external_api {
 
 		$info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
+		$gradingperiods = block_exacomp_is_exastud_installed() ? \block_exastud\api::get_periods() : [];
+
 		return array(
 			'use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
-			'teacher_eval_items' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items()),
-			'student_eval_items' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items()),
+			'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items()),
+			'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items()),
+			'gradingperiods' => $gradingperiods,
 			'version' => $info->versiondb,
 			'release' => $info->release,
 		);
 	}
 
 	public static function login_parameters() {
-		return new external_function_parameters(array());
+		return new external_function_parameters(array(
+			'app' => new external_value (PARAM_INT, 'app accessing this service (eg. dakora)'),
+			'app_version' => new external_value (PARAM_INT, 'version of the app (eg. 4.6.0)'),
+			'services' => new external_value (PARAM_INT, 'wanted webservice tokens (eg. exacomp,exaport)', VALUE_OPTIONAL),
+		));
 	}
 
 	/**
@@ -5948,13 +5961,19 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function login_returns() {
-		return new external_single_structure (array(
+		return new external_single_structure ([
 			'user' => static::dakora_get_user_information_returns(),
+			'exacompcourses' => static::dakora_get_courses_returns(),
 			'config' => static::dakora_get_config_returns(),
-		));
+			'tokens' => new external_multiple_structure (new external_single_structure ([
+				'service' => new external_value (PARAM_TEXT, 'name of service'),
+				'token' => new external_value (PARAM_TEXT, 'token of the service'),
+			]), 'requested tokens'),
+		]);
 	}
 
 	/**
+	 * webservice called through token.php
 	 *
 	 * @ws-type-read
 	 * @return array
@@ -5964,6 +5983,7 @@ class block_exacomp_external extends external_api {
 			'user' => static::dakora_get_user_information(),
 			'exacompcourses' => static::dakora_get_courses(),
 			'config' => static::dakora_get_config(),
+			'tokens' => [],
 		];
 	}
 

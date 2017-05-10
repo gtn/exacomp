@@ -36,7 +36,7 @@ Get examples</div><div>type: read</div>Params: <table><tr><td>subjectid<td>int<t
                 "quiz_title": "text null (title of quiz)",
                 "quiz_grade": "float null (sum grade of quiz)"
             },
-            "..."
+            "... quiz data ..."
         ]
     },
     "..."
@@ -926,23 +926,32 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
         },
         "..."
     ],
-    "teacher_eval_items": [
+    "teacherevalitems": [
         {
             "id": "int null (id)",
             "name": "text null (name)"
         },
         "..."
     ],
-    "student_eval_items": [
+    "studentevalitems": [
         {
             "id": "int null (id)",
             "name": "text null (name)"
         },
         "..."
     ],
-    "version": "int null ()",
-    "release": "text null ()"
-}</pre><h2>block_exacomp_login</h2><div></div><div>type: read</div>Params: <table></table>Returns:<pre>{
+    "gradingperiods": [
+        {
+            "id": "int null (id)",
+            "description": "text null (name)",
+            "starttime": "int null (active from)",
+            "endtime": "int null (active to)"
+        },
+        "... grading periods from exastud ..."
+    ],
+    "version": "float null (mooodle version number in YYYYMMDDXX format)",
+    "release": "text null (plugin release x.x.x format)"
+}</pre><h2>block_exacomp_login</h2><div>webservice called through token.php</div><div>type: read</div>Params: <table><tr><td>app<td>int<td>null<td>required<td><td>app accessing this service (eg. dakora)<tr><td>app_version<td>int<td>null<td>required<td><td>version of the app (eg. 4.6.0)<tr><td>services<td>int<td>null<td>required<td><td>wanted webservice tokens (eg. exacomp,exaport)</table>Returns:<pre>{
     "user": {
         "id": "int null (ID of the user)",
         "username": "raw null (The username)",
@@ -960,6 +969,14 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
         "profileimageurl": "url null (User image profile URL - big version)",
         "exarole": "int null (1=trainer, 2=student)"
     },
+    "exacompcourses": [
+        {
+            "courseid": "int null (id of course)",
+            "fullname": "text null (fullname of course)",
+            "shortname": "raw null (shortname of course)"
+        },
+        "..."
+    ],
     "config": {
         "use_evalniveau": "bool null (use evaluation niveaus)",
         "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
@@ -970,23 +987,39 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
             },
             "..."
         ],
-        "teacher_eval_items": [
+        "teacherevalitems": [
             {
                 "id": "int null (id)",
                 "name": "text null (name)"
             },
             "..."
         ],
-        "student_eval_items": [
+        "studentevalitems": [
             {
                 "id": "int null (id)",
                 "name": "text null (name)"
             },
             "..."
         ],
-        "version": "int null ()",
-        "release": "text null ()"
-    }
+        "gradingperiods": [
+            {
+                "id": "int null (id)",
+                "description": "text null (name)",
+                "starttime": "int null (active from)",
+                "endtime": "int null (active to)"
+            },
+            "... grading periods from exastud ..."
+        ],
+        "version": "float null (mooodle version number in YYYYMMDDXX format)",
+        "release": "text null (plugin release x.x.x format)"
+    },
+    "tokens": [
+        {
+            "service": "text null (name of service)",
+            "token": "text null (token of the service)"
+        },
+        "... requested tokens ..."
+    ]
 }</pre><h2>dakora_set_descriptor_visibility</h2><div>set visibility for descriptor</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for descriptor in current context</table>Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre><h2>dakora_set_example_visibility</h2><div>set visibility for example</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for example in current context</table>Returns:<pre>{

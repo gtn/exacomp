@@ -62,12 +62,20 @@ $services = array_keys(
 
 foreach ($services as $service) {
 	$token = block_exacomp_load_service($service);
-	$block_exacomp_tokens[$service] = $token;
+	$block_exacomp_tokens[] = [
+		'service' => $service,
+		'token' => $token,
+	];
 }
 
 require __DIR__.'/externallib.php';
 
+// get login data
 $data = block_exacomp_external::login();
+// add tokens
 $data['tokens'] = $block_exacomp_tokens;
+
+// clean output
+$data = external_api::clean_returnvalue(block_exacomp_external::login_returns(), $data);
 
 echo json_encode($data, JSON_PRETTY_PRINT);

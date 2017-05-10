@@ -644,7 +644,7 @@ get admin evaluation configurations',
     'classname' => 'block_exacomp_external',
     'methodname' => 'login',
     'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => '',
+    'description' => 'webservice called through token.php',
     'type' => 'read',
   ),
   'dakora_set_descriptor_visibility' => 

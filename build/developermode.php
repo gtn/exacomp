@@ -87,10 +87,14 @@ call_user_func(function() {
 
 		$recursor = function($o) use (&$recursor) {
 			if ($o instanceof external_multiple_structure) {
-				return [
-					$recursor($o->content),
-					'...',
-				];
+				$ret = [];
+				$ret[] = $recursor($o->content);
+				if ($o->desc) {
+					$ret[] = '... '.$o->desc.' ...';
+				} else {
+					$ret[] = '...';
+				}
+				return $ret;
 			} elseif ($o instanceof external_single_structure) {
 				$data = [];
 				foreach ($o->keys as $paramName => $paramInfo) {
