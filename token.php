@@ -53,7 +53,7 @@ if (optional_param('testconnection', false, PARAM_BOOL)) {
 	exit;
 }
 
-$block_exacomp_tokens = [];
+$exa_tokens = [];
 
 $services = optional_param('services', '', PARAM_TEXT);
 $services = array_keys(
@@ -62,18 +62,18 @@ $services = array_keys(
 
 foreach ($services as $service) {
 	$token = block_exacomp_load_service($service);
-	$block_exacomp_tokens[] = [
+	$exa_tokens[] = [
 		'service' => $service,
 		'token' => $token,
 	];
 }
 
-require __DIR__.'/externallib.php';
+require_once __DIR__.'/externallib.php';
 
 // get login data
 $data = block_exacomp_external::login();
 // add tokens
-$data['tokens'] = $block_exacomp_tokens;
+$data['tokens'] = $exa_tokens;
 
 // clean output
 $data = external_api::clean_returnvalue(block_exacomp_external::login_returns(), $data);

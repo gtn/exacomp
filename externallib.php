@@ -5951,7 +5951,7 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters(array(
 			'app' => new external_value (PARAM_INT, 'app accessing this service (eg. dakora)'),
 			'app_version' => new external_value (PARAM_INT, 'version of the app (eg. 4.6.0)'),
-			'services' => new external_value (PARAM_INT, 'wanted webservice tokens (eg. exacomp,exaport)', VALUE_OPTIONAL),
+			'services' => new external_value (PARAM_INT, 'wanted webservice tokens (eg. exacomp,exaport)', VALUE_DEFAULT, 'moodle_mobile_app,exacompservices'),
 		));
 	}
 

@@ -951,7 +951,7 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
     ],
     "version": "float null (mooodle version number in YYYYMMDDXX format)",
     "release": "text null (plugin release x.x.x format)"
-}</pre><h2>block_exacomp_login</h2><div>webservice called through token.php</div><div>type: read</div>Params: <table><tr><td>app<td>int<td>null<td>required<td><td>app accessing this service (eg. dakora)<tr><td>app_version<td>int<td>null<td>required<td><td>version of the app (eg. 4.6.0)<tr><td>services<td>int<td>null<td>required<td><td>wanted webservice tokens (eg. exacomp,exaport)</table>Returns:<pre>{
+}</pre><h2>block_exacomp_login</h2><div>webservice called through token.php</div><div>type: read</div>Params: <table><tr><td>app<td>int<td>null<td>required<td><td>app accessing this service (eg. dakora)<tr><td>app_version<td>int<td>null<td>required<td><td>version of the app (eg. 4.6.0)<tr><td>services<td>int<td>null<td><td>default: moodle_mobile_app,exacompservices<td>wanted webservice tokens (eg. exacomp,exaport)</table>Returns:<pre>{
     "user": {
         "id": "int null (ID of the user)",
         "username": "raw null (The username)",
