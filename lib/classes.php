@@ -1269,6 +1269,14 @@ class global_config {
 	static function get_values_additionalinfo_mapping() {
 		return array(6.0, 4.4, 2.7, 1.0);
 	}
+
+	static function get_allowed_inputs_for_type() {
+
+	}
+
+	static function get_allowed_inputs() {
+
+	}
 }
 
 class comp_eval extends db_record {
