@@ -4600,9 +4600,9 @@ class block_exacomp_external extends external_api {
 
 		//insert: if itemid == 0 OR status != 0
 		$insert = true;
-		if ($itemid != 0) {
+		if ($itemid > 0) {
 			$itemexample = $DB->get_record('block_exacompitemexample', array('itemid' => $itemid));
-			if ($itemexample->teachervalue == null || $itemexample->status == 0) {
+			if ($itemexample && ($itemexample->teachervalue == null || $itemexample->status == 0)) {
 				$insert = false;
 			}
 		}
