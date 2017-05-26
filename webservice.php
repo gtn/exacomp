@@ -52,7 +52,10 @@ if ($authenticationinfo['service']->name != 'exacompservices') {
 	throw new moodle_exception('not an exacomp webservice token');
 }
 
-class simple_service {
+class block_exacomp_simple_service {
+	/**
+	 * used own webservice, because moodle does not support returning files from webservices
+	 */
 	static function dakora_print_schedule() {
 		$courseid = required_param('courseid', PARAM_INT);
 
@@ -89,11 +92,14 @@ class simple_service {
 			print_error("student not found");
 		}
 
-		printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
+		\block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
 
 		// die;
 	}
 
+	/**
+	 * used own webservice, because moodle does not support indexed arrays (eg. [ 188 => object])
+	 */
 	static function get_examples_as_tree() {
 		$courseid = required_param('courseid', PARAM_INT);
 		$q = trim(optional_param('q', '', PARAM_RAW));
@@ -104,11 +110,14 @@ class simple_service {
 
 		require_login($course);
 
-		$subjects = search_competence_grid_as_tree($courseid, $q);
+		$subjects = block_exacomp_search_competence_grid_as_tree($courseid, $q);
 
 		return static::json_items($subjects, BLOCK_EXACOMP_DB_SUBJECTS);
 	}
 
+	/**
+	 * used own webservice, because moodle does not support indexed arrays (eg. [ 188 => object])
+	 */
 	static function get_examples_as_list() {
 		$courseid = required_param('courseid', PARAM_INT);
 		$q = trim(optional_param('q', '', PARAM_RAW));
@@ -119,7 +128,7 @@ class simple_service {
 
 		require_login($course);
 
-		$examples = search_competence_grid_as_example_list($courseid, $q);
+		$examples = block_exacomp_search_competence_grid_as_example_list($courseid, $q);
 
 		return static::json_items($examples, BLOCK_EXACOMP_DB_EXAMPLES);
 	}
@@ -128,14 +137,14 @@ class simple_service {
 		$results = [];
 
 		foreach ($items as $item) {
-			if ($item instanceof subject) {
+			if ($item instanceof \block_exacomp\subject) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
 					'title' => $item->title,
 					'topics' => static::json_items($item->topics, $by),
 				];
 			}
-			elseif ($item instanceof topic) {
+			elseif ($item instanceof \block_exacomp\topic) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
 					'numbering' => $item->get_numbering(),
@@ -143,7 +152,7 @@ class simple_service {
 					'descriptors' => static::json_items($item->descriptors, $by),
 				];
 			}
-			elseif ($item instanceof descriptor) {
+			elseif ($item instanceof \block_exacomp\descriptor) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
 					'numbering' => $item->get_numbering(),
@@ -154,7 +163,7 @@ class simple_service {
 					$results[$item->id]->examples = static::json_items($item->examples, $by);
 				}
 			}
-			elseif ($item instanceof example) {
+			elseif ($item instanceof \block_exacomp\example) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
 					'title' => $item->title,
@@ -173,8 +182,8 @@ class simple_service {
 	}
 }
 
-if (is_callable(['\block_exacomp\simple_service', $function])) {
-	$ret = simple_service::$function();
+if (is_callable(['block_exacomp_simple_service', $function])) {
+	$ret = block_exacomp_simple_service::$function();
 
 	// pretty print if available (since php 5.4.0)
 	echo defined('JSON_PRETTY_PRINT') ? json_encode($ret, JSON_PRETTY_PRINT) : json_encode($ret);
