@@ -2298,7 +2298,7 @@ class block_exacomp_external extends external_api {
 		}
 
 		if (!$parent || $role == BLOCK_EXACOMP_ROLE_STUDENT) { //TK or student -> value not mapped
-			if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1) {
+			if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
 				throw new invalid_parameter_exception ('Not allowed');
 			}
 		} else {    //teacher grading for K/T/S: map
@@ -2318,7 +2318,7 @@ class block_exacomp_external extends external_api {
 			}
 
 			$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
-			if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1) {
+			if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
 				throw new invalid_parameter_exception ('Not allowed');
 			}
 

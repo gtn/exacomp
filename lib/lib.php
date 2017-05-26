@@ -749,7 +749,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 
 	\block_exacomp\event\competence_assigned::log(['objecttable' => ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 
-	return true;
+	return 1;
 }
 
 function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null) {
