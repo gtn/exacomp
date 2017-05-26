@@ -5940,7 +5940,7 @@ class block_exacomp_external extends external_api {
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
 			'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items()),
-			'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items()),
+			'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
 			'gradingperiods' => $gradingperiods,
 			'version' => $info->versiondb,
 			'release' => $info->release,

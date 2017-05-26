@@ -203,7 +203,8 @@ $string['conf_comps'] = 'configure competences';
 // === Examples ===
 $string['example'] = 'Example';
 $string['sorting'] = 'select sorting: ';
-$string['subject'] = 'subjects';
+$string['subject'] = 'subject';
+$string['topic'] = 'Topic';
 $string['taxonomies'] = 'taxonomies';
 $string['show_all_course_examples'] = 'Show examples from all courses';
 $string['name_example'] = 'Name';
@@ -306,7 +307,9 @@ $string['statistic'] = 'Overview';
 $string['niveau'] = 'Difficulty Level';
 $string['niveau_short'] = 'Level';
 $string['competence_grid_niveau'] = 'Difficulty Level';
+$string['competence_grid_additionalinfo'] = 'Grade';
 $string['descriptor'] = 'Competency';
+$string['descriptor_child'] = 'Child Competency';
 $string['assigndone'] = 'task done: ';
 // === metadata ===
 $string['subject_singular'] = 'Field of competence';

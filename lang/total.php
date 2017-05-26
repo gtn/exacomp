@@ -639,8 +639,12 @@ return [
 		'select sorting: ',
 	],
 	'subject' => [
-		'Kompetenzbereiche',
-		'subjects',
+		'Bildungsstandard',
+		'subject',
+	],
+	'topic' => [
+		'Kompetenzbereich',
+		'Topic',
 	],
 	'taxonomies' => [
 		'Niveaustufen',
@@ -1023,9 +1027,17 @@ return [
 		'Niveau',
 		'Difficulty Level',
 	],
+	'competence_grid_additionalinfo' => [
+		'Note',
+		'Grade',
+	],
 	'descriptor' => [
 		'Kompetenz',
 		'Competency',
+	],
+	'descriptor_child' => [
+		'Teilkompetenz',
+		'Child Competency',
 	],
 	'assigndone' => [
 		'Aufgabe erledigt: ',

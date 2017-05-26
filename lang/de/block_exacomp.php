@@ -203,7 +203,8 @@ $string['conf_comps'] = 'Kompetenzen zuordnen';
 // === Examples ===
 $string['example'] = 'Lernmaterial';
 $string['sorting'] = 'Sortierung wählen: ';
-$string['subject'] = 'Kompetenzbereiche';
+$string['subject'] = 'Bildungsstandard';
+$string['topic'] = 'Kompetenzbereich';
 $string['taxonomies'] = 'Niveaustufen';
 $string['show_all_course_examples'] = 'Lernmaterialien aus allen Kursen anzeigen';
 $string['name_example'] = 'Name';
@@ -306,7 +307,9 @@ $string['statistic'] = 'Gesamtübersicht';
 $string['niveau'] = 'Lernfortschritt';
 $string['niveau_short'] = 'LFS';
 $string['competence_grid_niveau'] = 'Niveau';
+$string['competence_grid_additionalinfo'] = 'Note';
 $string['descriptor'] = 'Kompetenz';
+$string['descriptor_child'] = 'Teilkompetenz';
 $string['assigndone'] = 'Aufgabe erledigt: ';
 // === metadata ===
 $string['subject_singular'] = 'Fach';

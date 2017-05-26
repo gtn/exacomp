@@ -1158,17 +1158,23 @@ class global_config {
 	/**
 	 * Returns all values used for examples and child-descriptors
 	 */
-	static function get_student_eval_items() {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__], function() {
+	static function get_student_eval_items($include_empty = false) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty) {
 			// if additional_grading is set, use global value scheme
+
+			if ($include_empty) {
+				$values = [0 => ''];
+			} else {
+				$values = [];
+			}
+
 			if (block_exacomp_additional_grading()) {
 				/*
 					3 => '😊',
 					2 => '😔',
 					1 => '😓',
 				*/
-				return [
-					0 => '',
+				return $values + [
 					3 => ':-)',
 					2 => ':-|',
 					1 => ':-(',
@@ -1178,10 +1184,7 @@ class global_config {
 				// TODO: add settings to g::$COURSE?
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 
-				$values = array(0 => '');
-				$values += range(1, $course_grading);
-
-				return $values;
+				return $values + range(1, $course_grading);
 			}
 		});
 	}
@@ -1270,12 +1273,43 @@ class global_config {
 		return array(6.0, 4.4, 2.7, 1.0);
 	}
 
-	static function get_allowed_inputs_for_type() {
+	static function get_allowed_inputs($type) {
+		$inputs = [];
 
-	}
+		if ($type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+			$inputs['additionalinfo'] = true;
+			if (block_exacomp_use_eval_niveau()) {
+				$inputs['evalniveauid'] = true;
+			}
+		} elseif ($type == BLOCK_EXACOMP_TYPE_TOPIC) {
+			$inputs['student_evaluation'] = true;
+			$inputs['additionalinfo'] = true;
+			if (block_exacomp_use_eval_niveau()) {
+				$inputs['evalniveauid'] = true;
+			}
+		} elseif ($type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+			$inputs['student_evaluation'] = true;
+			$inputs['additionalinfo'] = true;
+			if (block_exacomp_use_eval_niveau()) {
+				$inputs['evalniveauid'] = true;
+			}
+		} elseif ($type == BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) {
+			$inputs['student_evaluation'] = true;
+			$inputs['teacher_evaluation'] = true;
+			if (block_exacomp_use_eval_niveau()) {
+				$inputs['evalniveauid'] = true;
+			}
+		} elseif ($type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+			$inputs['student_evaluation'] = true;
+			$inputs['teacher_evaluation'] = true;
+			if (block_exacomp_use_eval_niveau()) {
+				$inputs['evalniveauid'] = true;
+			}
+		} else {
+			throw new moodle_exception("unknown type '$type'");
+		}
 
-	static function get_allowed_inputs() {
-
+		return $inputs;
 	}
 }
 

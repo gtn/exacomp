@@ -2202,7 +2202,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if (strcmp($evaluation, 'teacher') == 0) {
 			$options = \block_exacomp\global_config::get_teacher_eval_items();
 		} else {
-			$options = \block_exacomp\global_config::get_student_eval_items();
+			$options = \block_exacomp\global_config::get_student_eval_items(true);
 		}
 
 		if ($this->is_print_mode()) {

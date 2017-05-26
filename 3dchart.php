@@ -98,7 +98,7 @@ $value_titles = array_filter(\block_exacomp\global_config::get_teacher_eval_item
 $value_titles_long = array_filter(\block_exacomp\global_config::get_teacher_eval_items($courseid, false), function($k) {
 	return $k >= 0;
 }, ARRAY_FILTER_USE_KEY);
-$value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items();
+$value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items(true);
 
 $graph_options->zLabels = array_fill(0, count($value_titles), '');
 
