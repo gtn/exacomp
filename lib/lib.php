@@ -4041,8 +4041,8 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 
 	$timecreated = $timemodified = time();
 
-	// already inside schedule?
-	if($DB->get_record(\block_exacomp\DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))){
+	// prüfen, ob element schon zur gleichen zeit im weochenplan ist
+	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
 
