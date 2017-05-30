@@ -5935,13 +5935,15 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 	}
 
 	if ($record) {
+		// falls sich die bewertung geändert hat, timestamp neu setzen
+		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
+			$record->timestamp = time();
+		}
+
 		$record->reviewerid = $USER->id;
 		$record->additionalinfo = $additionalinfo;
 		$record->value = $value;
 
-		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
-			$record->timestamp = time();
-		}
 		$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
 	} else {
 		$insert = new stdClass();
