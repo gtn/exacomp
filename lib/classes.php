@@ -911,6 +911,10 @@ class descriptor extends db_record {
 		return block_exacomp_get_descriptor_numbering($this);
 	}
 
+	function get_detailedtype() {
+		return $this->parentid ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
+	}
+
 	static function insertInCourse($courseid, $data) {
 		global $DB;
 
@@ -1086,6 +1090,8 @@ class niveau extends db_record {
 
 class cross_subject extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_CROSSSUBJECTS;
+	const TYPE = BLOCK_EXACOMP_TYPE_CROSSSUB;
+	const SUBS = false;
 
 	function is_draft() {
 		return !$this->courseid;
@@ -1175,10 +1181,10 @@ class global_config {
 					1 => '😓',
 				*/
 				return $values + [
-					3 => ':-)',
-					2 => ':-|',
-					1 => ':-(',
-				];
+						3 => ':-)',
+						2 => ':-|',
+						1 => ':-(',
+					];
 			} // else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
@@ -1273,43 +1279,52 @@ class global_config {
 		return array(6.0, 4.4, 2.7, 1.0);
 	}
 
-	static function get_allowed_inputs($type) {
-		$inputs = [];
+	static function get_allowed_inputs($detailedcomptype) {
+		$inputs = [
+			BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION => false,
+			BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION => false,
+			BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO => false,
+			BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID => false,
+		];
 
-		if ($type == BLOCK_EXACOMP_TYPE_SUBJECT) {
-			$inputs['additionalinfo'] = true;
+		if ($detailedcomptype == BLOCK_EXACOMP_TYPE_SUBJECT) {
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO] = true;
 			if (block_exacomp_use_eval_niveau()) {
-				$inputs['evalniveauid'] = true;
+				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
 			}
-		} elseif ($type == BLOCK_EXACOMP_TYPE_TOPIC) {
-			$inputs['student_evaluation'] = true;
-			$inputs['additionalinfo'] = true;
+		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_TOPIC) {
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO] = true;
 			if (block_exacomp_use_eval_niveau()) {
-				$inputs['evalniveauid'] = true;
+				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
 			}
-		} elseif ($type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
-			$inputs['student_evaluation'] = true;
-			$inputs['additionalinfo'] = true;
+		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT) {
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO] = true;
 			if (block_exacomp_use_eval_niveau()) {
-				$inputs['evalniveauid'] = true;
+				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
 			}
-		} elseif ($type == BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) {
-			$inputs['student_evaluation'] = true;
-			$inputs['teacher_evaluation'] = true;
+		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) {
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION] = true;
 			if (block_exacomp_use_eval_niveau()) {
-				$inputs['evalniveauid'] = true;
+				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
 			}
-		} elseif ($type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
-			$inputs['student_evaluation'] = true;
-			$inputs['teacher_evaluation'] = true;
+		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
+			$inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION] = true;
 			if (block_exacomp_use_eval_niveau()) {
-				$inputs['evalniveauid'] = true;
+				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
 			}
 		} else {
-			throw new moodle_exception("unknown type '$type'");
+			throw new moodle_exception("unknown type '$detailedcomptype'");
 		}
 
 		return $inputs;
+	}
+
+	static function is_input_allowed($detailedcomptype, $input) {
+		return !empty(static::get_allowed_inputs($detailedcomptype)[$input]);
 	}
 }
 
@@ -1333,7 +1348,7 @@ class comp_eval extends db_record {
 		if ($this->role == BLOCK_EXACOMP_ROLE_STUDENT) {
 			return global_config::get_student_eval_title_by_id($this->value);
 		} elseif ($this->role == BLOCK_EXACOMP_ROLE_TEACHER) {
-			if ($this->comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+			if ($this->comptype == BLOCK_EXACOMP_TYPE_EXAMPLE || $this->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 				return global_config::get_teacher_eval_title_by_id($this->value);
 			}
 		}
@@ -1343,5 +1358,85 @@ class comp_eval extends db_record {
 
 	function get_evalniveau_title() {
 		return global_config::get_evalniveau_title_by_id($this->evalniveauid);
+	}
+}
+
+class comp_eval_merged {
+	public $teacherevalid;
+	public $studentevalid;
+	public $courseid;
+	public $userid;
+	public $comptype;
+	public $compid;
+	public $teacherevaluation;
+	public $studentevaluation;
+	public $additionalinfo;
+	public $evalniveauid;
+	public $teacherreviewerid;
+	public $timestampteacher;
+	public $timestampstudent;
+
+	private $detailed_comptype;
+
+	function __construct($data) {
+		foreach ($data as $key => $value) {
+			$this->$key = $value;
+		}
+	}
+
+	static function get($courseid, $studentid, $comptype, $compid) {
+		$student_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $comptype, $compid);
+		$teacher_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $comptype, $compid);
+
+		// always return an eval, even though none is entered
+		return new static([
+			'teacherevalid' => @$teacher_eval->id,
+			'studentevalid' => @$student_eval->id,
+			'courseid' => $courseid,
+			'userid' => $studentid,
+			'comptype' => $comptype,
+			'compid' => $compid,
+
+			'teacherevaluation' => @$teacher_eval->value,
+			'studentevaluation' => @$student_eval->value,
+			'additionalinfo' => @$teacher_eval->additionalinfo,
+			'evalniveauid' => @$teacher_eval->evalniveauid,
+			'teacherreviewerid' => @$teacher_eval->reviewerid,
+			'timestampteacher' => @$teacher_eval->timestamp,
+			'timestampstudent' => @$student_eval->timestamp,
+		]);
+	}
+
+	function get_detailed_comptype() {
+		if (!$this->detailed_comptype) {
+			if ($this->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+				$descriptor = \block_exacomp\descriptor::get($this->compid);
+				if ($descriptor) {
+					$this->detailed_comptype = $descriptor->get_detailedtype();
+				}
+			} else {
+				$this->detailed_comptype = $this->comptype;
+			}
+		}
+
+		return $this->detailed_comptype;
+	}
+
+	function get_teacher_value_title() {
+		if (\block_exacomp\global_config::is_input_allowed($this->get_detailed_comptype(), BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION)) {
+			return global_config::get_teacher_eval_title_by_id($this->teacherevaluation);
+		}
+	}
+
+	function get_student_value_title() {
+		if (\block_exacomp\global_config::is_input_allowed($this->get_detailed_comptype(), BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION)) {
+			return global_config::get_student_eval_title_by_id($this->studentevaluation);
+		}
+	}
+
+	function get_evalniveau_title() {
+		if (\block_exacomp\global_config::is_input_allowed($this->get_detailed_comptype(), BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID)) {
+			return global_config::get_evalniveau_title_by_id($this->evalniveauid);
+		}
 	}
 }

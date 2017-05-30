@@ -87,7 +87,8 @@ const BLOCK_EXACOMP_TYPE_TOPIC = 1;
 const BLOCK_EXACOMP_TYPE_CROSSSUB = 2;
 const BLOCK_EXACOMP_TYPE_SUBJECT = 3;
 const BLOCK_EXACOMP_TYPE_EXAMPLE = 4;
-const BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD = 5;
+const BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT = 1001;
+const BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD = 1002;
 
 const BLOCK_EXACOMP_SETTINGS_MAX_SCHEME = 10;
 const BLOCK_EXACOMP_DATA_SOURCE_CUSTOM = 3;
@@ -124,6 +125,11 @@ const BLOCK_EXACOMP_DEFAULT_STUDENT = -5;
 const BLOCK_EXACOMP_REPORT1 = 1;
 const BLOCK_EXACOMP_REPORT2 = 2;
 const BLOCK_EXACOMP_REPORT3 = 3;
+
+const BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION = 'teacherevaluation';
+const BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION = 'studentevaluation';
+const BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO = 'additionalinfo';
+const BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID = 'evalniveauid';
 
 /**
  * access configuration setting via functions
@@ -776,7 +782,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	} else {
 		$data = [
 			'timestamp' => time(),
-			'value' => $value
+			'value' => $value,
 		];
 	}
 
@@ -1810,6 +1816,7 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
 		if ($isTeacher) {
 			//Einstellungen
 			$rows[] = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_teacher_settings'), null, true);
+			$rows[] = new tabobject('tab_group_reports', new moodle_url('/blocks/exacomp/group_reports.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_group_reports'), null, true);
 		}
 	}
 
@@ -7101,16 +7108,16 @@ function block_exacomp_get_comp_eval_gained($courseid, $role, $userid, $comptype
  * return evaluation for any type of competence: descriptor, subject, topic, crosssubject
  * @param unknown $courseid
  * @param unknown $role
- * @param unknown $userid
+ * @param unknown $studentid
  * @param unknown $comptype
  * @param unknown $compid
  * @return \block_exacomp\comp_eval
  */
-function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid) {
+function block_exacomp_get_comp_eval($courseid, $role, $studentid, $comptype, $compid) {
 
 	// fallback for example style
 	if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
-		$eval = g::$DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $compid));
+		$eval = g::$DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $compid));
 		if (!$eval) {
 			return null;
 		}
@@ -7152,10 +7159,22 @@ function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $comp
 		return \block_exacomp\comp_eval::create($data);
 	}
 
-	return \block_exacomp\comp_eval::get(['courseid' => $courseid, 'userid' => $userid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role]);
+	return \block_exacomp\comp_eval::get(['courseid' => $courseid, 'userid' => $studentid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role]);
 }
 
-function block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $compid, $data) {
+/**
+ * get student and teacher evaluation
+ * @param $courseid
+ * @param $studentid
+ * @param $comptype
+ * @param $compid
+ * @return \block_exacomp\comp_eval_merged
+ */
+function block_exacomp_get_comp_eval_merged($courseid, $studentid, $comptype, $compid) {
+	return \block_exacomp\comp_eval_merged::get($courseid, $studentid, $comptype, $compid);
+}
+
+function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $compid, $data) {
 	$data = (array)$data;
 	unset($data['courseid']);
 	unset($data['role']);
@@ -7212,7 +7231,7 @@ function block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $comp
 		}
 
 		g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $data, [
-			'studentid' => $userid,
+			'studentid' => $studentid,
 			'courseid' => $courseid,
 			'exampleid' => $compid,
 		]);
@@ -7235,7 +7254,7 @@ function block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $comp
 
 		g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
 			'courseid' => $courseid,
-			'userid' => $userid,
+			'userid' => $studentid,
 			'comptype' => $comptype,
 			'compid' => $compid,
 			'role' => $role,

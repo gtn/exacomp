@@ -3879,8 +3879,6 @@ class block_exacomp_external extends external_api {
 					}
 				}
 			}
-
-
 		}
 
 		$all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
@@ -3888,6 +3886,12 @@ class block_exacomp_external extends external_api {
 			$cross_subject->visible = 0;
 			if (array_key_exists($cross_subject->id, $cross_subjects_visible)) {
 				$cross_subject->visible = 1;
+			}
+		}
+
+		if (!$forall && $userid) {
+			foreach ($all_cross_subjects as $cross_subject) {
+				static::add_comp_eval($cross_subject, $courseid, $userid);
 			}
 		}
 
@@ -3900,13 +3904,13 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_cross_subjects_by_course_returns() {
-		return new external_multiple_structure (new external_single_structure (array(
-			'id' => new external_value (PARAM_INT, 'id of cross subject'),
-			'title' => new external_value (PARAM_TEXT, 'title of cross subject'),
-			'description' => new external_value (PARAM_TEXT, 'description of cross subject'),
-			'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
-			'visible' => new external_value (PARAM_INT, 'visibility of crosssubject for selected student'),
-		)));
+		return new external_multiple_structure (new external_single_structure ([
+				'id' => new external_value (PARAM_INT, 'id of cross subject'),
+				'title' => new external_value (PARAM_TEXT, 'title of cross subject'),
+				'description' => new external_value (PARAM_TEXT, 'description of cross subject'),
+				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
+				'visible' => new external_value (PARAM_INT, 'visibility of crosssubject for selected student'),
+			] + static::comp_eval_returns()));
 	}
 
 	/**
@@ -7179,5 +7183,36 @@ class block_exacomp_external extends external_api {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Returns the default eval value fields for a competence for both teacher and studen
+	 * @return external_value[]
+	 */
+	protected static function comp_eval_returns() {
+		return [
+			'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading'),
+			'teacherevaluation' => new external_value (PARAM_INT, 'grading of child', VALUE_OPTIONAL),
+			'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_OPTIONAL),
+			'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation', VALUE_OPTIONAL),
+			'studentevaluation' => new external_value (PARAM_INT, 'self evaluation of child', VALUE_OPTIONAL),
+			'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation', VALUE_OPTIONAL),
+		];
+	}
+
+	/**
+	 * @param \block_exacomp\db_record $item
+	 * @param $courseid
+	 * @param $studentid
+	 */
+	protected static function add_comp_eval($item, $courseid, $studentid) {
+		$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item::TYPE, $item->id);
+
+		$item->teacherevaluation = $eval->teacherevaluation;
+		$item->studentevaluation = $eval->studentevaluation;
+		$item->evalniveauid = $eval->evalniveauid;
+		$item->additionalinfo = $eval->additionalinfo;
+		$item->timestampteacher = $eval->timestampteacher;
+		$item->timestampstudent = $eval->timestampstudent;
 	}
 }

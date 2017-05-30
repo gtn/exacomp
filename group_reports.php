@@ -32,7 +32,7 @@ $output = block_exacomp_get_renderer();
 
 $type = optional_param('type', 'student', PARAM_TEXT);
 
-echo $output->header_v2('group_reports');
+echo $output->header_v2('tab_group_reports');
 
 /*
 ?>
@@ -52,6 +52,30 @@ $eval_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
 
 $filter = (array)@$_REQUEST['filter'];
 
+if (!$filter) {
+	// default filter
+	@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
+	@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
+	@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
+}
+
+// active means, we also have to loop over those items
+if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
+	@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+}
+if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+	@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+}
+if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+	@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+}
+if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+	@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+}
+if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+	@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+}
+
 function block_exacomp_print_filter($input_type, $titleid) {
 	global $filter, $teacher_eval_items;
 
@@ -65,36 +89,39 @@ function block_exacomp_print_filter($input_type, $titleid) {
 
 	?>
 	<div class="filter-group">
-		<h3><label><input type="checkbox" name="filter[<?=$input_type?>][visible]" <?php if (@$input_filter['visible']) echo 'checked="checked"'; ?> class="filter-group-checkbox"/> <?=block_exacomp_get_string($titleid)?></label></h3>
-		<?php if (!empty($inputs['evalniveauid'])) { ?>
-			<div><span class="filter-title"><?=block_exacomp_get_string('competence_grid_niveau')?>:</span> <?php
-				foreach ([0=>'ohne Angabe'] + \block_exacomp\global_config::get_evalniveaus() as $key => $value) {
-					$checked = in_array($key, (array)@$input_filter['evalniveauid']) ? 'checked="checked"' : '';
-					echo '<label><input type="checkbox" name="filter['.$input_type.'][evalniveauid][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
+		<h3>
+			<label><input type="checkbox" name="filter[<?= $input_type ?>][visible]" <?php if (@$input_filter['visible']) {
+					echo 'checked="checked"';
+				} ?> class="filter-group-checkbox"/> <?= block_exacomp_get_string($titleid) ?></label></h3>
+		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) { ?>
+			<div><span class="filter-title"><?= block_exacomp_get_string('competence_grid_niveau') ?>:</span> <?php
+				foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_evalniveaus() as $key => $value) {
+					$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) ? 'checked="checked"' : '';
+					echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
 				}
-			?></div>
+				?></div>
 		<?php } ?>
-		<?php if (!empty($inputs['additionalinfo'])) { ?>
-			<div><span class="filter-title"><?=block_exacomp_get_string('competence_grid_additionalinfo')?>:</span>
-				<input placeholder="von" size="3" name="filter[<?=$input_type?>][additionalinfo_from]" value="<?=s(@$input_filter['additionalinfo_from'])?>"/> -
-				<input placeholder="bis" size="3" name="filter[<?=$input_type?>][additionalinfo_to]" value="<?=s(@$input_filter['additionalinfo_to'])?>"/>
+		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO])) { ?>
+			<div><span class="filter-title"><?= block_exacomp_get_string('competence_grid_additionalinfo') ?>:</span>
+				<input placeholder="von" size="3" name="filter[<?= $input_type ?>][additionalinfo_from]" value="<?= s(@$input_filter['additionalinfo_from']) ?>"/> -
+				<input placeholder="bis" size="3" name="filter[<?= $input_type ?>][additionalinfo_to]" value="<?= s(@$input_filter['additionalinfo_to']) ?>"/>
 			</div>
 		<?php } ?>
-		<?php if (!empty($inputs['teacher_evaluation'])) { ?>
-			<div><span class="filter-title"><?=block_exacomp_get_string('competence_grid_niveau')?>:</span> <?php
-				foreach ([0=>'ohne Angabe'] + $teacher_eval_items as $key => $value) {
-					$checked = in_array($key, (array)@$input_filter['teacher_evaluation']) ? 'checked="checked"' : '';
-					echo '<label><input type="checkbox" name="filter['.$input_type.'][teacher_evaluation][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
+		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) { ?>
+			<div><span class="filter-title"><?= block_exacomp_get_string('teacherevaluation') ?>:</span> <?php
+				foreach ([-1 => 'ohne Angabe'] + $teacher_eval_items as $key => $value) {
+					$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
+					echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
 				}
-			?></div>
+				?></div>
 		<?php } ?>
-		<?php if (!empty($inputs['student_evaluation'])) { ?>
-			<div><span class="filter-title"><?=block_exacomp_get_string('selfevaluation')?>:</span> <?php
-				foreach ([-1=>'ohne Angabe'] + \block_exacomp\global_config::get_student_eval_items(false) as $key => $value) {
-					$checked = in_array($key, (array)@$input_filter['student_evaluation']) ? 'checked="checked"' : '';
-					echo '<label><input type="checkbox" name="filter['.$input_type.'][evalniveauid][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
+		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) { ?>
+			<div><span class="filter-title"><?= block_exacomp_get_string('selfevaluation') ?>:</span> <?php
+				foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_student_eval_items(false) as $key => $value) {
+					$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) ? 'checked="checked"' : '';
+					echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
 				}
-			?></div>
+				?></div>
 		<?php } ?>
 	</div>
 	<?php
@@ -136,26 +163,26 @@ function block_exacomp_print_filter($input_type, $titleid) {
 		}
 	</style>
 	<script>
-		function update() {
-			$(':checkbox.filter-group-checkbox').each(function(){
-				if ($(this).is(':checked')) {
-					$(this).closest('.filter-group').addClass('visible');
-				} else {
-					$(this).closest('.filter-group').removeClass('visible');
-				}
-			});
-		}
+			function update() {
+				$(':checkbox.filter-group-checkbox').each(function () {
+					if ($(this).is(':checked')) {
+						$(this).closest('.filter-group').addClass('visible');
+					} else {
+						$(this).closest('.filter-group').removeClass('visible');
+					}
+				});
+			}
 
-		$(document).on('change', ':checkbox.filter-group-checkbox', update);
-		$(update);
+			$(document).on('change', ':checkbox.filter-group-checkbox', update);
+			$(update);
 	</script>
 	<div class="block">
-		<h2><?=block_exacomp_get_string('filter')?></h2>
+		<h2><?= block_exacomp_trans('de:Anzeigeoption') ?></h2>
 		<form method="post">
-		<?php
+			<?php
 			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_SUBJECT, 'subject');
 			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_TOPIC, 'topic');
-			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_DESCRIPTOR, 'descriptor');
+			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT, 'descriptor');
 			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, 'descriptor_child');
 			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_EXAMPLE, 'example');
 
@@ -164,10 +191,16 @@ function block_exacomp_print_filter($input_type, $titleid) {
 			$titleid = 'choosedaterange';
 			?>
 			<div class="filter-group">
-				<h3><label><input type="checkbox" name="filter[<?=$input_type?>][visible]" <?php if (@$input_filter['visible']) echo 'checked="checked"'; ?> class="filter-group-checkbox"/> Zeitintervall</label></h3>
+				<h3>
+					<label><input type="checkbox" name="filter[<?= $input_type ?>][active]" <?php if (@$input_filter['active']) {
+							echo 'checked="checked"';
+						} ?> class="filter-group-checkbox"/> Zeitintervall TODO</label></h3>
 				<div><span class="filter-title"></span>
-					<input placeholder="von" size="3" name="filter[<?=$input_type?>][time_from]" value="<?=s(@$input_filter['time_from'])?>"/> -
-					<input placeholder="bis" size="3" name="filter[<?=$input_type?>][time_to]" value="<?=s(@$input_filter['time_to'])?>"/>
+					<input placeholder="von" size="3" name="filter[<?= $input_type ?>][from]" value="<?= s(@$input_filter['from']) ?>"/> -
+					<input placeholder="bis" size="3" name="filter[<?= $input_type ?>][to]" value="<?= s(@$input_filter['to']) ?>"/>
+					<select>
+						<option>Eingabezeitraum</option>
+					</select>
 				</div>
 			</div>
 			<input type="submit" value="Filter anwenden"/>
@@ -175,162 +208,143 @@ function block_exacomp_print_filter($input_type, $titleid) {
 	</div>
 <?php
 
+function block_exacomp_tree_walk(&$items, $callback) {
+	$args = func_get_args();
+	array_shift($args);
+	array_shift($args);
+
+	foreach ($items as $key => $item) {
+		$walk_subs = function() use ($item, $callback) {
+			global $filter;
+
+			$args = func_get_args();
+
+			if ($item instanceof \block_exacomp\subject && @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->topics, $callback], $args));
+			}
+			if ($item instanceof \block_exacomp\topic && @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->descriptors, $callback], $args));
+			}
+			if ($item instanceof \block_exacomp\descriptor && @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->examples, $callback], $args));
+			}
+			if ($item instanceof \block_exacomp\descriptor && @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->children, $callback], $args));
+			}
+		};
+
+		$ret = call_user_func_array($callback, array_merge([$walk_subs, $item], $args));
+
+		if ($ret === false) {
+			unset($items[$key]);
+		}
+	}
+}
+
 if ($type == 'student') {
 	$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
 	echo "<h2>Ergebnis:</h2>";
 
-	function filter_tree(&$items, $studentid, $level = 0) {
-		global $courseid, $filter;
+	foreach (block_exacomp_get_students_by_course($courseid) as $student) {
+		echo '<h3>'.fullname($student).'</h3>';
 
-		foreach ($items as $key=>$item) {
-			$student_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $item::TYPE, $item->id);
-			$teacher_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $item::TYPE, $item->id);
+		$studentid = $student->id;
 
-			// $item_filter = $filter[BLOCK_EXACOMP_TYPE_SUBJECT];
-			if ($item instanceof \block_exacomp\subject && @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active']) {
-				unset($items[$key]);
-				continue;
-			}
-			if ($item instanceof \block_exacomp\topic && @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
-				unset($items[$key]);
-				continue;
-			}
-			if ($item instanceof \block_exacomp\descriptor && @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active']) {
-				unset($items[$key]);
-				continue;
+		block_exacomp_tree_walk($subjects, function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
+			$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item::TYPE, $item->id);
+
+			$item_type = $item::TYPE;
+			if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+				$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 			}
 
-			recurse_subs('filter_tree', $item, $level + 1);
-		}
-	}
+			$item_filter = (array)@$filter[$item_type];
 
-	function print_tree($items, $studentid, $level = 0) {
-		global $courseid;
+			$item->visible = @$item_filter['visible'];
 
-		foreach ($items as $item) {
-
-			$student_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $item::TYPE, $item->id);
-			$teacher_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $item::TYPE, $item->id);
-
-			/*
-			if ($item instanceof \block_exacomp\topic) {
-				print_tree($item->descriptors, $level + 1, $studentid);
+			if (!@$item_filter['active']) {
+				return false;
 			}
-			if ($item instanceof \block_exacomp\descriptor) {
-				print_tree($item->examples, $level + 1, $studentid);
-				print_tree($item->children, $level + 1, $studentid);
+
+			if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
+				$value = @$eval->evalniveauid ?: 0;
+				if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
+					/*
+					$item->visible = false;
+					return;
+					*/
+					return false;
+				}
 			}
-			if ($item instanceof \block_exacomp\example) {
+			if (@$item_filter['additionalinfo_from']) {
+				$value = @$eval->additionalinfo ?: 0;
+				if ($value < $item_filter['additionalinfo_from']) {
+					return false;
+				}
 			}
-			*/
+			if (@$item_filter['additionalinfo_to']) {
+				$value = @$eval->additionalinfo ?: 0;
+				if ($value > $item_filter['additionalinfo_to']) {
+					return false;
+				}
+			}
+
+			if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) {
+				$value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+				if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
+					return false;
+				}
+			}
+			if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) {
+				$value = @$eval->studentevaluation ?: 0;
+				if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
+					return false;
+				}
+			}
+
+			if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+				$item->visible = false;
+			}
+			if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
+				$item->visible = false;
+			}
+
+			$walk_subs($level + 1);
+		});
+
+		ob_start();
+		block_exacomp_tree_walk($subjects, function($walk_subs, $item, $level = 0) use ($studentid, $courseid) {
+			$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item::TYPE, $item->id);
+
+			if (!$item->visible) {
+				// walk subs with same level
+				$walk_subs($level);
+
+				return;
+			}
 
 			echo '<tr>';
 			echo '<td style="white-space: nowrap">'.$item->get_numbering();
 			echo '<td style="padding-left: '.($level * 20).'px">'.$item->title;
-			echo '<td style="padding: 0 10px;">'.($student_eval?$student_eval->get_value_title():'');
-			echo '<td style="padding: 0 10px;">'.($teacher_eval?$teacher_eval->additionalinfo:'');
-			echo '<td style="padding: 0 10px;">'.($teacher_eval?$teacher_eval->get_value_title():'');
-			echo '<td style="padding: 0 10px;">'.($teacher_eval?$teacher_eval->get_evalniveau_title():'');
+			echo '<td style="padding: 0 10px;">'.$eval->get_student_value_title();
+			echo '<td style="padding: 0 10px;">'.$eval->additionalinfo;
+			echo '<td style="padding: 0 10px;">'.$eval->get_teacher_value_title();
+			echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title();
 
-			recurse_subs('print_tee', $studentid, $level + 1);
+			$walk_subs($level + 1);
+		});
+		$output = ob_get_clean();
+
+		if (!$output) {
+			echo 'Keine Einträge gefunden';
+		} else {
+			echo '<table border="1" width="100%">';
+			echo '<tr><th></th><th></th><th colspan="4">Ausgabe der jeweiligen Bewertungen</th>';
+			echo $output;
+			echo '</table>';
 		}
 	}
-
-	echo '<h3>Schüler 1</h3>';
-
-	echo '<table border="1">';
-	echo '<tr><th></th><th></th><th colspan="4">Ausgabe der jeweiligen Bewertungen</th>';
-
-	$studentid = 3;
-
-	function tree_walk(&$items, $callback) {
-		$args = func_get_args();
-		array_shift($args);
-		array_shift($args);
-
-		foreach ($items as $key => $item) {
-			$walk_subs = function() use ($item, $callback) {
-				$args = func_get_args();
-
-				if ($item instanceof \block_exacomp\subject) {
-					call_user_func_array('tree_walk', array_merge([&$item->topics, $callback], $args));
-				}
-				if ($item instanceof \block_exacomp\topic) {
-					call_user_func_array('tree_walk', array_merge([&$item->descriptors, $callback], $args));
-				}
-				if ($item instanceof \block_exacomp\descriptor) {
-					call_user_func_array('tree_walk', array_merge([&$item->examples, $callback], $args));
-					call_user_func_array('tree_walk', array_merge([&$item->children, $callback], $args));
-				}
-				if ($item instanceof \block_exacomp\example) {
-				}
-			};
-
-			$ret = call_user_func_array($callback, array_merge([$walk_subs, $item], $args));
-
-			if ($ret === false) {
-				unset($items[$key]);
-			}
-		}
-	}
-
-	tree_walk($subjects, function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
-		$student_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $item::TYPE, $item->id);
-		$teacher_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $item::TYPE, $item->id);
-
-		$item_type = $item::TYPE;
-		if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $level > 2) {
-			$item_type = BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD;
-		}
-		$item_filter = (array)@$filter[$item_type];
-
-		if (!@$item_filter['visible']) {
-			return false;
-		}
-		if (@$item_filter['evalniveauid']) {
-			$value = $teacher_eval ? $teacher_eval->evalniveauid : 0;
-			if (!in_array($value, $item_filter['evalniveauid'])) {
-				return false;
-			}
-		}
-		if (@$item_filter['additionalinfo_from']) {
-			$value = $teacher_eval ? $teacher_eval->additionalinfo : 0;
-			if ($value < $item_filter['additionalinfo_from']) {
-				return false;
-			}
-		}
-		if (@$item_filter['additionalinfo_to']) {
-			$value = $teacher_eval ? $teacher_eval->additionalinfo : 0;
-			if ($value > $item_filter['additionalinfo_to']) {
-				return false;
-			}
-		}
-
-		$walk_subs($level+1);
-	});
-	tree_walk($subjects, function($walk_subs, $item, $level = 0) use ($studentid, $courseid) {
-		$student_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $item::TYPE, $item->id);
-		$teacher_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $item::TYPE, $item->id);
-
-		echo '<tr>';
-		echo '<td style="white-space: nowrap">'.$item->get_numbering();
-		echo '<td style="padding-left: '.($level * 20).'px">'.$item->title;
-		echo '<td style="padding: 0 10px;">'.($student_eval?$student_eval->get_value_title():'');
-		echo '<td style="padding: 0 10px;">'.($teacher_eval?$teacher_eval->additionalinfo:'');
-		echo '<td style="padding: 0 10px;">'.($teacher_eval?$teacher_eval->get_value_title():'');
-		echo '<td style="padding: 0 10px;">'.($teacher_eval?$teacher_eval->get_evalniveau_title():'');
-
-		$walk_subs($level+1);
-	});
-
-	// filter_tree($subjects, $studentid);
-	// print_tree($subjects, $studentid);
-	echo '</table>';
-
-	echo '<h3>Schüler 2</h3>....';
-	echo '<h3>Schüler 3</h3>....';
-	echo '<h3>Schüler 4</h3>....';
 }
 
 if ($type == 'student_counts') {

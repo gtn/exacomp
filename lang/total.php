@@ -176,6 +176,10 @@ return [
 		'Wochenplan',
 		'Weekly Schedule',
 	],
+	'tab_group_reports' => [
+		'Gruppenberichte',
+		'Group Reports',
+	],
 	'assign_descriptor_to_crosssubject' => [
 		'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:',
 		'Assign the competence "{$a}" to the following interdisciplinary subjects:',

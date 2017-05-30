@@ -67,6 +67,7 @@ $string['tab_cross_subjects'] = 'Themen';
 $string['tab_cross_subjects_overview'] = 'Übersicht';
 $string['tab_cross_subjects_course'] = 'Kursthemen';
 $string['tab_weekly_schedule'] = 'Wochenplan';
+$string['tab_group_reports'] = 'Gruppenberichte';
 $string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Kompetenzraster Modul zu importieren.';

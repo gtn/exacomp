@@ -67,6 +67,7 @@ $string['tab_cross_subjects'] = 'Interdisciplinary Subjects';
 $string['tab_cross_subjects_overview'] = 'Overview';
 $string['tab_cross_subjects_course'] = 'Course Interdisciplinary Subjects';
 $string['tab_weekly_schedule'] = 'Weekly Schedule';
+$string['tab_group_reports'] = 'Group Reports';
 $string['assign_descriptor_to_crosssubject'] = 'Assign the competence "{$a}" to the following interdisciplinary subjects:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'No interdisciplinary subjects are available.';
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competence Grid.';
