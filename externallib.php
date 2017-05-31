@@ -72,7 +72,7 @@ class block_exacomp_external extends external_api {
 						"fullname" => $mycourse->fullname,
 						"shortname" => $mycourse->shortname
 				);
-				$courses [] = $course;
+				$courses[] = $course;
 			}
 		}
 
@@ -133,12 +133,12 @@ class block_exacomp_external extends external_api {
 		$topics = block_exacomp_get_topics_by_subject ( $courseid, $subjectid );
 		foreach ( $topics as $topic ) {
 			if (! array_key_exists ( $topic->id, $structure )) {
-				$structure [$topic->id] = new stdClass ();
-				$structure [$topic->id]->topicid = $topic->id;
-				$structure [$topic->id]->title = $topic->title;
-				$structure [$topic->id]->requireaction = false;
-				$structure [$topic->id]->examples = array ();
-				$structure [$topic->id]->quizes = array ();
+				$structure[$topic->id] = new stdClass ();
+				$structure[$topic->id]->topicid = $topic->id;
+				$structure[$topic->id]->title = $topic->title;
+				$structure[$topic->id]->requireaction = false;
+				$structure[$topic->id]->examples = array ();
+				$structure[$topic->id]->quizes = array ();
 			}
 			$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $topic->id, false, true );
 
@@ -172,11 +172,11 @@ class block_exacomp_external extends external_api {
 					}
 					*/
 
-					if (! array_key_exists ( $example->id, $structure [$topic->id]->examples )) {
-						$structure [$topic->id]->examples [$example->id] = new stdClass ();
-						$structure [$topic->id]->examples [$example->id]->exampleid = $example->id;
-						$structure [$topic->id]->examples [$example->id]->example_title = $example->title;
-						$structure [$topic->id]->examples [$example->id]->example_creatorid = $example->creatorid;
+					if (! array_key_exists ( $example->id, $structure[$topic->id]->examples )) {
+						$structure[$topic->id]->examples[$example->id] = new stdClass ();
+						$structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
+						$structure[$topic->id]->examples[$example->id]->example_title = $example->title;
+						$structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
 						$items_examp = $DB->get_records ( 'block_exacompitemexample', array (
 								'exampleid' => $example->id
 						) );
@@ -186,23 +186,23 @@ class block_exacomp_external extends external_api {
 									'id' => $item_examp->itemid
 							) );
 							if ($item_db->userid == $userid)
-								$items [] = $item_examp;
+								$items[] = $item_examp;
 						}
 						if (! empty ( $items )) {
 							// check for current
 							$current_timestamp = 0;
 							foreach ( $items as $item ) {
 								if ($item->timecreated > $current_timestamp) {
-									$structure [$topic->id]->examples [$example->id]->example_item = $item->itemid;
-									$structure [$topic->id]->examples [$example->id]->example_status = $item->status;
+									$structure[$topic->id]->examples[$example->id]->example_item = $item->itemid;
+									$structure[$topic->id]->examples[$example->id]->example_status = $item->status;
 
 									if($item->status == 0)
-										$structure [$topic->id]->requireaction = true;
+										$structure[$topic->id]->requireaction = true;
 								}
 							}
 						} else {
-							$structure [$topic->id]->examples [$example->id]->example_item = - 1;
-							$structure [$topic->id]->examples [$example->id]->example_status = - 1;
+							$structure[$topic->id]->examples[$example->id]->example_item = - 1;
+							$structure[$topic->id]->examples[$example->id]->example_status = - 1;
 						}
 					}
 				}
@@ -226,11 +226,11 @@ class block_exacomp_external extends external_api {
 						if(!$cm->visible)
 							continue;
 						
-						if (! array_key_exists ( $quiz->id, $structure [$topic->id]->quizes )) {
-							$structure [$topic->id]->quizes [$quiz->id] = new stdClass ();
-							$structure [$topic->id]->quizes [$quiz->id]->quizid = $quiz->id;
-							$structure [$topic->id]->quizes [$quiz->id]->quiz_title = $quiz->name;
-							$structure [$topic->id]->quizes [$quiz->id]->quiz_grade = $quiz->grade;
+						if (! array_key_exists ( $quiz->id, $structure[$topic->id]->quizes )) {
+							$structure[$topic->id]->quizes[$quiz->id] = new stdClass ();
+							$structure[$topic->id]->quizes[$quiz->id]->quizid = $quiz->id;
+							$structure[$topic->id]->quizes[$quiz->id]->quiz_title = $quiz->name;
+							$structure[$topic->id]->quizes[$quiz->id]->quiz_grade = $quiz->grade;
 						}
 					}
 				}
@@ -401,7 +401,7 @@ class block_exacomp_external extends external_api {
 
 		$descriptors = array ();
 		foreach ( $descriptors_exam_mm as $descriptor_mm ) {
-			$descriptors [$descriptor_mm->descrid] = $DB->get_record (\block_exacomp\DB_DESCRIPTORS, array (
+			$descriptors[$descriptor_mm->descrid] = $DB->get_record (\block_exacomp\DB_DESCRIPTORS, array (
 					'id' => $descriptor_mm->descrid
 			) );
 
@@ -412,12 +412,12 @@ class block_exacomp_external extends external_api {
 			}
 			$eval = block_exacomp\get_comp_eval($courseid, $grading, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor_mm->descrid);
 			if ($eval && $eval->value !== null) {
-				$descriptors [$descriptor_mm->descrid]->evaluation = $eval->value;
+				$descriptors[$descriptor_mm->descrid]->evaluation = $eval->value;
 			} else {
-				$descriptors [$descriptor_mm->descrid]->evaluation = 0;
+				$descriptors[$descriptor_mm->descrid]->evaluation = 0;
 			}
 
-			$descriptors [$descriptor_mm->descrid]->descriptorid = $descriptor_mm->descrid;
+			$descriptors[$descriptor_mm->descrid]->descriptorid = $descriptor_mm->descrid;
 		}
 		return $descriptors;
 	}
@@ -481,7 +481,7 @@ class block_exacomp_external extends external_api {
 	
 			$descriptors = array ();
 			foreach ( $descriptors_quiz_mm as $descriptor_mm ) {
-				$descriptors [$descriptor_mm->compid] = $DB->get_record (\block_exacomp\DB_DESCRIPTORS, array (
+				$descriptors[$descriptor_mm->compid] = $DB->get_record (\block_exacomp\DB_DESCRIPTORS, array (
 						'id' => $descriptor_mm->compid
 				) );
 	
@@ -492,11 +492,11 @@ class block_exacomp_external extends external_api {
 				}
 				$eval = block_exacomp\get_comp_eval($courseid, $grading, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor_mm->compid);
 				if ($eval && $eval->value !== null) {
-					$descriptors [$descriptor_mm->compid]->evaluation = $eval->value;
+					$descriptors[$descriptor_mm->compid]->evaluation = $eval->value;
 				} else {
-					$descriptors [$descriptor_mm->compid]->evaluation = 0;
+					$descriptors[$descriptor_mm->compid]->evaluation = 0;
 				}
-				$descriptors [$descriptor_mm->compid]->descriptorid = $descriptor_mm->compid;
+				$descriptors[$descriptor_mm->compid]->descriptorid = $descriptor_mm->compid;
 			}
 			return $descriptors;
 	}
@@ -613,7 +613,7 @@ class block_exacomp_external extends external_api {
 				$currentCohort->cohortid = $user_cohort->cohortid;
 				$currentCohort->name = $cohorts[$user_cohort->cohortid]->name;
 
-				$return_cohorts [] = $currentCohort;
+				$return_cohorts[] = $currentCohort;
 			}
 			$returndataObject->cohorts = $return_cohorts;
 
@@ -627,7 +627,7 @@ class block_exacomp_external extends external_api {
 
 			static::get_user_list_info($returndataObject, 'get_external_trainer_students');
 
-			$returndata [] = $returndataObject;
+			$returndata[] = $returndataObject;
 		}
 
 		return $returndata;
@@ -690,16 +690,16 @@ class block_exacomp_external extends external_api {
 
 		$subjects_res = array ();
 		foreach ( $courses as $course ) {
-			$subjects = block_exacomp_get_subjects_by_course ( $course ["courseid"] );
+			$subjects = block_exacomp_get_subjects_by_course ( $course["courseid"] );
 
 			foreach ( $subjects as $subject ) {
 				if (! array_key_exists ( $subject->id, $subjects_res )) {
 					$elem = new stdClass ();
 					$elem->subjectid = $subject->id;
 					$elem->title = $subject->title;
-					$elem->courseid = $course ["courseid"];
+					$elem->courseid = $course["courseid"];
 					$elem->requireaction = array_key_exists($subject->id, $require_actions);
-					$subjects_res [] = $elem;
+					$subjects_res[] = $elem;
 				}
 			}
 		}
@@ -999,7 +999,7 @@ class block_exacomp_external extends external_api {
 		$courses = static::get_courses ( $userid );
 
 		foreach ( $courses as $course ) {
-			$tree = block_exacomp_get_competence_tree ( $course ["courseid"] );
+			$tree = block_exacomp_get_competence_tree ( $course["courseid"] );
 
 			foreach ( $tree as $subject ) {
 				$elem_sub = new stdClass ();
@@ -1015,11 +1015,11 @@ class block_exacomp_external extends external_api {
 						$elem_desc = new stdClass ();
 						$elem_desc->descriptorid = $descriptor->id;
 						$elem_desc->descriptortitle = $descriptor->title;
-						$elem_topic->descriptors [] = $elem_desc;
+						$elem_topic->descriptors[] = $elem_desc;
 					}
-					$elem_sub->topics [] = $elem_topic;
+					$elem_sub->topics[] = $elem_topic;
 				}
-				$structure [] = $elem_sub;
+				$structure[] = $elem_sub;
 			}
 		}
 
@@ -1429,7 +1429,7 @@ class block_exacomp_external extends external_api {
 		$unset_descriptors = array ();
 		foreach ( $descriptors_exam_mm as $descr_examp ) {
 			if (! in_array ( $descr_examp->descrid, $descriptors )) {
-				$unset_descriptors [] = $descr_examp->descrid;
+				$unset_descriptors[] = $descr_examp->descrid;
 			}
 		}
 
@@ -1538,7 +1538,7 @@ class block_exacomp_external extends external_api {
 									'id' => $item_examp->itemid
 							) );
 							if ($item_db->userid == $USER->id)
-								$items [] = $item_examp;
+								$items[] = $item_examp;
 						}
 						if (! empty ( $items )) {
 							// check for current
@@ -1552,7 +1552,7 @@ class block_exacomp_external extends external_api {
 							$elem->example_status = - 1;
 						}
 
-						$examples [$example->exampleid] = $elem;
+						$examples[$example->exampleid] = $elem;
 					}
 				}
 			}
@@ -1641,10 +1641,10 @@ class block_exacomp_external extends external_api {
 		$subjects_res = array ();
 		foreach ( $courses as $course ) {
 
-			$subjects = block_exacomp_get_subjects_by_course ( $course ["courseid"] );
-			$coursesettings = block_exacomp_get_settings_by_course ( $course ['courseid'] );
-			$user = block_exacomp_get_user_information_by_course ( $user, $course ['courseid'] );
-			$cm_mm = block_exacomp_get_course_module_association ( $course ['courseid'] );
+			$subjects = block_exacomp_get_subjects_by_course ( $course["courseid"] );
+			$coursesettings = block_exacomp_get_settings_by_course ( $course['courseid'] );
+			$user = block_exacomp_get_user_information_by_course ( $user, $course['courseid'] );
+			$cm_mm = block_exacomp_get_course_module_association ( $course['courseid'] );
 
 			foreach ( $subjects as $subject ) {
 				$subject_total_competencies = 0;
@@ -1653,7 +1653,7 @@ class block_exacomp_external extends external_api {
 				$subject_reached_examples = 0;
 				$subject_topics = array();
 
-				$topics = block_exacomp_get_topics_by_subject ( $course ['courseid'], $subject->id );
+				$topics = block_exacomp_get_topics_by_subject ( $course['courseid'], $subject->id );
 				foreach ( $topics as $topic ) {
 					$topic_total_competencies = 0;
 					$topic_total_examples = 0;
@@ -1661,16 +1661,16 @@ class block_exacomp_external extends external_api {
 					$topic_reached_examples = 0;
 
 					// topics zählen wir vorerst nicht, weil get_user_profile für elove ist
-					//if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->topics [$topic->id] )))
+					//if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->topics[$topic->id] )))
 					//	$topic_total_competencies ++;
 
 					//if (isset($user->topics->{$grading}[$topic->id])) {
 					//	$topic_reached_competencies++;
 					//}
 
-					$descriptors = block_exacomp_get_descriptors_by_topic ( $course ['courseid'], $topic->id, false, true );
+					$descriptors = block_exacomp_get_descriptors_by_topic ( $course['courseid'], $topic->id, false, true );
 					foreach ( $descriptors as $descriptor ) {
-						if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->competencies [$descriptor->id] )))
+						if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->competencies[$descriptor->id] )))
 							$topic_total_competencies ++;
 
 						if (isset($user->competencies->{$grading}[$descriptor->id])) {
@@ -1701,7 +1701,7 @@ class block_exacomp_external extends external_api {
 								$example->tax = "";
 							}
 							if (! in_array ( $example->id, $total_examples )) {
-								$total_examples [] = $example->id;
+								$total_examples[] = $example->id;
 								$topic_total_examples ++;
 
 								// CHECK FOR USER EXAMPLES
@@ -1712,7 +1712,7 @@ class block_exacomp_external extends external_api {
 										$example->id,
 										$userid
 								) )) {
-									$total_user_examples [] = $example->id;
+									$total_user_examples[] = $example->id;
 									$topic_reached_examples ++;
 								}
 							}
@@ -1734,7 +1734,7 @@ class block_exacomp_external extends external_api {
 								"total" => $topic_total_examples,
 								"reached" => $topic_reached_examples
 						);
-						$subject_topics [] = $elem;
+						$subject_topics[] = $elem;
 					}
 				}
 
@@ -1751,7 +1751,7 @@ class block_exacomp_external extends external_api {
 					);
 					$elem->topics = $subject_topics;
 
-					$subjects_res [] = $elem;
+					$subjects_res[] = $elem;
 				}
 
 				$total_competencies += $subject_total_competencies;
@@ -1760,7 +1760,7 @@ class block_exacomp_external extends external_api {
 		}
 
 		$defaultdata = array ();
-		$defaultdata ['user'] = array (
+		$defaultdata['user'] = array (
 				"competencies" => array (
 						"total" => $total_competencies,
 						"reached" => $total_user_competencies
@@ -1770,7 +1770,7 @@ class block_exacomp_external extends external_api {
 						"reached" => count ( $total_user_examples )
 				)
 		);
-		$defaultdata ['subjects'] = array ();
+		$defaultdata['subjects'] = array ();
 
 		foreach ( $subjects_res as $subject_res ) {
 			$cursubject = array (
@@ -1792,7 +1792,7 @@ class block_exacomp_external extends external_api {
 							);
 			}
 
-			$defaultdata ['subjects'] [] = $cursubject;
+			$defaultdata['subjects'][] = $cursubject;
 		}
 
 		/*
@@ -2110,7 +2110,7 @@ class block_exacomp_external extends external_api {
 		$courses = static::get_courses ( $userid );
 
 		foreach ( $courses as $course ) {
-			$tree = block_exacomp_get_competence_tree ( $course ["courseid"] );
+			$tree = block_exacomp_get_competence_tree ( $course["courseid"] );
 
 			foreach ( $tree as $subject ) {
 				foreach ( $subject->topics as $topic ) {
@@ -2119,7 +2119,7 @@ class block_exacomp_external extends external_api {
 							$elem_desc = new stdClass ();
 							$elem_desc->descriptorid = $descriptor->id;
 							$elem_desc->descriptortitle = $descriptor->title;
-							$structure [] = $elem_desc;
+							$structure[] = $elem_desc;
 						}
 					}
 				}
@@ -4885,9 +4885,9 @@ class block_exacomp_external extends external_api {
 				 */
 				// TODO: moodle_url contains encoding errors which lead to problems in dakora
 				$fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $itemInformation->id . "&wstoken=" . static::wstoken ();
-				$data ['file'] = $fileurl;
-				$data ['mimetype'] = $file->get_mimetype ();
-				$data ['filename'] = $file->get_filename ();
+				$data['file'] = $fileurl;
+				$data['mimetype'] = $file->get_mimetype ();
+				$data['filename'] = $file->get_filename ();
 			}
 
 			$data['studentcomment'] = '';

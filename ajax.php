@@ -377,10 +377,10 @@ switch($action){
 			$stat = block_exacomp_get_evaluation_statistic_for_subject ( $courseid, $subjectid, $studentid, $start, $end );
 			$output = block_exacomp_get_renderer ();
 			
-			$tables = $output->subject_statistic_table ( $course->id, $stat ['descriptor_evaluations'], 'Kompetenzen' );
-			$tables .= $output->subject_statistic_table ( $course->id, $stat ['child_evaluations'], 'Teilkompetenzen' );
+			$tables = $output->subject_statistic_table ( $course->id, $stat['descriptor_evaluations'], 'Kompetenzen' );
+			$tables .= $output->subject_statistic_table ( $course->id, $stat['child_evaluations'], 'Teilkompetenzen' );
 			if(block_exacomp_course_has_examples($course->id))
-				$tables .= $output->subject_statistic_table ( $course->id, $stat ['example_evaluations'], 'Lernmaterialien' );
+				$tables .= $output->subject_statistic_table ( $course->id, $stat['example_evaluations'], 'Lernmaterialien' );
 			echo html_writer::tag ( 'div', $tables, array (
 					'class' => 'statistictables',
 					'exa-subjectid' => $subjectid,

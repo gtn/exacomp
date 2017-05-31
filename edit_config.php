@@ -66,11 +66,11 @@ if ($fromimport == 1) {
 
 // Falls Formular abgesendet, speichern
 if (isset ( $action ) && $action == 'save') {
-	$values = isset ( $_POST ['data'] ) ? $_POST ['data'] : array ();
+	$values = isset ( $_POST['data'] ) ? $_POST['data'] : array ();
 	
 	block_exacomp_set_mdltype ( $values );
 	
-	if (! isset ( $_POST ['data'] ))
+	if (! isset ( $_POST['data'] ))
 		$headertext = get_string ( 'tick_some', 'block_exacomp' );
 	else {
 		$string = get_string ( 'next_step', 'block_exacomp' );
@@ -116,18 +116,18 @@ $data->levels = array ();
 
 $levels = block_exacomp_get_edulevels ();
 foreach ( $levels as $level ) {
-	$data->levels [$level->id] = new stdClass ();
-	$data->levels [$level->id]->level = $level;
-	$data->levels [$level->id]->schooltypes = array ();
+	$data->levels[$level->id] = new stdClass ();
+	$data->levels[$level->id]->level = $level;
+	$data->levels[$level->id]->schooltypes = array ();
 	
 	$types = block_exacomp_get_schooltypes ( $level->id );
 	
 	foreach ( $types as $type ) {
 		$ticked = block_exacomp_get_mdltypes ( $type->id );
 		
-		$data->levels [$level->id]->schooltypes [$type->id] = new stdClass ();
-		$data->levels [$level->id]->schooltypes [$type->id]->schooltype = $type;
-		$data->levels [$level->id]->schooltypes [$type->id]->ticked = $ticked;
+		$data->levels[$level->id]->schooltypes[$type->id] = new stdClass ();
+		$data->levels[$level->id]->schooltypes[$type->id]->schooltype = $type;
+		$data->levels[$level->id]->schooltypes[$type->id]->ticked = $ticked;
 	}
 }
 

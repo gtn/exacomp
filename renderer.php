@@ -2915,7 +2915,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan ( $table_header, $spanning_niveaus );
 		
 		$table = new html_table ();
-		$table->attributes ['class'] = 'compprofiletable flexible boxaligncenter generaltable';
+		$table->attributes['class'] = 'compprofiletable flexible boxaligncenter generaltable';
 		$rows = array ();
 		
 		// header
@@ -2924,7 +2924,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// first subject title cell
 		$cell = new html_table_cell ();
 		$cell->text = ''; // $table_content->subject_title;
-		$row->cells [] = $cell;
+		$row->cells[] = $cell;
 		
 		// niveaus
 		foreach ( $table_header as $element ) {
@@ -2933,8 +2933,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				$cell = new html_table_cell ();
 				$cell->text = $element->title;
-				$cell->attributes ['class'] = 'header';
-				$row->cells [] = $cell;
+				$cell->attributes['class'] = 'header';
+				$row->cells[] = $cell;
 			}
 		}
 		
@@ -2942,20 +2942,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			$topic_eval_header = new html_table_cell ();
 			$topic_eval_header->text = get_string ( 'total', 'block_exacomp' );
-			$topic_eval_header->attributes ['class'] = 'header';
-			$row->cells [] = $topic_eval_header;
+			$topic_eval_header->attributes['class'] = 'header';
+			$row->cells[] = $topic_eval_header;
 		}
 		
-		$rows [] = $row;
+		$rows[] = $row;
 		
 		$row = new html_table_row ();
 		
 		foreach ( $table_content->content as $topic => $rowcontent ) {
 			
 			$cell = new html_table_cell ();
-			$cell->text = block_exacomp_get_topic_numbering ( $topic ) . " " . $table_column [$topic]->title;
-			$cell->attributes ['class'] = (($rowcontent->visible) ? '' : 'notvisible');
-			$row->cells [] = $cell;
+			$cell->text = block_exacomp_get_topic_numbering ( $topic ) . " " . $table_column[$topic]->title;
+			$cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
+			$row->cells[] = $cell;
 			
 			foreach ( $rowcontent->niveaus as $niveau => $element ) {
 				
@@ -2975,14 +2975,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						"data-valuemax" => $max_scheme 
 				) )) : '');
 				
-				$cell->attributes ['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
-				$cell->attributes ['exa-timestamp'] = $element->timestamp;
+				$cell->attributes['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
+				$cell->attributes['exa-timestamp'] = $element->timestamp;
 				
 				if (in_array ( $niveau, $spanning_niveaus )) {
 					$cell->colspan = $spanning_colspan;
 				}
 				
-				$row->cells [] = $cell;
+				$row->cells[] = $cell;
 			}
 			
 			if (block_exacomp_is_topicgrading_enabled ()) {
@@ -3003,13 +3003,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						"data-valuemax" => $max_scheme 
 				) );
 				
-				$topic_eval_cell->attributes ['class'] = (($rowcontent->visible) ? '' : 'notvisible');
-				$topic_eval_cell->attributes ['exa-timestamp'] = $rowcontent->timestamp;
+				$topic_eval_cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
+				$topic_eval_cell->attributes['exa-timestamp'] = $rowcontent->timestamp;
 				
-				$row->cells [] = $topic_eval_cell;
+				$row->cells[] = $topic_eval_cell;
 			}
 			
-			$rows [] = $row;
+			$rows[] = $row;
 			
 			$row = new html_table_row ();
 		}
@@ -3019,16 +3019,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$subject_empty_cell = new html_table_cell ();
 			$subject_empty_cell->text = get_string ( 'total', 'block_exacomp' );
 			$subject_empty_cell->colspan = count ( $table_header );
-			$subject_empty_cell->attributes ['class'] = 'header';
+			$subject_empty_cell->attributes['class'] = 'header';
 			
-			$row->cells [] = $subject_empty_cell;
+			$row->cells[] = $subject_empty_cell;
 			$subject_eval_cell = new html_table_cell ();
 			$subject_eval_cell->text = $table_content->subject_evalniveau . $table_content->subject_eval;
-			$subject_eval_cell->attributes ['class'] = 'header';
-			$subject_eval_cell->attributes ['exa-timestamp'] = $table_content->timestamp;
-			$row->cells [] = $subject_eval_cell;
+			$subject_eval_cell->attributes['class'] = 'header';
+			$subject_eval_cell->attributes['exa-timestamp'] = $table_content->timestamp;
+			$row->cells[] = $subject_eval_cell;
 			
-			$rows [] = $row;
+			$rows[] = $row;
 		}
 		
 		$table->data = $rows;

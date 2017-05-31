@@ -4041,8 +4041,8 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 
 	$timecreated = $timemodified = time();
 
-	// already inside schedule?
-	if($DB->get_record(\block_exacomp\DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))){
+	// prüfen, ob element schon zur gleichen zeit im weochenplan ist
+	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
 
@@ -4830,14 +4830,14 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 			if ($USER->id == $example->studentid) {
 				$itemExists = block_exacomp_get_current_item_for_example($USER->id, $example->exampleid);
 
-				$example_array ['submission_url'] = html_writer::link(
+				$example_array['submission_url'] = html_writer::link(
 						new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid)),
 						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/' . ((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt'=>get_string("submission", "block_exacomp"), 'title'=>get_string("submission", "block_exacomp"))),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			} else {
 				$url = block_exacomp_get_viewurl_for_example ( $example->studentid, $USER->id, $example->exampleid );
 				if ($url)
-					$example_array ['submission_url'] = html_writer::link ( $url, html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt'=>get_string("submission", "block_exacomp"), 'title'=>get_string("submission", "block_exacomp"))), array (
+					$example_array['submission_url'] = html_writer::link ( $url, html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt'=>get_string("submission", "block_exacomp"), 'title'=>get_string("submission", "block_exacomp"))), array (
 							"target" => "_blank",
 							"onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"
 					) );
@@ -6048,16 +6048,16 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		);
 		
 		foreach ( $evaluationniveau_items as $niveaukey => $niveauitem ) {
-			$descriptorgradings [$niveaukey] = array ();
-			$childgradings [$niveaukey] = array ();
-			$examplegradings [$niveaukey] = array ();
+			$descriptorgradings[$niveaukey] = array ();
+			$childgradings[$niveaukey] = array ();
+			$examplegradings[$niveaukey] = array ();
 			
 			foreach ( $scheme_items as $schemekey => $schemetitle ) {
 				
 				if ($schemekey > - 1) {
-					$descriptorgradings [$niveaukey] [$schemekey] = 0;
-					$childgradings [$niveaukey] [$schemekey] = 0;
-					$examplegradings [$niveaukey] [$schemekey] = 0;
+					$descriptorgradings[$niveaukey][$schemekey] = 0;
+					$childgradings[$niveaukey][$schemekey] = 0;
+					$examplegradings[$niveaukey][$schemekey] = 0;
 				}
 			}
 		}
@@ -6065,45 +6065,45 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		foreach ( $descriptors as $descriptor ) {
 			// check if grading is within timeframe
 			
-			if (isset ( $user->competencies->timestamp_teacher [$descriptor->id] ) && 
-			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] >= $start_timestamp) && 
-			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] <= $end_timestamp)) {
+			if (isset ( $user->competencies->timestamp_teacher[$descriptor->id] ) &&
+			($start_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] >= $start_timestamp) &&
+			($end_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] <= $end_timestamp)) {
 				
 				// check if niveau is given in evaluation, if not -1
 				$niveaukey = (block_exacomp_use_eval_niveau())?((isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:-1):0;
 				
-				if (isset ( $user->competencies->teacher [$descriptor->id] ) && $user->competencies->teacher [$descriptor->id] > - 1) // increase counter in statistic
-					$descriptorgradings [$niveaukey] [$user->competencies->teacher [$descriptor->id]] ++;
+				if (isset ( $user->competencies->teacher[$descriptor->id] ) && $user->competencies->teacher[$descriptor->id] > - 1) // increase counter in statistic
+					$descriptorgradings[$niveaukey][$user->competencies->teacher[$descriptor->id]] ++;
 			}
 		}
 		
 		foreach ( $child_descriptors as $child ) {
 			// check if grading is within timeframe
 			
-			if (isset ( $user->competencies->timestamp_teacher [$child->id] ) && 
-			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] >= $start_timestamp) && 
-			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] <= $end_timestamp)) {
+			if (isset ( $user->competencies->timestamp_teacher[$child->id] ) &&
+			($start_timestamp == 0 || $user->competencies->timestamp_teacher[$child->id] >= $start_timestamp) &&
+			($end_timestamp == 0 || $user->competencies->timestamp_teacher[$child->id] <= $end_timestamp)) {
 				
 				// check if niveau is given in evaluation, if not -1
 				$niveaukey = (block_exacomp_use_eval_niveau())?((isset($user->competencies->niveau[$child->id]))?$user->competencies->niveau[$child->id]:-1):0;
 				
-				if (isset ( $user->competencies->teacher [$child->id] ) && $user->competencies->teacher [$child->id] > - 1) // increase counter in statistic
-					$childgradings [$niveaukey] [$user->competencies->teacher [$child->id]] ++;
+				if (isset ( $user->competencies->teacher[$child->id] ) && $user->competencies->teacher[$child->id] > - 1) // increase counter in statistic
+					$childgradings[$niveaukey][$user->competencies->teacher[$child->id]] ++;
 			}
 		}
 		
 		foreach ( $examples as $example ) {
 			// create grading statistic for example
 			
-			if (isset ( $user->examples->timestamp_teacher [$example->id] ) && 
-			($start_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] >= $start_timestamp) && 
-			($end_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] <= $end_timestamp)) {
+			if (isset ( $user->examples->timestamp_teacher[$example->id] ) &&
+			($start_timestamp == 0 || $user->examples->timestamp_teacher[$example->id] >= $start_timestamp) &&
+			($end_timestamp == 0 || $user->examples->timestamp_teacher[$example->id] <= $end_timestamp)) {
 				
 				// check if niveau is given in evaluation, if not -1
 				$niveaukey = (block_exacomp_use_eval_niveau())?((isset($user->examples->niveau[$example->id]))?$user->examples->niveau[$example->id]:-1):0;
 				
-				if (isset ( $user->examples->teacher [$example->id] ) && $user->examples->teacher [$example->id] > - 1) // increase counter in statistic
-					$examplegradings [$niveaukey] [$user->examples->teacher [$example->id]] ++;
+				if (isset ( $user->examples->teacher[$example->id] ) && $user->examples->teacher[$example->id] > - 1) // increase counter in statistic
+					$examplegradings[$niveaukey][$user->examples->teacher[$example->id]] ++;
 			}
 		}
 		
