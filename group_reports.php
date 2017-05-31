@@ -47,7 +47,6 @@ if (!$q) {
 }
 */
 
-$teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 $eval_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
 
 $filter = (array)@$_REQUEST['filter'];
@@ -74,57 +73,6 @@ if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE
 }
 if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
 	@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
-}
-
-function block_exacomp_print_filter($input_type, $titleid) {
-	global $filter, $teacher_eval_items;
-
-	$inputs = \block_exacomp\global_config::get_allowed_inputs($input_type);
-
-	if (!$inputs) {
-		return;
-	}
-
-	$input_filter = (array)@$filter[$input_type];
-
-	?>
-	<div class="filter-group">
-		<h3>
-			<label><input type="checkbox" name="filter[<?= $input_type ?>][visible]" <?php if (@$input_filter['visible']) {
-					echo 'checked="checked"';
-				} ?> class="filter-group-checkbox"/> <?= block_exacomp_get_string($titleid) ?></label></h3>
-		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) { ?>
-			<div><span class="filter-title"><?= block_exacomp_get_string('competence_grid_niveau') ?>:</span> <?php
-				foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_evalniveaus() as $key => $value) {
-					$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) ? 'checked="checked"' : '';
-					echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
-				}
-				?></div>
-		<?php } ?>
-		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO])) { ?>
-			<div><span class="filter-title"><?= block_exacomp_get_string('competence_grid_additionalinfo') ?>:</span>
-				<input placeholder="von" size="3" name="filter[<?= $input_type ?>][additionalinfo_from]" value="<?= s(@$input_filter['additionalinfo_from']) ?>"/> -
-				<input placeholder="bis" size="3" name="filter[<?= $input_type ?>][additionalinfo_to]" value="<?= s(@$input_filter['additionalinfo_to']) ?>"/>
-			</div>
-		<?php } ?>
-		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) { ?>
-			<div><span class="filter-title"><?= block_exacomp_get_string('teacherevaluation') ?>:</span> <?php
-				foreach ([-1 => 'ohne Angabe'] + $teacher_eval_items as $key => $value) {
-					$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
-					echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
-				}
-				?></div>
-		<?php } ?>
-		<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) { ?>
-			<div><span class="filter-title"><?= block_exacomp_get_string('selfevaluation') ?>:</span> <?php
-				foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_student_eval_items(false) as $key => $value) {
-					$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) ? 'checked="checked"' : '';
-					echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
-				}
-				?></div>
-		<?php } ?>
-	</div>
-	<?php
 }
 
 ?>
@@ -178,33 +126,8 @@ function block_exacomp_print_filter($input_type, $titleid) {
 	</script>
 	<div class="block">
 		<h2><?= block_exacomp_trans('de:Anzeigeoption') ?></h2>
-		<form method="post">
-			<?php
-			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_SUBJECT, 'subject');
-			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_TOPIC, 'topic');
-			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT, 'descriptor');
-			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, 'descriptor_child');
-			block_exacomp_print_filter(BLOCK_EXACOMP_TYPE_EXAMPLE, 'example');
 
-			$input_type = 'time';
-			$input_filter = (array)@$filter[$input_type];
-			$titleid = 'choosedaterange';
-			?>
-			<div class="filter-group">
-				<h3>
-					<label><input type="checkbox" name="filter[<?= $input_type ?>][active]" <?php if (@$input_filter['active']) {
-							echo 'checked="checked"';
-						} ?> class="filter-group-checkbox"/> Zeitintervall TODO</label></h3>
-				<div><span class="filter-title"></span>
-					<input placeholder="von" size="3" name="filter[<?= $input_type ?>][from]" value="<?= s(@$input_filter['from']) ?>"/> -
-					<input placeholder="bis" size="3" name="filter[<?= $input_type ?>][to]" value="<?= s(@$input_filter['to']) ?>"/>
-					<select>
-						<option>Eingabezeitraum</option>
-					</select>
-				</div>
-			</div>
-			<input type="submit" value="Filter anwenden"/>
-		</form>
+		<?php echo $output->group_report_filters($filter, ''); ?>
 	</div>
 <?php
 

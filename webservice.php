@@ -35,8 +35,8 @@ define('NO_MOODLE_COOKIES', true);
 
 
 require __DIR__.'/inc.php';
-require_once($CFG->libdir . '/filelib.php');
-require_once($CFG->dirroot . '/webservice/lib.php');
+require_once($CFG->libdir.'/filelib.php');
+require_once($CFG->dirroot.'/webservice/lib.php');
 
 // Allow CORS requests.
 header('Access-Control-Allow-Origin: *');
@@ -57,32 +57,25 @@ class block_exacomp_simple_service {
 	 * used own webservice, because moodle does not support returning files from webservices
 	 */
 	static function dakora_print_schedule() {
-		$courseid = required_param('courseid', PARAM_INT);
-
-		if (!$course = g::$DB->get_record('course', array('id' => $courseid))) {
-			print_error('invalidcourse', 'block_simplehtml', $courseid);
-		}
-
-		require_login($course);
-
-		$context = \context_course::instance($courseid);
+		$course = static::require_courseid();
 
 		// CHECK TEACHER
-		$isTeacher = block_exacomp_is_teacher($context);
+		$isTeacher = block_exacomp_is_teacher($course->id);
 
-		$studentid = block_exacomp_get_studentid() ;
+		$studentid = block_exacomp_get_studentid();
 
 		/* CONTENT REGION */
-		if($isTeacher){
-			$coursestudents = block_exacomp_get_students_by_course($courseid);
-			if($studentid <= 0) {
+		if ($isTeacher) {
+			$coursestudents = block_exacomp_get_students_by_course($course->id);
+			if ($studentid <= 0) {
 				$student = null;
-			}else{
+			} else {
 				//check permission for viewing students profile
-				if(!array_key_exists($studentid, $coursestudents))
-					print_error("nopermissions","","","Show student profile");
+				if (!array_key_exists($studentid, $coursestudents)) {
+					print_error("nopermissions", "", "", "Show student profile");
+				}
 
-				$student = g::$DB->get_record('user',array('id' => $studentid));
+				$student = g::$DB->get_record('user', array('id' => $studentid));
 			}
 		} else {
 			$student = g::$USER;
@@ -101,16 +94,10 @@ class block_exacomp_simple_service {
 	 * used own webservice, because moodle does not support indexed arrays (eg. [ 188 => object])
 	 */
 	static function get_examples_as_tree() {
-		$courseid = required_param('courseid', PARAM_INT);
+		$course = static::require_courseid();
 		$q = trim(optional_param('q', '', PARAM_RAW));
 
-		if (!$course = g::$DB->get_record('course', array('id' => $courseid))) {
-			print_error('invalidcourse', 'block_simplehtml', $courseid);
-		}
-
-		require_login($course);
-
-		$subjects = block_exacomp_search_competence_grid_as_tree($courseid, $q);
+		$subjects = block_exacomp_search_competence_grid_as_tree($course->id, $q);
 
 		return static::json_items($subjects, BLOCK_EXACOMP_DB_SUBJECTS);
 	}
@@ -119,8 +106,37 @@ class block_exacomp_simple_service {
 	 * used own webservice, because moodle does not support indexed arrays (eg. [ 188 => object])
 	 */
 	static function get_examples_as_list() {
-		$courseid = required_param('courseid', PARAM_INT);
+		$course = static::require_courseid();
 		$q = trim(optional_param('q', '', PARAM_RAW));
+
+		$examples = block_exacomp_search_competence_grid_as_example_list($course->id, $q);
+
+		return static::json_items($examples, BLOCK_EXACOMP_DB_EXAMPLES);
+	}
+
+	static function group_reports_form() {
+		$course = static::require_courseid();
+
+		$output = block_exacomp_get_renderer();
+
+		// default filter
+		@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
+		@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
+		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
+
+		$wstoken = required_param('wstoken', PARAM_ALPHANUM);
+
+		$action = $_SERVER['PHP_SELF'].'?wstoken='.$wstoken.'&wsfunction=group_reports_result&courseid='.$course->id;
+
+		return $output->group_report_filters($filter, $action);
+	}
+
+	static function group_reports_result() {
+		static::require_courseid();
+	}
+
+	private static function require_courseid() {
+		$courseid = required_param('courseid', PARAM_INT);
 
 		if (!$course = g::$DB->get_record('course', array('id' => $courseid))) {
 			print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -128,10 +144,9 @@ class block_exacomp_simple_service {
 
 		require_login($course);
 
-		$examples = block_exacomp_search_competence_grid_as_example_list($courseid, $q);
-
-		return static::json_items($examples, BLOCK_EXACOMP_DB_EXAMPLES);
+		return $course;
 	}
+
 
 	private static function json_items($items, $by) {
 		$results = [];
@@ -143,16 +158,14 @@ class block_exacomp_simple_service {
 					'title' => $item->title,
 					'topics' => static::json_items($item->topics, $by),
 				];
-			}
-			elseif ($item instanceof \block_exacomp\topic) {
+			} elseif ($item instanceof \block_exacomp\topic) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
 					'numbering' => $item->get_numbering(),
 					'title' => $item->title,
 					'descriptors' => static::json_items($item->descriptors, $by),
 				];
-			}
-			elseif ($item instanceof \block_exacomp\descriptor) {
+			} elseif ($item instanceof \block_exacomp\descriptor) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
 					'numbering' => $item->get_numbering(),
@@ -162,8 +175,7 @@ class block_exacomp_simple_service {
 				if ($by == BLOCK_EXACOMP_DB_SUBJECTS) {
 					$results[$item->id]->examples = static::json_items($item->examples, $by);
 				}
-			}
-			elseif ($item instanceof \block_exacomp\example) {
+			} elseif ($item instanceof \block_exacomp\example) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
 					'title' => $item->title,
@@ -172,8 +184,7 @@ class block_exacomp_simple_service {
 					// for example list
 					$results[$item->id]->subjects = static::json_items($item->subjects, $by);
 				}
-			}
-			else {
+			} else {
 				throw new \coding_exception('wrong object type '.get_class($item));
 			}
 		}
@@ -185,8 +196,12 @@ class block_exacomp_simple_service {
 if (is_callable(['block_exacomp_simple_service', $function])) {
 	$ret = block_exacomp_simple_service::$function();
 
-	// pretty print if available (since php 5.4.0)
-	echo defined('JSON_PRETTY_PRINT') ? json_encode($ret, JSON_PRETTY_PRINT) : json_encode($ret);
+	if (is_string($ret)) {
+		echo $ret;
+	} else {
+		// pretty print if available (since php 5.4.0)
+		echo defined('JSON_PRETTY_PRINT') ? json_encode($ret, JSON_PRETTY_PRINT) : json_encode($ret);
+	}
 } else {
 	throw new \moodle_exception("wsfunction '$function' not found");
 }
