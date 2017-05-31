@@ -4437,8 +4437,8 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 
 	$timecreated = $timemodified = time();
 
-	// already inside schedule?
-	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))) {
+	// prüfen, ob element schon zur gleichen zeit im weochenplan ist
+	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
 
@@ -5318,14 +5318,14 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 			if ($USER->id == $example->studentid) {
 				$itemExists = block_exacomp_get_current_item_for_example($USER->id, $example->exampleid);
 
-				$example_array ['submission_url'] = html_writer::link(
+				$example_array['submission_url'] = html_writer::link(
 					new moodle_url('/blocks/exacomp/example_submission.php', array("courseid" => $example->courseid, "exampleid" => $example->exampleid)),
 					html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/'.((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt' => block_exacomp_get_string("submission"), 'title' => block_exacomp_get_string("submission"))),
 					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			} else {
 				$url = block_exacomp_get_viewurl_for_example($example->studentid, $USER->id, $example->exampleid);
 				if ($url) {
-					$example_array ['submission_url'] = html_writer::link($url, html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt' => block_exacomp_get_string("submission"), 'title' => block_exacomp_get_string("submission"))), array(
+					$example_array['submission_url'] = html_writer::link($url, html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt' => block_exacomp_get_string("submission"), 'title' => block_exacomp_get_string("submission"))), array(
 						"target" => "_blank",
 						"onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;",
 					));
@@ -6568,16 +6568,16 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	);
 
 	foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
-		$descriptorgradings [$niveaukey] = [];
-		$childgradings [$niveaukey] = [];
-		$examplegradings [$niveaukey] = [];
+		$descriptorgradings[$niveaukey] = [];
+		$childgradings[$niveaukey] = [];
+		$examplegradings[$niveaukey] = [];
 
 		foreach ($scheme_items as $schemekey => $schemetitle) {
 
 			if ($schemekey > -1) {
-				$descriptorgradings [$niveaukey] [$schemekey] = 0;
-				$childgradings [$niveaukey] [$schemekey] = 0;
-				$examplegradings [$niveaukey] [$schemekey] = 0;
+				$descriptorgradings[$niveaukey][$schemekey] = 0;
+				$childgradings[$niveaukey][$schemekey] = 0;
+				$examplegradings[$niveaukey][$schemekey] = 0;
 			}
 		}
 	}
