@@ -6543,8 +6543,6 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  *
  */
 function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0) {
-	global $DB;
-
 	// TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
 	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
 	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
@@ -6556,9 +6554,9 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	// create grading statistic
 	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid));
-	$evaluationniveau_items = (block_exacomp_use_eval_niveau()) ? \block_exacomp\global_config::get_evalniveaus() : array(
-		'0' => '',
-	);
+	$evaluationniveau_items = block_exacomp_use_eval_niveau()
+		? \block_exacomp\global_config::get_evalniveaus()
+		: ['0' => ''];
 
 	foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
 		$descriptorgradings[$niveaukey] = [];
@@ -6566,7 +6564,6 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		$examplegradings[$niveaukey] = [];
 
 		foreach ($scheme_items as $schemekey => $schemetitle) {
-
 			if ($schemekey > -1) {
 				$descriptorgradings[$niveaukey][$schemekey] = 0;
 				$childgradings[$niveaukey][$schemekey] = 0;
@@ -6577,13 +6574,15 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	foreach ($descriptors as $descriptor) {
 		$eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+
 		// check if grading is within timeframe
 		if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-			// increase counter in statistic
-			// check if niveau is given in evaluation, if not -1
-			$niveaukey = block_exacomp_use_eval_niveau() ? (isset($eval->evalniveauid) ? $eval->evalniveauid : -1) : 0;
+			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
 
-			@$descriptorgradings[$niveaukey][$eval->value]++;
+			// increase counter in statistic
+			if (isset($descriptorgradings[$niveaukey][$eval->value])) {
+				$descriptorgradings[$niveaukey][$eval->value]++;
+			}
 		}
 	}
 
@@ -6592,11 +6591,12 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 		// check if grading is within timeframe
 		if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-			// check if niveau is given in evaluation, if not -1
-			$niveaukey = block_exacomp_use_eval_niveau() ? (isset($eval->evalniveauid) ? $eval->evalniveauid : -1) : 0;
+			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
 
 			// increase counter in statistic
-			@$childgradings[$niveaukey][$eval->value]++;
+			if (isset($childgradings[$niveaukey][$eval->value])) {
+				$childgradings[$niveaukey][$eval->value]++;
+			}
 		}
 	}
 
@@ -6605,11 +6605,12 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 		// check if grading is within timeframe
 		if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-			// check if niveau is given in evaluation, if not -1
-			$niveaukey = block_exacomp_use_eval_niveau() ? (isset($eval->evalniveauid) ? $eval->evalniveauid : -1) : 0;
+			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
 
 			// increase counter in statistic
-			@$examplegradings[$niveaukey][$eval->value]++;
+			if (isset($examplegradings[$niveaukey][$eval->value])) {
+				$examplegradings[$niveaukey][$eval->value]++;
+			}
 		}
 	}
 
