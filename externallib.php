@@ -1283,6 +1283,7 @@ class block_exacomp_external extends external_api {
 			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma'),
 			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
+			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
 		));
 	}
 
@@ -1299,7 +1300,7 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($name, $description, $externalurl, $comps, $filename, $fileitemid = 0) {
+	public static function create_example($name, $description, $externalurl, $comps, $filename, $fileitemid = 0, $solutionfileitemid = 0) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
@@ -1313,6 +1314,7 @@ class block_exacomp_external extends external_api {
 			'comps' => $comps,
 			'filename' => $filename,
 			'fileitemid' => $fileitemid,
+			'solutionfileitemid' => $solutionfileitemid,
 		));
 
 		// insert into examples and example_desc
@@ -1328,11 +1330,17 @@ class block_exacomp_external extends external_api {
 
 		$example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
 
-		if ($filename != '') {
+		if ($fileitemid) {
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 
-			if (!$file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename)) {
+			if ($filename) {
+				// TODO: filename sollte nicht mehr notwendig sein, das ist alter code?
+				$file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename);
+			} else {
+				$file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
+			}
+			if (!$file) {
 				throw new moodle_exception('file not found');
 			}
 
@@ -1342,6 +1350,25 @@ class block_exacomp_external extends external_api {
 				'filearea' => 'example_task',
 				'itemid' => $example->id,
 			), $file);
+
+			$file->delete();
+		}
+
+		if ($solutionfileitemid) {
+			$context = context_user::instance($USER->id);
+			$fs = get_file_storage();
+
+			$file = reset($fs->get_area_files($context->id, 'user', 'draft', $solutionfileitemid, null, false));
+			if (!$file) {
+				throw new moodle_exception('solution file not found');
+			}
+
+			$fs->create_file_from_storedfile([
+				'contextid' => context_system::instance()->id,
+				'component' => 'block_exacomp',
+				'filearea' => 'example_solution',
+				'itemid' => $example->id,
+			], $file);
 
 			$file->delete();
 		}
