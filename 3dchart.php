@@ -92,12 +92,17 @@ $student_value_index = key($graph_options->yLabels) + 1;
 $graph_options->yLabels[$student_value_index] = block_exacomp_get_string('selfevaluation_short');
 $ylabels_long[$student_value_index] = block_exacomp_get_string('selfevaluation');
 
-$value_titles = array_filter(\block_exacomp\global_config::get_teacher_eval_items($courseid, true), function($k) {
+// php <5.6.0 has no filter key function
+function block_exacomp_array_filter_keys($arr, $cb) {
+	return array_intersect_key($arr, array_flip(array_filter(array_keys($arr), $cb)));
+}
+
+$value_titles = block_exacomp_array_filter_keys(\block_exacomp\global_config::get_teacher_eval_items($courseid, true), function($k) {
 	return $k >= 0;
-}, ARRAY_FILTER_USE_KEY);
-$value_titles_long = array_filter(\block_exacomp\global_config::get_teacher_eval_items($courseid, false), function($k) {
+});
+$value_titles_long = block_exacomp_array_filter_keys(\block_exacomp\global_config::get_teacher_eval_items($courseid, false), function($k) {
 	return $k >= 0;
-}, ARRAY_FILTER_USE_KEY);
+});
 $value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items(true);
 
 $graph_options->zLabels = array_fill(0, count($value_titles), '');
@@ -141,14 +146,14 @@ foreach ($evaluation as $e) {
 	$x++;
 }
 
-echo '<script> exacomp_graph = '.json_encode($exacomp_graph).'; </script>';
-
 $output = block_exacomp_get_renderer();
 $output->requires()->js('/blocks/exacomp/javascript/vis.js', true);
 
 // build tab navigation & print header
 $PAGE->set_pagelayout('embedded');
 echo $output->header_v2();
+
+echo '<script> exacomp_graph = '.json_encode($exacomp_graph).'; </script>';
 
 /* CONTENT REGION */
 if (!$exacomp_graph->data) {
