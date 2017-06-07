@@ -700,7 +700,13 @@ class db_record {
 	 * @throws \coding_exception
 	 */
 	static function get($conditions, $fields = null, $strictness = null) {
-		if (is_scalar($conditions)) {
+		if ($conditions === null) {
+			return null;
+		} elseif (is_scalar($conditions)) {
+			if (!$conditions) {
+				return null;
+			}
+
 			// id
 			$conditions = array('id' => $conditions);
 		} elseif (is_object($conditions)) {
@@ -710,6 +716,9 @@ class db_record {
 				return $conditions;
 			} elseif ($conditions instanceof \stdClass) {
 				$conditions = (array)$conditions;
+				if (!$conditions) {
+					print_error('wrong fields');
+				}
 			} else {
 				throw new \coding_exception('Wrong class for $conditions expected "'.get_called_class().'" got "'.get_class($conditions).'"');
 			}
