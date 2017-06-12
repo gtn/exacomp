@@ -6914,7 +6914,7 @@ function block_exacomp_get_user_subject_evaluation($userid, $subjectid, $coursei
 		$userid,
 		$courseid,
 		$subjectid,
-		ROLE_TEACHER,
+		BLOCK_EXACOMP_ROLE_TEACHER,
 	]);
 }
 
