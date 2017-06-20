@@ -228,7 +228,7 @@ $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 $string['solution'] = 'Musterlösung';
 $string['hide_solution'] = 'Musterlösung verbergen';
 $string['show_solution'] = 'Musterlösung anzeigen';
-$string['hide_solution_disabled'] = 'Musterlösung ist bereits für alle Schüler versteckt';
+$string['hide_solution_disabled'] = 'Musterlösung ist bereits für alle Schüler/innen versteckt';
 $string['submission'] = 'Abgabe';
 $string['assignments'] = 'Moodle Aktivitäten';
 $string['files'] = 'Dateien';
@@ -324,10 +324,10 @@ $string['instruction_content'] = 'Hier können Sie für Ihre Lerngruppen / Klass
 				eintragen. Je nach Konzept der Schule kann die Bearbeitung des
 				Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz
 				markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung
-				gekennzeichnet werden. Keinenfalls müssen die Schülerinnen und
-				Schüler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz
-				bereits vorliegt, kann das hier eingetragen werden. Die Schülerinnen
-				und Schüler müssen dann keine zugehörigen Lernmaterialien
+				gekennzeichnet werden. Keinenfalls müssen die Schüler/innen 
+				alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz
+				bereits vorliegt, kann das hier eingetragen werden. Die Schüler/innen
+				müssen dann keine zugehörigen Lernmaterialien
 				bearbeiten.';
 
 
@@ -441,7 +441,7 @@ $string['example_pool'] = 'Planungsspeicher';
 $string['example_trash'] = 'Papierkorb';
 $string['choosecourse'] = 'Kurs auswählen: ';
 $string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Kursteilnehmer/innen auf den Planungsspeicher im Wochenplan gelegt.';
-$string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem Schüler bereits im Planungsspeicher im Wochenplan.';
+$string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem/r Schüler/in bereits im Planungsspeicher im Wochenplan.';
 $string['weekly_schedule_link_to_grid'] = 'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln';
 $string['pre_planning_storage'] = 'Vorplanungsspeicher';
 $string['pre_planning_storage_added'] = 'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.';
@@ -457,8 +457,8 @@ $string['blocking_event_title'] = 'Titel';
 $string['blocking_event_create'] = 'Zum Vorplanungsspeicher hinzufügen';
 $string['weekly_schedule_disabled'] = 'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.';
 $string['pre_planning_storage_disabled'] = 'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.';
-$string['add_example_for_all_students_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für alle Schüler auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
-$string['add_example_for_all_students_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler auf den Wochenplan legen möchten?';
+$string['add_example_for_all_students_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
+$string['add_example_for_all_students_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht';
@@ -515,5 +515,5 @@ $string['exaport_not_found'] = 'Exaportservice nicht gefunden';
 $string['no_external_trainer'] = 'Keine externen Trainer zugeteilt';
 $string['periodselect'] = 'Auswahl der Periode';
 $string['teacher'] = 'Lehrer';
-$string['student'] = 'Schüler';
+$string['student'] = 'Schüler/in';
 $string['timeline_available'] = 'Verfügbare';

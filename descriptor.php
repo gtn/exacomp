@@ -37,7 +37,7 @@ $item = $id ? \block_exacomp\descriptor::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
-$PAGE->set_heading($item ? block_exacomp_trans('competency_edit', ['de:Kompetenz bearbeiten', 'en:Edit competency']) : block_exacomp_trans('competency_add', ['de:Neue Kompetenz anlegen', 'en:Create new competency']));
+$PAGE->set_heading($item ? block_exacomp_trans('competence_edit', ['de:Kompetenz bearbeiten', 'en:Edit competence']) : block_exacomp_trans('competence_add', ['de:Neue Kompetenz anlegen', 'en:Create new competence']));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header

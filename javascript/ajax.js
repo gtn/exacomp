@@ -20,7 +20,7 @@
 
 	// ## AJAX
 	// # COMPETENCIES
-	//cannot hide anymore, as soon as competency is checked
+	//cannot hide anymore, as soon as competence is checked
 	var competencies = {};
 
 	var prev_val;

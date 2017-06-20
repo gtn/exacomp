@@ -62,7 +62,7 @@ class block_exacomp_local_item_form extends moodleform {
 		if ($niveaus) {
 			$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_trans(['de:vorhandener Lernfortschritt', 'en:Existing niveau']), 'existing');
 		}
-		$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_trans(['de:neuer Lernfortschritt', 'en:New niveau']), 'new');
+		$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_trans(['de:neuer Lernfortschritt', 'en:New learning progress']), 'new');
 		$mform->addGroup($radioarray, 'radioar', '', array(' '), false);
 		
 		$mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
@@ -71,14 +71,14 @@ class block_exacomp_local_item_form extends moodleform {
 		
 		$mform->addElement('selectgroups', 'niveau_id', block_exacomp_get_string('niveau'), $niveaus);
 		
-		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu', 'en:Please assign a competency to the new niveau']).':');
+		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
 		
 		$radioarray=array();
 		if ($this->_customdata['descriptors']) {
 			// disable if no descriptors
-			$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp_trans(['de:vorhandene Kompetenz', 'en:Existing competency']), 'existing');
+			$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp_trans(['de:vorhandene Kompetenz', 'en:Existing competence']), 'existing');
 		}
-		$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp_trans(['de:neue Kompetenz', 'en:New competency']), 'new');
+		$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp_trans(['de:neue Kompetenz', 'en:New competence']), 'new');
 		$mform->addGroup($radioarray, 'radioar', '', array(' '), false);
 
 		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');

@@ -176,11 +176,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if ($students) {
 				$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid' => $COURSE->id, 'creatorid' => $USER->id));
 				$right_content .= html_writer::tag('button',
-					html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
-							'title' => block_exacomp_get_string('pre_planning_storage'))
-					),
+					html_writer::empty_tag('img', ['src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png')]),
 					array(
 						'id' => 'pre_planning_storage_submit', 'name' => 'pre_planning_storage_submit',
+						'title' => block_exacomp_get_string('pre_planning_storage'),
 						'type' => 'button', /* browser default setting for html buttons is submit */
 						'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false),
 					)
@@ -1266,7 +1265,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$cell = new html_table_cell();
 					$cell->attributes['class'] = 'rg2-indent';
-					$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid' => $topic->id, 'niveauid' => $niveauid));
+					$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Kompetenz', 'en:New competence']), 'topicid' => $topic->id, 'niveauid' => $niveauid));
 					if ($niveauid) {
 						$cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
 					} else {
@@ -1883,7 +1882,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if ($descriptor_in_crosssubj) {
 						$cell = new html_table_cell();
 						$cell->attributes['class'] = 'rg2-indent';
-						$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Teilkompetenz', 'en:New child competency']), 'parentid' => $descriptor->id));
+						$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Teilkompetenz', 'en:New sub competence']), 'parentid' => $descriptor->id));
 						$cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
 						$own_additionRow->cells[] = $cell;
 					}
@@ -3692,11 +3691,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid' => $COURSE->id, 'creatorid' => $USER->id));
 			$right_content .= html_writer::tag('button',
-				html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
-						'title' => block_exacomp_get_string('pre_planning_storage'))
-				),
+				html_writer::empty_tag('img', ['src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png')]),
 				array(
 					'id' => 'pre_planning_storage_submit', 'name' => 'pre_planning_storage_submit',
+					'title' => block_exacomp_get_string('pre_planning_storage'),
 					'type' => 'button', /* browser default setting for html buttons is submit */
 					'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false),
 				)
@@ -4050,14 +4048,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$content .= html_writer::end_tag('ul');
-		$content .= html_writer::tag('span', html_writer::start_tag('fieldset', array('class' => 'gray')).html_writer::end_tag('fieldset').'Material aus Vorplanungsspeicher erhalten', array('class' => 'pre_planning_storage_legend_gray'));
-		$content .= html_writer::tag('span', html_writer::start_tag('fieldset', array('class' => 'blue')).html_writer::end_tag('fieldset').'Noch kein Material erhalten', array('class' => 'pre_planning_storage_legend_blue'));
+		$content .= html_writer::tag('span', html_writer::start_tag('fieldset', array('class' => 'gray')).html_writer::end_tag('fieldset').block_exacomp_trans(['de:Material aus Vorplanungsspeicher erhalten', 'en:Examples from pre-planning storage']), array('class' => 'pre_planning_storage_legend_gray'));
+		$content .= html_writer::tag('span', html_writer::start_tag('fieldset', array('class' => 'blue')).html_writer::end_tag('fieldset').block_exacomp_trans(['de:Noch kein Material erhalten', 'en:No examples received']), array('class' => 'pre_planning_storage_legend_blue'));
 
 		return html_writer::div($content, 'external-students', array('id' => 'external-students'));
 	}
 
 	public function pre_planning_storage_pool() {
-		$content = html_writer::tag('h4', block_exacomp_get_string('example_pool'));
+		$content = html_writer::tag('h4', block_exacomp_get_string('pre_planning_storage'));
 
 		$content .= html_writer::tag('ul', '', array('id' => 'sortable'));
 

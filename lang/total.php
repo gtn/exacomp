@@ -724,7 +724,7 @@ return [
 		'Show solution',
 	],
 	'hide_solution_disabled' => [
-		'Musterlösung ist bereits für alle Schüler versteckt',
+		'Musterlösung ist bereits für alle Schüler/innen versteckt',
 		'The solution is already hidden for all students',
 	],
 	'submission' => [
@@ -1037,11 +1037,11 @@ return [
 	],
 	'descriptor' => [
 		'Kompetenz',
-		'Competency',
+		'Competence',
 	],
 	'descriptor_child' => [
 		'Teilkompetenz',
-		'Child Competency',
+		'Sub competence',
 	],
 	'assigndone' => [
 		'Aufgabe erledigt: ',
@@ -1075,10 +1075,10 @@ return [
 				eintragen. Je nach Konzept der Schule kann die Bearbeitung des
 				Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz
 				markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung
-				gekennzeichnet werden. Keinenfalls müssen die Schülerinnen und
-				Schüler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz
-				bereits vorliegt, kann das hier eingetragen werden. Die Schülerinnen
-				und Schüler müssen dann keine zugehörigen Lernmaterialien
+				gekennzeichnet werden. Keinenfalls müssen die Schüler/innen 
+				alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz
+				bereits vorliegt, kann das hier eingetragen werden. Die Schüler/innen
+				müssen dann keine zugehörigen Lernmaterialien
 				bearbeiten.',
 		'This is an overview for learning resources that are associated with 
 				standards and ticking off competencies for students. Students can
@@ -1154,7 +1154,7 @@ return [
 	],
 	'competencegrid_nodata' => [
 		'Sollte der Kompetenzraster leer sein, wurden für die Deskriptoren des ausgewählten Gegenstands keine Niveaus in den Daten definiert',
-		'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.',
+		'In case the competence grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.',
 	],
 	'statistic_type_descriptor' => [
 		'Wechsel zur Statistik der Teilkompetenzen',
@@ -1468,7 +1468,7 @@ return [
 		'Example added to the weekly schedule of all students.',
 	],
 	'weekly_schedule_already_existing_for_one' => [
-		'Die Aufgabe ist bei mindestens einem Schüler bereits im Planungsspeicher im Wochenplan.',
+		'Die Aufgabe ist bei mindestens einem/r Schüler/in bereits im Planungsspeicher im Wochenplan.',
 		'Example has already been added to at least one student\'s weekly schedule.',
 	],
 	'weekly_schedule_link_to_grid' => [
@@ -1532,11 +1532,11 @@ return [
 		'Hidden example can not be added to pre-planning storage.',
 	],
 	'add_example_for_all_students_to_schedule' => [
-		'Achtung: Sie sind dabei Lernmaterialien für alle Schüler auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
+		'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
 		'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.',
 	],
 	'add_example_for_all_students_to_schedule_confirmation' => [
-		'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler auf den Wochenplan legen möchten?',
+		'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?',
 		'You are about to add the examples to the schedules of all students, do you want to continue?',
 	],
 
@@ -1735,7 +1735,7 @@ return [
 		'Teacher',
 	],
 	'student' => [
-		'Schüler',
+		'Schüler/in',
 		'Student',
 	],
 	'timeline_available' => [
