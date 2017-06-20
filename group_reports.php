@@ -175,7 +175,7 @@ if ($type == 'student') {
 		$studentid = $student->id;
 
 		block_exacomp_tree_walk($subjects, function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
-			$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item::TYPE, $item->id);
+			$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
 			$item_type = $item::TYPE;
 			if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
@@ -238,7 +238,7 @@ if ($type == 'student') {
 
 		ob_start();
 		block_exacomp_tree_walk($subjects, function($walk_subs, $item, $level = 0) use ($studentid, $courseid) {
-			$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item::TYPE, $item->id);
+			$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
 			if (!$item->visible) {
 				// walk subs with same level

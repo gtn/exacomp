@@ -7233,7 +7233,7 @@ class block_exacomp_external extends external_api {
 	 * @param $studentid
 	 */
 	protected static function add_comp_eval($item, $courseid, $studentid) {
-		$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item::TYPE, $item->id);
+		$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
 		$item->teacherevaluation = $eval->teacherevaluation;
 		$item->studentevaluation = $eval->studentevaluation;

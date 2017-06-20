@@ -129,12 +129,12 @@ class api {
 		foreach ($courses as $course) {
 			$subjects = db_layer_course::create($course->id)->get_subjects();
 			foreach ($subjects as $subject) {
-				$evaluation = block_exacomp_get_user_subject_evaluation($studentid, $subject->id, $course->id);
-				if ($evaluation) {
+				$evaluation = block_exacomp_get_comp_eval_merged($course->id, $studentid, $subject);
+				if ($evaluation->additionalinfo) {
 					$resultSubjects[] = (object)[
 						'title' => $subject->title,
 						'additionalinfo' => $evaluation->additionalinfo,
-						'niveau' => $evaluation->niveau,
+						'niveau' => $evaluation->get_evalniveau_title(),
 					];
 				}
 			}

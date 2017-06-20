@@ -7171,8 +7171,8 @@ function block_exacomp_get_comp_eval($courseid, $role, $studentid, $comptype, $c
  * @param $compid
  * @return \block_exacomp\comp_eval_merged
  */
-function block_exacomp_get_comp_eval_merged($courseid, $studentid, $comptype, $compid) {
-	return \block_exacomp\comp_eval_merged::get($courseid, $studentid, $comptype, $compid);
+function block_exacomp_get_comp_eval_merged($courseid, $studentid, $item) {
+	return \block_exacomp\comp_eval_merged::get($courseid, $studentid, $item);
 }
 
 function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $compid, $data) {

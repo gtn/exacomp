@@ -355,6 +355,9 @@ class db_layer_course extends db_layer {
 			block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 	}
 
+	/**
+	 * @return subject[]
+	 */
 	function get_subjects() {
 		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid, $this->showalldescriptors), null, $this);
 	}
@@ -1393,7 +1396,16 @@ class comp_eval_merged {
 		}
 	}
 
-	static function get($courseid, $studentid, $comptype, $compid) {
+	/**
+	 * @param $courseid
+	 * @param $studentid
+	 * @param db_record $item
+	 * @return static
+	 */
+	static function get($courseid, $studentid, $item) {
+		$compid = $item->id;
+		$comptype = $item::TYPE;
+
 		$student_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $comptype, $compid);
 		$teacher_eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $comptype, $compid);
 
