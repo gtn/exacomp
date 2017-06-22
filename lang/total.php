@@ -217,7 +217,7 @@ return [
 		'The next step is to associate Moodle activities with competencies ',
 	],
 	'teacher_third_configuration_step_link' => [
-		'(Optional: Wenn Sie nicht mit Moodle-Aktivitäten arbeiten möchten, dann entfernen Sie das Häkchen "Ich möchte mit Moodle-Aktivitäten arbeiten" im Tab "Konfiguration".)',
+		'(Optional: Wenn Sie nicht mit Moodle-Aktivitäten arbeiten möchten, dann entfernen Sie das Häkchen "Ich möchte mit Moodle-Aktivitäten arbeiten" im Tab "Einstellungen".)',
 		'(Optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")',
 	],
 	'completed_config' => [
@@ -1110,7 +1110,7 @@ return [
 		'configuration of Exabis Competence Grid is not completed yet. please chose a topic that you would like to associate Moodle activities with',
 	],
 	'no_activities_selected' => [
-		'Bitte ordnen Sie den erstellen Moodle-Aktivitäten Kompetenzen zu.',
+		'Bitte ordnen Sie den erstellten Moodle-Aktivitäten Kompetenzen zu.',
 		'please associate Moodle activities with competences',
 	],
 	'no_activities_selected_student' => [
