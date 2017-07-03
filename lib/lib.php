@@ -1816,7 +1816,7 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
 		if ($isTeacher) {
 			//Einstellungen
 			$rows[] = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_teacher_settings'), null, true);
-			// $rows[] = new tabobject('tab_group_reports', new moodle_url('/blocks/exacomp/group_reports.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_group_reports'), null, true);
+			$rows[] = new tabobject('tab_group_reports', new moodle_url('/blocks/exacomp/group_reports.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_group_reports'), null, true);
 		}
 	}
 
@@ -7507,4 +7507,275 @@ function block_exacomp_format_eval_value($value) {
 	}
 
 	return format_float($value, 1, true, true);
+}
+
+function block_exacomp_group_reports_get_filter() {
+	$filter = (array)@$_REQUEST['filter'];
+
+	if (!$filter) {
+		// default filter
+		@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
+		@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
+		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
+	}
+
+	// active means, we also have to loop over those items
+	if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
+		@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+	}
+	if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+	}
+	if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+	}
+	if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+		@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+	}
+	if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+		@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+	}
+
+	if (@$filter['type'] != 'student_counts') {
+		$filter['type'] = 'students';
+	}
+
+	return $filter;
+}
+
+function block_exacomp_tree_walk(&$items, $data, $callback) {
+	$args = func_get_args();
+	array_shift($args);
+	array_shift($args);
+	array_shift($args);
+
+	foreach ($items as $key => $item) {
+		$walk_subs = function() use ($item, $data, $callback) {
+			$filter = $data['filter'];
+
+			$args = func_get_args();
+
+			if ($item instanceof \block_exacomp\subject && @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->topics, $data, $callback], $args));
+			}
+			if ($item instanceof \block_exacomp\topic && @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->descriptors, $data, $callback], $args));
+			}
+			if ($item instanceof \block_exacomp\descriptor && @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->examples, $data, $callback], $args));
+			}
+			if ($item instanceof \block_exacomp\descriptor && @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+				call_user_func_array('block_exacomp_tree_walk', array_merge([&$item->children, $data, $callback], $args));
+			}
+		};
+
+		$ret = call_user_func_array($callback, array_merge([$walk_subs, $item], $args));
+
+		if ($ret === false) {
+			unset($items[$key]);
+		}
+	}
+}
+
+function block_exacomp_group_reports_result($filter) {
+	$courseid = g::$COURSE->id;
+	$students = block_exacomp_get_students_by_course($courseid);
+
+	if ($filter['type'] == 'students') {
+		echo "<h2>Ergebnis:</h2>";
+
+		$has_output = false;
+
+		foreach ($students as $student) {
+			$studentid = $student->id;
+
+			$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
+				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
+
+				$item_type = $item::TYPE;
+				if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+					$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
+				}
+
+				$item_filter = (array)@$filter[$item_type];
+
+				$item->visible = @$item_filter['visible'];
+
+				if (!@$item_filter['active']) {
+					return false;
+				}
+
+				if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
+					$value = @$eval->evalniveauid ?: 0;
+					if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
+						/*
+						$item->visible = false;
+						return;
+						*/
+						return false;
+					}
+				}
+				if (@$item_filter['additionalinfo_from']) {
+					$value = @$eval->additionalinfo ?: 0;
+					if ($value < $item_filter['additionalinfo_from']) {
+						return false;
+					}
+				}
+				if (@$item_filter['additionalinfo_to']) {
+					$value = @$eval->additionalinfo ?: 0;
+					if ($value > $item_filter['additionalinfo_to']) {
+						return false;
+					}
+				}
+
+				if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) {
+					$value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+					if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
+						return false;
+					}
+				}
+				if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) {
+					$value = @$eval->studentevaluation ?: 0;
+					if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
+						return false;
+					}
+				}
+
+				if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+					$item->visible = false;
+				}
+				if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
+					$item->visible = false;
+				}
+
+				$walk_subs($level + 1);
+			});
+
+
+			ob_start();
+			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
+				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
+
+				if (!$item->visible) {
+					// walk subs with same level
+					$walk_subs($level);
+
+					return;
+				}
+
+				echo '<tr>';
+				echo '<td style="white-space: nowrap">'.$item->get_numbering();
+				echo '<td style="padding-left: '.($level * 20).'px">'.$item->title;
+				if (@$filter['time']['active']) {
+					echo '<td>'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
+				}
+				echo '<td style="padding: 0 10px;">'.$eval->get_student_value_title();
+				echo '<td style="padding: 0 10px;">'.$eval->additionalinfo;
+				echo '<td style="padding: 0 10px;">'.$eval->get_teacher_value_title();
+				echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title();
+
+				$walk_subs($level + 1);
+			});
+			$output = ob_get_clean();
+
+			if ($output) {
+				$has_output = true;
+
+				echo '<h3>'.fullname($student).'</h3>';
+				echo '<table border="1" width="100%">';
+				echo '<tr><th style="width: 4%"></th><th style="width: 65%"></th>';
+				if (@$filter['time']['active']) {
+					echo '<th>Bewertungsdatum</th>';
+				}
+				echo '<th colspan="4">Ausgabe der jeweiligen Bewertungen</th>';
+				echo $output;
+				echo '</table>';
+			}
+		}
+
+		if (!$has_output) {
+			echo 'Keine Einträge gefunden';
+		}
+	}
+
+	if ($filter['type'] == 'student_counts') {
+		$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+
+		echo "<h2>Ergebnis:</h2>";
+
+		echo '<table>';
+		echo '<tr><th></th><th></th><th colspan="3">Anzahl gefundener Schüler ('.count($students).')</th>';
+
+		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students) {
+
+			$item_type = $item::TYPE;
+			if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+				$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
+			}
+
+			$item_filter = (array)@$filter[$item_type];
+
+			$visible = @$item_filter['visible'];
+
+			if ($visible) {
+				$count = 0;
+				foreach ($students as $student) {
+					$studentid = $student->id;
+
+					$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
+
+					if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
+						$value = @$eval->evalniveauid ?: 0;
+						if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
+							continue;
+						}
+					}
+					if (@$item_filter['additionalinfo_from']) {
+						$value = @$eval->additionalinfo ?: 0;
+						if ($value < $item_filter['additionalinfo_from']) {
+							continue;
+						}
+					}
+					if (@$item_filter['additionalinfo_to']) {
+						$value = @$eval->additionalinfo ?: 0;
+						if ($value > $item_filter['additionalinfo_to']) {
+							continue;
+						}
+					}
+
+					if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) {
+						$value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+						if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
+							continue;
+						}
+					}
+					if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) {
+						$value = @$eval->studentevaluation ?: 0;
+						if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
+							continue;
+						}
+					}
+
+					if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+						continue;
+					}
+					if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
+						continue;
+					}
+
+					$count++;
+				}
+
+				echo '<tr>';
+				echo '<td style="white-space: nowrap">'.$item->get_numbering();
+				echo '<td style="padding-left: '.($level * 20).'px">'.$item->title;
+				echo '<td style="padding: 0 10px;">'.$count;
+			}
+
+			$walk_subs($level + 1);
+		});
+
+		echo '</table>';
+	}
 }

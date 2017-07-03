@@ -118,21 +118,25 @@ class block_exacomp_simple_service {
 		$course = static::require_courseid();
 
 		$output = block_exacomp_get_renderer();
-
-		// default filter
-		@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
-		@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
-		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
-
+		$filter = block_exacomp_group_reports_get_filter();
 		$wstoken = required_param('wstoken', PARAM_ALPHANUM);
+		$action = $_SERVER['PHP_SELF'];
 
-		$action = $_SERVER['PHP_SELF'].'?wstoken='.$wstoken.'&wsfunction=group_reports_result&courseid='.$course->id;
+		$extra = '
+			<input type="hidden" name="wstoken" value="'.$wstoken.'"/>
+			<input type="hidden" name="wsfunction" value="'.'group_reports_result'.'"/>
+			<input type="hidden" name="courseid" value="'.$course->id.'"/>
+		';
 
-		return $output->group_report_filters($filter, $action);
+		echo $output->group_report_filters('webservice', $filter, $action, $extra);
 	}
 
 	static function group_reports_result() {
 		static::require_courseid();
+
+		$filter = block_exacomp_group_reports_get_filter();
+
+		block_exacomp_group_reports_result($filter);
 	}
 
 	private static function require_courseid() {
@@ -194,10 +198,13 @@ class block_exacomp_simple_service {
 }
 
 if (is_callable(['block_exacomp_simple_service', $function])) {
+	ob_start();
 	$ret = block_exacomp_simple_service::$function();
+	$output = ob_get_clean();
 
-	if (is_string($ret)) {
-		echo $ret;
+	if ($ret === null) {
+		header("Content-Type: text/html; charset=utf-8");
+		echo $output.$ret;
 	} else {
 		// pretty print if available (since php 5.4.0)
 		echo defined('JSON_PRETTY_PRINT') ? json_encode($ret, JSON_PRETTY_PRINT) : json_encode($ret);

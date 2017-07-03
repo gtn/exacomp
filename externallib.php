@@ -5141,6 +5141,7 @@ class block_exacomp_external extends external_api {
 		));
 
 		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_example($exampleid, $courseid);
 
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 		if (!$example) {
@@ -7133,19 +7134,44 @@ class block_exacomp_external extends external_api {
 	 * @throws block_exacomp_permission_exception
 	 */
 	private static function require_can_access_example($exampleid, $courseid) {
-		$examples = block_exacomp_get_examples_by_course($courseid);
-		if (!isset($examples[$exampleid])) {
-			throw new block_exacomp_permission_exception("Example '$exampleid' not found in course '$courseid'");
+		$example = \block_exacomp\example::get($exampleid);
+		if (!$example) {
+			throw new block_exacomp_permission_exception("Example '$exampleid' not found");
 		}
 
-		// can be viewed by user, or by whole course
-		if (block_exacomp_is_teacher($courseid) ||
-			(block_exacomp_is_student($courseid) && block_exacomp_is_example_visible($courseid, \block_exacomp\example::get($exampleid), g::$USER->id))
-		) {
-			return;
-		}
+		if ($example->blocking_event) {
+			$schedule = g::$DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $exampleid]);
+			if (!$schedule) {
+				throw new block_exacomp_permission_exception("Example '$exampleid' not found #2");
+			}
 
-		throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
+			if ($schedule->studentid == g::$USER->id) {
+				// ok
+				return;
+			} elseif (block_exacomp_is_teacher($courseid)) {
+				$students = block_exacomp_get_students_by_course($courseid);
+				if (isset($students[$schedule->studentid])) {
+					// blocking event from a student in course
+					return;
+				}
+			}
+
+			throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
+		} else {
+			$examples = block_exacomp_get_examples_by_course($courseid);
+			if (!isset($examples[$exampleid])) {
+				throw new block_exacomp_permission_exception("Example '$exampleid' not found in course '$courseid'");
+			}
+
+			// can be viewed by user, or by whole course
+			if (block_exacomp_is_teacher($courseid) ||
+				(block_exacomp_is_student($courseid) && block_exacomp_is_example_visible($courseid, $example, g::$USER->id))
+			) {
+				return;
+			}
+
+			throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
+		}
 	}
 
 

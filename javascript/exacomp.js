@@ -30,7 +30,7 @@
 	};
 
 	function is_page(page) {
-		return !!$('body#page-blocks-exacomp-' + page).length;
+		return !!document.location.href.match('/exacomp/'+page);
 	}
 
 	window.block_exacomp = $E = {
@@ -708,7 +708,53 @@
 			});
 		}
 
-		if ($('input[id="daterangepicker"]').length) {
+		if (is_page('group_reports')) {
+			var $picker = $('<input id="daterangepicker" />');
+			var allowClearSelect = true;
+
+			$picker.insertAfter('.range-inputs');
+			$picker.dateRangePicker({
+				separator: ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',
+				format: 'DD.MMM.YYYY',
+				startOfWeek: 'monday',
+				showShortcuts: true,
+				shortcuts: {
+					'prev-days': [3, 5, 7],
+					'prev': ['week', 'month', 'year'],
+					'next-days': null,
+					'next': null
+				}
+			}).bind('datepicker-change', function (event, obj) {
+				$('.range-inputs input[name*="from"]').val(obj.date1.getTime()/1000|0);
+				$('.range-inputs input[name*="to"]').val(obj.date2.getTime()/1000|0);
+
+				if (allowClearSelect) {
+					$('select[name="daterangeperiods"]').val('');
+				}
+			});
+
+			if ($('.range-inputs input[name*="from"]').val() && $('.range-inputs input[name*="to"]').val()) {
+				$picker.data('dateRangePicker').setDateRange(new Date($('.range-inputs input[name*="from"]').val()*1000), new Date($('.range-inputs input[name*="to"]').val()*1000));
+			}
+
+			// perioden auswahl
+			$('select[name="daterangeperiods"]').change(function (event) {
+				if (!$(this).val()) {
+					$('#clear-range').click();
+				} else {
+					var fromTo = $(this).val().split('-');
+					allowClearSelect = false;
+					$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(fromTo[0] * 1000), new Date(fromTo[1] * 1000));
+					allowClearSelect = true;
+				}
+			});
+
+			$('#clear-range').click(function (event) {
+				$('input[id="daterangepicker"]').data('dateRangePicker').clear();
+				$('select[name="daterangeperiods"]').val('');
+				$('.range-inputs input').val('');
+			});
+		} else if ($('input[id="daterangepicker"]').length) {
 			var allowClearSelect = true;
 			$('input[id="daterangepicker"]').dateRangePicker({
 				separator: ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',

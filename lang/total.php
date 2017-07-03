@@ -1726,7 +1726,7 @@ return [
 		'No external trainers assigned',
 	],
 	'periodselect' => [
-		'Auswahl der Periode',
+		'Auswahl des Eingabezeitraums',
 		'Select Period',
 	],
 

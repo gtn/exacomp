@@ -4335,10 +4335,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $output;
 	}
 
-	function group_report_filters($filter, $action) {
+	function group_report_filters($type, $filter, $action, $extra = '') {
 		ob_start();
 		?>
 		<form method="post" action="<?php echo $action; ?>">
+			<?php
+			echo $extra;
+			?>
+			<div class="filter-group visible">
+				<h3 class="filter-group-title"><label>Report Typ</label></h3>
+				<div class="filter-group-body">
+					<div>
+						<label><input type="radio" name="filter[type]" value="students" <?php if (@$filter['type'] == 'students') echo 'checked="checked"'; ?>/>
+							<?php echo block_exacomp_trans('de:Schüler Kompetenzen'); ?></label>&nbsp;&nbsp;&nbsp;
+						<label><input type="radio" name="filter[type]" value="student_counts" <?php if (@$filter['type'] == 'student_counts') echo 'checked="checked"'; ?>/>
+							<?php echo block_exacomp_trans('de:Schüler Anzahl'); ?></label>&nbsp;&nbsp;&nbsp;
+					</div>
+				</div>
+			</div>
 			<?php
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'subject');
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'topic');
@@ -4348,22 +4362,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$input_type = 'time';
 			$input_filter = (array)@$filter[$input_type];
-			$titleid = 'choosedaterange';
+
+			if ($periods = block_exacomp_get_exastud_periods_current_and_past_periods()) {
+				$options = [];
+				foreach ($periods as $period) {
+					$options[$period->starttime.'-'.$period->endtime] = $period->description;
+				}
+				$period_select = html_writer::select($options, 'daterangeperiods', '', block_exacomp_get_string('periodselect'), []);
+			} else {
+				$period_select = '';
+			}
+
 			?>
 			<div class="filter-group">
-				<h3>
+				<h3 class="filter-group-title">
 					<label><input type="checkbox" name="filter[<?= $input_type ?>][active]" <?php if (@$input_filter['active']) {
 							echo 'checked="checked"';
-						} ?> class="filter-group-checkbox"/> Zeitintervall TODO</label></h3>
-				<div><span class="filter-title"></span>
-					<input placeholder="von" size="3" data-exa-type="datetime" name="filter[<?= $input_type ?>][from]" value="<?= s(@$input_filter['from']) ?>"/> -
-					<input placeholder="bis" size="3" data-exa-type="datetime" name="filter[<?= $input_type ?>][to]" value="<?= s(@$input_filter['to']) ?>"/>
-					<select>
-						<option>Eingabezeitraum</option>
-					</select>
+						} ?> class="filter-group-checkbox"/> Zeitintervall</label></h3>
+				<div class="filter-group-body"><span class="filter-title"></span>
+					<?php echo $period_select; ?>
+					<span class="range-inputs">
+						<input placeholder="von" size="3" data-exa-type="datetime" name="filter[<?= $input_type ?>][from]" value="<?= s(@$input_filter['from']) ?>"/> -
+						<input placeholder="bis" size="3" data-exa-type="datetime" name="filter[<?= $input_type ?>][to]" value="<?= s(@$input_filter['to']) ?>"/>
+					</span>
+					<?php
+						echo html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range', 'type' => 'button'))
+					?>
 				</div>
 			</div>
-			<input type="submit" value="Filter anwenden"/>
+			<input type="submit" value="Bericht erstellen"/>
 		</form>
 		<?php
 
@@ -4383,41 +4410,43 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		?>
 		<div class="filter-group">
-			<h3>
+			<h3 class="filter-group-title">
 				<label><input type="checkbox" name="filter[<?= $input_type ?>][visible]" <?php if (@$input_filter['visible']) {
 						echo 'checked="checked"';
 					} ?> class="filter-group-checkbox"/> <?= block_exacomp_get_string($titleid) ?></label></h3>
-			<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) { ?>
-				<div><span class="filter-title"><?= block_exacomp_get_string('competence_grid_niveau') ?>:</span> <?php
-					foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_evalniveaus() as $key => $value) {
-						$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) ? 'checked="checked"' : '';
-						echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
-					}
-					?></div>
-			<?php } ?>
-			<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO])) { ?>
-				<div>
-					<span class="filter-title"><?= block_exacomp_get_string('competence_grid_additionalinfo') ?>:</span>
-					<input data-exa-type="float" placeholder="von" size="3" name="filter[<?= $input_type ?>][additionalinfo_from]" value="<?= s(@$input_filter['additionalinfo_from']) ?>"/> -
-					<input data-exa-type="float" placeholder="bis" size="3" name="filter[<?= $input_type ?>][additionalinfo_to]" value="<?= s(@$input_filter['additionalinfo_to']) ?>"/>
-				</div>
-			<?php } ?>
-			<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) { ?>
-				<div><span class="filter-title"><?= block_exacomp_get_string('teacherevaluation') ?>:</span> <?php
-					foreach ([-1 => 'ohne Angabe'] + $teacher_eval_items as $key => $value) {
-						$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
-						echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
-					}
-					?></div>
-			<?php } ?>
-			<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) { ?>
-				<div><span class="filter-title"><?= block_exacomp_get_string('selfevaluation') ?>:</span> <?php
-					foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_student_eval_items(false) as $key => $value) {
-						$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) ? 'checked="checked"' : '';
-						echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
-					}
-					?></div>
-			<?php } ?>
+			<div class="filter-group-body">
+				<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) { ?>
+					<div><span class="filter-title"><?= block_exacomp_get_string('competence_grid_niveau') ?>:</span> <?php
+						foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_evalniveaus() as $key => $value) {
+							$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) ? 'checked="checked"' : '';
+							echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
+						}
+						?></div>
+				<?php } ?>
+				<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO])) { ?>
+					<div>
+						<span class="filter-title"><?= block_exacomp_get_string('competence_grid_additionalinfo') ?>:</span>
+						<input data-exa-type="float" placeholder="von" size="3" name="filter[<?= $input_type ?>][additionalinfo_from]" value="<?= s(@$input_filter['additionalinfo_from']) ?>"/> -
+						<input data-exa-type="float" placeholder="bis" size="3" name="filter[<?= $input_type ?>][additionalinfo_to]" value="<?= s(@$input_filter['additionalinfo_to']) ?>"/>
+					</div>
+				<?php } ?>
+				<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) { ?>
+					<div><span class="filter-title"><?= block_exacomp_get_string('teacherevaluation') ?>:</span> <?php
+						foreach ([-1 => 'ohne Angabe'] + $teacher_eval_items as $key => $value) {
+							$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
+							echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
+						}
+						?></div>
+				<?php } ?>
+				<?php if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) { ?>
+					<div><span class="filter-title"><?= block_exacomp_get_string('selfevaluation') ?>:</span> <?php
+						foreach ([0 => 'ohne Angabe'] + \block_exacomp\global_config::get_student_eval_items(false) as $key => $value) {
+							$checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) ? 'checked="checked"' : '';
+							echo '<label><input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'</label>&nbsp;&nbsp;&nbsp;';
+						}
+						?></div>
+				<?php } ?>
+			</div>
 		</div>
 		<?php
 	}

@@ -90,7 +90,7 @@ if(!$isTeacher){
 			}
 			echo html_writer::select($options, 'daterangeperiods', '', block_exacomp_get_string('periodselect'), []).' ';
 		}
-		echo $output->daterangepicker(true);
+		echo $output->daterangepicker();
 	}
 
 	echo '</div>';
