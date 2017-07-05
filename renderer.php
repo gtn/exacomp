@@ -4335,4 +4335,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $output;
 	}
+
+	/**
+	 * in moodle33 pix_url was renamed to image_url
+	 */
+	public function image_url($imagename, $component = 'moodle') {
+		if (method_exists(get_parent_class($this), 'image_url')) {
+			return call_user_func_array(['parent', 'image_url'], func_get_args());
+		} else {
+			return call_user_func_array(['parent', 'pix_url'], func_get_args());
+		}
+	}
 }
