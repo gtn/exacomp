@@ -5675,11 +5675,24 @@ function block_exacomp_get_message_icon($userid) {
 			return;
 		}
 
-		message_messenger_requirejs();
-		$url = new moodle_url('message/index.php', array('id' => $userto->id));
-		$attributes = message_messenger_sendmessage_link_params($userto);
+		if (function_exists('message_messenger_requirejs')) {
+			// before moodle 3.3
+			message_messenger_requirejs();
+			$url = new moodle_url('message/index.php', array('id' => $userto->id));
+			$attributes = message_messenger_sendmessage_link_params($userto);
 
-		return html_writer::link($url, html_writer::tag('button', html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message'), array('title' => fullname($userto)))), $attributes);
+			return html_writer::link($url, html_writer::tag('button', html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message'), array('title' => fullname($userto)))), $attributes);
+		} else {
+			$url = new moodle_url('/message/index.php', array('id' => $userto->id));
+			$attributes = ['target' => '_blank', 'title' => fullname($userto)];
+			return html_writer::link($url, html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message')), $attributes);
+			$anchortagcontents = '<img class="iconsmall" src="'.$OUTPUT->pix_url('t/message') . '" alt="'. get_string('messageselectadd') .'" />';
+			$anchorurl = new moodle_url('/message/index.php', array('id' => $user->id));
+			$anchortag = html_writer::link($anchorurl, $anchortagcontents,
+				array('title' => get_string('messageselectadd')));
+
+			$this->content->text .= '<div class="message">'.$anchortag.'</div>';
+		}
 	} else {
 		$attributes = array(
 			'exa-type' => 'iframe-popup',
