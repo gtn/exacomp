@@ -7618,13 +7618,13 @@ function block_exacomp_group_reports_result($filter) {
 				}
 				if (@$item_filter['additionalinfo_from']) {
 					$value = @$eval->additionalinfo ?: 0;
-					if ($value < $item_filter['additionalinfo_from']) {
+					if ($value < str_replace(',', '.', $item_filter['additionalinfo_from'])) {
 						return false;
 					}
 				}
 				if (@$item_filter['additionalinfo_to']) {
 					$value = @$eval->additionalinfo ?: 0;
-					if ($value > $item_filter['additionalinfo_to']) {
+					if ($value > str_replace(',', '.', $item_filter['additionalinfo_to'])) {
 						return false;
 					}
 				}
@@ -7671,7 +7671,7 @@ function block_exacomp_group_reports_result($filter) {
 					echo '<td>'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
 				echo '<td style="padding: 0 10px;">'.$eval->get_student_value_title();
-				echo '<td style="padding: 0 10px;">'.$eval->additionalinfo;
+				echo '<td style="padding: 0 10px;">'.block_exacomp_format_eval_value($eval->additionalinfo);
 				echo '<td style="padding: 0 10px;">'.$eval->get_teacher_value_title();
 				echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title();
 
@@ -7733,13 +7733,13 @@ function block_exacomp_group_reports_result($filter) {
 					}
 					if (@$item_filter['additionalinfo_from']) {
 						$value = @$eval->additionalinfo ?: 0;
-						if ($value < $item_filter['additionalinfo_from']) {
+						if ($value < str_replace(',', '.', $item_filter['additionalinfo_from'])) {
 							continue;
 						}
 					}
 					if (@$item_filter['additionalinfo_to']) {
 						$value = @$eval->additionalinfo ?: 0;
-						if ($value > $item_filter['additionalinfo_to']) {
+						if ($value > str_replace(',', '.', $item_filter['additionalinfo_to'])) {
 							continue;
 						}
 					}

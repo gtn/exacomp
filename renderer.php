@@ -2013,7 +2013,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		return html_writer::link("", $icon, array('name' => 'hide-descriptor', 'descrid' => $descriptorid, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
-			'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show"),
+			'showurl' => $this->image_url("i/hide"), 'hideurl' => $this->image_url("i/show"),
 		));
 
 	}
@@ -2026,7 +2026,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		return html_writer::link("", $icon, array('class' => 'hide-topic', 'name' => 'hide-topic', 'topicid' => $topicid, 'id' => 'hide-topic', 'state' => ($visible) ? '-' : '+',
-			'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show"),
+			'showurl' => $this->image_url("i/hide"), 'hideurl' => $this->image_url("i/show"),
 		));
 
 	}
@@ -2039,7 +2039,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		return html_writer::link("", $icon, array('name' => 'hide-example', 'exampleid' => $exampleid, 'id' => 'hide-example', 'state' => ($visible) ? '-' : '+',
-			'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show"),
+			'showurl' => $this->image_url("i/hide"), 'hideurl' => $this->image_url("i/show"),
 		));
 
 	}
