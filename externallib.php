@@ -7146,7 +7146,10 @@ class block_exacomp_external extends external_api {
 			}
 
 			if ($schedule->studentid == g::$USER->id) {
-				// ok
+				// ok: student example
+				return;
+			} elseif ($schedule->creatorid == g::$USER->id) {
+				// ok: created by this student / teacher
 				return;
 			} elseif (block_exacomp_is_teacher($courseid)) {
 				$students = block_exacomp_get_students_by_course($courseid);
