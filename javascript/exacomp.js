@@ -84,7 +84,7 @@
 			})
 				.done(function (ret) {
 					//console.log(data.action, 'ret', ret);
-				}).error(function (ret) {
+				}).fail(function (ret) {
 					var errorMsg = '';
 					if (ret.responseText[0] == '<') {
 						// html

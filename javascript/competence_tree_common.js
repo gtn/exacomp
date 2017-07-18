@@ -28,7 +28,7 @@
 
 	}
 
-	$( window ).load(function() {
+	$(function() {
 		var group = block_exacomp.get_param('group');
 		block_exacomp.onlyShowColumnGroup(group);
 	});
