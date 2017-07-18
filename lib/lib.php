@@ -745,6 +745,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $compid, [
 		'value' => $value,
 		'evalniveauid' => $evalniveauid,
+		'reviewerid' => $USER->id,
 	]);
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
@@ -5678,8 +5679,9 @@ function block_exacomp_get_message_icon($userid) {
 		} else {
 			$url = new moodle_url('/message/index.php', array('id' => $userto->id));
 			$attributes = ['target' => '_blank', 'title' => fullname($userto)];
+
 			return html_writer::link($url, html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message')), $attributes);
-			$anchortagcontents = '<img class="iconsmall" src="'.$OUTPUT->pix_url('t/message') . '" alt="'. get_string('messageselectadd') .'" />';
+			$anchortagcontents = '<img class="iconsmall" src="'.$OUTPUT->pix_url('t/message').'" alt="'.get_string('messageselectadd').'" />';
 			$anchorurl = new moodle_url('/message/index.php', array('id' => $user->id));
 			$anchortag = html_writer::link($anchorurl, $anchortagcontents,
 				array('title' => get_string('messageselectadd')));
@@ -7265,6 +7267,47 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 				$data['evalniveauid'] = null;
 			}
 		}
+
+		if (!array_key_exists('timestamp', $data)) {
+			$record = g::$DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, [
+				'courseid' => $courseid,
+				'userid' => $studentid,
+				'comptype' => $comptype,
+				'compid' => $compid,
+				'role' => $role,
+			]);
+
+			if ($record) {
+				$changed = false;
+				if (array_key_exists('additionalinfo', $data) && $data['additionalinfo'] != $record->additionalinfo) {
+					$changed = true;
+				}
+				if (array_key_exists('evalniveauid', $data) && $data['evalniveauid'] != $record->evalniveauid) {
+					$changed = true;
+				}
+				if (array_key_exists('value', $data)) {
+					// for value also check for null
+					$new_value = $data['value'];
+					$old_value = $record->value;
+					if ($new_value !== null) {
+						$new_value = (int)$new_value;
+					}
+					if ($old_value !== null) {
+						$old_value = (int)$old_value;
+					}
+					if ($new_value !== $old_value) {
+						$changed = true;
+					}
+				}
+
+				if ($changed) {
+					$data['timestamp'] = time();
+				}
+			} else {
+				$data['timestamp'] = time();
+			}
+		}
+
 
 		g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
 			'courseid' => $courseid,
