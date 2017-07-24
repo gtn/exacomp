@@ -313,8 +313,7 @@ class block_exacomp_external extends external_api {
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
 			'id' => $exampleid,
 		));
-		$example->description = htmlentities($example->description);
-		$example->hassubmissions = ($DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid))) ? true : false;
+		$example->hassubmissions = !!$DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid));
 		if ($file = block_exacomp_get_file($example, 'example_task')) {
 			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
 			$example->taskfilename = $file->get_filename();
@@ -346,7 +345,7 @@ class block_exacomp_external extends external_api {
 
 		$solution = block_exacomp_get_file($example, 'example_solution', $courseid);
 		if ($solution) {
-			$example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);;
+			$example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
 		} elseif ($example->externalsolution) {
 			$example->solution = $example->externalsolution;
 		}
