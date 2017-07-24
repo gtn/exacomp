@@ -5429,7 +5429,7 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 
 	$comp = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid));
 
-	if ($comp && $comp->teacher_evaluation !== null) {
+	if ($comp && !$comp->resubmission && $comp->teacher_evaluation !== null) {
 		if ($comp->teacher_evaluation == 0) {
 			return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
 		}
