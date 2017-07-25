@@ -103,7 +103,7 @@ if($formdata = $form->get_data()) {
 		
 		// add one dummy topic
 		$topicid = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, array(
-			'title' => block_exacomp_trans(['de:Neuer Raster', 'en:New competence grid']),
+			'title' => block_exacomp_trans(['de:Neues Raster', 'en:New competence grid']),
 			'subjid' => $new->id,
 			'numb' => 1,
 			'source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM,
