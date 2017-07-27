@@ -61,25 +61,32 @@ call_user_func(function() {
 		$services['exacompservices']['functions'][] = $func;
 
 		// doku
-		$doku .= "<h2>$func</h2>";
-		$doku .= "<div>$description</div>";
-		$doku .= "<div>type: $matches[1]</div>";
+		$doku .= "<h2>$func</h2>\n";
+		$doku .= "<div>$description</div>\n";
+		$doku .= "<div>type: $matches[1]</div>\n";
 
 
 		$paramMethod = $rc->getMethod($method->getName().'_parameters');
 		/* @var external_function_parameters $params */
 		$params = $paramMethod->invoke(null)->keys;
-		$doku .= 'Params: <table>';
+		$doku .= "Params: <table>\n";
 		foreach ($params as $paramName => $paramInfo) {
-			$doku .= '<tr>';
-			$doku .= '<td>'.$paramName;
-			$doku .= '<td>'.$paramInfo->type;
-			$doku .= '<td>'.($paramInfo->allownull ? 'null' : 'not null');
-			$doku .= '<td>'.($paramInfo->required ? 'required' : '');
-			$doku .= '<td>'.($paramInfo->default ? 'default: '.$paramInfo->default : '');
-			$doku .= '<td>'.$paramInfo->desc;
+			$doku .= "<tr>\n";
+			$doku .= '<td>'.$paramName."</td>\n";
+			$doku .= '<td>'.$paramInfo->type."</td>\n";
+			$doku .= '<td>'.($paramInfo->allownull ? 'null' : 'not null')."</td>\n";
+			$doku .= '<td>'.($paramInfo->required ? 'required' : 'optional')."</td>\n";
+			if (!$paramInfo->required) {
+				ob_start();
+				var_dump($paramInfo->default);
+				$default = ob_get_clean();
+				$doku .= '<td>default: '.$default."</td>\n";
+			} else {
+				$doku .= '<td>'."</td>\n";
+			}
+			$doku .= '<td>'.$paramInfo->desc."</td>\n";
 		}
-		$doku .= '</table>';
+		$doku .= "</table>\n";
 
 		$returnMethod = $rc->getMethod($method->getName().'_returns');
 		/* @var external_description $returns */
@@ -117,7 +124,7 @@ call_user_func(function() {
 		};
 		$data = $recursor($returns);
 
-		$doku .= "Returns:<pre>".json_encode($data, JSON_PRETTY_PRINT).'</pre>';
+		$doku .= "Returns:<pre>".json_encode($data, JSON_PRETTY_PRINT)."</pre>\n";
 	}
 
 	// save to services.php

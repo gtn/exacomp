@@ -6,16 +6,56 @@
 			border: 1px solid black;
 			padding: 2px 5px;
 		}
-	</style><h2>block_exacomp_get_courses</h2><div>Get courses with exacomp block instances.
-get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td><td><td>id of user</table>Returns:<pre>[
+	</style><h2>block_exacomp_get_courses</h2>
+<div>Get courses with exacomp block instances.
+get courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
     {
         "courseid": "int null (id of course)",
         "fullname": "text null (fullname of course)",
         "shortname": "raw null (shortname of course)"
     },
     "..."
-]</pre><h2>block_exacomp_get_examples_for_subject</h2><div>Get examples for subtopic
-Get examples</div><div>type: read</div>Params: <table><tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+]</pre>
+<h2>block_exacomp_get_examples_for_subject</h2>
+<div>Get examples for subtopic
+Get examples</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
     {
         "topicid": "int null (id of topic)",
         "title": "text null (title of topic)",
@@ -40,8 +80,21 @@ Get examples</div><div>type: read</div>Params: <table><tr><td>subjectid<td>int<t
         ]
     },
     "..."
-]</pre><h2>block_exacomp_get_example_by_id</h2><div>Get example
-Get example</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+]</pre>
+<h2>block_exacomp_get_example_by_id</h2>
+<div>Get example
+Get example</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+</table>
+Returns:<pre>{
     "title": "text null (title of example)",
     "description": "text null (description of example)",
     "taskfileurl": "text null (task fileurl)",
@@ -51,26 +104,92 @@ Get example</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td
     "solution": "text null (solution(url\/description) of example)",
     "timeframe": "int null (timeframe in minutes)",
     "hassubmissions": "bool null (true if example has already submissions)"
-}</pre><h2>block_exacomp_get_descriptors_for_example</h2><div>Get desciptors for example
-Get descriptors for example</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+}</pre>
+<h2>block_exacomp_get_descriptors_for_example</h2>
+<div>Get desciptors for example
+Get descriptors for example</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "title": "text null (title of descriptor)",
         "evaluation": "int null (evaluation of descriptor)"
     },
     "..."
-]</pre><h2>block_exacomp_get_descriptors_for_quiz</h2><div>Get desciptors for quiz
-Get descriptors for quiz</div><div>type: read</div>Params: <table><tr><td>quizid<td>int<td>null<td>required<td><td>id of quiz<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+]</pre>
+<h2>block_exacomp_get_descriptors_for_quiz</h2>
+<div>Get desciptors for quiz
+Get descriptors for quiz</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>quizid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of quiz</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "title": "text null (title of descriptor)",
         "evaluation": "int null (evaluation of descriptor)"
     },
     "..."
-]</pre><h2>block_exacomp_get_user_role</h2><div>Get role for user: 1=trainer 2=student</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+]</pre>
+<h2>block_exacomp_get_user_role</h2>
+<div>Get role for user: 1=trainer 2=student</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
     "role": "int null (1=trainer, 2=student)"
-}</pre><h2>block_exacomp_get_external_trainer_students</h2><div>Get external trainer's students
-Get all students for an external trainer</div><div>type: read</div>Params: <table></table>Returns:<pre>[
+}</pre>
+<h2>block_exacomp_get_external_trainer_students</h2>
+<div>Get external trainer's students
+Get all students for an external trainer</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>[
     {
         "userid": "int null (id of user)",
         "name": "text null (name of user)",
@@ -89,8 +208,21 @@ Get all students for an external trainer</div><div>type: read</div>Params: <tabl
         }
     },
     "..."
-]</pre><h2>block_exacomp_get_subjects_for_user</h2><div>Get Subjects
-get subjects from one user for all his courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+]</pre>
+<h2>block_exacomp_get_subjects_for_user</h2>
+<div>Get Subjects
+get subjects from one user for all his courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
     {
         "subjectid": "int null (id of subject)",
         "title": "text null (title of subject)",
@@ -98,14 +230,74 @@ get subjects from one user for all his courses</div><div>type: read</div>Params:
         "requireaction": "bool null (whether example in this subject has been edited or not by the selected student)"
     },
     "..."
-]</pre><h2>block_exacomp_delete_item</h2><div>delete a submitted and wrong item
-Deletes one user item if it is not graded already</div><div>type: write</div>Params: <table><tr><td>itemid<td>int<td>null<td>required<td><td>id of item</table>Returns:<pre>{
+]</pre>
+<h2>block_exacomp_delete_item</h2>
+<div>delete a submitted and wrong item
+Deletes one user item if it is not graded already</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status)"
-}</pre><h2>block_exacomp_set_competence</h2><div>Set a student evaluation for a particular competence
-Set student evaluation</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of descriptor<tr><td>value<td>int<td>null<td>required<td><td>evaluation value</table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_set_competence</h2>
+<div>Set a student evaluation for a particular competence
+Set student evaluation</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>evaluation value</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>block_exacomp_get_item_for_example</h2><div>Get Item
-get subjects from one user for all his courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>itemid<td>int<td>null<td>required<td><td>id of item</table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_get_item_for_example</h2>
+<div>Get Item
+get subjects from one user for all his courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
+</table>
+Returns:<pre>{
     "id": "int null (id of item)",
     "name": "text null (title of item)",
     "type": "text null (type of item (note,file,link))",
@@ -119,8 +311,21 @@ get subjects from one user for all his courses</div><div>type: read</div>Params:
     "studentvalue": "int null (student grading)",
     "teachercomment": "text null (teacher comment)",
     "studentcomment": "text null (student comment)"
-}</pre><h2>block_exacomp_get_competencies_for_upload</h2><div>Get competencetree
-Get all available competencies</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>[
+}</pre>
+<h2>block_exacomp_get_competencies_for_upload</h2>
+<div>Get competencetree
+Get all available competencies</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
     {
         "subjectid": "int null (id of topic)",
         "subjecttitle": "text null (title of topic)",
@@ -140,18 +345,220 @@ Get all available competencies</div><div>type: read</div>Params: <table><tr><td>
         ]
     },
     "..."
-]</pre><h2>block_exacomp_submit_example</h2><div>Submit example
-Add item</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>exampleid<tr><td>studentvalue<td>int<td>null<td>required<td><td>studentvalue<tr><td>url<td>url<td>null<td>required<td><td>url<tr><td>effort<td>text<td>null<td>required<td><td>effort<tr><td>filename<td>text<td>null<td>required<td><td>filename, used to look up file and create a new one in the exaport file area<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid, used to look up file and create a new one in the exaport file area<tr><td>studentcomment<td>text<td>null<td>required<td><td>studentcomment<tr><td>title<td>text<td>null<td>required<td><td>title<tr><td>itemid<td>int<td>null<td>required<td><td>itemid<tr><td>courseid<td>int<td>null<td>required<td><td>courseid</table>Returns:<pre>{
+]</pre>
+<h2>block_exacomp_submit_example</h2>
+<div>Submit example
+Add item</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>exampleid</td>
+<tr>
+<td>studentvalue</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentvalue</td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>url</td>
+<tr>
+<td>effort</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>effort</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>fileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemid, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>studentcomment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentcomment</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>itemid</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status)",
     "itemid": "int null (itemid)"
-}</pre><h2>block_exacomp_create_example</h2><div>Create an example
-create example</div><div>type: write</div>Params: <table><tr><td>name<td>text<td>null<td>required<td><td>title of example<tr><td>description<td>text<td>null<td>required<td><td>description of example<tr><td>externalurl<td>text<td>null<td>required<td><td><tr><td>comps<td>text<td>null<td>required<td><td>list of competencies, seperated by comma<tr><td>filename<td>text<td>null<td><td><td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid<tr><td>solutionfileitemid<td>int<td>null<td><td><td>fileitemid</table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_create_example</h2>
+<div>Create an example
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>name</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of example</td>
+<tr>
+<td>externalurl</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>list of competencies, seperated by comma</td>
+<tr>
+<td>fileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemid</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>fileitemid</td>
+<tr>
+<td>taxonomies</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>list of taxonomies</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area</td>
+</table>
+Returns:<pre>{
     "exampleid": "int null (id of created example)"
-}</pre><h2>block_exacomp_grade_item</h2><div>Grade an item
-grade an item</div><div>type: write</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>value<td>int<td>null<td>required<td><td>value for grading<tr><td>status<td>int<td>null<td>required<td><td>status<tr><td>comment<td>text<td>null<td>required<td><td>comment of grading<tr><td>itemid<td>int<td>null<td>required<td><td>id of item<tr><td>comps<td>text<td>null<td>required<td><td>comps for example - positive grading<tr><td>courseid<td>int<td>null<td>required<td><td>if of course</table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_grade_item</h2>
+<div>Grade an item
+grade an item</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value for grading</td>
+<tr>
+<td>status</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>status</td>
+<tr>
+<td>comment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comment of grading</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comps for example - positive grading</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if of course</td>
+</table>
+Returns:<pre>{
     "success": "bool null (true if grading was successful)"
-}</pre><h2>block_exacomp_get_user_examples</h2><div>get examples created by a specific user
-grade an item</div><div>type: read</div>Params: <table></table>Returns:<pre>[
+}</pre>
+<h2>block_exacomp_get_user_examples</h2>
+<div>get examples created by a specific user
+grade an item</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of example)",
         "exampletitle": "text null (title of example)",
@@ -159,7 +566,20 @@ grade an item</div><div>type: read</div>Params: <table></table>Returns:<pre>[
         "exampletopicid": "int null (topic id where example belongs to)"
     },
     "..."
-]</pre><h2>block_exacomp_get_user_profile</h2><div>get a list of courses with their competencies</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user</table>Returns:<pre>{
+]</pre>
+<h2>block_exacomp_get_user_profile</h2>
+<div>get a list of courses with their competencies</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>{
     "user": {
         "competencies": {
             "total": "int null (amount of total competencies)",
@@ -202,31 +622,224 @@ grade an item</div><div>type: read</div>Params: <table></table>Returns:<pre>[
         },
         "..."
     ]
-}</pre><h2>block_exacomp_update_example</h2><div>update an example</div><div>type: write</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>name<td>text<td>null<td>required<td><td>title of example<tr><td>description<td>text<td>null<td>required<td><td>description of example<tr><td>externalurl<td>text<td>null<td>required<td><td><tr><td>comps<td>text<td>null<td>required<td><td>list of competencies, seperated by comma<tr><td>filename<td>text<td>null<td>required<td><td>filename, used to look up file and create a new one in the exaport file area<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid</table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_update_example</h2>
+<div>update an example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>name</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of example</td>
+<tr>
+<td>externalurl</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>list of competencies, seperated by comma</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>fileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemid</td>
+</table>
+Returns:<pre>{
     "success": "bool null (true if successful)"
-}</pre><h2>block_exacomp_delete_example</h2><div>delete a custom item
-delete example</div><div>type: write</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_delete_example</h2>
+<div>delete a custom item
+delete example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+</table>
+Returns:<pre>{
     "success": "bool null (true if successful)"
-}</pre><h2>block_exacomp_get_competencies_by_topic</h2><div>get competencies for a specific topic
-Get all available competencies</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic</table>Returns:<pre>[
+}</pre>
+<h2>block_exacomp_get_competencies_by_topic</h2>
+<div>get competencies for a specific topic
+Get all available competencies</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of example)",
         "descriptortitle": "text null (title of example)"
     },
     "..."
-]</pre><h2>dakora_set_competence</h2><div>set competence for student
-Set a competence for a user</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>compid<td>int<td>null<td>required<td><td>competence id<tr><td>comptype<td>int<td>null<td>required<td><td>type of competence: descriptor, topic, subject<tr><td>role<td>int<td>null<td>required<td><td>user role (0 == student, 1 == teacher)<tr><td>value<td>int<td>null<td>required<td><td>evaluation value, only set for TK (0 to 3)<tr><td>additionalinfo<td>float<td>null<td>required<td><td>decimal between 1 and 6<tr><td>evalniveauid<td>int<td>null<td>required<td><td>evaluation niveau (-1, 1, 2, 3)</table>Returns:<pre>{
+]</pre>
+<h2>dakora_set_competence</h2>
+<div>set competence for student
+Set a competence for a user</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>compid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>competence id</td>
+<tr>
+<td>comptype</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>type of competence: descriptor, topic, subject</td>
+<tr>
+<td>role</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>user role (0 == student, 1 == teacher)</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>evaluation value, only set for TK (0 to 3)</td>
+<tr>
+<td>additionalinfo</td>
+<td>float</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>decimal between 1 and 6</td>
+<tr>
+<td>evalniveauid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>evaluation niveau (-1, 1, 2, 3)</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_get_courses</h2><div>get courses for user for dakora app
-get courses</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td><td><td>id of user</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_courses</h2>
+<div>get courses for user for dakora app
+get courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
     {
         "courseid": "int null (id of course)",
         "fullname": "text null (fullname of course)",
         "shortname": "raw null (shortname of course)"
     },
     "..."
-]</pre><h2>dakora_get_topics_by_course</h2><div>get topics for course for dakora app associated with examples
-get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td><td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td><td><td>for all users = true, for one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_topics_by_course</h2>
+<div>get topics for course for dakora app associated with examples
+get courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "topicid": "int null (id of topic)",
         "topictitle": "text null (title of topic)",
@@ -237,8 +850,37 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_all_topics_by_course</h2><div>get topics for course for dakora app
-get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td><td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td><td><td>for all users = true, for one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_all_topics_by_course</h2>
+<div>get topics for course for dakora app
+get courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "topicid": "int null (id of topic)",
         "topictitle": "text null (title of topic)",
@@ -249,8 +891,42 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_descriptors</h2><div>get descriptors for topic for dakora app associated with examples
-get descriptors for one topic, considering the visibility</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_descriptors</h2>
+<div>get descriptors for topic for dakora app associated with examples
+get descriptors for one topic, considering the visibility</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "descriptortitle": "text null (title of descriptor)",
@@ -261,8 +937,42 @@ get descriptors for one topic, considering the visibility</div><div>type: read</
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_all_descriptors</h2><div>get descriptors for topic for dakora app
-get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_all_descriptors</h2>
+<div>get descriptors for topic for dakora app
+get courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "descriptortitle": "text null (title of descriptor)",
@@ -273,8 +983,42 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_descriptor_children</h2><div>get children (childdescriptor and examples) for descriptor for dakora app (only childs associated with examples)
-get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>{
+]</pre>
+<h2>dakora_get_descriptor_children</h2>
+<div>get children (childdescriptor and examples) for descriptor for dakora app (only childs associated with examples)
+get courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>{
     "children": [
         {
             "descriptorid": "int null (id of child)",
@@ -306,7 +1050,41 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
     "examplestotal": "int null (number of total examples)",
     "examplesvisible": "int null (number of visible examples)",
     "examplesinwork": "int null (number of examples in work)"
-}</pre><h2>dakora_get_examples_for_descriptor</h2><div>get examples for descriptor for dakora app</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_examples_for_descriptor</h2>
+<div>get examples for descriptor for dakora app</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of descriptor)",
         "exampletitle": "text null (title of descriptor)",
@@ -315,7 +1093,41 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_examples_for_descriptor_with_grading</h2><div>get examples for descriptor with additional grading information</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_examples_for_descriptor_with_grading</h2>
+<div>get examples for descriptor with additional grading information</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of descriptor)",
         "exampletitle": "text null (title of descriptor)",
@@ -329,7 +1141,48 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
         "timestampstudent": "int null (timestamp for student evaluation)"
     },
     "..."
-]</pre><h2>dakora_get_examples_for_descriptor_for_crosssubject</h2><div>get examples for descriptor for dakora app</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_examples_for_descriptor_for_crosssubject</h2>
+<div>get examples for descriptor for dakora app</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of descriptor)",
         "exampletitle": "text null (title of descriptor)",
@@ -338,7 +1191,48 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_examples_for_descriptor_for_crosssubject_with_grading</h2><div>get examples for descriptor with additional grading information</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>if all users = true, only one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_examples_for_descriptor_for_crosssubject_with_grading</h2>
+<div>get examples for descriptor with additional grading information</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of descriptor)",
         "exampletitle": "text null (title of descriptor)",
@@ -352,7 +1246,34 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
         "timestampstudent": "int null (timestamp for student evaluation)"
     },
     "..."
-]</pre><h2>dakora_get_example_overview</h2><div>get example overview for dakora app</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+]</pre>
+<h2>dakora_get_example_overview</h2>
+<div>get example overview for dakora app</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+</table>
+Returns:<pre>{
     "title": "text null (title of example)",
     "description": "text null (description of example)",
     "taskfileurl": "text null (task fileurl)",
@@ -363,11 +1284,86 @@ get courses</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>
     "timeframe": "int null (timeframe in minutes)",
     "hassubmissions": "bool null (true if example has already submissions)",
     "solution_visible": "bool null (visibility for example solution in current context)"
-}</pre><h2>dakora_add_example_to_learning_calendar</h2><div>add example to learning calendar for dakora
-get courses</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>creatorid<td>int<td>null<td>required<td><td>id of creator<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>{
+}</pre>
+<h2>dakora_add_example_to_learning_calendar</h2>
+<div>add example to learning calendar for dakora
+get courses</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>creatorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of creator</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_get_descriptors_for_example</h2><div>get descriptors where example is associated
-Get descriptors for example</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_descriptors_for_example</h2>
+<div>get descriptors where example is associated
+Get descriptors for example</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "title": "text null (title of descriptor)",
@@ -378,33 +1374,133 @@ Get descriptors for example</div><div>type: read</div>Params: <table><tr><td>exa
         "parentid": "int null (parentid if child, 0 otherwise)"
     },
     "..."
-]</pre><h2>dakora_get_example_grading</h2><div>get student and teacher evaluation for example
-Get example grading for user</div><div>type: read</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+]</pre>
+<h2>dakora_get_example_grading</h2>
+<div>get student and teacher evaluation for example
+Get example grading for user</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+</table>
+Returns:<pre>{
     "teacherevaluation": "int null (teacher evaluation for student and example)",
     "studentevaluation": "int null (self evaluation for example)",
     "evalniveauid": "int null (evaluation niveau id)"
-}</pre><h2>dakora_get_topic_grading</h2><div>get student and teacher evaluation for topic
-Get topic grading for user</div><div>type: read</div>Params: <table><tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_topic_grading</h2>
+<div>get student and teacher evaluation for topic
+Get topic grading for user</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+</table>
+Returns:<pre>{
     "teacherevaluation": "int null (teacher evaluation for student and topic)",
     "additionalinfo": "float null (teacher additional info for student and topic)",
     "studentevaluation": "int null (self evaluation for topic)",
     "evalniveauid": "int null (evaluation niveau id)",
     "timestampteacher": "int null (timestamp for teacher evaluation)",
     "timestampstudent": "int null (timestamp for student evaluation)"
-}</pre><h2>dakora_get_subject_grading</h2><div>get student and teacher evaluation for subject
-Get subject grading for user</div><div>type: read</div>Params: <table><tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject<tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_subject_grading</h2>
+<div>get student and teacher evaluation for subject
+Get subject grading for user</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+</table>
+Returns:<pre>{
     "teacherevaluation": "int null (teacher evaluation for student and subject)",
     "additionalinfo": "float null (teacher additional info for student and subject)",
     "studentevaluation": "int null (self evaluation for subject)",
     "evalniveauid": "int null (evaluation niveau id)",
     "timestampteacher": "int null (timestamp for teacher evaluation)",
     "timestampstudent": "int null (timestamp for student evaluation)"
-}</pre><h2>dakora_get_user_role</h2><div>get user role 1= trainer, 2= student
+}</pre>
+<h2>dakora_get_user_role</h2>
+<div>get user role 1= trainer, 2= student
 return 1 for trainer
 2 for student
-0 if false</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+0 if false</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
     "role": "int null (1=trainer, 2=student)"
-}</pre><h2>dakora_get_students_for_course</h2><div>get list of students for course</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_students_for_course</h2>
+<div>get list of students for course</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>[
     {
         "studentid": "int null (id of student)",
         "firstname": "text null (firstname of student)",
@@ -412,8 +1508,28 @@ return 1 for trainer
         "profilepicture": "text null (link to  profile picture)"
     },
     "..."
-]</pre><h2>dakora_get_examples_pool</h2><div>get list of examples for weekly schedule pool
-Get examples for pool</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_examples_pool</h2>
+<div>get list of examples for weekly schedule pool
+Get examples for pool</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of example)",
         "title": "text null (title of example)",
@@ -427,8 +1543,28 @@ Get examples for pool</div><div>type: read</div>Params: <table><tr><td>courseid<
         "coursefullname": "text null (full name of example course)"
     },
     "..."
-]</pre><h2>dakora_get_examples_trash</h2><div>get examples for trash bin
-Get examples for trash</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_examples_trash</h2>
+<div>get examples for trash bin
+Get examples for trash</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of example)",
         "title": "text null (title of example)",
@@ -442,17 +1578,104 @@ Get examples for trash</div><div>type: read</div>Params: <table><tr><td>courseid
         "coursefullname": "text null (full name of example course)"
     },
     "..."
-]</pre><h2>dakora_set_example_time_slot</h2><div>set start and end time for example
-set example time slot</div><div>type: write</div>Params: <table><tr><td>scheduleid<td>int<td>null<td>required<td><td>id in schedule context<tr><td>start<td>int<td>null<td>required<td><td>start timestamp<tr><td>end<td>int<td>null<td>required<td><td>end timestamp<tr><td>deleted<td>int<td>null<td>required<td><td>delete item</table>Returns:<pre>{
+]</pre>
+<h2>dakora_set_example_time_slot</h2>
+<div>set start and end time for example
+set example time slot</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>scheduleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id in schedule context</td>
+<tr>
+<td>start</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp</td>
+<tr>
+<td>end</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp</td>
+<tr>
+<td>deleted</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>delete item</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_remove_example_from_schedule</h2><div>remove example from weekly schedule
-remove example from time slot</div><div>type: write</div>Params: <table><tr><td>scheduleid<td>int<td>null<td>required<td><td>id of schedule entry</table>Returns:<pre>{
+}</pre>
+<h2>dakora_remove_example_from_schedule</h2>
+<div>remove example from weekly schedule
+remove example from time slot</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>scheduleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of schedule entry</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_add_examples_to_schedule_for_all</h2><div>add examples to the schedules of all course students
-remove example from time slot</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>{
+}</pre>
+<h2>dakora_add_examples_to_schedule_for_all</h2>
+<div>add examples to the schedules of all course students
+remove example from time slot</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_get_examples_for_time_slot</h2><div>get examples for a special start to end period (e.g. day)
-Get examples for time slot</div><div>type: read</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>start<td>int<td>null<td>required<td><td>start timestamp<tr><td>end<td>int<td>null<td>required<td><td>end timestamp</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_examples_for_time_slot</h2>
+<div>get examples for a special start to end period (e.g. day)
+Get examples for time slot</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>start</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp</td>
+<tr>
+<td>end</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of example)",
         "title": "text null (title of example)",
@@ -468,8 +1691,35 @@ Get examples for time slot</div><div>type: read</div>Params: <table><tr><td>user
         "coursefullname": "text null (full name of example course)"
     },
     "..."
-]</pre><h2>dakora_get_cross_subjects_by_course</h2><div>get cross subjects for an user in course context (allways all crosssubjs, even if not associated)
-Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_cross_subjects_by_course</h2>
+<div>get cross subjects for an user in course context (allways all crosssubjs, even if not associated)
+Get cross subjects</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "id": "int null (id of cross subject)",
         "title": "text null (title of cross subject)",
@@ -484,8 +1734,42 @@ Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>
         "timestampstudent": "int null (timestamp of student evaluation)"
     },
     "..."
-]</pre><h2>dakora_get_descriptors_by_cross_subject</h2><div>get descriptors for a cross subject associated with examples
-Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_descriptors_by_cross_subject</h2>
+<div>get descriptors for a cross subject associated with examples
+Get cross subjects</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "descriptortitle": "text null (title of descriptor)",
@@ -496,8 +1780,42 @@ Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_all_descriptors_by_cross_subject</h2><div>get descriptors for a cross subject
-Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject<tr><td>userid<td>int<td>null<td>required<td><td>id of user, if 0 current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_all_descriptors_by_cross_subject</h2>
+<div>get descriptors for a cross subject
+Get cross subjects</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "descriptortitle": "text null (title of descriptor)",
@@ -508,8 +1826,49 @@ Get cross subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>
         "used": "int null (used in current context)"
     },
     "..."
-]</pre><h2>dakora_get_descriptor_children_for_cross_subject</h2><div>get children in context of cross subject, associated with examples
-get children for descriptor in cross subject context</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject</table>Returns:<pre>{
+]</pre>
+<h2>dakora_get_descriptor_children_for_cross_subject</h2>
+<div>get children in context of cross subject, associated with examples
+get children for descriptor in cross subject context</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
+</table>
+Returns:<pre>{
     "children": [
         {
             "descriptorid": "int null (id of child)",
@@ -541,8 +1900,49 @@ get children for descriptor in cross subject context</div><div>type: read</div>P
     "examplestotal": "int null (number of total examples)",
     "examplesvisible": "int null (number of visible examples)",
     "examplesinwork": "int null (number of examples in work)"
-}</pre><h2>dakora_get_all_descriptor_children_for_cross_subject</h2><div>get children in context of cross subject
-get children for descriptor in cross subject context</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of parent descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of cross subject</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_all_descriptor_children_for_cross_subject</h2>
+<div>get children in context of cross subject
+get children for descriptor in cross subject context</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
+</table>
+Returns:<pre>{
     "children": [
         {
             "descriptorid": "int null (id of child)",
@@ -575,8 +1975,14 @@ get children for descriptor in cross subject context</div><div>type: read</div>P
     "examplestotal": "int null (number of total examples)",
     "examplesvisible": "int null (number of visible examples)",
     "examplesinwork": "int null (number of examples in work)"
-}</pre><h2>dakora_get_schedule_config</h2><div>get configuration options for schedule units
-get children for descriptor in cross subject context</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_schedule_config</h2>
+<div>get configuration options for schedule units
+get children for descriptor in cross subject context</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
     "units": "int null (number of units per day)",
     "interval": "text null (duration of unit in minutes)",
     "begin": "text null (begin time for the first unit, format hh:mm)",
@@ -586,8 +1992,21 @@ get children for descriptor in cross subject context</div><div>type: read</div>P
         },
         "..."
     ]
-}</pre><h2>dakora_get_pre_planning_storage_examples</h2><div>get examples for pre planning storage
-get pre planning storage examples for current teacher</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_pre_planning_storage_examples</h2>
+<div>get examples for pre planning storage
+get pre planning storage examples for current teacher</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of example)",
         "title": "text null (title of example)",
@@ -596,8 +2015,21 @@ get pre planning storage examples for current teacher</div><div>type: read</div>
         "scheduleid": "int null (id in schedule context)"
     },
     "..."
-]</pre><h2>dakora_get_pre_planning_storage_students</h2><div>get students for pre planning storage
-get pre planning storage students for current teacher</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_pre_planning_storage_students</h2>
+<div>get students for pre planning storage
+get pre planning storage students for current teacher</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>[
     {
         "studentid": "int null (id of student)",
         "firstname": "text null (firstname of student)",
@@ -605,27 +2037,269 @@ get pre planning storage students for current teacher</div><div>type: read</div>
         "has_examples": "bool null (already has examples from current pre planning storage)"
     },
     "..."
-]</pre><h2>dakora_has_items_in_pre_planning_storage</h2><div>return 0 if no items, 1 otherwise
-get pre planning storage students for current teacher</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>{
+]</pre>
+<h2>dakora_has_items_in_pre_planning_storage</h2>
+<div>return 0 if no items, 1 otherwise
+get pre planning storage students for current teacher</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_empty_pre_planning_storage</h2><div>delte all items from current pre planning storage
-empty pre planning storage for current teacher</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>{
+}</pre>
+<h2>dakora_empty_pre_planning_storage</h2>
+<div>delte all items from current pre planning storage
+empty pre planning storage for current teacher</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_add_example_to_pre_planning_storage</h2><div>add example to current pre planning storage
-add example to current pre planning storage</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+}</pre>
+<h2>dakora_add_example_to_pre_planning_storage</h2>
+<div>add example to current pre planning storage
+add example to current pre planning storage</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success)"
-}</pre><h2>dakora_add_examples_to_students_schedule</h2><div>add examples from current pre planning storage to students weekly schedule
-add example to current pre planning storage</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>examples<td>text<td>null<td>required<td><td>json array of examples<tr><td>students<td>text<td>null<td>required<td><td>json array of students</table>Returns:<pre>{
+}</pre>
+<h2>dakora_add_examples_to_students_schedule</h2>
+<div>add examples from current pre planning storage to students weekly schedule
+add example to current pre planning storage</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>examples</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>json array of examples</td>
+<tr>
+<td>students</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>json array of students</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_submit_example</h2><div>submit example solution
-Add student submission to example.</div><div>type: write</div>Params: <table><tr><td>exampleid<td>int<td>null<td>required<td><td>exampleid<tr><td>studentvalue<td>int<td>null<td><td>default: -1<td>studentvalue<tr><td>url<td>url<td>null<td>required<td><td>url<tr><td>filename<td>text<td>null<td>required<td><td>filename, used to look up file and create a new one in the exaport file area<tr><td>studentcomment<td>text<td>null<td>required<td><td>studentcomment<tr><td>itemid<td>int<td>null<td>required<td><td>itemid (0 for insert, >0 for update)<tr><td>courseid<td>int<td>null<td>required<td><td>courseid<tr><td>fileitemid<td>int<td>null<td>required<td><td>fileitemid</table>Returns:<pre>{
+}</pre>
+<h2>dakora_submit_example</h2>
+<div>submit example solution
+Add student submission to example.</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>exampleid</td>
+<tr>
+<td>studentvalue</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>studentvalue</td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>url</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>studentcomment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentcomment</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>itemid (0 for insert, >0 for update)</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>fileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemid</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status)",
     "itemid": "int null (itemid)"
-}</pre><h2>dakora_grade_example</h2><div>grade example solution
-Add student submission to example.</div><div>type: write</div>Params: <table><tr><td>userid<td>int<td>null<td>required<td><td>userid<tr><td>courseid<td>int<td>null<td>required<td><td>courseid<tr><td>exampleid<td>int<td>null<td>required<td><td>exampleid<tr><td>examplevalue<td>int<td>null<td>required<td><td>examplevalue<tr><td>exampleevalniveauid<td>int<td>null<td>required<td><td>example evaluation niveau id<tr><td>itemid<td>int<td>null<td><td>default: -1<td>itemid<tr><td>itemvalue<td>int<td>null<td><td>default: -1<td>itemvalue<tr><td>comment<td>text<td>null<td><td><td>teachercomment</table>Returns:<pre>{
+}</pre>
+<h2>dakora_grade_example</h2>
+<div>grade example solution
+Add student submission to example.</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>exampleid</td>
+<tr>
+<td>examplevalue</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>examplevalue</td>
+<tr>
+<td>exampleevalniveauid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>example evaluation niveau id</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>itemid</td>
+<tr>
+<td>itemvalue</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>itemvalue</td>
+<tr>
+<td>comment</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>teachercomment</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status)",
     "exampleid": "int null (exampleid)"
-}</pre><h2>dakora_get_descriptor_details</h2><div>get descriptor details incl. grading and children</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>courseid<tr><td>descriptorid<td>int<td>null<td>required<td><td>descriptorid<tr><td>userid<td>int<td>null<td>required<td><td>userid<tr><td>forall<td>bool<td>null<td>required<td><td>forall<tr><td>crosssubjid<td>int<td>null<td>required<td><td>crosssubjid</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_descriptor_details</h2>
+<div>get descriptor details incl. grading and children</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>descriptorid</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>forall</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>crosssubjid</td>
+</table>
+Returns:<pre>{
     "descriptorid": "int null (id of descriptor)",
     "descriptortitle": "text null (title of descriptor)",
     "teacherevaluation": "int null (teacher evaluation of descriptor)",
@@ -744,8 +2418,35 @@ Add student submission to example.</div><div>type: write</div>Params: <table><tr
     },
     "visible": "int null (visibility of example in current context)",
     "used": "int null (used in current context)"
-}</pre><h2>dakora_get_example_information</h2><div>get information and submission for example
-get example with all submission details and gradings</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_example_information</h2>
+<div>get information and submission for example
+get example with all submission details and gradings</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+</table>
+Returns:<pre>{
     "itemid": "int null (id of item)",
     "status": "int null (status of the submission (-1 == no submission; 0 == not graded; 1 == graded)",
     "name": "text null (title of item)",
@@ -764,8 +2465,14 @@ get example with all submission details and gradings</div><div>type: read</div>P
     "studentcomment": "text null (student comment)",
     "teacheritemvalue": "int null (item teacher grading)",
     "resubmission": "bool null (resubmission is allowed\/not allowed)"
-}</pre><h2>dakora_get_user_information</h2><div>get information about current user
-get example with all submission details and gradings</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_user_information</h2>
+<div>get information about current user
+get example with all submission details and gradings</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
     "id": "int null (ID of the user)",
     "username": "raw null (The username)",
     "firstname": "notags null (The first name(s) of the user)",
@@ -781,21 +2488,143 @@ get example with all submission details and gradings</div><div>type: read</div>P
     "profileimageurlsmall": "url null (User image profile URL - small version)",
     "profileimageurl": "url null (User image profile URL - big version)",
     "exarole": "int null (1=trainer, 2=student)"
-}</pre><h2>dakora_create_blocking_event</h2><div>create a blocking event
-Create a new blocking event</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>title<td>text<td>null<td>required<td><td>title of new blocking event<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>preplanningstorage<td>bool<td>null<td>required<td><td>in pre planning storage or for specific student</table>Returns:<pre>{
+}</pre>
+<h2>dakora_create_blocking_event</h2>
+<div>create a blocking event
+Create a new blocking event</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of new blocking event</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>preplanningstorage</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>in pre planning storage or for specific student</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status)"
-}</pre><h2>dakora_get_examples_by_descriptor_and_grading</h2><div>returns examples for given descriptor and grading
-Create a new blocking event</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>descriptorid<td>text<td>null<td>required<td><td>id of descriptor<tr><td>grading<td>int<td>null<td>required<td><td>grading value</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_examples_by_descriptor_and_grading</h2>
+<div>returns examples for given descriptor and grading
+Create a new blocking event</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>descriptorid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>grading</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>grading value</td>
+</table>
+Returns:<pre>[
     {
         "exampleid": "int null (id of topic)",
         "exampletitle": "text null (title of topic)"
     },
     "..."
-]</pre><h2>dakora_allow_example_resubmission</h2><div>allow student to resubmit example
-Create a new blocking event</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example</table>Returns:<pre>{
+]</pre>
+<h2>dakora_allow_example_resubmission</h2>
+<div>allow student to resubmit example
+Create a new blocking event</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_get_competence_grid_for_profile</h2><div>get grid for profile
-Get competence grid for profile</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_competence_grid_for_profile</h2>
+<div>get grid for profile
+Get competence grid for profile</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+</table>
+Returns:<pre>{
     "rows": [
         {
             "columns": [
@@ -816,8 +2645,49 @@ Get competence grid for profile</div><div>type: read</div>Params: <table><tr><td
         },
         "..."
     ]
-}</pre><h2>dakora_get_competence_profile_statistic</h2><div>get statistic in user and subject context
-Get competence statistic for profile</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject<tr><td>start_timestamp<td>int<td>null<td>required<td><td>start timestamp for evaluation range<tr><td>end_timestamp<td>int<td>null<td>required<td><td>end timestamp for evaluation range</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_competence_profile_statistic</h2>
+<div>get statistic in user and subject context
+Get competence statistic for profile</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>start_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp for evaluation range</td>
+<tr>
+<td>end_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp for evaluation range</td>
+</table>
+Returns:<pre>{
     "descriptor_evaluations": {
         "niveaus": [
             {
@@ -863,8 +2733,35 @@ Get competence statistic for profile</div><div>type: read</div>Params: <table><t
             "..."
         ]
     }
-}</pre><h2>dakora_get_competence_profile_comparison</h2><div>get list for student and teacher comparison
-Get competence comparison for profile</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>topicid<td>int<td>null<td>required<td><td>id of subject</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_competence_profile_comparison</h2>
+<div>get list for student and teacher comparison
+Get competence comparison for profile</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+</table>
+Returns:<pre>{
     "descriptors": [
         {
             "descriptorid": "int null (descriptorid)",
@@ -892,8 +2789,49 @@ Get competence comparison for profile</div><div>type: read</div>Params: <table><
         },
         "..."
     ]
-}</pre><h2>dakora_get_competence_profile_topic_statistic</h2><div>get data for 3D graph
-Get competence statistic for topic in profile for 3D graph</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>userid<td>int<td>null<td>required<td><td>id of user<tr><td>topicid<td>int<td>null<td>required<td><td>id of subject<tr><td>start_timestamp<td>int<td>null<td>required<td><td>start timestamp for evaluation range<tr><td>end_timestamp<td>int<td>null<td>required<td><td>end timestamp for evaluation range</table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_competence_profile_topic_statistic</h2>
+<div>get data for 3D graph
+Get competence statistic for topic in profile for 3D graph</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>start_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp for evaluation range</td>
+<tr>
+<td>end_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp for evaluation range</td>
+</table>
+Returns:<pre>{
     "descriptor_evaluation": {
         "niveaus": [
             {
@@ -905,10 +2843,22 @@ Get competence statistic for topic in profile for 3D graph</div><div>type: read<
             "..."
         ]
     }
-}</pre><h2>block_exacomp_is_elove_student_self_assessment_enabled</h2><div>check the corresponding config setting</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_is_elove_student_self_assessment_enabled</h2>
+<div>check the corresponding config setting</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
     "enabled": "bool null ()"
-}</pre><h2>dakora_get_evaluation_config</h2><div>get evaluation configuration
-get admin evaluation configurations</div><div>type: read</div>Params: <table></table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_evaluation_config</h2>
+<div>get evaluation configuration
+get admin evaluation configurations</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
     "use_evalniveau": "bool null (use evaluation niveaus)",
     "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
     "evalniveaus": {
@@ -922,7 +2872,13 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
         "text null (value title for id = 2)",
         "text null (value title for id = 3)"
     ]
-}</pre><h2>dakora_get_config</h2><div></div><div>type: read</div>Params: <table></table>Returns:<pre>{
+}</pre>
+<h2>dakora_get_config</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
     "use_evalniveau": "bool null (use evaluation niveaus)",
     "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
     "evalniveaus": [
@@ -957,7 +2913,35 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
     ],
     "version": "float null (mooodle version number in YYYYMMDDXX format)",
     "release": "text null (plugin release x.x.x format)"
-}</pre><h2>block_exacomp_login</h2><div>webservice called through token.php</div><div>type: read</div>Params: <table><tr><td>app<td>int<td>null<td>required<td><td>app accessing this service (eg. dakora)<tr><td>app_version<td>int<td>null<td>required<td><td>version of the app (eg. 4.6.0)<tr><td>services<td>int<td>null<td><td>default: moodle_mobile_app,exacompservices<td>wanted webservice tokens (eg. exacomp,exaport)</table>Returns:<pre>{
+}</pre>
+<h2>block_exacomp_login</h2>
+<div>webservice called through token.php</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>app</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>app accessing this service (eg. dakora)</td>
+<tr>
+<td>app_version</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>version of the app (eg. 4.6.0)</td>
+<tr>
+<td>services</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(33) "moodle_mobile_app,exacompservices"
+</td>
+<td>wanted webservice tokens (eg. exacomp,exaport)</td>
+</table>
+Returns:<pre>{
     "user": {
         "id": "int null (ID of the user)",
         "username": "raw null (The username)",
@@ -1026,34 +3010,347 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
         },
         "... requested tokens ..."
     ]
-}</pre><h2>dakora_set_descriptor_visibility</h2><div>set visibility for descriptor</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>descriptorid<td>int<td>null<td>required<td><td>id of descriptor<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for descriptor in current context</table>Returns:<pre>{
+}</pre>
+<h2>dakora_set_descriptor_visibility</h2>
+<div>set visibility for descriptor</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for descriptor in current context</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_set_example_visibility</h2><div>set visibility for example</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for example in current context</table>Returns:<pre>{
+}</pre>
+<h2>dakora_set_example_visibility</h2>
+<div>set visibility for example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for example in current context</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_set_topic_visibility</h2><div>set visibility for topic</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>topicid<td>int<td>null<td>required<td><td>id of topic<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for topic in current context</table>Returns:<pre>{
+}</pre>
+<h2>dakora_set_topic_visibility</h2>
+<div>set visibility for topic</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for topic in current context</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_set_example_solution_visibility</h2><div>set visibility for example solutions</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>exampleid<td>int<td>null<td>required<td><td>id of example<tr><td>userid<td>int<td>null<td>required<td><td>id of user, 0 for current user<tr><td>forall<td>bool<td>null<td>required<td><td>for all users = true, for one user = false<tr><td>visible<td>bool<td>null<td>required<td><td>visibility for example in current context</table>Returns:<pre>{
+}</pre>
+<h2>dakora_set_example_solution_visibility</h2>
+<div>set visibility for example solutions</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for example in current context</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_create_cross_subject</h2><div>create new crosssubject</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>title<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>description<td>text<td>null<td>required<td><td>description of crosssubject<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject crosssubject is assigned to<tr><td>draftid<td>int<td>null<td><td><td>id of draft</table>Returns:<pre>{
+}</pre>
+<h2>dakora_create_cross_subject</h2>
+<div>create new crosssubject</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of crosssubject</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject crosssubject is assigned to</td>
+<tr>
+<td>draftid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of draft</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_delete_cross_subject</h2><div>delete cross subject</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject</table>Returns:<pre>{
+}</pre>
+<h2>dakora_delete_cross_subject</h2>
+<div>delete cross subject</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_edit_cross_subject</h2><div>edit existing crosssubject</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject<tr><td>title<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>description<td>text<td>null<td>required<td><td>description of crosssubject<tr><td>subjectid<td>int<td>null<td>required<td><td>id of subject crosssubject is assigned to</table>Returns:<pre>{
+}</pre>
+<h2>dakora_edit_cross_subject</h2>
+<div>edit existing crosssubject</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of crosssubject</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject crosssubject is assigned to</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_get_cross_subject_drafts</h2><div>get available drafts</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+}</pre>
+<h2>dakora_get_cross_subject_drafts</h2>
+<div>get available drafts</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>[
     {
         "id": "int null (id of crosssubjet draft)",
         "title": "text null (title of draft)",
         "description": "text null (description of draft)"
     },
     "..."
-]</pre><h2>dakora_get_subjects</h2><div>get subjects</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course</table>Returns:<pre>[
+]</pre>
+<h2>dakora_get_subjects</h2>
+<div>get subjects</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>[
     {
         "id": "int null (id of subject)",
         "title": "text null (title of subject)"
     },
     "..."
-]</pre><h2>dakora_get_students_for_cross_subject</h2><div>get_students_for_crosssubject</div><div>type: read</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crossssubj</table>Returns:<pre>{
+]</pre>
+<h2>dakora_get_students_for_cross_subject</h2>
+<div>get_students_for_crosssubject</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crossssubj</td>
+</table>
+Returns:<pre>{
     "students": [
         {
             "id": "int null (id of student)",
@@ -1064,8 +3361,83 @@ get admin evaluation configurations</div><div>type: read</div>Params: <table></t
         "..."
     ],
     "visible_forall": "int null (visibility of crosssubject to all students)"
-}</pre><h2>dakora_set_cross_subject_student</h2><div>set visibility for crosssubject and student</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject<tr><td>userid<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>forall<td>int<td>null<td>required<td><td>0 or 1<tr><td>value<td>int<td>null<td>required<td><td>value 0 or 1</table>Returns:<pre>{
+}</pre>
+<h2>dakora_set_cross_subject_student</h2>
+<div>set visibility for crosssubject and student</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>userid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>forall</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>0 or 1</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value 0 or 1</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
-}</pre><h2>dakora_set_cross_subject_descriptor</h2><div>set descriptor crosssubject association</div><div>type: write</div>Params: <table><tr><td>courseid<td>int<td>null<td>required<td><td>id of course<tr><td>crosssubjid<td>int<td>null<td>required<td><td>id of crosssubject<tr><td>descriptorid<td>text<td>null<td>required<td><td>title of crosssubject<tr><td>value<td>int<td>null<td>required<td><td>value 0 or 1</table>Returns:<pre>{
+}</pre>
+<h2>dakora_set_cross_subject_descriptor</h2>
+<div>set descriptor crosssubject association</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>descriptorid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value 0 or 1</td>
+</table>
+Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>

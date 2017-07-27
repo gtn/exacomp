@@ -1280,9 +1280,10 @@ class block_exacomp_external extends external_api {
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'externalurl' => new external_value (PARAM_TEXT, ''),
 			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma'),
-			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
 			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
+			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
+			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
 		));
 	}
 
@@ -1299,7 +1300,7 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($name, $description, $externalurl, $comps, $filename, $fileitemid = 0, $solutionfileitemid = 0) {
+	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $filename) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
@@ -1311,9 +1312,10 @@ class block_exacomp_external extends external_api {
 			'description' => $description,
 			'externalurl' => $externalurl,
 			'comps' => $comps,
-			'filename' => $filename,
 			'fileitemid' => $fileitemid,
 			'solutionfileitemid' => $solutionfileitemid,
+			'taxonomies' => $taxonomies,
+			'filename' => $filename,
 		));
 
 		// insert into examples and example_desc
@@ -1391,6 +1393,13 @@ class block_exacomp_external extends external_api {
 			}
 		}
 
+		$taxonomies = trim($taxonomies) ? explode(',', trim($taxonomies)) : [];
+		foreach ($taxonomies as $taxid) {
+			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
+				'exampleid' => $id,
+				'taxid' => $taxid,
+			]);
+		}
 
 		return array(
 			"exampleid" => $id,
