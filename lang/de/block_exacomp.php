@@ -395,6 +395,7 @@ $string['add_drafts_to_course'] = 'Ausgewählte Vorlagen im Kurs verwenden';
 $string['crosssubject'] = 'Thema';
 $string['help_crosssubject'] = 'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.';
 $string['description'] = 'Beschreibung';
+$string['numb'] = 'Nummer';
 $string['no_student'] = '-- kein(e) Kursteilnehmer/in ausgewählt --';
 $string['no_student_edit'] = 'Editiermodus';
 $string['save_as_draft'] = 'Thema als Vorlage speichern';

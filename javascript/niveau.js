@@ -20,20 +20,40 @@
 	function update() {
 		var descriptor_type = $(':radio[name=descriptor_type]:checked').val();
 		if (descriptor_type == 'new') {
+			// moodle 30: still needed?
 			$('#fitem_id_descriptor_title').show();
 			$('#fitem_id_descriptor_id').hide();
+			// moodle 33
+			$(':input[name=descriptor_title]').closest('.fitem').show();
+			$(':input[name=descriptor_id]').closest('.fitem').hide();
 		} else {
+			// moodle 30: still needed?
 			$('#fitem_id_descriptor_title').hide();
 			$('#fitem_id_descriptor_id').show();
+			// moodle 33
+			$(':input[name=descriptor_title]').closest('.fitem').hide();
+			$(':input[name=descriptor_id]').closest('.fitem').show();
 		}
 
 		var niveau_type = $(':radio[name=niveau_type]:checked').val();
 		if (niveau_type == 'new') {
+			// moodle 30: still needed?
 			$('#fitem_id_niveau_title').show();
+			$('#fitem_id_niveau_numb').show();
 			$('#fitem_id_niveau_id').hide();
+			// moodle 33
+			$(':input[name=niveau_title]').closest('.fitem').show();
+			$(':input[name=niveau_numb]').closest('.fitem').show();
+			$(':input[name=niveau_id]').closest('.fitem').hide();
 		} else {
+			// moodle 30: still needed?
 			$('#fitem_id_niveau_title').hide();
+			$('#fitem_id_niveau_numb').hide();
 			$('#fitem_id_niveau_id').show();
+			// moodle 33
+			$(':input[name=niveau_title]').closest('.fitem').hide();
+			$(':input[name=niveau_numb]').closest('.fitem').hide();
+			$(':input[name=niveau_id]').closest('.fitem').show();
 		}
 	}
 	
@@ -41,11 +61,5 @@
 		update();
 		$(':radio[name=descriptor_type]').change(update);
 		$(':radio[name=niveau_type]').change(update);
-		
-		/*
-		$('#id_submitbutton').click(function(){
-			$('#fitem_id_niveau_title')
-		});
-		*/
 	});
 })(jQueryExacomp);

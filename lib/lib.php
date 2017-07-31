@@ -1437,6 +1437,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	$defaultNiveau = block_exacomp\niveau::create();
 	$defaultNiveau->id = BLOCK_EXACOMP_SHOW_ALL_NIVEAUS;
 	$defaultNiveau->title = block_exacomp_get_string('allniveaus');
+	$defaultNiveau->source = 0;
 
 	$niveaus = array($defaultNiveau->id => $defaultNiveau) + $niveaus;
 
@@ -1454,7 +1455,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	foreach ($courseTopics as $topic) {
 		$courseSubjects[$topic->subjid]->topics[$topic->id] = $topic;
 	}
-
+	
 	return array($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau);
 }
 

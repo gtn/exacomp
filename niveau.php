@@ -69,6 +69,9 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->setType('niveau_title', PARAM_TEXT);
 		// $mform->addRule('niveau_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 		
+		$mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
+		$mform->setType('niveau_numb', PARAM_TEXT);
+
 		$mform->addElement('selectgroups', 'niveau_id', block_exacomp_get_string('niveau'), $niveaus);
 		
 		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
@@ -91,71 +94,117 @@ class block_exacomp_local_item_form extends moodleform {
 	}
 }
 
-$topic = \block_exacomp\topic::get(required_param('topicid', PARAM_INT));
+class block_exacomp_local_item_edit_form extends moodleform {
 
-$descriptors = array_map(function($d){ return $d->title; }, $topic->descriptors);
-$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], array(
-	'descriptors' => $descriptors
-));
+	function definition() {
+		global $CFG, $USER, $DB, $PAGE;
 
-$data = new stdClass;
-$data->descriptor_type = $descriptors ? 'existing' : 'new';
-$data->niveau_type = 'existing';
-$form->set_data($data);
+		$output = block_exacomp_get_renderer();
 
-if($formdata = $form->get_data()) {
-	
-	if ($formdata->niveau_type == 'new') {
-		$niveau = new stdClass;
-		$niveau->sorting = $DB->get_field(BLOCK_EXACOMP_DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
-		$niveau->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
-		$niveau->title = $formdata->niveau_title;
-		$niveau->id = $DB->insert_record(BLOCK_EXACOMP_DB_NIVEAUS, $niveau);
-	} else {
-		$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $formdata->niveau_id));
+		$mform = & $this->_form;
+
+		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
+		$mform->setType('title', PARAM_TEXT);
+
+		$mform->addElement('text', 'numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
+		$mform->setType('numb', PARAM_TEXT);
+
+		$this->add_action_buttons(false);
+	}
+}
+
+$id = optional_param('id', 0, PARAM_INT);
+$item = $id ? \block_exacomp\niveau::get($id) : null;
+
+if ($item) {
+	// TODO: check if is local niveau
+	// block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $item);
+}
+
+if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
+	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
+	$item->delete();
+
+	echo $output->popup_close_and_reload();
+	exit;
+}
+
+if (!$item) {
+	$topic = \block_exacomp\topic::get(required_param('topicid', PARAM_INT));
+
+	$descriptors = array_map(function($d){ return $d->title; }, $topic->descriptors);
+	$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], array(
+		'descriptors' => $descriptors
+	));
+
+	$data = new stdClass;
+	$data->descriptor_type = $descriptors ? 'existing' : 'new';
+	$data->niveau_type = 'existing';
+	$form->set_data($data);
+
+	if($formdata = $form->get_data()) {
+
+		if ($formdata->niveau_type == 'new') {
+			$niveau = new stdClass;
+			$niveau->sorting = $DB->get_field(BLOCK_EXACOMP_DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
+			$niveau->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+			$niveau->title = $formdata->niveau_title;
+			$niveau->numb = $formdata->niveau_numb;
+			$niveau->id = $DB->insert_record(BLOCK_EXACOMP_DB_NIVEAUS, $niveau);
+		} else {
+			$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $formdata->niveau_id));
+		}
+
+		if ($niveau) {
+			if ($formdata->descriptor_type == 'new') {
+				\block_exacomp\descriptor::insertInCourse($courseid, array(
+					'title' => $formdata->descriptor_title,
+					'topicid' => $topic->id,
+					'niveauid' => $niveau->id
+				));
+			} else {
+				$descriptor = \block_exacomp\descriptor::get($formdata->descriptor_id, MUST_EXIST);
+				$descriptor->update(array('niveauid' => $niveau->id));
+			}
+
+			echo $output->popup_close_and_reload();
+			exit;
+		}
 	}
 
-	if ($niveau) {
-		if ($formdata->descriptor_type == 'new') {
-			\block_exacomp\descriptor::insertInCourse($courseid, array(
-				'title' => $formdata->descriptor_title,
-				'topicid' => $topic->id,
-				'niveauid' => $niveau->id
-			));
-		} else {
-			$descriptor = \block_exacomp\descriptor::get($formdata->descriptor_id, MUST_EXIST);
-			$descriptor->update(array('niveauid' => $niveau->id));
-		}
+	echo $output->header($context, $courseid, '', false);
 
-		/*
-		$mm = new stdClass();
-		$mm->descrid = $formdata->descriptor_id;
-		$mm->catid = $formdata->category;
+	$form->display();
 
-		if (!$item) {
-			$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
-			$new->sourceid = 0;
-			$new->subjid = required_param('subjectid', PARAM_INT);
+	echo $output->footer();
+} else {
+	$form = new block_exacomp_local_item_edit_form($_SERVER['REQUEST_URI']);
+	if ($item) $form->set_data($item);
 
-			$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
+	if($formdata = $form->get_data()) {
 
-			// add topic to course
-			$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
-				'courseid' => $courseid,
-				'topicid' => $new->id
-			));
-		} else {
-			$item->update($new);
-		}
-		*/
+		$new = new stdClass();
+		$new->title = $formdata->title;
+		$new->numb = $formdata->numb;
+		$item->update($new);
 
 		echo $output->popup_close_and_reload();
 		exit;
 	}
+
+	echo $output->header($context, $courseid, '', false);
+
+	/*
+	if ($item) {
+		// TODO: also check $item->can_delete
+		echo '<div style="position: absolute; top: 40px; right: 20px;">';
+		echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.block_exacomp_trans('de:Wirklich löschen?').'\');">';
+		echo block_exacomp_get_string('delete');
+		echo '</a></div>';
+	}
+	*/
+
+	$form->display();
+
+	echo $output->footer();
 }
-
-echo $output->header($context, $courseid, '', false);
-
-$form->display();
-
-echo $output->footer();

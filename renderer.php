@@ -232,7 +232,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach ($subjects as $subject) {
 			$extra = '';
 			if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-				$extra .= ' '.$this->pix_icon("i/edit", block_exacomp_get_string("edit"), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid='.$COURSE->id.'&id='.$subject->id]);
+				$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid='.$COURSE->id.'&id='.$subject->id]);
 			}
 			$content .= html_writer::tag('li',
 				html_writer::link(
@@ -252,7 +252,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if (block_exacomp_is_teacher() || block_exacomp_is_topic_visible($COURSE->id, $topic, g::$USER->id)) {
 					$extra = '';
 					if ($this->is_edit_mode() && $topic->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-						$extra .= ' '.$this->pix_icon("i/edit", block_exacomp_get_string("edit"), null, [
+						$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, [
 								'exa-type' => "iframe-popup",
 								'exa-url' => 'topic.php?courseid='.$COURSE->id.'&id='.$topic->id,
 							]);
@@ -290,9 +290,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach ($niveaus as $niveau) {
 			$title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
 			$subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
+
+			$extra = '';
+			if ($this->is_edit_mode() && $niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+				$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id]);
+			}
+
 			$content .= html_writer::tag('li',
 				html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
-					$title.($subtitle ? '<span class="subtitle">'.$subtitle.'</span>' : ''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $title.($subtitle ? ': '.$subtitle : '')))
+					$title.($subtitle ? '<span class="subtitle">'.$subtitle.'</span>' : '').$extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $title.($subtitle ? ': '.$subtitle : '')))
 			);
 		}
 

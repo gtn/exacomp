@@ -389,6 +389,7 @@ $string['add_drafts_to_course'] = 'Add drafts to course';
 $string['crosssubject'] = 'Interdisciplinary Subject';
 $string['help_crosssubject'] = 'The compilation of a subject is done for the whole Moodle installation (school) using the tab learning path. Here you can selectively deactivate course-specific competences, sub-competences and materials. Individual learning material can also be added. This is then automatically added to the learning paths.';
 $string['description'] = 'Description';
+$string['numb'] = 'Number';
 $string['no_student'] = '-- no participant selected --';
 $string['no_student_edit'] = 'edit mode - no participant';
 $string['save_as_draft'] = 'Save interdisciplinary subject as draft';

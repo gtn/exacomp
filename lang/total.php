@@ -1301,6 +1301,10 @@ return [
 		'Beschreibung',
 		'Description',
 	],
+	'numb' => [
+		'Nummer',
+		'Number',
+	],
 	'no_student' => [
 		'-- kein(e) Kursteilnehmer/in ausgewählt --',
 		'-- no participant selected --',
