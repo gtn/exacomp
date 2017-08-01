@@ -298,7 +298,7 @@ class printer {
 			}
 
 			.state9 {
-				background-color: rgb(240, 230, 0);
+				background-color: #593d1e;
 			}
 			.different-course {
 				background-color: #acbcca;
