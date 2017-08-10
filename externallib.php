@@ -397,7 +397,7 @@ class block_exacomp_external extends external_api {
 	 * @throws invalid_parameter_exception
 	 */
 	public static function get_descriptors_for_example($exampleid, $courseid, $userid) {
-		global $DB, $USER;
+		global $USER;
 
 		if ($userid == 0) {
 			$userid = $USER->id;
@@ -413,6 +413,25 @@ class block_exacomp_external extends external_api {
 		if ($courseid > 0) {
 			static::require_can_access_example($exampleid, $courseid);
 		}
+
+		return static::_get_descriptors_for_example();
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function get_descriptors_for_example_returns() {
+		return new external_multiple_structure (new external_single_structure (array(
+			'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+			'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
+			'evaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
+		)));
+	}
+
+	protected static function _get_descriptors_for_example($exampleid, $courseid, $userid) {
+		global $DB;
 
 		$descriptors_exam_mm = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array(
 			'exampid' => $exampleid,
@@ -440,19 +459,6 @@ class block_exacomp_external extends external_api {
 		}
 
 		return $descriptors;
-	}
-
-	/**
-	 * Returns desription of method return values
-	 *
-	 * @return external_multiple_structure
-	 */
-	public static function get_descriptors_for_example_returns() {
-		return new external_multiple_structure (new external_single_structure (array(
-			'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-			'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-			'evaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
-		)));
 	}
 
 	/**
@@ -3064,7 +3070,7 @@ class block_exacomp_external extends external_api {
 			$non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 		}
 
-		$descriptors = static::get_descriptors_for_example($exampleid, $courseid, $userid);
+		$descriptors = static::_get_descriptors_for_example($exampleid, $courseid, $userid);
 
 		$final_descriptors = array();
 		foreach ($descriptors as $descriptor) {
@@ -5137,7 +5143,7 @@ class block_exacomp_external extends external_api {
 	 * @return
 	 */
 	public static function dakora_get_example_information($courseid, $userid, $exampleid) {
-		global $CFG, $DB, $USER;
+		global $USER;
 		if ($userid == 0) {
 			$userid = $USER->id;
 		}
@@ -5150,6 +5156,40 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 		static::require_can_access_example($exampleid, $courseid);
+
+		return static::_get_example_information($courseid, $userid, $exampleid);
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_example_information_returns() {
+		return new external_single_structure (array(
+			'itemid' => new external_value (PARAM_INT, 'id of item'),
+			'status' => new external_value (PARAM_INT, 'status of the submission (-1 == no submission; 0 == not graded; 1 == graded'),
+			'name' => new external_value (PARAM_TEXT, 'title of item'),
+			'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)'),
+			'url' => new external_value (PARAM_TEXT, 'url'),
+			'filename' => new external_value (PARAM_TEXT, 'title of item'),
+			'file' => new external_value (PARAM_URL, 'file url'),
+			'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+			'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
+			'studentvalue' => new external_value (PARAM_INT, 'student grading'),
+			'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+			'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
+			'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
+			'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
+			'teacherfile' => new external_value (PARAM_TEXT),
+			'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
+			'teacheritemvalue' => new external_value (PARAM_INT, 'item teacher grading'),
+			'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
+		));
+	}
+
+	protected static function _get_example_information($courseid, $userid, $exampleid) {
+		global $CFG, $DB;
 
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 		if (!$example) {
@@ -5245,34 +5285,6 @@ class block_exacomp_external extends external_api {
 		}
 
 		return $data;
-	}
-
-	/**
-	 * Returns desription of method return values
-	 *
-	 * @return external_multiple_structure
-	 */
-	public static function dakora_get_example_information_returns() {
-		return new external_single_structure (array(
-			'itemid' => new external_value (PARAM_INT, 'id of item'),
-			'status' => new external_value (PARAM_INT, 'status of the submission (-1 == no submission; 0 == not graded; 1 == graded'),
-			'name' => new external_value (PARAM_TEXT, 'title of item'),
-			'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)'),
-			'url' => new external_value (PARAM_TEXT, 'url'),
-			'filename' => new external_value (PARAM_TEXT, 'title of item'),
-			'file' => new external_value (PARAM_URL, 'file url'),
-			'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-			'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
-			'studentvalue' => new external_value (PARAM_INT, 'student grading'),
-			'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-			'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-			'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
-			'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
-			'teacherfile' => new external_value (PARAM_TEXT),
-			'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
-			'teacheritemvalue' => new external_value (PARAM_INT, 'item teacher grading'),
-			'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
-		));
 	}
 
 	/**
@@ -6951,7 +6963,7 @@ class block_exacomp_external extends external_api {
 				$example_return->timestampteacher = 0;
 				$example_return->timestampstudent = 0;
 			} else {
-				$evaluation = (object)static::dakora_get_example_information($courseid, $userid, $example->id);
+				$evaluation = (object)static::_get_example_information($courseid, $userid, $example->id);
 				$example_return->teacherevaluation = $evaluation->teachervalue;
 				$example_return->studentevaluation = $evaluation->studentvalue;
 				$example_return->evalniveauid = $evaluation->evalniveauid;
@@ -7175,8 +7187,39 @@ class block_exacomp_external extends external_api {
 			throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
 		} else {
 			$examples = block_exacomp_get_examples_by_course($courseid);
-			if (!isset($examples[$exampleid])) {
-				throw new block_exacomp_permission_exception("Example '$exampleid' not found in course '$courseid'");
+			$found = false;
+			if (isset($examples[$exampleid])) {
+				// ok: is course example
+				$found = true;
+			} else {
+				// try to find it in a cross-subject
+				$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
+				if ($cross_subjects) {
+					$found = call_user_func(function() use ($cross_subjects, $courseid, $exampleid) {
+						foreach ($cross_subjects as $cross_subject) {
+							$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject);
+
+							foreach ($descriptors as $descriptor) {
+								if (!empty($descriptor->examples[$exampleid])) {
+									return true;
+								}
+
+								foreach ($descriptor->children as $descriptor) {
+									if (!empty($descriptor->examples[$exampleid])) {
+										return true;
+									}
+								}
+							}
+						}
+
+						return false;
+					});
+				}
+			}
+
+			if (!$found) {
+			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+				throw new block_exacomp_permission_exception("Example '$exampleid' not found #3");
 			}
 
 			// can be viewed by user, or by whole course
