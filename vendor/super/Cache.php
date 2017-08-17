@@ -237,7 +237,7 @@ class Cache {
 	}
 
 	static function object($cache_id, $class, array $params = [], array $options = []) {
-		$cb = new CacheCallback($cache_id, function($params) use ($class, $params) {
+		$cb = new CacheCallback($cache_id, function() use ($class, $params) {
 			$r = new \ReflectionClass($class);
 
 			return $r->newInstanceArgs($params);
