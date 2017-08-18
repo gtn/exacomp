@@ -5927,17 +5927,22 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 	global $DB, $USER;
 
+	if (is_string($additionalinfo)) {
+		// force additional info to be stored with a dot as decimal mark
+		$additionalinfo = (float)str_replace(",", ".", $additionalinfo);
+	}
+
 	if ($additionalinfo > 6.0) {
 		$additionalinfo = 6.0;
-	} elseif ($additionalinfo < 1.0 && $additionalinfo != "") {
+	} elseif ($additionalinfo > 0 && $additionalinfo < 1.0) {
 		$additionalinfo = 1.0;
+	} elseif ($additionalinfo <= 0) {
+		$additionalinfo = null;
 	}
 
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 	$record = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $comptype, $descriptorid);
 
-	// force additional info to be stored with a dot as decimal mark
-	$additionalinfo = str_replace(",", ".", $additionalinfo);
 
 	if ($additionalinfo == '' || empty($additionalinfo)) {
 		$additionalinfo = null;

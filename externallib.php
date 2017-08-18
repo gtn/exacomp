@@ -2343,21 +2343,6 @@ class block_exacomp_external extends external_api {
 				throw new invalid_parameter_exception ('Not allowed');
 			}
 		} else {    //teacher grading for K/T/S: map
-
-			//ensure correct values for additionalinfo
-			if ($additionalinfo > 6.0) {
-				$additionalinfo = 6.0;
-			} elseif ($additionalinfo < 1.0 && $additionalinfo != "") {
-				$additionalinfo = 1.0;
-			}
-
-			// force additional info to be stored with a dot as decimal mark
-			$additionalinfo = str_replace(",", ".", $additionalinfo);
-
-			if ($additionalinfo == '' || empty($additionalinfo || $additionalinfo == 0)) {
-				$additionalinfo = null;
-			}
-
 			$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 			if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
 				throw new invalid_parameter_exception ('Not allowed');
@@ -2367,9 +2352,9 @@ class block_exacomp_external extends external_api {
 
 		}
 
-		return array(
-			"success" => true,
-		);
+		return ['success' => true];
+		// TODO: should we also return the changed values?
+		// + (array)block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid);
 	}
 
 	/**
@@ -2380,6 +2365,11 @@ class block_exacomp_external extends external_api {
 	public static function dakora_set_competence_returns() {
 		return new external_single_structure (array(
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+			/*
+			'value' => new external_value(PARAM_INT, 'evaluation value, only set for TK (0 to 3)'),
+			'additionalinfo' => new external_value(PARAM_FLOAT, 'decimal between 1 and 6'),
+			'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau (-1, 1, 2, 3)'),
+			*/
 		));
 	}
 
@@ -4897,13 +4887,13 @@ class block_exacomp_external extends external_api {
 		$descriptor_return->descriptorid = $descriptorid;
 		$descriptor_return->descriptortitle = $descriptor->title;
 		$descriptor_return->teacherevaluation = -1;
-		$descriptor_return->additionalinfo = -1;
+		$descriptor_return->additionalinfo = null;
 		$descriptor_return->evalniveauid = null;
 		$descriptor_return->timestampteacher = 0;
 		if (!$forall) {
 			if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
 				$descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
-				$descriptor_return->additionalinfo = ($grading->additionalinfo) ? $grading->additionalinfo : -1;
+				$descriptor_return->additionalinfo = $grading->additionalinfo;
 				$descriptor_return->evalniveauid = $grading->evalniveauid;
 				$descriptor_return->timestampteacher = $grading->timestamp;
 			}
