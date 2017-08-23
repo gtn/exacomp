@@ -7222,7 +7222,6 @@ class block_exacomp_external extends external_api {
 			}
 
 			if (!$found) {
-			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 				throw new block_exacomp_permission_exception("Example '$exampleid' not found #3");
 			}
 
