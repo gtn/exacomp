@@ -71,10 +71,22 @@ class block_exacomp_external extends external_api {
 				"parentcontextid" => $context->id,
 			))
 			) {
+
+				if (block_exacomp_is_teacher($mycourse->id, $userid)) {
+					$exarole = BLOCK_EXACOMP_WS_ROLE_TEACHER;
+
+					$teachercanedit = block_exacomp_is_editingteacher($mycourse->id, $userid);
+				} else {
+					$exarole = BLOCK_EXACOMP_ROLE_STUDENT;
+					$teachercanedit = false;
+				}
+
 				$course = array(
 					"courseid" => $mycourse->id,
 					"fullname" => $mycourse->fullname,
 					"shortname" => $mycourse->shortname,
+					"exarole" => $exarole,
+					"teachercanedit" => $teachercanedit,
 				);
 				$courses[] = $course;
 			}
@@ -93,6 +105,8 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'fullname' => new external_value (PARAM_TEXT, 'fullname of course'),
 			'shortname' => new external_value (PARAM_RAW, 'shortname of course'),
+			'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
+			'teachercanedit' => new external_value (PARAM_BOOL),
 		)));
 	}
 

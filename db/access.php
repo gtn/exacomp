@@ -42,6 +42,15 @@ $capabilities = array(
 						'manager' => CAP_ALLOW
 				)
 		),
+		'block/exacomp:editingteacher' => array(
+				'captype' => 'write',
+				'contextlevel' => CONTEXT_COURSE,
+				'legacy' => array(
+					'coursecreator' => CAP_ALLOW,
+					'editingteacher' => CAP_ALLOW,
+					'manager' => CAP_ALLOW
+				)
+		),
 		'block/exacomp:student' => array(
 				'captype' => 'write',
 				'contextlevel' => CONTEXT_COURSE,

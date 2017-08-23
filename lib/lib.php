@@ -243,6 +243,12 @@ function block_exacomp_is_teacher($context = null, $userid = null) {
 	return has_capability('block/exacomp:teacher', $context, $userid);
 }
 
+function block_exacomp_is_editingteacher($context = null, $userid = null) {
+	$context = block_exacomp_get_context_from_courseid($context);
+
+	return has_capability('block/exacomp:teacher', $context, $userid) && has_capability('block/exacomp:editingteacher', $context, $userid);
+}
+
 function block_exacomp_is_teacher_in_any_course() {
 	$courses = block_exacomp_get_courseids();
 
