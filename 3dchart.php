@@ -129,7 +129,7 @@ foreach ($evaluation as $e) {
 			'x' => $x,
 			'y' => $y_id_to_index[$e->evalniveau],
 			'z' => $e->teachervalue,
-			'label' => $xlabels_long[$x].' / '.$ylabels_long[$y_id_to_index[$e->evalniveau]].': <b>'.$value_titles_long[$e->teachervalue].'</b>',
+			'label' => @$xlabels_long[$x].' / '.@$ylabels_long[$y_id_to_index[$e->evalniveau]].': <b>'.@$value_titles_long[$e->teachervalue].'</b>',
 		];
 		$graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
 	}

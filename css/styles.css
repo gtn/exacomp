@@ -1135,3 +1135,10 @@ not used anymore?
 	font-size: 1em !important;
 	font-family: inherit !important;
 }
+
+/* fix date picker in moodle 3.1: css collides with moodle.css */
+.date-picker-wrapper .normal {
+	display: block;
+	width: auto;
+	height: auto;
+}
