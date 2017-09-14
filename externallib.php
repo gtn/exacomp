@@ -5312,7 +5312,7 @@ class block_exacomp_external extends external_api {
 		require_once($CFG->dirroot."/user/lib.php");
 
 		$data = user_get_user_details_courses($USER);
-		$data['exarole'] = static::get_user_role()->role;
+		$data['exarole'] = static::dakora_get_user_role()->role;
 		unset($data['enrolledcourses']);
 		unset($data['preferences']);
 
