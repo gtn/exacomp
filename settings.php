@@ -47,34 +47,14 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 	
 	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
 		public function write_setting($data) {
-			global $DB;
 			$ret = parent::write_setting($data);
 		   
 			if ($ret != '') {
 				return $ret;
 			}
-			
-			set_config('use_eval_niveau', 1, 'exacomp');
-			
-			if($data == '1') $titles = array(1=>'G', 2=>'M', 3=>'E', 101=>'Z');
-			elseif($data == '2') $titles = array(1=>'A', 2=>'B', 3=>'C');
-			elseif($data=='3') $titles = array(1=>'1', 2=>'2', 3=>'3');
-			else{
-				set_config('use_eval_niveau', 0, 'exacomp');
-				return '';
-			}
 
-			$DB->delete_records(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU);
+			block_exacomp_update_evaluation_niveau_tables();
 
-			//fill table
-			foreach($titles as $id => $title){
-				$entry = new stdClass();
-				$entry->title = $title;
-				$entry->id = $id;
-				// to insert record with a specific id, use insert_record_raw and set $customsequence = true
-				$DB->insert_record_raw(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, $entry, false, false, true);
-			}
-			
 			return '';
 		}
 	}

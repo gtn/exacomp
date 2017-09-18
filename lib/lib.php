@@ -287,11 +287,13 @@ function block_exacomp_is_elove_student_self_assessment_enabled() {
 }
 
 function block_exacomp_use_eval_niveau() {
-	return get_config('exacomp', 'use_eval_niveau');
+	$evaluation_niveau = block_exacomp_evaluation_niveau_type();
+
+	return $evaluation_niveau >= 1 && $evaluation_niveau <= 3;
 }
 
 function block_exacomp_evaluation_niveau_type() {
-	return (get_config('exacomp', 'adminscheme')) ? get_config('exacomp', 'adminscheme') : 0;
+	return get_config('exacomp', 'adminscheme');
 }
 
 function block_exacomp_additional_grading() {
@@ -1461,7 +1463,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	foreach ($courseTopics as $topic) {
 		$courseSubjects[$topic->subjid]->topics[$topic->id] = $topic;
 	}
-	
+
 	return array($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau);
 }
 
@@ -7845,5 +7847,30 @@ function block_exacomp_group_reports_result($filter) {
 		});
 
 		echo '</table>';
+	}
+}
+
+function block_exacomp_update_evaluation_niveau_tables() {
+	$evaluation_niveau = block_exacomp_evaluation_niveau_type();
+
+	if ($evaluation_niveau == 1) {
+		$titles = array(1 => 'G', 2 => 'M', 3 => 'E', 101 => 'Z');
+	} elseif ($evaluation_niveau == 2) {
+		$titles = array(1 => 'A', 2 => 'B', 3 => 'C');
+	} elseif ($evaluation_niveau == 3) {
+		$titles = array(1 => '1', 2 => '2', 3 => '3');
+	} else {
+		return;
+	}
+
+	g::$DB->delete_records(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU);
+
+	//fill table
+	foreach ($titles as $id => $title) {
+		$entry = new stdClass();
+		$entry->title = $title;
+		$entry->id = $id;
+		// to insert record with a specific id, use insert_record_raw and set $customsequence = true
+		g::$DB->insert_record_raw(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, $entry, false, false, true);
 	}
 }
