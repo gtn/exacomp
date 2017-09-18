@@ -1303,6 +1303,7 @@ class block_exacomp_external extends external_api {
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
 			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
+			'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
 		));
 	}
@@ -1320,7 +1321,7 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $filename) {
+	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
@@ -1335,6 +1336,7 @@ class block_exacomp_external extends external_api {
 			'fileitemid' => $fileitemid,
 			'solutionfileitemid' => $solutionfileitemid,
 			'taxonomies' => $taxonomies,
+			'courseid' => $courseid,
 			'filename' => $filename,
 		));
 
@@ -1345,9 +1347,15 @@ class block_exacomp_external extends external_api {
 		$example->externalurl = $externalurl;
 		$example->creatorid = $USER->id;
 		$example->timestamp = time();
-		$example->source = static::dakora_get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
-			? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
-			: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
+		if ($courseid) {
+			$example->source = block_exacomp_is_teacher($courseid)
+				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
+				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
+		} else {
+			$example->source = static::get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
+				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
+				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
+		}
 
 		$example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
 
