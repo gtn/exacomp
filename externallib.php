@@ -1352,7 +1352,7 @@ class block_exacomp_external extends external_api {
 				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
 				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
 		} else {
-			$example->source = static::get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
+			$example->source = static::dakora_get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
 				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
 				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
 		}
