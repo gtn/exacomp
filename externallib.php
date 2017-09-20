@@ -1348,10 +1348,13 @@ class block_exacomp_external extends external_api {
 		$example->creatorid = $USER->id;
 		$example->timestamp = time();
 		if ($courseid) {
+			// dakora ab 2017-09-19 übergibt auch die courseid
 			$example->source = block_exacomp_is_teacher($courseid)
 				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
 				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
 		} else {
+			// bei elove wird keine courseid übergeben
+			// elove logik: dakora_get_user_role() kann nicht verwendet werden
 			$example->source = static::get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
 				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
 				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
