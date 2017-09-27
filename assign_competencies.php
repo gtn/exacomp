@@ -34,6 +34,7 @@ require_login($courseid);
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher();
 if(!$isTeacher) $editmode = 0;
+$isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
 
 $studentid = block_exacomp_get_studentid() ;
 if($studentid == 0)
@@ -136,7 +137,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		$html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 		// $html .= "&nbsp;<br />";
-		$html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0);
+		$html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
 	}
 
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
@@ -147,7 +148,7 @@ echo $colselector;
 echo $output->competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 
 //dropdowns for subjects and topics and students -> if user is teacher and working with students
-echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $selectedStudentid, $isTeacher);
+echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $selectedStudentid, $isTeacher, $isEditingTeacher);
 
 echo '<div class="clearfix"></div>';
 
@@ -188,7 +189,7 @@ if($course_settings->nostudents != 1 && $studentid)
 
 echo $output->competence_overview($competence_tree, $courseid, $students, $showevaluation,
 		$isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme,
-		($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS), 0);
+		($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS), 0, $isEditingTeacher);
 echo '</div>';
 
 echo html_writer::end_tag("div");
