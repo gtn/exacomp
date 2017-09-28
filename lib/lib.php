@@ -5956,30 +5956,32 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 		$additionalinfo = null;
 	}
 
-	if ($record) {
-		// falls sich die bewertung geändert hat, timestamp neu setzen
-		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
-			$record->timestamp = time();
-		}
-
-		$record->reviewerid = $USER->id;
-		$record->additionalinfo = $additionalinfo;
-		$record->value = $value;
-
-		$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
-	} else {
-		$insert = new stdClass();
-		$insert->compid = $descriptorid;
-		$insert->userid = $studentid;
-		$insert->courseid = $courseid;
-		$insert->comptype = $comptype;
-		$insert->role = BLOCK_EXACOMP_ROLE_TEACHER;
-		$insert->reviewerid = $USER->id;
-		$insert->timestamp = time();
-
-		$insert->additionalinfo = $additionalinfo;
-		$insert->value = $value;
-		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
+	if(block_exacomp_is_teacher()){
+    	if ($record) {
+    		// falls sich die bewertung geändert hat, timestamp neu setzen
+    		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
+    			$record->timestamp = time();
+    		}
+    
+    		$record->reviewerid = $USER->id;
+    		$record->additionalinfo = $additionalinfo;
+    		$record->value = $value;
+    
+    		$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
+    	} else {
+    		$insert = new stdClass();
+    		$insert->compid = $descriptorid;
+    		$insert->userid = $studentid;
+    		$insert->courseid = $courseid;
+    		$insert->comptype = $comptype;
+    		$insert->role = BLOCK_EXACOMP_ROLE_TEACHER;
+    		$insert->reviewerid = $USER->id;
+    		$insert->timestamp = time();
+    
+    		$insert->additionalinfo = $additionalinfo;
+    		$insert->value = $value;
+    		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
+    	}   
 	}
 }
 
