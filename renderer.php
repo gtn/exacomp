@@ -839,12 +839,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
 						$niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
-					    if($isEditingTeacher){
-					        $disableCell = ($role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : false;
-					    }else { //non editing teacher should not be able to use the cell
-					        $disableCell = true;
-					    }
-					    $niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, $disableCell, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
+					    $niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, !$isEditingTeacher, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
 
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$subject->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
@@ -1579,7 +1574,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								    $disableCell = !$visible_student; 
 								}
 								$self_evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, $disableCell, $data->profoundness, ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
-								//$self_evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 							}
 						}
 						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
