@@ -1746,4 +1746,32 @@ return [
 		'Verfügbare',
 		'Available',
 	],
+	// === Group Reports ===
+    'result' => [
+        'Ergebnis',
+        'Result',
+    ],
+    'evaluationdate'=> [
+        'Bewertungsdatum',
+        'Evaluation Date',
+    ],
+    'output_current_assessments' => [ 
+        'Ausgabe der jeweiligen Bewertungen',
+        'Output of current assessments',
+    ],
+    'student_assessment' => [
+        'Schülerbewertung',
+        'Student assessment',
+    ],
+    'teacher_assessment' => [
+        'Lehrerbewertung',
+        'Teacher assessment',
+    ],'difficulty' => [
+        'Niveau',
+        'Difficulty level',
+    ],
+    
+    
+    
+    
 ];

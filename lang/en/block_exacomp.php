@@ -512,3 +512,10 @@ $string['periodselect'] = 'Select Period';
 $string['teacher'] = 'Teacher';
 $string['student'] = 'Student';
 $string['timeline_available'] = 'Available';
+// === Group Reports ===
+$string['result'] = 'Result';
+$string['evaluationdate'] = 'Evaluation Date';
+$string['output_current_assessments'] = 'Output of current assessments';
+$string['student_assessment'] = 'Student assessment';
+$string['teacher_assessment'] = 'Teacher assessment';
+$string['difficulty'] = 'Difficulty level';

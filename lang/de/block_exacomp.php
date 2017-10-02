@@ -518,3 +518,10 @@ $string['periodselect'] = 'Auswahl des Eingabezeitraums';
 $string['teacher'] = 'Lehrer';
 $string['student'] = 'Schüler/in';
 $string['timeline_available'] = 'Verfügbare';
+// === Group Reports ===
+$string['result'] = 'Ergebnis';
+$string['evaluationdate'] = 'Bewertungsdatum';
+$string['output_current_assessments'] = 'Ausgabe der jeweiligen Bewertungen';
+$string['student_assessment'] = 'Schülerbewertung';
+$string['teacher_assessment'] = 'Lehrerbewertung';
+$string['difficulty'] = 'Niveau';
