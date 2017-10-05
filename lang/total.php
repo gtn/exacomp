@@ -1766,10 +1766,47 @@ return [
     'teacher_assessment' => [
         'Lehrerbewertung',
         'Teacher assessment',
-    ],'difficulty' => [
+    ],'difficulty_group_report' => [
         'Niveau',
         'Difficulty level',
+    ],'no_entries_found' => [
+        'Keine Einträge gefunden',
+        'No entries found',
+    ],'assessment_date' => [
+        'Bewertungsdatum',
+        'Assessment date',
+    ],'number_of_found_students' => [
+        'Anzahl gefundener Schüler',
+        'Number of found students',
+    ],'display_settings' => [
+        'Anzeigeoptionen',
+        'Display settings',
+    ],'create_report' => [
+        'Bericht erstellen',
+        'Create report',
+    ],'students_competences' => [
+        'Schüler Kompetenzen',
+        'Student competences',
+    ],'number_of_students' => [
+        'Schüler Anzahl',
+        'Number of students',
+    ],'no_specification' => [
+        'ohne Angabe',
+        'no specification',
+    ],'period' => [
+        'Zeitintervall',
+        'Period',
+    ],'from' => [
+        'von',
+        'from',
+    ],'to' => [
+        'bis',
+        'to',
     ],
+   
+    
+    
+    
     
     
     

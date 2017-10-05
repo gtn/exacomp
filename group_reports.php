@@ -107,9 +107,10 @@ $extra = '<input type="hidden" name="action" value="search"/>';
 			$(update);
 	</script>
 	<div class="block">
-		<h2><?= block_exacomp_trans('de:Anzeigeoption') ?></h2>
-
-		<?php echo $output->group_report_filters('exacomp', $filter, '', $extra); ?>
+		<?php 
+		  echo '<h2>'.block_exacomp_get_string('display_settings').'</h2>';
+		  echo $output->group_report_filters('exacomp', $filter, '', $extra); 
+		?>
 	</div>
 <?php
 

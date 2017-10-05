@@ -7758,7 +7758,7 @@ function block_exacomp_group_reports_result($filter) {
 				echo '<table border="1" width="100%">';
 				echo '<tr><th style="width: 4%"></th><th style="width: 65%"></th>';
 				if (@$filter['time']['active']) {
-					echo '<th>Bewertungsdatum</th>';
+				    echo '<th>'.block_exacomp_get_string('assessment_date').'</th>';
 				}
 				//echo html_writer::tag('th',block_exacomp_get_string('output_current_assessments'),array('colspan' => "4"));
 				echo '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
@@ -7767,26 +7767,26 @@ function block_exacomp_group_reports_result($filter) {
                 echo '<th></th>';
                 echo '<th>'.block_exacomp_get_string('student_assessment').'</th>';
                 echo '<th>'.block_exacomp_get_string('teacher_assessment').'</th>';
-                echo '<th></th>';
-                echo '<th>'.block_exacomp_get_string('difficulty').'</th>';
+                echo '<th>'.block_exacomp_get_string('teacher_assessment').'</th>';
+                echo '<th>'.block_exacomp_get_string('difficulty_group_report').'</th>';
 				echo $output;
 				echo '</table>';
 			}
 		}
 
 		if (!$has_output) {
-			echo 'Keine Einträge gefunden';
+			echo block_exacomp_get_string('no_entries_found');
 		}
 	}
 
 	if ($filter['type'] == 'student_counts') {
 		$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
-		$out=html_writer::h2('ERGEBNIST');
-		//echo "<h2>".block_exacomp_get_string("result")."</h2>";
+		echo html_writer::tag('h2',block_exacomp_get_string('result'));
 
 		echo '<table>';
-		echo '<tr><th></th><th></th><th colspan="3">Anzahl gefundener Schüler ('.count($students).')</th>';
+		echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
+		
 
 		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students) {
 
