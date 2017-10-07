@@ -149,7 +149,7 @@
 	exacomp_calcendar = {
 		event_slot_to_time: function(origEvent) {
 			// clone event
-			event = $.extend({}, origEvent);
+			var event = $.extend({}, origEvent);
 			
 			event.start = this.slot_to_time(event.start, 'start');
 			if (event.end) {
@@ -163,7 +163,7 @@
 		},
 		event_time_to_slot: function(origEvent) {
 			// clone event
-			event = $.extend({}, origEvent);
+			var event = $.extend({}, origEvent);
 			
 			event.start = this.time_to_slot(event.start, 'start');
 			if (event.end) event.end = this.time_to_slot(event.end, 'end');
@@ -182,7 +182,7 @@
 		},
 		time_to_slot: function(time, type /* start or end */ ) {
 			var m = ((time*1) == time ? moment.unix(time) : moment(time));
-			var time = m.format('HH:mm');
+			time = m.format('HH:mm');
 			var found_slot_i = null;
 	
 			$.each(exacomp_calcendar_config.slots, function(i, slot) {
@@ -315,7 +315,7 @@
 			defaultTimedEventDuration: '00:01:00', // default event length
 			
 			contentHeight: "auto",
-			
+
 			eventConstraint: {
 				start: '00:00:00', // a start time (10am in this example)
 				end: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length)
@@ -331,6 +331,7 @@
 			},
 	
 			events: function(start, end, timezone, callback){
+				console.log('events');
 				exacomp_calendar_load_events(start, end, timezone, function(events){
 					// convert to calendar timeslots
 					events = $.map(events, function(o){
@@ -360,6 +361,7 @@
 						exacomp_calendar_loading_done();
 					}
 					
+				console.log('events' ,events);
 					callback(events);
 				})
 			},
