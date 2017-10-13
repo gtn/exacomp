@@ -7737,15 +7737,15 @@ function block_exacomp_group_reports_result($filter) {
 				}
 
 				echo '<tr>';
-				echo '<td style="white-space: nowrap">'.$item->get_numbering();
-				echo '<td style="padding-left: '.($level * 20).'px">'.$item->title;
+				echo '<td class="exarep_descriptor" style="white-space: nowrap">'.$item->get_numbering();
+				echo '<td class="exarep_descriptorText" style="padding-left: '.($level * 20).'px">'.$item->title;
 				if (@$filter['time']['active']) {
-					echo '<td>'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
+					echo '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
-				echo '<td style="padding: 0 10px;">'.$eval->get_student_value_title();
-				echo '<td style="padding: 0 10px;">'.block_exacomp_format_eval_value($eval->additionalinfo);
-				echo '<td style="padding: 0 10px;">'.$eval->get_teacher_value_title();
-				echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title();
+				echo '<td class="exarep_studentAssessment" style="padding: 0 10px;">'.$eval->get_student_value_title();
+				echo '<td class="exarep_teacherAssessment" style="padding: 0 10px;">'.block_exacomp_format_eval_value($eval->additionalinfo);
+				echo '<td class="exarep_exa_evaluation" style="padding: 0 10px;">'.$eval->get_teacher_value_title();
+				echo '<td class="exarep_difficultyLevel" style="padding: 0 10px;">'.$eval->get_evalniveau_title();
 
 				$walk_subs($level + 1);
 			});
@@ -7755,7 +7755,7 @@ function block_exacomp_group_reports_result($filter) {
 				$has_output = true;
 
 				echo '<h3>'.fullname($student).'</h3>';
-				echo '<table border="1" width="100%">';
+				echo '<table class="report_table" border="1" width="100%">';
 				echo '<tr><th style="width: 4%"></th><th style="width: 65%"></th>';
 				if (@$filter['time']['active']) {
 				    echo '<th>'.block_exacomp_get_string('assessment_date').'</th>';
@@ -7763,12 +7763,12 @@ function block_exacomp_group_reports_result($filter) {
 				//echo html_writer::tag('th',block_exacomp_get_string('output_current_assessments'),array('colspan' => "4"));
 				echo '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
 				echo '<tr>';
-                echo '<th></th>';
-                echo '<th></th>';
-                echo '<th>'.block_exacomp_get_string('student_assessment').'</th>';
-                echo '<th>'.block_exacomp_get_string('teacher_assessment').'</th>';
-                echo '<th>'.block_exacomp_get_string('teacher_assessment').'</th>';
-                echo '<th>'.block_exacomp_get_string('difficulty_group_report').'</th>';
+                echo '<th class="heading"></th>';
+                echo '<th class="heading"></th>';
+                echo '<th class="heading" class="studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
+                echo '<th class="heading" class="teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
+                echo '<th class="heading" class="exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
+                echo '<th class="heading"class="difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
 				echo $output;
 				echo '</table>';
 			}

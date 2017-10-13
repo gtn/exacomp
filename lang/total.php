@@ -1766,7 +1766,12 @@ return [
     'teacher_assessment' => [
         'Lehrerbewertung',
         'Teacher assessment',
-    ],'difficulty_group_report' => [
+    ],
+    'exa_evaluation' => [
+        'Lernmaterial Bewertung',
+        'Example evaluation',
+    ],
+    'difficulty_group_report' => [
         'Niveau',
         'Difficulty level',
     ],'no_entries_found' => [

@@ -524,6 +524,7 @@ $string['evaluationdate'] = 'Bewertungsdatum';
 $string['output_current_assessments'] = 'Ausgabe der jeweiligen Bewertungen';
 $string['student_assessment'] = 'Schülerbewertung';
 $string['teacher_assessment'] = 'Lehrerbewertung';
+$string['exa_evaluation'] = 'Lernmaterial Bewertung';
 $string['difficulty_group_report'] = 'Niveau';
 $string['no_entries_found'] = 'Keine Einträge gefunden';
 $string['assessment_date'] = 'Bewertungsdatum';
