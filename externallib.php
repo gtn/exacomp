@@ -428,7 +428,7 @@ class block_exacomp_external extends external_api {
 			static::require_can_access_example($exampleid, $courseid);
 		}
 
-		return static::_get_descriptors_for_example();
+		return static::_get_descriptors_for_example($exampleid, $courseid, $userid);
 	}
 
 	/**
@@ -445,7 +445,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	protected static function _get_descriptors_for_example($exampleid, $courseid, $userid) {
-		global $DB;
+		global $DB, $USER;
 
 		$descriptors_exam_mm = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array(
 			'exampid' => $exampleid,
