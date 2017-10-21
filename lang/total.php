@@ -1807,13 +1807,10 @@ return [
     ],'to' => [
         'bis',
         'to',
-    ],
-   
-    
-    
-    
-    
-    
-    
+    ],'report_type' => [
+        'Report Typ',
+        'Report Type',
+    ]
+  
     
 ];

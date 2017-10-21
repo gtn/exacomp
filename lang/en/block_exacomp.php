@@ -531,3 +531,4 @@ $string['no_specification'] = 'no specification';
 $string['period'] = 'Period';
 $string['from'] = 'from';
 $string['to'] = 'to';
+$string['report_type'] = 'Report Type';

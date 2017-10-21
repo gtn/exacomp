@@ -537,3 +537,4 @@ $string['no_specification'] = 'ohne Angabe';
 $string['period'] = 'Zeitintervall';
 $string['from'] = 'von';
 $string['to'] = 'bis';
+$string['report_type'] = 'Report Typ';
