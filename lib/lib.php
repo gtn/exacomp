@@ -5956,7 +5956,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 		$additionalinfo = null;
 	}
 
-	if(block_exacomp_is_teacher()){
+	if(block_exacomp_is_teacher($courseid)){
     	if ($record) {
     		// falls sich die bewertung geändert hat, timestamp neu setzen
     		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
