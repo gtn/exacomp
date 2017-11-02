@@ -7251,7 +7251,7 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 				unset($data['value']);
 			}
 
-			if (isset($data['student_evaluation']) && $data['student_evaluation'] <= 0) {
+			if (isset($data['student_evaluation']) && $data['student_evaluation'] < 0) {
 				// teacher:
 				// 0, null, -1 = nicht gesetzt => auf null setzen
 				$data['student_evaluation'] = null;
@@ -7768,7 +7768,7 @@ function block_exacomp_group_reports_result($filter) {
 
 				echo '<h3>'.fullname($student).'</h3>';
 				echo '<table class="report_table" border="1" width="100%">';
-				echo '<tr><th style="width: 4%"></th><th style="width: 65%"></th>';
+				echo '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
 				if (@$filter['time']['active']) {
 				    echo '<th>'.block_exacomp_get_string('assessment_date').'</th>';
 				}
@@ -7781,7 +7781,8 @@ function block_exacomp_group_reports_result($filter) {
                 echo '<th class="heading" class="teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
                 echo '<th class="heading" class="exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
                 echo '<th class="heading"class="difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
-				echo $output;
+                echo "<tbody>";
+                echo $output;
 				echo '</table>';
 			}
 		}
