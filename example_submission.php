@@ -36,7 +36,10 @@ require_login($course);
 
 $itemInformation = block_exacomp_get_current_item_for_example($USER->id, $exampleid);
 if ($itemInformation && !optional_param('newsubmission', false, PARAM_BOOL)) {
-	$url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$itemInformation->id,"descriptorselection"=>false));
+	// edit url
+	// $url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$itemInformation->id,"descriptorselection"=>false));
+	// view url + comments
+	$url = new moodle_url("/blocks/exaport/shared_item.php",array("courseid"=>$courseid,"access"=>"portfolio/id/".$itemInformation->userid,"itemid"=>$itemInformation->id));
 	redirect($url);
 }
 
