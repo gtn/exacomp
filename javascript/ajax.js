@@ -807,6 +807,13 @@
 		}
 	});
 
+	// preload M.core.dialogue if necessary
+	$(function(){
+		if ($('[exa-type=iframe-popup]').length) {
+			Y.use('moodle-core-notification-dialogue');
+		}
+	});
+
 	$(document).on('click', '[exa-type=iframe-popup]', function(event) {
 		event.preventDefault();
 		popupheight = this.getAttribute('exa-height');

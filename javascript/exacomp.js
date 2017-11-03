@@ -105,58 +105,61 @@
 				};
 			}
 
-			var popup = this.last_popup = new M.core.dialogue({
-				headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
-				// + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
+			// preload M.core.dialogue
+			Y.use('moodle-core-notification-dialogue', function(){
+				var popup = this.last_popup = new M.core.dialogue({
+					headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
+					// + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
 
-				bodyContent: '<iframe src="' + config.url + '" width="100%" height="100%" frameborder="0"></iframe>',
-				visible: true, //by default it is not displayed
-				modal: false, // sollte true sein, aber wegen moodle bug springt dann das fenster immer nach oben
-				zIndex: 1000,
-				// ok: width: '80%',
-				// ok: width: '500px',
-				// ok: width: null, = automatic
-				height: config.height || '80%',
-				width: config.width || '85%',
+					bodyContent: '<iframe src="' + config.url + '" width="100%" height="100%" frameborder="0"></iframe>',
+					visible: true, //by default it is not displayed
+					modal: false, // sollte true sein, aber wegen moodle bug springt dann das fenster immer nach oben
+					zIndex: 1000,
+					// ok: width: '80%',
+					// ok: width: '500px',
+					// ok: width: null, = automatic
+					height: config.height || '80%',
+					width: config.width || '85%',
+				});
+
+				// disable scrollbars
+				$(window).disablescroll();
+
+				// hack my own overlay, because moodle dialogue modal is not working
+				var overlay = $('<div style="opacity:0.7; filter: alpha(opacity=20); background-color:#000; width:100%; height:100%; z-index:10; top:0; left:0; position:fixed;"></div>')
+					.appendTo('body');
+				// hide popup when clicking overlay
+				overlay.click(function () {
+					popup.hide();
+				});
+
+				var orig_hide = popup.hide;
+				popup.hide = function () {
+
+					if (config.onhide) {
+						config.onhide();
+					}
+
+					// remove overlay, when hiding popup
+					overlay.remove();
+
+					// enable scrolling
+					$(window).disablescroll('undo');
+
+					// call original popup.hide()
+					orig_hide.call(popup);
+				};
+
+				popup.remove = function () {
+					if (this.$body.is(':visible')) {
+						this.hide();
+					}
+
+					this.destroy();
+				};
 			});
 
-			// disable scrollbars
-			$(window).disablescroll();
-
-			// hack my own overlay, because moodle dialogue modal is not working
-			var overlay = $('<div style="opacity:0.7; filter: alpha(opacity=20); background-color:#000; width:100%; height:100%; z-index:10; top:0; left:0; position:fixed;"></div>')
-				.appendTo('body');
-			// hide popup when clicking overlay
-			overlay.click(function () {
-				popup.hide();
-			});
-
-			var orig_hide = popup.hide;
-			popup.hide = function () {
-
-				if (config.onhide) {
-					config.onhide();
-				}
-
-				// remove overlay, when hiding popup
-				overlay.remove();
-
-				// enable scrolling
-				$(window).disablescroll('undo');
-
-				// call original popup.hide()
-				orig_hide.call(popup);
-			};
-
-			popup.remove = function () {
-				if (this.$body.is(':visible')) {
-					this.hide();
-				}
-
-				this.destroy();
-			};
-
-			return popup;
+			// TODO: return popup as a promise?
 		},
 
 		popup_close: function () {
