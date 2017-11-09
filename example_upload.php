@@ -219,7 +219,14 @@ if($exampleid > 0) {
 	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid,
 			array('subdirs' => 0, 'maxfiles' => 1));
 	$example->solution = $draftitemid;
-	
+
+	// currently externaltask can only hold a module url
+	// read the id from the url and assign it to the form
+	// TODO: later add a modid field or so
+	if ($example->externaltask && preg_match('![^a-z]id=(?<id>[0-9]+)!', $example->externaltask, $matches)) {
+		$example->assignment = $matches['id'];
+	}
+
 	$form->set_data($example);
 }
 

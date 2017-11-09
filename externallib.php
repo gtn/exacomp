@@ -2957,6 +2957,7 @@ class block_exacomp_external extends external_api {
 			'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
 			'taskfilename' => new external_value (PARAM_TEXT, 'task filename'),
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
+			'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
 			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
 			'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),

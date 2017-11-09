@@ -1721,7 +1721,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						if ($example->externalurl) {
 							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
-						} elseif ($example->externaltask) {
+						}
+
+						if ($example->externaltask) {
 							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
 						}
 
