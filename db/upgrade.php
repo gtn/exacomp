@@ -2949,6 +2949,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2016092101, 'exacomp');
 	}
 	
+	
+	if ($oldversion < 2017082400) {
+    	// Define field resubmission to be added to block_exacompexameval.
+    	$table = new xmldb_table('block_exacompexameval');
+    	$field = new xmldb_field('resubmission', XMLDB_TYPE_INTEGER, '5', null, null, null, '0');
+    	$dbman->change_field_default($table, $field);
+    	// Exacomp savepoint reached.
+    	upgrade_block_savepoint(true, 2017082400, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

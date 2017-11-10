@@ -5455,8 +5455,8 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 
 		//changed from $comp->student_evaluation >= 0 to > 0 because 0 means "O/A". 
 		//the student has to be able to submit examples, even if he doesn't feel like choosing a smiley
-		//this function only gets called when the student submits something, so the change from >= to > should work just fine 
-		if ($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation >= 0)) {
+		//this function only gets called when the student submits something, so the change from > to >= should work just fine 
+		if ($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation >= 0 && !$comp->resubmission )) {
 			return BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED;
 		}
 	}
