@@ -91,6 +91,11 @@ $extra = '<input type="hidden" name="action" value="search"/>';
 		.range-inputs {
 			display: none;
 		}
+
+		.filter-title {
+			display: inline-block;
+			width: 140px;
+		}
 	</style>
 	<script>
 			function update() {
@@ -115,6 +120,8 @@ $extra = '<input type="hidden" name="action" value="search"/>';
 <?php
 
 if (optional_param('action', '', PARAM_TEXT) == 'search') {
+    echo html_writer::tag('h2',block_exacomp_get_string('result'));
+
 	block_exacomp_group_reports_result($filter);
 }
 

@@ -7657,8 +7657,6 @@ function block_exacomp_group_reports_result($filter) {
 	$students = block_exacomp_get_students_by_course($courseid);
 
 	if ($filter['type'] == 'students') {
-	    echo html_writer::tag('h2',block_exacomp_get_string('result'));
-
 		$has_output = false;
 
 		foreach ($students as $student) {
@@ -7753,7 +7751,7 @@ function block_exacomp_group_reports_result($filter) {
 				}
 				
 				echo '<td class="exarep_descriptor" style="white-space: nowrap">'.$item->get_numbering();
-				echo '<td class="exarep_descriptorText" style="padding-left: '.($level * 20).'px">'.$item->title;
+				echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
 				if (@$filter['time']['active']) {
 					echo '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
@@ -7797,8 +7795,6 @@ function block_exacomp_group_reports_result($filter) {
 
 	if ($filter['type'] == 'student_counts') {
 		$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
-
-		echo html_writer::tag('h2',block_exacomp_get_string('result'));
 
 		echo '<table>';
 		echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
@@ -7866,7 +7862,7 @@ function block_exacomp_group_reports_result($filter) {
 
 				echo '<tr>';
 				echo '<td style="white-space: nowrap">'.$item->get_numbering();
-				echo '<td style="padding-left: '.($level * 20).'px">'.$item->title;
+				echo '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
 				echo '<td style="padding: 0 10px;">'.$count;
 			}
 
