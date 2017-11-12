@@ -5453,10 +5453,10 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 
 		$items_examp = $DB->get_records_sql($sql, array($exampleid, $studentid));
 
-		//changed from $comp->student_evaluation >= 0 to > 0 because 0 means "O/A". 
-		//the student has to be able to submit examples, even if he doesn't feel like choosing a smiley
-		//this function only gets called when the student submits something, so the change from > to >= should work just fine 
-		if ($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation >= 0 && !$comp->resubmission )) {
+		// $comp->student_evaluation can also be 0 = "O/A".
+		// if student has an self-evaluation, and that self-evaluation was after the teacher evaluation (or teacher hasn't evaluated yet)
+		// then the example is submitted
+		if ($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation >= 0 && $comp->timestamp_student > $comp->timestamp_teacher)) {
 			return BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED;
 		}
 	}
