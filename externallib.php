@@ -4709,9 +4709,7 @@ class block_exacomp_external extends external_api {
 		} else {
 			$item = $DB->get_record('block_exaportitem', array('id' => $itemid));
 
-			if ($url != '') {
-				$item->url = $url;
-			}
+			$item->url = $url;
 			$item->timemodified = time();
 
 			if ($type == 'file') {
@@ -4752,8 +4750,8 @@ class block_exacomp_external extends external_api {
 			$itemexample->studentvalue = $studentvalue;
 			$DB->update_record('block_exacompitemexample', $itemexample);
 
+			$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
 			if ($studentcomment != '') {
-				$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
 				$DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
 			}
 		}

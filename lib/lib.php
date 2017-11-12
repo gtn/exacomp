@@ -3282,7 +3282,7 @@ function block_exacomp_truncate_all_data() {
 function block_exacomp_exaportexists() {
 	global $DB;
 
-	return $DB->get_record('block', array('name' => 'exaport'));
+	return !!$DB->get_record('block', array('name' => 'exaport'));
 }
 
 /**
