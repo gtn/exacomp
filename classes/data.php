@@ -1341,6 +1341,12 @@ class data_importer extends data {
 	private static function insert_or_update_item($table, $item) {
 		$where = $item->source ? array('source' => $item->source, 'sourceid' => $item->sourceid) : array('id'=>$item->id);
 
+		// when exporting some niveaus had no title
+		// when reimporting use empty title
+		if (@$item->title === null) {
+			$item->title = '';
+		}
+
 		// before inserting decode html entities if needed
 		foreach ($item as $key=>$value) {
 			if (is_string($value) && strpos($value, 'uml;')) {
