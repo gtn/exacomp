@@ -7723,6 +7723,24 @@ function block_exacomp_group_reports_result($filter) {
 				}
 
 				$walk_subs($level + 1);
+
+				$filter_active = $item_filter;
+				unset($filter_active['active']);
+				unset($filter_active['visible']);
+				$filter_active = array_filter($filter_active, function($value) { return !empty($value); });
+				$filter_active = !!$filter_active;
+
+				if (!$filter_active) {
+					if ($item instanceof \block_exacomp\subject && !$item->topics) {
+						return false;
+					}
+					if ($item instanceof \block_exacomp\topic && !$item->descriptors) {
+						return false;
+					}
+					if ($item instanceof \block_exacomp\descriptor && !$item->children && !$item->examples) {
+						return false;
+					}
+				}
 			});
 
 
@@ -7748,6 +7766,8 @@ function block_exacomp_group_reports_result($filter) {
 				    echo '<tr class="exarep_descriptor_parent_row">';
 				}else if($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $level > 2) {
 				    echo '<tr class="exarep_descriptor_child_row">';
+				}else if($item_type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+				    echo '<tr class="exarep_example_row">';
 				}
 				
 				echo '<td class="exarep_descriptor" style="white-space: nowrap">'.$item->get_numbering();
