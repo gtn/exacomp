@@ -835,11 +835,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$evaluation_cell = new html_table_cell();
 						$evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
 
-						$niveau_cell = new html_table_cell();
-						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-						$niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
+ 						$niveau_cell = new html_table_cell();
+ 						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+ 						$niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
-					    $niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, !$isEditingTeacher, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
+ 					    $niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, !$isEditingTeacher, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
 
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$subject->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
@@ -1514,17 +1514,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$evaluation_cell = new html_table_cell();
 						$evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
 
-						$niveau_cell = new html_table_cell();
-						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-						$niveau_cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
+ 						$niveau_cell = new html_table_cell();
+ 						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+ 						$niveau_cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
 
 						if($data->role == BLOCK_EXACOMP_ROLE_TEACHER && !$isEditingTeacher){
 						    $disableCell = true;
 						}else{
 						    $disableCell = ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student) ? false : true);
 						}
-						$niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student,
-						    $disableCell, ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
+ 						$niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student,
+ 						    $disableCell, ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
 
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$descriptor->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
@@ -2272,7 +2272,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function generate_niveau_select($name, $compid, $type, $student, $disabled = false, $reviewerid = null) {
 		global $USER, $DB;
-
+		
+		//Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+        //the warning contains the name of the reviewer
+		$reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+		$reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+		$reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+		if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+		    $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+		}else {
+		    $reviewername=$reviewerTeacherUsername;
+		}
+		
 		if (block_exacomp_use_eval_niveau()) {
 			$options = \block_exacomp\global_config::get_evalniveaus(true);
 
@@ -2286,6 +2297,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$attributes['exa-compid'] = $compid;
 			$attributes['exa-userid'] = $student->id;
+			
+			$attributes['reviewername'] = $reviewername;
 
 			//$attributes['exa-evaluation'] = $evaluation;
 

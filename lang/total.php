@@ -878,10 +878,14 @@ return [
 		'unbekannte Quelle',
 		'Unknown source',
 	],
-	'override_notice' => [
-		'Dieser Eintrag wurde von jemand anderem bearbeitet. Wirklich ändern?',
-		'This entry was editied by someone else before. Continue?',
+	'override_notice1' => [
+		'Dieser Eintrag wurde von ',
+		'This entry was editied by ',
 	],
+    'override_notice2' => [
+        ' bearbeitet. Wirklich ändern?',
+        ' before. Continue?',
+    ],
 	'unload_notice' => [
 		'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.',
 		'Are you sure? Unsaved changes will be lost.',

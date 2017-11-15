@@ -190,7 +190,7 @@ function block_exacomp_init_js_css() {
 		'show', 'hide', 'all',
 	], 'moodle');
 	$PAGE->requires->strings_for_js([
-		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples',
+	    'override_notice1', 'override_notice2','unload_notice', 'example_sorting_notice', 'delete_unconnected_examples',
 		'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule',
 		'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled',
 		'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation',

@@ -38,7 +38,7 @@
 	$(document).on('change', 'input[name^=datadescriptors\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
 				return;
 			}
@@ -96,7 +96,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
@@ -128,7 +128,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
@@ -170,7 +170,7 @@
 
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			}
@@ -233,7 +233,7 @@
 		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
 
 		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
 				return;
 			}
@@ -281,7 +281,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
@@ -315,7 +315,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
@@ -355,7 +355,7 @@
 		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid+']').val();
 
 		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
 				return;
 			}
@@ -396,7 +396,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
@@ -431,7 +431,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
@@ -540,7 +540,7 @@
 		var hide = $(tr).find('input[name~="hide-example"]');
 
 		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
 				return;
 			}
@@ -572,7 +572,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
@@ -600,7 +600,7 @@
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
