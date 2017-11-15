@@ -669,6 +669,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $isEditingTeacher = true) {
 		global $DB, $USER;
+		
 
 		$table = new html_table();
 		$rows = array();
@@ -841,12 +842,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
  					    $niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, !$isEditingTeacher, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
 
+ 					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+ 					    //the warning contains the name of the reviewer
+ 					    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+ 					    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+ 					    $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+ 					    if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+ 					        $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+ 					    }else {
+ 					        $reviewername=$reviewerTeacherUsername;
+ 					    }
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$subject->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
 							'value' => isset($student->subjects->teacher_additional_grading[$subject->id]) ?
 								block_exacomp_format_eval_value($student->subjects->teacher_additional_grading[$subject->id]) : "",
 							'exa-compid' => $subject->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_SUBJECT,
-							'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+							'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
+						    'reviewername' => $reviewername);
 
 						if ($role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
 							$params['disabled'] = 'disabled';
@@ -865,7 +877,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								if ($scheme == 1) {
 									$evaluation_cell->text = $this->generate_checkbox($checkboxname, $subject->id, 'subjects', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true);
 								} else {
-									$evaluation_cell->text = $this->generate_select($checkboxname, $subject->id, 'subjects', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true, $profoundness);
+									$evaluation_cell->text = $this->generate_select($checkboxname, $subject->id, 'subjects', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true, $profoundness, $reviewerid);
 								}
 							}
 						} else {
@@ -981,11 +993,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_crosssub', $crosssubjid, 'crosssubs', $student, ($role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : false, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
 
+				//Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+				//the warning contains the name of the reviewer
+				$reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+				$reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+				$reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+				if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+				    $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+				}else {
+				    $reviewername=$reviewerTeacherUsername;
+				}
 				$params = array('name' => 'add-grading-'.$student->id.'-'.$crosssubjid, 'type' => 'text',
 					'maxlength' => 3, 'class' => 'percent-rating-text',
 					'value' => isset($student->crosssubs->teacher_additional_grading[$crosssubjid]) ?
 						block_exacomp_format_eval_value($student->crosssubs->teacher_additional_grading[$crosssubjid]) : "",
-					'exa-compid' => $crosssubjid, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_CROSSSUB);
+					'exa-compid' => $crosssubjid, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_CROSSSUB,
+				    'reviewername' => $reviewername);
 
 				if ($role == BLOCK_EXACOMP_ROLE_STUDENT  || !$isEditingTeacher) {
 					$params['disabled'] = 'disabled';
@@ -1003,7 +1026,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if ($scheme == 1) {
 						$evaluation_cell->text = $this->generate_checkbox($checkboxname, $crosssubjid, 'crosssubs', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true);
 					} else {
-						$evaluation_cell->text = $this->generate_select($checkboxname, $crosssubjid, 'crosssubs', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true, $profoundness);
+						$evaluation_cell->text = $this->generate_select($checkboxname, $crosssubjid, 'crosssubs', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true, $profoundness, $reviewerid);
 					}
 				}
 
@@ -1192,12 +1215,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student,
 						    $disableCell, ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
 
+					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+					    //the warning contains the name of the reviewer
+					    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+					    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+					    $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+					    if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+					        $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+					    }else {
+					        $reviewername=$reviewerTeacherUsername;
+					    }
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$topic->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
 							'value' => isset($student->topics->teacher_additional_grading[$topic->id]) ?
 								block_exacomp_format_eval_value($student->topics->teacher_additional_grading[$topic->id]) : "",
 							'exa-compid' => $topic->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_TOPIC,
 							'reviewerid' => ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
+						    'reviewername' => $reviewername, 
 						);
 
 						if (!$visible_student || $data->role == BLOCK_EXACOMP_ROLE_STUDENT  || !$isEditingTeacher) {
@@ -1216,7 +1250,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if ($data->scheme == 1) {
 								$evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 							} else {
-								$evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+							    $evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness, $reviewerid);
 							}
 						}
 
@@ -1526,12 +1560,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
  						$niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student,
  						    $disableCell, ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
 
+					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+					    //the warning contains the name of the reviewer
+					    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+					    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+					    $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+					    if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+					        $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+					    }else {
+					        $reviewername=$reviewerTeacherUsername;
+					    }
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$descriptor->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
 							'value' => isset($student->competencies->teacher_additional_grading[$descriptor->id]) ?
 								block_exacomp_format_eval_value($student->competencies->teacher_additional_grading[$descriptor->id]) : "",
 							'exa-compid' => $descriptor->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_DESCRIPTOR,
 							'reviewerid' => ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
+						    'reviewername' => $reviewername,
 						);
 
 						if (!$visible_student || $data->role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
@@ -1550,7 +1595,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if ($data->scheme == 1) {
 								$evaluation_cell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 							} else {
-								$evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+							    $evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness, $reviewerid);
 							}
 						}
 
@@ -1848,7 +1893,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if ($data->scheme == 1) {
 							$evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 						} else {
-							$evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+						    $evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness, $reviewerid);
 						}
 
 						if ($data->showevaluation) {
@@ -2234,7 +2279,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @return String $select html code for select
 	 */
 	public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
-		global $USER;
+	    global $USER, $DB;
+		
+		
+		//Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+		//the warning contains the name of the reviewer
+	    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+	    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+	    $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+	    if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+	        $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+	    }else {
+	        $reviewername=$reviewerTeacherUsername;
+	    }
+
 
 		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
 
@@ -2263,6 +2321,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$attributes['exa-userid'] = $student->id;
 		$attributes['exa-evaluation'] = $evaluation;
 
+		$attributes['reviewername'] = $reviewername;
+		
 		return $this->select(
 			$options,
 			$name.'-'.$compid.'-'.$student->id.'-'.$evaluation,
