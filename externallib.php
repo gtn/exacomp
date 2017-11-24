@@ -4894,8 +4894,8 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
 		global $DB, $USER;
-		static::validate_parameters(static::dakora_get_descriptor_details_parameters(),
-			array('courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
+ 		static::validate_parameters(static::dakora_get_descriptor_details_parameters(),
+ 			array('courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
 
 		if (!$forall && $userid == 0) {
 			$userid = $USER->id;
@@ -4914,12 +4914,27 @@ class block_exacomp_external extends external_api {
 		$descriptor_return->additionalinfo = null;
 		$descriptor_return->evalniveauid = null;
 		$descriptor_return->timestampteacher = 0;
+		$descriptor_return->reviewerid = 0;
+		$descriptor_return->reviewername = null;
 		if (!$forall) {
 			if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
 				$descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
 				$descriptor_return->additionalinfo = $grading->additionalinfo;
 				$descriptor_return->evalniveauid = $grading->evalniveauid;
 				$descriptor_return->timestampteacher = $grading->timestamp;
+				$descriptor_return->reviewerid = $grading->reviewerid;
+				
+				//Reviewername finden
+				$reviewerid = $grading->reviewerid;
+				$reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+				$reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+				$reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+				if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+				    $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+				}else {
+				    $reviewername=$reviewerTeacherUsername;
+				}
+				$descriptor_return->reviewername = $reviewername;
 			}
 		}
 		$descriptor_return->studentevaluation = -1;
@@ -5041,6 +5056,8 @@ class block_exacomp_external extends external_api {
 
 	public static function dakora_get_descriptor_details_returns() {
 		return new external_single_structure (array(
+		    'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
+		    'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
 			'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
 			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 			'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
@@ -5054,6 +5071,8 @@ class block_exacomp_external extends external_api {
 			'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
 			'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
 			'children' => new external_multiple_structure (new external_single_structure (array(
+			    'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
+			    'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
 				'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
 				'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 				'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
