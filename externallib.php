@@ -3895,6 +3895,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_cross_subjects_by_course($courseid, $userid, $forall) {
 		global $USER, $DB;
+		
 		static::validate_parameters(static::dakora_get_cross_subjects_by_course_parameters(), array(
 			'courseid' => $courseid,
 			'userid' => $userid,
@@ -3949,6 +3950,10 @@ class block_exacomp_external extends external_api {
 		if (!$forall && $userid) {
 			foreach ($all_cross_subjects as $cross_subject) {
 				static::add_comp_eval($cross_subject, $courseid, $userid);
+			}
+		} else {
+			foreach ($all_cross_subjects as $cross_subject) {
+				static::add_empty_comp_eval($cross_subject);
 			}
 		}
 
@@ -7358,5 +7363,14 @@ class block_exacomp_external extends external_api {
 		$item->additionalinfo = $eval->additionalinfo;
 		$item->timestampteacher = $eval->timestampteacher;
 		$item->timestampstudent = $eval->timestampstudent;
+	}
+
+	protected static function add_empty_comp_eval($item) {
+		$item->teacherevaluation = null;
+		$item->studentevaluation = null;
+		$item->evalniveauid = null;
+		$item->additionalinfo = null;
+		$item->timestampteacher = null;
+		$item->timestampstudent = null;
 	}
 }
