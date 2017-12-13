@@ -1547,6 +1547,50 @@ return [
 		'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?',
 		'You are about to add the examples to the schedules of all students, do you want to continue?',
 	],
+    'participating_student' => [
+        'Kursteilnehmer/in',
+        'student',
+    ],   
+    '1. Einheit' => [
+        '1. Einheit:',
+        '1. unit',
+    ],
+    '2. Einheit' => [
+        '2. Einheit:',
+        '2. unit',
+    ],
+    '3. Einheit' => [
+        '3. Einheit:',
+        '3. unit',
+    ],
+    '4. Einheit' => [
+        '4. Einheit:',
+        '4. unit',
+    ],
+    '5. Einheit' => [
+        '5. Einheit:',
+        '5. unit',
+    ],
+    '6. Einheit' => [
+        '6. Einheit:',
+        '6. unit',
+    ],
+    '7. Einheit' => [
+        '7. Einheit:',
+        '7. unit',
+    ],
+    '8. Einheit' => [
+        '8. Einheit:',
+        '8. unit',
+    ],
+    '9. Einheit' => [
+        '9. Einheit:',
+        '9. unit',
+    ],
+    '10. Einheit' => [
+        '10. Einheit:',
+        '10. unit',
+    ],
 
 	// === Notifications ===
 	'notification_submission_subject' => [
@@ -1664,7 +1708,7 @@ return [
 	// === Message ===
 	'messagetocourse' => [
 		'Nachricht an alle Kursteilnehmer/innen senden',
-		'Nachricht an alle Kursteilnehmer/innen senden',
+		'Send message to all students',
 	],
 	'messageprovider:submission' => [
 		'Nachricht bei neuer Schülerabgabe',

@@ -455,6 +455,17 @@ $string['weekly_schedule_disabled'] = 'Hidden example can not be added to weekly
 $string['pre_planning_storage_disabled'] = 'Hidden example can not be added to pre-planning storage.';
 $string['add_example_for_all_students_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.';
 $string['add_example_for_all_students_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students, do you want to continue?';
+$string['participating_student'] = 'student';
+$string['1. Einheit'] = '1. unit';
+$string['2. Einheit'] = '2. unit';
+$string['3. Einheit'] = '3. unit';
+$string['4. Einheit'] = '4. unit';
+$string['5. Einheit'] = '5. unit';
+$string['6. Einheit'] = '6. unit';
+$string['7. Einheit'] = '7. unit';
+$string['8. Einheit'] = '8. unit';
+$string['9. Einheit'] = '9. unit';
+$string['10. Einheit'] = '10. unit';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} submitted a solution for {$a->example}';
@@ -489,7 +500,7 @@ $string['eventsimportcompleted'] = 'Import completed';
 $string['eventscrosssubjectadded'] = 'Interdisciplinary subject added';
 
 // === Message ===
-$string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
+$string['messagetocourse'] = 'Send message to all students';
 $string['messageprovider:submission'] = 'Notify teacher that a student has submitted an item';
 $string['messageprovider:grading'] = 'Notify Student that a teacher graded competencies';
 $string['messageprovider:self_assessment'] = 'Student assessed some own competencies';

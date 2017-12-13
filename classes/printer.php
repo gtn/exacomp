@@ -307,8 +307,8 @@ class printer {
 
 		$header = '
 			<table><tr>
-				<td style="font-size: 12pt; font-weight: bold;" align="left">Wochenplan</td>
-				<td style="font-size: 12pt; font-weight: bold;" align="right">Kursteilnehmer/in: '.fullname($student).'</td>
+				<td style="font-size: 12pt; font-weight: bold;" align="left">'.block_exacomp_get_string("weekly_schedule").'</td>
+				<td style="font-size: 12pt; font-weight: bold;" align="right">'.block_exacomp_get_string("participating_student").': '.fullname($student).'</td>
 			</tr></table>
 			&nbsp;<br />
 			<table border="0.1" style="padding: 1px">';
@@ -329,7 +329,11 @@ class printer {
 			if ($color_i % 2) {
 				$tbl .= ' style="background-color:#EEEEEE;"';
 			}
-			$tbl .= '><td>'.$slot["name"].'</td>';
+			if(block_exacomp_get_string($slot['name'])!='[[]]'){
+			    $tbl .= '><td>'.block_exacomp_get_string($slot['name']).'</td>';
+			}else{
+			    $tbl .= '><td></td>';
+			}
 			foreach ($days as $day) {
 				for ($col_i = 0; $col_i < $day->colspan; $col_i++) {
 					$example = $day->slots[$slot_i]->cols[$col_i];

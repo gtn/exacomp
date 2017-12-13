@@ -461,6 +461,17 @@ $string['weekly_schedule_disabled'] = 'Lernmaterial ist versteckt und kann nicht
 $string['pre_planning_storage_disabled'] = 'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.';
 $string['add_example_for_all_students_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
 $string['add_example_for_all_students_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?';
+$string['participating_student'] = 'Kursteilnehmer/in:';
+$string['1. Einheit'] = '1. Einheit:';
+$string['2. Einheit'] = '2. Einheit:';
+$string['3. Einheit'] = '3. Einheit:';
+$string['4. Einheit'] = '4. Einheit:';
+$string['5. Einheit'] = '5. Einheit:';
+$string['6. Einheit'] = '6. Einheit:';
+$string['7. Einheit'] = '7. Einheit:';
+$string['8. Einheit'] = '8. Einheit:';
+$string['9. Einheit'] = '9. Einheit:';
+$string['10. Einheit'] = '10. Einheit:';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht';
