@@ -114,7 +114,7 @@ $extra = '<input type="hidden" name="action" value="search"/>';
 	<div class="block">
 		<?php 
 		  echo '<h2>'.block_exacomp_get_string('display_settings').'</h2>';
-		  echo $output->group_report_filters('exacomp', $filter, '', $extra); 
+		  echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid); 
 		?>
 	</div>
 <?php

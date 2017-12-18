@@ -128,7 +128,8 @@ class block_exacomp_simple_service {
 			<input type="hidden" name="courseid" value="'.$course->id.'"/>
 		';
 
-		echo $output->group_report_filters('webservice', $filter, $action, $extra);
+		$courseid = required_param('courseid', PARAM_INT);
+		echo $output->group_report_filters('webservice', $filter, $action, $extra, $courseid);
 	}
 
 	static function group_reports_result() {

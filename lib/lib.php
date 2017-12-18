@@ -7586,7 +7586,7 @@ function block_exacomp_format_eval_value($value) {
 
 function block_exacomp_group_reports_get_filter() {
 	$filter = (array)@$_REQUEST['filter'];
-
+	
 	if (!$filter) {
 		// default filter
 		@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
@@ -7658,7 +7658,10 @@ function block_exacomp_group_reports_result($filter) {
 
 	if ($filter['type'] == 'students') {
 		$has_output = false;
-
+		
+		if($filter['selectedStudent'] != 0){
+		    $students=array($students[$filter['selectedStudent']]);
+ 		}
 		foreach ($students as $student) {
 			$studentid = $student->id;
 

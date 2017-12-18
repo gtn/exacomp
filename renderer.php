@@ -4459,9 +4459,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function group_report_filters($type, $filter, $action, $extra = '') {
+	function group_report_filters($type, $filter, $action, $extra = '', $courseid) {
 		ob_start();
 		?>
+		
 		<form method="post" action="<?php echo $action; ?>">
 			<?php
 			echo $extra;
@@ -4472,17 +4473,28 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					<div>
 						<label><input type="radio" name="filter[type]" value="students" <?php if (@$filter['type'] == 'students') echo 'checked="checked"'; ?>/>
 							<?php echo block_exacomp_get_string('students_competences'); ?></label>&nbsp;&nbsp;&nbsp;
-						<label><input type="radio" name="filter[type]" value="student_counts" <?php if (@$filter['type'] == 'student_counts') echo 'checked="checked"'; ?>/>
-							<?php echo block_exacomp_get_string('number_of_students'); ?></label>&nbsp;&nbsp;&nbsp;
+						<?php 
+            			$studentsAssociativeArray = array();
+            			$students=block_exacomp_get_students_by_course($courseid);
+            			$studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
+            			foreach ($students as $student) {
+            			    $studentsAssociativeArray[$student->id] = fullname($student);
+            			}
+            			echo $this->select($studentsAssociativeArray,'filter[selectedStudent]',block_exacomp_get_string('all_students'),true);	
+            			?>	
+							
+						<br><label><input type="radio" name="filter[type]" value="student_counts" <?php if (@$filter['type'] == 'student_counts') echo 'checked="checked"'; ?>/>
+							<?php echo block_exacomp_get_string('number_of_students'); ?></label>&nbsp;&nbsp;&nbsp;				
+            			
 					</div>
 				</div>
 			</div>
 			<?php
-			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'subject');
-			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'topic');
+			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'report_subject');
+			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'report_competencefield');
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT, 'descriptor');
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, 'descriptor_child');
-			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_EXAMPLE, 'example');
+			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_EXAMPLE, 'report_learniningmaterial');
 
 			$input_type = 'time';
 			$input_filter = (array)@$filter[$input_type];

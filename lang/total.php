@@ -1033,19 +1033,19 @@ return [
 	],
 	'competence_grid_niveau' => [
 		'Niveau',
-		'Difficulty Level',
+		'difficulty Level',
 	],
 	'competence_grid_additionalinfo' => [
 		'Note',
-		'Grade',
+		'grade',
 	],
 	'descriptor' => [
 		'Kompetenz',
-		'Competence',
+		'competence',
 	],
 	'descriptor_child' => [
 		'Teilkompetenz',
-		'Sub competence',
+		'sub competence',
 	],
 	'assigndone' => [
 		'Aufgabe erledigt: ',
@@ -1146,7 +1146,7 @@ return [
 	],
 	'selfevaluation' => [
 		'Selbsteinschätzung',
-		'Self assessment',
+		'self assessment',
 	],
 	'selfevaluation_short' => [
 		'SE',
@@ -1154,7 +1154,7 @@ return [
 	],
 	'teacherevaluation' => [
 		'Einschätzung des Beurteilenden',
-		'Trainer assessment',
+		'trainer assessment',
 	],
 	'competencegrid_nodata' => [
 		'Sollte der Kompetenzraster leer sein, wurden für die Deskriptoren des ausgewählten Gegenstands keine Niveaus in den Daten definiert',
@@ -1627,7 +1627,7 @@ return [
 	],
 	'notification_self_assessment_context' => [
 		'Selbsteinschätzung',
-		'Self assessment',
+		'self assessment',
 	],
 	'notification_example_comment_subject' => [
 		'{$a->site}: Neuer Kommentar bei Aufgabe {$a->example}',
@@ -1797,58 +1797,58 @@ return [
 	// === Group Reports ===
     'result' => [
         'Ergebnis',
-        'Result',
+        'result',
     ],
     'evaluationdate'=> [
         'Bewertungsdatum',
-        'Evaluation Date',
+        'evaluation Date',
     ],
     'output_current_assessments' => [ 
         'Ausgabe der jeweiligen Bewertungen',
-        'Output of current assessments',
+        'output of current assessments',
     ],
     'student_assessment' => [
         'Schülerbewertung',
-        'Student assessment',
+        'students\' assessment',
     ],
     'teacher_assessment' => [
         'Lehrerbewertung',
-        'Teacher assessment',
+        'teachers\' assessment',
     ],
     'exa_evaluation' => [
         'Lernmaterial Bewertung',
-        'Example evaluation',
+        'learning material',
     ],
     'difficulty_group_report' => [
         'Niveau',
-        'Difficulty level',
+        'difficulty level',
     ],'no_entries_found' => [
         'Keine Einträge gefunden',
-        'No entries found',
+        'no entries found',
     ],'assessment_date' => [
         'Bewertungsdatum',
-        'Assessment date',
+        'assessment date',
     ],'number_of_found_students' => [
         'Anzahl gefundener Schüler',
-        'Number of found students',
+        'number of found students',
     ],'display_settings' => [
         'Anzeigeoptionen',
-        'Display settings',
+        'display settings',
     ],'create_report' => [
         'Bericht erstellen',
-        'Create report',
+        'generate report',
     ],'students_competences' => [
         'Schüler Kompetenzen',
-        'Student competences',
+        'students\' competences',
     ],'number_of_students' => [
         'Schüler Anzahl',
-        'Number of students',
+        'number of students',
     ],'no_specification' => [
         'ohne Angabe',
-        'no specification',
+        'not specified',
     ],'period' => [
         'Zeitintervall',
-        'Period',
+        'time interval',
     ],'from' => [
         'von',
         'from',
@@ -1857,8 +1857,18 @@ return [
         'to',
     ],'report_type' => [
         'Report Typ',
-        'Report Type',
+        'type of report',
+    ],'report_subject' => [
+        'Bildungsstandard',
+        'educational standard',
+    ],'report_learniningmaterial' => [
+        'Lernmaterial',
+        'learning material',
+    ],'report_competencefield' => [
+        'Kompetenzbereich',
+        'competence field',
+    ], 'all_students' => [
+        'Alle Schüler',
+        'all students',
     ]
-  
-    
 ];
