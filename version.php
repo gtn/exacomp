@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 //
 // You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
+
 // This copyright notice MUST APPEAR in all copies of the script!
 
 defined('MOODLE_INTERNAL') || die();
