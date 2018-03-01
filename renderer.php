@@ -308,7 +308,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($this->is_edit_mode()) {
 			// add niveau button
 			// nur erlauben, wenn auch ein einzelner topic ausgewählt wurde
-			$addNiveauContent = "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_trans(['de:Neuer Lernfortschritt', 'en:New niveau']);
+			$addNiveauContent = "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_trans(['de:Neuer Lernfortschritt', 'en:new diffic level']);
 
 			if ($selectedTopic) {
 				$content .= html_writer::tag('li',
