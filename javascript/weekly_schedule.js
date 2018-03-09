@@ -295,7 +295,7 @@
 			&& x <= offset.right
 			&& y <= offset .bottom);
 	}
-
+	
 	function create_calendar() {
 		$('#calendar').fullCalendar({
 			header: {
@@ -303,7 +303,7 @@
 				center: 'title',
 				right: 'month,agendaWeek,agendaDay'
 			},
-			lang: 'de',
+			lang: $('html').attr('lang'),
 			defaultView: 'agendaWeek',
 			defaultDate: (moment().day() == 6 || moment().day() == 0) ? moment().add(2, "days") : moment(),
 			minTime: "00:00:00",
