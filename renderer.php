@@ -2070,7 +2070,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function schedule_icon($exampleid, $studentid, $courseid) {
 		return html_writer::link(
 			"#",
-			$this->pix_icon("e/insert_date", block_exacomp_get_string("weekly_schedule")),
+			$this->pix_icon("e/insert_date", block_exacomp_get_string("example_pool")),
 			array('class' => 'add-to-schedule', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
 
