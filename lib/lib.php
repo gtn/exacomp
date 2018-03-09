@@ -194,7 +194,8 @@ function block_exacomp_init_js_css() {
 		'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule',
 		'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled',
 		'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation',
-		'topic_3dchart_empty', 'columnselect',
+	    'topic_3dchart_empty', 'columnselect', 'n1.unit', 'n2.unit', 'n3.unit', 'n4.unit', 'n5.unit', 'n6.unit', 'n7.unit',
+	    'n8.unit', 'n9.unit', 'n10.unit',
 	], 'block_exacomp');
 
 	// page specific js/css

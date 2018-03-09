@@ -456,16 +456,16 @@ $string['pre_planning_storage_disabled'] = 'Hidden example can not be added to p
 $string['add_example_for_all_students_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.';
 $string['add_example_for_all_students_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students, do you want to continue?';
 $string['participating_student'] = 'student';
-$string['1. Einheit'] = '1. unit';
-$string['2. Einheit'] = '2. unit';
-$string['3. Einheit'] = '3. unit';
-$string['4. Einheit'] = '4. unit';
-$string['5. Einheit'] = '5. unit';
-$string['6. Einheit'] = '6. unit';
-$string['7. Einheit'] = '7. unit';
-$string['8. Einheit'] = '8. unit';
-$string['9. Einheit'] = '9. unit';
-$string['10. Einheit'] = '10. unit';
+$string['n1.unit'] = '1. unit';
+$string['n2.unit'] = '2. unit';
+$string['n3.unit'] = '3. unit';
+$string['n4.unit'] = '4. unit';
+$string['n5.unit'] = '5. unit';
+$string['n6.unit'] = '6. unit';
+$string['n7.unit'] = '7. unit';
+$string['n8.unit'] = '8. unit';
+$string['n9.unit'] = '9. unit';
+$string['n10.unit'] = '10. unit';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} submitted a solution for {$a->example}';

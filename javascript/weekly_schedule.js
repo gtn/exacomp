@@ -443,14 +443,16 @@
 			
 			viewRender: function(view, element) {
 				// reset axis labels
-				var i = 0, einheit = 0;
+				var i = 0, unit = 0;
 				element.find('.fc-time').each(function(){
 					var slot = exacomp_calcendar_config.slots[i];
-					this.innerHTML = '<span>'+(slot.name ? '<b>' + slot.name + '</b><br />' + slot.time : '')
+					//manipulate the string in order to get it into a form that is allowed by the string system:
+					slot.name=slot.name.replace(" Einheit", "unit");
+					this.innerHTML = '<span>'+(slot.name ? '<b>' + M.util.get_string("n"+slot.name, 'block_exacomp') + '</b><br />' + slot.time : '')
 						+ '<span style="font-size: 85%">'+'</span>'+'</span>';
 					i++;
-					if (slot.name) einheit++;
-					if (einheit%2)
+					if (slot.name) unit++;
+					if (unit%2)
 						$(this).closest('tr').css('background-color', 'rgba(0, 0, 0, 0.08)');
 				});
 				

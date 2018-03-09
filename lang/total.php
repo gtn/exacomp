@@ -1551,43 +1551,43 @@ return [
         'Kursteilnehmer/in',
         'student',
     ],   
-    '1. Einheit' => [
+    'n1.unit' => [
         '1. Einheit:',
         '1. unit',
     ],
-    '2. Einheit' => [
+    'n2.unit' => [
         '2. Einheit:',
         '2. unit',
     ],
-    '3. Einheit' => [
+    'n3.unit' => [
         '3. Einheit:',
         '3. unit',
     ],
-    '4. Einheit' => [
+    'n4.unit' => [
         '4. Einheit:',
         '4. unit',
     ],
-    '5. Einheit' => [
+    'n5.unit' => [
         '5. Einheit:',
         '5. unit',
     ],
-    '6. Einheit' => [
+    'n6.unit' => [
         '6. Einheit:',
         '6. unit',
     ],
-    '7. Einheit' => [
+    'n7.unit' => [
         '7. Einheit:',
         '7. unit',
     ],
-    '8. Einheit' => [
+    'n8.unit' => [
         '8. Einheit:',
         '8. unit',
     ],
-    '9. Einheit' => [
+    'n9.unit' => [
         '9. Einheit:',
         '9. unit',
     ],
-    '10. Einheit' => [
+    'n10.unit' => [
         '10. Einheit:',
         '10. unit',
     ],

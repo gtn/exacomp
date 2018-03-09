@@ -462,16 +462,16 @@ $string['pre_planning_storage_disabled'] = 'Lernmaterial ist versteckt und kann 
 $string['add_example_for_all_students_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
 $string['add_example_for_all_students_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?';
 $string['participating_student'] = 'Kursteilnehmer/in';
-$string['1. Einheit'] = '1. Einheit:';
-$string['2. Einheit'] = '2. Einheit:';
-$string['3. Einheit'] = '3. Einheit:';
-$string['4. Einheit'] = '4. Einheit:';
-$string['5. Einheit'] = '5. Einheit:';
-$string['6. Einheit'] = '6. Einheit:';
-$string['7. Einheit'] = '7. Einheit:';
-$string['8. Einheit'] = '8. Einheit:';
-$string['9. Einheit'] = '9. Einheit:';
-$string['10. Einheit'] = '10. Einheit:';
+$string['n1.unit'] = '1. Einheit:';
+$string['n2.unit'] = '2. Einheit:';
+$string['n3.unit'] = '3. Einheit:';
+$string['n4.unit'] = '4. Einheit:';
+$string['n5.unit'] = '5. Einheit:';
+$string['n6.unit'] = '6. Einheit:';
+$string['n7.unit'] = '7. Einheit:';
+$string['n8.unit'] = '8. Einheit:';
+$string['n9.unit'] = '9. Einheit:';
+$string['n10.unit'] = '10. Einheit:';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht';
