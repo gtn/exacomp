@@ -59,6 +59,21 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 		}
 	}
 	
+	class block_exacomp_grading_schema extends admin_setting_configselect {
+		public function write_setting($data) {
+			$ret = parent::write_setting($data);
+		   
+			if ($ret != '') {
+				return $ret;
+			}
+
+			block_exacomp_update_evaluation_niveau_tables();
+
+			return '';
+		}
+	}
+	
+	
 	class admin_setting_configcheckbox_grading extends admin_setting_configcheckbox {
 		public function write_setting($data) {
 			$ret = parent::write_setting($data);
@@ -80,6 +95,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			return '';
 		}
 	}
+	
+	
 }
 
 // generate id if not set
@@ -100,8 +117,49 @@ $settings->add(new admin_setting_configcheckbox('exacomp/notifications', block_e
 $settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', block_exacomp_get_string('useprofoundness'),
 		'', 0));
 
+$settings->add(new admin_setting_heading('exacomp/heading_evaluation_new', block_exacomp_trans(['de:Beurteilung Neu', 'en:Evaluation New']), ''));
 
-$settings->add(new admin_setting_heading('exacomp/heading_evaluation', block_exacomp_trans(['de:Beurteilung', 'en:Evaluation']), ''));
+
+
+$settings->add(new block_exacomp_grading_schema('exacomp/grading_subject_schema', block_exacomp_trans(['de:Gegenstand Bewertungsschema', 'en:Subject Grading Scheme']),
+	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_subject_useDifficultylevel', block_exacomp_trans(['de:Gegenstand Niveau verwenden', 'en:Subject Use Difficulty Level']),
+	'i.e. GME or Not', 1));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_subject_useStudentSelfEvaluation', block_exacomp_trans(['de:Gegenstand Schülerselbsteinschätzung verwenden', 'en:Subject Use Student Self Evaluation']),
+	'', 1));
+	
+	
+$settings->add(new block_exacomp_grading_schema('exacomp/grading_topic_schema', block_exacomp_trans(['de:Thema Bewertungsschema', 'en:Topic Grading Scheme']),
+	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_topic_useDifficultylevel', block_exacomp_trans(['de:Thema Niveau verwenden', 'en:Topic Use Difficulty Level']),
+	'i.e. GME or Not', 1));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_topic_useStudentSelfEvaluation', block_exacomp_trans(['de:Thema Schülerselbsteinschätzung verwenden', 'en:Topic Use Student Self Evaluation']),
+	'', 1));
+	
+$settings->add(new block_exacomp_grading_schema('exacomp/grading_competence_schema', block_exacomp_trans(['de:Kompetenz Bewertungsschema', 'en:Competence Grading Scheme']),
+	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_competence_useDifficultylevel', block_exacomp_trans(['de:Kompetenz Niveau verwenden', 'en:Competence Use Difficulty Level']),
+	'i.e. GME or Not', 1));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_competence_useStudentSelfEvaluation', block_exacomp_trans(['de:Kompetenz Schülerselbsteinschätzung verwenden', 'en:Competence Use Student Self Evaluation']),
+	'', 1));
+	
+$settings->add(new block_exacomp_grading_schema('exacomp/grading_childcompetence_schema', block_exacomp_trans(['de:Teilkompetenz Bewertungsschema', 'en:Childcompetence Grading Scheme']),
+	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_childcompetence_useDifficultylevel', block_exacomp_trans(['de:Teilkompetenz Niveau verwenden', 'en:Childcompetence Use Difficulty Level']),
+	'i.e. GME or Not', 1));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_childcompetence_useStudentSelfEvaluation', block_exacomp_trans(['de:Teilkompetenz Schülerselbsteinschätzung verwenden', 'en:Childcompetence Use Student Self Evaluation']),
+	'', 1));
+	
+$settings->add(new block_exacomp_grading_schema('exacomp/grading_example_schema', block_exacomp_trans(['de:Lernmaterial Bewertungsschema', 'en:Material Grading Scheme']),
+	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_example_useDifficultylevel', block_exacomp_trans(['de:Lernmaterial Niveau verwenden', 'en:Example Use Difficulty Level']),
+	'i.e. GME or Not', 1));
+$settings->add(new admin_setting_configcheckbox('exacomp/grading_example_useStudentSelfEvaluation', block_exacomp_trans(['de:Lernmaterial Schülerselbsteinschätzung verwenden', 'en:Example Use Student Self Evaluation']),
+	'', 1));
+	
+	
+$settings->add(new admin_setting_heading('exacomp/heading_evaluation', block_exacomp_trans(['de:Beurteilung Alt', 'en:Evaluation old']), ''));
+
 
 $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', block_exacomp_get_string('settings_admin_scheme'),
 	block_exacomp_get_string('settings_admin_scheme_description'), block_exacomp_get_string('settings_admin_scheme_none'), array(block_exacomp_get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));
