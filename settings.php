@@ -95,7 +95,145 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			return '';
 		}
 	}
-	
+
+	// Table with Evaluation settings
+    class block_exacomp_grading_configtable extends admin_setting {
+
+	    private $targets = array('example', 'childcompetence', 'competence', 'topic', 'subject', 'crosssubject');
+	    private $params = array('schema', 'useDifficultylevel', 'useStudentSelfEvaluation');
+	    private $schemascount = 3;
+
+        public function __construct($name, $visiblename, $description, $defaultsetting) {
+            // Default grading settings.
+            if ($defaultsetting == '') {
+                $gradingdefault = array();
+                foreach ($this->targets as $target) {
+                    foreach ($this->params as $param) {
+                        switch ($param) {
+                            case 'schema': $value = 0; break;
+                            case 'useDifficultylevel': $value = 1; break;
+                            case 'useStudentSelfEvaluation': $value = 1; break;
+                            default: $value = 1; break;
+                        }
+                        $gradingdefault[$target][$param] = $value;
+                    }
+                }
+            }
+            parent::__construct($name, $visiblename, $description, $gradingdefault);
+        }
+
+        public function get_setting() {
+            $result = array();
+            foreach ($this->targets as $target) {
+                foreach ($this->params as $param) {
+                    $targetparam = 'grading_'.$target.'_'.$param;
+                    $value = $this->config_read($targetparam);
+                    if ($value !== null) {
+                        $result[$target][$param] = $value;
+                    } else {
+                        $result[$target][$param] = $this->defaultsetting[$target][$param];
+                    };
+                }
+            }
+            return $result;
+        }
+
+        public function write_setting($data) {
+            if(!is_array($data)) {
+                $data = $this->defaultsetting;
+            }
+            $result = '';
+            foreach ($data as $target => $parameters) {
+                foreach ($parameters as $param => $value) {
+                    if (!$this->config_write('grading_'.$target.'_'.$param, trim($value))) {
+                        $result = get_string('errorsetting', 'admin');
+                    }
+                }
+            }
+            block_exacomp_update_evaluation_niveau_tables();
+            return $result;
+        }
+
+        public function output_html($data, $query='') {
+            $return = '';
+            $table = new html_table();
+            $table->head = array('');
+            // Add Schemas.
+            foreach ($this->params as $key => $param) {
+                // Key 0: schema
+                // Key 1: useDifficultylevel
+                // Key 2: useStudentSelfEvaluation
+                if ($key == 0) {
+                    // Schemascount with ZERO.
+                    for($i = 0; $i <= $this->schemascount; $i++) {
+                        $table->head[] = block_exacomp_get_string('settings_grading_'.$param.'_'.$i);
+                    }
+                } else {
+                    $table->head[] = block_exacomp_get_string('settings_grading_'.$param);
+                }
+            }
+            // Targets:
+            foreach ($this->targets as $key => $target) {
+                $row = new html_table_row();
+                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_grading_target_'.$target));
+                // Schemas.
+                for($i = 0; $i <= $this->schemascount; $i++) {
+                    $id = $this->get_id().'_'.$target.'_schema_'.$i;
+                    $name = $this->get_full_name().'['.$target.'][schema]';
+                    $schemaradioattributes = array(
+                        'type' => 'radio',
+                        'id' => $id,
+                        'name' => $name,
+                        'value' => $i
+                    );
+                    if ($data[$target]['schema'] == $i) {
+                        $schemaradioattributes['checked'] = 'checked';
+                    }
+                    $cell = new html_table_cell(html_writer::empty_tag('input', $schemaradioattributes));
+                    $cell->attributes['align'] = 'center';
+                    $row->cells[] = $cell;
+                }
+                // Params useDifficultylevel and useStudentSelfEvaluation.
+                $otherparams = array_slice($this->params, 1);
+
+                foreach ($otherparams as $key => $paramname) {
+                    $id = $this->get_id().'_'.$target.'_'.$paramname.'_'.$key;
+                    $name = $this->get_full_name().'['.$target.']['.$paramname.']';
+                    // We need "0" for non-checked checkboxes before checkbox element.
+                    $hiddeninput = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $name, 'value' => '0'));
+                    $checkbox = html_writer::checkbox($name,
+                            '1',
+                            $data[$target][$paramname],
+                            '',
+                            array('id' => $id));
+                    $cell = new html_table_cell($hiddeninput.$checkbox);
+                    $cell->attributes['align'] = 'center';
+                    $row->cells[] = $cell;
+                }
+                $table->data[] = $row;
+            }
+            $return .= html_writer::table($table);
+            // Get standard settings parameters template.
+            $template = format_admin_setting($this, $this->visiblename, $return,
+                    $this->description, true, '', '', $query);
+            // Hide some html for better view of this settings.
+            $doc = new DOMDocument();
+            $doc->loadHTML($template);
+            $selector = new DOMXPath($doc);
+            // Delete div with classes.
+            $deletedivs = array('form-label', 'form-defaultinfo');
+            foreach ($deletedivs as $deletediv) {
+                foreach($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e ) {
+                    $e->parentNode->removeChild($e);
+                }
+            }
+            // Change col-sm-9 -> col-sm-12 if it is here.
+            $template = $doc->saveHTML($doc->documentElement);
+            $template = str_replace('col-sm-9', 'col-sm-12', $template);
+            return $template;
+        }
+
+    }
 	
 }
 
@@ -117,49 +255,11 @@ $settings->add(new admin_setting_configcheckbox('exacomp/notifications', block_e
 $settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', block_exacomp_get_string('useprofoundness'),
 		'', 0));
 
-$settings->add(new admin_setting_heading('exacomp/heading_evaluation_new', block_exacomp_trans(['de:Beurteilung Neu', 'en:Evaluation New']), ''));
+$settings->add(new admin_setting_heading('exacomp/heading_evaluation_new', block_exacomp_get_string('settings_grading_schema'), ''));
 
+$settings->add(new block_exacomp_grading_configtable('exacomp/grading_mapping', '', '', ''));
 
-
-$settings->add(new block_exacomp_grading_schema('exacomp/grading_subject_schema', block_exacomp_trans(['de:Gegenstand Bewertungsschema', 'en:Subject Grading Scheme']),
-	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_subject_useDifficultylevel', block_exacomp_trans(['de:Gegenstand Niveau verwenden', 'en:Subject Use Difficulty Level']),
-	'i.e. GME or Not', 1));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_subject_useStudentSelfEvaluation', block_exacomp_trans(['de:Gegenstand Schülerselbsteinschätzung verwenden', 'en:Subject Use Student Self Evaluation']),
-	'', 1));
-	
-	
-$settings->add(new block_exacomp_grading_schema('exacomp/grading_topic_schema', block_exacomp_trans(['de:Thema Bewertungsschema', 'en:Topic Grading Scheme']),
-	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_topic_useDifficultylevel', block_exacomp_trans(['de:Thema Niveau verwenden', 'en:Topic Use Difficulty Level']),
-	'i.e. GME or Not', 1));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_topic_useStudentSelfEvaluation', block_exacomp_trans(['de:Thema Schülerselbsteinschätzung verwenden', 'en:Topic Use Student Self Evaluation']),
-	'', 1));
-	
-$settings->add(new block_exacomp_grading_schema('exacomp/grading_competence_schema', block_exacomp_trans(['de:Kompetenz Bewertungsschema', 'en:Competence Grading Scheme']),
-	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_competence_useDifficultylevel', block_exacomp_trans(['de:Kompetenz Niveau verwenden', 'en:Competence Use Difficulty Level']),
-	'i.e. GME or Not', 1));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_competence_useStudentSelfEvaluation', block_exacomp_trans(['de:Kompetenz Schülerselbsteinschätzung verwenden', 'en:Competence Use Student Self Evaluation']),
-	'', 1));
-	
-$settings->add(new block_exacomp_grading_schema('exacomp/grading_childcompetence_schema', block_exacomp_trans(['de:Teilkompetenz Bewertungsschema', 'en:Childcompetence Grading Scheme']),
-	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_childcompetence_useDifficultylevel', block_exacomp_trans(['de:Teilkompetenz Niveau verwenden', 'en:Childcompetence Use Difficulty Level']),
-	'i.e. GME or Not', 1));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_childcompetence_useStudentSelfEvaluation', block_exacomp_trans(['de:Teilkompetenz Schülerselbsteinschätzung verwenden', 'en:Childcompetence Use Student Self Evaluation']),
-	'', 1));
-	
-$settings->add(new block_exacomp_grading_schema('exacomp/grading_example_schema', block_exacomp_trans(['de:Lernmaterial Bewertungsschema', 'en:Material Grading Scheme']),
-	block_exacomp_trans(['de:Welches Beurteilungsschema wird verwendet', 'en:Evaluation Scheme']), block_exacomp_get_string('settings_admin_scheme_none'), array( 'None', 'Grad', 'Dropdown','YesNo')));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_example_useDifficultylevel', block_exacomp_trans(['de:Lernmaterial Niveau verwenden', 'en:Example Use Difficulty Level']),
-	'i.e. GME or Not', 1));
-$settings->add(new admin_setting_configcheckbox('exacomp/grading_example_useStudentSelfEvaluation', block_exacomp_trans(['de:Lernmaterial Schülerselbsteinschätzung verwenden', 'en:Example Use Student Self Evaluation']),
-	'', 1));
-	
-	
 $settings->add(new admin_setting_heading('exacomp/heading_evaluation', block_exacomp_trans(['de:Beurteilung Alt', 'en:Evaluation old']), ''));
-
 
 $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', block_exacomp_get_string('settings_admin_scheme'),
 	block_exacomp_get_string('settings_admin_scheme_description'), block_exacomp_get_string('settings_admin_scheme_none'), array(block_exacomp_get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));

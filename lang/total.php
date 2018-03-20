@@ -319,6 +319,58 @@ return [
 		'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".',
 		'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".',
 	],
+    'settings_grading_schema' => [
+        'Generisches Bewertungsschema',
+        'Generic assessment scheme',
+    ],
+    'settings_grading_schema_0' => [
+        'keine',
+        'None',
+    ],
+    'settings_grading_schema_1' => [
+        'Noten (1-6)',
+        'Grades (1-6)',
+    ],
+    'settings_grading_schema_2' => [
+        'Ausprägung',
+        'Completeness',
+    ],
+    'settings_grading_schema_3' => [
+        'Dichotom',
+        'Dichotomous',
+    ],
+    'settings_grading_useDifficultylevel' => [
+        'Globales Bewertungsniveau',
+        'Global grading level',
+    ],
+    'settings_grading_useStudentSelfEvaluation' => [
+        'Selbsteinschätzung',
+        'Student assessment',
+    ],
+    'settings_grading_target_example' => [
+        'Material',
+        'Material',
+    ],
+    'settings_grading_target_childcompetence' => [
+        'Teilkompetenz',
+        'Child competence',
+    ],
+    'settings_grading_target_competence' => [
+        'Kompetenz',
+        'Competence',
+    ],
+    'settings_grading_target_topic' => [
+        'Kompetenzbereich',
+        'Topic',
+    ],
+    'settings_grading_target_subject' => [
+        'Fach',
+        'Subject',
+    ],
+    'settings_grading_target_crosssubject' => [
+        'Thema (fachübergreifend)',
+        'Theme (interdisciplinary)',
+    ],
 
 	// === Unit Tests ===
 	'unittest_string' => [

@@ -105,6 +105,19 @@ $string['settings_additional_grading'] = 'Angepasste Bewertung';
 $string['settings_additional_grading_description'] = 'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken';
 $string['settings_periods'] = 'Einträge für Zeittafel';
 $string['settings_periods_description'] = 'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".';
+$string['settings_grading_schema'] = 'Generisches Bewertungsschema';
+$string['settings_grading_schema_0'] = 'keine';
+$string['settings_grading_schema_1'] = 'Noten (1-6)';
+$string['settings_grading_schema_2'] = 'Ausprägung';
+$string['settings_grading_schema_3'] = 'Dichotom';
+$string['settings_grading_useDifficultylevel'] = 'Globales Bewertungsniveau';
+$string['settings_grading_useStudentSelfEvaluation'] = 'Selbsteinschätzung';
+$string['settings_grading_target_example'] = 'Material';
+$string['settings_grading_target_childcompetence'] = 'Teilkompetenz';
+$string['settings_grading_target_competence'] = 'Kompetenz';
+$string['settings_grading_target_topic'] = 'Kompetenzbereich';
+$string['settings_grading_target_subject'] = 'Fach';
+$string['settings_grading_target_crosssubject'] = 'Thema (fachübergreifend)';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';

@@ -105,6 +105,19 @@ $string['settings_additional_grading'] = 'Adapted grading';
 $string['settings_additional_grading_description'] = 'Grading limited from "not gained(0)" - "completely gained(3)"';
 $string['settings_periods'] = 'Timetable entries';
 $string['settings_periods_description'] = 'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".';
+$string['settings_grading_schema'] = 'Generic assessment scheme';
+$string['settings_grading_schema_0'] = 'None';
+$string['settings_grading_schema_1'] = 'Grades (1-6)';
+$string['settings_grading_schema_2'] = 'Completeness';
+$string['settings_grading_schema_3'] = 'Dichotomous';
+$string['settings_grading_useDifficultylevel'] = 'Global grading level';
+$string['settings_grading_useStudentSelfEvaluation'] = 'Student assessment';
+$string['settings_grading_target_example'] = 'Material';
+$string['settings_grading_target_childcompetence'] = 'Child competence';
+$string['settings_grading_target_competence'] = 'Competence';
+$string['settings_grading_target_topic'] = 'Topic';
+$string['settings_grading_target_subject'] = 'Subject';
+$string['settings_grading_target_crosssubject'] = 'Theme (interdisciplinary)';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
