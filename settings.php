@@ -259,6 +259,20 @@ $settings->add(new admin_setting_heading('exacomp/heading_evaluation_new', block
 
 $settings->add(new block_exacomp_grading_configtable('exacomp/grading_mapping', '', '', ''));
 
+$settings->add(new admin_setting_configtext('exacomp/assessment_points_limit', block_exacomp_trans(['de:höchste Punkteanzahl', 'en:highest value for Points']),
+	block_exacomp_trans(['de:Bewertungsschema Punkte, die höchst mögliche Punkteanzahl die eingegeben werden kann.', 'en:assessment scheme points, limit for input']), 20, PARAM_INTEGER));
+
+$settings->add(new admin_setting_configtext('exacomp/assessment_grade_limit', block_exacomp_trans(['de:höchste Note', 'en:highest value for grade']),
+	block_exacomp_trans(['de:Bewertungsschema Note, die höchst mögliche Note die eingegeben werden kann.', 'en:assessment scheme grade, limit for input']), 20, PARAM_INTEGER));
+	
+$settings->add(new admin_setting_configtext('exacomp/assessment_diffLevel_options', block_exacomp_trans(['de:Niveau Werte', 'en:Difficulty Level Options']),
+	block_exacomp_trans(['de:Liste der möglichen Werte des Niveaus, z.B: G,M,E', 'en:list of difficultiy Levels, i.e. G,M,E']), 250, PARAM_TEXT));
+
+$settings->add(new admin_setting_configtext('exacomp/assessment_verbose_options', block_exacomp_trans(['de:Verbalisierung Werte', 'en:verbose Options']),
+	block_exacomp_trans(['de:Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht', 'en:list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained']), 250, PARAM_TEXT));
+	
+			
+	
 $settings->add(new admin_setting_heading('exacomp/heading_evaluation', block_exacomp_trans(['de:Beurteilung Alt', 'en:Evaluation old']), ''));
 
 $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', block_exacomp_get_string('settings_admin_scheme'),
