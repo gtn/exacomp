@@ -86,7 +86,7 @@ $string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum nächsten Sch
 // === Block Settings ===
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
-$string['settings_autotest'] = 'Automatischer Kompetenzerwerb durch Tests';
+$string['settings_autotest'] = 'Automatischer Kompetenzerwerb durch Moodle-Tests';
 $string['settings_autotest_description'] = 'Kompetenzen die mit Tests verbunden sind, gelten automatisch als erworben, wenn der angegebene Test-Prozentwert erreicht wurde';
 $string['settings_testlimit'] = 'Testlimit in %';
 $string['settings_testlimit_description'] = 'Dieser Prozentwert muss erreicht werden, damit die Kompetenz als erworben gilt';
@@ -105,19 +105,35 @@ $string['settings_additional_grading'] = 'Angepasste Bewertung';
 $string['settings_additional_grading_description'] = 'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken';
 $string['settings_periods'] = 'Einträge für Zeittafel';
 $string['settings_periods_description'] = 'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".';
-$string['settings_grading_schema'] = 'Generisches Bewertungsschema';
-$string['settings_grading_schema_0'] = 'keine';
-$string['settings_grading_schema_1'] = 'Noten (1-6)';
-$string['settings_grading_schema_2'] = 'Ausprägung';
-$string['settings_grading_schema_3'] = 'Dichotom';
-$string['settings_grading_useDifficultylevel'] = 'Globales Bewertungsniveau';
-$string['settings_grading_useStudentSelfEvaluation'] = 'Selbsteinschätzung';
-$string['settings_grading_target_example'] = 'Material';
-$string['settings_grading_target_childcompetence'] = 'Teilkompetenz';
-$string['settings_grading_target_competence'] = 'Kompetenz';
-$string['settings_grading_target_topic'] = 'Kompetenzbereich';
-$string['settings_grading_target_subject'] = 'Fach';
-$string['settings_grading_target_crosssubject'] = 'Thema (fachübergreifend)';
+$string['settings_heading_general'] = 'Allgemein';
+$string['settings_heading_assessment'] = 'Beurteilung';
+$string['settings_heading_visualisation'] = 'Darstellung';
+$string['settings_heading_technical'] = 'Administratives';
+$string['settings_heading_apps'] = 'Apps-Einstellungen';
+$string['settings_heading_scheme'] = 'Generisches Bewertungsschema';
+$string['settings_assessment_scheme_0'] = 'Keines';
+$string['settings_assessment_scheme_1'] = 'Noten';
+$string['settings_assessment_scheme_2'] = 'Verbalisierung';
+$string['settings_assessment_scheme_3'] = 'Punkte';
+$string['settings_assessment_scheme_4'] = 'Ja/Nein';
+$string['settings_assessment_diffLevel'] = 'Globales Bewertungsniveau';
+$string['settings_assessment_SelfEval'] = 'Selbsteinschätzung';
+$string['settings_assessment_target_example'] = 'Material';
+$string['settings_assessment_target_childcomp'] = 'Teilkompetenz';
+$string['settings_assessment_target_comp'] = 'Kompetenz';
+$string['settings_assessment_target_topic'] = 'Kompetenzbereich';
+$string['settings_assessment_target_subject'] = 'Fach';
+$string['settings_assessment_target_theme'] = 'Thema (fachübergreifend)';
+$string['settings_assessment_points_limit'] = 'höchste Punkteanzahl';
+$string['settings_assessment_points_limit_description'] = 'Bewertungsschema Punkte, die höchst mögliche Punkteanzahl die eingegeben werden kann.';
+$string['settings_assessment_grade_limit'] = 'höchste Note';
+$string['settings_assessment_grade_limit_description'] = 'Bewertungsschema Note, die höchst mögliche Note die eingegeben werden kann.';
+$string['settings_assessment_diffLevel_options'] = 'Niveau Werte';
+$string['settings_assessment_diffLevel_options_description'] = 'Liste der möglichen Werte des Niveaus, z.B: G,M,E';
+$string['settings_assessment_verbose_options'] = 'Verbalisierung Werte';
+$string['settings_assessment_verbose_options_description'] = 'Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht';
+$string['settings_sourceId'] = 'Source ID';
+$string['settings_sourceId_description'] = 'Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -394,7 +410,7 @@ $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
 
 // === External trainer & eLove ===
-$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen erlauben.';
+$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermögliche.';
 $string['block_exacomp_external_trainer_assign_body'] = 'Erforderlich für die Benutzung der elove App.';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben.';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
@@ -503,12 +519,12 @@ $string['notification_weekly_schedule_subject'] = '{$a->site}: Neue Aufgabe am W
 $string['notification_weekly_schedule_body'] = 'Lieber/Liebe {$a->receiver}, </br></br>{$a->teacher} hat dir im Kurs {$a->course} eine neue Aufgabe auf den Wochenplan gelegt.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
 $string['notification_weekly_schedule_context'] = 'Wochenplan';
 $string['inwork'] = '{$a->inWork}/{$a->total} Materialien in Arbeit';
-$string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen';
+$string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen aktivieren';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 
 
 // === Logging ===
-$string['block_exacomp_logging_head'] = 'Logging';
+$string['block_exacomp_logging_head'] = 'Logging aktivieren';
 $string['block_exacomp_logging_body'] = 'Relevante Aktionen werden geloggt.';
 $string['eventscompetenceassigned'] = 'Kompetenz zugeteilt';
 $string['eventsexamplesubmitted'] = 'Aufgabe abgegeben';

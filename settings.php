@@ -97,36 +97,36 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 	}
 
 	// Table with Evaluation settings
-    class block_exacomp_grading_configtable extends admin_setting {
+    class block_exacomp_assessment_configtable extends admin_setting {
 
-	    private $targets = array('example', 'childcompetence', 'competence', 'topic', 'subject', 'crosssubject');
-	    private $params = array('schema', 'useDifficultylevel', 'useStudentSelfEvaluation');
-	    private $schemascount = 3;
+	    private $targets = array('example', 'childcomp', 'comp', 'topic', 'subject', 'theme');
+	    private $params = array('scheme', 'diffLevel', 'SelfEval');
+	    private $schemescount = 4; // Look also language settings: lang/total.php.
 
         public function __construct($name, $visiblename, $description, $defaultsetting) {
-            // Default grading settings.
+            // Default assessment settings.
             if ($defaultsetting == '') {
-                $gradingdefault = array();
+                $assessmentdefault = array();
                 foreach ($this->targets as $target) {
                     foreach ($this->params as $param) {
                         switch ($param) {
-                            case 'schema': $value = 0; break;
-                            case 'useDifficultylevel': $value = 1; break;
-                            case 'useStudentSelfEvaluation': $value = 1; break;
+                            case 'scheme': $value = 0; break;
+                            case 'diffLevel': $value = 1; break;
+                            case 'SelfEval': $value = 1; break;
                             default: $value = 1; break;
                         }
-                        $gradingdefault[$target][$param] = $value;
+                        $assessmentdefault[$target][$param] = $value;
                     }
                 }
             }
-            parent::__construct($name, $visiblename, $description, $gradingdefault);
+            parent::__construct($name, $visiblename, $description, $assessmentdefault);
         }
 
         public function get_setting() {
             $result = array();
             foreach ($this->targets as $target) {
                 foreach ($this->params as $param) {
-                    $targetparam = 'grading_'.$target.'_'.$param;
+                    $targetparam = 'assessment_'.$target.'_'.$param;
                     $value = $this->config_read($targetparam);
                     if ($value !== null) {
                         $result[$target][$param] = $value;
@@ -145,7 +145,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $result = '';
             foreach ($data as $target => $parameters) {
                 foreach ($parameters as $param => $value) {
-                    if (!$this->config_write('grading_'.$target.'_'.$param, trim($value))) {
+                    if (!$this->config_write('assessment_'.$target.'_'.$param, trim($value))) {
                         $result = get_string('errorsetting', 'admin');
                     }
                 }
@@ -158,42 +158,42 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $return = '';
             $table = new html_table();
             $table->head = array('');
-            // Add Schemas.
+            // Add Schemes.
             foreach ($this->params as $key => $param) {
-                // Key 0: schema
-                // Key 1: useDifficultylevel
-                // Key 2: useStudentSelfEvaluation
+                // Key 0: scheme
+                // Key 1: diffLevel
+                // Key 2: SelfEval
                 if ($key == 0) {
-                    // Schemascount with ZERO.
-                    for($i = 0; $i <= $this->schemascount; $i++) {
-                        $table->head[] = block_exacomp_get_string('settings_grading_'.$param.'_'.$i);
+                    // Schemescount with ZERO.
+                    for($i = 0; $i <= $this->schemescount; $i++) {
+                        $table->head[] = block_exacomp_get_string('settings_assessment_'.$param.'_'.$i);
                     }
                 } else {
-                    $table->head[] = block_exacomp_get_string('settings_grading_'.$param);
+                    $table->head[] = block_exacomp_get_string('settings_assessment_'.$param);
                 }
             }
             // Targets:
             foreach ($this->targets as $key => $target) {
                 $row = new html_table_row();
-                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_grading_target_'.$target));
-                // Schemas.
-                for($i = 0; $i <= $this->schemascount; $i++) {
-                    $id = $this->get_id().'_'.$target.'_schema_'.$i;
-                    $name = $this->get_full_name().'['.$target.'][schema]';
-                    $schemaradioattributes = array(
+                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_assessment_target_'.$target));
+                // Schemes.
+                for($i = 0; $i <= $this->schemescount; $i++) {
+                    $id = $this->get_id().'_'.$target.'_scheme_'.$i;
+                    $name = $this->get_full_name().'['.$target.'][scheme]';
+                    $schemeradioattributes = array(
                         'type' => 'radio',
                         'id' => $id,
                         'name' => $name,
                         'value' => $i
                     );
-                    if ($data[$target]['schema'] == $i) {
-                        $schemaradioattributes['checked'] = 'checked';
+                    if ($data[$target]['scheme'] == $i) {
+                        $schemeradioattributes['checked'] = 'checked';
                     }
-                    $cell = new html_table_cell(html_writer::empty_tag('input', $schemaradioattributes));
+                    $cell = new html_table_cell(html_writer::empty_tag('input', $schemeradioattributes));
                     $cell->attributes['align'] = 'center';
                     $row->cells[] = $cell;
                 }
-                // Params useDifficultylevel and useStudentSelfEvaluation.
+                // Params diffLevel and SelfEval.
                 $otherparams = array_slice($this->params, 1);
 
                 foreach ($otherparams as $key => $paramname) {
@@ -240,70 +240,104 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 // generate id if not set
 block_exacomp\data::generate_my_source();
 
+// Allgemein (General).
+$settings->add(new admin_setting_heading('exacomp/heading_general', block_exacomp_get_string('settings_heading_general'), ''));
 $settings->add(new admin_setting_configcheckbox('exacomp/autotest', block_exacomp_get_string('settings_autotest'),
-	block_exacomp_get_string('settings_autotest_description'), 0, 1, 0));
-
+	    block_exacomp_get_string('settings_autotest_description'), 0, 1, 0));
 $settings->add(new admin_setting_configtext('exacomp/testlimit', block_exacomp_get_string('settings_testlimit'),
-	block_exacomp_get_string('settings_testlimit_description'), 50, PARAM_INTEGER));
+	    block_exacomp_get_string('settings_testlimit_description'), 50, PARAM_INT));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/usebadges', block_exacomp_get_string('settings_usebadges'),
-	block_exacomp_get_string('settings_usebadges_description'), 0, 1, 0));
+// Beurteilung (assessment).
+$settings->add(new admin_setting_heading('exacomp/heading_assessment',
+        block_exacomp_get_string('settings_heading_assessment'),
+        ''));
+$settings->add(new block_exacomp_assessment_configtable('exacomp/assessment_mapping', '', '', ''));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/notifications', block_exacomp_get_string('block_exacomp_notifications_head'),
-	block_exacomp_get_string('block_exacomp_notifications_body'), 0));
+$settings->add(new admin_setting_configtext('exacomp/assessment_points_limit',
+        block_exacomp_get_string('settings_assessment_points_limit'),
+        block_exacomp_get_string('settings_assessment_points_limit_description'),
+        20, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/assessment_grade_limit',
+        block_exacomp_get_string('settings_assessment_grade_limit'),
+        block_exacomp_get_string('settings_assessment_grade_limit_description'),
+        20, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/assessment_diffLevel_options',
+        block_exacomp_get_string('settings_assessment_diffLevel_options'),
+        block_exacomp_get_string('settings_assessment_diffLevel_options_description'),
+        250, PARAM_TEXT));
+$settings->add(new admin_setting_configtext('exacomp/assessment_verbose_options',
+        block_exacomp_get_string('settings_assessment_verbose_options'),
+        block_exacomp_get_string('settings_assessment_verbose_options_description'),
+        250, PARAM_TEXT));
+$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
+        block_exacomp_get_string('settings_admin_scheme'),
+        block_exacomp_get_string('settings_admin_scheme_description'),
+        block_exacomp_get_string('settings_admin_scheme_none'),
+        array(block_exacomp_get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));
+$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness',
+        block_exacomp_get_string('useprofoundness'),
+        '', 0));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', block_exacomp_get_string('useprofoundness'),
-		'', 0));
+// Darstellung (visualisation).
+$settings->add(new admin_setting_heading('exacomp/heading_visualisation',
+        block_exacomp_get_string('settings_heading_visualisation'),
+        ''));
+$settings->add(new admin_setting_configcheckbox('exacomp/usenumbering',
+        block_exacomp_get_string('usenumbering'),
+        '', 1));
+$settings->add(new admin_setting_configtext('exacomp/scheduleinterval',
+        block_exacomp_get_string('settings_interval'),
+        block_exacomp_get_string('settings_interval_description'), 50, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/scheduleunits',
+        block_exacomp_get_string('settings_scheduleunits'),
+        block_exacomp_get_string('settings_scheduleunits_description'), 8, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/schedulebegin',
+        block_exacomp_get_string('settings_schedulebegin'),
+        block_exacomp_get_string('settings_schedulebegin_description'), "07:45", PARAM_TEXT));
+$settings->add(new admin_setting_configtextarea('exacomp/periods',
+        block_exacomp_get_string('settings_periods'),
+        block_exacomp_get_string('settings_periods_description'),''));
 
-$settings->add(new admin_setting_heading('exacomp/heading_evaluation_new', block_exacomp_get_string('settings_grading_schema'), ''));
+// Administratives (technical).
+$settings->add(new admin_setting_heading('exacomp/heading_technical',
+        block_exacomp_get_string('settings_heading_technical'),
+        ''));
+$settings->add(new admin_setting_configcheckbox('exacomp/usebadges',
+        block_exacomp_get_string('settings_usebadges'),
+    	block_exacomp_get_string('settings_usebadges_description'), 0, 1, 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/notifications',
+        block_exacomp_get_string('block_exacomp_notifications_head'),
+    	block_exacomp_get_string('block_exacomp_notifications_body'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/logging',
+        block_exacomp_get_string('block_exacomp_logging_head'),
+        block_exacomp_get_string('block_exacomp_logging_body'), 0));
+$settings->add(new block_exacomp_admin_setting_source('exacomp/mysource',
+        block_exacomp_get_string('settings_sourceId'),
+        block_exacomp_get_string('settings_sourceId_description'),
+        PARAM_TEXT));
+$settings->add(new admin_setting_configtext('exacomp/xmlserverurl',
+        block_exacomp_get_string('settings_xmlserverurl'),
+        block_exacomp_get_string('settings_configxmlserverurl'), "", PARAM_URL));
 
-$settings->add(new block_exacomp_grading_configtable('exacomp/grading_mapping', '', '', ''));
+// Apps-Einstellungen (configuration for apps).
+$settings->add(new admin_setting_heading('exacomp/heading_apps',
+        block_exacomp_get_string('settings_heading_apps'),
+        ''));
+$settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_assessment',
+        block_exacomp_get_string('block_exacomp_elove_student_self_assessment_head'),
+        block_exacomp_get_string('block_exacomp_elove_student_self_assessment_body'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign',
+        block_exacomp_get_string('block_exacomp_external_trainer_assign_head'),
+        block_exacomp_get_string('block_exacomp_external_trainer_assign_body'), 0));
 
-$settings->add(new admin_setting_heading('exacomp/heading_evaluation', block_exacomp_trans(['de:Beurteilung Alt', 'en:Evaluation old']), ''));
 
-$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', block_exacomp_get_string('settings_admin_scheme'),
-	block_exacomp_get_string('settings_admin_scheme_description'), block_exacomp_get_string('settings_admin_scheme_none'), array(block_exacomp_get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));
-
+// To delete?
+$settings->add(new admin_setting_heading('exacomp/heading_data', '&nbsp;', ''));
 $settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grading', block_exacomp_get_string('settings_additional_grading'),
 	block_exacomp_get_string('settings_additional_grading_description'), 0));
-
 $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', block_exacomp_get_string('usetopicgrading'),
 	'', 0));
 $settings->add(new admin_setting_configcheckbox('exacomp/usesubjectgrading', block_exacomp_get_string('usesubjectgrading'),
 	'', 0));
-
-$settings->add(new admin_setting_heading('exacomp/heading_display', block_exacomp_trans(['de:Anzeige', 'en:Display']), ''));
-
-$settings->add(new admin_setting_configcheckbox('exacomp/usenumbering', block_exacomp_get_string('usenumbering'),
-	'', 1));
-
-
-$settings->add(new admin_setting_heading('exacomp/heading_weekly_schedule', block_exacomp_get_string('weekly_schedule'), ''));
-$settings->add(new admin_setting_configtext('exacomp/scheduleinterval', block_exacomp_get_string('settings_interval'),
-	block_exacomp_get_string('settings_interval_description'), 50, PARAM_INT));
-$settings->add(new admin_setting_configtext('exacomp/scheduleunits', block_exacomp_get_string('settings_scheduleunits'),
-	block_exacomp_get_string('settings_scheduleunits_description'), 8, PARAM_INT));
-$settings->add(new admin_setting_configtext('exacomp/schedulebegin', block_exacomp_get_string('settings_schedulebegin'),
-	block_exacomp_get_string('settings_schedulebegin_description'), "07:45", PARAM_TEXT));
-$settings->add(new admin_setting_configtextarea('exacomp/periods', block_exacomp_get_string('settings_periods'),block_exacomp_get_string('settings_periods_description'),''));
- 
-
-
-$settings->add(new admin_setting_heading('exacomp/heading_data', block_exacomp_trans(['de:Technische Einstellungen', 'en:Technical Settings']), ''));
-
-$settings->add(new admin_setting_configcheckbox('exacomp/logging', block_exacomp_get_string('block_exacomp_logging_head'),
-	block_exacomp_get_string('block_exacomp_logging_body'), 0));
-
-$settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', block_exacomp_get_string('block_exacomp_external_trainer_assign_head'),
-	block_exacomp_get_string('block_exacomp_external_trainer_assign_body'), 0));
-
-$settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_assessment', block_exacomp_get_string('block_exacomp_elove_student_self_assessment_head'),
-		block_exacomp_get_string('block_exacomp_elove_student_self_assessment_body'), 0));
-
-$settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Source ID',
-	block_exacomp_trans(['de:Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden', 'en:Automatically generated ID of this Exacomp installation. This ID can not be changed']), PARAM_TEXT));
-
-$settings->add(new admin_setting_configtext('exacomp/xmlserverurl', block_exacomp_get_string('settings_xmlserverurl'),
-	block_exacomp_get_string('settings_configxmlserverurl'), "", PARAM_URL));
 
 

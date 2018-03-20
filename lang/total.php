@@ -244,8 +244,8 @@ return [
 		'Url to a xml file, which is used for keeping the database entries up to date',
 	],
 	'settings_autotest' => [
-		'Automatischer Kompetenzerwerb durch Tests',
-		'Automatical gain of competence through quizzes',
+		'Automatischer Kompetenzerwerb durch Moodle-Tests',
+		'Automatical gain of competence through Moodle-quizzes',
 	],
 	'settings_autotest_description' => [
 		'Kompetenzen die mit Tests verbunden sind, gelten automatisch als erworben, wenn der angegebene Test-Prozentwert erreicht wurde',
@@ -261,7 +261,7 @@ return [
 	],
 	'settings_usebadges' => [
 		'Badges/Auszeichnungen verwenden',
-		'Use badges',
+		'Connect to Moodle badges',
 	],
 	'settings_usebadges_description' => [
 		'Anhaken um den Badges/Auszeichnungen Kompetenzen zuzuteilen',
@@ -277,7 +277,7 @@ return [
 	],
 	'settings_scheduleunits' => [
 		'Anzahl der Einheiten',
-		'Anmount of units',
+		'Amount of units',
 	],
 	'settings_scheduleunits_description' => [
 		'Anzahl der Einheiten im Wochenplan',
@@ -285,7 +285,7 @@ return [
 	],
 	'settings_schedulebegin' => [
 		'Beginn der Einheiten',
-		'Schedule begin',
+		'Begin of schedule',
 	],
 	'settings_schedulebegin_description' => [
 		'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm',
@@ -319,57 +319,121 @@ return [
 		'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".',
 		'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".',
 	],
-    'settings_grading_schema' => [
+    'settings_heading_general' => [
+        'Allgemein',
+        'General',
+    ],
+    'settings_heading_assessment' => [
+        'Beurteilung',
+        'Assessment',
+    ],
+    'settings_heading_visualisation' => [
+        'Darstellung',
+        'Visualisation',
+    ],
+    'settings_heading_technical' => [
+        'Administratives',
+        'Administrative',
+    ],
+    'settings_heading_apps' => [
+        'Apps-Einstellungen',
+        'Configuration for apps',
+    ],
+    'settings_heading_scheme' => [
         'Generisches Bewertungsschema',
         'Generic assessment scheme',
     ],
-    'settings_grading_schema_0' => [
-        'keine',
+    'settings_assessment_scheme_0' => [
+        'Keines',
         'None',
     ],
-    'settings_grading_schema_1' => [
-        'Noten (1-6)',
-        'Grades (1-6)',
+    'settings_assessment_scheme_1' => [
+        'Noten',
+        'Grade',
     ],
-    'settings_grading_schema_2' => [
-        'Ausprägung',
-        'Completeness',
+    'settings_assessment_scheme_2' => [
+        'Verbalisierung',
+        'Verbose',
     ],
-    'settings_grading_schema_3' => [
-        'Dichotom',
-        'Dichotomous',
+    'settings_assessment_scheme_3' => [
+        'Punkte',
+        'Points',
     ],
-    'settings_grading_useDifficultylevel' => [
+    'settings_assessment_scheme_4' => [
+        'Ja/Nein',
+        'Yes/No',
+    ],
+    'settings_assessment_diffLevel' => [
         'Globales Bewertungsniveau',
-        'Global grading level',
+        'Global assessment level',
     ],
-    'settings_grading_useStudentSelfEvaluation' => [
+    'settings_assessment_SelfEval' => [
         'Selbsteinschätzung',
         'Student assessment',
     ],
-    'settings_grading_target_example' => [
+    'settings_assessment_target_example' => [
         'Material',
         'Material',
     ],
-    'settings_grading_target_childcompetence' => [
+    'settings_assessment_target_childcomp' => [
         'Teilkompetenz',
         'Child competence',
     ],
-    'settings_grading_target_competence' => [
+    'settings_assessment_target_comp' => [
         'Kompetenz',
         'Competence',
     ],
-    'settings_grading_target_topic' => [
+    'settings_assessment_target_topic' => [
         'Kompetenzbereich',
         'Topic',
     ],
-    'settings_grading_target_subject' => [
+    'settings_assessment_target_subject' => [
         'Fach',
         'Subject',
     ],
-    'settings_grading_target_crosssubject' => [
+    'settings_assessment_target_theme' => [
         'Thema (fachübergreifend)',
         'Theme (interdisciplinary)',
+    ],
+    'settings_assessment_points_limit' => [
+        'höchste Punkteanzahl',
+        'highest value for Points',
+    ],
+    'settings_assessment_points_limit_description' => [
+        'Bewertungsschema Punkte, die höchst mögliche Punkteanzahl die eingegeben werden kann.',
+        'assessment scheme points, limit for input',
+    ],
+    'settings_assessment_grade_limit' => [
+        'höchste Note',
+        'highest value for grade',
+    ],
+    'settings_assessment_grade_limit_description' => [
+        'Bewertungsschema Note, die höchst mögliche Note die eingegeben werden kann.',
+        'assessment scheme grade, limit for input',
+    ],
+    'settings_assessment_diffLevel_options' => [
+        'Niveau Werte',
+        'Difficulty Level Options',
+    ],
+    'settings_assessment_diffLevel_options_description' => [
+        'Liste der möglichen Werte des Niveaus, z.B: G,M,E',
+        'list of difficultiy Levels, i.e. G,M,E',
+    ],
+    'settings_assessment_verbose_options' => [
+        'Verbalisierung Werte',
+        'verbose Options',
+    ],
+    'settings_assessment_verbose_options_description' => [
+        'Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
+        'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained',
+    ],
+    'settings_sourceId' => [
+        'Source ID',
+        'Source ID',
+    ],
+    'settings_sourceId_description' => [
+        'Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden',
+        'Automatically generated ID of this Exacomp installation. This ID can not be changed',
     ],
 
 	// === Unit Tests ===
@@ -1307,8 +1371,8 @@ return [
 
 	// === External trainer & eLove ===
 	'block_exacomp_external_trainer_assign_head' => [
-		'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen erlauben.',
-		'Allow assigning external trainers for students.',
+		'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermögliche.',
+		'Allow assigning of external trainers for students.',
 	],
 	'block_exacomp_external_trainer_assign_body' => [
 		'Erforderlich für die Benutzung der elove App.',
@@ -1710,7 +1774,7 @@ return [
 		'{$a->inWork}/{$a->total} in work',
 	],
 	'block_exacomp_notifications_head' => [
-		'Mitteilungen und Benachrichtigungen',
+		'Mitteilungen und Benachrichtigungen aktivieren',
 		'Notifications and Messages',
 	],
 	'block_exacomp_notifications_body' => [
@@ -1721,8 +1785,8 @@ return [
 
 	// === Logging ===
 	'block_exacomp_logging_head' => [
-		'Logging',
-		'Logging',
+		'Logging aktivieren',
+		'Activate logging',
 	],
 	'block_exacomp_logging_body' => [
 		'Relevante Aktionen werden geloggt.',

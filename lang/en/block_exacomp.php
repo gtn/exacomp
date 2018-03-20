@@ -86,17 +86,17 @@ $string['next_step_first_teacher_step'] = 'Click here to continue configuration.
 // === Block Settings ===
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
-$string['settings_autotest'] = 'Automatical gain of competence through quizzes';
+$string['settings_autotest'] = 'Automatical gain of competence through Moodle-quizzes';
 $string['settings_autotest_description'] = 'Competences that are associated with quizzes are gained automatically if needed percentage of quiz is reached';
 $string['settings_testlimit'] = 'Quiz-percentage needed to gain competence';
 $string['settings_testlimit_description'] = 'This percentage has to be reached to gain the competence';
-$string['settings_usebadges'] = 'Use badges';
+$string['settings_usebadges'] = 'Connect to Moodle badges';
 $string['settings_usebadges_description'] = 'Check to associate badges with competences';
 $string['settings_interval'] = 'Unit duration';
 $string['settings_interval_description'] = 'Duration of the units in the schedule';
-$string['settings_scheduleunits'] = 'Anmount of units';
+$string['settings_scheduleunits'] = 'Amount of units';
 $string['settings_scheduleunits_description'] = 'Amount of units in the schedule';
-$string['settings_schedulebegin'] = 'Schedule begin';
+$string['settings_schedulebegin'] = 'Begin of schedule';
 $string['settings_schedulebegin_description'] = 'Begin time for the first unit in the schedule. Format hh:mm';
 $string['settings_admin_scheme'] = 'Global difficulty level';
 $string['settings_admin_scheme_description'] = 'Grading can be done on different difficulty levels.';
@@ -105,19 +105,35 @@ $string['settings_additional_grading'] = 'Adapted grading';
 $string['settings_additional_grading_description'] = 'Grading limited from "not gained(0)" - "completely gained(3)"';
 $string['settings_periods'] = 'Timetable entries';
 $string['settings_periods_description'] = 'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".';
-$string['settings_grading_schema'] = 'Generic assessment scheme';
-$string['settings_grading_schema_0'] = 'None';
-$string['settings_grading_schema_1'] = 'Grades (1-6)';
-$string['settings_grading_schema_2'] = 'Completeness';
-$string['settings_grading_schema_3'] = 'Dichotomous';
-$string['settings_grading_useDifficultylevel'] = 'Global grading level';
-$string['settings_grading_useStudentSelfEvaluation'] = 'Student assessment';
-$string['settings_grading_target_example'] = 'Material';
-$string['settings_grading_target_childcompetence'] = 'Child competence';
-$string['settings_grading_target_competence'] = 'Competence';
-$string['settings_grading_target_topic'] = 'Topic';
-$string['settings_grading_target_subject'] = 'Subject';
-$string['settings_grading_target_crosssubject'] = 'Theme (interdisciplinary)';
+$string['settings_heading_general'] = 'General';
+$string['settings_heading_assessment'] = 'Assessment';
+$string['settings_heading_visualisation'] = 'Visualisation';
+$string['settings_heading_technical'] = 'Administrative';
+$string['settings_heading_apps'] = 'Configuration for apps';
+$string['settings_heading_scheme'] = 'Generic assessment scheme';
+$string['settings_assessment_scheme_0'] = 'None';
+$string['settings_assessment_scheme_1'] = 'Grade';
+$string['settings_assessment_scheme_2'] = 'Verbose';
+$string['settings_assessment_scheme_3'] = 'Points';
+$string['settings_assessment_scheme_4'] = 'Yes/No';
+$string['settings_assessment_diffLevel'] = 'Global assessment level';
+$string['settings_assessment_SelfEval'] = 'Student assessment';
+$string['settings_assessment_target_example'] = 'Material';
+$string['settings_assessment_target_childcomp'] = 'Child competence';
+$string['settings_assessment_target_comp'] = 'Competence';
+$string['settings_assessment_target_topic'] = 'Topic';
+$string['settings_assessment_target_subject'] = 'Subject';
+$string['settings_assessment_target_theme'] = 'Theme (interdisciplinary)';
+$string['settings_assessment_points_limit'] = 'highest value for Points';
+$string['settings_assessment_points_limit_description'] = 'assessment scheme points, limit for input';
+$string['settings_assessment_grade_limit'] = 'highest value for grade';
+$string['settings_assessment_grade_limit_description'] = 'assessment scheme grade, limit for input';
+$string['settings_assessment_diffLevel_options'] = 'Difficulty Level Options';
+$string['settings_assessment_diffLevel_options_description'] = 'list of difficultiy Levels, i.e. G,M,E';
+$string['settings_assessment_verbose_options'] = 'verbose Options';
+$string['settings_assessment_verbose_options_description'] = 'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained';
+$string['settings_sourceId'] = 'Source ID';
+$string['settings_sourceId_description'] = 'Automatically generated ID of this Exacomp installation. This ID can not be changed';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -388,7 +404,7 @@ $string['profoundness_entirely'] = 'Entirely achieved';
 
 
 // === External trainer & eLove ===
-$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students.';
+$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning of external trainers for students.';
 $string['block_exacomp_external_trainer_assign_body'] = 'This is required for using the elove app.';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Allow self-assessment for students in the elove app';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
@@ -502,7 +518,7 @@ $string['block_exacomp_notifications_body'] = 'Users will get notified after rel
 
 
 // === Logging ===
-$string['block_exacomp_logging_head'] = 'Logging';
+$string['block_exacomp_logging_head'] = 'Activate logging';
 $string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';
 $string['eventscompetenceassigned'] = 'Competence assigned';
 $string['eventsexamplesubmitted'] = 'Example submitted';
