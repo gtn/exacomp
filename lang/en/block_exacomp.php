@@ -176,8 +176,8 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 
 
 // === Import ===
-$string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.';
-$string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
+$string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
+$string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">Server-URL</a>.';
 $string['import_max_execution_time'] = 'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data has been imported yet!';
@@ -342,7 +342,7 @@ $string['niveau_short'] = 'Level';
 $string['competence_grid_niveau'] = 'difficulty Level';
 $string['competence_grid_additionalinfo'] = 'grade';
 $string['descriptor'] = 'competence';
-$string['descriptor_child'] = 'sub competence';
+$string['descriptor_child'] = 'child competence';
 $string['assigndone'] = 'task done: ';
 // === metadata ===
 $string['subject_singular'] = 'Field of competence';
@@ -440,7 +440,7 @@ $string['no_students_crosssub'] = 'No students are assigend to this interdiscipl
 $string['use_available_crosssub'] = 'Use draft for creating new interdisciplinary subject:';
 $string['save_crosssub'] = 'Save changes';
 $string['add_content_to_crosssub'] = 'The interdisciplinary subject is still empty.';
-$string['add_descriptors_to_crosssub'] = 'Add descriptor to interdisciplinary subject';
+$string['add_descriptors_to_crosssub'] = 'Add competence to interdisciplinary subject';
 $string['manage_crosssubs'] = 'Back to overview';
 $string['show_course_crosssubs'] = 'Show used interdisciplinary subjects';
 $string['existing_crosssub'] = 'existing cross subjects in this course';

@@ -74,7 +74,7 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform->addElement('selectgroups', 'niveau_id', block_exacomp_get_string('niveau'), $niveaus);
 		
-		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
+		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfortschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
 		
 		$radioarray=array();
 		if ($this->_customdata['descriptors']) {

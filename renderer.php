@@ -308,7 +308,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($this->is_edit_mode()) {
 			// add niveau button
 			// nur erlauben, wenn auch ein einzelner topic ausgewählt wurde
-			$addNiveauContent = "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_trans(['de:Neuer Lernfortschritt', 'en:new diffic level']);
+			$addNiveauContent = "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_trans(['de:Neuer Lernfortschritt', 'en:new level']);
 
 			if ($selectedTopic) {
 				$content .= html_writer::tag('li',
@@ -1967,7 +1967,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if ($descriptor_in_crosssubj) {
 						$cell = new html_table_cell();
 						$cell->attributes['class'] = 'rg2-indent';
-						$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Teilkompetenz', 'en:New sub competence']), 'parentid' => $descriptor->id));
+						$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Teilkompetenz', 'en:New child competence']), 'parentid' => $descriptor->id));
 						$cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
 						$own_additionRow->cells[] = $cell;
 					}

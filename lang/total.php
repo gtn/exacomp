@@ -567,12 +567,12 @@ return [
 
 	// === Import ===
 	'importinfo' => [
-		'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte <a target="_blank" href="http://bist.edugroup.at">http://bist.edugroup.at</a>',
-		'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.',
+		'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>',
+		'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.',
 	],
 	'importwebservice' => [
-		'Es besteht auch die Möglichkeit die Daten über ein <a href="{$a}">Webservice</a> aktuell zu halten.',
-		'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.',
+		'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.',
+		'It is possible to keep the data up to date via a <a href="{$a}">Server-URL</a>.',
 	],
 	'import_max_execution_time' => [
 		'Wichtig: Die aktuellen Servereinstellung beschränken den Import auf {$a} Sekunden. Falls der Import länger dauert, wird er abgebrochen und es werden keine Daten importiert. Am Bildschirm wird in diesem Fall eine Sever Fehlermeldung (wie z.B. "500 Internal Server Error") angezeigt.',
@@ -1169,7 +1169,7 @@ return [
 	],
 	'descriptor_child' => [
 		'Teilkompetenz',
-		'sub competence',
+		'child competence',
 	],
 	'assigndone' => [
 		'Aufgabe erledigt: ',
@@ -1507,7 +1507,7 @@ return [
 	],
 	'add_descriptors_to_crosssub' => [
 		'Kompetenzen mit Thema verknüpfen',
-		'Add descriptor to interdisciplinary subject',
+		'Add competence to interdisciplinary subject',
 	],
 	'manage_crosssubs' => [
 		'Zurück zur Übersicht',
