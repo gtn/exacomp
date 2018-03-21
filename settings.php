@@ -218,7 +218,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     $this->description, true, '', '', $query);
             // Hide some html for better view of this settings.
             $doc = new DOMDocument();
-            $doc->loadHTML($template);
+            $doc->loadHTML(utf8_decode($template));
             $selector = new DOMXPath($doc);
             // Delete div with classes.
             $deletedivs = array('form-label', 'form-defaultinfo');
@@ -252,7 +252,6 @@ $settings->add(new admin_setting_heading('exacomp/heading_assessment',
         block_exacomp_get_string('settings_heading_assessment'),
         ''));
 $settings->add(new block_exacomp_assessment_configtable('exacomp/assessment_mapping', '', '', ''));
-
 $settings->add(new admin_setting_configtext('exacomp/assessment_points_limit',
         block_exacomp_get_string('settings_assessment_points_limit'),
         block_exacomp_get_string('settings_assessment_points_limit_description'),
@@ -264,11 +263,13 @@ $settings->add(new admin_setting_configtext('exacomp/assessment_grade_limit',
 $settings->add(new admin_setting_configtext('exacomp/assessment_diffLevel_options',
         block_exacomp_get_string('settings_assessment_diffLevel_options'),
         block_exacomp_get_string('settings_assessment_diffLevel_options_description'),
-        250, PARAM_TEXT));
+        block_exacomp_get_string('settings_assessment_diffLevel_options_default'),
+        PARAM_TEXT));
 $settings->add(new admin_setting_configtext('exacomp/assessment_verbose_options',
         block_exacomp_get_string('settings_assessment_verbose_options'),
         block_exacomp_get_string('settings_assessment_verbose_options_description'),
-        250, PARAM_TEXT));
+        block_exacomp_get_string('settings_assessment_verbose_options_default'),
+        PARAM_TEXT));
 $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
         block_exacomp_get_string('settings_admin_scheme'),
         block_exacomp_get_string('settings_admin_scheme_description'),
@@ -332,12 +333,15 @@ $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign
 
 
 // To delete?
-$settings->add(new admin_setting_heading('exacomp/heading_data', '&nbsp;', ''));
-$settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grading', block_exacomp_get_string('settings_additional_grading'),
-	block_exacomp_get_string('settings_additional_grading_description'), 0));
-$settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', block_exacomp_get_string('usetopicgrading'),
-	'', 0));
-$settings->add(new admin_setting_configcheckbox('exacomp/usesubjectgrading', block_exacomp_get_string('usesubjectgrading'),
-	'', 0));
+/*$settings->add(new admin_setting_heading('exacomp/heading_data', '&nbsp;', ''));
+$settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grading',
+        block_exacomp_get_string('settings_additional_grading'),
+	    block_exacomp_get_string('settings_additional_grading_description'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading',
+        block_exacomp_get_string('usetopicgrading'),
+	    '', 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/usesubjectgrading',
+        block_exacomp_get_string('usesubjectgrading'),
+	    '', 0));*/
 
 

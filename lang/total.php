@@ -396,16 +396,16 @@ return [
         'Theme (interdisciplinary)',
     ],
     'settings_assessment_points_limit' => [
-        'höchste Punkteanzahl',
-        'highest value for Points',
+        'Höchste Punkteanzahl',
+        'Highest value for Points',
     ],
     'settings_assessment_points_limit_description' => [
         'Bewertungsschema Punkte, die höchst mögliche Punkteanzahl die eingegeben werden kann.',
         'assessment scheme points, limit for input',
     ],
     'settings_assessment_grade_limit' => [
-        'höchste Note',
-        'highest value for grade',
+        'Höchste Note',
+        'Highest value for grade',
     ],
     'settings_assessment_grade_limit_description' => [
         'Bewertungsschema Note, die höchst mögliche Note die eingegeben werden kann.',
@@ -419,6 +419,10 @@ return [
         'Liste der möglichen Werte des Niveaus, z.B: G,M,E',
         'list of difficultiy Levels, i.e. G,M,E',
     ],
+    'settings_assessment_diffLevel_options_default' => [
+            'G,M,E',
+            'G,M,E',
+    ],
     'settings_assessment_verbose_options' => [
         'Verbalisierung Werte',
         'verbose Options',
@@ -426,6 +430,10 @@ return [
     'settings_assessment_verbose_options_description' => [
         'Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
         'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained',
+    ],
+    'settings_assessment_verbose_options_default' => [
+        'nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
+        'not gained, partly gained, mostly gained, completely gained',
     ],
     'settings_sourceId' => [
         'Source ID',
