@@ -1236,6 +1236,41 @@ class global_config {
 
 		return $ret;
 	}
+	
+	/**
+	 * Returns all diffLevel_options, specified by the admin
+	 */
+	static function get_diffLevel_options($include_empty = false) {
+	    static $values;
+	    
+	    if ($values === null) {
+	        $values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU,  array('option_type' => 'diffLevel_options'), '', 'id,title');
+	    }
+	    
+	    $ret = $values;
+	    if ($include_empty) {
+	        $ret = [0 => ''] + $ret;
+	    }
+	    
+	    return $ret;
+	}
+	
+	/**
+	 * Returns all evaluation verbose_options, specified by the admin
+	 */
+	static function get_verbose_options($include_empty = false) {
+	    static $values;
+	    if ($values === null) {
+	        $values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, array('option_type' => 'verbose_options'), '', 'id,title');
+	    }
+	    
+	    $ret = $values;
+	    if ($include_empty) {
+	        $ret = [0 => ''] + $ret;
+	    }
+	    
+	    return $ret;
+	}
 
 	/**
 	 * Returns title for one evaluation niveau

@@ -2871,7 +2871,9 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_evaluation_config</h2>
 <div>get evaluation configuration
-get admin evaluation configurations</div>
+get admin evaluation configurations
+
+???deprecated use dakora_get_config instead         actually getting used a lot</div>
 <div>type: read</div>
 Params: <table>
 </table>
@@ -2896,6 +2898,40 @@ Returns:<pre>{
 Params: <table>
 </table>
 Returns:<pre>{
+    "points_limit": "int null (points_limit)",
+    "grade_limit": "int null (grade_limit)",
+    "diffLevel_options": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
+        },
+        "..."
+    ],
+    "verbose_options": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
+        },
+        "..."
+    ],
+    "example_scheme": "int null (example_scheme)",
+    "example_diffLevel": "bool null (example_diffLevel)",
+    "example_SelfEval": "bool null (example_SelfEval)",
+    "childcomp_scheme": "int null (childcomp_scheme)",
+    "childcomp_diffLevel": "bool null (childcomp_diffLevel)",
+    "childcomp_SelfEval": "bool null (childcomp_SelfEval)",
+    "comp_scheme": "int null (comp_scheme)",
+    "comp_diffLevel": "bool null (comp_diffLevel)",
+    "comp_SelfEval": "bool null (comp_SelfEval)",
+    "topic_scheme": "int null (topic_scheme)",
+    "topic_diffLevel": "bool null (topic_diffLevel)",
+    "topic_SelfEval": "bool null (topic_SelfEval)",
+    "subject_scheme": "int null (subject_scheme)",
+    "subject_diffLevel": "bool null (subject_diffLevel)",
+    "subject_SelfEval": "bool null (subject_SelfEval)",
+    "theme_scheme": "int null (theme_scheme)",
+    "theme_diffLevel": "bool null (theme_diffLevel)",
+    "theme_SelfEval": "bool null (theme_SelfEval)",
     "use_evalniveau": "bool null (use evaluation niveaus)",
     "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
     "evalniveaus": [
@@ -2994,6 +3030,40 @@ Returns:<pre>{
         "..."
     ],
     "config": {
+        "points_limit": "int null (points_limit)",
+        "grade_limit": "int null (grade_limit)",
+        "diffLevel_options": [
+            {
+                "id": "int null (id)",
+                "name": "text null (name)"
+            },
+            "..."
+        ],
+        "verbose_options": [
+            {
+                "id": "int null (id)",
+                "name": "text null (name)"
+            },
+            "..."
+        ],
+        "example_scheme": "int null (example_scheme)",
+        "example_diffLevel": "bool null (example_diffLevel)",
+        "example_SelfEval": "bool null (example_SelfEval)",
+        "childcomp_scheme": "int null (childcomp_scheme)",
+        "childcomp_diffLevel": "bool null (childcomp_diffLevel)",
+        "childcomp_SelfEval": "bool null (childcomp_SelfEval)",
+        "comp_scheme": "int null (comp_scheme)",
+        "comp_diffLevel": "bool null (comp_diffLevel)",
+        "comp_SelfEval": "bool null (comp_SelfEval)",
+        "topic_scheme": "int null (topic_scheme)",
+        "topic_diffLevel": "bool null (topic_diffLevel)",
+        "topic_SelfEval": "bool null (topic_SelfEval)",
+        "subject_scheme": "int null (subject_scheme)",
+        "subject_diffLevel": "bool null (subject_diffLevel)",
+        "subject_SelfEval": "bool null (subject_SelfEval)",
+        "theme_scheme": "int null (theme_scheme)",
+        "theme_diffLevel": "bool null (theme_diffLevel)",
+        "theme_SelfEval": "bool null (theme_SelfEval)",
         "use_evalniveau": "bool null (use evaluation niveaus)",
         "evalniveautype": "int null (same as adminscheme before: 1: GME, 2: ABC, 3: *\/**\/***)",
         "evalniveaus": [

@@ -301,6 +301,111 @@ function block_exacomp_additional_grading() {
 	return get_config('exacomp', 'additional_grading');
 }
 
+// function block_exacomp_get_assessment_limits() {
+//     $points_limit = get_config('exacomp', 'assessment_points_limit');
+//     $grade_limit = get_config('exacomp', 'assessment_grade_limit');
+//     return array($points_limit,$grad_limit);
+// }
+
+function block_exacomp_get_assessment_points_limit() {
+    return get_config('exacomp', 'assessment_points_limit');
+}
+
+function block_exacomp_get_assessment_grade_limit() {
+    return get_config('exacomp', 'assessment_grade_limit');
+}
+
+function block_exacomp_get_assessment_diffLevel_options() {
+    return get_config('exacomp', 'assessment_diffLevel_options');
+}
+
+function block_exacomp_get_assessment_verbose_options() {
+    return get_config('exacomp', 'assessment_verbose_options');
+}
+
+function block_exacomp_get_assessment_example_scheme() {
+    return get_config('exacomp', 'assessment_example_scheme');
+}
+
+function block_exacomp_get_assessment_example_diffLevel() {
+    return get_config('exacomp', 'assessment_example_diffLevel');
+}
+
+function block_exacomp_get_assessment_example_SelfEval() {
+    return get_config('exacomp', 'assessment_example_SelfEval');
+}
+
+function block_exacomp_get_assessment_childcomp_scheme() {
+    return get_config('exacomp', 'assessment_childcomp_scheme');
+}
+
+function block_exacomp_get_assessment_childcomp_diffLevel() {
+    return get_config('exacomp', 'assessment_childcomp_diffLevel');
+}
+
+function block_exacomp_get_assessment_childcomp_SelfEval() {
+    return get_config('exacomp', 'assessment_childcomp_SelfEval');
+}
+
+function block_exacomp_get_assessment_comp_scheme() {
+    return get_config('exacomp', 'assessment_comp_scheme');
+}
+
+function block_exacomp_get_assessment_comp_diffLevel() {
+    return get_config('exacomp', 'assessment_comp_diffLevel');
+}
+
+function block_exacomp_get_assessment_comp_SelfEval() {
+    return get_config('exacomp', 'assessment_comp_SelfEval');
+}
+
+function block_exacomp_get_assessment_topic_scheme() {
+    return get_config('exacomp', 'assessment_topic_scheme');
+}
+
+function block_exacomp_get_assessment_topic_diffLevel() {
+    return get_config('exacomp', 'assessment_topic_diffLevel');
+}
+
+function block_exacomp_get_assessment_topic_SelfEval() {
+    return get_config('exacomp', 'assessment_topic_SelfEval');
+}
+
+function block_exacomp_get_assessment_subject_scheme() {
+    return get_config('exacomp', 'assessment_subject_scheme');
+}
+
+function block_exacomp_get_assessment_subject_diffLevel() {
+    return get_config('exacomp', 'assessment_subject_diffLevel');
+}
+
+function block_exacomp_get_assessment_subject_SelfEval() {
+    return get_config('exacomp', 'assessment_subject_SelfEval');
+}
+
+function block_exacomp_get_assessment_theme_scheme() {
+    return get_config('exacomp', 'assessment_theme_scheme');
+}
+
+function block_exacomp_get_assessment_theme_diffLevel() {
+    return get_config('exacomp', 'assessment_theme_diffLevel');
+}
+
+function block_exacomp_get_assessment_theme_SelfEval() {
+    return get_config('exacomp', 'assessment_theme_SelfEval');
+}
+
+
+
+
+
+
+
+
+
+
+
+
 function block_exacomp_get_timetable_entries() {
 	$content = get_config('exacomp', 'periods');
 

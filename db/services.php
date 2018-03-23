@@ -628,7 +628,9 @@ Get competence statistic for topic in profile for 3D graph',
     'methodname' => 'dakora_get_evaluation_config',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => 'get evaluation configuration
-get admin evaluation configurations',
+get admin evaluation configurations
+
+???deprecated use dakora_get_config instead         actually getting used a lot',
     'type' => 'read',
   ),
   'dakora_get_config' => 

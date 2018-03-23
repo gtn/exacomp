@@ -5950,7 +5950,7 @@ class block_exacomp_external extends external_api {
 	 * get evaluation configuration
 	 * get admin evaluation configurations
 	 *
-	 * @deprecated use dakora_get_config instead
+	 * ???deprecated use dakora_get_config instead         actually getting used a lot
 	 * @ws-type-read
 	 */
 	public static function dakora_get_evaluation_config() {
@@ -5958,6 +5958,9 @@ class block_exacomp_external extends external_api {
 
 		static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
 
+		//$confiiig=get_config(\block_exacomp\global_config::get_evalniveaus(true));
+		//echo('asdf');
+		
 		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(true),
@@ -5997,6 +6000,36 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_config_returns() {
 		return new external_single_structure (array(
+// 		    'assessment_limits' => new external_multiple_structure (new external_single_structure ([
+// 		        'points_limit' => new external_value (PARAM_INT, 'points_limit'),
+// 		        'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
+// 		    ]), 'values'),
+		    'points_limit' => new external_value (PARAM_INT, 'points_limit'),
+		    'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
+		    //'diffLevel_options' => new external_value (PARAM_TEXT, 'grade_limit'),
+		    //'verbose_options' => new external_value (PARAM_TEXT, 'grade_limit'),
+		    'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
+		    'verbose_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'verbose_options'),
+		    
+		    'example_scheme' => new external_value (PARAM_INT, 'example_scheme'),
+		    'example_diffLevel' => new external_value (PARAM_BOOL, 'example_diffLevel'),
+		    'example_SelfEval' => new external_value (PARAM_BOOL, 'example_SelfEval'),
+		    'childcomp_scheme' => new external_value (PARAM_INT, 'childcomp_scheme'),
+		    'childcomp_diffLevel' => new external_value (PARAM_BOOL, 'childcomp_diffLevel'),
+		    'childcomp_SelfEval' => new external_value (PARAM_BOOL, 'childcomp_SelfEval'),
+		    'comp_scheme' => new external_value (PARAM_INT, 'comp_scheme'),
+		    'comp_diffLevel' => new external_value (PARAM_BOOL, 'comp_diffLevel'),
+		    'comp_SelfEval' => new external_value (PARAM_BOOL, 'comp_SelfEval'),
+		    'topic_scheme' => new external_value (PARAM_INT, 'topic_scheme'),
+		    'topic_diffLevel' => new external_value (PARAM_BOOL, 'topic_diffLevel'),
+		    'topic_SelfEval' => new external_value (PARAM_BOOL, 'topic_SelfEval'),
+		    'subject_scheme' => new external_value (PARAM_INT, 'subject_scheme'),
+		    'subject_diffLevel' => new external_value (PARAM_BOOL, 'subject_diffLevel'),
+		    'subject_SelfEval' => new external_value (PARAM_BOOL, 'subject_SelfEval'),
+		    'theme_scheme' => new external_value (PARAM_INT, 'theme_scheme'),
+		    'theme_diffLevel' => new external_value (PARAM_BOOL, 'theme_diffLevel'),
+		    'theme_SelfEval' => new external_value (PARAM_BOOL, 'theme_SelfEval'),
+		    
 			'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
 			'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
@@ -6030,6 +6063,33 @@ class block_exacomp_external extends external_api {
 		$gradingperiods = block_exacomp_is_exastud_installed() ? \block_exastud\api::get_periods() : [];
 
 		return array(
+		    //'assessment_limits' => block_exacomp_get_assessment_limits(),
+		    //'assessment_limits' => array(array("points_limit"=>1,"grade_limit"=>12),array("points_limit"=>1,"grade_limit"=>12)),
+		    'points_limit' => block_exacomp_get_assessment_points_limit(),
+		    'grade_limit' => block_exacomp_get_assessment_grade_limit(),
+		    //'diffLevel_options' => block_exacomp_get_assessment_diffLevel_options(),
+		    //'verbose_options' => block_exacomp_get_assessment_verbose_options(),
+		    'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
+		    'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
+		    'example_scheme' => block_exacomp_get_assessment_example_scheme(),
+		    'example_diffLevel' => block_exacomp_get_assessment_example_diffLevel(),
+		    'example_SelfEval' => block_exacomp_get_assessment_example_SelfEval(),
+		    'childcomp_scheme' => block_exacomp_get_assessment_childcomp_scheme(),
+		    'childcomp_diffLevel' => block_exacomp_get_assessment_childcomp_diffLevel(),
+		    'childcomp_SelfEval' => block_exacomp_get_assessment_childcomp_SelfEval(),
+		    'comp_scheme' => block_exacomp_get_assessment_comp_scheme(),
+		    'comp_diffLevel' => block_exacomp_get_assessment_comp_diffLevel(),
+		    'comp_SelfEval' => block_exacomp_get_assessment_comp_SelfEval(),
+		    'topic_scheme' => block_exacomp_get_assessment_topic_scheme(),
+		    'topic_diffLevel' => block_exacomp_get_assessment_topic_diffLevel(),
+		    'topic_SelfEval' => block_exacomp_get_assessment_topic_SelfEval(),
+		    'subject_scheme' => block_exacomp_get_assessment_subject_scheme(),
+		    'subject_diffLevel' => block_exacomp_get_assessment_subject_diffLevel(),
+		    'subject_SelfEval' => block_exacomp_get_assessment_subject_SelfEval(),
+		    'theme_scheme' => block_exacomp_get_assessment_theme_scheme(),
+		    'theme_diffLevel' => block_exacomp_get_assessment_theme_diffLevel(),
+		    'theme_SelfEval' => block_exacomp_get_assessment_theme_SelfEval(),
+		    
 			'use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
