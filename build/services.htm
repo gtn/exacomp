@@ -83,6 +83,61 @@ Returns:<pre>[
     },
     "..."
 ]</pre>
+<h2>block_exacomp_get_examples_for_subject_with_lfs_infos</h2>
+<div>Get examples for subtopic
+Get examples</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
+    {
+        "topicid": "int null (id of topic)",
+        "title": "text null (title of topic)",
+        "requireaction": "bool null (trainer action required or not)",
+        "totalCompetencies": "int null (amount of total competencies of this topic)",
+        "examples": [
+            {
+                "exampleid": "int null (id of example)",
+                "numbering": "text null (descriptor numbering)",
+                "example_title": "text null (title of example)",
+                "example_item": "int null (current item id)",
+                "example_status": "int null (status of current item)",
+                "example_creatorid": "int null (creator of example)"
+            },
+            "..."
+        ],
+        "quizes": [
+            {
+                "quizid": "int null (id of quiz)",
+                "quiz_title": "text null (title of quiz)",
+                "quiz_grade": "float null (sum grade of quiz)"
+            },
+            "... quiz data ..."
+        ]
+    },
+    "..."
+]</pre>
 <h2>block_exacomp_get_example_by_id</h2>
 <div>Get example
 Get example</div>

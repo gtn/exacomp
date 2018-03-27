@@ -289,6 +289,216 @@ class block_exacomp_external extends external_api {
 			)), 'quiz data', VALUE_OPTIONAL),
 		)));
 	}
+	
+	
+	
+	
+	/*
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_examples_for_subject_with_lfs_infos_parameters() {
+	    return new external_function_parameters (array(
+	        'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+	        'userid' => new external_value (PARAM_INT, 'id of user'),
+	    ));
+	}
+	
+	/**
+	 * Get examples for subtopic
+	 * Get examples
+	 *
+	 * @ws-type-read
+	 * @param int subjectid
+	 * @return array of examples
+	 */
+	public static function get_examples_for_subject_with_lfs_infos($subjectid, $courseid, $userid) {
+	    global $DB, $USER;
+	    
+	    if (empty ($subjectid) || empty ($courseid)) {
+	        throw new invalid_parameter_exception ('Parameter can not be empty');
+	    }
+	    
+	    static::validate_parameters(static::get_examples_for_subject_with_lfs_infos_parameters(), array(
+	        'subjectid' => $subjectid,
+	        'courseid' => $courseid,
+	        'userid' => $userid,
+	    ));
+	    
+	    if ($userid == 0) {
+	        $userid = $USER->id;
+	    }
+	    
+	    static::require_can_access_user($userid);
+	    
+	    $coursesettings = block_exacomp_get_settings_by_course($course['courseid']);
+	    $cm_mm = block_exacomp_get_course_module_association($course['courseid']);
+	    
+	    $structure = array();
+	    
+	    
+	    $topics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+	    foreach ($topics as $topic) {
+	        $topic_total_competencies = 0;
+	        
+	        if (!array_key_exists($topic->id, $structure)) {
+	            $structure[$topic->id] = new stdClass ();
+	            $structure[$topic->id]->topicid = $topic->id;
+	            $structure[$topic->id]->title = $topic->title;
+	            $structure[$topic->id]->requireaction = false;
+	            $structure[$topic->id]->totalCompetencies = $topic_total_competencies;
+	            $structure[$topic->id]->examples = array();
+	            $structure[$topic->id]->quizes = array();
+	        }
+	       
+	        $descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id, false, true);
+	        
+	        
+	        
+	        foreach ($descriptors as $descriptor) {
+ 	            if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ($cm_mm->competencies[$descriptor->id]))) {
+ 	                $topic_total_competencies++;
+ 	            }            
+	          
+	            $examples = $DB->get_records_sql("SELECT de.id as deid, e.id, e.title, e.externalurl,
+						e.externalsolution, e.externaltask, e.completefile, e.description, e.source, e.creatorid
+						FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+						JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?
+						ORDER BY de.sorting
+						", array(
+						    $descriptor->id,
+						));
+	            
+	         
+	            
+	            
+	            foreach ($examples as $example) {
+	                if ($example->source == BLOCK_EXACOMP_EXAMPLE_SOURCE_USER && $example->creatorid != $userid) {
+	                    // skip non user examples
+	                    continue;
+	                }
+	                
+	                // TODO: is this dead code?
+	                /*
+	                 $taxonomies = block_exacomp_get_taxonomies_by_example($example);
+	                 if(!empty($taxonomies)){
+	                 $taxonomy = reset($taxonomies);
+	                 
+	                 $example->taxid = $taxonomy->id;
+	                 $example->tax = $taxonomy->title;
+	                 }else{
+	                 $example->taxid = null;
+	                 $example->tax = "";
+	                 }
+	                 */
+	                
+	                if (!array_key_exists($example->id, $structure[$topic->id]->examples)) {
+	                    $structure[$topic->id]->examples[$example->id] = new stdClass ();
+	                    $structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
+	                    $structure[$topic->id]->examples[$example->id]->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+	                    $structure[$topic->id]->examples[$example->id]->example_title = $example->title;
+	                    $structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
+	                    $items_examp = $DB->get_records('block_exacompitemexample', array(
+	                        'exampleid' => $example->id,
+	                    ));
+	                    $items = array();
+	                    foreach ($items_examp as $item_examp) {
+	                        $item_db = $DB->get_record('block_exaportitem', array(
+	                            'id' => $item_examp->itemid,
+	                        ));
+	                        if ($item_db->userid == $userid) {
+	                            $items[] = $item_examp;
+	                        }
+	                    }
+	                    if (!empty ($items)) {
+	                        // check for current
+	                        $current_timestamp = 0;
+	                        foreach ($items as $item) {
+	                            if ($item->timecreated > $current_timestamp) {
+	                                $structure[$topic->id]->examples[$example->id]->example_item = $item->itemid;
+	                                $structure[$topic->id]->examples[$example->id]->example_status = $item->status;
+	                                
+	                                if ($item->status == 0) {
+	                                    $structure[$topic->id]->requireaction = true;
+	                                }
+	                            }
+	                        }
+	                    } else {
+	                        $structure[$topic->id]->examples[$example->id]->example_item = -1;
+	                        $structure[$topic->id]->examples[$example->id]->example_status = -1;
+	                    }
+	                }
+	            }
+	            
+	            // Quiz webservices are available from Moodle 3.1 onwards
+	            global $CFG;
+	            if ($CFG->version >= 2016052300) {
+	                $quizes = $DB->get_records_sql("SELECT q.id, q.name, q.grade
+							FROM {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} ca
+							JOIN {course_modules} cm ON ca.activityid = cm.id
+							JOIN {modules} m ON cm.module = m.id
+							JOIN {quiz} q ON cm.instance = q.id
+							WHERE m.name = 'quiz' AND ca.compid = ? AND ca.comptype = ?
+							", array(
+							    $descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR,
+							)
+	                    );
+	                
+	                foreach ($quizes as $quiz) {
+	                    $cm = get_coursemodule_from_instance('quiz', $quiz->id);
+	                    if (!$cm->visible) {
+	                        continue;
+	                    }
+	                    
+	                    if (!array_key_exists($quiz->id, $structure[$topic->id]->quizes)) {
+	                        $structure[$topic->id]->quizes[$quiz->id] = new stdClass ();
+	                        $structure[$topic->id]->quizes[$quiz->id]->quizid = $quiz->id;
+	                        $structure[$topic->id]->quizes[$quiz->id]->quiz_title = $quiz->name;
+	                        $structure[$topic->id]->quizes[$quiz->id]->quiz_grade = $quiz->grade;
+	                    }
+	                }
+	            }
+	        }
+	        $structure[$topic->id]->totalCompetencies = $topic_total_competencies;
+	    }
+	  
+	    
+	    return $structure;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function get_examples_for_subject_with_lfs_infos_returns() {
+	    return new external_multiple_structure (new external_single_structure (array(
+	        'topicid' => new external_value (PARAM_INT, 'id of topic'),
+	        'title' => new external_value (PARAM_TEXT, 'title of topic'),
+	        'requireaction' => new external_value(PARAM_BOOL, 'trainer action required or not'),
+	        'totalCompetencies' => new external_value (PARAM_INT, 'amount of total competencies of this topic'),
+	        'examples' => new external_multiple_structure (new external_single_structure (array(
+	            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+	            'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
+	            'example_title' => new external_value (PARAM_TEXT, 'title of example'),
+	            'example_item' => new external_value (PARAM_INT, 'current item id'),
+	            'example_status' => new external_value (PARAM_INT, 'status of current item'),
+	            'example_creatorid' => new external_value (PARAM_INT, 'creator of example'),
+	        ))),
+	        'quizes' => new external_multiple_structure (new external_single_structure (array(
+	            'quizid' => new external_value (PARAM_INT, 'id of quiz'),
+	            'quiz_title' => new external_value (PARAM_TEXT, 'title of quiz'),
+	            'quiz_grade' => new external_value (PARAM_FLOAT, 'sum grade of quiz'),
+	            
+	        )), 'quiz data', VALUE_OPTIONAL),
+	    )));
+	}
+	
+	
+	
+	
+	
 
 	/**
 	 * Returns description of method parameters
