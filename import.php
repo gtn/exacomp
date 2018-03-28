@@ -219,8 +219,8 @@ if($isAdmin || block_exacomp_check_customupload()) {
 			// export
 			if($hasData) {
 				echo '<hr />';
-				echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'export_all', 'courseid'=>$courseid)), 'Alle Kompetenzraster dieser Moodle Instanz exportieren'));
-				echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'select', 'courseid'=>$courseid)), 'Selektiver Export'));
+				echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'export_all', 'courseid'=>$courseid)), block_exacomp_get_string("export_all_standards")));
+				echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'select', 'courseid'=>$courseid)), block_exacomp_get_string("export_selective")));
 			}
 			
 			

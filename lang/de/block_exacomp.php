@@ -585,3 +585,5 @@ $string['report_subject'] = 'Bildungsstandard';
 $string['report_learniningmaterial'] = 'Lernmaterial';
 $string['report_competencefield'] = 'Kompetenzbereich';
 $string['all_students'] = 'Alle Schüler';
+$string['export_all_standards'] = 'Alle Kompetenzraster dieser Moodle Instanz exportieren';
+$string['export_selective'] = 'Selektiver Export';

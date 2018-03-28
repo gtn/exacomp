@@ -1531,7 +1531,7 @@ return [
 	],
 	'available_crosssubjects' => [
 		'Vorhandene Kursthemen',
-		'Available Cross Subjects',
+		'Available Interdisciplinary Subjects',
 	],
 	'crosssubject_drafts' => [
 		'Themenvorlagen',
@@ -1539,7 +1539,7 @@ return [
 	],
 	'de:Freigegebene Kursthemen' => [
 		null,
-		'Published Cross Subjects',
+		'Published Interdisciplinary Subjects',
 	],
 	'de:Freigabe bearbeiten' => [
 		null,
@@ -1994,5 +1994,11 @@ return [
     ], 'all_students' => [
         'Alle Schüler',
         'all students',
+    ], 'export_all_standards' => [
+        'Alle Kompetenzraster dieser Moodle Instanz exportieren',
+        'Export all competence grids of this Moodle installation',
+    ], 'export_selective' => [
+        'Selektiver Export',
+        'Select competence grids for export',
     ]
 ];
