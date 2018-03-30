@@ -260,6 +260,11 @@ $settings->add(new admin_setting_configtext('exacomp/assessment_grade_limit',
         block_exacomp_get_string('settings_assessment_grade_limit'),
         block_exacomp_get_string('settings_assessment_grade_limit_description'),
         20, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/assessment_grade_verbose',
+        block_exacomp_get_string('settings_assessment_grade_verbose'),
+        block_exacomp_get_string('settings_assessment_grade_verbose_description'),
+        block_exacomp_get_string('settings_assessment_grade_verbose_default'),
+        PARAM_TEXT));
 $settings->add(new admin_setting_configtext('exacomp/assessment_diffLevel_options',
         block_exacomp_get_string('settings_assessment_diffLevel_options'),
         block_exacomp_get_string('settings_assessment_diffLevel_options_description'),
