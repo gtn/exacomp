@@ -579,5 +579,5 @@ $string['report_subject'] = 'educational standard';
 $string['report_learniningmaterial'] = 'learning material';
 $string['report_competencefield'] = 'competence field';
 $string['all_students'] = 'all students';
-$string['export_all_standards'] = 'export all competence grids of this Moodle installation';
-$string['export_selective'] = 'select competence grids for export';
+$string['export_all_standards'] = 'Export all competence grids of this Moodle installation';
+$string['export_selective'] = 'Select competence grids for export';
