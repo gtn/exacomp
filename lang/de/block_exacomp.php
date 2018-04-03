@@ -111,6 +111,7 @@ $string['settings_heading_visualisation'] = 'Darstellung';
 $string['settings_heading_technical'] = 'Administratives';
 $string['settings_heading_apps'] = 'Apps-Einstellungen';
 $string['settings_heading_scheme'] = 'Generisches Bewertungsschema';
+$string['settings_admin_preconfiguration_none'] = 'Keine Vorkonfiguration verwenden';
 $string['settings_assessment_scheme_0'] = 'Keines';
 $string['settings_assessment_scheme_1'] = 'Noten';
 $string['settings_assessment_scheme_2'] = 'Verbalisierung';

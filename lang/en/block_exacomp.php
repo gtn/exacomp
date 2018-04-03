@@ -111,6 +111,7 @@ $string['settings_heading_visualisation'] = 'Visualisation';
 $string['settings_heading_technical'] = 'Administrative';
 $string['settings_heading_apps'] = 'Configuration for apps';
 $string['settings_heading_scheme'] = 'Generic assessment scheme';
+$string['settings_admin_preconfiguration_none'] = 'No preconfiguration';
 $string['settings_assessment_scheme_0'] = 'None';
 $string['settings_assessment_scheme_1'] = 'Grade';
 $string['settings_assessment_scheme_2'] = 'Verbose';

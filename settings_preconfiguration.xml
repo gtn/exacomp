@@ -1,0 +1,50 @@
+<settingsPreconfiguration>
+	<configOption id="1">
+		<name>Gesamtschule</name>
+		<assessment_example_scheme>2</assessment_example_scheme>
+		<assessment_example_diffLevel>1</assessment_example_diffLevel>
+		<assessment_example_SelfEval>1</assessment_example_SelfEval>
+		<assessment_childcomp_scheme>2</assessment_childcomp_scheme>
+		<assessment_childcomp_diffLevel>1</assessment_childcomp_diffLevel>
+		<assessment_childcomp_SelfEval>1</assessment_childcomp_SelfEval>
+		<assessment_comp_scheme>1</assessment_comp_scheme>
+		<assessment_comp_diffLevel>1</assessment_comp_diffLevel>
+		<assessment_comp_SelfEval>1</assessment_comp_SelfEval>
+		<assessment_topic_scheme>1</assessment_topic_scheme>
+		<assessment_topic_diffLevel>1</assessment_topic_diffLevel>
+		<assessment_topic_SelfEval>1</assessment_topic_SelfEval>
+		<assessment_subject_scheme>1</assessment_subject_scheme>
+		<assessment_subject_diffLevel>1</assessment_subject_diffLevel>
+		<assessment_subject_SelfEval>1</assessment_subject_SelfEval>
+		<assessment_theme_scheme>1</assessment_theme_scheme>
+		<assessment_theme_diffLevel>1</assessment_theme_diffLevel>
+		<assessment_theme_SelfEval>1</assessment_theme_SelfEval>
+		<assessment_points_limit>10</assessment_points_limit>
+		<assessment_grade_limit>6</assessment_grade_limit>
+		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
+	</configOption>
+	<configOption id="2">
+		<name>berufliche Schulen</name>
+		<assessment_example_scheme>3</assessment_example_scheme>
+		<assessment_example_diffLevel>0</assessment_example_diffLevel>
+		<assessment_example_SelfEval>1</assessment_example_SelfEval>
+		<assessment_childcomp_scheme>3</assessment_childcomp_scheme>
+		<assessment_childcomp_diffLevel>0</assessment_childcomp_diffLevel>
+		<assessment_childcomp_SelfEval>1</assessment_childcomp_SelfEval>
+		<assessment_comp_scheme>3</assessment_comp_scheme>
+		<assessment_comp_diffLevel>0</assessment_comp_diffLevel>
+		<assessment_comp_SelfEval>1</assessment_comp_SelfEval>
+		<assessment_topic_scheme>3</assessment_topic_scheme>
+		<assessment_topic_diffLevel>0</assessment_topic_diffLevel>
+		<assessment_topic_SelfEval>1</assessment_topic_SelfEval>
+		<assessment_subject_scheme>3</assessment_subject_scheme>
+		<assessment_subject_diffLevel>0</assessment_subject_diffLevel>
+		<assessment_subject_SelfEval>1</assessment_subject_SelfEval>
+		<assessment_theme_scheme>3</assessment_theme_scheme>
+		<assessment_theme_diffLevel>0</assessment_theme_diffLevel>
+		<assessment_theme_SelfEval>1</assessment_theme_SelfEval>
+		<assessment_points_limit>10</assessment_points_limit>
+		<assessment_grade_limit>6</assessment_grade_limit>
+		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
+	</configOption>
+</settingsPreconfiguration>

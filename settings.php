@@ -59,6 +59,20 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 		}
 	}
 	
+	class block_exacomp_admin_setting_preconfiguration extends admin_setting_configselect {
+		public function write_setting($data) {
+			$ret = parent::write_setting($data);
+		   
+			if ($ret != '') {
+				return $ret;
+			}
+
+			//block_exacomp_update_evaluation_niveau_tables();
+
+			return '';
+		}
+	}
+	
 	class block_exacomp_grading_schema extends admin_setting_configselect {
 		public function write_setting($data) {
 			$ret = parent::write_setting($data);
@@ -251,6 +265,12 @@ $settings->add(new admin_setting_configtext('exacomp/testlimit', block_exacomp_g
 $settings->add(new admin_setting_heading('exacomp/heading_assessment',
         block_exacomp_get_string('settings_heading_assessment'),
         ''));
+$settings->add(new block_exacomp_admin_setting_preconfiguration('exacomp/assessment_preconfiguration',
+        block_exacomp_get_string('settings_admin_scheme'),
+        block_exacomp_get_string('settings_admin_scheme_description'),
+        block_exacomp_get_string('settings_admin_scheme_none'),
+        array(block_exacomp_get_string('settings_admin_preconfiguration_none'), 'optionFromXml', 'optionFromXml')));
+        
 $settings->add(new block_exacomp_assessment_configtable('exacomp/assessment_mapping', '', '', ''));
 $settings->add(new admin_setting_configtext('exacomp/assessment_points_limit',
         block_exacomp_get_string('settings_assessment_points_limit'),
