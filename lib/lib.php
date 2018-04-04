@@ -556,14 +556,18 @@ function block_exacomp_get_subjecttitle_by_example($exampleid) {
 
 	$descriptors = block_exacomp_get_descriptors_by_example($exampleid);
 	foreach ($descriptors as $descriptor) {
-
 		$full = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array("id" => $descriptor->id));
 		$sql = "select s.* FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_TOPICS."} t
 		WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
 
-		$subject = $DB->get_record_sql($sql, array($full->parentid), IGNORE_MULTIPLE);
+		if($full->parentid == 0){
+		    $subject = $DB->get_record_sql($sql, array($full->id), IGNORE_MULTIPLE);
+		}else{
+		    $subject = $DB->get_record_sql($sql, array($full->parentid), IGNORE_MULTIPLE);
+		}
+
 		if ($subject) {
-			return $subject->title;
+		    return $subject->title;
 		}
 	}
 }

@@ -4976,7 +4976,7 @@ class block_exacomp_external extends external_api {
 		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
 
 		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
-
+		
 		return array("success" => true, "itemid" => $itemid);
 	}
 
