@@ -321,6 +321,7 @@
         <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="teacher_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="teacher_reviewerid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="student_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="starttime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
