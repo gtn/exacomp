@@ -3114,10 +3114,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			if (block_exacomp_additional_grading()) {
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
-				$tables = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], 'Kompetenzen');
-				$tables .= $this->subject_statistic_table($course->id, $stat['child_evaluations'], 'Teilkompetenzen');
+				$tables = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], block_exacomp_get_string('descriptors'));
+				$tables .= $this->subject_statistic_table($course->id, $stat['child_evaluations'], block_exacomp_get_string('childcompetencies_compProfile'));
 				if (block_exacomp_course_has_examples($course->id)) {
-					$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
+				    $tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], block_exacomp_get_string('materials_compProfile'));
 				}
 
 				$innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'), array('class' => 'competence_profile_insectitle'));
@@ -3376,11 +3376,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = 'Lehrerbewertung';
+		$cell->text = block_exacomp_get_string('teacher_assessment');
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = 'Schülerbewertung';
+		$cell->text = block_exacomp_get_string('student_assessment');
 		$row->cells[] = $cell;
 
 		$rows[] = $row;

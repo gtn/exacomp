@@ -1335,6 +1335,15 @@ return [
 		'Übersicht über die Kompetenzen und Aufgaben',
 		'Comparison: Teacher-Student',
 	],
+    'childcompetencies_compProfile' => [
+        'Teilkompetenzen',
+        'Child competencies',
+    ],
+    'materials_compProfile' => [
+        'Lernmaterialien',
+        'Materials',
+    ],
+    
 	// === Competence Profile Settings ===
 	'profile_settings_choose_courses' => [
 		'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
