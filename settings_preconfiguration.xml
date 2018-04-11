@@ -21,7 +21,9 @@
 		<assessment_theme_SelfEval>1</assessment_theme_SelfEval>
 		<assessment_points_limit>10</assessment_points_limit>
 		<assessment_grade_limit>6</assessment_grade_limit>
+		<assessment_grade_verbose>Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend</assessment_grade_verbose>
 		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
+		<assessment_verbose_options>nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht</assessment_verbose_options>
 	</configOption>
 	<configOption id="2">
 		<name>berufliche Schulen</name>
@@ -45,6 +47,8 @@
 		<assessment_theme_SelfEval>1</assessment_theme_SelfEval>
 		<assessment_points_limit>10</assessment_points_limit>
 		<assessment_grade_limit>6</assessment_grade_limit>
+		<assessment_grade_verbose>Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend</assessment_grade_verbose>
 		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
+		<assessment_verbose_options>nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht</assessment_verbose_options>
 	</configOption>
 </settingsPreconfiguration>
