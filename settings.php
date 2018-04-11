@@ -92,7 +92,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 	}
 	
 	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
-		public function write_setting($data) {
+
+        public function write_setting($data) {
 			$ret = parent::write_setting($data);
 		   
 			if ($ret != '') {
@@ -103,6 +104,29 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 
 			return '';
 		}
+
+        public function output_html($data, $query='') {
+            $output = parent::output_html($data, $query);
+            $preconfigparameters = block_exacomp_get_preconfigparameters_list();
+            if (in_array($this->name, $preconfigparameters)) {
+                $ispreconfig = get_config('exacomp', 'assessment_preconfiguration');
+                // Add needed element attributes for work with preconfiguration.
+                $doc = new DOMDocument();
+                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                $selector = new DOMXPath($doc);
+                foreach($selector->query('//select') as $e ) {
+                    $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
+                    if ($ispreconfig > 0) {
+                        $options = $e->getElementsByTagName('option');
+                        foreach($options as $o ) {
+                            $o->setAttribute('disabled', 'disabled');
+                        }
+                    }
+                }
+                $output = $doc->saveHTML($doc->documentElement);
+            }
+            return $output;
+        }
 	}
 	
 	class block_exacomp_admin_setting_preconfiguration extends admin_setting_configselect {
@@ -166,6 +190,12 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         if (elementsList[i].type.toLowerCase() == \'checkbox\') {
                             elementsList[i].onclick = null;
                             elementsList[i].onkeydown = null;
+                        };
+                        if (elementsList[i].tagName.toLowerCase() == \'select\') {
+                            var options = elementsList[i].options;
+                            for (var j = 0, lopt = options.length; j < lopt; j++) {                                                
+                                options[j].removeAttribute(\'disabled\');                                                                                                                                        
+                            }
                         };
                         elementsList[i].removeAttribute("readOnly");
                         elementsList[i].removeAttribute("disabled");
@@ -243,6 +273,14 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                                 }
                                                 break;
                                         case \'select\':
+                                                elementsList[i].value = inputvalue;
+                                                var options = elementsList[i].options;
+                                                for (var j = 0, lopt = options.length; j < lopt; j++) {                                                
+                                                    if (options[j].value != inputvalue) {
+                                                        options[j].disabled = \'disabled\';                                                                                                        
+                                                    }
+                                                }
+                                                break;
                                         case \'textarea\':
                                                 elementsList[i].value = inputvalue;
                                                 elementsList[i].readOnly = true;
