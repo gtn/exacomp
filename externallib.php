@@ -5124,6 +5124,7 @@ class block_exacomp_external extends external_api {
 
 		$descriptor_return = new stdClass();
 		$descriptor_return->descriptorid = $descriptorid;
+		$descriptor_return->parentid = $descriptor->parentid;
 		$descriptor_return->descriptortitle = $descriptor->title;
 		$descriptor_return->teacherevaluation = -1;
 		$descriptor_return->additionalinfo = null;
@@ -5274,6 +5275,7 @@ class block_exacomp_external extends external_api {
 		    'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
 		    'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
 			'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+		    'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
 			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 			'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
 			'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
@@ -5289,6 +5291,7 @@ class block_exacomp_external extends external_api {
 			    'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
 			    'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
 				'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+			    'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
 				'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 				'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
