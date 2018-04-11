@@ -2256,8 +2256,7 @@ Params: <table>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
-    "itemid": "int null (itemid)",
-    "subjecttitle": "text null (itemid)"
+    "itemid": "int null (itemid)"
 }</pre>
 <h2>dakora_grade_example</h2>
 <div>grade example solution
@@ -2372,6 +2371,7 @@ Returns:<pre>{
     "reviewerid": "int null (id of reviewer)",
     "reviewername": "text null (name of reviewer)",
     "descriptorid": "int null (id of descriptor)",
+    "parentid": "int null (id of parent of descriptor)",
     "descriptortitle": "text null (title of descriptor)",
     "teacherevaluation": "int null (teacher evaluation of descriptor)",
     "studentevaluation": "int null (student evaluation of descriptor)",
@@ -2388,6 +2388,7 @@ Returns:<pre>{
             "reviewerid": "int null (id of reviewer)",
             "reviewername": "text null (name of reviewer)",
             "descriptorid": "int null (id of descriptor)",
+            "parentid": "int null (id of parent of descriptor)",
             "descriptortitle": "text null (title of descriptor)",
             "teacherevaluation": "int null (teacher evaluation of descriptor)",
             "evalniveauid": "int null (evaluation niveau id)",

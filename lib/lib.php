@@ -8055,3 +8055,13 @@ function block_exacomp_read_preconfigurations_xml() {
     }
     return $xmlresult;
 }
+
+function block_exacomp_get_preconfigparameters_list() {
+    $xmlpreconfig = block_exacomp_read_preconfigurations_xml();
+    $preconfigparameters = array();
+    foreach ($xmlpreconfig as $id => $config) {
+        unset($config['name']);
+        $preconfigparameters = array_unique(array_merge($preconfigparameters, array_keys($config)));
+    }
+    return $preconfigparameters;
+}

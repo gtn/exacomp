@@ -26,35 +26,42 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 	// check needed, because moodle includes this file twice
 
     class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configtext {
-        private $preconfigparameters = array();
-        private $ispreconfig = 0;
-
-        public function __construct($name, $visiblename, $description, $defaultsetting) {
-            if (!(count($this->preconfigparameters) > 0)) {
-                $xmlpreconfig = block_exacomp_read_preconfigurations_xml();
-                foreach ($xmlpreconfig as $id => $config) {
-                    unset($config['name']);
-                    $this->preconfigparameters = array_merge($this->preconfigparameters, array_keys($config));
-                }
-            }
-            parent::__construct($name, $visiblename, $description, $defaultsetting);
-        }
-
-        public function get_setting() {
-            $this->ispreconfig = $this->config_read('assessment_preconfiguration');
-            return parent::get_setting();
-        }
 
         public function output_html($data, $query='') {
             $output = parent::output_html($data, $query);
-            if (in_array($this->name, $this->preconfigparameters)) {
+            $preconfigparameters = block_exacomp_get_preconfigparameters_list();
+            if (in_array($this->name, $preconfigparameters)) {
+                $ispreconfig = get_config('exacomp', 'assessment_preconfiguration');
                 // Add needed element attributes for work with preconfiguration.
                 $doc = new DOMDocument();
                 $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                 $selector = new DOMXPath($doc);
                 foreach($selector->query('//input') as $e ) {
                     $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
-                    if ($this->ispreconfig > 0) {
+                    if ($ispreconfig > 0) {
+                        $e->setAttribute('readOnly', 'readonly');
+                    }
+                }
+                $output = $doc->saveHTML($doc->documentElement);
+            }
+            return $output;
+        }
+    }
+
+    class block_exacomp_admin_setting_extraconfigcheckbox extends admin_setting_configcheckbox {
+
+        public function output_html($data, $query='') {
+            $output = parent::output_html($data, $query);
+            $preconfigparameters = block_exacomp_get_preconfigparameters_list();
+            if (in_array($this->name, $preconfigparameters)) {
+                $ispreconfig = get_config('exacomp', 'assessment_preconfiguration');
+                // Add needed element attributes for work with preconfiguration.
+                $doc = new DOMDocument();
+                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                $selector = new DOMXPath($doc);
+                foreach($selector->query('//input') as $e ) {
+                    $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
+                    if ($ispreconfig > 0) {
                         $e->setAttribute('readOnly', 'readonly');
                     }
                 }
@@ -137,11 +144,33 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 		    $output .= '<script>';
 		    $xmlarray = block_exacomp_read_preconfigurations_xml();
 		    if ($xmlarray && is_array($xmlarray)) {
+		        // Get all parameters from XML. XML can has different sets of parameters
+                $configparameters = array();
+                foreach ($xmlarray as $id => $config) {
+                    unset($config['name']);
+                    $configparameters = array_unique(array_merge($configparameters, array_keys($config)));
+                }
                 $output .= "var preconfigurations = [];\r\n";
                 foreach ($xmlarray as $key => $config) {
+                    foreach ($configparameters as $param) {
+                        if (!key_exists($param, $config)) {
+                            $config[$param] = '';
+                        }
+                    }
                     $output .= 'preconfigurations['.$key.'] = \''.json_encode($config).'\';'."\r\n";
                 }
                 $output .= 'function setupPreconfiguration(select) {
+                    // Enable all elements before any doings
+                    var elementsList = document.getElementsByClassName(\'exacomp_forpreconfig\');
+                    for (var i = 0, length = elementsList.length; i < length; i++) {
+                        if (elementsList[i].type.toLowerCase() == \'checkbox\') {
+                            elementsList[i].onclick = null;
+                            elementsList[i].onkeydown = null;
+                        };
+                        elementsList[i].removeAttribute("readOnly");
+                        elementsList[i].removeAttribute("disabled");
+                        elementsList[i].style.opacity = 1;
+                    }
 		            var selectedValue = select.value;
                     if (selectedValue > 0) {
                         var preconfigData = preconfigurations[selectedValue];                        
@@ -184,41 +213,46 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                 var inputvalue = preconfigObject[property];
                                 var elementsList = document.getElementsByName(inputname);                                
                                 for (var i = 0, length = elementsList.length; i < length; i++) {
-                                    var elementType = elementsList[i].type.toLowerCase(); 
-                                    switch (elementType) {
-                                        case \'radio\':
-                                        case \'checkbox\':
-                                            if (elementsList[i].value == inputvalue) {
-                                                elementsList[i].checked = true;                                                      
-                                            } else {
-                                                elementsList[i].checked = false;
-                                            }
-                                            if (elementType == \'checkbox\') {
-                                                elementsList[i].onclick = function () { return false; };
-                                                elementsList[i].onkeydown = function () { return false; };
-                                                elementsList[i].style.opacity = 0.5;
-                                            } else {
-                                                elementsList[i].disabled = \'disabled\';
-                                            }
-                                            break;
-                                        case \'text\':
-                                            elementsList[i].value = inputvalue;
-                                            elementsList[i].readOnly = true;
-                                            break;
-                                    }                                                                                                            
+                                    var tag = elementsList[i].tagName.toLowerCase();
+                                    var elementType = elementsList[i].type.toLowerCase();
+                                    switch (tag) {
+                                        case \'input\':
+                                                switch (elementType) {
+                                                    case \'radio\':
+                                                        if (elementsList[i].value == inputvalue) {
+                                                            elementsList[i].checked = true;                                                      
+                                                        } else {
+                                                            elementsList[i].checked = false;
+                                                        }
+                                                        elementsList[i].disabled = \'disabled\';
+                                                        break;
+                                                    case \'checkbox\':                                                        
+                                                        if (inputvalue == 1) {
+                                                            elementsList[i].checked = true;                                                      
+                                                        } else {
+                                                            elementsList[i].checked = false;
+                                                        }
+                                                        elementsList[i].onclick = function () { return false; };
+                                                        elementsList[i].onkeydown = function () { return false; };
+                                                        elementsList[i].style.opacity = 0.5;                                                        
+                                                        break;
+                                                    case \'text\':
+                                                        elementsList[i].value = inputvalue;
+                                                        elementsList[i].readOnly = true;
+                                                        break;
+                                                }
+                                                break;
+                                        case \'select\':
+                                        case \'textarea\':
+                                                elementsList[i].value = inputvalue;
+                                                elementsList[i].readOnly = true;
+                                                break;
+                                    }
                                 }                                
                             }
                         }
                     } else {
-                        // Enable all elements
-                        var elementsList = document.getElementsByClassName(\'exacomp_forpreconfig\');
-                        for (var i = 0, length = elementsList.length; i < length; i++) {
-                            elementsList[i].removeAttribute("onclick");
-                            elementsList[i].removeAttribute("onkeydown");
-                            elementsList[i].removeAttribute("readOnly");
-                            elementsList[i].removeAttribute("disabled");
-                            elementsList[i].style.opacity = 1;
-                        }
+                        // Doings if selected "no preconfigarate"                                              
                     }
 		        }
 		    ';
@@ -471,7 +505,7 @@ $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
         block_exacomp_get_string('settings_admin_scheme_description'),
         block_exacomp_get_string('settings_admin_scheme_none'),
         array(block_exacomp_get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));
-$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness',
+$settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/useprofoundness',
         block_exacomp_get_string('useprofoundness'),
         '', 0));
 
