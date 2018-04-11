@@ -8030,3 +8030,28 @@ function block_exacomp_update_evaluation_niveau_tables() {
 		g::$DB->insert_record_raw(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, $entry, false, false, true);
 	}
 }
+
+/**
+ * @return array
+ */
+function block_exacomp_read_preconfigurations_xml() {
+    global $CFG;
+    $xmlresult = array();
+    $path = $CFG->dirroot.'/blocks/exacomp/';
+    $namexml = $path.'settings_preconfiguration.xml';
+    $xmlcontent = file_get_contents($namexml);
+    $xmlarray = (array) simplexml_load_string($xmlcontent);
+    if ($xmlarray && is_array($xmlarray) && $xmlarray['configOption']) {
+        foreach ($xmlarray['configOption'] as $config) {
+            $data = (array)$config;
+            if ($data['@attributes']['id'] > 0) {
+                $key = $data['@attributes']['id'];
+            } else {
+                $key = max(array_keys($xmlresult)) + 1;
+            }
+            unset($data['@attributes']);
+            $xmlresult[$key] = $data;
+        }
+    }
+    return $xmlresult;
+}
