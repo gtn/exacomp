@@ -24,8 +24,6 @@
 		<assessment_grade_verbose>Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend</assessment_grade_verbose>
 		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
 		<assessment_verbose_options>nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht</assessment_verbose_options>
-		<adminscheme>2</adminscheme>
-		<useprofoundness>1</useprofoundness>
 	</configOption>
 	<configOption id="2">
 		<name>berufliche Schulen</name>
