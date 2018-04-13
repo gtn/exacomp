@@ -131,6 +131,12 @@ const BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION = 'studentevaluation';
 const BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO = 'additionalinfo';
 const BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID = 'evalniveauid';
 
+const BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE = 0;
+const BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE = 1;
+const BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE = 2;
+const BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS = 3;
+const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
+
 /**
  * access configuration setting via functions
  */
@@ -143,7 +149,7 @@ function block_exacomp_is_topicgrading_enabled() {
 }
 
 function block_exacomp_is_subjectgrading_enabled() {
-	return get_config('exacomp', 'usesubjectgrading');
+	return get_config('exacomp', 'assessment_subject_scheme');
 }
 
 function block_exacomp_is_numbering_enabled() {
@@ -297,7 +303,12 @@ function block_exacomp_evaluation_niveau_type() {
 	return get_config('exacomp', 'adminscheme');
 }
 
+/**
+ * @return mixed
+ * @deprecated
+ */
 function block_exacomp_additional_grading() {
+    //return true;
 	return get_config('exacomp', 'additional_grading');
 }
 
@@ -313,6 +324,10 @@ function block_exacomp_get_assessment_points_limit() {
 
 function block_exacomp_get_assessment_grade_limit() {
     return get_config('exacomp', 'assessment_grade_limit');
+}
+
+function block_exacomp_get_assessment_grade_verbose() {
+    return get_config('exacomp', 'assessment_grade_verbose');
 }
 
 function block_exacomp_get_assessment_diffLevel_options() {
@@ -1717,6 +1732,7 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
 	$user->subjects->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, timestamp');
 	$user->subjects->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, timestamp');
 	$user->subjects->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, additionalinfo');
+	$user->subjects->student_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, additionalinfo');
 	$user->subjects->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, evalniveauid');
 
 	return $user;
@@ -6231,9 +6247,6 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
 		return;
 	}
 
-	if ($evaluation_niveau_type == 0) {
-		return;
-	}
 
 	//predefined pictures
 	$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';

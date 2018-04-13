@@ -800,7 +800,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 			$evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? 'teacher' : 'student';
-
 			if (!$crosssubjid && $usesubjectgrading) {
 				$subjectRow = new html_table_row();
 				$subjectRow->attributes['class'] = 'highlight';
@@ -823,6 +822,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentsCount = 0;
 				foreach ($students as $student) {
 					if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+					    // TEACHER VIEW.
 						$reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, "reviewerid", array("userid" => $student->id, "compid" => $subject->id, "courseid" => $courseid, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT));
 						if ($reviewerid == $USER->id || $reviewerid == 0) {
 							$reviewerid = null;
@@ -840,7 +840,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
  						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
  						$niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
- 					    $niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, !$isEditingTeacher, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
+ 						if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_subject_diffLevel()) {
+ 					        $niveau_cell->text = $this->generate_niveau_select('niveau_subject',
+                                                                                $subject->id,
+                                                                                'subjects',
+                                                                                $student,
+                                                                                !$isEditingTeacher,
+                                                                                ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+ 						} else {
+                            $niveau_cell->text = '';
+                        }
 
  					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
  					    //the warning contains the name of the reviewer
@@ -852,6 +861,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
  					    }else {
  					        $reviewername=$reviewerTeacherUsername;
  					    }
+ 					    //echo '<pre>';print_r($student); echo '</pre>';
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$subject->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
 							'value' => isset($student->subjects->teacher_additional_grading[$subject->id]) ?
@@ -860,17 +870,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
 						    'reviewername' => $reviewername);
 
-						if ($role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
-							$params['disabled'] = 'disabled';
-						}
 
 						//student & niveau & showevaluation
-						if (block_exacomp_use_eval_niveau() && $role == BLOCK_EXACOMP_ROLE_STUDENT && $showevaluation) {
+						/*if (block_exacomp_use_eval_niveau() && $role == BLOCK_EXACOMP_ROLE_STUDENT && $showevaluation) {
 							$subjectRow->cells[] = $niveau_cell;
-						}
+						}*/
 
-
-						if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
+                        // has no sence? here $role is BLOCK_EXACOMP_ROLE_TEACHER. look above if().
+						/*if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
 							if (block_exacomp_additional_grading() && $role == BLOCK_EXACOMP_ROLE_STUDENT) {    //use parent grading
 								$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 							} else {    //use drop down/checkbox values
@@ -882,7 +889,44 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 						} else {
 							$evaluation_cell->text = "";
-						}
+						}*/
+						// Self evaluate.
+                        $subjectscheme = block_exacomp_get_assessment_subject_scheme();
+                        $evaluation_cell->text = '';
+                        if ($subjectscheme && block_exacomp_get_assessment_subject_SelfEval() == 1) {
+                            if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
+                                $evaluation_cell->text = $this->generate_checkbox(
+                                        $checkboxname,
+                                        $subject->id,
+                                        'subjects',
+                                        $student,
+                                        'student',
+                                        $subjectscheme,
+                                        true,
+                                        null,
+                                        $reviewerid);
+                            } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+                                $params['disabled'] = true;
+                                $evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+                            } else { // Lists.
+                                $evaluation_cell->text = $this->generate_select(
+                                        $checkboxname,
+                                        $subject->id,
+                                        'subjects',
+                                        $student,
+                                        'student',
+                                        $subjectscheme,
+                                        true,
+                                        $profoundness,
+                                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+                            }
+ /*                           if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE) {
+                                $evaluation_cell->text = $this->generate_checkbox($checkboxname, $subject->id, 'subjects', $student,
+                                        ($evaluation == "teacher") ? "student" : "teacher", $subjectscheme, true);
+                            } else {
+
+                            }*/
+                        }
 
 						if ($showevaluation) {
 							$subjectRow->cells[] = $evaluation_cell;
@@ -892,7 +936,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$subjectRow->cells[] = $niveau_cell;
 						}
 
-						if ($scheme == 1) {
+						/*if ($scheme == 1) {
 							$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $subject->id, 'subjects', $student, $evaluation, $scheme, false, null, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 						} else {
 							if (block_exacomp_additional_grading() && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
@@ -900,14 +944,141 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							} else {
 								$self_evaluation_cell->text = $this->generate_select($checkboxname, $subject->id, 'subjects', $student, $evaluation, $scheme, false, $profoundness, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 							}
+						}*/
+
+                        if (/*$role == BLOCK_EXACOMP_ROLE_STUDENT || */!$isEditingTeacher) {
+                            $params['disabled'] = 'disabled';
+                        } else {
+                            unset($params['disabled']);
+                        }
+
+                        if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE) { // None.
+                            $self_evaluation_cell->text = '';
+                        } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
+                            $self_evaluation_cell->text = $this->generate_checkbox(
+							        $checkboxname,
+                                    $subject->id,
+                                    'subjects',
+                                    $student,
+                                    $evaluation,
+                                    $scheme,
+                                    false,
+                                    null,
+                                    ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+						} else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+						    $self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+                        } else { // Lists.
+                            $self_evaluation_cell->text = $this->generate_select($checkboxname, $subject->id, 'subjects', $student, $evaluation, $subjectscheme, false, $profoundness, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 						}
+
 						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
 						$subjectRow->cells[] = $self_evaluation_cell;
 					} else {
-						$empty_cell = new html_table_cell();
-						$empty_cell->colspan = 1 + ((block_exacomp_use_eval_niveau()) ? 1 : 0) + (($showevaluation) ? 1 : 0);
-						$subjectRow->cells[] = $empty_cell;
+					    // STUDENT VIEW.
+                        //$empty_cell = new html_table_cell();
+                        //$empty_cell->colspan = 1 + ((block_exacomp_use_eval_niveau()) ? 1 : 0) + (($showevaluation) ? 1 : 0);
+                        //$subjectRow->cells[] = $empty_cell;
+
+                        $niveau_cell = new html_table_cell();
+                        $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                        $niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
+                        if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_subject_diffLevel()) {
+                            $niveau_cell->text = $this->generate_niveau_select('niveau_subject',
+                                    $subject->id,
+                                    'subjects',
+                                    $student,
+                                    !$isEditingTeacher,
+                                    null);
+                        } else {
+                            $niveau_cell->text = '';
+                        }
+
+                        $evaluation_cell = new html_table_cell();
+                        $evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+
+                        $self_evaluation_cell = new html_table_cell();
+                        $self_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+
+                       $params = array('name' => 'add-grading-'/*$checkboxname.'-'*/.$student->id.'-'.$subject->id, 'type' => 'text',
+                                'maxlength' => 3, 'class' => 'percent-rating-text',
+                                'value' => isset($student->subjects->teacher_additional_grading[$subject->id]) ?
+                                        block_exacomp_format_eval_value($student->subjects->teacher_additional_grading[$subject->id]) : "",
+                                'exa-compid' => $subject->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_SUBJECT,
+                                'disabled' => 'disabled');
+
+                        //student & niveau & showevaluation
+                        if (block_exacomp_use_eval_niveau() && $showevaluation) {
+                            $subjectRow->cells[] = $niveau_cell;
+                        }
+
+                        $subjectscheme = block_exacomp_get_assessment_subject_scheme();
+
+                        if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE) { // None.
+                            $evaluation_cell->text = '';
+                        } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
+                            $evaluation_cell->text = $this->generate_checkbox(
+                                    $checkboxname,
+                                    $subject->id,
+                                    'subjects',
+                                    $student,
+                                    'teacher',
+                                    $scheme,
+                                    true,
+                                    null,
+                                    null);
+                        } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+                            $evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+                        } else { // Lists.
+                            $evaluation_cell->text = $this->generate_select(
+                                    $checkboxname,
+                                    $subject->id,
+                                    'subjects',
+                                    $student,
+                                    'teacher',
+                                    $subjectscheme,
+                                    true,
+                                    $profoundness,
+                                    null);
+                        }
+
+                        $evaluation_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
+
+                        $subjectRow->cells[] = $evaluation_cell;
+
+                        $self_evaluation_cell->text = '';
+                        if ($subjectscheme && block_exacomp_get_assessment_subject_SelfEval() == 1) {
+                            if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
+                                $self_evaluation_cell->text = $this->generate_checkbox(
+                                        $checkboxname,
+                                        $subject->id,
+                                        'subjects',
+                                        $student,
+                                        'student',
+                                        $subjectscheme,
+                                        false,
+                                        null,
+                                        null);
+                            } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+                                unset($params['disabled']);
+                                $self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+                            } else { // Lists.
+                                $self_evaluation_cell->text = $this->generate_select(
+                                        $checkboxname,
+                                        $subject->id,
+                                        'subjects',
+                                        $student,
+                                        'student',
+                                        $subjectscheme,
+                                        false,
+                                        $profoundness,
+                                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+                            }
+                        }
+
+                        if ($showevaluation) {
+                            $subjectRow->cells[] = $self_evaluation_cell;
+                        }
 					}
 				}
 
@@ -940,7 +1111,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
 
-			$row_cnt = count($rows); // save row count to calc print_wdith
+			$row_cnt = count($rows); // save row count to calc print_width
 			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher);
 
 			if ($this->is_print_mode()) {
@@ -1453,6 +1624,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$icontext = "";
 					//check reviewerid for teacher
+                    $reviewerid = null;
 					if ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) {
 						$reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, "reviewerid", array("userid" => $student->id, "compid" => $descriptor->id, "courseid" => $data->courseid, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
 						if ($reviewerid == $USER->id || $reviewerid == 0) {
@@ -2052,7 +2224,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function resubmission_icon($exampleid, $studentid, $courseid) {
 		global $CFG, $DB;
 
-		if ($CFG->block_exaport_app_alloweditdelete) {
+		if (isset($CFG->block_exaport_app_alloweditdelete) && $CFG->block_exaport_app_alloweditdelete) {
 			return "";
 		}
 
@@ -2365,7 +2537,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			return $this->select(
 				$options,
 				$name.'-'.$compid.'-'.$student->id,
-				(isset($student->{$type}->niveau[$compid])) ? $student->{$type}->niveau[$compid] : -1, true, $attributes);
+				(isset($student->{$type}->niveau[$compid])) ? $student->{$type}->niveau[$compid] : -1,
+                true,
+                $attributes);
 		}
 
 		return '';
