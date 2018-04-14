@@ -305,11 +305,25 @@ function block_exacomp_evaluation_niveau_type() {
 
 /**
  * @return mixed
- * @deprecated
  */
-function block_exacomp_additional_grading() {
-    //return true;
-	return get_config('exacomp', 'additional_grading');
+function block_exacomp_additional_grading($level = BLOCK_EXACOMP_TYPE_SUBJECT) {
+    switch ($level) {
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+            return block_exacomp_get_assessment_comp_scheme();
+        case BLOCK_EXACOMP_TYPE_TOPIC:
+            return block_exacomp_get_assessment_topic_scheme();
+        case BLOCK_EXACOMP_TYPE_CROSSSUB:
+            return block_exacomp_get_assessment_theme_scheme();
+        case BLOCK_EXACOMP_TYPE_SUBJECT:
+            return block_exacomp_get_assessment_subject_scheme();
+        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+            return block_exacomp_get_assessment_example_scheme();
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
+            return block_exacomp_get_assessment_childcomp_scheme();
+        default:
+            return block_exacomp_get_assessment_subject_scheme();
+    }
+	//return get_config('exacomp', 'additional_grading');
 }
 
 // function block_exacomp_get_assessment_limits() {
@@ -6077,15 +6091,17 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 		$additionalinfo = null;
 	}
 
+    $context = context_course::instance($courseid);
+    $role = block_exacomp_is_teacher($context) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT;
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
-	$record = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $comptype, $descriptorid);
+	$record = block_exacomp_get_comp_eval($courseid, $role, $studentid, $comptype, $descriptorid);
 
 
 	if ($additionalinfo == '' || empty($additionalinfo)) {
 		$additionalinfo = null;
 	}
 
-	if(block_exacomp_is_teacher($courseid)){
+	//if(block_exacomp_is_teacher($courseid)){
     	if ($record) {
     		// falls sich die bewertung geändert hat, timestamp neu setzen
     		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
@@ -6103,7 +6119,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$insert->userid = $studentid;
     		$insert->courseid = $courseid;
     		$insert->comptype = $comptype;
-    		$insert->role = BLOCK_EXACOMP_ROLE_TEACHER;
+    		$insert->role = $role;
     		$insert->reviewerid = $USER->id;
     		$insert->timestamp = time();
     
@@ -6111,7 +6127,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$insert->value = $value;
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}   
-	}
+	//}
 }
 
 /**

@@ -864,8 +864,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
  					    //echo '<pre>';print_r($student); echo '</pre>';
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$subject->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
-							'value' => isset($student->subjects->teacher_additional_grading[$subject->id]) ?
-								block_exacomp_format_eval_value($student->subjects->teacher_additional_grading[$subject->id]) : "",
+							'value' => isset($student->subjects->student_additional_grading[$subject->id]) ?
+								block_exacomp_format_eval_value($student->subjects->student_additional_grading[$subject->id]) : "",
 							'exa-compid' => $subject->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_SUBJECT,
 							'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
 						    'reviewername' => $reviewername);
@@ -890,7 +890,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						} else {
 							$evaluation_cell->text = "";
 						}*/
-						// Self evaluate.
+						// Self evaluate from student.
                         $subjectscheme = block_exacomp_get_assessment_subject_scheme();
                         $evaluation_cell->text = '';
                         if ($subjectscheme && block_exacomp_get_assessment_subject_SelfEval() == 1) {
@@ -905,7 +905,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         true,
                                         null,
                                         $reviewerid);
-                            } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+                            } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // Input.
                                 $params['disabled'] = true;
                                 $evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
                             } else { // Lists.
@@ -965,7 +965,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     false,
                                     null,
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
-						} else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+						} else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // Input.
+                            $params['value'] = isset($student->subjects->teacher_additional_grading[$subject->id]) ?
+                                    block_exacomp_format_eval_value($student->subjects->teacher_additional_grading[$subject->id]) : "";
 						    $self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
                         } else { // Lists.
                             $self_evaluation_cell->text = $this->generate_select($checkboxname, $subject->id, 'subjects', $student, $evaluation, $subjectscheme, false, $profoundness, ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -1000,7 +1002,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $self_evaluation_cell = new html_table_cell();
                         $self_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
 
-                       $params = array('name' => 'add-grading-'/*$checkboxname.'-'*/.$student->id.'-'.$subject->id, 'type' => 'text',
+                       $params = array('name' => 'add-grading-'.$student->id.'-'.$subject->id, 'type' => 'text',
                                 'maxlength' => 3, 'class' => 'percent-rating-text',
                                 'value' => isset($student->subjects->teacher_additional_grading[$subject->id]) ?
                                         block_exacomp_format_eval_value($student->subjects->teacher_additional_grading[$subject->id]) : "",
@@ -1027,7 +1029,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     true,
                                     null,
                                     null);
-                        } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+                        } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // Input.
                             $evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
                         } else { // Lists.
                             $evaluation_cell->text = $this->generate_select(
@@ -1059,8 +1061,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         false,
                                         null,
                                         null);
-                            } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) { // Input.
+                            } else if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // Input.
                                 unset($params['disabled']);
+                                $params['value'] = isset($student->subjects->student_additional_grading[$subject->id]) ?
+                                        block_exacomp_format_eval_value($student->subjects->student_additional_grading[$subject->id]) : "";
                                 $self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
                             } else { // Lists.
                                 $self_evaluation_cell->text = $this->generate_select(

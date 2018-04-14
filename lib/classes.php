@@ -1134,22 +1134,15 @@ class global_config {
             // TODO: make for other levels?
 		    $scheme = block_exacomp_get_assessment_subject_scheme();
 		    switch($scheme) {
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                    $result = array(-1 => '');
-                    // Options from plugin settings: assessment_grade_verbose.
-                    $options = array_map('trim', explode(',', block_exacomp_get_assessment_grade_verbose()));
-                    $options = array_reverse($options);
-                    // start from 1
-                    array_unshift($options, 'temp'); unset($options[0]);
-                    $result = $result + $options;
+                case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                    // Options from plugin settings: 0, 1... -> assessment_points_limit.
+                    $result = array('-1' => '') + range(0, block_exacomp_get_assessment_points_limit());
                     break;
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                     $result = array(-1 => '');
                     // Options from plugin settings: assessment_grade_verbose.
                     $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
                     //$options = array_reverse($options);
-                    // start from 1
-                    array_unshift($options, 'temp'); unset($options[0]);
                     $result = $result + $options;
                     break;
                 default:
@@ -1224,15 +1217,10 @@ class global_config {
             // TODO: make for other levels?
             $scheme = block_exacomp_get_assessment_subject_scheme();
             switch($scheme) {
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                     // Options from plugin settings: assessment_grade_verbose.
-                    $options = array_map('trim', explode(',', block_exacomp_get_assessment_grade_verbose()));
-                    $options = array_reverse($options);
-                    // start from 1
-                    array_unshift($options, 'temp'); unset($options[0]);
-                    $result = $result + $options;
+                case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                    $result = array('-1' => '') + range(0, block_exacomp_get_assessment_points_limit());
                     break;
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                /*case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                     // Options from plugin settings: assessment_grade_verbose.
                     $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
                     //$options = array_reverse($options);
@@ -1240,10 +1228,10 @@ class global_config {
                     array_unshift($options, 'temp');
                     unset($options[0]);
                     $result = $result + $options;
-                    break;
+                    break;*/
                 default:
                     // Old code!
-                    if (block_exacomp_additional_grading()) {
+                    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) {  // TODO !!!! only subject now !!!!
                         /*
                             3 => '😊',
                             2 => '😔',
