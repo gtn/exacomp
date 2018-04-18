@@ -24,11 +24,6 @@ require_once $CFG->libdir.'/externallib.php';
 require_once $CFG->dirroot.'/mod/assign/locallib.php';
 require_once $CFG->dirroot.'/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot.'/lib/filelib.php';
-// require_once $CFG->dirroot.'/message/lib.php';
-// require_once $CFG->dirroot.'/message/externallib.php';
-// require_once $CFG->dirroot.'/lib/.php';
-require_once("$CFG->libdir/externallib.php");
-require_once($CFG->dirroot . "/message/lib.php");
 
 use block_exacomp\globals as g;
 
@@ -7112,28 +7107,32 @@ class block_exacomp_external extends external_api {
 	                    }
 	                    
 	                    $message->text = message_format_message_text($message);
+	                    
+	                    
+	                    //Hier hinzufügen welche courseid und so
+	                    $message->examplecourseid = 2;
+ 	                    $message->exampleid = 2;
+// 	                    $message->examplestate = 2;      
+	                    
 	                    $messages[$mid] = (array) $message;
 	            }
 	        }
 	        
+	        
+	        
+// 	        $exacompdata = array(
+// 	            "courseid" => "asdf",
+// 	        );
+
+// 	        echo $exacompdata[courseid];
+	        
+	        
 	        $results = array(
-	            'messages' => $messages,
-	            'warnings' => $warnings
+	            'messages' => $messages, //array of objects
+	            'warnings' => $warnings,
 	        );
 	        
 	        return $results;
-// 	    $messages = array();
-// 	    $messages = \core_message\api::get_messages(4, $useridto, 0,15, true);
-// 	    $warnings = array();
-//         $results = array(
-//             'messages' => $messages,
-//             'warnings' => $warnings
-//         );
-//         return $results;
-//         $messages = \core_message\api::get_messages(1, 3, 0,15, true);
-// //  	        $messages = "asdf";
-// //  	        return array('messages' => $messages);
- 	        
 	}
 	
 	/**
@@ -7143,29 +7142,29 @@ class block_exacomp_external extends external_api {
 	 * @since 2.8
 	 */
 	public static function dakora_get_messages_returns() {
-	    return new external_single_structure(
-	        array(
-	            'messages' => new external_multiple_structure(
-	                new external_single_structure(
-	                    array(
-                'id' => new external_value(PARAM_INT, 'Message id'),
-                'useridfrom' => new external_value(PARAM_INT, 'User from id'),
-                'useridto' => new external_value(PARAM_INT, 'User to id'),
-                'subject' => new external_value(PARAM_TEXT, 'The message subject'),
-                'text' => new external_value(PARAM_RAW, 'The message text formated'),
-                'fullmessage' => new external_value(PARAM_RAW, 'The message'),
-                'fullmessageformat' => new external_format_value('fullmessage'),
-                'fullmessagehtml' => new external_value(PARAM_RAW, 'The message in html'),
-                'smallmessage' => new external_value(PARAM_RAW, 'The shorten message'),
-                'notification' => new external_value(PARAM_INT, 'Is a notification?'),
-                'contexturl' => new external_value(PARAM_RAW, 'Context URL'),
-                'contexturlname' => new external_value(PARAM_TEXT, 'Context URL link name'),
-                'timecreated' => new external_value(PARAM_INT, 'Time created'),
-                'timeread' => new external_value(PARAM_INT, 'Time read'),
-                'usertofullname' => new external_value(PARAM_TEXT, 'User to full name'),
-                'userfromfullname' => new external_value(PARAM_TEXT, 'User from full name')
+	    return new external_single_structure(array(
+	        'messages' => new external_multiple_structure(
+                new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT, 'Message id'),
+                    'useridfrom' => new external_value(PARAM_INT, 'User from id'),
+                    'useridto' => new external_value(PARAM_INT, 'User to id'),
+                    'subject' => new external_value(PARAM_TEXT, 'The message subject'),
+                    'text' => new external_value(PARAM_RAW, 'The message text formated'),
+                    'fullmessage' => new external_value(PARAM_RAW, 'The message'),
+                    'fullmessageformat' => new external_format_value('fullmessage'),
+                    'fullmessagehtml' => new external_value(PARAM_RAW, 'The message in html'),
+                    'smallmessage' => new external_value(PARAM_RAW, 'The shorten message'),
+                    'notification' => new external_value(PARAM_INT, 'Is a notification?'),
+                    'contexturl' => new external_value(PARAM_RAW, 'Context URL'),
+                    'contexturlname' => new external_value(PARAM_TEXT, 'Context URL link name'),
+                    'timecreated' => new external_value(PARAM_INT, 'Time created'),
+                    'timeread' => new external_value(PARAM_INT, 'Time read'),
+                    'usertofullname' => new external_value(PARAM_TEXT, 'User to full name'),
+                    'userfromfullname' => new external_value(PARAM_TEXT, 'User from full name'),
+                    'examplecourseid' => new external_value(PARAM_INT, 'courseid'),
+                    'exampleid' => new external_value(PARAM_INT, 'courseid')
             ), 'message')),
-            'warnings' => new external_warnings()
+            'warnings' => new external_warnings(),
         ));
 // 	    return new external_single_structure (array(
 // 	        'messages' => new external_value (PARAM_TEXT, 'status of success, either true (1) or false (0)')
