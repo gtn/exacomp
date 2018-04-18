@@ -2964,6 +2964,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    $field = new xmldb_field('option_type');
 	    $field->set_attributes(XMLDB_TYPE_CHAR, '20', null, null, null, null, null);
 	    $dbman->add_field($table, $field);
+	    $sql = 'UPDATE {block_exacompeval_niveau} SET option_type=\'niveau\'';
+			$DB->Execute($sql);
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018032303, 'exacomp');
 	}

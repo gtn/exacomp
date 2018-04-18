@@ -70,7 +70,19 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             return $output;
         }
     }
+	class block_exacomp_admin_setting_diffLevelOptions extends block_exacomp_admin_setting_extraconfigtext {
+		public function write_setting($data) {
+			
+			$ret = parent::write_setting($data);
+		   
+			if ($ret != '') {
+				return $ret;
+			}
 
+			block_exacomp_update_evaluation_niveau_tables($data,'niveau');
+			return '';
+		}
+	}
 	class block_exacomp_admin_setting_source extends block_exacomp_admin_setting_extraconfigtext {
 		public function validate($data) {
 			$ret = parent::validate($data);
@@ -100,7 +112,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 				return $ret;
 			}
 
-			block_exacomp_update_evaluation_niveau_tables();
+			//block_exacomp_update_evaluation_niveau_tables();
 
 			return '';
 		}
@@ -309,7 +321,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 				return $ret;
 			}
 
-			block_exacomp_update_evaluation_niveau_tables();
+			//block_exacomp_update_evaluation_niveau_tables();
 
 			return '';
 		}
@@ -394,7 +406,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     }
                 }
             }
-            block_exacomp_update_evaluation_niveau_tables();
+            //block_exacomp_update_evaluation_niveau_tables();
             return $result;
         }
 
@@ -528,7 +540,7 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_grade_verbose_description'),
         block_exacomp_get_string('settings_assessment_grade_verbose_default'),
         PARAM_TEXT));
-$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_diffLevel_options',
+$settings->add(new block_exacomp_admin_setting_diffLevelOptions('exacomp/assessment_diffLevel_options',
         block_exacomp_get_string('settings_assessment_diffLevel_options'),
         block_exacomp_get_string('settings_assessment_diffLevel_options_description'),
         block_exacomp_get_string('settings_assessment_diffLevel_options_default'),
