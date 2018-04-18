@@ -6930,6 +6930,45 @@ class block_exacomp_external extends external_api {
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
 		));
 	}
+	
+	
+	
+	
+	/**
+	 * 
+	 * @ws-type-read
+	 */
+	public static function dakora_get_messages($courseid, $userid, $subjectid) {
+	    //$messages=get_messages();
+	    $messages = "asdf";
+	    return array('messages' => $messages);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_get_messages_returns() {
+	    return new external_single_structure (array(
+	        'messages' => new external_value (PARAM_TEXT, 'status of success, either true (1) or false (0)')
+	    ));
+	}
+	
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_messages_parameters() {
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+	        'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
+	        'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
+	    ));
+	}
+	
 
 	/**
 	 * helper function to use same code for 2 ws
