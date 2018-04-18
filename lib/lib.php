@@ -8035,19 +8035,25 @@ function block_exacomp_group_reports_result($filter) {
 	}
 }
 
-function block_exacomp_update_evaluation_niveau_tables() {
-	$evaluation_niveau = block_exacomp_evaluation_niveau_type();
-
-	if ($evaluation_niveau == 1) {
-		$titles = array(1 => 'G', 2 => 'M', 3 => 'E', 101 => 'Z');
-	} elseif ($evaluation_niveau == 2) {
-		$titles = array(1 => 'A', 2 => 'B', 3 => 'C');
-	} elseif ($evaluation_niveau == 3) {
-		$titles = array(1 => '1', 2 => '2', 3 => '3');
-	} else {
-		return;
+function block_exacomp_update_evaluation_niveau_tables($data='',$option_type='niveau') {
+	
+	if($data!=''){
+		$titles=explode(",",$data);
+	}else{
+		$evaluation_niveau = block_exacomp_evaluation_niveau_type();
+	
+		if ($evaluation_niveau == 1) {
+			$titles = array(1 => 'G', 2 => 'M', 3 => 'E', 101 => 'Z');
+		} elseif ($evaluation_niveau == 2) {
+			$titles = array(1 => 'A', 2 => 'B', 3 => 'C');
+		} elseif ($evaluation_niveau == 3) {
+			$titles = array(1 => '1', 2 => '2', 3 => '3');
+		} else {
+			return;
+		}
 	}
 
+	//g::$DB->delete_records(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU,array('option_type'=>$option_type));
 	g::$DB->delete_records(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU);
 
 	//fill table
@@ -8055,8 +8061,9 @@ function block_exacomp_update_evaluation_niveau_tables() {
 		$entry = new stdClass();
 		$entry->title = $title;
 		$entry->id = $id;
+		$entry->option_type = $option_type;
 		// to insert record with a specific id, use insert_record_raw and set $customsequence = true
-		g::$DB->insert_record_raw(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, $entry, false, false, true);
+		g::$DB->insert_record(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, $entry);
 	}
 }
 
