@@ -1064,7 +1064,6 @@ class block_exacomp_external extends external_api {
 	 * @param int courseid
 	 * @param int descriptorid
 	 * @param int value
-	 * @return status
 	 */
 	public static function set_competence($courseid, $descriptorid, $value) {
 		global $DB, $USER;
@@ -2567,24 +2566,30 @@ class block_exacomp_external extends external_api {
 
 		$parent = true;
 		if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
-			$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $compid));
-			if ($descriptor && $descriptor->parentid > 0) {
-				$parent = false;
-			}
+		    $descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $compid));
+		    if ($descriptor && $descriptor->parentid > 0) {
+		        $parent = false;
+		    }
+		}
+		
+		$mapping = true;
+		if($parent && block_exacomp_get_assessment_comp_scheme()!=1){
+		    $mapping = false;
+		}
+		if(!$parent && block_exacomp_get_assessment_childcomp_scheme()!=1){
+		    $mapping = false;
 		}
 
-		if (!$parent || $role == BLOCK_EXACOMP_ROLE_STUDENT) { //TK or student -> value not mapped
-			if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
-				throw new invalid_parameter_exception ('Not allowed');
-			}
-		} else {    //teacher grading for K/T/S: map
-			$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
-			if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
-				throw new invalid_parameter_exception ('Not allowed');
-			}
-
-			block_exacomp_save_additional_grading_for_comp($courseid, $compid, $userid, $additionalinfo, $comptype);
-
+		if ($mapping) { // grade ==> mapping needed, save mapped value and save additionalinfo
+		    $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
+		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
+		        throw new invalid_parameter_exception ('Not allowed');
+		    }
+		    block_exacomp_save_additional_grading_for_comp($courseid, $compid, $userid, $additionalinfo, $comptype);
+		} else {    // not grade ==> no mapping needed, just save the adittionalinfo into value
+		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
+		        throw new invalid_parameter_exception ('Not allowed');
+		    }
 		}
 
 		return ['success' => true];
@@ -5279,6 +5284,7 @@ class block_exacomp_external extends external_api {
 			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 			'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
 			'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
+		    'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
 			'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
 			'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
 			'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
@@ -5294,6 +5300,7 @@ class block_exacomp_external extends external_api {
 			    'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
 				'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 				'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
+			    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 				'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
 				'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
@@ -6163,7 +6170,7 @@ class block_exacomp_external extends external_api {
 	 * get evaluation configuration
 	 * get admin evaluation configurations
 	 *
-	 * ???deprecated use dakora_get_config instead         actually getting used a lot
+	 * @deprecated use dakora_get_config instead         actually getting used a lot
 	 * @ws-type-read
 	 */
 	public static function dakora_get_evaluation_config() {
