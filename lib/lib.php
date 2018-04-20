@@ -4564,7 +4564,7 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
 	$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
 	$topic = (reset(reset($tree)->topics));
 
-	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid.'&studentid='.$studentid.'&subjectid='.$topic->subjid.'&topicid='.$topic->id;
+	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid.'&studentid='.$studentid.'&subjectid='.$topic->subjid.'&topicid='.$topic->id.'&exampleid='.$exampleid;
 }
 
 /**
@@ -5874,8 +5874,8 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	}
 
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
-	if ($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
-		array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturlname' => $context, (time() - 5 * 60)))
+	if ($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturl = ? AND fullmessage = ? AND timecreated > ?",
+	    array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturl' => $contexturl,'fullmessage' => $message, (time() - 5 * 60)))
 	) {
 		return;
 	}
