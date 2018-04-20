@@ -334,7 +334,8 @@ $schooltype = substr($schooltype_title, 0, strlen($schooltype_title)-1);
 */
 echo $output->overview_metadata_cross_subjects($cross_subject, $editmode);
 
-$scheme = block_exacomp_get_grading_scheme($courseid);
+//$scheme = block_exacomp_get_grading_scheme($courseid);
+$scheme = block_exacomp_get_assessment_theme_scheme();
 
 if(!$isTeacher){
 	$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);

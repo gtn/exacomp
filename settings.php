@@ -618,7 +618,7 @@ $settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grad
         block_exacomp_get_string('settings_additional_grading'),
 	    block_exacomp_get_string('settings_additional_grading_description'), 0));
 $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading',
-        block_exacomp_get_string('usetopicgrading'),
+            block_exacomp_get_string('usetopicgrading'),
 	    '', 0));
 $settings->add(new admin_setting_configcheckbox('exacomp/usesubjectgrading',
         block_exacomp_get_string('usesubjectgrading'),

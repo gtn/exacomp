@@ -154,22 +154,35 @@ switch($action){
 			$examples = block_exacomp\param::clean_array($data->examples, array((object)array(
 				'userid' => PARAM_INT,
 				'exampleid' => PARAM_INT,
-				'value' => PARAM_INT,
+				'value' => PARAM_RAW,// PARAM_INT,
 				'niveauid' => PARAM_INT,
 			)));
+
 			foreach($examples as $example){
 				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $example->value, $example->niveauid);
 			}
 		}
-		
-		if(!empty($data->competencies_additional_grading)){
-			
-			$additional_grading = block_exacomp\param::clean_array($data->competencies_additional_grading, 
+
+/*		if(!empty($data->examples_additional_grading)){
+			$additional_grading = block_exacomp\param::clean_array($data->examples_additional_grading,
 				array(PARAM_INT=>
 					array(PARAM_INT => PARAM_TEXT),
 				)
 			);
-			
+			foreach($additional_grading as $exampleid => $students){
+				foreach($students as $studentid=>$value){
+					block_exacomp_save_additional_grading_for_comp($courseid, $exampleid, $studentid, $value, BLOCK_EXACOMP_TYPE_EXAMPLE);
+				}
+			}
+		}*/
+		if(!empty($data->competencies_additional_grading)){
+
+			$additional_grading = block_exacomp\param::clean_array($data->competencies_additional_grading,
+				array(PARAM_INT=>
+					array(PARAM_INT => PARAM_TEXT),
+				)
+			);
+
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
 					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
@@ -367,7 +380,7 @@ switch($action){
 		
 		break;
 	case 'get_statistics_for_profile' :
-		if (block_exacomp_additional_grading ()) {
+		if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_SUBJECT)) {
 			$courseid = required_param ( 'courseid', PARAM_INT );
 			$subjectid = required_param ( 'subjectid', PARAM_INT );
 			$studentid = required_param ( 'studentid', PARAM_INT );

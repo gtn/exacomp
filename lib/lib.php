@@ -145,7 +145,7 @@ function block_exacomp_is_skillsmanagement() {
 }
 
 function block_exacomp_is_topicgrading_enabled() {
-	return get_config('exacomp', 'usetopicgrading');
+	return get_config('exacomp', 'assessment_topic_scheme');
 }
 
 function block_exacomp_is_subjectgrading_enabled() {
@@ -306,7 +306,7 @@ function block_exacomp_evaluation_niveau_type() {
 /**
  * @return mixed
  */
-function block_exacomp_additional_grading($level = BLOCK_EXACOMP_TYPE_SUBJECT) {
+function block_exacomp_additional_grading($level = null) {
     switch ($level) {
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
             return block_exacomp_get_assessment_comp_scheme();
@@ -321,8 +321,9 @@ function block_exacomp_additional_grading($level = BLOCK_EXACOMP_TYPE_SUBJECT) {
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
             return block_exacomp_get_assessment_childcomp_scheme();
         default:
-            return block_exacomp_get_assessment_subject_scheme();
+            return false;
     }
+    return false;
 	//return get_config('exacomp', 'additional_grading');
 }
 
@@ -1766,6 +1767,7 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
 	$examples->niveau = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, evalniveauid');
 	$examples->timestamp_teacher = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, timestamp_teacher as timestamp');
 	$examples->timestamp_student = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, timestamp_student as timestamp');
+    $examples->teacher_additional_grading = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, additionalinfo');
 
 	return $examples;
 }
@@ -3646,7 +3648,7 @@ function block_exacomp_perform_auto_test() {
 					//assign competences to student
 					if (isset($test->descriptors)) {
 						foreach ($test->descriptors as $descriptor) {
-							if (block_exacomp_additional_grading()) {
+							if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
 								block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $student->id,
 									\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
 							}
@@ -3658,7 +3660,7 @@ function block_exacomp_perform_auto_test() {
 					}
 					if (isset($test->topics)) {
 						foreach ($test->topics as $topic) {
-							if (block_exacomp_additional_grading() && block_exacomp_is_topicgrading_enabled()) {
+							if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) {
 								block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $student->id,
 									\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
 							}
@@ -6100,8 +6102,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 	if ($additionalinfo == '' || empty($additionalinfo)) {
 		$additionalinfo = null;
 	}
-
-	//if(block_exacomp_is_teacher($courseid)){
+	if(block_exacomp_is_teacher($courseid)){
     	if ($record) {
     		// falls sich die bewertung geändert hat, timestamp neu setzen
     		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
@@ -6111,8 +6112,12 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$record->reviewerid = $USER->id;
     		$record->additionalinfo = $additionalinfo;
     		$record->value = $value;
-    
-    		$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
+
+    		if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+                $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $record);
+            } else {
+                $DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
+            }
     	} else {
     		$insert = new stdClass();
     		$insert->compid = $descriptorid;
@@ -6127,7 +6132,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$insert->value = $value;
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}   
-	//}
+	}
 }
 
 /**
@@ -6343,7 +6348,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		$data->topic_evalniveau = @$evaluationniveau_items[$data->topic_evalniveauid] ?: '';
 
 		$data->topic_eval =
-			((block_exacomp_additional_grading()) ?
+			((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) ?
 				((isset($user->topics->teacher_additional_grading[$topic->id]))
 					? $user->topics->teacher_additional_grading[$topic->id] : '')
 				: ((isset($user->topics->teacher[$topic->id]))
@@ -6365,7 +6370,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 			? $user->subjects->niveau[$subject->id] : -1)
 		: 0);
 
-	$table_content->subject_eval = ((block_exacomp_additional_grading()) ?
+	$table_content->subject_eval = ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) ?
 		((isset($user->subjects->teacher_additional_grading[$subject->id]))
 			? $user->subjects->teacher_additional_grading[$subject->id] : '')
 		: ((isset($user->subjects->teacher[$subject->id]))
@@ -6438,7 +6443,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 
 		// copy of block_exacomp_get_descriptor_statistic_for_topic()
 		$data->niveaus[$niveau->title]->eval =
-			(block_exacomp_additional_grading())
+			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
 				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
 				: (($evaluation && $evaluation->value) ? $scheme_items[$evaluation->value] : -1);
 
@@ -6837,7 +6842,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 		$descriptorgradings[$niveau->title] = new stdClass();
 		// copy of block_exacomp_get_grid_for_competence_profile_topic_data()
 		$descriptorgradings[$niveau->title]->teachervalue =
-			(block_exacomp_additional_grading())
+			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR))
 				? (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_evaluation->additionalinfo) : '')
 				: (($teacher_evaluation && $teacher_evaluation->value) ? $scheme_items[$teacher_evaluation->value] : -1);
 		$descriptorgradings[$niveau->title]->evalniveau = ($use_evalniveau && $teacher_eval_within_timeframe ? $teacher_evaluation->evalniveauid : -1) ?: -1;
@@ -7263,7 +7268,7 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
 }
 
 function block_exacomp_check_competence_data_is_gained($competence_data) {
-	if (block_exacomp_additional_grading()) {
+	if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
 		$value = block_exacomp\global_config::get_additionalinfo_value_mapping($competence_data->additionalinfo);
 
 		return $value >= 1;

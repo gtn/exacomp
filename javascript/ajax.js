@@ -534,12 +534,12 @@
 		prev_val = $(this).val();
 	});
 
-	$(document).on('click', 'input[name^=dataexamples\-]', function() {
+	$(document).on('click, change', 'input[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-example"]');
 
-		if($(this).attr("reviewerid")) {
+		if($(this).attr("reviewerid") > 0) {
 			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
 				return;
@@ -550,18 +550,31 @@
 			}
 		}
 
-		examples[this.name] = {
-			userid : values[2],
-			exampleid : values[1],
-			value : $(this).prop("checked")
-		};
-		if ($(this).prop("checked")) {
-			//check comp->hide descriptor not possible
-			hide.addClass("hidden");
-		} else {
-			//uncheck comp -> hide possible again
-			hide.removeClass("hidden");
-		}
+        if ($(this).is(':checkbox')) {
+            examples[this.name] = {
+                userid : values[2],
+                exampleid : values[1],
+                value : $(this).prop("checked")
+            };
+            if ($(this).prop("checked")) {
+                //check comp->hide descriptor not possible
+                hide.addClass("hidden");
+            } else {
+                //uncheck comp -> hide possible again
+                hide.removeClass("hidden");
+            }
+        } else {
+            var niveauid = $('select[name=niveau_examples-'+values[1]+'-'+values[2]).val();
+            var val = $(this).val();
+            console.log($(this));
+            console.log(val);
+            examples[this.name] = {
+                userid : values[2],
+                exampleid : values[1],
+                value : val,
+                niveauid : niveauid
+            };
+        }
 	});
 
 	$(document).on('focus', 'select[name^=dataexamples\-]', function() {

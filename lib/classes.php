@@ -1125,14 +1125,18 @@ class global_config {
 
 	/**
 	 * Returns all values used for examples and child-descriptors
+     * @param integer $courseid
+     * @param bool $short
+     * @param integer $scheme
+     * @return array
 	 */
-	static function get_teacher_eval_items($courseid = 0, $short = false) {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false) {
+	static function get_teacher_eval_items($courseid = 0, $short = false, $scheme = BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false, $scheme = BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
 
 		    $result = array();
 		    // Now only for subject.
             // TODO: make for other levels?
-		    $scheme = block_exacomp_get_assessment_subject_scheme();
+            //$scheme = block_exacomp_get_assessment_subject_scheme();
 		    switch($scheme) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
                     // Options from plugin settings: 0, 1... -> assessment_points_limit.
@@ -1196,9 +1200,12 @@ class global_config {
 
 	/**
 	 * Returns all values used for examples and child-descriptors
+     * @param bool $include_empty
+     * @param integer $scheme
+     * @return array
 	 */
-	static function get_student_eval_items($include_empty = false) {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty) {
+	static function get_student_eval_items($include_empty = false, $scheme = BLOCK_EXACOMP_TYPE_SUBJECT) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty, $scheme) {
 			// if additional_grading is set, use global value scheme
 
 			if ($include_empty) {
@@ -1206,51 +1213,24 @@ class global_config {
 			} else {
 				$values = [];
 			}
+            if (block_exacomp_additional_grading($scheme)) {  // TODO !!!! only subject now !!!!
+                /*
+                    3 => '😊',
+                    2 => '😔',
+                    1 => '😓',
+                */
+                return $values + [
+                                3 => ':-)',
+                                2 => ':-|',
+                                1 => ':-(',
+                        ];
+            } // else use value scheme set in the course
+            else {
+                // TODO: add settings to g::$COURSE?
+                $course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 
-			// TODO: this function is very similar to get_teacher_eval_items!
-            if ($include_empty) {
-                $result = array(-1 => '');
-            } else {
-                $result = array();
+                return $values + range(1, $course_grading);
             }
-            // Now only for subject.
-            // TODO: make for other levels?
-            $scheme = block_exacomp_get_assessment_subject_scheme();
-            switch($scheme) {
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-                    $result = array('-1' => '') + range(0, block_exacomp_get_assessment_points_limit());
-                    break;
-                /*case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                    // Options from plugin settings: assessment_grade_verbose.
-                    $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
-                    //$options = array_reverse($options);
-                    // start from 1
-                    array_unshift($options, 'temp');
-                    unset($options[0]);
-                    $result = $result + $options;
-                    break;*/
-                default:
-                    // Old code!
-                    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) {  // TODO !!!! only subject now !!!!
-                        /*
-                            3 => '😊',
-                            2 => '😔',
-                            1 => '😓',
-                        */
-                        return $values + [
-                                        3 => ':-)',
-                                        2 => ':-|',
-                                        1 => ':-(',
-                                ];
-                    } // else use value scheme set in the course
-                    else {
-                        // TODO: add settings to g::$COURSE?
-                        $course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
-
-                        return $values + range(1, $course_grading);
-                    }
-            }
-            return $result;
 		});
 	}
 
