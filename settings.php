@@ -79,7 +79,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 				return $ret;
 			}
 
-			block_exacomp_update_evaluation_niveau_tables($data,'niveau');
+			block_exacomp_update_evaluation_niveau_tables($data, 'niveau');
 			return '';
 		}
 	}
@@ -103,7 +103,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 		}
 	}
 	
-	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
+/*	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
 
         public function write_setting($data) {
 			$ret = parent::write_setting($data);
@@ -139,7 +139,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             }
             return $output;
         }
-	}
+	}*/
 	
 	class block_exacomp_admin_setting_preconfiguration extends admin_setting_configselect {
 		public function write_setting($data) {
@@ -550,11 +550,6 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_verbose_options_description'),
         block_exacomp_get_string('settings_assessment_verbose_options_default'),
         PARAM_TEXT));
-$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
-        block_exacomp_get_string('settings_admin_scheme'),
-        block_exacomp_get_string('settings_admin_scheme_description'),
-        block_exacomp_get_string('settings_admin_scheme_none'),
-        array(block_exacomp_get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));
 $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/useprofoundness',
         block_exacomp_get_string('useprofoundness'),
         '', 0));
@@ -613,6 +608,11 @@ $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign
 
 
 // To delete?
+//$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
+//        block_exacomp_get_string('settings_admin_scheme'),
+//        block_exacomp_get_string('settings_admin_scheme_description'),
+//        block_exacomp_get_string('settings_admin_scheme_none'),
+//        array(block_exacomp_get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));
 /*$settings->add(new admin_setting_heading('exacomp/heading_data', '&nbsp;', ''));
 $settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grading',
         block_exacomp_get_string('settings_additional_grading'),

@@ -406,7 +406,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0, $studentid = 0, $subjectid = 0) {
 		global $DB;
-
 		$headFlag = false;
 
 		$context = context_course::instance($courseid);

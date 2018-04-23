@@ -294,11 +294,15 @@ function block_exacomp_is_elove_student_self_assessment_enabled() {
 }
 
 function block_exacomp_use_eval_niveau() {
-	$evaluation_niveau = block_exacomp_evaluation_niveau_type();
-
-	return $evaluation_niveau >= 1 && $evaluation_niveau <= 3;
+	$evaluation_niveau = block_exacomp_get_assessment_diffLevel_options();
+    return $evaluation_niveau != '';
+    //return $evaluation_niveau >= 1 && $evaluation_niveau <= 3;
 }
 
+/**
+ * @return mixed
+ * @deprecated
+ */
 function block_exacomp_evaluation_niveau_type() {
 	return get_config('exacomp', 'adminscheme');
 }
@@ -346,7 +350,7 @@ function block_exacomp_get_assessment_grade_verbose() {
 }
 
 function block_exacomp_get_assessment_diffLevel_options() {
-    return get_config('exacomp', 'assessment_diffLevel_options');
+    return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
 function block_exacomp_get_assessment_verbose_options() {
@@ -6263,11 +6267,15 @@ function block_exacomp_get_courseids_by_example($exampleid) {
  * according to course scheme and admin scheme
  **/
 function block_exacomp_get_html_for_niveau_eval($evaluation) {
-	$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
-	if ($evaluation_niveau_type == 0) {
+	//$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
+	$evaluation_niveau_type = block_exacomp_get_assessment_diffLevel_options();
+	if ($evaluation_niveau_type == '') {
 		return;
 	}
 
+	// TODO: this funciton is used inly in one place: competence_grid function
+    // and call of this function is commented.
+    // so, this function is deprecated?
 
 	//predefined pictures
 	$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
@@ -8040,14 +8048,25 @@ function block_exacomp_group_reports_result($filter) {
 	}
 }
 
+// TODO: do we need this function yet?
 function block_exacomp_update_evaluation_niveau_tables($data='',$option_type='niveau') {
-	
-	if($data!=''){
-		$titles=explode(",",$data);
-	}else{
-		$evaluation_niveau = block_exacomp_evaluation_niveau_type();
-	
-		if ($evaluation_niveau == 1) {
+	if ($data != ''){
+		//$titles = explode(",",$data);
+        $titles = preg_split( "/(\/|,)/", $data);
+        // array from 1, not from 0
+        array_unshift($titles, null); unset($titles[0]);
+    } else {
+		//$evaluation_niveau = block_exacomp_evaluation_niveau_type();
+		$evaluation_niveau = block_exacomp_get_assessment_diffLevel_options();
+		if ($evaluation_niveau == '') {
+		    return;
+        }
+		$titles = preg_split( "/(\/|,) /", $evaluation_niveau);
+        // array from 1, not from 0
+        array_unshift($titles, null); unset($titles[0]);
+        if ($titles[1] == $evaluation_niveau)
+            return;
+		/*if ($evaluation_niveau == 1) {
 			$titles = array(1 => 'G', 2 => 'M', 3 => 'E', 101 => 'Z');
 		} elseif ($evaluation_niveau == 2) {
 			$titles = array(1 => 'A', 2 => 'B', 3 => 'C');
@@ -8055,7 +8074,7 @@ function block_exacomp_update_evaluation_niveau_tables($data='',$option_type='ni
 			$titles = array(1 => '1', 2 => '2', 3 => '3');
 		} else {
 			return;
-		}
+		}*/
 	}
 
 	//g::$DB->delete_records(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU,array('option_type'=>$option_type));
