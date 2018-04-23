@@ -345,16 +345,17 @@ function block_exacomp_get_assessment_grade_limit() {
     return get_config('exacomp', 'assessment_grade_limit');
 }
 
-function block_exacomp_get_assessment_grade_verbose() {
-    return get_config('exacomp', 'assessment_grade_verbose');
+function block_exacomp_get_assessment_grade_verbose($getforlanguage = null) {
+    return block_exacomp_get_translatable_parameter('assessment_grade_verbose', $getforlanguage);
+    //return get_config('exacomp', 'assessment_grade_verbose');
 }
 
 function block_exacomp_get_assessment_diffLevel_options() {
     return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
-function block_exacomp_get_assessment_verbose_options() {
-    return get_config('exacomp', 'assessment_verbose_options');
+function block_exacomp_get_assessment_verbose_options($getforlanguage = null) {
+    return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
 }
 
 function block_exacomp_get_assessment_example_scheme() {
@@ -430,7 +431,28 @@ function block_exacomp_get_assessment_theme_SelfEval() {
 }
 
 
-
+function block_exacomp_get_translatable_parameter($parameter = '', $getforlanguage = null ) {
+    if ($parameter == '')
+        return false;
+    // stored as json for different languages
+    // de - default language
+    $jsondata = get_config('exacomp', $parameter);
+    $copyofdata = $jsondata;
+    $configdata = json_decode($jsondata, true);
+    if (json_last_error() && $copyofdata != '') { // if old data is not json
+        $configdata['de'] = $copyofdata;
+    }
+    if ($getforlanguage) {
+        $language = $getforlanguage;
+    } else {
+        $language = current_language();
+    }
+    if (isset($configdata[$language]) && $configdata[$language] != '') {
+        return $configdata[$language];
+    } else {
+        return $configdata['de'];
+    }
+}
 
 
 

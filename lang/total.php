@@ -425,7 +425,7 @@ return [
     ],
     'settings_assessment_verbose_options' => [
         'Verbalisierung Werte',
-        'verbose Options',
+        'verbose Options (EN)',
     ],
     'settings_assessment_verbose_options_description' => [
         'Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
@@ -435,6 +435,18 @@ return [
         'nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
         'not gained, partly gained, mostly gained, completely gained',
     ],
+    'settings_assessment_grade_verbose' => [
+            'Noten Verbalisierung',
+            'verbalized grades (EN)',
+    ],
+    'settings_assessment_grade_verbose_description' => [
+            'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
+            'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
+    ],
+    'settings_assessment_grade_verbose_default' => [
+            'Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
+            'Very good, Good, Satisfactory, Sufficient, Deficient, Insufficient',
+    ],
     'settings_sourceId' => [
         'Source ID',
         'Source ID',
@@ -442,6 +454,14 @@ return [
     'settings_sourceId_description' => [
         'Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden',
         'Automatically generated ID of this Exacomp installation. This ID can not be changed',
+    ],
+    'settings_admin_preconfiguration_none' => [
+        'Keine Vorkonfiguration verwenden',
+        'No preconfiguration',
+    ],
+    'settings_default_de_value' => [
+        'DE value: ',
+        'DE value: ',
     ],
 
 	// === Unit Tests ===

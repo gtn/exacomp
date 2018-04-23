@@ -111,7 +111,6 @@ $string['settings_heading_visualisation'] = 'Visualisation';
 $string['settings_heading_technical'] = 'Administrative';
 $string['settings_heading_apps'] = 'Configuration for apps';
 $string['settings_heading_scheme'] = 'Generic assessment scheme';
-$string['settings_admin_preconfiguration_none'] = 'No preconfiguration';
 $string['settings_assessment_scheme_0'] = 'None';
 $string['settings_assessment_scheme_1'] = 'Grade';
 $string['settings_assessment_scheme_2'] = 'Verbose';
@@ -129,17 +128,19 @@ $string['settings_assessment_points_limit'] = 'Highest value for Points';
 $string['settings_assessment_points_limit_description'] = 'assessment scheme points, limit for input';
 $string['settings_assessment_grade_limit'] = 'Highest value for grade';
 $string['settings_assessment_grade_limit_description'] = 'assessment scheme grade, limit for input';
-$string['settings_assessment_grade_verbose'] = 'Noten Verbalisierung';
-$string['settings_assessment_grade_verbose_description'] = 'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
-$string['settings_assessment_grade_verbose_default'] = 'Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
 $string['settings_assessment_diffLevel_options'] = 'Difficulty Level Options';
 $string['settings_assessment_diffLevel_options_description'] = 'list of difficultiy Levels, i.e. G,M,E';
 $string['settings_assessment_diffLevel_options_default'] = 'G,M,E';
-$string['settings_assessment_verbose_options'] = 'verbose Options';
+$string['settings_assessment_verbose_options'] = 'verbose Options (EN)';
 $string['settings_assessment_verbose_options_description'] = 'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained';
 $string['settings_assessment_verbose_options_default'] = 'not gained, partly gained, mostly gained, completely gained';
+$string['settings_assessment_grade_verbose'] = 'verbalized grades (EN)';
+$string['settings_assessment_grade_verbose_description'] = 'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
+$string['settings_assessment_grade_verbose_default'] = 'Very good, Good, Satisfactory, Sufficient, Deficient, Insufficient';
 $string['settings_sourceId'] = 'Source ID';
 $string['settings_sourceId_description'] = 'Automatically generated ID of this Exacomp installation. This ID can not be changed';
+$string['settings_admin_preconfiguration_none'] = 'No preconfiguration';
+$string['settings_default_de_value'] = 'DE value: ';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -396,6 +397,9 @@ $string['my_badges'] = 'My Badges';
 $string['innersection1'] = 'Grid view';
 $string['innersection2'] = 'Statistics';
 $string['innersection3'] = 'Comparison: Teacher-Student';
+$string['childcompetencies_compProfile'] = 'Child competencies';
+$string['materials_compProfile'] = 'Materials';
+
 // === Competence Profile Settings ===
 $string['profile_settings_choose_courses'] = 'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['specificcontent'] = 'site-specific topics';

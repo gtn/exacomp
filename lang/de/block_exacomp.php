@@ -111,7 +111,6 @@ $string['settings_heading_visualisation'] = 'Darstellung';
 $string['settings_heading_technical'] = 'Administratives';
 $string['settings_heading_apps'] = 'Apps-Einstellungen';
 $string['settings_heading_scheme'] = 'Generisches Bewertungsschema';
-$string['settings_admin_preconfiguration_none'] = 'Keine Vorkonfiguration verwenden';
 $string['settings_assessment_scheme_0'] = 'Keines';
 $string['settings_assessment_scheme_1'] = 'Noten';
 $string['settings_assessment_scheme_2'] = 'Verbalisierung';
@@ -129,17 +128,19 @@ $string['settings_assessment_points_limit'] = 'Höchste Punkteanzahl';
 $string['settings_assessment_points_limit_description'] = 'Bewertungsschema Punkte, die höchst mögliche Punkteanzahl die eingegeben werden kann.';
 $string['settings_assessment_grade_limit'] = 'Höchste Note';
 $string['settings_assessment_grade_limit_description'] = 'Bewertungsschema Note, die höchst mögliche Note die eingegeben werden kann.';
-$string['settings_assessment_grade_verbose'] = 'Noten Verbalisierung';
-$string['settings_assessment_grade_verbose_description'] = 'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
-$string['settings_assessment_grade_verbose_default'] = 'Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
 $string['settings_assessment_diffLevel_options'] = 'Niveau Werte';
 $string['settings_assessment_diffLevel_options_description'] = 'Liste der möglichen Werte des Niveaus, z.B: G,M,E';
 $string['settings_assessment_diffLevel_options_default'] = 'G,M,E';
 $string['settings_assessment_verbose_options'] = 'Verbalisierung Werte';
 $string['settings_assessment_verbose_options_description'] = 'Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht';
 $string['settings_assessment_verbose_options_default'] = 'nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht';
+$string['settings_assessment_grade_verbose'] = 'Noten Verbalisierung';
+$string['settings_assessment_grade_verbose_description'] = 'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
+$string['settings_assessment_grade_verbose_default'] = 'Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
 $string['settings_sourceId'] = 'Source ID';
 $string['settings_sourceId_description'] = 'Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden';
+$string['settings_admin_preconfiguration_none'] = 'Keine Vorkonfiguration verwenden';
+$string['settings_default_de_value'] = 'DE value: ';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -402,6 +403,9 @@ $string['my_badges'] = 'Meine Auszeichnungen';
 $string['innersection1'] = 'Rasterübersicht';
 $string['innersection2'] = 'Statistik';
 $string['innersection3'] = 'Übersicht über die Kompetenzen und Aufgaben';
+$string['childcompetencies_compProfile'] = 'Teilkompetenzen';
+$string['materials_compProfile'] = 'Lernmaterialien';
+
 // === Competence Profile Settings ===
 $string['profile_settings_choose_courses'] = 'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';

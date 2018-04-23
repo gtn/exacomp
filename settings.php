@@ -27,6 +27,61 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 
     class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configtext {
 
+        private $lang = 'de';
+
+        public function __construct($name, $visiblename, $description, $defaultsetting, $paramtype = PARAM_RAW, $size = null) {
+            $this->lang = current_language();
+            parent::__construct($name, $visiblename, $description, $defaultsetting, $paramtype, $size);
+        }
+
+        public function get_setting() {
+            $get = parent::get_setting();
+            // Different conversions for different parameters
+            $paramname = $this->name;
+            switch ($paramname) {
+                case 'assessment_grade_verbose':
+                case 'assessment_verbose_options':
+                    $copyofget = trim($get);
+                    $get = json_decode($get, true);
+                    if (json_last_error() && $copyofget != '') {
+                        return $copyofget; // return string if it is not json data
+                    }
+                    $get = $get[$this->lang];
+                    break;
+                default:
+            }
+            return $get;
+        }
+
+        public function write_setting($data) {
+            // Different parameters can have different data convertion
+            $paramname = $this->name;
+            switch ($paramname) {
+                case 'assessment_grade_verbose':
+                case 'assessment_verbose_options':
+                    $olddata = get_config('exacomp', $paramname);
+                    $copyofold = trim($olddata);
+                    $olddata = json_decode($olddata, true);
+                    if (json_last_error() && $copyofold != '') { // Old data is not json
+                        $olddata['de'] = $copyofold;
+                    }
+                    $olddata[$this->lang] = $data;
+                    if (!isset($olddata['de'])) { // It is possible if the admin works only with EN
+                        $olddata['de'] = $data;
+                    }
+                    $data = json_encode($olddata);
+                    break;
+                default:
+            }
+            $ret = parent::write_setting($data);
+
+            if ($ret != '') {
+                return $ret;
+            }
+
+            return '';
+        }
+
         public function output_html($data, $query='') {
             $output = parent::output_html($data, $query);
             $preconfigparameters = block_exacomp_get_preconfigparameters_list();
@@ -43,6 +98,25 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     }
                 }
                 $output = $doc->saveHTML($doc->documentElement);
+            }
+            // add mesage about default (DE) value if the user uses not DE interface language
+            if ($this->lang != 'de') { // only for NON DE
+                switch ($this->name) {
+                    case 'assessment_grade_verbose':
+                    case 'assessment_verbose_options':
+                        $doc = new DOMDocument();
+                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                        $selector = new DOMXPath($doc);
+                        $message = block_exacomp_get_string('settings_default_de_value').call_user_func('block_exacomp_get_'.$this->name, 'de');
+                        $br = $doc->createElement('br');
+                        foreach($selector->query('//*[@name="s_exacomp_'.$this->name.'"]') as $e ) {
+                            $span = $doc->createElement('span', $message);
+                            $span->setAttribute('class', 'text-info');
+                            $e->parentNode->insertBefore($br, $e->nextSibling);
+                            $e->parentNode->insertBefore($span, $e->nextSibling);
+                        }
+                        $output = $doc->saveHTML($doc->documentElement);
+                }
             }
             return $output;
         }
@@ -265,8 +339,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                                             elementsList[i].checked = true;                                                      
                                                         } else {
                                                             elementsList[i].checked = false;
+                                                            elementsList[i].disabled = \'disabled\';
                                                         }
-                                                        elementsList[i].disabled = \'disabled\';
                                                         break;
                                                     case \'checkbox\':                                                        
                                                         if (inputvalue == 1) {

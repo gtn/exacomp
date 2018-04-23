@@ -1134,8 +1134,6 @@ class global_config {
 		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false, $scheme = BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
 
 		    $result = array();
-		    // Now only for subject.
-            // TODO: make for other levels?
             //$scheme = block_exacomp_get_assessment_subject_scheme();
 		    switch($scheme) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
