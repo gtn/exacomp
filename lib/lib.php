@@ -5899,9 +5899,11 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 		return;
 	}
 
+
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
+	// string-cast because sometimes the URL is a string and sometimes it is a moodle_url     expected is a string, otherwise an exception is thrown
 	if ($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturl = ? AND fullmessage = ? AND timecreated > ?",
-	    array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturl' => $contexturl,'fullmessage' => $message, (time() - 5 * 60)))
+	    array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturl' => (string)$contexturl,'fullmessage' => $message, (time() - 5 * 60)))
 	) {
 		return;
 	}
