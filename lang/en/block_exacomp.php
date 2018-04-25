@@ -314,6 +314,7 @@ $string['value_too_large'] = 'Error: Values above 6.0 are not allowed';
 $string['value_too_low'] = 'Error: Values below 1.0 are not allowed';
 $string['value_not_allowed'] = 'Error: Values need to be numbers between 1.0 and 6.0';
 $string['competence_locked'] = 'Evaluation exists or learning material is used';
+$string['save_changes_competence_evaluation'] = 'Changes were saved';
 // === Example Submission ===
 $string['example_submission_header'] = 'Edit example {$a}';
 $string['example_submission_info'] = 'You are about to edit the example "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.';

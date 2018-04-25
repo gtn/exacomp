@@ -691,7 +691,7 @@
 					location.reload();
 				} else {
 					document.location.href='#';
-					alert('Änderungen wurden gespeichert!');
+					alert(M.util.get_string('save_changes_competence_evaluation','block_exacomp'));
 				}
 			}
 

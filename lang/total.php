@@ -1058,6 +1058,10 @@ return [
 		'Beurteilung vorhanden oder Lernmaterial in Verwendung!',
 		'Evaluation exists or learning material is used',
 	],
+    'save_changes_competence_evaluation' => [
+        'Änderungen wurden gespeichert!',
+        'Changes were saved',
+    ],
 	// === Example Submission ===
 	'example_submission_header' => [
 		'Aufgabe {$a} bearbeiten',

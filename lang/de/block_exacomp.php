@@ -314,6 +314,7 @@ $string['value_too_large'] = 'Fehler: Benotungen dürfen nicht größer als 6.0 
 $string['value_too_low'] = 'Fehler: Benotungen dürfen nicht kleiner als 1.0 sein!';
 $string['value_not_allowed'] = 'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein';
 $string['competence_locked'] = 'Beurteilung vorhanden oder Lernmaterial in Verwendung!';
+$string['save_changes_competence_evaluation'] = 'Änderungen wurden gespeichert!';
 // === Example Submission ===
 $string['example_submission_header'] = 'Aufgabe {$a} bearbeiten';
 $string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
