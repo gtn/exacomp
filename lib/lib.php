@@ -4543,7 +4543,7 @@ function block_exacomp_get_students_for_crosssubject($courseid, $crosssub) {
  * @param $exampleid
  * @return null|string
  */
-function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid) {
+function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid, $courseid) {
 	global $CFG, $DB;
 
 	if (!block_exacomp_exaportexists()) {
@@ -4573,7 +4573,7 @@ function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid
 		$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->id;
 	}
 
-	return $CFG->wwwroot.'/blocks/exaport/shared_item.php?access='.$access;
+	return $CFG->wwwroot.'/blocks/exaport/shared_item.php?access='.$access.'&exampleid='.$exampleid.'&courseid='.$courseid;
 }
 
 /**
@@ -5901,12 +5901,11 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 
 
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
-	// string-cast because sometimes the URL is a string and sometimes it is a moodle_url     expected is a string, otherwise an exception is thrown
-	if ($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturl = ? AND fullmessage = ? AND timecreated > ?",
-	    array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturl' => (string)$contexturl,'fullmessage' => $message, (time() - 5 * 60)))
-	) {
-		return;
-	}
+// 	if ($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturl = ? AND fullmessage = ? AND timecreated > ?",
+// 	    array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturl' => $contexturl,'fullmessage' => $message, (time() - 5 * 60)))
+// 	) {
+// 		return;
+// 	}
 
 	require_once($CFG->dirroot.'/message/lib.php');
 
@@ -5947,7 +5946,7 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 
 	$message = block_exacomp_get_string('notification_submission_body', null, array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_submission_context');
-
+	
 	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl);
 }
 
@@ -5984,7 +5983,7 @@ function block_exacomp_send_self_assessment_notification($userfrom, $userto, $co
 	$context = block_exacomp_get_string('notification_self_assessment_context');
 
 	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
-
+	
 	block_exacomp_send_notification("self_assessment", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
 
@@ -6054,7 +6053,8 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
 	$message = block_exacomp_get_string('notification_weekly_schedule_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_weekly_schedule_context');
 
-	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid));
+	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid, 'exampleid' => $exampleid)); 
+	//$viewurl = $CFG->wwwroot.'/blocks/exacomp/weekly_schedule.php?courseid='.$courseid.'&exampleid='.$exampleid;
 
 	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
@@ -6075,7 +6075,7 @@ function block_exacomp_send_example_comment_notification($userfrom, $userto, $co
 	$message = block_exacomp_get_string('notification_example_comment_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_example_comment_context');
 
-	$viewurl = block_exacomp_get_viewurl_for_example($userto->id, $userto->id, $example->id);
+	$viewurl = block_exacomp_get_viewurl_for_example($userto->id, $userto->id, $example->id, $courseid);
 
 	block_exacomp_send_notification("comment", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
