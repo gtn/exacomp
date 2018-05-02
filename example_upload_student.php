@@ -159,13 +159,16 @@ if($formdata = $form->get_data()) {
 	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
 	
 	// add to weekly schedule
-	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);
-	
+	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);	
 	block_exacomp_settstamp();
-	
 	echo $output->popup_close_and_reload();
 	exit;
+}else if($form->is_cancelled()){
+    echo $output->popup_close_and_reload();
+    exit;
 }
+
+
 
 if($exampleid > 0) {
 	$example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));

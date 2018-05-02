@@ -205,7 +205,11 @@ if($formdata = $form->get_data()) {
 
 	echo $output->popup_close_and_reload();
 	exit;
+}else if($form->is_cancelled()){
+    echo $output->popup_close_and_reload();
+    exit;
 }
+
 
 if($exampleid > 0) {
 	$example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));

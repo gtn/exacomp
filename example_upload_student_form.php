@@ -71,7 +71,7 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		$mform->setType('exampleid', PARAM_INT);
 		$mform->setDefault('exampleid',$this->_customdata['exampleid']);
 		
-		$this->add_action_buttons(false);
+		$this->add_action_buttons(true);
 	}
 
 	function validation($data, $files) {
