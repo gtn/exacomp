@@ -3334,6 +3334,7 @@ class block_exacomp_external extends external_api {
 			'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
 			'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
 			'evaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
+		    //'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
 			'topicid' => new external_value (PARAM_INT, 'id of topic'),
 			'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
 			'child' => new external_value (PARAM_BOOL, 'true: child, false: parent'),
@@ -5443,6 +5444,7 @@ class block_exacomp_external extends external_api {
 			'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
 			'teacheritemvalue' => new external_value (PARAM_INT, 'item teacher grading'),
 			'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
+		    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading'),
 		));
 	}
 
@@ -5476,6 +5478,8 @@ class block_exacomp_external extends external_api {
 			$data['type'] = $itemInformation->type;
 			$data['url'] = $itemInformation->url;
 			$data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
+			$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
+			
 
 			require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 			if ($file = block_exaport_get_item_file($itemInformation)) {
@@ -5534,6 +5538,7 @@ class block_exacomp_external extends external_api {
 			$data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
 			$data['timestampstudent'] = isset ($exampleEvaluation->timestamp_student) ? $exampleEvaluation->timestamp_student : 0;
 			$data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
+			$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
 		}
 
 		if (!$exampleEvaluation || $exampleEvaluation->resubmission) {
