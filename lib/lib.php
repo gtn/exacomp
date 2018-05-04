@@ -4452,7 +4452,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 	}
 
 	\block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
-
+	
 	return true;
 }
 
