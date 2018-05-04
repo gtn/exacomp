@@ -4473,7 +4473,9 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 	// Add examples for all users
 	foreach ($examples as $example) {
 		foreach ($students as $student) {
-			block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end);
+		    if (block_exacomp_is_example_visible($courseid, $example, $student->id)) {
+		        block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end);
+		    }
 		}
 	}
 
