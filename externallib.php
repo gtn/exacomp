@@ -3228,16 +3228,17 @@ class block_exacomp_external extends external_api {
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 
 		if ($forall) {
-			//Add to the teacher planning Storage
+			//Add to the teacher planning Storage, not to the students themselves    otherwise they would have it in the schedule as well as in the pool which 
+			//could lead to mnay issues (not technical, but logical for them)
 		    block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
 			
-			$students = block_exacomp_get_students_by_course($courseid);
+// 			$students = block_exacomp_get_students_by_course($courseid);
 
-			foreach ($students as $student) {
-			    if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
-			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
-				}
-			}
+// 			foreach ($students as $student) {
+// 			    if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
+// 			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
+// 				}
+// 			}
 		} else {
 		    if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
 				block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
@@ -4768,6 +4769,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course($courseid);
 		static::require_can_access_example($exampleid, $courseid);
 
+		//block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, $preStorage=1);
 		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
 
 		return array(
