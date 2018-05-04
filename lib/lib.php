@@ -4641,7 +4641,7 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 	// Add examples for all users
 	foreach ($examples as $example) {
 		foreach ($students as $student) {
-		    if (block_exacomp_is_example_visible($courseid, $example, $student->id)) {
+		    if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
 		        block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end);
 		    }
 		}
@@ -4845,7 +4845,7 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_is_example_visible($courseid, $example, $studentid) {
+function block_exacomp_is_example_visible($courseid, $exampleid, $studentid) {
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
 	if ($studentid <= 0) {
 		$studentid = 0;
@@ -4859,14 +4859,14 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
 	*/
 
 	$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+	if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
 		return false;
 	}
 
 	if ($studentid > 0) {
 		// also check student if set
-		$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
-		if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+ 		$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
+ 		if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
 			return false;
 		}
 	}

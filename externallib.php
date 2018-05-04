@@ -3234,12 +3234,12 @@ class block_exacomp_external extends external_api {
 			$students = block_exacomp_get_students_by_course($courseid);
 
 			foreach ($students as $student) {
-				if (block_exacomp_is_example_visible($courseid, $example, $student->id)) {
-					block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
+			    if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
+			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 				}
 			}
 		} else {
-			if (block_exacomp_is_example_visible($courseid, $example, $userid)) {
+		    if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
 				block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
 			}
 		}
