@@ -3013,6 +3013,9 @@ class block_exacomp_external extends external_api {
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 
 		if ($forall) {
+			//Add to the teacher planning Storage
+		    block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
+			
 			$students = block_exacomp_get_students_by_course($courseid);
 
 			foreach ($students as $student) {
