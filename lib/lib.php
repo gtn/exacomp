@@ -4603,17 +4603,18 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
  * @param unknown $end
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $is_pps) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
 
-	// prüfen, ob element schon zur gleichen zeit im weochenplan ist
+	// prüfen, ob element schon zur gleichen zeit im wochenplan ist
 	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
 
-	$DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified, 'start' => $start, 'end' => $end));
+	$DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated, 
+	                                                    'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0,'is_pps' => $is_pps));
 	//only send a notification if a teacher adds an example for a student and not for pre planning storage
 	if ($creatorid != $studentid && $studentid > 0) {
 		block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
@@ -4642,7 +4643,7 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 	foreach ($examples as $example) {
 		foreach ($students as $student) {
 		    if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
-		        block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end);
+		        block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, 0);
 		    }
 		}
 	}
@@ -5284,7 +5285,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
-			WHERE s.studentid = ? AND s.deleted = 0 AND (
+			WHERE s.studentid = ? AND s.deleted = 0 AND s.is_pps = 0 AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
 				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
@@ -5693,7 +5694,7 @@ function block_exacomp_get_pre_planning_storage($creatorid, $courseid) {
 			FROM {".BLOCK_EXACOMP_DB_SCHEDULE."} s
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
-			WHERE s.creatorid = ? AND s.studentid=0 AND (
+			WHERE s.creatorid = ? AND s.studentid=0 AND s.is_pps = 1 AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
 			)

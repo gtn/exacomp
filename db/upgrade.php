@@ -2979,6 +2979,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    upgrade_block_savepoint(true, 2018040600, 'exacomp');
 	}
 	
+	if ($oldversion < 2018051100) {
+	    $table = new xmldb_table('block_exacompschedule');
+	    $field = new xmldb_field('is_pps');
+	    $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, null, null, null);
+	    $dbman->add_field($table, $field);
+	    // Exacomp savepoint reached.
+	    upgrade_block_savepoint(true, 2018051100, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
