@@ -159,8 +159,9 @@ if($formdata = $form->get_data()) {
 	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
 	
 	// add to weekly schedule
-	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);
-	
+
+	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid, null, null, 0);	
+
 	block_exacomp_settstamp();
 	
 	echo $output->popup_close_and_reload();
