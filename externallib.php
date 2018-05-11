@@ -3015,7 +3015,7 @@ class block_exacomp_external extends external_api {
 		if ($forall) {
 			//Add to the teacher planning Storage, not to the students themselves    otherwise they would have it in the schedule as well as in the pool which 
 			//could lead to mnay issues (not technical, but logical for them)
-		    block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
+		    block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
 			
 // 			$students = block_exacomp_get_students_by_course($courseid);
 
@@ -3026,7 +3026,7 @@ class block_exacomp_external extends external_api {
 // 			}
 		} else {
 		    if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
-				block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
+				block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
 			}
 		}
 
@@ -3548,13 +3548,13 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
-
+		
 		foreach ($examples as $example) {
-			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
-
-			$example_course = $DB->get_record('course', array('id' => $example->courseid));
-			$example->courseshortname = $example_course->shortname;
-			$example->coursefullname = $example_course->fullname;
+	        $example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+	        
+	        $example_course = $DB->get_record('course', array('id' => $example->courseid));
+	        $example->courseshortname = $example_course->shortname;
+	        $example->coursefullname = $example_course->fullname;
 		}
 
 		return $examples;
@@ -4553,8 +4553,8 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course($courseid);
 		static::require_can_access_example($exampleid, $courseid);
 
-		//block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, $preStorage=1);
-		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
+		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, null, null, 1);
+		//block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
 
 		return array(
 			"success" => true,
@@ -4612,7 +4612,7 @@ class block_exacomp_external extends external_api {
 
 		foreach ($examples as $example) {
 			foreach ($students as $student) {
-				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid);
+				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid, null, null, 0);
 			}
 		}
 
