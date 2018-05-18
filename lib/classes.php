@@ -442,6 +442,7 @@ class db_layer_all_user_courses extends db_layer_student {
 			foreach ($courseSubjects as $courseSubject) {
 				if (!isset($subjects[$courseSubject->id])) {
 					$subjects[$courseSubject->id] = $courseSubject;
+					$subjects[$courseSubject->id]->courseid = $course->id;
 				}
 
 				foreach ($courseSubject->topics as $topic) {
@@ -461,6 +462,7 @@ class db_layer_all_user_courses extends db_layer_student {
 		return $subjects;
 		// subject::create_objects(block_exacomp_get_subjects_by_course(2), null, $this);
 	}
+
 }
 
 /**
