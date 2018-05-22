@@ -614,6 +614,10 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_grade_verbose_description'),
         block_exacomp_get_string('settings_assessment_grade_verbose_default'),
         PARAM_TEXT));
+$settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/use_grade_verbose_competenceprofile',
+        block_exacomp_get_string('use_grade_verbose_competenceprofile'),
+        block_exacomp_get_string('use_grade_verbose_competenceprofile_descr'), 1));
+
 $settings->add(new block_exacomp_admin_setting_diffLevelOptions('exacomp/assessment_diffLevel_options',
         block_exacomp_get_string('settings_assessment_diffLevel_options'),
         block_exacomp_get_string('settings_assessment_diffLevel_options_description'),
@@ -623,6 +627,11 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_verbose_options'),
         block_exacomp_get_string('settings_assessment_verbose_options_description'),
         block_exacomp_get_string('settings_assessment_verbose_options_default'),
+        PARAM_TEXT));
+$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_verbose_options_short',
+        block_exacomp_get_string('settings_assessment_verbose_options_short'),
+        block_exacomp_get_string('settings_assessment_verbose_options_short_description'),
+        block_exacomp_get_string('settings_assessment_verbose_options_short_default'),
         PARAM_TEXT));
 $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/useprofoundness',
         block_exacomp_get_string('useprofoundness'),

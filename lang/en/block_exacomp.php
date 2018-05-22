@@ -134,9 +134,15 @@ $string['settings_assessment_diffLevel_options_default'] = 'G,M,E';
 $string['settings_assessment_verbose_options'] = 'verbose Options (EN)';
 $string['settings_assessment_verbose_options_description'] = 'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained';
 $string['settings_assessment_verbose_options_default'] = 'not gained, partly gained, mostly gained, completely gained';
+$string['settings_assessment_verbose_options_short'] = 'verbose Options (EN)';
+$string['settings_assessment_verbose_options_short_description'] = 'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained';
+$string['settings_assessment_verbose_options_short_default'] = 'ng, pg, mg, cg';
+
 $string['settings_assessment_grade_verbose'] = 'verbalized grades (EN)';
 $string['settings_assessment_grade_verbose_description'] = 'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend';
 $string['settings_assessment_grade_verbose_default'] = 'Very good, Good, Satisfactory, Sufficient, Deficient, Insufficient';
+$string['use_grade_verbose_competenceprofile'] = 'Noten Verbalisierung Kompetenzprofil';
+$string['use_grade_verbose_competenceprofile_descr'] = 'Noten Verbalisierung im Kompetenzprofil verwenden';
 $string['settings_sourceId'] = 'Source ID';
 $string['settings_sourceId_description'] = 'Automatically generated ID of this Exacomp installation. This ID can not be changed';
 $string['settings_admin_preconfiguration_none'] = 'No preconfiguration';
