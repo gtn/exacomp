@@ -437,7 +437,7 @@ return [
     ],
     'settings_assessment_verbose_options_short' => [
         'Verbalisierung Werte Abkürzung',
-        'verbose Options (EN)',
+        'verbose Options (EN) short',
     ],
     'settings_assessment_verbose_options_short_description' => [
         'Abkürzung obiger verbalisierter Werte für die Auswertungen',

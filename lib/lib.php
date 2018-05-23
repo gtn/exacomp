@@ -358,6 +358,10 @@ function block_exacomp_get_assessment_verbose_options($getforlanguage = null) {
     return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
 }
 
+function block_exacomp_get_assessment_verbose_options_short($getforlanguage = null) {
+    return block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
+}
+
 function block_exacomp_get_assessment_example_scheme() {
     return get_config('exacomp', 'assessment_example_scheme');
 }

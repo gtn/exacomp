@@ -4852,7 +4852,38 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+	
+// 	/**
+// 	 * Returns description of method parameters
+// 	 *
+// 	 * @return external_function_parameters
+// 	 */
+// 	public static function dakora_submit_example_as_teacher_parameters() {
+	
+// 	}
 
+// 	/**
+// 	 * submit example solution
+// 	 * Add student submission to example.
+// 	 *
+// 	 * @ws-type-write
+// 	 * @param int itemid (0 for new, >0 for existing)
+// 	 * @return array of course subjects
+// 	 */
+// 	public static function dakora_submit_example_as_teacher() {
+// 	    throw new invalid_parameter_exception("NOT IMPLEMENTED YET");
+// 	}
+
+// 	/**
+// 	 * Returns desription of method return values
+// 	 *
+// 	 * @return external_single_structure
+// 	 */
+// 	public static function dakora_submit_example_as_teacher_returns() {
+	    
+// 	}
+	
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -6315,6 +6346,7 @@ class block_exacomp_external extends external_api {
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
 			'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items()),
+		    //'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items_short()),
 			'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
 			'gradingperiods' => $gradingperiods,
 			'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'sorting', 'id, title'),
