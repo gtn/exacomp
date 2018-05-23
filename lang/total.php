@@ -292,8 +292,8 @@ return [
 		'Begin time for the first unit in the schedule. Format hh:mm',
 	],
 	'settings_admin_scheme' => [
-		'Globales Bewertungsniveau',
-		'Global difficulty level',
+		'Vordefinierte Konfiguration',
+		'Predefined Konfiguration',
 	],
 	'settings_admin_scheme_description' => [
 		'Beurteilungen können auf unterschiedlichem Niveau erfolgen.',
@@ -435,6 +435,18 @@ return [
         'nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
         'not gained, partly gained, mostly gained, completely gained',
     ],
+    'settings_assessment_verbose_options_short' => [
+        'Verbalisierung Werte Abkürzung',
+        'verbose Options (EN)',
+    ],
+    'settings_assessment_verbose_options_short_description' => [
+        'Abkürzung obiger verbalisierter Werte für die Auswertungen',
+        'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained',
+    ],
+    'settings_assessment_verbose_options_short_default' => [
+        'ne, te, ge, ve',
+        'ng, pg, mg, cg',
+    ],
     'settings_assessment_grade_verbose' => [
             'Noten Verbalisierung',
             'verbalized grades (EN)',
@@ -446,6 +458,14 @@ return [
     'settings_assessment_grade_verbose_default' => [
             'Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
             'Very good, Good, Satisfactory, Sufficient, Deficient, Insufficient',
+    ],
+    'use_grade_verbose_competenceprofile' => [
+        'Noten Verbalisierung Kompetenzprofil',
+        'grades verbose competence profile ',
+    ],
+    'use_grade_verbose_competenceprofile_descr' => [
+        'Noten Verbalisierung im Kompetenzprofil verwenden',
+        'use grades verbose in competence profile',
     ],
     'settings_sourceId' => [
         'Source ID',
