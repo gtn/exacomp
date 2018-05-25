@@ -1131,7 +1131,7 @@ class global_config {
      * @return array
 	 */
 	static function get_teacher_eval_items($courseid = 0, $short = false, $scheme = null) {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false, $scheme) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false, $scheme = null) {
 
 		    $result = array();
 		    if (!$scheme) {
