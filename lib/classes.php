@@ -1134,7 +1134,7 @@ class global_config {
 		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false, $scheme = BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
 
 		    $result = array();
-            //$scheme = block_exacomp_get_assessment_subject_scheme();
+            $scheme = block_exacomp_get_assessment_subject_scheme(); //Why was this left as a comment? it works and is needed
 		    switch($scheme) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
                     // Options from plugin settings: 0, 1... -> assessment_points_limit.
@@ -1143,7 +1143,11 @@ class global_config {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                     $result = array(-1 => '');
                     // Options from plugin settings: assessment_grade_verbose.
-                    $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
+                    if ($short) {
+                        $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options_short()));
+                    }else {
+                        $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
+                    }
                     //$options = array_reverse($options);
                     $result = $result + $options;
                     break;

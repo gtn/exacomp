@@ -6291,6 +6291,7 @@ class block_exacomp_external extends external_api {
 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
 			'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
 			'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+		    'teacherevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 			'studentevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 			'gradingperiods' => new external_multiple_structure (new external_single_structure ([
 				'id' => new external_value (PARAM_INT, 'id'),
@@ -6346,7 +6347,7 @@ class block_exacomp_external extends external_api {
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
 			'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items()),
-		    //'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items_short()),
+		    'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,true)),
 			'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
 			'gradingperiods' => $gradingperiods,
 			'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'sorting', 'id, title'),
