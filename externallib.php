@@ -4850,39 +4850,7 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure (array(
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
 		));
-	}
-
-	
-// 	/**
-// 	 * Returns description of method parameters
-// 	 *
-// 	 * @return external_function_parameters
-// 	 */
-// 	public static function dakora_submit_example_as_teacher_parameters() {
-	
-// 	}
-
-// 	/**
-// 	 * submit example solution
-// 	 * Add student submission to example.
-// 	 *
-// 	 * @ws-type-write
-// 	 * @param int itemid (0 for new, >0 for existing)
-// 	 * @return array of course subjects
-// 	 */
-// 	public static function dakora_submit_example_as_teacher() {
-// 	    throw new invalid_parameter_exception("NOT IMPLEMENTED YET");
-// 	}
-
-// 	/**
-// 	 * Returns desription of method return values
-// 	 *
-// 	 * @return external_single_structure
-// 	 */
-// 	public static function dakora_submit_example_as_teacher_returns() {
-	    
-// 	}
-	
+	}	
 	
 	/**
 	 * Returns description of method parameters
@@ -5037,7 +5005,7 @@ class block_exacomp_external extends external_api {
 			'itemid' => new external_value (PARAM_INT, 'itemid'),
 		));
 	}
-
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5053,6 +5021,9 @@ class block_exacomp_external extends external_api {
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
 			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ""),
+		    //'url' => new external_value (PARAM_URL, 'url'),
+		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+		    'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
 		));
 	}
 
@@ -5064,11 +5035,11 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment) {
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment, $filename, $fileitemid) {
 		global $DB, $USER;
 
 		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-			'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment));
+		    'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment, 'filename' => $filename, 'fileitemid' => $fileitemid));
 
 		if ($userid == 0) {
 			$role = BLOCK_EXACOMP_ROLE_STUDENT;
