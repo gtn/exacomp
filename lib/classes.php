@@ -1130,11 +1130,13 @@ class global_config {
      * @param integer $scheme
      * @return array
 	 */
-	static function get_teacher_eval_items($courseid = 0, $short = false, $scheme = BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false, $scheme = BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+	static function get_teacher_eval_items($courseid = 0, $short = false, $scheme = null) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false, $scheme) {
 
 		    $result = array();
-            $scheme = block_exacomp_get_assessment_subject_scheme(); //Why was this left as a comment? it works and is needed
+		    if (!$scheme) {
+                $scheme = block_exacomp_get_assessment_subject_scheme();
+            }
 		    switch($scheme) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
                     // Options from plugin settings: 0, 1... -> assessment_points_limit.
