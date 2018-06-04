@@ -416,12 +416,12 @@ return [
         'Difficulty Level Options',
     ],
     'settings_assessment_diffLevel_options_description' => [
-        'Liste der möglichen Werte des Niveaus, z.B: G,M,E',
-        'list of difficultiy Levels, i.e. G,M,E',
+        'Liste der möglichen Werte des Niveaus, z.B: G,M,E,Z',
+        'list of difficultiy Levels, i.e. G,M,E,Z',
     ],
     'settings_assessment_diffLevel_options_default' => [
-            'G,M,E',
-            'G,M,E',
+            'G,M,E,Z',
+            'G,M,E,Z',
     ],
     'settings_assessment_verbose_options' => [
         'Verbalisierung Werte',

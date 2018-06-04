@@ -145,11 +145,13 @@ function block_exacomp_is_skillsmanagement() {
 }
 
 function block_exacomp_is_topicgrading_enabled() {
-	return get_config('exacomp', 'assessment_topic_scheme');
+    $topicscheme = get_config('exacomp', 'assessment_topic_scheme');
+    return ($topicscheme ? true : false);
 }
 
 function block_exacomp_is_subjectgrading_enabled() {
-	return get_config('exacomp', 'assessment_subject_scheme');
+    $subjectscheme = get_config('exacomp', 'assessment_subject_scheme');
+	return ($subjectscheme ? true : false);
 }
 
 function block_exacomp_is_numbering_enabled() {
@@ -201,7 +203,7 @@ function block_exacomp_init_js_css() {
 		'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled',
 		'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation',
 	    'topic_3dchart_empty', 'columnselect', 'n1.unit', 'n2.unit', 'n3.unit', 'n4.unit', 'n5.unit', 'n6.unit', 'n7.unit',
-	    'n8.unit', 'n9.unit', 'n10.unit',
+	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation',
 	], 'block_exacomp');
 
 	// page specific js/css
@@ -299,6 +301,15 @@ function block_exacomp_use_eval_niveau() {
     //return $evaluation_niveau >= 1 && $evaluation_niveau <= 3;
 }
 
+function block_exacomp_get_assessment_any_diffLevel_exist() {
+    return (block_exacomp_get_assessment_subject_diffLevel() == 1
+                || block_exacomp_get_assessment_topic_diffLevel() == 1
+                || block_exacomp_get_assessment_comp_diffLevel() == 1
+                || block_exacomp_get_assessment_childcomp_diffLevel() == 1
+                || block_exacomp_get_assessment_example_diffLevel() == 1 ? true : false);
+}
+
+
 /**
  * @return mixed
  * @deprecated
@@ -308,6 +319,7 @@ function block_exacomp_evaluation_niveau_type() {
 }
 
 /**
+ * @var boolean $level
  * @return mixed
  */
 function block_exacomp_additional_grading($level = null) {
@@ -4864,14 +4876,14 @@ function block_exacomp_is_example_visible($courseid, $exampleid, $studentid) {
 	*/
 
 	$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
+	if (isset($visibilities[$exampleid->id]) && !$visibilities[$exampleid->id]) {
 		return false;
 	}
 
 	if ($studentid > 0) {
 		// also check student if set
  		$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
- 		if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
+ 		if (isset($visibilities[$exampleid->id]) && !$visibilities[$exampleid->id]) {
 			return false;
 		}
 	}

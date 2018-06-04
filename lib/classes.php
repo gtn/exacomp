@@ -1217,7 +1217,7 @@ class global_config {
 			} else {
 				$values = [];
 			}
-            if (block_exacomp_additional_grading($scheme)) {  // TODO !!!! only subject now !!!!
+            //if (block_exacomp_additional_grading($scheme)) {  // TODO !!!! only subject now !!!!
                 /*
                     3 => '😊',
                     2 => '😔',
@@ -1228,13 +1228,14 @@ class global_config {
                                 2 => ':-|',
                                 1 => ':-(',
                         ];
-            } // else use value scheme set in the course
-            else {
+            //} // else use value scheme set in the course
+            // now only emojis ?
+           /* else {
                 // TODO: add settings to g::$COURSE?
                 $course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 
                 return $values + range(1, $course_grading);
-            }
+            }*/
 		});
 	}
 
