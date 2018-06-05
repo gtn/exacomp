@@ -364,7 +364,7 @@ return [
         'Yes/No',
     ],
     'settings_assessment_diffLevel' => [
-        'Globales Bewertungsniveau',
+        'Niveau',
         'Global assessment level',
     ],
     'settings_assessment_SelfEval' => [
@@ -424,7 +424,7 @@ return [
             'G,M,E,Z',
     ],
     'settings_assessment_verbose_options' => [
-        'Verbalisierung Werte',
+        'Erreichungsgrad',
         'verbose Options (EN)',
     ],
     'settings_assessment_verbose_options_description' => [
