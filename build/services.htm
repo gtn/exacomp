@@ -2229,8 +2229,9 @@ Params: <table>
 <td>studentcomment</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>studentcomment</td>
 <tr>
 <td>itemid</td>
@@ -2253,6 +2254,22 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>fileitemid</td>
+<tr>
+<td>comment</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>teachercomment</td>
+<tr>
+<td>itemvalue</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>itemvalue</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
