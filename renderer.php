@@ -1280,13 +1280,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     }
                     $totalRow->cells[] = $student_evaluation_cell;
                 } else { // Teacher
-                    $totalRow->cells[] = $student_evaluation_cell;
+                    if ($showevaluation) {
+                        $totalRow->cells[] = $student_evaluation_cell;
+                    }
                     if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_any_diffLevel_exist()) {
                         $totalRow->cells[] = $niveau_cell;
                     }
-                    if ($showevaluation) {
-                        $totalRow->cells[] = $teacher_evaluation_cell;
-                    }
+                    $totalRow->cells[] = $teacher_evaluation_cell;
                 }
 
 			}
