@@ -2193,9 +2193,17 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_submit_example</h2>
 <div>submit example solution
-Add student submission to example.</div>
+Add student submission to example.
+Or add teacher file to a student submission</div>
 <div>type: write</div>
 Params: <table>
+<tr>
+<td>role</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>role</td>
 <tr>
 <td>exampleid</td>
 <td>int</td>
@@ -2203,14 +2211,6 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>exampleid</td>
-<tr>
-<td>studentvalue</td>
-<td>int</td>
-<td>null</td>
-<td>optional</td>
-<td>default: int(-1)
-</td>
-<td>studentvalue</td>
 <tr>
 <td>url</td>
 <td>url</td>
@@ -2225,14 +2225,6 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>filename, used to look up file and create a new one in the exaport file area</td>
-<tr>
-<td>studentcomment</td>
-<td>text</td>
-<td>null</td>
-<td>optional</td>
-<td>default: string(0) ""
-</td>
-<td>studentcomment</td>
 <tr>
 <td>itemid</td>
 <td>int</td>
@@ -2261,15 +2253,15 @@ Params: <table>
 <td>optional</td>
 <td>default: string(0) ""
 </td>
-<td>teachercomment</td>
+<td>studentcomment or teachercomment</td>
 <tr>
-<td>itemvalue</td>
+<td>value</td>
 <td>int</td>
 <td>null</td>
 <td>optional</td>
 <td>default: int(-1)
 </td>
-<td>itemvalue</td>
+<td>teacher or studentvalue</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",

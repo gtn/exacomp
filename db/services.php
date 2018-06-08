@@ -522,7 +522,8 @@ add example to current pre planning storage',
     'methodname' => 'dakora_submit_example',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => 'submit example solution
-Add student submission to example.',
+Add student submission to example.
+Or add teacher file to a student submission',
     'type' => 'write',
   ),
   'dakora_grade_example' => 
