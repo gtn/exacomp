@@ -4983,20 +4983,27 @@ class block_exacomp_external extends external_api {
 			}
 		}
 
-		if ($insert) {
-			$DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
-			if ($studentcomment != '') {
-				$DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
-			}
-		} else {
-			$itemexample->timemodified = time();
-			$itemexample->studentvalue = $studentvalue;
-			$DB->update_record('block_exacompitemexample', $itemexample);
-
-			$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
-			if ($studentcomment != '') {
-				$DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
-			}
+		//Insert comments and teacher/student values
+		//if student:
+		if($role == "student"){
+		    if ($insert) {
+		        $DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
+		        if ($comment != '') {
+		            $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
+		        }
+		    } else {
+		        $itemexample->timemodified = time();
+		        $itemexample->studentvalue = $value;
+		        $DB->update_record('block_exacompitemexample', $itemexample);
+		        
+		        $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+		        if ($comment != '') {
+		            $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
+		        }
+		    }
+		    block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $value);
+		    
+		    block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
 		}
 		
 		if($role == "teacher"){
