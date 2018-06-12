@@ -16,13 +16,15 @@
 // You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
 //
 // This copyright notice MUST APPEAR in all copies of the script!
-
 namespace block_exacomp;
 defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
 
 use block_exacomp\globals as g;
+use PhpOffice\PhpWord\Escaper\RegExp;
+use PhpOffice\PhpWord\Escaper\Xml;
+
 
 class printer_TCPDF extends \TCPDF {
 	private $_header = '';
@@ -397,4 +399,397 @@ class printer {
 		$pdf->Output();
 		exit;
 	}
+
+	static function block_exacomp_generate_report_annex_docx($dataRow) {
+        global $CFG;
+//echo '<pre>'; print_r($dataRow); echo '</pre>';exit;
+        $templateFile = __DIR__.'/../reports/tmpl_annex.docx';
+
+        if (!file_exists($templateFile)) {
+            throw new \Exception("template 'tmpl_annex' not found");
+        }
+
+        \PhpOffice\PhpWord\Settings::setTempDir($CFG->tempdir);
+        $templateProcessor = new \block_exacomp\TemplateProcessor($templateFile);
+
+        $templateProcessor->duplicateDocumentBody(count($dataRow));
+
+        foreach ($dataRow as $studentId => $reportData) {
+            $templateProcessor->setValue('course', $reportData['courseData']->fullname, 1);
+            $templateProcessor->setValue('student_name', fullname($reportData['studentData']), 1);
+            // subjects
+            $subjectsCount = count($reportData['subjects']);
+            $templateProcessor->cloneBlock('subjectif', $subjectsCount);
+            // subject table data
+            //$subjectInd = 1;
+            //$subjectValues = array();
+            foreach ($reportData['subjects'] as $subject) {
+                //echo '<pre>';print_r($subject); echo '</pre>';exit;
+                //$subjectValues[] = array(
+                //        'subject' => $subject->title
+                //);
+                $templateProcessor->setValue('subject', $subject->title, 1);
+                // topics
+                //$templateProcessor->cloneRow('topic', count($subject->topics));
+                foreach($subject->topics as $topic) {
+                    $templateProcessor->cloneRowToEnd("topic");
+                    $templateProcessor->cloneRowToEnd("descriptor");
+                    $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
+                    $templateProcessor->setValue("n", $topic->evaluation->get_evalniveau_title(), 1);
+                    $templateProcessor->setValue("nu", $topic->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
+                    $templateProcessor->setValue("ne", $topic->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
+                    $templateProcessor->setValue("tw", $topic->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
+                    $templateProcessor->setValue("ue", $topic->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
+                    $templateProcessor->setValue("ve", $topic->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                    // descriptors
+                    foreach ($topic->descriptors as $descriptor) {
+                        $templateProcessor->duplicateRow("descriptor");
+                        $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
+                        $templateProcessor->setValue("n", $descriptor->evaluation->get_evalniveau_title(), 1);
+                        $templateProcessor->setValue("nu", $descriptor->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ne", $descriptor->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
+                        $templateProcessor->setValue("tw", $descriptor->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ue", $descriptor->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ve", $descriptor->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                    }
+
+                    $templateProcessor->deleteRow("descriptor");
+
+                }
+                $templateProcessor->deleteRow("topic");
+                $templateProcessor->deleteRow("descriptor");
+                //$subjectInd++;
+            }
+        }
+        // save as a random file in temp file
+        $temp_file = tempnam($CFG->tempdir, 'exacomp');
+        $templateProcessor->saveAs($temp_file);
+        $filename = 'gruppenbericht.docx';
+        require_once $CFG->dirroot.'/lib/filelib.php';
+        send_temp_file($temp_file, $filename);
+
+    }
+
 }
+
+class Slice
+{
+
+    function __construct($string, $start, $end)
+    {
+        $this->before = substr($string, 0, $start);
+        $this->slice = substr($string, $start, $end - $start);
+        $this->after = substr($string, $end);
+    }
+
+    function get()
+    {
+        return $this->slice;
+    }
+
+    function set($value)
+    {
+        $this->slice = $value;
+
+        return $this;
+    }
+
+    function join()
+    {
+        return $this->before . $this->slice . $this->after;
+    }
+}
+
+class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
+{
+
+    function getDocumentMainPart()
+    {
+        return $this->tempDocumentMainPart;
+    }
+
+    function setDocumentMainPart($part)
+    {
+        $this->tempDocumentMainPart = $part;
+    }
+
+    function setValues($data)
+    {
+        foreach ($data as $key => $value) {
+            $this->setValue($key, $value);
+            /*
+             * $value = ;
+             * $content = str_replace('{'.$key.'}', $value, $content);
+             * $content = str_replace('>'.$key.'<', '>'.$value.'<', $content);
+             */
+        }
+    }
+
+    function setValue($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT)
+    {
+        $replace = $this->escape($replace);
+        $replace = str_replace([
+            "\r",
+            "\n"
+        ], [
+            '',
+            '</w:t><w:br/><w:t>'
+        ], $replace);
+        
+        return $this->setValueRaw($search, $replace, $limit);
+    }
+
+    function setValueRaw($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT)
+    {
+        $oldEscaping = \PhpOffice\PhpWord\Settings::isOutputEscapingEnabled();
+        
+        // it's a raw value
+        \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(false);
+        
+        $ret = parent::setValue($search, $replace, $limit);
+        
+        \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled($oldEscaping);
+        
+        return $ret;
+    }
+
+    function applyFilters($filters)
+    {
+        foreach ($filters as $filter) {
+            $this->tempDocumentMainPart = $filter($this->tempDocumentMainPart);
+        }
+    }
+
+    function applyFiltersAllParts($filters)
+    {
+        foreach ($filters as $filter) {
+            $this->tempDocumentHeaders = $filter($this->tempDocumentHeaders);
+            $this->tempDocumentMainPart = $filter($this->tempDocumentMainPart);
+            $this->tempDocumentFooters = $filter($this->tempDocumentFooters);
+        }
+    }
+
+    function replaceWords($data)
+    {
+        foreach ($data as $key => $value) {
+            $this->tempDocumentMainPart = str_replace('>' . $key . '<', '>' . $value . '<', $this->tempDocumentMainPart);
+        }
+    }
+
+    function check()
+    {
+        if (preg_match('!\\$(.*(>|{)(?<name>[a-z{}].*)<)!iU', $this->tempDocumentMainPart, $matches)) {
+            throw new \Exception("fehler in variable ${matches['name']}");
+        }
+    }
+
+    function tagPos($search)
+    {
+        if ('${' !== substr($search, 0, 2) && '}' !== substr($search, - 1)) {
+            $search = '${' . $search . '}';
+        }
+        
+        $tagPos = strpos($this->tempDocumentMainPart, $search);
+        if (! $tagPos) {
+            throw new \Exception("Can't find '$search'");
+        }
+        
+        return $tagPos;
+    }
+
+    public function cloneBlockAndSetNewVarNames($blockname, $clones, $replace, $varname)
+    {
+        $clone = $this->cloneBlock($blockname, $clones, $replace);
+        
+        for ($i = 0; $i < $clones; $i ++) {
+            $regExpEscaper = new RegExp();
+            $this->tempDocumentMainPart = preg_replace($regExpEscaper->escape($clone), str_replace('${', '${' . $varname . $i . '-', $clone), $this->tempDocumentMainPart, 1);
+        }
+    }
+
+    function cloneRowToEnd($search)
+    {
+        $tagPos = $this->tagPos($search);
+        
+        $rowStart = $this->findRowStart($tagPos);
+        $rowEnd = $this->findRowEnd($tagPos);
+        $xmlRow = $this->getSlice($rowStart, $rowEnd);
+        
+        $lastRowEnd = strpos($this->tempDocumentMainPart, '</w:tbl>', $tagPos);
+        
+        $result = $this->getSlice(0, $lastRowEnd);
+        $result .= $xmlRow;
+        $result .= $this->getSlice($lastRowEnd);
+        
+        $this->tempDocumentMainPart = $result;
+    }
+
+    function duplicateRow($search)
+    {
+        $tagPos = $this->tagPos($search);
+        
+        $rowStart = $this->findRowStart($tagPos);
+        $rowEnd = $this->findRowEnd($tagPos);
+        $xmlRow = $this->getSlice($rowStart, $rowEnd);
+        
+        $result = $this->getSlice(0, $rowEnd);
+        $result .= $xmlRow;
+        $result .= $this->getSlice($rowEnd);
+        
+        $this->tempDocumentMainPart = $result;
+    }
+
+    function deleteRow($search)
+    {
+        $this->cloneRow($search, 0);
+    }
+
+    /*
+     * function strTagPos($string, $tag, $offset) {
+     * $tagStart = strpos($string, '<'.$tag.' ', $offset);
+     *
+     * if (!$tagStart) {
+     * $tagStart = strpos($string, '<'.$tag.'>', $string);
+     * }
+     * if (!$tagStart) {
+     * throw new Exception('Can not find the start position of tag '.$tag.'.');
+     * }
+     *
+     * return $tagStart;
+     * }
+     *
+     * function strrTagPos($string, $tag, $offset) {
+     * $tagStart = strrpos($this->tempDocumentMainPart, '<w:'.$tag.' ', ((strlen($this->tempDocumentMainPart) - $offset) * -1));
+     *
+     * if (!$tagStart) {
+     * $tagStart = strrpos($this->tempDocumentMainPart, '<w:'.$tag.'>', ((strlen($this->tempDocumentMainPart) - $offset) * -1));
+     * }
+     * if (!$tagStart) {
+     * throw new Exception('Can not find the start position of tag '.$tag.'.');
+     * }
+     *
+     * return $tagStart;
+     * }
+     *
+     * function findTagEnd($tag, $offset) {
+     * $search = '</w:'.$tag.'>';
+     *
+     * return strpos($this->tempDocumentMainPart, $search, $offset) + strlen($search);
+     * }
+     */
+    function splitByTag($string, $tag)
+    {
+        $rest = $string;
+        $parts = [];
+        
+        while ($rest) {
+            if (! preg_match('!^(?<before>.*)(?<tag><w:' . $tag . '[\s>].*</w:' . $tag . '>|<w:' . $tag . '(\s[^>]+)?/>)!Uis', $rest, $matches)) {
+                $parts[] = $rest;
+                break;
+            }
+            
+            if ($matches['before']) {
+                $parts[] = $matches['before'];
+            }
+            $parts[] = $matches['tag'];
+            
+            $rest = substr($rest, strlen($matches[0]));
+        }
+        
+        return $parts;
+    }
+
+    function rfindTagStart($tag, $offset)
+    {
+        /*
+         * if (!preg_match('!<w:'.$tag.'[\s>].*$!Uis', substr($this->tempDocumentMainPart, 0, $offset), $matches)) {
+         * throw new \Exception('tagStart $tag not found');
+         * }
+         *
+         * echo $offset - strlen($matches[0]);
+         */
+        $tagStart = strrpos($this->tempDocumentMainPart, '<w:' . $tag . ' ', ((strlen($this->tempDocumentMainPart) - $offset) * - 1));
+        
+        if (! $tagStart) {
+            $tagStart = strrpos($this->tempDocumentMainPart, '<w:' . $tag . '>', ((strlen($this->tempDocumentMainPart) - $offset) * - 1));
+        }
+        if (! $tagStart) {
+            throw new Exception('Can not find the start position of tag ' . $tag . '.');
+        }
+        
+        return $tagStart;
+    }
+
+    function findTagEnd($tag, $offset)
+    {
+        $search = '</w:' . $tag . '>';
+        
+        return strpos($this->tempDocumentMainPart, $search, $offset) + strlen($search);
+    }
+
+    function slice($string, $start, $end)
+    {
+        return new Slice($string, $start, $end);
+    }
+
+    function duplicateCol($search, $numberOfCols = 1)
+    {
+        $tagPos = $this->tagPos($search);
+        
+        $table = $this->slice($this->tempDocumentMainPart, $this->rfindTagStart('tbl', $tagPos), $this->findTagEnd('tbl', $tagPos));
+        
+        $splits = static::splitByTag($table->get(), 'gridCol');
+        
+        preg_match('!(^.*w:w=")([0-9]+)(".*)$!', $splits[1], $firstCol);
+        preg_match('!(^.*w:w=")([0-9]+)(".*)$!', $splits[2], $newCol);
+        array_shift($firstCol);
+        array_shift($newCol);
+        
+        $newWidth = $firstCol[1] - $newCol[1] * ($numberOfCols - 1);
+        $firstCol[1] = $newWidth;
+        
+        $splits[1] = join('', $firstCol);
+        $splits[2] = str_repeat($splits[2], $numberOfCols);
+        
+        $splits = static::splitByTag(join('', $splits), 'tc');
+        
+        $splits[1] = preg_replace('!(w:w=")[0-9]+!', '${1}' . $newWidth, $splits[1]);
+        $splits[4] = preg_replace('!(w:w=")[0-9]+!', '${1}' . $newWidth, $splits[4]);
+        
+        $splits[2] = str_repeat($splits[2], $numberOfCols);
+        $splits[5] = str_repeat($splits[5], $numberOfCols);
+        
+        $table->set(join('', $splits));
+        
+        $this->tempDocumentMainPart = $table->join();
+    }
+
+    function escape($str)
+    {
+        static $xmlEscaper = null;
+        if (! $xmlEscaper) {
+            $xmlEscaper = new Xml();
+        }
+        
+        return $xmlEscaper->escape($str);
+    }
+
+    function updateFile($filename, $path)
+    {
+        return $this->zipClass->addFromString($filename, file_get_contents($path));
+	}
+
+	function duplicateDocumentBody($count = 1) {
+        $startPos = strpos($this->tempDocumentMainPart, '<w:body>') + 8;
+        $endPos = strpos($this->tempDocumentMainPart, '</w:body>');
+        $body = $this->slice($this->tempDocumentMainPart, $startPos, $endPos);
+        $bodyContent = $body->get();
+        $result = '';
+        for($i = 1; $i <= $count; $i++) {
+            $result .= $bodyContent;
+        }
+        $body->set($result);
+        $this->tempDocumentMainPart = $body->join();
+    }
+}
+

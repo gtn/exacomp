@@ -116,6 +116,28 @@ return [
 		'Create new subject',
 	],
 
+	'tab_teacher_report_general' => [
+		'General report',
+		'General report',
+	],
+	'tab_teacher_report_annex' => [
+		'Zeugnisse ',
+		'Annex',
+	],
+	'tab_teacher_report_annex_title' => [
+		'Anlage zum Lernentwicklungsbericht',
+		'Annex to the learning development report',
+	],
+	'create_html' => [
+		'Zeugnis im HTML-Format generieren (Voransicht)',
+		'generate HTML preview',
+	],
+	'create_docx' => [
+		'Zeugnis im docx-Format generieren',
+		'generate .docx',
+	],
+
+
 	// === Student Tabs ===
 	'tab_student_all' => [
 		'Alle erworbenen Kompetenzen',
@@ -845,6 +867,10 @@ return [
 	'choosestudent' => [
 		'Kursteilnehmer/in auswählen: ',
 		'Choose student: ',
+	],
+	'choose_student' => [
+		'Auswahl der Schüler/innen: ',
+		'Choose students: ',
 	],
 	'choosedaterange' => [
 		'Betrachtungszeitraum auswählen: ',

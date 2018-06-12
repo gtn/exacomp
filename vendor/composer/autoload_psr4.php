@@ -7,4 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Super\\' => array($vendorDir . '/super'),
+    'Zend\\Stdlib\\' => array($vendorDir . '/zendframework/zend-stdlib/src'),
+    'PhpOffice\\PhpWord\\' => array($vendorDir . '/phpoffice/PhpWord'),
+    'PhpOffice\\' => array($vendorDir . '/phpoffice'),
+
 );

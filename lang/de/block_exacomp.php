@@ -48,6 +48,12 @@ $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neuen Kompetenzraster anlegen';
+$string['tab_teacher_report_general'] = 'General report';
+$string['tab_teacher_report_annex'] = 'Zeugnisse ';
+$string['tab_teacher_report_annex_title'] = 'Anlage zum Lernentwicklungsbericht';
+$string['create_html'] = 'Zeugnis im HTML-Format generieren (Voransicht)';
+$string['create_docx'] = 'Zeugnis im docx-Format generieren';
+
 
 // === Student Tabs ===
 $string['tab_student_all'] = 'Alle erworbenen Kompetenzen';
@@ -261,6 +267,7 @@ $string['allniveaus'] = 'Alle Lernfortschritte';
 $string['choosesubject'] = 'Kompetenzbereich auswählen';
 $string['choosetopic'] = 'Lernfortschritte auswählen';
 $string['choosestudent'] = 'Kursteilnehmer/in auswählen: ';
+$string['choose_student'] = 'Auswahl der Schüler/innen: ';
 $string['choosedaterange'] = 'Betrachtungszeitraum auswählen: ';
 $string['cleardaterange'] = 'Zurücksetzen';
 $string['seperatordaterange'] = 'bis';

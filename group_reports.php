@@ -27,7 +27,22 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 
 require_login($course);
 
+$reportType = optional_param('reportType', 'general', PARAM_ALPHANUM);
+$page_identifier = 'tab_teacher_report_'.$reportType;
+
+$action = optional_param('action', '', PARAM_TEXT);
+$isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+
+$filter = block_exacomp_group_reports_get_filter($reportType);
+
+// before all output
+if ($action == 'search' && $reportType == 'annex' && $isDocx) {
+    block_exacomp_group_reports_annex_result($filter);
+}
+
 $PAGE->set_url($_SERVER['REQUEST_URI']);
+$PAGE->set_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => $reportType));
+
 $output = block_exacomp_get_renderer();
 
 $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
@@ -49,7 +64,6 @@ if (!$q) {
 }
 */
 
-$filter = block_exacomp_group_reports_get_filter();
 $extra = '<input type="hidden" name="action" value="search"/>';
 
 ?>
@@ -111,18 +125,35 @@ $extra = '<input type="hidden" name="action" value="search"/>';
 			$(document).on('change', ':checkbox.filter-group-checkbox', update);
 			$(update);
 	</script>
+<?php
+    $settings_subtree = array();
+    $settings_subtree[] = new tabobject('tab_teacher_report_general', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType'=>'general')), block_exacomp_get_string("tab_teacher_report_general"), null, true);
+    $settings_subtree[] = new tabobject('tab_teacher_report_annex', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType'=>'annex')), block_exacomp_get_string("tab_teacher_report_annex"), null, true);
+    echo $OUTPUT->tabtree($settings_subtree, $page_identifier);
+?>
 	<div class="block">
 		<?php 
 		  echo '<h2>'.block_exacomp_get_string('display_settings').'</h2>';
-		  echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid); 
+		  switch ($reportType) {
+              case 'annex':
+                    echo $output->group_report_annex_filters('exacomp', $filter, '', $extra, $courseid);
+                    break;
+              default:
+                    echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid);
+          }
 		?>
 	</div>
 <?php
 
-if (optional_param('action', '', PARAM_TEXT) == 'search') {
-    echo html_writer::tag('h2',block_exacomp_get_string('result'));
-
-	block_exacomp_group_reports_result($filter);
+if ($action == 'search') {
+    echo html_writer::tag('h2', block_exacomp_get_string('result'));
+    switch ($reportType) {
+        case 'annex':
+                block_exacomp_group_reports_annex_result($filter);
+                break;
+        default:
+                block_exacomp_group_reports_result($filter);
+    }
 }
 
 echo $output->footer();

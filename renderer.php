@@ -1562,9 +1562,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
 					    //the warning contains the name of the reviewer
-					    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
-					    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
-					    $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+                        if (isset($reviewerid) && $reviewerid > 0) {
+                            $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+                            $reviewerTeacherLastname = $DB->get_field('user','lastname',array('id' => $reviewerid));
+                            $reviewerTeacherUsername = $DB->get_field('user','username',array('id' => $reviewerid));
+                        } else {
+                            $reviewerTeacherFirstname = null;
+                            $reviewerTeacherLastname = null;
+                            $reviewerTeacherUsername = '';
+                        }
+
 					    if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
 					        $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
 					    }else {
@@ -1595,7 +1602,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if ($data->scheme == 1) {
 								$evaluation_cell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 							} else {
-							    $evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness, $reviewerid);
+							    $evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness, (isset($reviewerid) ? $reviewerid : null));
 							}
 						}
 
@@ -1893,7 +1900,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if ($data->scheme == 1) {
 							$evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 						} else {
-						    $evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness, $reviewerid);
+						    $evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness, (isset($reviewerid) ? $reviewerid : null));
 						}
 
 						if ($data->showevaluation) {
@@ -4462,7 +4469,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	function group_report_filters($type, $filter, $action, $extra = '', $courseid) {
 		ob_start();
 		?>
-		
+
 		<form method="post" action="<?php echo $action; ?>">
 			<?php
 			echo $extra;
@@ -4536,7 +4543,49 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return ob_get_clean();
 	}
 
-	private function group_reports_print_filter($filter, $input_type, $titleid) {
+    function group_report_annex_filters($type, $filter, $action, $extra = '', $courseid) {
+        ob_start();
+        ?>
+
+        <form method="post" action="<?php echo $action; ?>">
+            <?php
+            echo $extra;
+            ?>
+            <div class="filter-group visible form-group row">
+                <h3 class="filter-group-title"><label><?= block_exacomp_get_string('choose_student');?></label></h3>
+                <div class="filter-group-body">
+                    <div>
+                        <?php
+                        $studentsAssociativeArray = array();
+                        $students = block_exacomp_get_students_by_course($courseid);
+                        $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
+                        foreach ($students as $student) {
+                            $studentsAssociativeArray[$student->id] = fullname($student);
+                        }
+                        echo $this->select($studentsAssociativeArray, 'filter[selectedStudent]', @$filter['selectedStudent'], true, array('class' => 'form-control'));
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+            //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'report_subject');
+            //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'report_competencefield');
+            //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT, 'descriptor');
+            //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, 'descriptor_child');
+            //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_EXAMPLE, 'report_learniningmaterial');
+
+            echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html'), 'class' => 'btn btn-default'));
+            echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_docx'), 'class' => 'btn btn-default', 'name' => 'formatDocx'));
+            //echo '<input type="submit" value='.block_exacomp_get_string('create_report').'/>'
+            ?>
+        </form>
+        <?php
+
+        return ob_get_clean();
+    }
+
+
+    private function group_reports_print_filter($filter, $input_type, $titleid) {
 		$teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id);
 
 		$inputs = \block_exacomp\global_config::get_allowed_inputs($input_type);

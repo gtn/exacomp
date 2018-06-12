@@ -3,7 +3,8 @@
   "type": "moodle-block",
   "autoload": {
     "psr-4": {
-      "Super\\": "vendor/super/"
+      "Super\\": "vendor/super/",
+      "PhpOffice\\": "vendor/phpoffice/"
     }
   }
 }

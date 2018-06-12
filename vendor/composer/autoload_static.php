@@ -7,9 +7,18 @@ namespace Composer\Autoload;
 class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
 {
     public static $prefixLengthsPsr4 = array (
+        'Z' => 
+        array (
+            'Zend\\Stdlib\\' => 12,
+        ),
         'S' => 
         array (
             'Super\\' => 6,
+        ),
+        'P' => 
+        array (
+            'PhpOffice\\PhpWord\\' => 18,
+            'PhpOffice\\' => 10,
         ),
     );
 
@@ -17,6 +26,18 @@ class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
         'Super\\' => 
         array (
             0 => __DIR__ . '/..' . '/super',
+        ),
+        'Zend\\Stdlib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
+        ),
+        'PhpOffice\\PhpWord\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/PhpWord',
+        ),
+        'PhpOffice\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice',
         ),
     );
 
