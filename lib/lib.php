@@ -7945,57 +7945,8 @@ function block_exacomp_group_reports_annex_result($filter) {
                 return false;
             }
 
-            if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
-                $value = @$eval->evalniveauid ?: 0;
-                if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
-                    return false;
-                }
-            }
-            if (@$item_filter['additionalinfo_from']) {
-                $value = @$eval->additionalinfo ?: 0;
-                if ($value < str_replace(',', '.', $item_filter['additionalinfo_from'])) {
-                    return false;
-                }
-            }
-            if (@$item_filter['additionalinfo_to']) {
-                $value = @$eval->additionalinfo ?: 0;
-                if ($value > str_replace(',', '.', $item_filter['additionalinfo_to'])) {
-                    return false;
-                }
-            }
-
-            if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) {
-                $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
-                if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
-                    return false;
-                }
-            }
-            if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) {
-                $value = @$eval->studentevaluation ?: 0;
-                if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
-                    return false;
-                }
-            }
-
             $walk_subs($level + 1);
 
-            $filter_active = $item_filter;
-            unset($filter_active['active']);
-            unset($filter_active['visible']);
-            $filter_active = array_filter($filter_active, function($value) { return !empty($value); });
-            $filter_active = !!$filter_active;
-
-            if (!$filter_active) {
-                if ($item instanceof \block_exacomp\subject && !$item->topics) {
-                    return false;
-                }
-                if ($item instanceof \block_exacomp\topic && !$item->descriptors) {
-                    return false;
-                }
-                if ($item instanceof \block_exacomp\descriptor && !$item->children && !$item->examples) {
-                    return false;
-                }
-            }
             $item->evaluation = $eval;
         });
 
