@@ -4487,7 +4487,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             			foreach ($students as $student) {
             			    $studentsAssociativeArray[$student->id] = fullname($student);
             			}
-            			echo $this->select($studentsAssociativeArray,'filter[selectedStudent]',@$filter['selectedStudent'], true, array('class' => 'form-control'));
+            			echo $this->select($studentsAssociativeArray,'filter[selectedStudent]',@$filter['selectedStudent'], true);
             			?>	
 							
 						<br><label><input type="radio" name="filter[type]" value="student_counts" <?php if (@$filter['type'] == 'student_counts') echo 'checked="checked"'; ?>/>

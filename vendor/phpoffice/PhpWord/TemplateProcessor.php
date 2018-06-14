@@ -333,7 +333,6 @@ class TemplateProcessor
             for ($i = 1; $i <= $clones; $i++) {
                 $cloned[] = $xmlBlock;
             }
-
             if ($replace) {
                 $this->tempDocumentMainPart = str_replace(
                     $matches[2] . $matches[3] . $matches[4],

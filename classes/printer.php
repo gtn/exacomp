@@ -400,9 +400,9 @@ class printer {
 		exit;
 	}
 
-	static function block_exacomp_generate_report_annex_docx($dataRow) {
+
+    static function block_exacomp_generate_report_annex_docx($dataRow) {
         global $CFG;
-//echo '<pre>'; print_r($dataRow); echo '</pre>';exit;
         $templateFile = __DIR__.'/../reports/tmpl_annex.docx';
 
         if (!file_exists($templateFile)) {
@@ -413,7 +413,7 @@ class printer {
         $templateProcessor = new \block_exacomp\TemplateProcessor($templateFile);
 
         $templateProcessor->duplicateDocumentBody(count($dataRow));
-
+        $toDeleteBlocks = 0;
         foreach ($dataRow as $studentId => $reportData) {
             $templateProcessor->setValue('course', $reportData['courseData']->fullname, 1);
             $templateProcessor->setValue('student_name', fullname($reportData['studentData']), 1);
@@ -421,46 +421,70 @@ class printer {
             $subjectsCount = count($reportData['subjects']);
             $templateProcessor->cloneBlock('subjectif', $subjectsCount);
             // subject table data
-            //$subjectInd = 1;
-            //$subjectValues = array();
-            foreach ($reportData['subjects'] as $subject) {
-                //echo '<pre>';print_r($subject); echo '</pre>';exit;
-                //$subjectValues[] = array(
-                //        'subject' => $subject->title
-                //);
+            $subjectKeys = array_keys($reportData['subjects']);
+            $lastSubjectKey = array_pop($subjectKeys);
+            $subjectsCount = 0;
+            foreach ($reportData['subjects'] as $subjKey => $subject) {
                 $templateProcessor->setValue('subject', $subject->title, 1);
                 // topics
-                //$templateProcessor->cloneRow('topic', count($subject->topics));
+                $subjectEntries = 0;
                 foreach($subject->topics as $topic) {
                     $templateProcessor->cloneRowToEnd("topic");
                     $templateProcessor->cloneRowToEnd("descriptor");
-                    $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
-                    $templateProcessor->setValue("n", $topic->evaluation->get_evalniveau_title(), 1);
-                    $templateProcessor->setValue("nu", $topic->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
-                    $templateProcessor->setValue("ne", $topic->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
-                    $templateProcessor->setValue("tw", $topic->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
-                    $templateProcessor->setValue("ue", $topic->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
-                    $templateProcessor->setValue("ve", $topic->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                    if ($topic->evaluation->teacherevaluation > 0) {
+                        $subjectEntries++;
+                        $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
+                        $templateProcessor->setValue("n", $topic->evaluation->get_evalniveau_title(), 1);
+                        $templateProcessor->setValue("nu", $topic->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ne", $topic->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
+                        $templateProcessor->setValue("tw", $topic->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ue", $topic->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ve", $topic->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                    } else {
+                        $templateProcessor->deleteRow("topic");
+                    }
                     // descriptors
                     foreach ($topic->descriptors as $descriptor) {
                         $templateProcessor->duplicateRow("descriptor");
-                        $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
-                        $templateProcessor->setValue("n", $descriptor->evaluation->get_evalniveau_title(), 1);
-                        $templateProcessor->setValue("nu", $descriptor->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ne", $descriptor->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
-                        $templateProcessor->setValue("tw", $descriptor->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ue", $descriptor->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ve", $descriptor->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                        if ($descriptor->evaluation->teacherevaluation > 0) {
+                            $subjectEntries++;
+                            $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
+                            $templateProcessor->setValue("n", $descriptor->evaluation->get_evalniveau_title(), 1);
+                            $templateProcessor->setValue("nu", $descriptor->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
+                            $templateProcessor->setValue("ne", $descriptor->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
+                            $templateProcessor->setValue("tw", $descriptor->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
+                            $templateProcessor->setValue("ue", $descriptor->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
+                            $templateProcessor->setValue("ve", $descriptor->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                        } else {
+                            //$toDeleteDesc++;
+                            $templateProcessor->deleteRow("descriptor");
+                        }
                     }
-
                     $templateProcessor->deleteRow("descriptor");
 
                 }
                 $templateProcessor->deleteRow("topic");
                 $templateProcessor->deleteRow("descriptor");
-                //$subjectInd++;
+
+                if ($subjectEntries > 0) {
+                    $templateProcessor->setValue("message", '', 1);
+                    $templateProcessor->cloneBlockOnlyFirst('subjectclean');
+                    $subjectsCount++;
+                } else {
+                    $templateProcessor->setValue("message", '', 1);
+                    $templateProcessor->replaceMarkerName('subjectclean', 'todelete', true);
+                    $templateProcessor->replaceMarkerName('/subjectclean', '/todelete', true);
+                    $toDeleteBlocks++;
+                    if ($subjectsCount == 0 && $subjKey == $lastSubjectKey) { // Any graded subjects for student
+                        // empty student
+                    }
+                }
             }
         }
+        for ($i=0; $i<=$toDeleteBlocks; $i++) {
+            $templateProcessor->replaceBlock('todelete', '');
+        }
+        //echo $templateProcessor->getDocumentMainPart(); exit;
         // save as a random file in temp file
         $temp_file = tempnam($CFG->tempdir, 'exacomp');
         $templateProcessor->saveAs($temp_file);
@@ -791,5 +815,49 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         $body->set($result);
         $this->tempDocumentMainPart = $body->join();
     }
+
+    public function cloneBlockOnlyFirst($blockname)
+    {
+        $startPos = strpos($this->tempDocumentMainPart, '${'.$blockname.'}');
+        $endPos = strpos($this->tempDocumentMainPart, '${/'.$blockname.'}', $startPos) + 4 + strlen($blockname);
+        $startPosContent = strpos($this->tempDocumentMainPart, '${'.$blockname.'}') + 3 + strlen($blockname);
+        $endPosContent = strpos($this->tempDocumentMainPart, '${/'.$blockname.'}', $startPosContent);
+        $content = substr($this->tempDocumentMainPart, $startPosContent, $endPosContent - $startPosContent);
+        $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, $content, $startPos, $endPos - $startPos);
+    }
+
+
+    function replaceBlockOnlyFirst($blockname, $replacement) {
+        preg_match(
+                '/(<\?xml.*)(<w:p.*>\${' . $blockname . '}<\/w:.*?p>)(.*)(<w:p.*\${\/' . $blockname . '}<\/w:.*?p>)/is',
+                $this->tempDocumentMainPart,
+                $matches
+        );
+
+        if (isset($matches[3])) {
+            //$pos1 = strpos($this->tempDocumentMainPart, '${'.$blockname);
+            //$pos2 = strpos($this->tempDocumentMainPart, '${/'.$blockname);
+            $pos1 = strpos($this->tempDocumentMainPart, $matches[2].$matches[3].$matches[4]);
+            $pos2 = strpos($this->tempDocumentMainPart, $matches[4], $pos1);
+            if ($pos1 !== false && $pos2 !== false) {
+                $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, $replacement, $pos1, strlen($matches[2]) + strlen($matches[3]) + strlen($matches[4]));
+                //$this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, $replacement, $pos1, $pos2 - $pos1 + strlen($blockname) + 4);
+            }
+        }
+    }
+
+    function replaceMarkerName($blockname, $replacement, $onlyFirst = false) {
+        $pos = strpos($this->tempDocumentMainPart, '${'.$blockname.'}');
+        if ($pos !== false) {
+            if ($onlyFirst) {
+                $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, '${'.$replacement.'}', $pos, strlen($blockname) + 3);
+                //$count = 1;
+                //$this->tempDocumentMainPart = str_replace('${'.$blockname.'}', '${'.$replacement.'}', $this->tempDocumentMainPart, $count);
+            } else {
+                $this->tempDocumentMainPart = str_replace('${'.$blockname.'}', '${'.$replacement.'}', $this->tempDocumentMainPart);
+            }
+        }
+    }
+
 }
 

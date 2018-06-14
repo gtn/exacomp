@@ -7987,59 +7987,60 @@ function block_exacomp_group_reports_annex_result($filter) {
 
                 //item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
                 $item_type = $item::TYPE;
-
-                switch ($item_type) {
-                    case BLOCK_EXACOMP_TYPE_SUBJECT:
-                        $has_subject_results = false;
-                        // table wrapping with Subject title
-                        if (!$firstSubject) {
-                            echo "</tbody>";
-                            echo '</table>';
-                        } else {
-                            $firstSubject = false;
-                        }
-                        echo '<br><h3>'.$item->title.'</h3>';
-                        echo '<table class="report_table" border="1" width="100%" style="margin-bottom: 25px;">';
-                        echo '<thead>';
-                        echo '<tr>';
-                        echo '<th class="heading">'.block_exacomp_get_string('descriptor').'</th>';
-                        echo '<th class="heading">'.block_exacomp_get_string('taxonomy').'</th>';
-                        for ($i = 0; $i <= $colCount; $i++) {
-                            echo '<th class="heading">'.$i.'</th>';
-                        }
-                        echo '</tr></thead>';
-                        echo "<tbody>";
-                        break;
-                    case BLOCK_EXACOMP_TYPE_TOPIC:
-                        echo '<tr class="exarep_topic_row">';
-                        break;
-                    case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
-                        if ($level <= 2) {
-                            echo '<tr class="exarep_descriptor_parent_row">';
-                        } else if ($level > 2) {
-                            echo '<tr class="exarep_descriptor_child_row">';
-                        }
-                        break;
-                    case BLOCK_EXACOMP_TYPE_EXAMPLE:
-                        echo '<tr class="exarep_example_row">';
-                        break;
-                }
-
-                if ($item_type != BLOCK_EXACOMP_TYPE_SUBJECT) {
-                    $has_subject_results = true;
-                    echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.
-                            $item->get_numbering().' '.$item->title.'</td>';
-                    //echo '<pre>'.print_r($item,true).'</pre>';
-                    echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
-                    $selectedEval = $eval->teacherevaluation;
-                    for ($i = 0; $i <= $colCount; $i++) {
-                        echo '<td style="padding: 0 10px;">';
-                        if ($selectedEval == $i) {
-                            echo 'X';
-                        }
-                        echo '</td>';
+                $selectedEval = $eval->teacherevaluation;
+                if ($selectedEval > 0 || $item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+                    switch ($item_type) {
+                        case BLOCK_EXACOMP_TYPE_SUBJECT:
+                            $has_subject_results = false;
+                            // table wrapping with Subject title
+                            if (!$firstSubject) {
+                                echo "</tbody>";
+                                echo '</table>';
+                            } else {
+                                $firstSubject = false;
+                            }
+                            echo '<br><h3>'.$item->title.'</h3>';
+                            echo '<table class="report_table" border="1" width="100%" style="margin-bottom: 25px;">';
+                            echo '<thead>';
+                            echo '<tr>';
+                            echo '<th class="heading">'.block_exacomp_get_string('descriptor').'</th>';
+                            echo '<th class="heading">'.block_exacomp_get_string('taxonomy').'</th>';
+                            for ($i = 0; $i <= $colCount; $i++) {
+                                echo '<th class="heading">'.$i.'</th>';
+                            }
+                            echo '</tr></thead>';
+                            echo "<tbody>";
+                            break;
+                        case BLOCK_EXACOMP_TYPE_TOPIC:
+                            echo '<tr class="exarep_topic_row">';
+                            break;
+                        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+                            if ($level <= 2) {
+                                echo '<tr class="exarep_descriptor_parent_row">';
+                            } else if ($level > 2) {
+                                echo '<tr class="exarep_descriptor_child_row">';
+                            }
+                            break;
+                        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+                            echo '<tr class="exarep_example_row">';
+                            break;
                     }
-                    echo '</tr>';
+
+                    if ($item_type != BLOCK_EXACOMP_TYPE_SUBJECT) {
+                        $has_subject_results = true;
+                        echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.
+                                $item->get_numbering().' '.$item->title.'</td>';
+                        //echo '<pre>'.print_r($item,true).'</pre>';
+                        echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
+                        for ($i = 0; $i <= $colCount; $i++) {
+                            echo '<td style="padding: 0 10px;">';
+                            if ($selectedEval == $i) {
+                                echo 'X';
+                            }
+                            echo '</td>';
+                        }
+                        echo '</tr>';
+                    }
                 }
                 $walk_subs($level + 1);
             });
