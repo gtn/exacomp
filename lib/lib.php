@@ -6368,6 +6368,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *       span = 1 or 0 inidication if niveau is across (übergreifend)
  */
 function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid) {
+    
 	global $DB;
 	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, -1, 0, false, block_exacomp_is_teacher(), $studentid);
 
@@ -6378,7 +6379,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	if (!$subject) {
 		return;
 	}
-
+	
 	$table_content = new stdClass();
 	$table_content->content = array();
 
@@ -6388,7 +6389,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	foreach ($subject->topics as $topic) {
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
-
+		
 		// gesamt für topic
 		$data->topic_evalniveauid =
 			(($use_evalniveau) ?
@@ -6398,6 +6399,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
 		$data->topic_evalniveau = @$evaluationniveau_items[$data->topic_evalniveauid] ?: '';
 
+		//auswirkung auf total im kompetenzprofil
 		$data->topic_eval =
 			((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) ?
 				((isset($user->topics->teacher_additional_grading[$topic->id]))
@@ -6476,7 +6478,8 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 
 	foreach ($topic->descriptors as $descriptor) {
 		$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-
+		//$grading =    block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid))
+        //var_dump($evaluation);
 		$niveau = \block_exacomp\niveau::get($descriptor->niveauid);
 		if (!$niveau) {
 			continue;
@@ -6489,14 +6492,19 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->niveaus[$niveau->title]->evalniveauid = $evaluation->evalniveauid ?: -1;
 		} else {
 			$data->niveaus[$niveau->title]->evalniveau = '';
-			$data->niveaus[$niveau->title]->evalniveauid = -1;
+			$data->niveaus[$niveau->title]->evalniveauid = -1;  //ändert für jeden LFS was
 		}
 
+		//var_dump($evaluation->value);
 		// copy of block_exacomp_get_descriptor_statistic_for_topic()
+		//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
+		
 		$data->niveaus[$niveau->title]->eval =
 			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
 				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
-				: (($evaluation && $evaluation->value) ? $scheme_items[$evaluation->value] : -1);
+				: (($evaluation && $evaluation->value) ? $evaluation->value : -1);
+		
+		//$data->niveaus[$niveau->title]->eval = $evaluation->value;
 
 		$data->niveaus[$niveau->title]->show = true;
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
@@ -6571,6 +6579,11 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$current_idx = 1;
 		foreach ($rowcontent->niveaus as $niveau => $element) {
 			$content_row->columns[$current_idx] = new stdClass();
+			//var_dump(block_exacomp_get_descriptor_numbering($element));
+			//var_dump($rowcontent);
+			//$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $element->descriptorid);
+			//$content_row->columns[$current_idx]->evaluation = ($grading->value !== null) ? $grading->value : -1;
+			//var_dump($element);
 			$content_row->columns[$current_idx]->evaluation = (empty($element->eval) || strlen(trim($element->eval)) == 0) ? -1 : $element->eval;
 			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
 			$content_row->columns[$current_idx]->show = $element->show;

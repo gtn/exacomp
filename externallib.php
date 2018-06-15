@@ -5310,6 +5310,8 @@ class block_exacomp_external extends external_api {
 		$descriptor_return->reviewername = null;
 		if (!$forall) {
 			if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
+			    //var_dump($grading);
+			    //throw new invalid_parameter_exception ('STOPPPP');
 				$descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
 				$descriptor_return->additionalinfo = $grading->additionalinfo;
 				$descriptor_return->evalniveauid = $grading->evalniveauid;
