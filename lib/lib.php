@@ -7950,6 +7950,8 @@ function block_exacomp_group_reports_annex_result($filter) {
             $item->evaluation = $eval;
         });
 
+        //echo '<pre>';print_r($subjects); echo '<pre>';
+
         // count of columns
         $colCount = block_exacomp_get_grading_scheme($courseid);
 
@@ -7987,7 +7989,20 @@ function block_exacomp_group_reports_annex_result($filter) {
 
                 //item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
                 $item_type = $item::TYPE;
-                $selectedEval = $eval->teacherevaluation;
+                if (block_exacomp_additional_grading() && (BLOCK_EXACOMP_TYPE_TOPIC || BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+                    // additional grading is used
+                    // formula for additionalinfo (grading by value)
+                    // y = 0.4x + 0.6
+                    // y = grading by 1-3 (as in the report columns)
+                    // x - grading from input field from competences overview: 1-6
+                    if ($eval->additionalinfo >= 1) {
+                        $selectedEval = round(0.4 * $eval->additionalinfo + 0.6);
+                    } else {
+                        $selectedEval = 0;
+                    }
+                } else {
+                    $selectedEval = $eval->teacherevaluation;
+                }
                 if ($selectedEval > 0 || $item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
                     switch ($item_type) {
                         case BLOCK_EXACOMP_TYPE_SUBJECT:
@@ -8084,4 +8099,35 @@ function block_exacomp_update_evaluation_niveau_tables() {
 		// to insert record with a specific id, use insert_record_raw and set $customsequence = true
 		g::$DB->insert_record_raw(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, $entry, false, false, true);
 	}
+}
+
+function block_exacomp_get_custom_profile_field_value($userid, $fieldname) {
+    return g::$DB->get_field_sql("SELECT uid.data
+			FROM {user_info_data} uid
+			JOIN {user_info_field} uif ON uif.id=uid.fieldid
+			WHERE uif.shortname=? AND uid.userid=?
+			", [$fieldname, $userid]);
+}
+
+
+function block_exacomp_get_date_of_birth_as_timestamp($userid) {
+    $str = trim(block_exacomp_get_custom_profile_field_value($userid, 'dateofbirth'));
+    if (!$str) {
+        return null;
+    }
+    $parts = preg_split('![^0-9]+!', $str);
+    if (count($parts) != 3) {
+        // wrong format
+        return null;
+    }
+
+    return mktime(0, 0, 0, $parts[1], $parts[0], $parts[2]);
+}
+
+function block_exacomp_get_date_of_birth($userid) {
+    $timestamp = block_exacomp_get_date_of_birth_as_timestamp($userid);
+    if (!$timestamp) {
+        return null;
+    }
+    return date('d.m.Y', $timestamp);
 }

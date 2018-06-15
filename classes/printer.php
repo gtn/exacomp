@@ -417,6 +417,10 @@ class printer {
         foreach ($dataRow as $studentId => $reportData) {
             $templateProcessor->setValue('course', $reportData['courseData']->fullname, 1);
             $templateProcessor->setValue('student_name', fullname($reportData['studentData']), 1);
+            $templateProcessor->setValue('name', fullname($reportData['studentData']), 1);
+            $dateOfB = block_exacomp_get_date_of_birth($studentId);
+            $templateProcessor->setValue('geburtsdatum', $dateOfB, 1);
+            $templateProcessor->setValue('courseid', $reportData['courseData']->id, 1);
             // subjects
             $subjectsCount = count($reportData['subjects']);
             $templateProcessor->cloneBlock('subjectif', $subjectsCount);
