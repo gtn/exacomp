@@ -4944,9 +4944,17 @@ class block_exacomp_external extends external_api {
 			$item->url = $url;
 			$item->timemodified = time();
 
+// 			$fiiile = block_exaport_get_item_comment_file(468);
+// 			var_dump($fiiile);
 			if ($type == 'file') {
- 			    $context = context_user::instance($USER->id);
- 			    block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
+ 			    $context = context_user::instance($USER->id); //so the teacher does not overwrite the student and vice verca
+ 			    //block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
+ 			    if($role == 'teacher'){
+ 			        block_exaport_comment_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
+ 			    } else{
+ 			        block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
+ 			    }
+ 			    
 			}
 			$DB->update_record('block_exaportitem', $item);
 		}
@@ -4960,9 +4968,16 @@ class block_exacomp_external extends external_api {
 			try {
 				$old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
 				if ($old) {
-					$file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-						'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-						'timecreated' => time(), 'timemodified' => time());
+				    if($role == "teacher"){
+				        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
+				            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
+				            'timecreated' => time(), 'timemodified' => time());
+				    } else {
+				        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
+				            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
+				            'timecreated' => time(), 'timemodified' => time());
+				    }
+					
 					$fs->create_file_from_storedfile($file_record, $old->get_id());					
 					$old->delete();
 				}
@@ -5634,7 +5649,7 @@ class block_exacomp_external extends external_api {
 			$data['url'] = $itemInformation->url;
 			$data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
 			$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
-			
+			//$data['teacherfile'] = "asdf";
 
 			require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 			if ($file = block_exaport_get_item_file($itemInformation)) {
@@ -5651,7 +5666,17 @@ class block_exacomp_external extends external_api {
 				$data['file'] = $fileurl;
 				$data['mimetype'] = $file->get_mimetype();
 				$data['filename'] = $file->get_filename();
+				
+				
 			}
+			
+// 			//$context = context_user::instance($USER->id);
+// 			//throw new invalid_parameter_exception ('BIS HIER');
+// 			if ($teacherfile = block_exaport_get_item_file($itemInformation,25)) {
+// 			   // throw new invalid_parameter_exception ('BIS HIER');
+// 			    $teacherfileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
+// 			    $data['teacherfile'] = $teacherfileurl;
+// 			}
 
 			$data['studentcomment'] = '';
 			$data['teachercomment'] = '';
@@ -5663,13 +5688,15 @@ class block_exacomp_external extends external_api {
 					$data['studentcomment'] = $itemcomment->entry;
 				} elseif (true) { // TODO: check if is teacher?
 					$data['teachercomment'] = $itemcomment->entry;
-					if ($itemcomment->file) {
-						$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-							'userid' => $userid,
-							'itemid' => $itemInformation->id,
-							'commentid' => $itemcomment->id,
-							'wstoken' => static::wstoken(),
-						]);
+					if (true) { // TODO: $itemcomment->file check if teacher has a file?
+// 						$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+// 							'userid' => $userid,
+// 							'itemid' => $itemInformation->id,
+// 							'commentid' => $itemcomment->id,
+// 							'wstoken' => static::wstoken(),
+// 						]);
+						//throw new invalid_parameter_exception ('BIS HIER');
+					    $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$itemcomment->userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
 						$data['teacherfile'] = $fileurl;
 					}
 				}
@@ -5701,6 +5728,7 @@ class block_exacomp_external extends external_api {
 		} else {
 			$data['resubmission'] = false;
 		}
+		//$data['teacherfile'] = "asdf";
 
 		return $data;
 	}
