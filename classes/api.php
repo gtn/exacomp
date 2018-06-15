@@ -26,6 +26,13 @@ require_once __DIR__.'/../inc.php';
 use block_exacomp\globals as g;
 
 class api {
+    
+    const BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE = 0;
+    const BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE = 1;
+    const BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE = 2;
+    const BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS = 3;
+    const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
+    
 	static function active() {
 		// check if block is active
 		if (!g::$DB->get_record('block', array('name' => 'exacomp', 'visible' => 1))) {
@@ -144,6 +151,8 @@ class api {
 	}
 
 	static function get_comp_tree_for_exastud($studentid) {
+	    
+	    
 		$subjects = db_layer_all_user_courses::create($studentid)->get_subjects();
 
 		$niveau_titles = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, [], '', 'id,title');
@@ -160,23 +169,117 @@ class api {
 		$niveaus_competencies = [];
 		$teacher_additional_grading_topics = [];
 		$teacher_additional_grading_competencies = [];
+		
+		
+		$topic_scheme = block_exacomp_get_assessment_topic_scheme();
+		$dicriptor_scheme = block_exacomp_get_assessment_comp_scheme();
+		$short = false;
+		if ($short) {
+		    $options =  array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options_short()));
+		}else {
+		    $options =  array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
+		}
 
 		foreach ($records as $record) {
 			if ($record->comptype == BLOCK_EXACOMP_TYPE_TOPIC) {
-				if ($record->evalniveauid !== null && !isset($niveaus_topics[$record->compid])) {
-					$niveaus_topics[$record->compid] = $record->evalniveauid;
-				}
-				if ($record->additionalinfo !== null && !isset($teacher_additional_grading_topics[$record->compid])) {
-					$teacher_additional_grading_topics[$record->compid] = $record->additionalinfo;
-				}
+			    if ($record->evalniveauid !== null && !isset($niveaus_topics[$record->compid])) {
+			        $niveaus_topics[$record->compid] = $record->evalniveauid;
+			    }
+			    switch($topic_scheme){
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+			            if ($record->additionalinfo !== null && !isset($teacher_additional_grading_topics[$record->compid])) {
+			                if(get_config('exacomp', 'use_grade_verbose_competenceprofile')){
+			                    if($record->additionalinfo < 1.5){
+			                        $teacher_additional_grading_topics[$record->compid] = 'Sehr Gut';
+			                    }else if($record->additionalinfo < 2.5){
+			                        $teacher_additional_grading_topics[$record->compid] = 'Gut';
+			                    }else if($record->additionalinfo < 3.5){
+			                        $teacher_additional_grading_topics[$record->compid] = 'Berfidigend';
+			                    }else if($record->additionalinfo < 4.5){
+			                            $teacher_additional_grading_topics[$record->compid] = 'Gen�gend';
+			                    }else if($record->additionalinfo < 5.5){
+			                        $teacher_additional_grading_topics[$record->compid] = 'Nicht Genügend';
+			                    }else {
+			                        $teacher_additional_grading_topics[$record->compid] = 'Ungenügend';
+			                    }
+			                }else {
+			                    $teacher_additional_grading_topics[$record->compid] = $record->additionalinfo;
+			                }
+			                
+			            }
+			            continue;
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+			            if ($record->value !== null && !isset($teacher_additional_grading_topics[$record->compid])) {
+			                $teacher_additional_grading_topics[$record->compid] = $options[$record->value];
+			            }
+			            continue;
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+			            if ($record->value !== null && !isset($teacher_additional_grading_topics[$record->compid])) {
+			                $teacher_additional_grading_topics[$record->compid] = $record->value;
+			            }
+			            continue;
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+			            if (!isset($teacher_additional_grading_topics[$record->compid])) {
+			                if($record->value == 0 || $record->value == null){
+			                    $teacher_additional_grading_topics[$record->compid] = 'Nein';
+			                }
+			                if($record->value >= 1){
+			                    $teacher_additional_grading_topics[$record->compid] = 'Ja';
+			                }
+			            }
+			            continue;
+			        
+			            
+			    }
 			} else {
-				// is descriptor
-				if ($record->evalniveauid !== null && !isset($niveaus_competencies[$record->compid])) {
-					$niveaus_competencies[$record->compid] = $record->evalniveauid;
-				}
-				if ($record->additionalinfo !== null && !isset($teacher_additional_grading_competencies[$record->compid])) {
-					$teacher_additional_grading_competencies[$record->compid] = $record->additionalinfo;
-				}
+			    if ($record->evalniveauid !== null && !isset($niveaus_competencies[$record->compid])) {
+			        $niveaus_competencies[$record->compid] = $record->evalniveauid;
+			    }
+			    switch($dicriptor_scheme){
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+			            if ($record->additionalinfo !== null && !isset($teacher_additional_grading_competencies[$record->compid])) {
+			                    if(get_config('exacomp', 'use_grade_verbose_competenceprofile')){
+			                        if($record->additionalinfo < 1.5){
+			                            $teacher_additional_grading_competencies[$record->compid] = 'Sehr Gut';
+			                        }else if($record->additionalinfo < 2.5){
+			                            $teacher_additional_grading_competencies[$record->compid] = 'Gut';
+			                        }else if($record->additionalinfo < 3.5){
+			                            $teacher_additional_grading_competencies[$record->compid] = 'Berfidigend';
+			                        }else if($record->additionalinfo < 4.5){
+			                            $teacher_additional_grading_competencies[$record->compid] = 'Gen�gend';
+			                        }else if($record->additionalinfo < 5.5){
+			                            $teacher_additional_grading_competencies[$record->compid] = 'Nicht Genügend';
+			                        }else {
+			                            $teacher_additional_grading_competencies[$record->compid] = 'Ungenügend';
+			                        }
+			                    }else {
+			                        $teacher_additional_grading_competencies[$record->compid] = $record->additionalinfo;
+			                    }
+			            }
+			            continue;
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+			            if ($record->value !== null && !isset($teacher_additional_grading_competencies[$record->compid])) {
+			                $teacher_additional_grading_competencies[$record->compid] = $options[$record->value];
+			            }
+			            continue;
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+			            if ($record->value !== null && !isset($teacher_additional_grading_competencies[$record->compid])) {
+			                $teacher_additional_grading_competencies[$record->compid] = $record->value;
+			            }
+			            continue;
+			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+			            if (!isset($teacher_additional_grading_competencies[$record->compid])) {
+			                if($record->value == 0 || $record->value == null){
+			                    $teacher_additional_grading_competencies[$record->compid] = 'Nein';
+			                }
+			                if($record->value >= 1){
+			                    $teacher_additional_grading_competencies[$record->compid] = 'Ja';
+			                }
+			            }
+			            continue;
+			        
+			            
+			    }
 			}
 		}
 
@@ -197,7 +300,8 @@ class api {
 					$descriptor->teacher_eval_niveau_text = @$niveau_titles[$niveaus_competencies[$descriptor->id]];
 					if (isset($teacher_additional_grading_competencies[$descriptor->id])) {
 						// \block_exacomp\global_config::get_teacher_eval_title_by_id
-						$descriptor->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_competencies[$descriptor->id]);
+						//$descriptor->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_competencies[$descriptor->id]);
+					    $descriptor->teacher_eval_additional_grading = $teacher_additional_grading_competencies[$descriptor->id];
 					} else {
 						$descriptor->teacher_eval_additional_grading = null;
 					}
@@ -210,7 +314,8 @@ class api {
 				$topic->teacher_eval_niveau_text = @$niveau_titles[$niveaus_topics[$topic->id]];
 				if (isset($teacher_additional_grading_topics[$topic->id])) {
 					// \block_exacomp\global_config::get_teacher_eval_title_by_id
-					$topic->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_topics[$topic->id]);
+					//$topic->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_topics[$topic->id]);
+				    $topic->teacher_eval_additional_grading = $teacher_additional_grading_topics[$topic->id];
 				} else {
 					$topic->teacher_eval_additional_grading = null;
 				}
