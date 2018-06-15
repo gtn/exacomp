@@ -1214,8 +1214,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 						$niveau_cell->text = (block_exacomp_use_eval_niveau()) ? $this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student,
 						    $disableCell, ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null) : '';
-
-					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+                        //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
 					    //the warning contains the name of the reviewer
 					    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
 					    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
@@ -2353,7 +2352,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		if (block_exacomp_use_eval_niveau()) {
 			$options = \block_exacomp\global_config::get_evalniveaus(true);
-
 			$attributes = array();
 			if ($disabled) {
 				$attributes["disabled"] = "disabled";

@@ -8069,7 +8069,7 @@ function block_exacomp_update_evaluation_niveau_tables() {
 	} elseif ($evaluation_niveau == 2) {
 		$titles = array(1 => 'A', 2 => 'B', 3 => 'C');
 	} elseif ($evaluation_niveau == 3) {
-		$titles = array(1 => '1', 2 => '2', 3 => '3');
+		$titles = array(1 => '*', 2 => '**', 3 => '***');
 	} else {
 		return;
 	}
