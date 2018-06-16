@@ -420,7 +420,8 @@ class printer {
             $templateProcessor->setValue('name', fullname($reportData['studentData']), 1);
             $dateOfB = block_exacomp_get_date_of_birth($studentId);
             $templateProcessor->setValue('geburtsdatum', $dateOfB, 1);
-            $templateProcessor->setValue('courseid', $reportData['courseData']->id, 1);
+            //$templateProcessor->setValue('courseid', $reportData['courseData']->id, 1);
+            $templateProcessor->setValue('courseid', $reportData['courseData']->idnumber, 1);
             // subjects
             $subjectsCount = count($reportData['subjects']);
             $templateProcessor->cloneBlock('subjectif', $subjectsCount);
