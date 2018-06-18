@@ -401,9 +401,20 @@ class printer {
 	}
 
 
-    static function block_exacomp_generate_report_annex_docx($dataRow) {
+    static function block_exacomp_generate_report_annex_docx($courseid, $dataRow) {
         global $CFG;
+        $templateContents = '';
         $templateFile = __DIR__.'/../reports/tmpl_annex.docx';
+        $resultFilename = 'gruppenbericht.docx';
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($courseid, 'block_exacomp', 'report_annex', 0);
+        foreach ($files as $f) {
+            if (!$f->is_directory()) {
+                $templateFile = $f->copy_content_to_temp();
+                $resultFilename = $f->get_filename();
+                //$templateContents = $f->get_content();
+            }
+        }
 
         if (!file_exists($templateFile)) {
             throw new \Exception("template 'tmpl_annex' not found");
@@ -493,9 +504,8 @@ class printer {
         // save as a random file in temp file
         $temp_file = tempnam($CFG->tempdir, 'exacomp');
         $templateProcessor->saveAs($temp_file);
-        $filename = 'gruppenbericht.docx';
         require_once $CFG->dirroot.'/lib/filelib.php';
-        send_temp_file($temp_file, $filename);
+        send_temp_file($temp_file, $resultFilename);
 
     }
 

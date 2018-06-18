@@ -33,6 +33,9 @@ $page_identifier = 'tab_teacher_report_'.$reportType;
 $action = optional_param('action', '', PARAM_TEXT);
 $isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
 
+$isTemplateDeleting = (bool)optional_param('deleteTemplate', false, PARAM_RAW);
+block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
+
 $filter = block_exacomp_group_reports_get_filter($reportType);
 
 // before all output
@@ -145,7 +148,7 @@ $extra = '<input type="hidden" name="action" value="search"/>';
 	</div>
 <?php
 
-if ($action == 'search') {
+if ($action == 'search' && !$isTemplateDeleting) {
     echo html_writer::tag('h2', block_exacomp_get_string('result'));
     switch ($reportType) {
         case 'annex':

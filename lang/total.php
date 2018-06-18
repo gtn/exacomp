@@ -134,7 +134,15 @@ return [
 	],
 	'create_docx' => [
 		'Zeugnis im docx-Format generieren',
-		'generate .docx',
+		'generate docx',
+	],
+	'tab_teacher_report_annex_template' => [
+		'template docx',
+		'template docx',
+	],
+	'tab_teacher_report_annex_delete_template' => [
+		'lÃ¶schen',
+		'delete',
 	],
 
 
@@ -941,7 +949,7 @@ return [
 		'Evaluation exists or learning material is used',
 	],
     'save_changes_competence_evaluation' => [
-        'Änderungen wurden gespeichert!',
+        'ï¿½nderungen wurden gespeichert!',
         'Changes were saved',
     ],
 	// === Example Submission ===

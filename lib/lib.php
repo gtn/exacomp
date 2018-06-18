@@ -8069,10 +8069,30 @@ function block_exacomp_group_reports_annex_result($filter) {
     }
 
     if ($isDocx) {
-        \block_exacomp\printer::block_exacomp_generate_report_annex_docx($dataRow);
+        \block_exacomp\printer::block_exacomp_generate_report_annex_docx($courseid, $dataRow);
         exit;
     }
 
+}
+
+function block_exacomp_save_report_settings($courseid, $delete = false) {
+    $fs = get_file_storage();
+    if ($delete) {
+        $fs->delete_area_files($courseid, 'block_exacomp', 'report_annex', 0);
+    }
+    if (isset($_FILES["templateDocx"]) && trim($_FILES["templateDocx"]['name']) != '') {
+        // Prepare file record object
+        $fileinfo = array(
+                'contextid' => $courseid,
+                'component' => 'block_exacomp',
+                'filearea' => 'report_annex',
+                'itemid' => 0,
+                'filepath' => '/',
+                'filename' => $_FILES["templateDocx"]['name']);
+
+        $fs->delete_area_files($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'], $fileinfo['itemid']);
+        $fs->create_file_from_pathname($fileinfo, $_FILES["templateDocx"]['tmp_name']);
+    }
 }
 
 
