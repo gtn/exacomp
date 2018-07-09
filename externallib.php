@@ -2746,6 +2746,7 @@ class block_exacomp_external extends external_api {
 			'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
+		   // 'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor'),
 		)));
 	}
 
@@ -2854,6 +2855,7 @@ class block_exacomp_external extends external_api {
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
+		    'gradingisold' => new external_value (PARAM_BOOL, 'true when there are newer gradings in the childcompetences')
 		)));
 	}
 
@@ -6038,6 +6040,7 @@ class block_exacomp_external extends external_api {
 					'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
 					'span' => new external_value (PARAM_INT, 'colspan'),
 					'timestamp' => new external_value (PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
+				    'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor',false),
 				))),
 			))),
 		));
@@ -7149,6 +7152,58 @@ class block_exacomp_external extends external_api {
 		));
 	}
 	
+	
+// 	public static function is_descriptor_grading_old() {
+// 	    return new external_function_parameters (array(
+// 	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+// 	        'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+// 	        'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+// 	        'value' => new external_value (PARAM_INT, 'value 0 or 1'),
+// 	    ));
+// 	}
+	
+// 	/**
+// 	 * set descriptor crosssubject association
+// 	 * @ws-type-write
+// 	 * @param $courseid
+// 	 * @param $crosssubjid
+// 	 * @param $descriptorid
+// 	 * @param $value
+// 	 * @return array
+// 	 */
+// 	public static function is_descriptor_grading_old($courseid, $crosssubjid, $descriptorid, $value) {
+// 	    global $USER, $DB;
+// 	    static::validate_parameters(static::dakora_set_cross_subject_descriptor_parameters(), array(
+// 	        'courseid' => $courseid,
+// 	        'crosssubjid' => $crosssubjid,
+// 	        'descriptorid' => $descriptorid,
+// 	        'value' => $value,
+// 	    ));
+	    
+// 	    static::require_can_access_course($courseid);
+// 	    block_exacomp_require_teacher($courseid);
+	    
+// 	    if ($value == 1) {
+// 	        block_exacomp_set_cross_subject_descriptor($crosssubjid, $descriptorid);
+	        
+// 	        return array('success' => true);
+// 	    }
+	    
+// 	    if ($value == 0) {
+// 	        block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descriptorid);
+	        
+// 	        return array('success' => true);
+// 	    }
+	    
+// 	    return array('success' => false);
+// 	}
+	
+// 	public static function is_descriptor_grading_old() {
+// 	    return new external_single_structure (array(
+// 	        'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+// 	    ));
+// 	}
+	
 
 	/**
 	 * helper function to use same code for 2 ws
@@ -7301,6 +7356,7 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->niveautitle = "";
 							$descriptor_return->niveausort = "";
 							$descriptor_return->niveauid = 0;
+							
 							if ($descriptor->niveauid) {
 								$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
 								$descriptor_return->niveautitle = $niveau->title;
@@ -7311,6 +7367,9 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
 							//if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
 							$descriptors_return[] = $descriptor_return;
+							if(!$forall){
+							    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+							}
 						}
 					}
 				}

@@ -397,6 +397,7 @@ $string['competencegrid_nodata'] = 'Sollte der Kompetenzraster leer sein, wurden
 $string['statistic_type_descriptor'] = 'Wechsel zur Statistik der Teilkompetenzen';
 $string['statistic_type_example'] = 'Wechsel zur Statistik der Aufgaben';
 $string['reports'] = 'Berichte';
+$string['newer_grading_tooltip'] = 'Neue Beurteilung einer Teilkompetenz';
 
 
 // === Competence Profile ===

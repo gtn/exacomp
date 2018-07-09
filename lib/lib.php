@@ -6494,6 +6494,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->niveaus[$niveau->title]->evalniveau = '';
 			$data->niveaus[$niveau->title]->evalniveauid = -1;  //ändert für jeden LFS was
 		}
+		
 
 		//var_dump($evaluation->value);
 		// copy of block_exacomp_get_descriptor_statistic_for_topic()
@@ -6509,6 +6510,10 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		$data->niveaus[$niveau->title]->show = true;
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 		$data->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp)) ? $evaluation->timestamp : 0);
+		
+		
+		$data->niveaus[$niveau->title]->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$studentid);
+		//var_dump($descriptor->id,$userid);
 
 		if ($niveau->span == 1) {
 			$data->span = 1;
@@ -6590,6 +6595,10 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
 			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 			$content_row->columns[$current_idx]->timestamp = $element->timestamp;
+			
+			//throw new block_exacomp_permission_exception('User is no teacher');
+			//var_dump($element);
+			$content_row->columns[$current_idx]->gradingisold = $element->gradingisold;
 
 			if (in_array($niveau, $spanning_niveaus)) {
 				$content_row->columns[$current_idx]->span = $spanning_colspan;
@@ -8181,3 +8190,39 @@ function block_exacomp_get_preconfigparameters_list() {
     }
     return $preconfigparameters;
 }
+
+/**
+ * 
+ * @param unknown $descriptorid
+ * @param unknown $studentid
+ * @return boolean    true if there exists a childcomp grading that is newer than the parentgrading
+ */
+ function block_exacomp_is_descriptor_grading_old($descriptorid, $studentid){
+     
+     global $CFG, $DB;
+    
+     $query = 'SELECT gradings.id, descriptors.parentid
+ 	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} gradings
+ 	  JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} descriptors ON gradings.compid = descriptors.id
+      WHERE descriptors.parentid = ? AND gradings.userid = ?  AND gradings.timestamp > 
+        ((SELECT timestamp
+         FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
+         WHERE compid = ?))';
+     //+30 sec weil innerhalb von 30 Sekunden die Ladezeit beim Hochladen sein kann??
+    
+     $condition = array($descriptorid, $studentid, $descriptorid);
+    
+     $results = $DB->get_records_sql($query, $condition);
+     
+     return $results != null;
+ }
+
+
+
+
+
+
+
+
+
+

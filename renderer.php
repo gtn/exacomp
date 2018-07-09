@@ -1617,6 +1617,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
 
 		foreach ($descriptors as $descriptor) {
+		    
 			$descriptor_parent_visible = $parent_visible;
 
 			if (!$editmode) {
@@ -1692,7 +1693,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$title = join('<br />', $title);
 				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname), '', ['title' => $title]);
-
+				//$titleCell->text = html_writer::div(html_writer::tag('span', "outputname"), '', ['title' => "mine title"]);
 
 				// EDIT MODE BUTTONS
 				if ($editmode) {
@@ -1832,6 +1833,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$teacher_evaluation_cell = new html_table_cell();
                         $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                        
+//                         if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
+//                             if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
+//                                 $teacher_evaluation_cell->attributes['bgcolor'] = "red";
+//                             }
+//                         }
+                        
+                        
 
  						$niveau_cell = new html_table_cell();
  						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
@@ -1878,6 +1887,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if (!$visible_student || $data->role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
 							$params['disabled'] = 'disabled';
 						}
+						
+						
 
 						//student show evaluation
                         if ((   block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) && $level == 1)
@@ -1900,7 +1911,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         block_exacomp_format_eval_value($student->competencies->teacher_additional_grading[$descriptor->id]) : "";
                                 $teacher_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
                             } else { // Lists.
-                                $teacher_evaluation_cell->text = $this->generate_select(
+                                $teacher_evaluation_cell->text = $this->generate_select(  //hier wird die das Dropdownmenue fürs Grading erzeugt
                                         $checkboxname,
                                         $descriptor->id,
                                         'competencies',
@@ -1910,6 +1921,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $data->profoundness : null,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+                            }
+                            if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
+                                if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
+                                    $teacher_evaluation_cell->attributes['bgcolor'] = 'red';
+                                    $teacher_evaluation_cell->text .= html_writer::div(html_writer::tag('span', '!!!', ['title' => block_exacomp_get_string('newer_grading_tooltip')]));
+//                                     $teacher_evaluation_cell->attributes['class'] .= ' tooltip';
+//                                     $teacher_evaluation_cell->text = $teacher_evaluation_cell->text
+//                                         ."<span class=\"tooltiptext\">Eine Teilkompetenz dieser Kompetenz wurde geändert. Update dieser Kompetenz?</span>"; 
+                                }
                             }
                         }
 
@@ -2190,6 +2210,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$teacher_evaluation_cell = new html_table_cell();
                         $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                        
 
 						$niveau_cell = new html_table_cell();
 						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;

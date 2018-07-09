@@ -391,6 +391,7 @@ $string['competencegrid_nodata'] = 'In case the competence grid is empty the out
 $string['statistic_type_descriptor'] = 'Change to descriptor statistics';
 $string['statistic_type_example'] = 'Change to example statistics';
 $string['reports'] = 'Type of report';
+$string['newer_grading_tooltip'] = 'Newer childcompetence grading exists';
 
 
 // === Competence Profile ===

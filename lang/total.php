@@ -1340,6 +1340,10 @@ return [
 		'Berichte',
 		'Type of report',
 	],
+    'newer_grading_tooltip' => [
+	    'Neue Beurteilung einer Teilkompetenz',
+	    'Newer childcompetence grading exists',
+	],
 
 
 	// === Competence Profile ===

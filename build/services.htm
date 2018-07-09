@@ -1047,7 +1047,8 @@ Returns:<pre>[
         "niveautitle": "text null (title of niveau)",
         "niveauid": "int null (id of niveau)",
         "visible": "int null (visibility of topic in current context)",
-        "used": "int null (used in current context)"
+        "used": "int null (used in current context)",
+        "gradingisold": "bool null (true when there are newer gradings in the childcompetences)"
     },
     "..."
 ]</pre>
@@ -2747,7 +2748,8 @@ Returns:<pre>{
                     "visible": "bool null (cell visibility)",
                     "topicid": "int null (topic id)",
                     "span": "int null (colspan)",
-                    "timestamp": "int null (evaluation timestamp, 0 if not set)"
+                    "timestamp": "int null (evaluation timestamp, 0 if not set)",
+                    "gradingisold": "bool null (true when there are childdescriptors with newer gradings than the parentdescriptor)"
                 },
                 "..."
             ]
