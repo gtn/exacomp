@@ -8205,12 +8205,12 @@ function block_exacomp_get_preconfigparameters_list() {
  	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} gradings
  	  JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} descriptors ON gradings.compid = descriptors.id
       WHERE descriptors.parentid = ? AND gradings.userid = ?  AND gradings.timestamp > 
-        ((SELECT timestamp
+        ((SELECT DISTINCT timestamp
          FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
-         WHERE compid = ?))';
+         WHERE compid = ? AND userid = ?))';
      //+30 sec weil innerhalb von 30 Sekunden die Ladezeit beim Hochladen sein kann??
     
-     $condition = array($descriptorid, $studentid, $descriptorid);
+     $condition = array($descriptorid, $studentid, $descriptorid, $studentid);
     
      $results = $DB->get_records_sql($query, $condition);
      
