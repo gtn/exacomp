@@ -4997,6 +4997,7 @@ class block_exacomp_external extends external_api {
 // 			var_dump($fiiile);
 			if ($type == 'file') {
 <<<<<<< HEAD
+<<<<<<< HEAD
  			    $context = context_user::instance($USER->id); //so the teacher does not overwrite the student and vice verca
  			    //block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
  			    if($role == 'teacher'){
@@ -5008,6 +5009,9 @@ class block_exacomp_external extends external_api {
 =======
 				block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
 >>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
+=======
+			    block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
+>>>>>>> parent of 5f5e53b... fileupload as teacher should work
 			}
 
 			$DB->update_record('block_exaportitem', $item);
@@ -5018,10 +5022,11 @@ class block_exacomp_external extends external_api {
 
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
-
 			try {
 				$old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
+
 				if ($old) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 				    if($role == "teacher"){
 				        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
@@ -5035,16 +5040,34 @@ class block_exacomp_external extends external_api {
 					
 					$fs->create_file_from_storedfile($file_record, $old->get_id());					
 =======
+=======
+				    //throw new invalid_parameter_exception("BIS HIERER");
+// 				    $oldUser = $DB->get_records_sql("
+//         				SELECT userid
+//         				FROM mdl_files 
+//         				WHERE itemid = ?",
+//         				array($itemid));
+
+ 				    //block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$USER->id);
+ 				    //throw new invalid_parameter_exception("BIS HIERER");
+
+				    
+>>>>>>> parent of 5f5e53b... fileupload as teacher should work
 					$file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
 						'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
 						'timecreated' => time(), 'timemodified' => time());
 					$fs->create_file_from_storedfile($file_record, $old->get_id());
+<<<<<<< HEAD
 
 >>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
+=======
+					
+>>>>>>> parent of 5f5e53b... fileupload as teacher should work
 					$old->delete();
 				}
 			} catch (Exception $e) {
 				//some problem with the file occured
+			    //throw new invalid_parameter_exception("EXCEPTION");
 			}
 		}
 
