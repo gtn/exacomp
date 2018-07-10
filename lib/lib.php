@@ -6624,7 +6624,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$table->rows[] = $content_row;
 	}
 
-	if (block_exacomp_is_subjectgrading_enabled()) {
+	if (block_exacomp_is_subjectgrading_enabled()) {	    
 		$content_row = new stdClass();
 		$content_row->columns = array();
 
@@ -6638,6 +6638,13 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
 		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
 		$content_row->columns[1]->span = 0;
+// 		var_dump($table_content->subject_eval);
+// 		$content_row->columns[1] = new stdClass();
+// 		$content_row->columns[1]->evaluation = 1;
+// 		$content_row->columns[1]->evaluation_text = "NEINEINEIN";
+// 		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
+// 		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
+// 		$content_row->columns[1]->span = 0;
 
 		$table->rows[] = $content_row;
 	}
@@ -8205,7 +8212,7 @@ function block_exacomp_get_preconfigparameters_list() {
  	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} gradings
  	  JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} descriptors ON gradings.compid = descriptors.id
       WHERE descriptors.parentid = ? AND gradings.userid = ?  AND gradings.timestamp > 
-        ((SELECT DISTINCT timestamp
+        ((SELECT MAX(timestamp)
          FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
          WHERE compid = ? AND userid = ?))';
      //+30 sec weil innerhalb von 30 Sekunden die Ladezeit beim Hochladen sein kann??

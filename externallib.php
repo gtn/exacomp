@@ -4981,7 +4981,9 @@ class block_exacomp_external extends external_api {
 		if ($type == "file") {
 		    $context = context_user::instance($USER->id);
 		    $fs = get_file_storage();
+// 		    var_dump($fs);
 		    try {
+		        //var_dump($context->id,$fileitmeid,$filename);
 		        $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
 		        if ($old) {
 		            $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
@@ -5045,7 +5047,10 @@ class block_exacomp_external extends external_api {
 			'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
-			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ""),
+			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ''),
+		    'url' => new external_value (PARAM_URL, 'url', VALUE_DEFAULT, ''),
+		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport comment file area', VALUE_DEFAULT, ''),
+		    'fileitemid' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ''),
 		));
 	}
 
@@ -5057,16 +5062,20 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment) {
-	    global $DB, $USER;
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment,$url, $filename,$fileitemid) {
+	    global $CFG, $DB, $USER;
 	    static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-	        'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment));
+	        'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
 	    if ($userid == 0) {
 	        $role = BLOCK_EXACOMP_ROLE_STUDENT;
 	        $userid = $USER->id;
 	    } else {
 	        $role = BLOCK_EXACOMP_ROLE_TEACHER;
 	    }
+	    
+	    require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+	    static::require_can_access_course($courseid);
+	    
 	    static::require_can_access_course_user($courseid, $userid);
 	    static::require_can_access_example($exampleid, $courseid);
 	    block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid);
@@ -5083,6 +5092,7 @@ class block_exacomp_external extends external_api {
 	        $itemexample->status = 1;
 	        $DB->update_record('block_exacompitemexample', $itemexample);
 	        if ($comment) {
+	            
 	            $insert = new stdClass ();
 	            $insert->itemid = $itemid;
 	            $insert->userid = $USER->id;
@@ -5092,9 +5102,31 @@ class block_exacomp_external extends external_api {
 	                'itemid' => $itemid,
 	                'userid' => $USER->id,
 	            ));
-	            $DB->insert_record('block_exaportitemcomm', $insert);
+	            $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
 	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
+	            
+	            if($filename != ''){
+	                $context = context_user::instance($USER->id);
+	                $fs = get_file_storage();
+// 	                var_dump($fs);
+	                try {
+// 	                    var_dump($context->id,$fileitmeid,$filename);
+	                    $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
+// 	                    throw new invalid_parameter_exception("Geht bis zum get_file");
+	                    if ($old) {
+	                        //TODO!!!!   contextid = 1 ?? immer??
+	                        $file_record = array('contextid' => 1, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
+	                            'itemid' => $commentid, 'filepath' => '/', 'filename' => $old->get_filename(),
+	                            'timecreated' => time(), 'timemodified' => time());
+	                        $fs->create_file_from_storedfile($file_record, $old->get_id());
+	                        $old->delete();
+	                    }
+	                } catch (Exception $e) {
+	                    throw new invalid_parameter_exception("some problem with the file occured");
+	                    //some problem with the file occured
+	                }
+	            }  
 	        }
 	    }
 	    return array("success" => true, "exampleid" => $exampleid);
