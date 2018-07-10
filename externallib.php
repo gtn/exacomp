@@ -5914,7 +5914,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	protected static function _get_example_information($courseid, $userid, $exampleid) {
-		global $CFG, $DB, $USER;
+		global $CFG, $DB;
 
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 		if (!$example) {
@@ -5945,10 +5945,14 @@ class block_exacomp_external extends external_api {
 			$data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
 			$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			$data['teacherfile'] = "asdf";
 =======
 			
 >>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
+=======
+			//$data['teacherfile'] = "asdf";
+>>>>>>> parent of 2547d28... show teacherfile in progress
 
 			require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 			if ($file = block_exaport_get_item_file($itemInformation)) {
@@ -5968,30 +5972,6 @@ class block_exacomp_external extends external_api {
 			}
 <<<<<<< HEAD
 			
-
-			$teacherItemFile = $DB->get_record_sql("
-				SELECT contextid, userid
-				FROM {files} 
-				WHERE  itemid = ? AND userid != ? AND filename != '.'",
-			    array($itemInformation->id, $userid));
-			//var_dump($teacherfile);
-			//var_dump($teacherfile->userid);
-			if ($teacherfile = block_exaport_get_item_file($itemInformation , $teacherfile->contextid)) {
-			     //throw new invalid_parameter_exception ('BIS HIER');
-			    /*
-			     * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-			     * 'userid' => $userid,
-			     * 'itemid' => $itemInformation->id,
-			     * 'wstoken' => static::wstoken(),
-			     * ]);
-			     */
-			    // TODO: moodle_url contains encoding errors which lead to problems in dakora
-			    $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$teacherItemFile->userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
-			    $data['teacherfile'] = $fileurl;
-// 			    $data['mimetype'] = $file->get_mimetype();
-// 			    $data['filename'] = $file->get_filename();  
-			}
-			
 // 			//$context = context_user::instance($USER->id);
 // 			//throw new invalid_parameter_exception ('BIS HIER');
 // 			if ($teacherfile = block_exaport_get_item_file($itemInformation,25)) {
@@ -6004,7 +5984,7 @@ class block_exacomp_external extends external_api {
 
 			$data['studentcomment'] = '';
 			$data['teachercomment'] = '';
-			//$data['teacherfile'] = '';
+			$data['teacherfile'] = '';
 
 			$itemcomments = \block_exaport\api::get_item_comments($itemInformation->id);
 			foreach ($itemcomments as $itemcomment) {
@@ -6013,15 +5993,20 @@ class block_exacomp_external extends external_api {
 				} elseif (true) { // TODO: check if is teacher?
 					$data['teachercomment'] = $itemcomment->entry;
 <<<<<<< HEAD
+<<<<<<< HEAD
 					//$commentfile = block_exaport_get_item_comment_file($itemcomment->id);
 					//var_dump($commentfile);
 					if (false) { // TODO: $itemcomment->file check if teacher has a file?
+=======
+					if (true) { // TODO: $itemcomment->file check if teacher has a file?
+>>>>>>> parent of 2547d28... show teacherfile in progress
 // 						$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
 // 							'userid' => $userid,
 // 							'itemid' => $itemInformation->id,
 // 							'commentid' => $itemcomment->id,
 // 							'wstoken' => static::wstoken(),
 // 						]);
+<<<<<<< HEAD
 // 						//throw new invalid_parameter_exception ('BIS HIER');
 // 					    //$fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$itemcomment->userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
 // 						$data['teacherfile'] = $fileurl;
@@ -6035,6 +6020,11 @@ class block_exacomp_external extends external_api {
 						]);
 						$data['teacherfile'] = $fileurl;
 >>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
+=======
+						//throw new invalid_parameter_exception ('BIS HIER');
+					    $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$itemcomment->userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
+						$data['teacherfile'] = $fileurl;
+>>>>>>> parent of 2547d28... show teacherfile in progress
 					}
 				}
 			}
