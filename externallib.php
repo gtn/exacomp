@@ -4897,28 +4897,10 @@ class block_exacomp_external extends external_api {
 			'studentvalue' => new external_value (PARAM_INT, 'studentvalue', VALUE_DEFAULT, -1),
 			'url' => new external_value (PARAM_URL, 'url'),
 			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
-<<<<<<< HEAD
-<<<<<<< HEAD
-			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
-			'courseid' => new external_value (PARAM_INT, 'courseid'),
-			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
-		    'comment' => new external_value (PARAM_TEXT, 'studentcomment or teachercomment', VALUE_DEFAULT, ""),
-		    'value' => new external_value (PARAM_INT, 'teacher or studentvalue', VALUE_DEFAULT, -1),
-=======
 			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
 			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
->>>>>>> parent of 1882bec... different appraoch to teacher fileupload
-=======
-			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment', VALUE_DEFAULT, ""),
-			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
-			'courseid' => new external_value (PARAM_INT, 'courseid'),
-			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
-		    
-		    'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ""),
-		    'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
->>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
 		));
 	}
 
@@ -4993,123 +4975,48 @@ class block_exacomp_external extends external_api {
 			$item->url = $url;
 			$item->timemodified = time();
 
-			if ($type == 'file') {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
- 			    $context = context_user::instance($USER->id); //so the teacher does not overwrite the student and vice verca
- 			    //block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
- 			    if($role == 'teacher'){
- 			        block_exaport_comment_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
- 			    } else{
- 			        block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
- 			    }
- 			    
-=======
-				block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
->>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
-=======
-			    block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
->>>>>>> parent of 5f5e53b... fileupload as teacher should work
-=======
- 			    $context = context_user::instance($USER->id);
- 			    block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
->>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
-			}
-
-			$DB->update_record('block_exaportitem', $item);
 		}
 
 		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
 		if ($type == "file") {
-
-			$context = context_user::instance($USER->id);
-			$fs = get_file_storage();
-			try {
-				$old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-
-				if ($old) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-				    if($role == "teacher"){
-				        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
-				            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-				            'timecreated' => time(), 'timemodified' => time());
-				    } else {
-				        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-				            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-				            'timecreated' => time(), 'timemodified' => time());
-				    }
-					
-=======
-					$file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-						'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-						'timecreated' => time(), 'timemodified' => time());
->>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
-					$fs->create_file_from_storedfile($file_record, $old->get_id());					
-=======
-=======
-				    //throw new invalid_parameter_exception("BIS HIERER");
-// 				    $oldUser = $DB->get_records_sql("
-//         				SELECT userid
-//         				FROM mdl_files 
-//         				WHERE itemid = ?",
-//         				array($itemid));
-
- 				    //block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$USER->id);
- 				    //throw new invalid_parameter_exception("BIS HIERER");
-
-				    
->>>>>>> parent of 5f5e53b... fileupload as teacher should work
-					$file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-						'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-						'timecreated' => time(), 'timemodified' => time());
-					$fs->create_file_from_storedfile($file_record, $old->get_id());
-<<<<<<< HEAD
-
->>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
-=======
-					
->>>>>>> parent of 5f5e53b... fileupload as teacher should work
-					$old->delete();
-				}
-			} catch (Exception $e) {
-				//some problem with the file occured
-			    //throw new invalid_parameter_exception("EXCEPTION");
-			}
-		}
-
-		//Insert comments and teacher/student values
-		//if student:
-		if($role == "student"){
-		    if ($insert) {
-		        $DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
-		        if ($comment != '') {
-		            $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
+		    $context = context_user::instance($USER->id);
+		    $fs = get_file_storage();
+		    try {
+		        $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
+		        if ($old) {
+		            $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
+		                'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
+		                'timecreated' => time(), 'timemodified' => time());
+		            $fs->create_file_from_storedfile($file_record, $old->get_id());
+		            $old->delete();
 		        }
-		    } else {
-		        $itemexample->timemodified = time();
-		        $itemexample->studentvalue = $value;
-		        $DB->update_record('block_exacompitemexample', $itemexample);
-		        
-		        $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
-		        if ($comment != '') {
-		            $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
-		        }
+		    } catch (Exception $e) {
+		        //some problem with the file occured
 		    }
-		    block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $value);
-		    
-		    block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
 		}
+		
 
+		if ($insert) {
+		    $DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
+		    if ($studentcomment != '') {
+		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
+		    }
+		} else {
+		    $itemexample->timemodified = time();
+		    $itemexample->studentvalue = $studentvalue;
+		    $DB->update_record('block_exacompitemexample', $itemexample);
+		    $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+		    if ($studentcomment != '') {
+		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
+		    }
+		}
+		
 		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
-
 		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
-
 		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 		
 		return array("success" => true, "itemid" => $itemid);
+		
 	}
 
 	/**
@@ -5124,7 +5031,7 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
-	/**
+		/**
 	 * Returns description of method parameters
 	 *
 	 * @return external_function_parameters
@@ -5139,18 +5046,6 @@ class block_exacomp_external extends external_api {
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
 			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ""),
-<<<<<<< HEAD
-<<<<<<< HEAD
-		    'url' => new external_value (PARAM_URL, 'url',VALUE_DEFAULT, false),
-		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area',VALUE_DEFAULT,null),
-		    'fileitemid' => new external_value (PARAM_INT, 'fileitemid',VALUE_DEFAULT,-1),
-=======
->>>>>>> parent of de4be51... adapted dakora_grade_example for fileupload from teacher
-=======
-		    //'url' => new external_value (PARAM_URL, 'url'),
-		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
-		    'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
->>>>>>> parent of c89fff1... teacher fileupload
 		));
 	}
 
@@ -5162,386 +5057,47 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-<<<<<<< HEAD
-<<<<<<< HEAD
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment,$url, $filename, $fileitemid) {
-<<<<<<< HEAD
-	    global $CFG, $DB, $USER;
-	    $insert = null;
-	    
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment) {
+	    global $DB, $USER;
 	    static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-	        'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
-	    
+	        'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment));
 	    if ($userid == 0) {
 	        $role = BLOCK_EXACOMP_ROLE_STUDENT;
 	        $userid = $USER->id;
 	    } else {
 	        $role = BLOCK_EXACOMP_ROLE_TEACHER;
 	    }
-	    
 	    static::require_can_access_course_user($courseid, $userid);
 	    static::require_can_access_example($exampleid, $courseid);
-	    
 	    block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid);
-	    
-	    //itemid wird normalerweise gößer 0 sein, wenn ein Schüler eine Abgabe getätigt hat eben
 	    if ($itemid > 0 && $userid > 0) {
-	        
 	        $itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
 	        if (!$itemexample) {
 	            throw new invalid_parameter_exception("Wrong itemid given");
 	        }
-	        
 	        if ($itemvalue < 0 && $itemvalue > 100) {
 	            throw new invalid_parameter_exception("Item value must be between 0 and 100");
 	        }
-	        
 	        $itemexample->teachervalue = $itemvalue;
 	        $itemexample->datemodified = time();
 	        $itemexample->status = 1;
-	        
 	        $DB->update_record('block_exacompitemexample', $itemexample);
-	        
 	        if ($comment) {
 	            $insert = new stdClass ();
 	            $insert->itemid = $itemid;
 	            $insert->userid = $USER->id;
 	            $insert->entry = $comment;
 	            $insert->timemodified = time();
-	            
 	            $DB->delete_records('block_exaportitemcomm', array(
 	                'itemid' => $itemid,
 	                'userid' => $USER->id,
 	            ));
 	            $DB->insert_record('block_exaportitemcomm', $insert);
-	            
 	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
-	            
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 	        }
 	    }
-	    
-// 	    //add the teacherfile if there is one
-// 	    if($role == BLOCK_EXACOMP_ROLE_TEACHER && filename != null){
-// 	        if (!isset($type)) {
-// 	            $type = ($filename != '') ? 'file' : 'url';
-// 	        };
-	        
-// 	        static::require_can_access_course($courseid);
-	        
-// 	        //insert: if itemid == 0 OR status != 0
-// 	        $insert = true;
-// 	        if ($itemid > 0) {
-// 	            $itemexample = $DB->get_record('block_exacompitemexample', array('itemid' => $itemid));
-// 	            if ($itemexample && ($itemexample->teachervalue == null || $itemexample->status == 0)) {
-// 	                $insert = false;
-// 	            }
-// 	        }
-// 	        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
-	        
-// 	        if ($insert) {
-// 	            //throw new invalid_parameter_exception("INSERT");
-// 	            //store item in the right portfolio category
-// 	            $course = get_course($courseid);
-// 	            $course_category = block_exaport_get_user_category($course->fullname, $USER->id);
-	            
-// 	            if (!$course_category) {
-// 	                $course_category = block_exaport_create_user_category($course->fullname, $USER->id);
-// 	            }
-	            
-// 	            $exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id' => $exampleid));
-// 	            $subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
-// 	            $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
-// 	            if (!$subject_category) {
-// 	                $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
-// 	            }
-	            
-// 	            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
-// 	            //autogenerate a published view for the new item
-// 	            $dbView = new stdClass();
-// 	            $dbView->userid = $USER->id;
-// 	            $dbView->name = $exampletitle;
-// 	            $dbView->timemodified = time();
-// 	            $dbView->layout = 1;
-// 	            // generate view hash
-// 	            do {
-// 	                $hash = substr(md5(microtime()), 3, 8);
-// 	            } while ($DB->record_exists("block_exaportview", array("hash" => $hash)));
-// 	            $dbView->hash = $hash;
-	            
-// 	            $dbView->id = $DB->insert_record('block_exaportview', $dbView);
-	            
-// 	            //share the view with teachers
-// 	            block_exaport_share_view_to_teachers($dbView->id);
-	            
-// 	            //add item to view
-// 	            $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
-	            
-// 	        } else {
-// 	            //throw new invalid_parameter_exception("NICHT INSERT");
-// 	            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
-	            
-// 	            $item->url = $url;
-// 	            $item->timemodified = time();
-	            
-// 	            if ($type == 'file') {
-// 	                block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
-// 	            }
-	            
-// 	            $DB->update_record('block_exaportitem', $item);
-// 	        }
-	        
-// 	        //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
-// 	        if ($type == "file") {
-	            
-// 	            $context = context_user::instance($USER->id);
-// 	            $fs = get_file_storage();
-// 	            try {
-// 	                $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-	                
-// 	                if ($old) {
-// 	                    $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-// 	                        'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-// 	                        'timecreated' => time(), 'timemodified' => time());
-// 	                    $fs->create_file_from_storedfile($file_record, $old->get_id());
-	                    
-// 	                    $old->delete();
-// 	                }
-// 	            } catch (Exception $e) {
-// 	                //some problem with the file occured
-// 	            }
-// 	        }
-	        
-// 	        if ($insert) {
-// 	            $DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
-// 	            if ($studentcomment != '') {
-// 	                $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
-// 	            }
-// 	        } else {
-// 	            $itemexample->timemodified = time();
-// 	            $itemexample->studentvalue = $studentvalue;
-// 	            $DB->update_record('block_exacompitemexample', $itemexample);
-	            
-// 	            $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
-// 	            if ($studentcomment != '') {
-// 	                $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
-// 	            }
-// 	        }
-	        
-// 	        block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
-	        
-// 	        block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
-	        
-// 	        \block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
-	        
-// 	        //return array("success" => true, "itemid" => $itemid);
-// 	    }
-	    
 	    return array("success" => true, "exampleid" => $exampleid);
-=======
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment) {
-		global $DB, $USER;
-
-		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-			'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment));
-=======
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment, $filename, $fileitemid) {
-		global $DB, $USER;
-
-		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-		    'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment, 'filename' => $filename, 'fileitemid' => $fileitemid));
->>>>>>> parent of c89fff1... teacher fileupload
-=======
-		global $CFG, $DB, $USER;
-		
-		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-		    'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
->>>>>>> parent of 1882bec... different appraoch to teacher fileupload
-
-		if ($userid == 0) {
-			$role = BLOCK_EXACOMP_ROLE_STUDENT;
-			$userid = $USER->id;
-		} else {
-			$role = BLOCK_EXACOMP_ROLE_TEACHER;
-		}
-<<<<<<< HEAD
-
-		static::require_can_access_course_user($courseid, $userid);
-		static::require_can_access_example($exampleid, $courseid);
-
-		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid);
-
-		if ($itemid > 0 && $userid > 0) {
-
-			$itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
-			if (!$itemexample) {
-				throw new invalid_parameter_exception("Wrong itemid given");
-			}
-
-			if ($itemvalue < 0 && $itemvalue > 100) {
-				throw new invalid_parameter_exception("Item value must be between 0 and 100");
-			}
-
-			$itemexample->teachervalue = $itemvalue;
-			$itemexample->datemodified = time();
-			$itemexample->status = 1;
-
-			$DB->update_record('block_exacompitemexample', $itemexample);
-
-			if ($comment) {
-				$insert = new stdClass ();
-				$insert->itemid = $itemid;
-				$insert->userid = $USER->id;
-				$insert->entry = $comment;
-				$insert->timemodified = time();
-
-				$DB->delete_records('block_exaportitemcomm', array(
-					'itemid' => $itemid,
-					'userid' => $USER->id,
-				));
-				$DB->insert_record('block_exaportitemcomm', $insert);
-
-				block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
-
-				\block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
-			}
-		}
-
-		return array("success" => true, "exampleid" => $exampleid);
->>>>>>> parent of de4be51... adapted dakora_grade_example for fileupload from teacher
-=======
-		
-		static::require_can_access_course_user($courseid, $userid);
-		static::require_can_access_example($exampleid, $courseid);
-		require_once $CFG->dirroot.'/blocks/exaport/inc.php';
-		if ($itemid > 0 && $userid > 0) {
-		    
-		    $itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
-		    if (!$itemexample) {
-		        throw new invalid_parameter_exception("Wrong itemid given");
-		    }
-		    
-		    if ($itemvalue < 0 && $itemvalue > 100) {
-		        throw new invalid_parameter_exception("Item value must be between 0 and 100");
-		    }
-		    
-		    $itemexample->teachervalue = $itemvalue;
-		    $itemexample->datemodified = time();
-		    $itemexample->status = 1;
-		    
-		    $DB->update_record('block_exacompitemexample', $itemexample);
-		    
-		    if ($comment) {
-		        $insert = new stdClass ();
-		        $insert->itemid = $itemid;
-		        $insert->userid = $USER->id;
-		        $insert->entry = $comment;
-		        $insert->timemodified = time();
-		        
-		        $DB->delete_records('block_exaportitemcomm', array(
-		            'itemid' => $itemid,
-		            'userid' => $USER->id,
-		        ));
-		        $DB->insert_record('block_exaportitemcomm', $insert);
-		        
-		        block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
-		        
-		        \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
-		    }
-		    
-		    
-		    
-		    
-		    //Insert teacherfile
-		    if (!isset($type)) {
-		        $type = ($filename != '') ? 'file' : 'url';
-		    };
-		    //store item in the right portfolio category
-		    $course = get_course($courseid);
-		    $course_category = block_exaport_get_user_category($course->fullname, $USER->id);
-		    
-		    if (!$course_category) {
-		        $course_category = block_exaport_create_user_category($course->fullname, $USER->id);
-		    }
-		    
-		    $exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id' => $exampleid));
-		    $subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
-		    $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
-		    if (!$subject_category) {
-		        $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
-		    }
-		    
-		    $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
-		    //autogenerate a published view for the new item
-		    $dbView = new stdClass();
-		    $dbView->userid = $USER->id;
-		    $dbView->name = $exampletitle;
-		    $dbView->timemodified = time();
-		    $dbView->layout = 1;
-		    // generate view hash
-		    do {
-		        $hash = substr(md5(microtime()), 3, 8);
-		    } while ($DB->record_exists("block_exaportview", array("hash" => $hash)));
-		    $dbView->hash = $hash;
-		    
-		    $dbView->id = $DB->insert_record('block_exaportview', $dbView);
-		    
-		    //share the view with teachers
-		    block_exaport_share_view_to_teachers($dbView->id);
-		    
-		    //add item to view
-		    $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
-		}
-		
-		
-		//File added
-		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
-		if ($type == "file") {
-		    
-		    $context = context_user::instance($USER->id);
-		    $fs = get_file_storage();
-		    try {
-		        $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-		        
-		        if ($old) {
-		            $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-		                'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-		                'timecreated' => time(), 'timemodified' => time());
-		            $fs->create_file_from_storedfile($file_record, $old->get_id());
-		            
-		            $old->delete();
-		        }
-		    } catch (Exception $e) {
-		        //some problem with the file occured
-		    }
-		}
-		
-// 		if ($insert) {
-		    
-// 		    $DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
-		    
-// 		    if ($studentcomment != '') {
-// 		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
-// 		    }
-		    
-// 		} else {
-		    
-// 		    $itemexample->timemodified = time();
-// 		    $itemexample->studentvalue = $studentvalue;
-		    
-// 		    $DB->update_record('block_exacompitemexample', $itemexample);
-// 		    throw new invalid_parameter_exception("BIS HIERHER");
-// 		    $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
-// 		    if ($studentcomment != '') {
-// 		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
-// 		    }
-// 		}
-		
-		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid);
-		\block_exacomp\event\example_graded::log(['objectid' => $exampleid, 'courseid' => $courseid]);
-
-		return array("success" => true, "exampleid" => $exampleid);
->>>>>>> parent of 1882bec... different appraoch to teacher fileupload
 	}
 
 	/**
@@ -5914,151 +5470,97 @@ class block_exacomp_external extends external_api {
 	}
 
 	protected static function _get_example_information($courseid, $userid, $exampleid) {
-		global $CFG, $DB;
-
-		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
-		if (!$example) {
-			throw new invalid_parameter_exception ('Example does not exist');
-		}
-
-		$itemInformation = block_exacomp_get_current_item_for_example($userid, $exampleid);
-		$exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid));
-
-		$data = array();
-
-		if ($itemInformation) {
-			//item exists
-			$data['itemid'] = $itemInformation->id;
-			$data['file'] = "";
-			$data['isimage'] = false;
-			$data['filename'] = "";
-			$data['mimetype'] = "";
-			$data['teachervalue'] = isset ($exampleEvaluation->teacher_evaluation) ? $exampleEvaluation->teacher_evaluation : -1;
-			$data['studentvalue'] = isset ($exampleEvaluation->student_evaluation) ? $exampleEvaluation->student_evaluation : -1;
-			$data['evalniveauid'] = isset ($exampleEvaluation->evalniveauid) ? $exampleEvaluation->evalniveauid : null;
-			$data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
-			$data['timestampstudent'] = isset ($exampleEvaluation->timestamp_student) ? $exampleEvaluation->timestamp_student : 0;
-			$data['status'] = isset ($itemInformation->status) ? $itemInformation->status : -1;
-			$data['name'] = $itemInformation->name;
-			$data['type'] = $itemInformation->type;
-			$data['url'] = $itemInformation->url;
-			$data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
-			$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
-<<<<<<< HEAD
-<<<<<<< HEAD
-			$data['teacherfile'] = "asdf";
-=======
-			
->>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
-=======
-			//$data['teacherfile'] = "asdf";
->>>>>>> parent of 2547d28... show teacherfile in progress
-
-			require_once $CFG->dirroot.'/blocks/exaport/inc.php';
-			if ($file = block_exaport_get_item_file($itemInformation)) {
-
-				/*
-				 * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-				 * 'userid' => $userid,
-				 * 'itemid' => $itemInformation->id,
-				 * 'wstoken' => static::wstoken(),
-				 * ]);
-				 */
-				// TODO: moodle_url contains encoding errors which lead to problems in dakora
-				$fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
-				$data['file'] = $fileurl;
-				$data['mimetype'] = $file->get_mimetype();
-				$data['filename'] = $file->get_filename();
-			}
-<<<<<<< HEAD
-			
-// 			//$context = context_user::instance($USER->id);
-// 			//throw new invalid_parameter_exception ('BIS HIER');
-// 			if ($teacherfile = block_exaport_get_item_file($itemInformation,25)) {
-// 			   // throw new invalid_parameter_exception ('BIS HIER');
-// 			    $teacherfileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
-// 			    $data['teacherfile'] = $teacherfileurl;
-// 			}
-=======
->>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
-
-			$data['studentcomment'] = '';
-			$data['teachercomment'] = '';
-			$data['teacherfile'] = '';
-
-			$itemcomments = \block_exaport\api::get_item_comments($itemInformation->id);
-			foreach ($itemcomments as $itemcomment) {
-				if ($userid == $itemcomment->userid) {
-					$data['studentcomment'] = $itemcomment->entry;
-				} elseif (true) { // TODO: check if is teacher?
-					$data['teachercomment'] = $itemcomment->entry;
-<<<<<<< HEAD
-<<<<<<< HEAD
-					//$commentfile = block_exaport_get_item_comment_file($itemcomment->id);
-					//var_dump($commentfile);
-					if (false) { // TODO: $itemcomment->file check if teacher has a file?
-=======
-					if (true) { // TODO: $itemcomment->file check if teacher has a file?
->>>>>>> parent of 2547d28... show teacherfile in progress
-// 						$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-// 							'userid' => $userid,
-// 							'itemid' => $itemInformation->id,
-// 							'commentid' => $itemcomment->id,
-// 							'wstoken' => static::wstoken(),
-// 						]);
-<<<<<<< HEAD
-// 						//throw new invalid_parameter_exception ('BIS HIER');
-// 					    //$fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$itemcomment->userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
-// 						$data['teacherfile'] = $fileurl;
-=======
-					if ($itemcomment->file) {
-						$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-							'userid' => $userid,
-							'itemid' => $itemInformation->id,
-							'commentid' => $itemcomment->id,
-							'wstoken' => static::wstoken(),
-						]);
-						$data['teacherfile'] = $fileurl;
->>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
-=======
-						//throw new invalid_parameter_exception ('BIS HIER');
-					    $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$itemcomment->userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
-						$data['teacherfile'] = $fileurl;
->>>>>>> parent of 2547d28... show teacherfile in progress
-					}
-				}
-			}
-		} else {
-			//no item and therefore no submission exists
-			$data['itemid'] = 0;
-			$data['status'] = -1;
-			$data['name'] = "";
-			$data['file'] = "";
-			$data['filename'] = "";
-			$data['url'] = "";
-			$data['type'] = "";
-			$data['mimetype'] = "";
-			$data['teachercomment'] = "";
-			$data['studentcomment'] = "";
-			$data['teacherfile'] = '';
-			$data['teachervalue'] = isset ($exampleEvaluation->teacher_evaluation) ? $exampleEvaluation->teacher_evaluation : -1;
-			$data['studentvalue'] = isset ($exampleEvaluation->student_evaluation) ? $exampleEvaluation->student_evaluation : -1;
-			$data['evalniveauid'] = isset ($exampleEvaluation->evalniveauid) ? $exampleEvaluation->evalniveauid : null;
-			$data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
-			$data['timestampstudent'] = isset ($exampleEvaluation->timestamp_student) ? $exampleEvaluation->timestamp_student : 0;
-			$data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
-			$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
-		}
-
-		if (!$exampleEvaluation || $exampleEvaluation->resubmission) {
-			$data['resubmission'] = true;
-		} else {
-			$data['resubmission'] = false;
-		}
-
-		return $data;
+	    global $CFG, $DB;
+	    $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+	    if (!$example) {
+	        throw new invalid_parameter_exception ('Example does not exist');
+	    }
+	    $itemInformation = block_exacomp_get_current_item_for_example($userid, $exampleid);
+	    $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid));
+	    $data = array();
+	    if ($itemInformation) {
+	        //item exists
+	        $data['itemid'] = $itemInformation->id;
+	        $data['file'] = "";
+	        $data['isimage'] = false;
+	        $data['filename'] = "";
+	        $data['mimetype'] = "";
+	        $data['teachervalue'] = isset ($exampleEvaluation->teacher_evaluation) ? $exampleEvaluation->teacher_evaluation : -1;
+	        $data['studentvalue'] = isset ($exampleEvaluation->student_evaluation) ? $exampleEvaluation->student_evaluation : -1;
+	        $data['evalniveauid'] = isset ($exampleEvaluation->evalniveauid) ? $exampleEvaluation->evalniveauid : null;
+	        $data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
+	        $data['timestampstudent'] = isset ($exampleEvaluation->timestamp_student) ? $exampleEvaluation->timestamp_student : 0;
+	        $data['status'] = isset ($itemInformation->status) ? $itemInformation->status : -1;
+	        $data['name'] = $itemInformation->name;
+	        $data['type'] = $itemInformation->type;
+	        $data['url'] = $itemInformation->url;
+	        $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
+	        $data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
+	        
+	        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+	        if ($file = block_exaport_get_item_file($itemInformation)) {
+	            /*
+	             * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+	             * 'userid' => $userid,
+	             * 'itemid' => $itemInformation->id,
+	             * 'wstoken' => static::wstoken(),
+	             * ]);
+	             */
+	            // TODO: moodle_url contains encoding errors which lead to problems in dakora
+	            $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
+	            $data['file'] = $fileurl;
+	            $data['mimetype'] = $file->get_mimetype();
+	            $data['filename'] = $file->get_filename();
+	        }
+	        $data['studentcomment'] = '';
+	        $data['teachercomment'] = '';
+	        $data['teacherfile'] = '';
+	        $itemcomments = \block_exaport\api::get_item_comments($itemInformation->id);
+	        foreach ($itemcomments as $itemcomment) {
+	            if ($userid == $itemcomment->userid) {
+	                $data['studentcomment'] = $itemcomment->entry;
+	            } elseif (true) { // TODO: check if is teacher?
+	                $data['teachercomment'] = $itemcomment->entry;
+	                if ($itemcomment->file) {
+	                    $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+	                        'userid' => $userid,
+	                        'itemid' => $itemInformation->id,
+	                        'commentid' => $itemcomment->id,
+	                        'wstoken' => static::wstoken(),
+	                    ]);
+	                    $data['teacherfile'] = $fileurl;
+	                }
+	            }
+	        }
+	    } else {
+	        //no item and therefore no submission exists
+	        $data['itemid'] = 0;
+	        $data['status'] = -1;
+	        $data['name'] = "";
+	        $data['file'] = "";
+	        $data['filename'] = "";
+	        $data['url'] = "";
+	        $data['type'] = "";
+	        $data['mimetype'] = "";
+	        $data['teachercomment'] = "";
+	        $data['studentcomment'] = "";
+	        $data['teacherfile'] = '';
+	        $data['teachervalue'] = isset ($exampleEvaluation->teacher_evaluation) ? $exampleEvaluation->teacher_evaluation : -1;
+	        $data['studentvalue'] = isset ($exampleEvaluation->student_evaluation) ? $exampleEvaluation->student_evaluation : -1;
+	        $data['evalniveauid'] = isset ($exampleEvaluation->evalniveauid) ? $exampleEvaluation->evalniveauid : null;
+	        $data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
+	        $data['timestampstudent'] = isset ($exampleEvaluation->timestamp_student) ? $exampleEvaluation->timestamp_student : 0;
+	        $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
+	        $data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
+	    }
+	    if (!$exampleEvaluation || $exampleEvaluation->resubmission) {
+	        $data['resubmission'] = true;
+	    } else {
+	        $data['resubmission'] = false;
+	    }
+	    return $data;
 	}
-
+	
 	/**
 	 * Returns description of method parameters
 	 *
