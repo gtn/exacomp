@@ -5936,7 +5936,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	$eventdata->fullmessageformat = FORMAT_HTML;
 	$eventdata->fullmessagehtml = $message;
 	$eventdata->fullmessage = $message;
-	$eventdata->smallmessage = $subject; //is that correct or a mistake that was not noticed?
+	$eventdata->smallmessage = $subject;
 
 	$eventdata->name = $notificationtype;
 	$eventdata->component = 'block_exacomp';

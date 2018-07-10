@@ -5097,11 +5097,17 @@ class block_exacomp_external extends external_api {
 			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
 			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ""),
 <<<<<<< HEAD
+<<<<<<< HEAD
 		    'url' => new external_value (PARAM_URL, 'url',VALUE_DEFAULT, false),
 		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area',VALUE_DEFAULT,null),
 		    'fileitemid' => new external_value (PARAM_INT, 'fileitemid',VALUE_DEFAULT,-1),
 =======
 >>>>>>> parent of de4be51... adapted dakora_grade_example for fileupload from teacher
+=======
+		    //'url' => new external_value (PARAM_URL, 'url'),
+		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+		    'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
+>>>>>>> parent of c89fff1... teacher fileupload
 		));
 	}
 
@@ -5113,6 +5119,7 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
+<<<<<<< HEAD
 <<<<<<< HEAD
 	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment,$url, $filename, $fileitemid) {
 	    global $CFG, $DB, $USER;
@@ -5293,6 +5300,13 @@ class block_exacomp_external extends external_api {
 
 		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
 			'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment));
+=======
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment, $filename, $fileitemid) {
+		global $DB, $USER;
+
+		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
+		    'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment, 'filename' => $filename, 'fileitemid' => $fileitemid));
+>>>>>>> parent of c89fff1... teacher fileupload
 
 		if ($userid == 0) {
 			$role = BLOCK_EXACOMP_ROLE_STUDENT;

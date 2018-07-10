@@ -21,10 +21,14 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'block_exacomp';
 $plugin->release = '4.6.3';
 <<<<<<< HEAD
+<<<<<<< HEAD
 $plugin->version   = 2018061500;
 =======
 $plugin->version   = 2018052500;
 >>>>>>> parent of de4be51... adapted dakora_grade_example for fileupload from teacher
+=======
+$plugin->version   = 2018052501;
+>>>>>>> parent of c89fff1... teacher fileupload
 $plugin->requires  = 2015051100;
 $plugin->maturity = MATURITY_STABLE;
 
