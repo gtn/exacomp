@@ -4893,10 +4893,11 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_submit_example_parameters() {
 		return new external_function_parameters (array(
-		    'role' => new external_value (PARAM_TEXT, 'role'),
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
+			'studentvalue' => new external_value (PARAM_INT, 'studentvalue', VALUE_DEFAULT, -1),
 			'url' => new external_value (PARAM_URL, 'url'),
 			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+<<<<<<< HEAD
 <<<<<<< HEAD
 			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
@@ -4909,29 +4910,36 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
 >>>>>>> parent of 1882bec... different appraoch to teacher fileupload
+=======
+			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment', VALUE_DEFAULT, ""),
+			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
+			'courseid' => new external_value (PARAM_INT, 'courseid'),
+			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
+		    
+		    'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ""),
+		    'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
+>>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
 		));
 	}
 
 	/**
 	 * submit example solution
 	 * Add student submission to example.
-	 * Or add teacher file to a student submission
 	 *
 	 * @ws-type-write
 	 * @param int itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_submit_example($role, $exampleid, $url, $filename, $itemid = 0, $courseid = 0, $fileitemid = 0, $comment, $value = 0) {
+	public static function dakora_submit_example($exampleid, $studentvalue = null, $url, $filename, $studentcomment, $itemid = 0, $courseid = 0, $fileitemid = 0) {
 		global $CFG, $DB, $USER;
-		
-		static::validate_parameters(static::dakora_submit_example_parameters(), array('role' => $role, 'exampleid' => $exampleid, 'url' => $url, 'filename' => $filename, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemid' => $fileitemid, 'comment' => $comment, 'value' => $value));
-		
+		static::validate_parameters(static::dakora_submit_example_parameters(), array('exampleid' => $exampleid, 'url' => $url, 'filename' => $filename, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemid' => $fileitemid));
+
 		if (!isset($type)) {
 			$type = ($filename != '') ? 'file' : 'url';
 		};
 
 		static::require_can_access_course($courseid);
-		
+
 		//insert: if itemid == 0 OR status != 0
 		$insert = true;
 		if ($itemid > 0) {
@@ -4972,7 +4980,7 @@ class block_exacomp_external extends external_api {
 			$dbView->hash = $hash;
 
 			$dbView->id = $DB->insert_record('block_exaportview', $dbView);
-			
+
 			//share the view with teachers
 			block_exaport_share_view_to_teachers($dbView->id);
 
@@ -4988,6 +4996,7 @@ class block_exacomp_external extends external_api {
 // 			$fiiile = block_exaport_get_item_comment_file(468);
 // 			var_dump($fiiile);
 			if ($type == 'file') {
+<<<<<<< HEAD
  			    $context = context_user::instance($USER->id); //so the teacher does not overwrite the student and vice verca
  			    //block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
  			    if($role == 'teacher'){
@@ -4996,10 +5005,14 @@ class block_exacomp_external extends external_api {
  			        block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
  			    }
  			    
+=======
+				block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
+>>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
 			}
+
 			$DB->update_record('block_exaportitem', $item);
 		}
-		
+
 		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
 		if ($type == "file") {
 
@@ -5009,6 +5022,7 @@ class block_exacomp_external extends external_api {
 			try {
 				$old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
 				if ($old) {
+<<<<<<< HEAD
 				    if($role == "teacher"){
 				        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
 				            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
@@ -5020,6 +5034,13 @@ class block_exacomp_external extends external_api {
 				    }
 					
 					$fs->create_file_from_storedfile($file_record, $old->get_id());					
+=======
+					$file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
+						'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
+						'timecreated' => time(), 'timemodified' => time());
+					$fs->create_file_from_storedfile($file_record, $old->get_id());
+
+>>>>>>> parent of 65d36b7... dakora_submit_example for teacher and student
 					$old->delete();
 				}
 			} catch (Exception $e) {
@@ -5049,27 +5070,10 @@ class block_exacomp_external extends external_api {
 		    
 		    block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
 		}
-		
-		if($role == "teacher"){
-		    //if teacher
-		    if ($insert) {
-		        $DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
-		        if ($comment != '') {
-		            $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
-		        }
-		    } else {
-		        $itemexample->timemodified = time();
-		        $itemexample->studentvalue = $value;
-		        $DB->update_record('block_exacompitemexample', $itemexample);
-		        
-		        $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
-		        if ($comment != '') {
-		            $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
-		        }
-		    }
-		    block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $value);
-		}
-		
+
+		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
+
+		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
 
 		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 		
