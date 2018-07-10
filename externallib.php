@@ -4993,9 +4993,8 @@ class block_exacomp_external extends external_api {
 			$item->url = $url;
 			$item->timemodified = time();
 
-// 			$fiiile = block_exaport_get_item_comment_file(468);
-// 			var_dump($fiiile);
 			if ($type == 'file') {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
  			    $context = context_user::instance($USER->id); //so the teacher does not overwrite the student and vice verca
@@ -5012,6 +5011,10 @@ class block_exacomp_external extends external_api {
 =======
 			    block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
 >>>>>>> parent of 5f5e53b... fileupload as teacher should work
+=======
+ 			    $context = context_user::instance($USER->id);
+ 			    block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)),$context->id);
+>>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
 			}
 
 			$DB->update_record('block_exaportitem', $item);
@@ -5028,6 +5031,7 @@ class block_exacomp_external extends external_api {
 				if ($old) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				    if($role == "teacher"){
 				        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
 				            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
@@ -5038,6 +5042,11 @@ class block_exacomp_external extends external_api {
 				            'timecreated' => time(), 'timemodified' => time());
 				    }
 					
+=======
+					$file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
+						'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
+						'timecreated' => time(), 'timemodified' => time());
+>>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
 					$fs->create_file_from_storedfile($file_record, $old->get_id());					
 =======
 =======
@@ -5935,7 +5944,11 @@ class block_exacomp_external extends external_api {
 			$data['url'] = $itemInformation->url;
 			$data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
 			$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
+<<<<<<< HEAD
 			$data['teacherfile'] = "asdf";
+=======
+			
+>>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
 
 			require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 			if ($file = block_exaport_get_item_file($itemInformation)) {
@@ -5952,9 +5965,8 @@ class block_exacomp_external extends external_api {
 				$data['file'] = $fileurl;
 				$data['mimetype'] = $file->get_mimetype();
 				$data['filename'] = $file->get_filename();
-				
-				
 			}
+<<<<<<< HEAD
 			
 
 			$teacherItemFile = $DB->get_record_sql("
@@ -5987,6 +5999,8 @@ class block_exacomp_external extends external_api {
 // 			    $teacherfileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
 // 			    $data['teacherfile'] = $teacherfileurl;
 // 			}
+=======
+>>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
 
 			$data['studentcomment'] = '';
 			$data['teachercomment'] = '';
@@ -5998,6 +6012,7 @@ class block_exacomp_external extends external_api {
 					$data['studentcomment'] = $itemcomment->entry;
 				} elseif (true) { // TODO: check if is teacher?
 					$data['teachercomment'] = $itemcomment->entry;
+<<<<<<< HEAD
 					//$commentfile = block_exaport_get_item_comment_file($itemcomment->id);
 					//var_dump($commentfile);
 					if (false) { // TODO: $itemcomment->file check if teacher has a file?
@@ -6010,6 +6025,16 @@ class block_exacomp_external extends external_api {
 // 						//throw new invalid_parameter_exception ('BIS HIER');
 // 					    //$fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$itemcomment->userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
 // 						$data['teacherfile'] = $fileurl;
+=======
+					if ($itemcomment->file) {
+						$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+							'userid' => $userid,
+							'itemid' => $itemInformation->id,
+							'commentid' => $itemcomment->id,
+							'wstoken' => static::wstoken(),
+						]);
+						$data['teacherfile'] = $fileurl;
+>>>>>>> parent of 20b785c... item_file from student, item_comment_file from teacher
 					}
 				}
 			}
@@ -6040,7 +6065,6 @@ class block_exacomp_external extends external_api {
 		} else {
 			$data['resubmission'] = false;
 		}
-		//$data['teacherfile'] = "asdf";
 
 		return $data;
 	}
