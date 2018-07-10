@@ -4852,7 +4852,39 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure (array(
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
 		));
-	}	
+	}
+
+	
+// 	/**
+// 	 * Returns description of method parameters
+// 	 *
+// 	 * @return external_function_parameters
+// 	 */
+// 	public static function dakora_submit_example_as_teacher_parameters() {
+	
+// 	}
+
+// 	/**
+// 	 * submit example solution
+// 	 * Add student submission to example.
+// 	 *
+// 	 * @ws-type-write
+// 	 * @param int itemid (0 for new, >0 for existing)
+// 	 * @return array of course subjects
+// 	 */
+// 	public static function dakora_submit_example_as_teacher() {
+// 	    throw new invalid_parameter_exception("NOT IMPLEMENTED YET");
+// 	}
+
+// 	/**
+// 	 * Returns desription of method return values
+// 	 *
+// 	 * @return external_single_structure
+// 	 */
+// 	public static function dakora_submit_example_as_teacher_returns() {
+	    
+// 	}
+	
 	
 	/**
 	 * Returns description of method parameters
@@ -5048,7 +5080,7 @@ class block_exacomp_external extends external_api {
 			'itemid' => new external_value (PARAM_INT, 'itemid'),
 		));
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5064,9 +5096,12 @@ class block_exacomp_external extends external_api {
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
 			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ""),
+<<<<<<< HEAD
 		    'url' => new external_value (PARAM_URL, 'url',VALUE_DEFAULT, false),
 		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area',VALUE_DEFAULT,null),
 		    'fileitemid' => new external_value (PARAM_INT, 'fileitemid',VALUE_DEFAULT,-1),
+=======
+>>>>>>> parent of de4be51... adapted dakora_grade_example for fileupload from teacher
 		));
 	}
 
@@ -5078,6 +5113,7 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
+<<<<<<< HEAD
 	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment,$url, $filename, $fileitemid) {
 	    global $CFG, $DB, $USER;
 	    $insert = null;
@@ -5251,6 +5287,63 @@ class block_exacomp_external extends external_api {
 // 	    }
 	    
 	    return array("success" => true, "exampleid" => $exampleid);
+=======
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment) {
+		global $DB, $USER;
+
+		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
+			'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment));
+
+		if ($userid == 0) {
+			$role = BLOCK_EXACOMP_ROLE_STUDENT;
+			$userid = $USER->id;
+		} else {
+			$role = BLOCK_EXACOMP_ROLE_TEACHER;
+		}
+
+		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_example($exampleid, $courseid);
+
+		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid);
+
+		if ($itemid > 0 && $userid > 0) {
+
+			$itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
+			if (!$itemexample) {
+				throw new invalid_parameter_exception("Wrong itemid given");
+			}
+
+			if ($itemvalue < 0 && $itemvalue > 100) {
+				throw new invalid_parameter_exception("Item value must be between 0 and 100");
+			}
+
+			$itemexample->teachervalue = $itemvalue;
+			$itemexample->datemodified = time();
+			$itemexample->status = 1;
+
+			$DB->update_record('block_exacompitemexample', $itemexample);
+
+			if ($comment) {
+				$insert = new stdClass ();
+				$insert->itemid = $itemid;
+				$insert->userid = $USER->id;
+				$insert->entry = $comment;
+				$insert->timemodified = time();
+
+				$DB->delete_records('block_exaportitemcomm', array(
+					'itemid' => $itemid,
+					'userid' => $USER->id,
+				));
+				$DB->insert_record('block_exaportitemcomm', $insert);
+
+				block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
+
+				\block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
+			}
+		}
+
+		return array("success" => true, "exampleid" => $exampleid);
+>>>>>>> parent of de4be51... adapted dakora_grade_example for fileupload from teacher
 	}
 
 	/**
