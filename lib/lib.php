@@ -6463,7 +6463,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 				if ($row->span != 1) {
 					if (!array_key_exists($niveau->title, $row->niveaus)) { //Hier werden die Total bewertungen von den Topics überschrieben!
 						$row->niveaus[$niveau->title] = new stdClass();
-						$row->niveaus[$niveau->title]->eval = 2;
+						$row->niveaus[$niveau->title]->eval = '';
 						$row->niveaus[$niveau->title]->evalniveau = '';
 						$row->niveaus[$niveau->title]->evalniveauid = ($use_evalniveau) ? -1 : 0;
 						$row->niveaus[$niveau->title]->show = false;
