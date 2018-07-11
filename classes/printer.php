@@ -97,9 +97,11 @@ class printer_TCPDF extends \TCPDF {
 }
 
 class printer {
+    
 	static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
-		$pdf = new printer_TCPDF('L');
-
+	    ob_start();
+	    $pdf = new printer_TCPDF('L');
+		
 		$pdf->setStyle('
 			* {
 				font-size: 9pt;
@@ -397,4 +399,10 @@ class printer {
 		$pdf->Output();
 		exit;
 	}
+// 	static function printReports($html){
+// 	    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+// 	    $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+// 	    $pdf->Output();
+// 	    exit;
+// 	}
 }

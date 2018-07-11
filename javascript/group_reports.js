@@ -1,4 +1,3 @@
-<?php
 // This file is part of Exabis Competence Grid
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
@@ -12,15 +11,14 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+//
 // You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-
+//
 // This copyright notice MUST APPEAR in all copies of the script!
 
-defined('MOODLE_INTERNAL') || die();
+(function($) {
 
-$plugin->component = 'block_exacomp';
-$plugin->release = '4.6.3';
-$plugin->version   = 2018071002;
-$plugin->requires  = 2015051100;
-$plugin->maturity = MATURITY_STABLE;
-
+	window.group_reports_print = function() {
+		window.open(document.location.href+'&print=1');
+	}
+})(jQueryExacomp);

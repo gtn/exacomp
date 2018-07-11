@@ -7894,8 +7894,13 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
 }
 
 function block_exacomp_group_reports_result($filter) {
+	echo block_exacomp_group_reports_return_result($filter);
+}
+
+function block_exacomp_group_reports_return_result($filter) {
 	$courseid = g::$COURSE->id;
 	$students = block_exacomp_get_students_by_course($courseid);
+	$html = '';
 
 	if ($filter['type'] == 'students') {
 		$has_output = false;
@@ -7989,7 +7994,7 @@ function block_exacomp_group_reports_result($filter) {
 
 
 			ob_start();
-			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
+			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter, $html) {
 				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
 				if (!$item->visible) {
@@ -8004,6 +8009,7 @@ function block_exacomp_group_reports_result($filter) {
 				$item_type = $item::TYPE;
 				if ($item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
 				    echo '<tr class="exarep_subject_row">';
+
 				}else if ($item_type == BLOCK_EXACOMP_TYPE_TOPIC) {
 				    echo '<tr class="exarep_topic_row">';
 				}else if($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $level <= 2) {
@@ -8016,14 +8022,15 @@ function block_exacomp_group_reports_result($filter) {
 				
 				echo '<td class="exarep_descriptor" style="white-space: nowrap">'.$item->get_numbering();
 				echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
+
 				if (@$filter['time']['active']) {
 					echo '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
+				    $html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
 				echo '<td class="exarep_studentAssessment" style="padding: 0 10px;">'.$eval->get_student_value_title();
 				echo '<td class="exarep_teacherAssessment" style="padding: 0 10px;">'.block_exacomp_format_eval_value($eval->additionalinfo);
 				echo '<td class="exarep_exa_evaluation" style="padding: 0 10px;">'.$eval->get_teacher_value_title();
 				echo '<td class="exarep_difficultyLevel" style="padding: 0 10px;">'.$eval->get_evalniveau_title();
-
 				$walk_subs($level + 1);
 			});
 			$output = ob_get_clean();
@@ -8031,40 +8038,59 @@ function block_exacomp_group_reports_result($filter) {
 			if ($output) {
 				$has_output = true;
 
-				echo '<h3>'.fullname($student).'</h3>';
-				echo '<table class="report_table" border="1" width="100%">';
-				echo '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
+// 				echo '<h3>'.fullname($student).'</h3>';
+// 				echo '<table class="report_table" border="1" width="100%">';
+// 				echo '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
+				
+				$html .= '<h3>'.fullname($student).'</h3>';
+				$html .= '<table class="report_table" border="1" width="100%">';
+				$html .= '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
 				if (@$filter['time']['active']) {
-				    echo '<th>'.block_exacomp_get_string('assessment_date').'</th>';
+// 				    echo '<th>'.block_exacomp_get_string('assessment_date').'</th>';
+				    $html .= '<th>'.block_exacomp_get_string('assessment_date').'</th>';
 				}
 				//echo html_writer::tag('th',block_exacomp_get_string('output_current_assessments'),array('colspan' => "4"));
-				echo '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
-				echo '<tr>';
-                echo '<th class="heading"></th>';
-                echo '<th class="heading"></th>';
-                echo '<th class="heading" class="studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
-                echo '<th class="heading" class="teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
-                echo '<th class="heading" class="exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
-                echo '<th class="heading"class="difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
-                echo "<tbody>";
-                echo $output;
-				echo '</table>';
+// 				echo '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
+// 				echo '<tr>';
+//                 echo '<th class="heading"></th>';
+//                 echo '<th class="heading"></th>';
+//                 echo '<th class="heading" class="studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
+//                 echo '<th class="heading" class="teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
+//                 echo '<th class="heading" class="exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
+//                 echo '<th class="heading"class="difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
+//                 echo "<tbody>";
+//                 echo $output;
+// 				echo '</table>';
+				
+				$html .= '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
+				$html .= '<tr>';
+				$html .= '<th class="heading"></th>';
+				$html .= '<th class="heading"></th>';
+				$html .= '<th class="heading" class="studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
+				$html .= '<th class="heading" class="teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
+				$html .= '<th class="heading" class="exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
+				$html .= '<th class="heading"class="difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
+				$html .= "<tbody>";
+				$html .= $output;
+				$html .= '</table>';
 			}
 		}
 
 		if (!$has_output) {
-			echo block_exacomp_get_string('no_entries_found');
+// 			echo block_exacomp_get_string('no_entries_found');
+			$html .= block_exacomp_get_string('no_entries_found');
 		}
 	}
 
 	if ($filter['type'] == 'student_counts') {
 		$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
-		echo '<table>';
-		echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
-		
+// 		echo '<table>';
+// 		echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
+		$html .= '<table>';
+		$html .= '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
 
-		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students) {
+		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students, $html) {
 
 			$item_type = $item::TYPE;
 			if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
@@ -8124,17 +8150,25 @@ function block_exacomp_group_reports_result($filter) {
 					$count++;
 				}
 
-				echo '<tr>';
-				echo '<td style="white-space: nowrap">'.$item->get_numbering();
-				echo '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
-				echo '<td style="padding: 0 10px;">'.$count;
+// 				echo '<tr>';
+// 				echo '<td style="white-space: nowrap">'.$item->get_numbering();
+// 				echo '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
+// 				echo '<td style="padding: 0 10px;">'.$count;
+				
+				$html .= '<tr>';
+				$html .= '<td style="white-space: nowrap">'.$item->get_numbering();
+				$html .= '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
+				$html .= '<td style="padding: 0 10px;">'.$count;
 			}
 
 			$walk_subs($level + 1);
 		});
 
-		echo '</table>';
+// 		echo '</table>';
+		$html .= '</table>';
+		
 	}
+	return $html;
 }
 
 // TODO: do we need this function yet?
