@@ -6349,7 +6349,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
 }
 
 /**
- * get data for grid table in profile, where topics are listed on horizontal axis, niveaus on vertical
+ * get data for grid table in profile, where topics are listed on vertical axis, niveaus on horizontal
  * and each cell represent descriptor evaluation
  * additionally topic and subject evaluation is also included
  * @param unknown $courseid
@@ -6376,6 +6376,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 
 	$subject = block_exacomp\db_layer_student::create($courseid)->get_subject($subjectid);
+
 	if (!$subject) {
 		return;
 	}
@@ -6389,7 +6390,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	foreach ($subject->topics as $topic) {
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
-		
+
 		// gesamt für topic
 		$data->topic_evalniveauid =
 			(($use_evalniveau) ?
@@ -6400,16 +6401,34 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		$data->topic_evalniveau = @$evaluationniveau_items[$data->topic_evalniveauid] ?: '';
 
 		//auswirkung auf total im kompetenzprofil
+// 		$data->topic_eval =
+// 			((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) ?
+// 				((isset($user->topics->teacher_additional_grading[$topic->id]))
+// 					? $user->topics->teacher_additional_grading[$topic->id] : '')
+// 				: ((isset($user->topics->teacher[$topic->id]))
+// 					? $scheme_items[$user->topics->teacher[$topic->id]] : '-1'));
 		$data->topic_eval =
-			((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) ?
-				((isset($user->topics->teacher_additional_grading[$topic->id]))
-					? $user->topics->teacher_additional_grading[$topic->id] : '')
-				: ((isset($user->topics->teacher[$topic->id]))
-					? $scheme_items[$user->topics->teacher[$topic->id]] : '-1'));
+		((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
+		    ((isset($user->topics->teacher_additional_grading[$topic->id]))
+		        ? $user->topics->teacher_additional_grading[$topic->id] : '')
+		    : ((isset($user->topics->teacher[$topic->id]))
+		        ? $user->topics->teacher[$topic->id] : '-1')); // $scheme_items[$user->topics->teacher[$topic->id]] would deliver the text... float expected
+		//var_dump(isset($user->topics->teacher[$topic->id]));
+		//var_dump($user->topics->teacher[$topic->id]);
+		$data->topic_eval = 2;
+		//var_dump(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC));
+		
+// 		((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) ?
+// 		((isset($user->topics->teacher_additional_grading[$topic->id]))
+// 		    ? var_dump($user->topics->teacher_additional_grading[$topic->id]) : var_dump('-5'))
+// 		    : ((isset($user->topics->teacher[$topic->id]))
+// 		        ? var_dump($scheme_items[$user->topics->teacher[$topic->id]]) : var_dump('-1')));
 
 		$data->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
 		$data->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id])) ? $user->topics->timestamp_teacher[$topic->id] : 0);
 		$data->topic_id = $topic->id;
+// 		var_dump($data->topic_id);
+// 		var_dump($data->topic_eval);
 	}
 
 	$table_content->subject_evalniveau =
@@ -6434,15 +6453,17 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
 	$table_content->subject_title = $subject->title;
 
+	//var_dump($table_header);
 	foreach ($table_header as $key => $niveau) {
+	    //var_dump($niveau->span);
 		if (isset($niveau->span) && $niveau->span == 1) {
 			unset($table_header[$key]);
 		} elseif ($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
 			foreach ($table_content->content as $row) {
 				if ($row->span != 1) {
-					if (!array_key_exists($niveau->title, $row->niveaus)) {
+					if (!array_key_exists($niveau->title, $row->niveaus)) { //Hier werden die Total bewertungen von den Topics überschrieben!
 						$row->niveaus[$niveau->title] = new stdClass();
-						$row->niveaus[$niveau->title]->eval = '';
+						$row->niveaus[$niveau->title]->eval = 2;
 						$row->niveaus[$niveau->title]->evalniveau = '';
 						$row->niveaus[$niveau->title]->evalniveauid = ($use_evalniveau) ? -1 : 0;
 						$row->niveaus[$niveau->title]->show = false;
@@ -6459,6 +6480,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		ksort($row->niveaus);
 	}
 
+	//var_dump($table_content);
 	return array($course_subjects, $table_column, $table_header, $table_content);
 }
 
@@ -6500,12 +6522,16 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		// copy of block_exacomp_get_descriptor_statistic_for_topic()
 		//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 		
+		//deprecated code before generic grading
+// 		$data->niveaus[$niveau->title]->eval =
+// 			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
+// 				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
+// 				: (($evaluation && $evaluation->value) ? $evaluation->value : -1);
 		$data->niveaus[$niveau->title]->eval =
-			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
-				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
-				: (($evaluation && $evaluation->value) ? $evaluation->value : -1);
-		
-		//$data->niveaus[$niveau->title]->eval = $evaluation->value;
+		(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
+		? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
+		: (($evaluation && $evaluation->value || ($evaluation->value=="0")) ? $evaluation->value : -1); //nuller anzeigen!
+		//var_dump($evaluation);
 
 		$data->niveaus[$niveau->title]->show = true;
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
@@ -6582,14 +6608,15 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[0]->visible = $rowcontent->visible;
 
 		$current_idx = 1;
-		foreach ($rowcontent->niveaus as $niveau => $element) {
+		foreach ($rowcontent->niveaus as $niveau => $element) { //DESCRIPTORS
 			$content_row->columns[$current_idx] = new stdClass();
 			//var_dump(block_exacomp_get_descriptor_numbering($element));
 			//var_dump($rowcontent);
 			//$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $element->descriptorid);
 			//$content_row->columns[$current_idx]->evaluation = ($grading->value !== null) ? $grading->value : -1;
 			//var_dump($element);
-			$content_row->columns[$current_idx]->evaluation = (empty($element->eval) || strlen(trim($element->eval)) == 0) ? -1 : $element->eval;
+			//var_dump($element->eval);
+			$content_row->columns[$current_idx]->evaluation = (empty($element->eval) && $element->eval != '0') ? -1 : $element->eval;
 			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
 			$content_row->columns[$current_idx]->show = $element->show;
 			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
@@ -6608,10 +6635,10 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$current_idx++;
 		}
 
-		if (block_exacomp_is_topicgrading_enabled()) {
+		if (block_exacomp_is_topicgrading_enabled()) { //TOPICS
 			$topic_eval = new stdClass();
 			$topic_eval->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
-			$topic_eval->evaluation = empty($rowcontent->topic_eval) ? -1 : $rowcontent->topic_eval;
+			$topic_eval->evaluation = (empty($rowcontent->topic_eval)|| strlen(trim($element->eval)) == 0) ? -1 : $rowcontent->topic_eval;
 			$topic_eval->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
 			$topic_eval->evalniveauid = $rowcontent->topic_evalniveauid;
 			$topic_eval->topicid = $rowcontent->topic_id;
