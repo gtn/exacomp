@@ -325,6 +325,7 @@ function block_exacomp_evaluation_niveau_type() {
 function block_exacomp_additional_grading($level = null) {
     switch ($level) {
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
             return block_exacomp_get_assessment_comp_scheme();
         case BLOCK_EXACOMP_TYPE_TOPIC:
             return block_exacomp_get_assessment_topic_scheme();
@@ -444,6 +445,48 @@ function block_exacomp_get_assessment_theme_diffLevel() {
 
 function block_exacomp_get_assessment_theme_SelfEval() {
     return get_config('exacomp', 'assessment_theme_SelfEval');
+}
+
+function block_exacomp_get_assessment_diffLevel($level) {
+    switch ($level) {
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
+            return block_exacomp_get_assessment_comp_diffLevel();
+        case BLOCK_EXACOMP_TYPE_TOPIC:
+            return block_exacomp_get_assessment_topic_diffLevel();
+        case BLOCK_EXACOMP_TYPE_CROSSSUB:
+            return block_exacomp_get_assessment_theme_diffLevel();
+        case BLOCK_EXACOMP_TYPE_SUBJECT:
+            return block_exacomp_get_assessment_subject_diffLevel();
+        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+            return block_exacomp_get_assessment_example_diffLevel();
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
+            return block_exacomp_get_assessment_childcomp_diffLevel();
+        default:
+            return false;
+    }
+    return false;
+}
+
+function block_exacomp_get_assessment_SelfEval($level) {
+    switch ($level) {
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
+            return block_exacomp_get_assessment_comp_SelfEval();
+        case BLOCK_EXACOMP_TYPE_TOPIC:
+            return block_exacomp_get_assessment_topic_SelfEval();
+        case BLOCK_EXACOMP_TYPE_CROSSSUB:
+            return block_exacomp_get_assessment_theme_SelfEval();
+        case BLOCK_EXACOMP_TYPE_SUBJECT:
+            return block_exacomp_get_assessment_subject_SelfEval();
+        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+            return block_exacomp_get_assessment_example_SelfEval();
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
+            return block_exacomp_get_assessment_childcomp_SelfEval();
+        default:
+            return false;
+    }
+    return false;
 }
 
 
@@ -5770,7 +5813,6 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 
 	$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid, 'descrid' => $descrid));
 	$example->descsorting = $desc_examp->sorting;
-	
 
 	if (block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_SORTING, $example)) {
 		$sql = "SELECT e.*, de.sorting as descsorting FROM {block_exacompexamples} e
@@ -6444,9 +6486,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
 	$table_content->subject_title = $subject->title;
 
-	//var_dump($table_header);
 	foreach ($table_header as $key => $niveau) {
-	    //var_dump($niveau->span);
 		if (isset($niveau->span) && $niveau->span == 1) {
 			unset($table_header[$key]);
 		} elseif ($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
@@ -6471,7 +6511,6 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		ksort($row->niveaus);
 	}
 
-	//var_dump($table_content->subject_eval);
 	return array($course_subjects, $table_column, $table_header, $table_content);
 }
 
@@ -6507,7 +6546,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->niveaus[$niveau->title]->evalniveau = '';
 			$data->niveaus[$niveau->title]->evalniveauid = -1;  //ändert für jeden LFS was
 		}
-		
+
 		//var_dump($evaluation->value);
 		// copy of block_exacomp_get_descriptor_statistic_for_topic()
 		//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
@@ -6524,11 +6563,11 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		//var_dump($evaluation);
 
 		//$data->niveaus[$niveau->title]->eval = 3;
-		
+
 		$data->niveaus[$niveau->title]->show = true;
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 		$data->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp)) ? $evaluation->timestamp : 0);
-		
+
 		$data->niveaus[$niveau->title]->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$studentid);
 		//var_dump($descriptor->id,$userid);
 
@@ -6613,7 +6652,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
 			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 			$content_row->columns[$current_idx]->timestamp = $element->timestamp;
-			
+
 			//throw new block_exacomp_permission_exception('User is no teacher');
 			//var_dump($element);
 			$content_row->columns[$current_idx]->gradingisold = $element->gradingisold;
@@ -6643,7 +6682,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$table->rows[] = $content_row;
 	}
 
-	if (block_exacomp_is_subjectgrading_enabled()) {	   //SUBJECT  
+	if (block_exacomp_is_subjectgrading_enabled()) {	   //SUBJECT
 		$content_row = new stdClass();
 		$content_row->columns = array();
 
@@ -6652,8 +6691,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[0]->span = count($table_header);
 
 		$content_row->columns[1] = new stdClass();
-		//var_dump($table_content->subject_eval);
-		$content_row->columns[1]->evaluation = (empty($table_content->subject_eval) && $table_content->subject_eval != '0') ? -1 : $table_content->subject_eval;
+		$content_row->columns[1]->evaluation = empty($table_content->subject_eval) ? -1 : $table_content->subject_eval;
 		$content_row->columns[1]->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval));
 		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
 		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
@@ -7828,39 +7866,72 @@ function block_exacomp_format_eval_value($value) {
 	return format_float($value, 1, true, true);
 }
 
-function block_exacomp_group_reports_get_filter() {
-	$filter = (array)@$_REQUEST['filter'];
-	
-	if (!$filter) {
-		// default filter
-		@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
-		@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
-		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
-	}
+function block_exacomp_group_reports_get_filter($reportType = 'general') {
+    $filter = (array)@$_REQUEST['filter'];
 
-	// active means, we also have to loop over those items
-	if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
-		@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
-	}
-	if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
-		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
-	}
-	if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
-		@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
-	}
-	if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
-		@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
-	}
-	if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
-		@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
-	}
+    switch ($reportType) {
+        case 'annex':
+            //if (!$filter) {
+            //default constants filter
+            @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
+            @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
+            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
+            //@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] = true;
+            @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+            @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+            //}
+            //break;
+        default:
+            if (!$filter) {
+                // default filter
+                @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
+                //@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] = true;
+                }
 
-	if (@$filter['type'] != 'student_counts') {
-		$filter['type'] = 'students';
-	}
+            // active means, we also have to loop over those items
+            if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
+                @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+            }
+            if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+            }
+            if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+            }
+            //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+            //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
+            //}
+            if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+                @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+            }
+            if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+                @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+            }
 
-	return $filter;
+            if (@$filter['type'] != 'student_counts') {
+                $filter['type'] = 'students';
+            }
+    }
+    // removes all NULL, FALSE and Empty Strings but leaves 0 (zero) values
+    $filter = block_exacomp_array_filter_recursive($filter, function($value) {
+        return ($value !== null && $value !== false && $value !== '');
+    });
+    return $filter;
+ }
+
+function block_exacomp_array_filter_recursive( array $array, callable $callback = null ) {
+    $array = is_callable( $callback ) ? array_filter( $array, $callback ) : array_filter( $array );
+    foreach ( $array as &$value ) {
+        if ( is_array( $value ) ) {
+            $value = call_user_func( __FUNCTION__, $value, $callback );
+        }
+    }
+    return $array;
 }
+
 
 function block_exacomp_tree_walk(&$items, $data, $callback) {
 	$args = func_get_args();
@@ -7919,6 +7990,7 @@ function block_exacomp_group_reports_return_result($filter) {
 				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
 				$item_type = $item::TYPE;
+				$item_scheme = block_exacomp_additional_grading($item_type);
 				if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 					$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 				}
@@ -7931,48 +8003,17 @@ function block_exacomp_group_reports_return_result($filter) {
 					return false;
 				}
 
-				if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
-					$value = @$eval->evalniveauid ?: 0;
-					if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
-						/*
-						$item->visible = false;
-						return;
-						*/
-						return false;
-					}
-				}
-				if (@$item_filter['additionalinfo_from']) {
-					$value = @$eval->additionalinfo ?: 0;
-					if ($value < str_replace(',', '.', $item_filter['additionalinfo_from'])) {
-						return false;
-					}
-				}
-				if (@$item_filter['additionalinfo_to']) {
-					$value = @$eval->additionalinfo ?: 0;
-					if ($value > str_replace(',', '.', $item_filter['additionalinfo_to'])) {
-						return false;
-					}
-				}
+                $filter_result = block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval);
+                if (!$filter_result) {
+				    return false;
+                }
 
-				if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) {
-					$value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
-					if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
-						return false;
-					}
-				}
-				if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) {
-					$value = @$eval->studentevaluation ?: 0;
-					if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
-						return false;
-					}
-				}
-
-				if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+				/*if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
 					$item->visible = false;
 				}
 				if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
 					$item->visible = false;
-				}
+				}*/
 
 				$walk_subs($level + 1);
 
@@ -8010,9 +8051,9 @@ function block_exacomp_group_reports_return_result($filter) {
 				
 				//item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
 				$item_type = $item::TYPE;
+                $item_scheme = block_exacomp_additional_grading($item_type);
 				if ($item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
 				    echo '<tr class="exarep_subject_row">';
-
 				}else if ($item_type == BLOCK_EXACOMP_TYPE_TOPIC) {
 				    echo '<tr class="exarep_topic_row">';
 				}else if($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $level <= 2) {
@@ -8031,9 +8072,31 @@ function block_exacomp_group_reports_return_result($filter) {
 				    $html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
 				echo '<td class="exarep_studentAssessment" style="padding: 0 10px;">'.$eval->get_student_value_title();
-				echo '<td class="exarep_teacherAssessment" style="padding: 0 10px;">'.block_exacomp_format_eval_value($eval->additionalinfo);
+				echo '<td class="exarep_teacherAssessment" style="padding: 0 10px;">';
+                switch ($item_scheme) {
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                        echo block_exacomp_format_eval_value($eval->additionalinfo);
+                        break;
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                        echo block_exacomp_format_eval_value($eval->teacherevaluation);
+                        break;
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                        $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+                        $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+                        if (isset($teacher_eval_items[$value])) {
+                            echo $teacher_eval_items[$value];
+                        }
+                        break;
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                        $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+                        if ($value > 0) {
+                            echo 'V';
+                        }
+                        break;
+                }
 				echo '<td class="exarep_exa_evaluation" style="padding: 0 10px;">'.$eval->get_teacher_value_title();
 				echo '<td class="exarep_difficultyLevel" style="padding: 0 10px;">'.$eval->get_evalniveau_title();
+
 				$walk_subs($level + 1);
 			});
 			$output = ob_get_clean();
@@ -8044,7 +8107,7 @@ function block_exacomp_group_reports_return_result($filter) {
 // 				echo '<h3>'.fullname($student).'</h3>';
 // 				echo '<table class="report_table" border="1" width="100%">';
 // 				echo '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
-				
+
 				$html .= '<h3>'.fullname($student).'</h3>';
 				$html .= '<table class="report_table" border="1" width="100%">';
 				$html .= '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
@@ -8064,7 +8127,7 @@ function block_exacomp_group_reports_return_result($filter) {
 //                 echo "<tbody>";
 //                 echo $output;
 // 				echo '</table>';
-				
+
 				$html .= '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
 				$html .= '<tr>';
 				$html .= '<th class="heading"></th>';
@@ -8096,6 +8159,7 @@ function block_exacomp_group_reports_return_result($filter) {
 		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students, $html) {
 
 			$item_type = $item::TYPE;
+            $item_scheme = block_exacomp_additional_grading($item_type);
 			if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 				$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 			}
@@ -8111,67 +8175,295 @@ function block_exacomp_group_reports_return_result($filter) {
 
 					$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
-					if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
-						$value = @$eval->evalniveauid ?: 0;
-						if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
-							continue;
-						}
-					}
-					if (@$item_filter['additionalinfo_from']) {
-						$value = @$eval->additionalinfo ?: 0;
-						if ($value < str_replace(',', '.', $item_filter['additionalinfo_from'])) {
-							continue;
-						}
-					}
-					if (@$item_filter['additionalinfo_to']) {
-						$value = @$eval->additionalinfo ?: 0;
-						if ($value > str_replace(',', '.', $item_filter['additionalinfo_to'])) {
-							continue;
-						}
-					}
-
-					if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) {
-						$value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
-						if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
-							continue;
-						}
-					}
-					if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) {
-						$value = @$eval->studentevaluation ?: 0;
-						if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
-							continue;
-						}
-					}
-
-					if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
-						continue;
-					}
-					if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
-						continue;
-					}
+                    $filter_result = block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval);
+                    if (!$filter_result) {
+                        continue;
+                    }
 
 					$count++;
 				}
 
-// 				echo '<tr>';
-// 				echo '<td style="white-space: nowrap">'.$item->get_numbering();
-// 				echo '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
-// 				echo '<td style="padding: 0 10px;">'.$count;
-				
-				$html .= '<tr>';
-				$html .= '<td style="white-space: nowrap">'.$item->get_numbering();
-				$html .= '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
-				$html .= '<td style="padding: 0 10px;">'.$count;
+                // 				echo '<tr>';
+                // 				echo '<td style="white-space: nowrap">'.$item->get_numbering();
+                // 				echo '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
+                // 				echo '<td style="padding: 0 10px;">'.$count;
+
+                $html .= '<tr>';
+                $html .= '<td style="white-space: nowrap">'.$item->get_numbering();
+                $html .= '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
+                $html .= '<td style="padding: 0 10px;">'.$count;
 			}
 
 			$walk_subs($level + 1);
 		});
 
-// 		echo '</table>';
-		$html .= '</table>';
-		
-	}
-	return $html;
+        // 		echo '</table>';
+        $html .= '</table>';
+
+    }
+    return $html;
+}
+
+/**
+ * @param integer $item_type
+ * @param integer $item_scheme
+ * @param array $filter
+ * @param $eval
+ * @return bool
+ */
+function block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval) {
+    $item_filter = (array)@$filter[$item_type];
+    if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
+        $value = @$eval->evalniveauid ?: 0;
+        if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
+            /*
+            $item->visible = false;
+            return;
+            */
+            return false;
+        }
+    }
+    switch ($item_scheme) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            $value = @$eval->additionalinfo ?: 0;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            if ($item_scheme != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+                $value = @$eval->teacherevaluation ?: 0;
+            }
+            if (@$item_filter['teacherevaluation_from']) {
+                if ($value < str_replace(',', '.', $item_filter['teacherevaluation_from'])) {
+                    return false;
+                }
+            }
+            if (@$item_filter['teacherevaluation_to']) {
+                if ($value > str_replace(',', '.', $item_filter['teacherevaluation_to'])) {
+                    return false;
+                }
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+            $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+            if (@$item_filter['teacherevaluation'] && is_array($item_filter['teacherevaluation']) && count($item_filter['teacherevaluation']) > 0) {
+                if (!isset($teacher_eval_items[$value]) || !in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
+                    return false;
+                }
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            //$value = $DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, array("compid" => $item->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, 'courseid' => $courseid, 'userid' => $studentid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+            $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+            if (@$item_filter['teacherevaluation'] && is_array($item_filter['teacherevaluation']) && count($item_filter['teacherevaluation']) > 0) {
+                if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
+                    return false;
+                }
+            }
+    }
+
+    /*if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) {
+        $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+        if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION])) {
+            return false;
+        }
+    }*/
+
+    if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) {
+        $value = @$eval->studentevaluation ?: 0;
+        if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
+            return false;
+        }
+    }
+
+    if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+        return false;
+    }
+    if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
+        return false;
+    }
+
+    return true;
+}
+
+function block_exacomp_group_reports_annex_result($filter) {
+    $courseid = g::$COURSE->id;
+    $students = block_exacomp_get_students_by_course($courseid);
+
+    //print_r($filter);
+    $has_output = false;
+    $isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+    $dataRow = array();
+
+    if ($filter['selectedStudent'] > 0){
+        $students = array($students[$filter['selectedStudent']]);
+    }
+    foreach ($students as $student) {
+        $studentid = $student->id;
+
+        $subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+        block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
+            $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
+
+            $item_type = $item::TYPE;
+            if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+                $item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
+            }
+
+            $item_filter = (array)@$filter[$item_type];
+            $item->visible = @$item_filter['visible'];
+
+            if (!@$item_filter['active']) {
+                return false;
+            }
+
+            $walk_subs($level + 1);
+
+            $item->evaluation = $eval;
+        });
+
+        //echo '<pre>';print_r($subjects); echo '<pre>';
+
+        // count of columns
+        $colCount = block_exacomp_get_grading_scheme($courseid);
+
+        if ($isDocx) {
+            $dataRow[$studentid] = array();
+            $dataRow[$studentid]['studentData'] = $student;
+            $dataRow[$studentid]['courseData'] = g::$COURSE;
+            $dataRow[$studentid]['subjects'] = $subjects;
+            /*block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use (
+                    $studentid, $courseid, $filter, &$dataRow
+            ) {
+                $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
+
+            });*/
+        } else {
+            echo '<hr>';
+            echo '<h1>'.block_exacomp_get_string('tab_teacher_report_annex_title').'</h1>';
+            echo '<h2>'.fullname($student).'</h2>';
+            echo '<h3>'.g::$COURSE->fullname.'</h3>';
+
+            $firstSubject = true;
+            $has_subject_results = false;
+
+            ob_start();
+            block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use (
+                    $studentid, $courseid, $filter, $colCount, &$firstSubject, &$has_subject_results
+            ) {
+                $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
+
+                if (!$item->visible) {
+                    // walk subs with same level
+                    $walk_subs($level);
+                    return;
+                }
+
+                //item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
+                $item_type = $item::TYPE;
+                if (block_exacomp_additional_grading() && (BLOCK_EXACOMP_TYPE_TOPIC || BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+                    // additional grading is used
+                    // formula for additionalinfo (grading by value)
+                    // y = 0.4x + 0.6
+                    // y = grading by 1-3 (as in the report columns)
+                    // x - grading from input field from competences overview: 1-6
+                    if ($eval->additionalinfo >= 1) {
+                        $selectedEval = round(0.4 * $eval->additionalinfo + 0.6);
+                    } else {
+                        $selectedEval = 0;
+                    }
+                } else {
+                    $selectedEval = $eval->teacherevaluation;
+                }
+                if ($selectedEval > 0 || $item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+                    switch ($item_type) {
+                        case BLOCK_EXACOMP_TYPE_SUBJECT:
+                            $has_subject_results = false;
+                            // table wrapping with Subject title
+                            if (!$firstSubject) {
+                                echo "</tbody>";
+                                echo '</table>';
+                            } else {
+                                $firstSubject = false;
+                            }
+                            echo '<br><h3>'.$item->title.'</h3>';
+                            echo '<table class="report_table" border="1" width="100%" style="margin-bottom: 25px;">';
+                            echo '<thead>';
+                            echo '<tr>';
+                            echo '<th class="heading">'.block_exacomp_get_string('descriptor').'</th>';
+                            echo '<th class="heading">'.block_exacomp_get_string('taxonomy').'</th>';
+                            for ($i = 0; $i <= $colCount; $i++) {
+                                echo '<th class="heading">'.$i.'</th>';
+                            }
+                            echo '</tr></thead>';
+                            echo "<tbody>";
+                            break;
+                        case BLOCK_EXACOMP_TYPE_TOPIC:
+                            echo '<tr class="exarep_topic_row">';
+                            break;
+                        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+                            if ($level <= 2) {
+                                echo '<tr class="exarep_descriptor_parent_row">';
+                            } else if ($level > 2) {
+                                echo '<tr class="exarep_descriptor_child_row">';
+                            }
+                            break;
+                        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+                            echo '<tr class="exarep_example_row">';
+                            break;
+                    }
+
+                    if ($item_type != BLOCK_EXACOMP_TYPE_SUBJECT) {
+                        $has_subject_results = true;
+                        echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.
+                                $item->get_numbering().' '.$item->title.'</td>';
+                        //echo '<pre>'.print_r($item,true).'</pre>';
+                        echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
+                        for ($i = 0; $i <= $colCount; $i++) {
+                            echo '<td style="padding: 0 10px;">';
+                            if ($selectedEval == $i) {
+                                echo 'X';
+                            }
+                            echo '</td>';
+                        }
+                        echo '</tr>';
+                    }
+                }
+                $walk_subs($level + 1);
+            });
+            echo "</tbody>";
+            echo '</table>';
+            if (!$has_subject_results) {
+                echo block_exacomp_get_string('no_entries_found');
+            }
+        }
+
+    }
+
+    if ($isDocx) {
+        \block_exacomp\printer::block_exacomp_generate_report_annex_docx($courseid, $dataRow);
+        exit;
+    }
+
+}
+
+
+function block_exacomp_save_report_settings($courseid, $delete = false) {
+    $fs = get_file_storage();
+    if ($delete) {
+        $fs->delete_area_files($courseid, 'block_exacomp', 'report_annex', 0);
+    }
+    if (isset($_FILES["templateDocx"]) && trim($_FILES["templateDocx"]['name']) != '') {
+        // Prepare file record object
+        $fileinfo = array(
+                'contextid' => $courseid,
+                'component' => 'block_exacomp',
+                'filearea' => 'report_annex',
+                'itemid' => 0,
+                'filepath' => '/',
+                'filename' => $_FILES["templateDocx"]['name']);
+
+        $fs->delete_area_files($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'], $fileinfo['itemid']);
+        $fs->create_file_from_pathname($fileinfo, $_FILES["templateDocx"]['tmp_name']);
+    }
 }
 
 // TODO: do we need this function yet?
@@ -8252,16 +8544,47 @@ function block_exacomp_get_preconfigparameters_list() {
     return $preconfigparameters;
 }
 
+function block_exacomp_get_custom_profile_field_value($userid, $fieldname) {
+    return g::$DB->get_field_sql("SELECT uid.data
+			FROM {user_info_data} uid
+			JOIN {user_info_field} uif ON uif.id=uid.fieldid
+			WHERE uif.shortname=? AND uid.userid=?
+			", [$fieldname, $userid]);
+}
+
+function block_exacomp_get_date_of_birth_as_timestamp($userid) {
+    $str = trim(block_exacomp_get_custom_profile_field_value($userid, 'dateofbirth'));
+    if (!$str) {
+        return null;
+    }
+    $parts = preg_split('![^0-9]+!', $str);
+    if (count($parts) != 3) {
+        // wrong format
+        return null;
+    }
+
+    return mktime(0, 0, 0, $parts[1], $parts[0], $parts[2]);
+}
+
+function block_exacomp_get_date_of_birth($userid) {
+    $timestamp = block_exacomp_get_date_of_birth_as_timestamp($userid);
+    if (!$timestamp) {
+        return null;
+    }
+    return date('d.m.Y', $timestamp);
+}
+
+
 /**
- * 
+ *
  * @param unknown $descriptorid
  * @param unknown $studentid
  * @return boolean    true if there exists a childcomp grading that is newer than the parentgrading
  */
  function block_exacomp_is_descriptor_grading_old($descriptorid, $studentid){
-     
+
      global $CFG, $DB;
-    
+
      $query = 'SELECT gradings.id, descriptors.parentid
  	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} gradings
  	  JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} descriptors ON gradings.compid = descriptors.id
@@ -8270,11 +8593,11 @@ function block_exacomp_get_preconfigparameters_list() {
          FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
          WHERE compid = ? AND userid = ?))';
      //+30 sec weil innerhalb von 30 Sekunden die Ladezeit beim Hochladen sein kann??
-    
+
      $condition = array($descriptorid, $studentid, $descriptorid, $studentid);
-    
+
      $results = $DB->get_records_sql($query, $condition);
-     
+
      return $results != null;
  }
 

@@ -1365,39 +1365,17 @@ class global_config {
 			BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO => false,
 			BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID => false,
 		];
+        if (block_exacomp_get_assessment_diffLevel($detailedcomptype)) {
+            $inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
+        }
+        if (block_exacomp_get_assessment_SelfEval($detailedcomptype)) {
+            $inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
+        }
+        if (block_exacomp_additional_grading($detailedcomptype)) {
+            $inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO] = true;
+            $inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION] = true;
 
-		if ($detailedcomptype == BLOCK_EXACOMP_TYPE_SUBJECT) {
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO] = true;
-			if (block_exacomp_use_eval_niveau()) {
-				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
-			}
-		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_TOPIC) {
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO] = true;
-			if (block_exacomp_use_eval_niveau()) {
-				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
-			}
-		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT) {
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO] = true;
-			if (block_exacomp_use_eval_niveau()) {
-				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
-			}
-		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) {
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION] = true;
-			if (block_exacomp_use_eval_niveau()) {
-				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
-			}
-		} elseif ($detailedcomptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION] = true;
-			$inputs[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION] = true;
-			if (block_exacomp_use_eval_niveau()) {
-				$inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID] = true;
-			}
-		} else {
-			throw new moodle_exception("unknown type '$detailedcomptype'");
-		}
+        }
 
 		return $inputs;
 	}
