@@ -48,6 +48,13 @@ $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_teacher_settings_new_subject'] = 'Create new subject';
+$string['tab_teacher_report_general'] = 'General report';
+$string['tab_teacher_report_annex'] = 'Annex';
+$string['tab_teacher_report_annex_title'] = 'Annex to the learning development report';
+$string['create_html'] = 'generate HTML preview';
+$string['create_docx'] = 'generate docx';
+$string['tab_teacher_report_annex_template'] = 'template docx';
+$string['tab_teacher_report_annex_delete_template'] = 'delete';
 
 // === Student Tabs ===
 $string['tab_student_all'] = 'All gained competencies';
@@ -302,6 +309,7 @@ $string['allniveaus'] = 'All difficulty levels';
 $string['choosesubject'] = 'Choose subject: ';
 $string['choosetopic'] = 'Choose topic';
 $string['choosestudent'] = 'Choose student: ';
+$string['choose_student'] = 'Choose students: ';
 $string['choosedaterange'] = 'Pick a date range: ';
 $string['cleardaterange'] = 'Clear range';
 $string['seperatordaterange'] = 'to';
