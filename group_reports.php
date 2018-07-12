@@ -143,7 +143,6 @@ $extra = '<input type="hidden" name="action" value="search"/>';
             default:
                 echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid);
         }
-        echo $output->button_box('group_reports_print();', '');
         ?>
 	</div>
 <?php
@@ -159,10 +158,5 @@ if ($action == 'search' && !$isTemplateDeleting) {
     }
 }
 
-if (optional_param('print', false, PARAM_BOOL)) {
-    $html = block_exacomp_group_reports_return_result($filter);
-    block_exacomp\printer::group_report($html);
-    exit;
-}
 
 echo $output->footer();
