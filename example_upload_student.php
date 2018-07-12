@@ -92,7 +92,7 @@ if($formdata = $form->get_data()) {
 		//update example
 		$newExample->id = $formdata->exampleid;
 		$DB->update_record('block_exacompexamples', $newExample);
-		$DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
+		$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP,array('exampid' => $newExample->id));
 	}
 
 	//add descriptor association
@@ -171,7 +171,7 @@ if($formdata = $form->get_data()) {
 
 
 if($exampleid > 0) {
-	$example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));
+    $example->descriptors = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCEXAMP, 'descrid', 'exampid = ?',array($exampleid));
 	$form->set_data($example);
 }
 

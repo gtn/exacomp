@@ -1426,7 +1426,7 @@ class block_exacomp_external extends external_api {
 			$DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, 'positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
 			//add the example competencies to the item, so that it is displayed in the exacomp moodle block
-			$comps = $DB->get_records('block_exacompdescrexamp_mm', array('exampid' => $exampleid));
+			$comps = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid));
 			foreach ($comps as $comp) {
 				$DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
 			}
@@ -7433,7 +7433,7 @@ class block_exacomp_external extends external_api {
 			JOIN {block_exacomptopics} t ON t.subjid = s.id
 			JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
 			JOIN {block_exacompdescriptors} d ON td.descrid = d.id
-			JOIN {block_exacompdescrexamp_mm} de ON de.descrid = d.id
+			JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON de.descrid = d.id
 			JOIN {block_exacompexamples} e ON de.exampid = e.id
 			JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
 			JOIN {block_exaportitem} i ON i.id = ie.itemid
