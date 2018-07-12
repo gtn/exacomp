@@ -4855,36 +4855,6 @@ class block_exacomp_external extends external_api {
 	}
 
 	
-// 	/**
-// 	 * Returns description of method parameters
-// 	 *
-// 	 * @return external_function_parameters
-// 	 */
-// 	public static function dakora_submit_example_as_teacher_parameters() {
-	
-// 	}
-
-// 	/**
-// 	 * submit example solution
-// 	 * Add student submission to example.
-// 	 *
-// 	 * @ws-type-write
-// 	 * @param int itemid (0 for new, >0 for existing)
-// 	 * @return array of course subjects
-// 	 */
-// 	public static function dakora_submit_example_as_teacher() {
-// 	    throw new invalid_parameter_exception("NOT IMPLEMENTED YET");
-// 	}
-
-// 	/**
-// 	 * Returns desription of method return values
-// 	 *
-// 	 * @return external_single_structure
-// 	 */
-// 	public static function dakora_submit_example_as_teacher_returns() {
-	    
-// 	}
-	
 	
 	/**
 	 * Returns description of method parameters
@@ -4898,6 +4868,7 @@ class block_exacomp_external extends external_api {
 			'url' => new external_value (PARAM_URL, 'url'),
 			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
 			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
+		    //'value' => new external_value (PARAM_INT, 'value of the grading', VALUE_DEFAULT, -1),
 			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
