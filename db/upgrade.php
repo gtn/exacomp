@@ -3002,6 +3002,23 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    upgrade_block_savepoint(true, 2018071202, 'exacomp');
 	}
 	
+	if ($oldversion < 2018071205) {
+	    $table = new xmldb_table('block_exacompdescrexamp_mm');
+	    
+	    //delete key activityid, activitytype and descid
+ 	    $key = new xmldb_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'));
+ 	    $dbman->drop_key($table, $key);
+	    
+	    $field = new xmldb_field('descrid');
+	    $field->set_attributes(XMLDB_TYPE_INTEGER, 11, null, null, null, null);
+	    $dbman->change_field_notnull($table, $field);
+	    
+	    $index = new xmldb_index('descrid',XMLDB_INDEX_NOTUNIQUE,array('descrid'));
+	    $dbman->add_key($table, $key);
+	    // Exacomp savepoint reached.
+	    upgrade_block_savepoint(true, 2018071205, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

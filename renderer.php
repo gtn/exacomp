@@ -4281,6 +4281,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = [html_writer::span(block_exacomp_get_string('tab_help'), 'exabis_comp_top_name'),
 				block_exacomp_get_string('help_crosssubject')];
 		}
+		
+		//Files
+		$titleCell = new html_table_cell();
+		if ($edit) {
+	        $exampleuploadCell = new html_table_cell();
+            $exampleuploadCell->text = html_writer::link(
+            new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => 1, "crossubjid" => $crosssubject->id)),
+            html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
+            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+            
+            //$exampleuploadCell->text .= $outputid.block_exacomp_get_descriptor_numbering($descriptor);
+           
+		} else {
+		    //$cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->description : '');
+		}
+		$rows[] = [html_writer::span(block_exacomp_get_string('files'), 'exabis_comp_top_name'), $exampleuploadCell];
+		
 		$table->data = $rows;
 
 		$content = html_writer::table($table);
