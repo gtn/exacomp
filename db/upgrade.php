@@ -2988,6 +2988,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    upgrade_block_savepoint(true, 2018051100, 'exacomp');
 	}
 	
+	if ($oldversion < 2018071202) {
+	    $table = new xmldb_table('block_exacompdescrexamp_mm');
+	    $field = new xmldb_field('id_foreign');
+	    $field->set_attributes(XMLDB_TYPE_INTEGER, 11, null, null, null, null);
+	    $dbman->add_field($table, $field);
+	    
+	    
+	    $field = new xmldb_field('table_foreign');
+	    $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, 'descr');
+	    $dbman->add_field($table, $field);
+	    // Exacomp savepoint reached.
+	    upgrade_block_savepoint(true, 2018071202, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
