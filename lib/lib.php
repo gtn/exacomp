@@ -6517,11 +6517,13 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 // 				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
 // 				: (($evaluation && $evaluation->value) ? $evaluation->value : -1);
 		$data->niveaus[$niveau->title]->eval =
-		(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
+		(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // DESCRIPTORS!!!
 		? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
 		: (($evaluation && $evaluation->value || ($evaluation->value=="0")) ? $evaluation->value : -1); //nuller anzeigen!
 		//var_dump($evaluation);
 
+		//$data->niveaus[$niveau->title]->eval = 3;
+		
 		$data->niveaus[$niveau->title]->show = true;
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 		$data->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp)) ? $evaluation->timestamp : 0);
