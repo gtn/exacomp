@@ -844,5 +844,3 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
 
 }
 
-
-}
