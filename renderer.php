@@ -4959,10 +4959,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
     function group_report_annex_filters($type, $filter, $action, $extra = '', $courseid) {
         ob_start();
         ?>
-        <form method="post" action="<?php echo $action; ?>">
+        <form method="post" action="<?php echo $action; ?>" enctype="multipart/form-data">
             <?php
                 echo $extra;
             ?>
+            <div class="filter-group visible form-group row">
+                <h3 class="filter-group-title"><label for="templateDocx"><?= block_exacomp_get_string('tab_teacher_report_annex_template');?></label></h3>
+                <div class="filter-group-body">
+                    <div>
+                        <?php
+                        $fs = get_file_storage();
+                        $files = $fs->get_area_files($courseid, 'block_exacomp', 'report_annex', 0);
+                        foreach ($files as $f) {
+                            if (!$f->is_directory()) {
+                                echo '<span style="color:#0000ff" >'.$f->get_filename().'</span>&nbsp;';
+                                echo html_writer::empty_tag('input', array('type' => 'submit',
+                                        'value' => block_exacomp_get_string('tab_teacher_report_annex_delete_template'),
+                                        'class' => 'btn btn-default',
+                                        'name' => 'deleteTemplate'));
+                            }
+                        }
+                        ?>
+                        <input type="file" name="templateDocx" id="templateDocx" class="btn btn-default">
+                    </div>
+                </div>
+            </div>
             <div class="filter-group visible form-group row">
                 <h3 class="filter-group-title"><label><?= block_exacomp_get_string('choose_student');?></label></h3>
                     <div class="filter-group-body">

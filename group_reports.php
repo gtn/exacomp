@@ -65,7 +65,6 @@ if (!$q) {
 }
 */
 
-$filter = block_exacomp_group_reports_get_filter();
 $extra = '<input type="hidden" name="action" value="search"/>';
 
 ?>
