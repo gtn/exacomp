@@ -4294,7 +4294,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
             //$exampleuploadCell->text .= $outputid.block_exacomp_get_descriptor_numbering($descriptor);
            
 		} else {
-		    //$cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->description : '');
+		    $cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->description : '');
+		    $examples = block_exacomp_get_examples_for_crossubject($crosssubject->id);
+		    //var_dump($examples);
+		    //var_dump("asdfasdfasdf");
 		}
 		$rows[] = [html_writer::span(block_exacomp_get_string('files'), 'exabis_comp_top_name'), $exampleuploadCell];
 		

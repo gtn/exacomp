@@ -5017,7 +5017,7 @@ class block_exacomp_external extends external_api {
 			'examplevalue' => new external_value (PARAM_INT, 'examplevalue'),
 			'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
-			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1),
+			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1), //what is this?
 			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ''),
 		    'url' => new external_value (PARAM_URL, 'url', VALUE_DEFAULT, ''),
 		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport comment file area', VALUE_DEFAULT, ''),

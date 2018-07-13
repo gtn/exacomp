@@ -8600,6 +8600,68 @@ function block_exacomp_get_date_of_birth($userid) {
 
      return $results != null;
  }
+ 
+ /**
+  * get all examples for a crossubject
+  * @param unknown $crossubjectid
+  */
+ function block_exacomp_get_examples_for_crossubject($crossubjectid) {
+     global $DB;
+     
+     $examples = \block_exacomp\example::get_objects_sql(
+         "SELECT DISTINCT mm.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
+			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
+			, mm.sorting, mm.id_foreign
+			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=?"
+         , array($crossubjectid));
+     
+     
+//      $examples = \block_exacomp\example::get_objects_sql(
+//          "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
+// 			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
+// 			, de.sorting
+// 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+// 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
+//          ." WHERE "
+//          ." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
+//          .($showallexamples ? " 1=1 " : " e.creatorid > 0")
+//          ." ORDER BY de.sorting"
+//          , array($descriptor->id, $courseid, $courseid));
+     
+     
+//      $sql = "select s.*,
+// 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+// 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
+// 				e.externalurl, e.externaltask, e.description
+// 			FROM {block_exacompschedule} s
+// 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
+// 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
+// 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
+// 			WHERE s.studentid = ? AND s.deleted = 0 AND s.is_pps = 0 AND (
+// 				-- noch nicht auf einen tag geleg
+// 				(s.start IS null OR s.start=0)
+// 				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
+// 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
+// 			)
+// 			ORDER BY s.id";
+     
+     return $examples;
+     //return $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
+ }
+ 
+//  /**
+//   * return descriptor with examples
+//   * @param unknown $descriptor - is returned again
+//   * @param array $filteredtaxonomies - only chosen taxonomies
+//   * @param string $showallexamples - exclude external or not
+//   * @param unknown $courseid
+//   * @param string $mind_visibility - return visibie field
+//   * @param string $showonlyvisible - return only visible
+//   * @return unknown
+//   */
+//  function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false) {
+     
 
 
 
