@@ -992,7 +992,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	return 1;
 }
 
-function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null) {
+function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null, $additionalinfo = null) {
 	global $USER;
 
 	$updateEvaluation = new stdClass();
@@ -1009,6 +1009,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 			'timestamp' => time(),
 			'evalniveauid' => $evalniveauid,
 			'resubmission' => ($value >= 0) ? false : true,
+		    'additionalinfo' => $additionalinfo
 		];
 	} elseif ($userid != $USER->id) {
 		// student can only assess himself

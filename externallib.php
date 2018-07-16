@@ -5015,6 +5015,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
 			'examplevalue' => new external_value (PARAM_INT, 'examplevalue'),
+		    'additionalinfo' => new external_value (PARAM_INT, 'additionalInfo'),
 			'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1), //what is this?
@@ -5033,10 +5034,10 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment,$url, $filename,$fileitemid) {
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $additionalInfo, $exampleevalniveauid, $itemid, $itemvalue, $comment,$url, $filename,$fileitemid) {
 	    global $CFG, $DB, $USER;
 	    static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-	        'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
+	        'additionalinfo' => $additionalInfo ,'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
 	    if ($userid == 0) {
 	        $role = BLOCK_EXACOMP_ROLE_STUDENT;
 	        $userid = $USER->id;
@@ -5049,7 +5050,7 @@ class block_exacomp_external extends external_api {
 	    
 	    static::require_can_access_course_user($courseid, $userid);
 	    static::require_can_access_example($exampleid, $courseid);
-	    block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid);
+	    block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid, $additionalInfo);
 	    if ($itemid > 0 && $userid > 0) {
 	        $itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
 	        if (!$itemexample) {
@@ -5061,6 +5062,8 @@ class block_exacomp_external extends external_api {
 	        $itemexample->teachervalue = $itemvalue;
 	        $itemexample->datemodified = time();
 	        $itemexample->status = 1;
+	        //$itemexample->additionalinfo = $additionalInfo;
+	       
 	        $DB->update_record('block_exacompitemexample', $itemexample);
 	        if ($comment) {
 	            
@@ -5498,7 +5501,8 @@ class block_exacomp_external extends external_api {
 	        $data['type'] = $itemInformation->type;
 	        $data['url'] = $itemInformation->url;
 	        $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
-	        $data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
+	        //$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
+	        $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
 	        
 	        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 	        if ($file = block_exaport_get_item_file($itemInformation)) {
@@ -5554,7 +5558,7 @@ class block_exacomp_external extends external_api {
 	        $data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
 	        $data['timestampstudent'] = isset ($exampleEvaluation->timestamp_student) ? $exampleEvaluation->timestamp_student : 0;
 	        $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
-	        $data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
+	        $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
 	    }
 	    if (!$exampleEvaluation || $exampleEvaluation->resubmission) {
 	        $data['resubmission'] = true;
