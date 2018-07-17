@@ -354,7 +354,8 @@ echo $output->cross_subject_buttons($cross_subject, $students, $selectedStudenti
 
 if($isTeacher){
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
-		$showevaluation = false;
+		//$showevaluation = false;   why?
+	    $showevaluation = true;
 		echo $output->students_column_selector(count($students));
 	}elseif ($studentid == 0)
 		$students = array();

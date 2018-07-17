@@ -6240,8 +6240,20 @@ function block_exacomp_get_examples_by_course($courseid) {
 			JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
 			WHERE ct.courseid = ?
 		)";
-
+	//var_dump(g::$DB->get_records_sql($sql, array($courseid)));
 	return g::$DB->get_records_sql($sql, array($courseid));
+}
+
+function block_exacomp_get_crossubject_examples_by_course($courseid){
+    $sql = "SELECT ex.*
+		FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
+		WHERE ex.id IN (
+			SELECT dex.exampid
+			FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex
+			JOIN {".BLOCK_EXACOMP_DB_CROSSSUBJECTS."} crosssub ON dex.id_foreign = crosssub.id
+			WHERE crosssub.courseid = ?
+		)";
+    return g::$DB->get_records_sql($sql, array($courseid));
 }
 
 /**
@@ -7717,7 +7729,9 @@ function block_exacomp_require_item_capability($cap, $item) {
 		// find example in course
 		$examples = block_exacomp_get_examples_by_course(g::$COURSE->id);
 		if (!isset($examples[$item->id])) {
-			throw new block_exacomp_permission_exception('Not a course example');
+		    if(!isset($examples[$item->id])){
+		        throw new block_exacomp_permission_exception('Not a course example!!!');
+		    }
 		}
 	} elseif ($item instanceof \block_exacomp\example && in_array($cap, [BLOCK_EXACOMP_CAP_VIEW])) {
 		if (!block_exacomp_is_student() && !block_exacomp_is_teacher()) {
@@ -7727,7 +7741,10 @@ function block_exacomp_require_item_capability($cap, $item) {
 		// find descriptor in course
 		$examples = block_exacomp_get_examples_by_course(g::$COURSE->id);
 		if (!isset($examples[$item->id])) {
-			throw new block_exacomp_permission_exception('Not a course example');
+		    $examples = block_exacomp_get_crossubject_examples_by_course(g::$COURSE->id);
+		    if(!isset($examples[$item->id])){
+		        throw new block_exacomp_permission_exception('Not a course example');
+		    }
 		}
 
 		// TODO: check visibility?

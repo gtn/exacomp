@@ -73,6 +73,8 @@ $descrid = optional_param('descrid',-1, PARAM_INT);
 $topicid = optional_param('topicid',-1, PARAM_INT);
 $crossubjid = optional_param('crossubjid', -1, PARAM_INT);
 
+
+
 // if($descid == -1 && $topicid == -1 && $crossubjid != -1){ //add to a crossubject
 
     
@@ -123,7 +125,7 @@ $crossubjid = optional_param('crossubjid', -1, PARAM_INT);
             array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
     }else if($crossubjid != -1){
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
-            array("crossubjid" => $crossubjid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
+            array("crossubjid" => $crossubjid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
     }
      
     if($formdata = $form->get_data()) {
@@ -143,6 +145,7 @@ $crossubjid = optional_param('crossubjid', -1, PARAM_INT);
     			$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
     		}
     	}
+    	
     	if($formdata->exampleid == 0) {
     		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
     		$newExample->sorting = $newExample->id;
