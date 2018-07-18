@@ -34,6 +34,10 @@ $isTeacher = block_exacomp_is_teacher($courseid);
 
 require_sesskey();
 
+
+
+
+
 switch($action){
 	case ('crosssubj-descriptors'):
 		$descrid = required_param('descrid', PARAM_INT);
@@ -121,7 +125,7 @@ switch($action){
 		exit;
 	case 'multi':
 		$data = (object)block_exacomp\param::required_json('data');
-
+		
 		if (!empty($data->new_descriptors)) {
 			$new_descriptors = block_exacomp\param::clean_array($data->new_descriptors, array((object)array(
 				'parentid' => PARAM_INT,
@@ -156,14 +160,18 @@ switch($action){
 				'exampleid' => PARAM_INT,
 				'value' => PARAM_RAW,// PARAM_INT,
 				'niveauid' => PARAM_INT,
+			    'additionalinfo' => PARAM_INT,
 			)));
 
 			foreach($examples as $example){
-				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $example->value, $example->niveauid);
+			    echo "-------------DEBUG DEBUG DEBUG --------------------------------------";
+				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $example->value, $example->niveauid, $example->additionalinfo);
 			}
 		}
 
-/*		if(!empty($data->examples_additional_grading)){
+		//War auskommentiert
+		
+		if(!empty($data->examples_additional_grading)){
 			$additional_grading = block_exacomp\param::clean_array($data->examples_additional_grading,
 				array(PARAM_INT=>
 					array(PARAM_INT => PARAM_TEXT),
@@ -174,7 +182,8 @@ switch($action){
 					block_exacomp_save_additional_grading_for_comp($courseid, $exampleid, $studentid, $value, BLOCK_EXACOMP_TYPE_EXAMPLE);
 				}
 			}
-		}*/
+		}
+		
 		if(!empty($data->competencies_additional_grading)){
 
 			$additional_grading = block_exacomp\param::clean_array($data->competencies_additional_grading,

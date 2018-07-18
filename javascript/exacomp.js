@@ -83,7 +83,8 @@
 				data: data
 			})
 				.done(function (ret) {
-					//console.log(data.action, 'ret', ret);
+					console.log(data);
+					console.log(data.action, 'ret', ret);
 				}).fail(function (ret) {
 					var errorMsg = '';
 					if (ret.responseText[0] == '<') {
