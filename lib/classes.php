@@ -1312,27 +1312,42 @@ class global_config {
 		return @static::get_evalniveaus()[$id];
 	}
 
+// 	/**
+// 	 * Maps gradings (1.0 - 6.0) to 0-3 values
+// 	 *
+// 	 * @param double $additionalinfo
+// 	 */ deprecated     was used to map to verbose
+// 	static function get_additionalinfo_value_mapping($additionalinfo) {
+// 		if (!$additionalinfo) {
+// 			return -1;
+// 		}
+
+// 		$mapping = array(6.0, 4.8, 3.5, 2.2);
+// 		$value = -1;
+
+// 		foreach ($mapping as $k => $v) {
+// 			if ($additionalinfo > $v) {
+// 				break;
+// 			}
+// 			$value = $k;
+// 		}
+
+// 		return $value;
+// 	}
+	
 	/**
-	 * Maps gradings (1.0 - 6.0) to 0-3 values
+	 * Maps float gradings to int gradings
 	 *
 	 * @param double $additionalinfo
 	 */
 	static function get_additionalinfo_value_mapping($additionalinfo) {
-		if (!$additionalinfo) {
-			return -1;
-		}
-
-		$mapping = array(6.0, 4.8, 3.5, 2.2);
-		$value = -1;
-
-		foreach ($mapping as $k => $v) {
-			if ($additionalinfo > $v) {
-				break;
-			}
-			$value = $k;
-		}
-
-		return $value;
+	    if (!$additionalinfo) {
+	        return -1;
+	    }
+	    
+	    $value = round($additionalinfo);
+	    
+	    return $value;
 	}
 
 	/**
