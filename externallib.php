@@ -7575,10 +7575,12 @@ class block_exacomp_external extends external_api {
 			throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
 		} else {
 			$examples = block_exacomp_get_examples_by_course($courseid);
+			$examples_crossubj = block_exacomp_get_crossubject_examples_by_course($courseid);
 			$found = false;
-			if (isset($examples[$exampleid])) {
+			
+			if (isset($examples[$exampleid]) || isset($examples_crossubj[$exampleid])) {
 				// ok: is course example
-				$found = true;
+			    $found = true;
 			} else {
 				// try to find it in a cross-subject
 				$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
