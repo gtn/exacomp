@@ -2855,7 +2855,7 @@ class block_exacomp_external extends external_api {
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
-		    'gradingisold' => new external_value (PARAM_BOOL, 'true when there are newer gradings in the childcompetences')
+		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false)
 		)));
 	}
 
@@ -7174,6 +7174,8 @@ class block_exacomp_external extends external_api {
 							$descriptors_return[] = $descriptor_return;
 							if(!$forall){
 							    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+							}else{
+							    $descriptor_return->gradingisold = false;
 							}
 						}
 					}
