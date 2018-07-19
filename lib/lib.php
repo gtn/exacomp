@@ -962,9 +962,7 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
  */
 function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null) {
 	global $DB, $USER;
-	
-// 	echo "<script>alert('Failure.');</script>";
-// 	throw new moodle_exception('GEHT HIER REIN');
+
 	if ($evalniveauid !== null && $evalniveauid < 1) {
 		$evalniveauid = null;
 	}
@@ -996,8 +994,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 
 function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null, $additionalinfo = null) {
 	global $USER;
-// 	throw new moodle_exception('GEHT HIER REIN');
-// 	echo "<script>alert('Failure.');</script>";
+
 	$updateEvaluation = new stdClass();
 	if ($evalniveauid < 1) {
 		$evalniveauid = null;

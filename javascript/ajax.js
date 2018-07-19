@@ -30,7 +30,6 @@
 	var topics_additional_grading = {};
 	var subjects_additional_grading = {};
 	var crosssubs_additional_grading = {};
-	var examples_additional_grading = {};
 
 	$(document).on('focus', 'input[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
@@ -573,8 +572,7 @@
                 userid : values[2],
                 exampleid : values[1],
                 value : val,
-                niveauid : niveauid,
-                additionalinfo : '2'
+                niveauid : niveauid
             };
         }
 	});
@@ -604,8 +602,7 @@
 				userid : values[2],
 				exampleid : values[1],
 				value : $(this).val(),
-				niveauid : niveauid,
-				additionalinfo : '2'
+				niveauid : niveauid
 			};
 		}
 		else
@@ -637,8 +634,7 @@
 					userid : values[2],
 					exampleid : values[1],
 					value : value,
-					niveauid : niveauid,
-					additionalinfo : '2'
+					niveauid : niveauid
 				};
 		}
 		else
@@ -705,10 +701,6 @@
 				multiQueryData.examples = examples;
 				examples = {};
 			}
-			
-			if(!$.isEmptyObject(examples_additional_grading)){
-				multiQueryData.examples_additional_grading = examples_additional_grading;
-			}
 
 			var competencies_by_type = [];
 
@@ -735,7 +727,6 @@
 			if (competencies_by_type.length) {
 				multiQueryData.competencies_by_type = competencies_by_type
 			}
-			
 
 			if(!$.isEmptyObject(competencies_additional_grading)){
 				multiQueryData.competencies_additional_grading = competencies_additional_grading;

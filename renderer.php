@@ -1550,13 +1550,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			        
 			        $example_params = array('name' => 'dataexamples-'.$example->id.'-'.$student->id, 'type' => 'text',
 			            'maxlength' => 3, 'class' => 'percent-rating-text',
-			            'value' =>  2,
-// 			            'value' => isset($student->examples->teacher_additional_grading[$example->id]) ?
-// 			            block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$example->id]) : "",
+			            'value' => isset($student->examples->teacher_additional_grading[$example->id]) ?
+			            block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$example->id]) : "",
 			            'exa-compid' => $example->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_EXAMPLE,
 			            'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
 			            'reviewername' => $reviewername,
-			            'additionalinfo' => 2,
 			        );
 			        
 			        if (!$visible_student_example || $role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
@@ -1581,8 +1579,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                null,
 			                ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 			            } else if ($example_scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // Input.
-			                $example_params['value'] = isset($student->examples->teacher_additional_grading[$example->id]) ?
-			                     block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$example->id]) : "";
+			                
+			                $example_params['value'] = isset($student->examples->teacher_additional_grading[$descriptor->id]) ?
+			                block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$descriptor->id]) : "";
 			                $teacher_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $example_params).'</span>';
 			            } else { // Lists.
 			                $teacher_evaluation_cell->text = $this->generate_select(
@@ -2601,13 +2600,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                         $example_params = array('name' => 'dataexamples-'.$example->id.'-'.$student->id, 'type' => 'text',
                                 'maxlength' => 3, 'class' => 'percent-rating-text',
-                                'value' =>  2,
-//                                 'value' => isset($student->examples->teacher_additional_grading[$example->id]) ?
-//                                         block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$example->id]) : "",
+                                'value' => isset($student->examples->teacher_additional_grading[$example->id]) ?
+                                        block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$example->id]) : "",
                                 'exa-compid' => $example->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_EXAMPLE,
                                 'reviewerid' => ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
                                 'reviewername' => $reviewername,
-                                'additionalinfo' => 2,
                         );
 
 						if (!$visible_student_example || $data->role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
@@ -2630,9 +2627,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         null,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                             } else if ($example_scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // Input.
-                                //var_dump($student->examples->teacher_additional_grading[$example->id]);
-                                $example_params['value'] = isset($student->examples->teacher_additional_grading[$example->id]) ?
-                                    block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$example->id]) : "";
+                                $example_params['value'] = isset($student->examples->teacher_additional_grading[$descriptor->id]) ?
+                                        block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$descriptor->id]) : "";
                                 $teacher_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $example_params).'</span>';
                             } else { // Lists.
                                 $teacher_evaluation_cell->text = $this->generate_select(
