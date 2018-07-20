@@ -2090,5 +2090,40 @@ return [
     ], 'export_selective' => [
         'Selektiver Export',
         'Select competence grids for export',
+    ],
+    
+    // === API ====
+    'yes_no_No' => [
+        'Nein',
+        'No',
+    ],
+    'yes_no_Yes' => [
+        'Ja',
+        'Yes',
+    ],
+    'grade_Verygood' => [
+        'Sehr gut',
+        'Very good',
+    ],
+    'grade_good' => [
+        'Gut',
+        'Good,',
+    ],
+    'grade_Satisfactory' => [
+        'Befriedigend',
+        'Satisfactory',
+    ],
+    'grade_Sufficient' => [
+        'Ausreichend',
+        'Sufficient',
+    ],
+    'grade_Deficient' => [
+        'Mangelhaft',
+        'Deficient',
+    ],
+    'grade_Insufficient' => [
+        'Ungenügend',
+        'Insufficient',
     ]
 ];
+

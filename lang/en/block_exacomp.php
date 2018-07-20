@@ -604,3 +604,13 @@ $string['report_competencefield'] = 'competence field';
 $string['all_students'] = 'all students';
 $string['export_all_standards'] = 'Export all competence grids of this Moodle installation';
 $string['export_selective'] = 'Select competence grids for export';
+
+// === API ====
+$string['yes_no_No'] = 'No';
+$string['yes_no_Yes'] = 'Yes';
+$string['grade_Verygood'] = 'Very good';
+$string['grade_good'] = 'Good,';
+$string['grade_Satisfactory'] = 'Satisfactory';
+$string['grade_Sufficient'] = 'Sufficient';
+$string['grade_Deficient'] = 'Deficient';
+$string['grade_Insufficient'] = 'Insufficient';

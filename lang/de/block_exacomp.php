@@ -610,3 +610,13 @@ $string['report_competencefield'] = 'Kompetenzbereich';
 $string['all_students'] = 'Alle Schüler';
 $string['export_all_standards'] = 'Alle Kompetenzraster dieser Moodle Instanz exportieren';
 $string['export_selective'] = 'Selektiver Export';
+
+// === API ====
+$string['yes_no_No'] = 'Nein';
+$string['yes_no_Yes'] = 'Ja';
+$string['grade_Verygood'] = 'Sehr gut';
+$string['grade_good'] = 'Gut';
+$string['grade_Satisfactory'] = 'Befriedigend';
+$string['grade_Sufficient'] = 'Ausreichend';
+$string['grade_Deficient'] = 'Mangelhaft';
+$string['grade_Insufficient'] = 'Ungenügend';
