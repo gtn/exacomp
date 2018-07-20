@@ -2580,7 +2580,8 @@ class block_exacomp_external extends external_api {
 		    $mapping = false;
 		}
 
-		if ($mapping) { // grade ==> mapping needed, save mapped value and save additionalinfo
+		if ($mapping && $role == BLOCK_EXACOMP_ROLE_TEACHER) { // grade ==> mapping needed, save mapped value and save additionalinfo
+		    //check if teacher, because the student sends the selfevaluationvalue in $value, not in $additinalinfo
 		    $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
 		        throw new invalid_parameter_exception ('Not allowed');
