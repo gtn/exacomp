@@ -259,6 +259,7 @@ $string['show_all_course_examples'] = 'Lernmaterialien aus allen Kursen anzeigen
 $string['name_example'] = 'Name';
 $string['comp_based'] = 'Nach Kompetenzen sortieren';
 $string['examp_based'] = 'Nach Lernmaterialien sortieren';
+$string['cross_based'] = 'für Themen';
 
 // === Icons ===
 $string['assigned_example'] = 'Zugeteiltes Lernmaterial';

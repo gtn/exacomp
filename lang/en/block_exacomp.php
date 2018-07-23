@@ -259,6 +259,7 @@ $string['show_all_course_examples'] = 'Show examples from all courses';
 $string['name_example'] = 'Name';
 $string['comp_based'] = 'sort by competencies';
 $string['examp_based'] = 'sort by examples';
+$string['cross_based'] = 'For Interdisciplinary Subjects';
 
 // === Icons ===
 $string['assigned_example'] = 'Assigned Example';

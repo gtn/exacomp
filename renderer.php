@@ -823,7 +823,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			    
 			    $studentsCount = 0;
 			    $checkboxname = 'datacrosssubs'; //?
-			    $student = array_values($students)[0];
+			    //$student = array_values($students)[0];
 			    
 			    $totalRow = new html_table_row();
 			    $totalRow->attributes['class'] = 'highlight';
@@ -4858,21 +4858,28 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function view_example_header() {
 		global $PAGE;
+		$page_url = html_entity_decode($PAGE->url);
+		// remove existing 'style' parameter from GET
+		$page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
 		$content = html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/withsubcat.png'),
 				'title' => block_exacomp_get_string('comp_based'))).' '.block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
-			"onclick" => "document.location.href='".$PAGE->url."&style=0';"));
+			"onclick" => "document.location.href='".$page_url."&style=0';"));
 
 		$content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/bullet_list.png'),
 				'title' => block_exacomp_get_string('examp_based'))).' '.block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
-			"onclick" => "document.location.href='".$PAGE->url."&style=1';"));
+			"onclick" => "document.location.href='".$page_url."&style=1';"));
+
+		$content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/find_replace.png'),
+				'title' => block_exacomp_get_string('cross_based'))).' '.block_exacomp_get_string('cross_based'), array('type' => 'button', 'id' => 'cross_based', 'name' => 'cross_based', 'class' => 'view_examples_icon',
+			"onclick" => "document.location.href='".$page_url."&style=2';"));
 
 		return html_writer::div($content, '', array('id' => 'view_examples_header'));
 	}
 
-	public function example_based_list_tree($examples) {
+	public function example_based_list_tree($examples, $tableid = '') {
 		$isTeacher = block_exacomp_is_teacher();
 
-		$content = '<table class="default-table">';
+		$content = '<table class="default-table" id="listTree'.$tableid.'">';
 
 		$content .= '<tr><th>'.block_exacomp_get_string('example').'</th><th>'.block_exacomp_get_string('descriptors').'</th></tr>';
 
@@ -4926,6 +4933,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
+
+    public function cross_based_list_tree($examples, $crosssubjectid = 0) {
+	    return $this->example_based_list_tree($examples, $crosssubjectid);
+    }
 
 	public function pre_planning_storage_students($students, $examples) {
 		global $COURSE;
