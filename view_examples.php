@@ -49,6 +49,7 @@ $page_identifier = 'tab_examples';
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/view_examples.php', array(
 	'courseid' => $courseid,
+    'style' => $style
 ));
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
@@ -66,33 +67,69 @@ if ($show_all_examples != 0) {
 
 /* CONTENT REGION */
 
-
 echo $output->view_example_header();
 
-if ($style == 0) {
-	$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
-	echo $output->competence_based_list_tree($tree, $isTeacher, false);
-}
-if ($style == 1) {
-	//could be optimized together with block_exacomp_build_example_tree
-	//non critical - only 1 additional query for whole loading process
-	$examples = \block_exacomp\example::get_objects_sql("
-		SELECT DISTINCT e.*
-		FROM {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct
-		JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
-		JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dt.descrid = de.descrid
-		JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
-		WHERE ct.courseid = ?
-		ORDER BY e.title
-	", [$courseid]);
+switch ($style) {
+	case 0:
+	    $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+	    echo $output->competence_based_list_tree($tree, $isTeacher, false);
+	    break;
+    case 1:
+        //could be optimized together with block_exacomp_build_example_tree
+        //non critical - only 1 additional query for whole loading process
+        $examples = \block_exacomp\example::get_objects_sql("
+            SELECT DISTINCT e.*
+            FROM {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct
+            JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dt.descrid = de.descrid
+            JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
+            WHERE ct.courseid = ?
+            ORDER BY e.title
+        ", [$courseid]);
 
-	if (!$isTeacher) {
-		$examples = array_filter($examples, function($example) use ($courseid, $studentid) {
-			return block_exacomp_is_example_visible($courseid, $example, $studentid);
-		});
-	}
+        if (!$isTeacher) {
+            $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
+                return block_exacomp_is_example_visible($courseid, $example, $studentid);
+            });
+        }
 
-	echo $output->example_based_list_tree($examples);
+        echo $output->example_based_list_tree($examples);
+        break;
+    case 2:
+        // get all crossubjects or for student
+        if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
+            $crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
+        } else {
+            $crosssubs = block_exacomp_get_cross_subjects_by_course($courseid, $USER->id);
+        }
+        echo html_writer::start_tag("table", array("class" => 'rg2'));
+        foreach ($crosssubs as $cross) {
+            $examples = \block_exacomp\example::get_objects_sql("
+                SELECT DISTINCT e.*
+                FROM {".BLOCK_EXACOMP_DB_DESCCROSS."} dc                    
+                    JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dc.descrid = de.descrid
+                    JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
+                WHERE dc.crosssubjid = ?
+                ORDER BY e.title
+            ", [$cross->id]);
+            if (!$isTeacher) {
+                $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
+                    return block_exacomp_is_example_visible($courseid, $example, $studentid);
+                });
+            }
+            echo html_writer::start_tag("tr", array("class" => "rg2-level-0 rg2 rg2-header highlight"));
+            echo html_writer::start_tag("td", array("class" => "rg2-arrow rg2-indent"));
+                echo '<div>'.$cross->title.'</div>';
+            echo html_writer::end_tag("td");
+            echo html_writer::end_tag("tr");
+            echo html_writer::start_tag("tr", array("class" => "rg2-level-1 rg2"));
+            echo html_writer::start_tag("td", array("class" => "rg2-indent"));
+                    echo $output->cross_based_list_tree($examples, $cross->id);
+            echo html_writer::end_tag("td");
+            echo html_writer::end_tag("tr");
+        }
+        echo html_writer::end_tag("table");
+        break;
 }
 
 /* END CONTENT REGION */

@@ -863,6 +863,10 @@ return [
 		'Nach Lernmaterialien sortieren',
 		'sort by examples',
 	],
+	'cross_based' => [
+		'für Themen',
+		'For Interdisciplinary Subjects',
+	],
 
 	// === Icons ===
 	'assigned_example' => [
