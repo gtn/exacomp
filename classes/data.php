@@ -88,17 +88,14 @@ class data {
 	
 	protected static function add_source_if_not_exists($source_global_id) {
 		self::load_sources();
-		
 		if ($source_local_id = array_search($source_global_id, self::$sources)) {
 			return $source_local_id;
 		}
-		
 		$maxId = self::$sources ? max(array_keys(self::$sources)) : 0;
 		$source_local_id = max($maxId + 1, self::MIN_SOURCE_ID);
-
 		// add new source
 		g::$DB->execute("INSERT INTO {".BLOCK_EXACOMP_DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
-		
+
 		self::$sources[$source_local_id] = $source_global_id;
 		
 		return $source_local_id;
@@ -1253,6 +1250,34 @@ class data_importer extends data {
 			// always move old specific data
 			self::move_items_to_source(BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC, self::$import_source_local_id);
 		}
+
+        // we need to compare assessment_diffLevel_options with XML categories and rename it if needed
+        if (isset($xml->categories)) {
+            // work with GetPost, because additional form settings are not initialized yet
+            $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
+            if ($newMapping) {
+                self::update_categorymapping_for_source(self::$import_source_local_id, $newMapping);
+            }
+            $difflevels = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+            $categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
+            $categories = array();
+            $theSame = true;
+            if (!$newMapping) {
+                foreach ($xml->categories->category as $category) {
+                    $categories[] = $category;
+                    // mapping must be from real plugin settings
+                    $mappingExists = $categoryMapping
+                                            && array_key_exists(intval($category->attributes()->id), $categoryMapping)
+                                            && in_array($categoryMapping[intval($category->attributes()->id)], $difflevels);
+                    if (!in_array(trim($category->title), $difflevels) && !$mappingExists) {
+                        $theSame = false;
+                    }
+                }
+            }
+            if (count($categories) > 0 && !$theSame) {
+                return array('result' => 'compareCategories', 'list' => $categories, 'sourceId' => self::$import_source_local_id);
+            }
+        }
 		
 		// self::kompetenzraster_load_current_data_for_source();
 		// don't delete all mm_records, because if you import 2 partial xml files the 2nd would overwrite the 1st
@@ -1279,8 +1304,9 @@ class data_importer extends data {
 		}
 
 		if(isset($xml->categories)) {
+            $categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
 			foreach($xml->categories->category as $category) {
-				self::insert_category($category);
+				self::insert_category($category, 0, $categoryMapping);
 			}
 		}
 		
@@ -1332,10 +1358,6 @@ class data_importer extends data {
 		return true;
 	}
 
-	
-	
-	
-	
 
 	
 	private static function insert_or_update_item($table, $item) {
@@ -1376,18 +1398,39 @@ class data_importer extends data {
 	}
 	
 	private static function insert_source($xmlItem) {
-		
+
 		if (!$dbSource = self::get_source_from_global_id($xmlItem['id'])) {
 			// only for already inserted sources, update them
 			return;
 		}
-		
+
 		g::$DB->update_record(BLOCK_EXACOMP_DB_DATASOURCES, array(
 			'name' => (string)$xmlItem->name
 		), array(
 			'id' => $dbSource->id,
 		));
 	}
+
+    private static function update_categorymapping_for_source($sourceId = null, $newMapping = array()) {
+	    //print_r($sourceId); print_r($newMapping);exit;
+	    $data = serialize($newMapping);
+        g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET category_mapping=? WHERE id=?", array($data, $sourceId));
+        // todo: why is this not working?!:
+        /*g::$DB->update_record(BLOCK_EXACOMP_DB_DATASOURCES, array(
+                'category_mapping' => $data
+        ), array(
+                'id' => $sourceId
+        ));*/
+    }
+
+    public static function get_categorymapping_for_source($sourceId = null) {
+        $where = array('id' => $sourceId);
+        $result = unserialize(g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "category_mapping", $where));
+        if (!is_array($result)) {
+            $result = false;
+        }
+        return $result;
+    }
 	
 	private static function insert_file($filearea, SimpleXMLElement $xmlItem, $item) {
 		if (!self::$zip) {
@@ -1549,8 +1592,13 @@ class data_importer extends data {
 		return $item;
 	}
 	
-	private static function insert_category($xmlItem, $parent = 0) {
+	private static function insert_category($xmlItem, $parent = 0, $categoryMapping = array()) {
 		$item = self::parse_xml_item($xmlItem);
+
+		// change category title bu category mapping
+		if (array_key_exists($item->sourceid, $categoryMapping)) {
+		    $item->title = trim($categoryMapping[$item->sourceid]);
+        }
 		
 		$item->parentid = $parent;
 	

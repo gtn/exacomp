@@ -2090,5 +2090,29 @@ return [
     ], 'export_selective' => [
         'Selektiver Export',
         'Select competence grids for export',
+    ],
+    'import_category_mapping_needed' => [
+        'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:',
+        'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:',
+    ],
+    'import_category_mapping_column_xml' => [
+            'XML title',
+            'XML title'
+    ],
+    'import_category_mapping_column_exacomp' => [
+            'Exacomp difflevel title',
+            'Exacomp difflevel title'
+    ],
+    'import_category_mapping_column_level' => [
+            'Niveau',
+            'Level'
+    ],
+    'import_category_mapping_column_level_descriptor' => [
+            'Kompetenz / Teilkompetenz',
+            'Competence / Child competence'
+    ],
+    'import_category_mapping_column_level_example' => [
+            'Material',
+            'Material'
     ]
 ];

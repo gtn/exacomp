@@ -3018,6 +3018,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018071205, 'exacomp');
 	}
+
+    if ($oldversion < 2018072301) {
+        $table = new xmldb_table('block_exacompdatasources');
+        $field = new xmldb_field('category_mapping');
+        $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $dbman->add_field($table, $field);
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2018072301, 'exacomp');
+    }
 	
 	/*
 	 * insert new upgrade scripts before this comment section
