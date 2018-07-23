@@ -1223,11 +1223,20 @@ class global_config {
                     2 => '😔',
                     1 => '😓',
                 */
-                return $values + [
-                                3 => ':-)',
-                                2 => ':-|',
-                                1 => ':-(',
-                        ];
+                $useEval = get_config('exacomp', 'assessment_SelfEval_useVerbose');
+                if ($useEval) {
+                    return $values + [
+                                    3 => block_exacomp_get_string('selfEvalVerbose.3'),
+                                    2 => block_exacomp_get_string('selfEvalVerbose.2'),
+                                    1 => block_exacomp_get_string('selfEvalVerbose.1'),
+                            ];
+                } else {
+                    return $values + [
+                                    3 => ':-)',
+                                    2 => ':-|',
+                                    1 => ':-(',
+                            ];
+                }
             //} // else use value scheme set in the course
             // now only emojis ?
            /* else {

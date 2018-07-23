@@ -741,6 +741,22 @@ return [
 		'Grund- und Erweiterungskompetenzen verwenden',
 		'Use basic and extended competencies',
 	],
+	'assessment_SelfEval_useVerbose' => [
+		'Use verbose Options for Self evaluation',
+		'Use verbose Options for Self evaluation',
+	],
+	'selfEvalVerbose.1' => [
+		'nicht gelöst',
+		'unsolved',
+	],
+	'selfEvalVerbose.2' => [
+		'mit Hilfe gelöst',
+		'solved with help',
+	],
+	'selfEvalVerbose.3' => [
+		'selbstständig gelöst',
+		'solved independently',
+	],
 	'usetopicgrading' => [
 		'Beurteilung von Kompetenzbereichen ermöglichen',
 		'Enable topic gradings',

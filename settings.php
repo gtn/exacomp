@@ -636,6 +636,9 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
 $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/useprofoundness',
         block_exacomp_get_string('useprofoundness'),
         '', 0));
+$settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/assessment_SelfEval_useVerbose',
+        block_exacomp_get_string('assessment_SelfEval_useVerbose'),
+        '', 0));
 
 // Darstellung (visualisation).
 $settings->add(new admin_setting_heading('exacomp/heading_visualisation',
