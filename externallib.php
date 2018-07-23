@@ -2580,7 +2580,8 @@ class block_exacomp_external extends external_api {
 		    $mapping = false;
 		}
 
-		if ($mapping) { // grade ==> mapping needed, save mapped value and save additionalinfo
+		if ($mapping && $role == BLOCK_EXACOMP_ROLE_TEACHER) { // grade ==> mapping needed, save mapped value and save additionalinfo
+		    //check if teacher, because the student sends the selfevaluationvalue in $value, not in $additinalinfo
 		    $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
 		        throw new invalid_parameter_exception ('Not allowed');
@@ -3233,19 +3234,18 @@ class block_exacomp_external extends external_api {
 
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 
-		if ($forall) {
-			//Add to the teacher planning Storage, not to the students themselves    otherwise they would have it in the schedule as well as in the pool which 
-			//could lead to mnay issues (not technical, but logical for them)
- 		    //block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
-			
+		if ($forall) {	
  			$students = block_exacomp_get_students_by_course($courseid);
-
+            //Add to all the students
 			foreach ($students as $student) {
 			    if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
 			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
 				}
 			}
 		} else {
+		    //Add to the teacher planning Storage, not to the students themselves    otherwise they would have it in the schedule as well as in the pool which 
+		    //could lead to mnay issues (not technical, but logical for them)
+		    //block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
 		    if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
 		        block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
 			}
@@ -5018,11 +5018,10 @@ class block_exacomp_external extends external_api {
 		    'additionalinfo' => new external_value (PARAM_INT, 'additionalInfo'),
 			'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
-			'itemvalue' => new external_value (PARAM_INT, 'itemvalue', VALUE_DEFAULT, -1), //what is this?
-			'comment' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ''),
+			'comment' => new external_value (PARAM_TEXT, 'comment', VALUE_DEFAULT, ''),
 		    'url' => new external_value (PARAM_URL, 'url', VALUE_DEFAULT, ''),
 		    'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport comment file area', VALUE_DEFAULT, ''),
-		    'fileitemid' => new external_value (PARAM_TEXT, 'teachercomment', VALUE_DEFAULT, ''),
+		    'fileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
 		));
 	}
 
@@ -5034,10 +5033,10 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $additionalInfo, $exampleevalniveauid, $itemid, $itemvalue, $comment,$url, $filename,$fileitemid) {
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $additionalInfo, $exampleevalniveauid, $itemid, $comment,$url, $filename,$fileitemid) {
 	    global $CFG, $DB, $USER;
 	    static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
-	        'additionalinfo' => $additionalInfo ,'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'itemvalue' => $itemvalue, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
+	        'additionalinfo' => $additionalInfo ,'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
 	    if ($userid == 0) {
 	        $role = BLOCK_EXACOMP_ROLE_STUDENT;
 	        $userid = $USER->id;
@@ -5056,17 +5055,11 @@ class block_exacomp_external extends external_api {
 	        if (!$itemexample) {
 	            throw new invalid_parameter_exception("Wrong itemid given");
 	        }
-	        if ($itemvalue < 0 && $itemvalue > 100) {
-	            throw new invalid_parameter_exception("Item value must be between 0 and 100");
-	        }
-	        $itemexample->teachervalue = $itemvalue;
 	        $itemexample->datemodified = time();
 	        $itemexample->status = 1;
-	        //$itemexample->additionalinfo = $additionalInfo;
 	       
 	        $DB->update_record('block_exacompitemexample', $itemexample);
 	        if ($comment) {
-	            
 	            $insert = new stdClass ();
 	            $insert->itemid = $itemid;
 	            $insert->userid = $USER->id;
@@ -5083,11 +5076,8 @@ class block_exacomp_external extends external_api {
 	            if($filename != ''){
 	                $context = context_user::instance($USER->id);
 	                $fs = get_file_storage();
-// 	                var_dump($fs);
 	                try {
-// 	                    var_dump($context->id,$fileitmeid,$filename);
 	                    $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-// 	                    throw new invalid_parameter_exception("Geht bis zum get_file");
 	                    if ($old) {
 	                        //TODO!!!!   contextid = 1 ?? immer??
 	                        $file_record = array('contextid' => 1, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',

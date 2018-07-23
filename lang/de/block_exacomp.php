@@ -616,3 +616,13 @@ $string['import_category_mapping_column_exacomp'] = 'Exacomp difflevel title';
 $string['import_category_mapping_column_level'] = 'Niveau';
 $string['import_category_mapping_column_level_descriptor'] = 'Kompetenz / Teilkompetenz';
 $string['import_category_mapping_column_level_example'] = 'Material';
+
+// === API ====
+$string['yes_no_No'] = 'Nein';
+$string['yes_no_Yes'] = 'Ja';
+$string['grade_Verygood'] = 'Sehr gut';
+$string['grade_good'] = 'Gut';
+$string['grade_Satisfactory'] = 'Befriedigend';
+$string['grade_Sufficient'] = 'Ausreichend';
+$string['grade_Deficient'] = 'Mangelhaft';
+$string['grade_Insufficient'] = 'Ungenügend';
