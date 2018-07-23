@@ -160,6 +160,22 @@
 	$(document).on('focus', 'input[name^=add-grading\-]', function() {
 		prev_val = $(this).val();
 	});
+	
+	$(document).on('keyup', 'input[name^=add-grading\-]', function(event) {
+		// check if anyone else has edited the competence before. if so, ask for confirmation
+		if(event.keyCode != 9){
+			if($(this).attr("reviewerid")) {
+				if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+					$(this).val(prev_val);
+					return;
+				}
+				else {
+					//remove reviewer attribute
+					$(this).removeAttr("reviewerid");
+				}
+			}
+		}
+	});
 
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
@@ -167,18 +183,6 @@
 		var value = $(this).val();
 
 		value = value.replace(",", ".");
-
-		// check if anyone else has edited the competence before. if so, ask for confirmation
-		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
-				$(this).val(prev_val);
-				return;
-			}
-			else {
-				//remove reviewer attribute
-				$(this).removeAttr("reviewerid");
-			}
-		}
 
 		// check for valid grading input range
 		if (value > 6.0) {
