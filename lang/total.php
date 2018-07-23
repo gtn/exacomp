@@ -1643,6 +1643,11 @@ return [
 		'',
 		'Use Draft',
 	],
+    'crossubject_files' => [
+        'Materialien',
+        'crossubject files',
+    ],
+    
 
 
 	// === Associations ===

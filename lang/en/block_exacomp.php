@@ -475,6 +475,8 @@ $string['de:Freigegebene Kursthemen'] = 'Published Interdisciplinary Subjects';
 $string['de:Freigabe bearbeiten'] = 'Change Sharing';
 $string['de:Kopie als Vorlage speichern'] = 'Create Copy as Draft';
 $string['de:Vorlage verwenden'] = 'Use Draft';
+$string['crossubject_files'] = 'crossubject files';
+
 
 
 // === Associations ===
@@ -604,12 +606,6 @@ $string['report_competencefield'] = 'competence field';
 $string['all_students'] = 'all students';
 $string['export_all_standards'] = 'Export all competence grids of this Moodle installation';
 $string['export_selective'] = 'Select competence grids for export';
-$string['import_category_mapping_needed'] = 'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:';
-$string['import_category_mapping_column_xml'] = 'XML title';
-$string['import_category_mapping_column_exacomp'] = 'Exacomp difflevel title';
-$string['import_category_mapping_column_level'] = 'Level';
-$string['import_category_mapping_column_level_descriptor'] = 'Competence / Child competence';
-$string['import_category_mapping_column_level_example'] = 'Material';
 
 // === API ====
 $string['yes_no_No'] = 'No';
@@ -620,3 +616,9 @@ $string['grade_Satisfactory'] = 'Satisfactory';
 $string['grade_Sufficient'] = 'Sufficient';
 $string['grade_Deficient'] = 'Deficient';
 $string['grade_Insufficient'] = 'Insufficient';
+$string['import_category_mapping_needed'] = 'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:';
+$string['import_category_mapping_column_xml'] = 'XML title';
+$string['import_category_mapping_column_exacomp'] = 'Exacomp difflevel title';
+$string['import_category_mapping_column_level'] = 'Level';
+$string['import_category_mapping_column_level_descriptor'] = 'Competence / Child competence';
+$string['import_category_mapping_column_level_example'] = 'Material';

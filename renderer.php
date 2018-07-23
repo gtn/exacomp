@@ -841,7 +841,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			    $totalRow->cells[] = $firstCol;
 			    
 			    $outputnameCell = new html_table_cell();
-			    $outputname = "crosssubject files";
+			    $outputname =  block_exacomp_get_string('crossubject_files');
 			    $outputnameCell->text = html_writer::div($outputname);
 			    $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			    $totalRow->cells[] = $outputnameCell;
