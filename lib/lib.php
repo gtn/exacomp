@@ -6041,7 +6041,6 @@ function block_exacomp_send_self_assessment_notification($userfrom, $userto, $co
 	global $SITE;
 
 	$course = get_course($courseid);
-
 	$subject = block_exacomp_get_string('notification_self_assessment_subject', null, array('site' => $SITE->fullname, 'course' => $course->shortname));
 	$message = block_exacomp_get_string('notification_self_assessment_body', null, array('course' => $course->fullname, 'student' => fullname($userfrom), 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_self_assessment_context');
@@ -6130,12 +6129,13 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
  * @param unknown $courseid
  * @param unknown $exampleid
  */
-function block_exacomp_send_example_comment_notification($userfrom, $userto, $courseid, $exampleid) {
+function block_exacomp_send_example_comment_notification($userfrom, $userto, $courseid, $exampleid, $comment) {
 	global $CFG, $USER, $DB, $SITE;
 
 	$course = get_course($courseid);
 	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 	$subject = block_exacomp_get_string('notification_example_comment_subject', null, array('example' => $example->title, 'site' => $SITE->fullname));
+	$subject .= "\n\r".$comment;
 	$message = block_exacomp_get_string('notification_example_comment_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_example_comment_context');
 

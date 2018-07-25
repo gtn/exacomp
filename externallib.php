@@ -5070,7 +5070,7 @@ class block_exacomp_external extends external_api {
 	                'userid' => $USER->id,
 	            ));
 	            $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
-	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
+	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment);
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 	            
 	            if($filename != ''){
