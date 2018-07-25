@@ -6000,11 +6000,12 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
  * @param unknown $time
  * @param unknown $courseid
  */
-function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time, $courseid) {
+function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time, $courseid, $studentcomment) {
 	global $CFG, $USER, $SITE;
 
 	$subject = block_exacomp_get_string('notification_submission_subject', null, array('site' => $SITE->fullname, 'student' => fullname($userfrom), 'example' => $example->title));
-
+	$subject .= "\n\r".$studentcomment;
+	
 	$gridurl = block_exacomp_get_gridurl_for_example($courseid, $userto->id, $example->id);
 
 	$message = block_exacomp_get_string('notification_submission_body', null, array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
@@ -6019,13 +6020,13 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
  * @param unknown $exampleid
  * @param unknown $timecreated
  */
-function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated) {
+function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated, $studentcomment = ' ') {
 	global $USER, $DB;
 
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
 	if ($teachers) {
 		foreach ($teachers as $teacher) {
-			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid)), date("D, d.m.Y", $timecreated), date("H:s", $timecreated), $courseid);
+		    block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid)), date("D, d.m.Y", $timecreated), date("H:s", $timecreated), $courseid, $studentcomment);
 		}
 	}
 }

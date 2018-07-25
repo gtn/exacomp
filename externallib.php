@@ -4985,7 +4985,7 @@ class block_exacomp_external extends external_api {
 		}
 		
 		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
-		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
+		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(),$studentcomment);
 		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 		
 		return array("success" => true, "itemid" => $itemid);
@@ -5398,6 +5398,11 @@ class block_exacomp_external extends external_api {
 	}
 
 
+	
+	
+	
+	
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5410,6 +5415,7 @@ class block_exacomp_external extends external_api {
 			'exampleid' => new external_value (PARAM_INT, 'id of example'),
 		));
 	}
+
 
 	/**
 	 * get information and submission for example
@@ -5464,6 +5470,7 @@ class block_exacomp_external extends external_api {
 		    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading'),
 		));
 	}
+	
 
 	protected static function _get_example_information($courseid, $userid, $exampleid) {
 	    global $CFG, $DB;
@@ -6236,7 +6243,7 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure (array(
 		    'points_limit' => new external_value (PARAM_INT, 'points_limit'),
 		    'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
-		    'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
+		    //'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
 		    //'verbose_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'verbose_options'),
 		    'example_scheme' => new external_value (PARAM_INT, 'example_scheme'),
 		    'example_diffLevel' => new external_value (PARAM_BOOL, 'example_diffLevel'),
@@ -6292,7 +6299,7 @@ class block_exacomp_external extends external_api {
 		return array(
 		    'points_limit' => block_exacomp_get_assessment_points_limit(),
 		    'grade_limit' => block_exacomp_get_assessment_grade_limit(),
-		    'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
+		    //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
 		    //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()), 
 		    'example_scheme' => block_exacomp_get_assessment_example_scheme(),
 		    'example_diffLevel' => block_exacomp_get_assessment_example_diffLevel(),
