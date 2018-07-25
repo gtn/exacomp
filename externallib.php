@@ -4945,7 +4945,12 @@ class block_exacomp_external extends external_api {
 
 			$item->url = $url;
 			$item->timemodified = time();
-
+			
+			if ($type == 'file') {
+			    block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
+			}
+			
+			$DB->update_record('block_exaportitem', $item);
 		}
 
 		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
