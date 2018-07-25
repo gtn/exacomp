@@ -1298,6 +1298,8 @@ class global_config {
 	
 	/**
 	 * Returns all evaluation verbose_options, specified by the admin
+	 * deprecated ???  or at least not used as planned
+	 * the verbose options are saved in mdl_config_plugins as a string, instead of in the mdl_block_exacompeval_niveau table
 	 */
 	static function get_verbose_options($include_empty = false) {
 	    static $values;
