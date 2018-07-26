@@ -8765,14 +8765,24 @@ function block_exacomp_get_date_of_birth($userid) {
 //   * @return unknown
 //   */
 //  function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false) {
+ 
+ 
+ /**
+  * unset descriptor gradingisold-attribute   (set it to false)
+  * @param unknown $courseid
+  * @param unknown $descriptorid
+  * @param unknown $studentid
+  */
+ function block_exacomp_set_descriptor_grading_timestamp($courseid, $descriptorid, $studentid) {
+     $data = array();
+     $data["timestamp"]=time();
      
-
-
-
-
-
-
-
-
-
-
+     g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
+         'courseid' => $courseid,
+         'userid' => $studentid,
+         'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR,
+         'compid' => $descriptorid,
+         'role' => BLOCK_EXACOMP_ROLE_TEACHER,
+     ]);
+ }
+ 

@@ -2286,11 +2286,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                             if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
                                 if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
-                                    //$teacher_evaluation_cell->attributes['bgcolor'] = 'red';
-                                    $teacher_evaluation_cell->text .= html_writer::tag('span', ' !!!', array('title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
-//                                     $teacher_evaluation_cell->attributes['class'] .= ' tooltip';
-//                                     $teacher_evaluation_cell->text = $teacher_evaluation_cell->text
-//                                         ."<span class=\"tooltiptext\">Eine Teilkompetenz dieser Kompetenz wurde geändert. Update dieser Kompetenz?</span>"; 
+                                    $oldGradingWarning = html_writer::tag('button', ' !!!', array('title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));                                    
+                                    $teacher_evaluation_cell->text .= $oldGradingWarning;
                                 }
                             }
                         }
