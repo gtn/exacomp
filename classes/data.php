@@ -1160,7 +1160,8 @@ class data_importer extends data {
 	/**
 	 *
 	 * @param String $data xml content
-	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects data from topic leven downwards (topics, descriptors, examples)
+	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects
+	 *         data from topic leven downwards (topics, descriptors, examples)
 	 */
 	public static function do_import_file($file = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 		if (!$file) {
@@ -1278,21 +1279,62 @@ class data_importer extends data {
                 return array('result' => 'compareCategories', 'list' => $categories, 'sourceId' => self::$import_source_local_id);
             }
         }
-		
+
+        // select grids for importing
+        if(isset($xml->edulevels)) {
+            // work with GetPost, because additional form settings are not initialized yet
+            $newSelecting = optional_param_array('selectedGrid', null, PARAM_RAW);
+            if ($newSelecting && count($newSelecting) > 0) {
+                self::update_selectedgrids_for_source(self::$import_source_local_id, $newSelecting);
+            }
+            $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id);
+		    $grids = array();
+		    if (!$newSelecting) {
+                foreach ($xml->edulevels->edulevel as $edulevel) {
+                    foreach ($edulevel->schooltypes->schooltype as $schooltype) {
+                        foreach ($schooltype->subjects->subject as $subject) {
+                            $subjectUid = intval($subject->attributes()->id);
+                            $subject->pathname = $edulevel->title.' &#9656; '.$schooltype->title;
+                            // selected on previous importing
+                            if ($selectedGrids && array_key_exists($subjectUid, $selectedGrids) && $selectedGrids[$subjectUid] == 1) {
+                                $subject->selected = true;
+                            } elseif (!$selectedGrids && !$newSelecting) { // first importing for this source
+                                $subject->selected = true; // all subjects are selecred
+                            }
+                            // it is new for importing from this source
+                            if ($selectedGrids && !array_key_exists($subjectUid, $selectedGrids)) {
+                                $subject->newForSelected = true;
+                            }
+                            $grids[$subjectUid] = $subject;
+                        }
+                    }
+                }
+                return array('result' => 'selectGrids', 'list' => $grids, 'sourceId' => self::$import_source_local_id);
+            }
+        }
 		// self::kompetenzraster_load_current_data_for_source();
 		// don't delete all mm_records, because if you import 2 partial xml files the 2nd would overwrite the 1st
 		// self::delete_mm_records(self::$import_source_local_id);
 
-		self::truncate_table(self::$import_source_local_id, BLOCK_EXACOMP_DB_SKILLS);
+        // used for next lists
+        $descriptorsFromSelectedGrids = self::get_descriptors_for_subjects_from_xml($xml);
+
+		$skillsFromSelected = self::get_property_for_descriptors_from_xml($xml, 'skillid', $descriptorsFromSelectedGrids);
+		//self::truncate_table(self::$import_source_local_id, BLOCK_EXACOMP_DB_SKILLS);
 		if(isset($xml->skills)) {
 			foreach($xml->skills->skill as $skill) {
-				self::insert_skill($skill);
+                if (in_array($skill->attributes()->id, $skillsFromSelected)) {
+                    self::insert_skill($skill);
+                }
 			}
 		}
 
+        $niveausFromSelected = self::get_property_for_descriptors_from_xml($xml, 'niveauid', $descriptorsFromSelectedGrids);
 		if(isset($xml->niveaus)) {
 			foreach($xml->niveaus->niveau as $niveau) {
-				self::insert_niveau($niveau);
+                if (in_array($niveau->attributes()->id, $niveausFromSelected)) {
+                    self::insert_niveau($niveau);
+                }
 			}
 		}
 		
@@ -1303,22 +1345,30 @@ class data_importer extends data {
 			}
 		}
 
+        $categoryFromSelected = self::get_property_for_descriptors_from_xml($xml, 'categories/categoryid', $descriptorsFromSelectedGrids);
 		if(isset($xml->categories)) {
             $categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
 			foreach($xml->categories->category as $category) {
-				self::insert_category($category, 0, $categoryMapping);
+                if (in_array($category->attributes()->id, $categoryFromSelected)) {
+                    self::insert_category($category, 0, $categoryMapping);
+                }
 			}
 		}
 		
 		if (isset($xml->descriptors)) {
 			foreach($xml->descriptors->descriptor as $descriptor) {
-				self::insert_descriptor($descriptor);
+			    if (in_array($descriptor->attributes()->id, $descriptorsFromSelectedGrids)) {
+                    self::insert_descriptor($descriptor);
+                }
 			}
 		}
-		
+
+        $examplesFromSelected = self::get_examples_for_descriptors_from_xml($xml, $descriptorsFromSelectedGrids);
 		if (isset($xml->examples)) {
 			foreach($xml->examples->example as $example) {
-				self::insert_example($example);
+			    if (in_array($example->attributes()->id, $examplesFromSelected)) {
+                    self::insert_example($example);
+                }
 			}
 		}
 		
@@ -1358,6 +1408,68 @@ class data_importer extends data {
 		return true;
 	}
 
+	private static function get_descriptors_for_subjects_from_xml($xml) {
+	    $result = array();
+        $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id);
+        $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
+        $selectedGrids = array_keys($selectedGrids);
+        array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+        $sujectsIds = implode(" or ", $selectedGrids);
+        if ($sujectsIds != '') {
+            $query = "//subjects/subject[".$sujectsIds."]/topics/topic/descriptors/descriptorid";
+            $tempXML = new \DOMDocument();
+            $tempXML->loadXML($xml->asXML());
+            $xpath = new \DOMXpath($tempXML);
+            $descriptors = $xpath->query($query);
+            if ($descriptors->length) {
+                foreach ($descriptors as $descriptor) {
+                    $result[] = $descriptor->getAttribute('id');
+                }
+            }
+        }
+        return $result;
+    }
+
+    // used for importing only needed skills, niveus... (from selected grids)
+    private static function get_property_for_descriptors_from_xml($xml, $propertyName = 'skillid', $descriptors = array()) {
+        $result = array();
+        array_walk($descriptors, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+        $descriptors = implode(" or ", $descriptors);
+        if ($descriptors != '') {
+            $query = "//descriptors/descriptor[".$descriptors."]/".$propertyName;
+            $tempXML = new \DOMDocument();
+            $tempXML->loadXML($xml->asXML());
+            $xpath = new \DOMXpath($tempXML);
+            $properties = $xpath->query($query);
+            if ($properties->length) {
+                foreach ($properties as $prop) {
+                    $result[] = $prop->getAttribute('id');
+                }
+            }
+        }
+        return $result;
+    }
+
+    private static function get_examples_for_descriptors_from_xml($xml, $descriptors = array()) {
+        $result = array();
+        array_walk($descriptors, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+        $descriptors = implode(" or ", $descriptors);
+        if ($descriptors != '') {
+            $query = "//examples/example/descriptors/descriptorid[".$descriptors."]";
+            $tempXML = new \DOMDocument();
+            $tempXML->loadXML($xml->asXML());
+            $xpath = new \DOMXpath($tempXML);
+            $descriptors = $xpath->query($query);
+            if ($descriptors->length) {
+                /** @var \DOMNodeList $descr */
+                foreach ($descriptors as $descr) {
+                    $result[] = $descr->parentNode->parentNode->getAttribute('id');
+                }
+            }
+            $result = array_unique($result);
+        }
+        return $result;
+    }
 
 	
 	private static function insert_or_update_item($table, $item) {
@@ -1412,7 +1524,10 @@ class data_importer extends data {
 	}
 
     private static function update_categorymapping_for_source($sourceId = null, $newMapping = array()) {
-	    //print_r($sourceId); print_r($newMapping);exit;
+        $currentMapping = self::get_categorymapping_for_source($sourceId);
+        if ($currentMapping) {
+            $newMapping = $newMapping + $currentMapping;
+        }
 	    $data = serialize($newMapping);
         g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET category_mapping=? WHERE id=?", array($data, $sourceId));
         // todo: why is this not working?!:
@@ -1425,7 +1540,26 @@ class data_importer extends data {
 
     public static function get_categorymapping_for_source($sourceId = null) {
         $where = array('id' => $sourceId);
-        $result = unserialize(g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "category_mapping", $where));
+        $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "category_mapping", $where);
+        $result = unserialize($row);
+        if (!is_array($result)) {
+            $result = false;
+        }
+        return $result;
+    }
+
+    private static function update_selectedgrids_for_source($sourceId = null, $newSelected = array()) {
+	    $currentSelected = self::get_selectedgrids_for_source($sourceId);
+	    if ($currentSelected) {
+            $newSelected = $newSelected + $currentSelected;
+        }
+	    $data = serialize($newSelected);
+        g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET selected_grids=? WHERE id=?", array($data, $sourceId));
+    }
+
+    public static function get_selectedgrids_for_source($sourceId = null) {
+        $where = array('id' => $sourceId);
+        $result = unserialize(g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "selected_grids", $where));
         if (!is_array($result)) {
             $result = false;
         }
@@ -1761,25 +1895,67 @@ class data_importer extends data {
 
 		return $subject;
 	}
+
 	private static function insert_schooltype($xmlItem) {
 		$schooltype = self::parse_xml_item($xmlItem);
+        $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id);
+        $subjectsExist = self::checkSelectedSubjectIdsInPath($xmlItem);
+        if (!$subjectsExist) {
+            return $schooltype;
+        }
 
 		self::insert_or_update_item(BLOCK_EXACOMP_DB_SCHOOLTYPES, $schooltype);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_SCHOOLTYPES, $schooltype);
 
 		foreach($xmlItem->subjects->subject as $subject) {
 			$subject->stid = $schooltype->id;
-			self::insert_subject($subject);
+            $subjectId = intval($subject->attributes()->id);
+			if ($selectedGrids && array_key_exists($subjectId, $selectedGrids) && $selectedGrids[$subjectId] == 1) {
+                self::insert_subject($subject);
+            }
 		}
 
 		return $schooltype;
 	}
+
+    /**
+     * @param \block_exacomp\SimpleXMLElement $xml
+     * @return bool
+     */
+	private static function checkSelectedSubjectIdsInPath($xml) {
+        $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id);
+        $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
+        $selectedGrids = array_keys($selectedGrids);
+        array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+        $sujectsIds = implode(" or ", $selectedGrids);
+        if ($sujectsIds != '') {
+            $query = "//subjects/subject[".$sujectsIds."]";
+            // does not work correctly!! why?
+            //$subjectsExist = $xml->xpath($query);
+            $tempXML = new \DOMDocument();
+            $tempXML->loadXML($xml->asXML());
+            $xpath = new \DOMXpath($tempXML);
+            $subjectsExist = $xpath->query($query);
+            if ($subjectsExist->length) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param \block_exacomp\SimpleXMLElement $xmlItem
+     * @return array|mixed|object
+     */
 	private static function insert_edulevel($xmlItem) {
 		$edulevel = self::parse_xml_item($xmlItem);
-	
+        $subjectsExist = self::checkSelectedSubjectIdsInPath($xmlItem);
+        if (!$subjectsExist) {
+            return $edulevel;
+        }
+
 		self::insert_or_update_item(BLOCK_EXACOMP_DB_EDULEVELS, $edulevel);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_EDULEVELS, $edulevel);
-		
 
 		foreach($xmlItem->schooltypes->schooltype as $schooltype) {
 			$schooltype->elid = $edulevel->id;

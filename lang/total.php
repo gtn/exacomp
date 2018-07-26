@@ -2116,6 +2116,22 @@ return [
         'Selektiver Export',
         'Select competence grids for export',
     ],
+    'select_all' => [
+        'alle wählen',
+        'select all'
+    ],
+    'deselect_all' => [
+        'alle abwählen',
+        'deselect all'
+    ],
+    'new' => [
+        'neu',
+        'new'
+    ],
+    'import_used_preselected_from_previous' => [
+        'is used preselected values from your previous importing from this source',
+        'is used preselected values from your previous importing from this source'
+    ],
 
     // === API ====
     'yes_no_No' => [
@@ -2149,6 +2165,10 @@ return [
     'grade_Insufficient' => [
         'Ungenügend',
         'Insufficient',
+    ],
+    'import_category_selectgrids_needed' => [
+        'Select subjects for importing:',
+        'Select subjects for importing:',
     ],
     'import_category_mapping_needed' => [
         'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:',

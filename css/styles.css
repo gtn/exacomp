@@ -1142,3 +1142,17 @@ not used anymore?
 	width: auto;
 	height: auto;
 }
+
+/* import xml */
+ul.exacomp_import_grids_list {
+	list-style-type: none;
+}
+
+.exacomp_import a.exacomp_import_select_sublist {
+	color: #007193;
+	cursor: pointer;
+}
+
+.exacomp_import a.exacomp_import_select_sublist:hover {
+	text-decoration: underline;
+}

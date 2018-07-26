@@ -837,4 +837,20 @@
 		}
 	});
 
+	// import: list of grids: select/deselect
+    $(document).on('click', '.exacomp_import_select_sublist', function(e) {
+    	e.preventDefault();
+    	var index = $(this).attr('data-targetList');
+    	var result = $(this).attr('data-selected');
+    	if (index == -1) {
+            var checkboxes = $('ul.exacomp_import_grids_list').find('input:checkbox');
+		} else {
+            var checkboxes = $('ul.exacomp_import_grids_list[data-pathIndex=' + index + ']').find('input:checkbox');
+        }
+    	if (result == 1)
+    		checkboxes.prop('checked', true);
+    	else
+            checkboxes.prop('checked', false);
+	});
+
 }();

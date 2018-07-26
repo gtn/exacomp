@@ -617,6 +617,10 @@ $string['report_competencefield'] = 'Kompetenzbereich';
 $string['all_students'] = 'Alle Schüler';
 $string['export_all_standards'] = 'Alle Kompetenzraster dieser Moodle Instanz exportieren';
 $string['export_selective'] = 'Selektiver Export';
+$string['select_all'] = 'alle wählen';
+$string['deselect_all'] = 'alle abwählen';
+$string['new'] = 'neu';
+$string['import_used_preselected_from_previous'] = 'is used preselected values from your previous importing from this source';
 
 // === API ====
 $string['yes_no_No'] = 'Nein';
@@ -627,6 +631,7 @@ $string['grade_Satisfactory'] = 'Befriedigend';
 $string['grade_Sufficient'] = 'Ausreichend';
 $string['grade_Deficient'] = 'Mangelhaft';
 $string['grade_Insufficient'] = 'Ungenügend';
+$string['import_category_selectgrids_needed'] = 'Select subjects for importing:';
 $string['import_category_mapping_needed'] = 'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:';
 $string['import_category_mapping_column_xml'] = 'XML title';
 $string['import_category_mapping_column_exacomp'] = 'Exacomp difflevel title';

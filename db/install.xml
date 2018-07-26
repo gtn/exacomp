@@ -492,7 +492,8 @@
         <FIELD NAME="source" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
+        <FIELD NAME="category_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
+        <FIELD NAME="selected_grids" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="selected grids"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

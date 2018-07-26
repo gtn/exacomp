@@ -61,6 +61,7 @@ $action = optional_param('action', '', PARAM_TEXT);
 
 require_once $CFG->libdir . '/formslib.php';
 
+
 class generalxml_upload_form extends \moodleform {
 
     protected $_confirmationData = null;
@@ -76,6 +77,7 @@ class generalxml_upload_form extends \moodleform {
 		$importtype = optional_param('importtype', 'normal', PARAM_TEXT);
 
 		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
+		$this->_form->_attributes['class'] = "mform exacomp_import";
 		$check = \block_exacomp\data::has_data();
 		if($importtype == 'custom') {
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));
@@ -91,6 +93,7 @@ class generalxml_upload_form extends \moodleform {
 	}
 
 	function definition_after_data() {
+        global $CFG;
         //parent::definition_after_data();
         $mform =& $this->_form;
         if ($this->_confirmationData && is_array($this->_confirmationData)) {
@@ -135,6 +138,49 @@ class generalxml_upload_form extends \moodleform {
                         $mform->addElement('html', '</tr>');
                     }
                     $mform->addElement('html', '</tbody></table>');
+                    break;
+                case 'selectGrids':
+                    require_once(__DIR__.'/classes/import_selectgrid_checkbox.php');
+                    MoodleQuickForm::registerElementType('import_selectgrid_checkbox', $CFG->dirroot.'/blocks/exacomp/classes/import_selectgrid_checkbox.php', 'block_exacomp_import_extraconfigcheckbox');
+                    // if used preselected values - message
+                    $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId']);
+                    if ($currentSelected) {
+                        $mform->addElement('html', '<div class="alert alert-info small">'.block_exacomp_get_string('import_used_preselected_from_previous').'</div>');
+                    }
+                    // Add select/deselect buttons
+                    $buttons = '<div><small>'.
+                            '<a class="exacomp_import_select_sublist" data-targetList="-1" data-selected="1">'.block_exacomp_get_string('select_all').'</a>&nbsp;/&nbsp;'.
+                            '<a class="exacomp_import_select_sublist" data-targetList="-1" data-selected="0">'.block_exacomp_get_string('deselect_all').'</a>'.
+                            '</small></div>';
+                    $currPath = '';
+                    $mform->addElement('html', $buttons.'<ul class="exacomp_import_grids_list">');
+                    $pathIndex = 0;
+                    foreach ($data['list'] as $subjid => $subject) {
+                        $path = (string)$subject->pathname;
+                        if ($currPath != $path) {
+                            $pathIndex++;
+                            $mform->addElement('html', '</ul>');
+                            $buttons = '<small>'.
+                                        '<a class="exacomp_import_select_sublist" data-targetList="'.$pathIndex.'" data-selected="1">'.block_exacomp_get_string('select_all').'</a>&nbsp;/&nbsp;'.
+                                        '<a class="exacomp_import_select_sublist" data-targetList="'.$pathIndex.'" data-selected="0">'.block_exacomp_get_string('deselect_all').'</a>'.
+                                        '</small>';
+                            $mform->addElement('html', '<h4>'.$path.'&nbsp;'.$buttons.'</h4>'."\r\n");
+                            $mform->addElement('html', '<ul class="exacomp_import_grids_list" data-pathIndex="'.$pathIndex.'">');
+                            $currPath = $subject->pathname;
+                        }
+                        $mform->addElement('html', '<li>');
+                        $params = array();
+                        if ($subject->selected) {
+                            $params['checked'] = 'checked';
+                        }
+                        $addText = '';
+                        if ($subject->newForSelected) {
+                            $addText = block_exacomp_get_string('new');
+                        }
+                        $mform->addElement('import_selectgrid_checkbox', 'selectedGrid['.$subjid.']', $addText, $subject->title, $params);
+                        $mform->addElement('html', '</li>');
+                    }
+                    $mform->addElement('html', '</ul>');
                     break;
             }
 
@@ -198,7 +244,6 @@ if(($isAdmin || block_exacomp_check_customupload()) && $action == 'delete') {
 $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, 'tab_admin_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
-
 /* CONTENT REGION */
 
 /* Admins are allowed to import data, or a special capability for custom imports */
@@ -231,7 +276,14 @@ if($isAdmin || block_exacomp_check_customupload()) {
                                 echo $OUTPUT->box($html);
                             } else if (is_array($importSuccess)){
                                 // no errors for now, but the user needs to configure importing
-                                $html = block_exacomp_get_string("import_category_mapping_needed");
+                                switch ($importSuccess['result']) {
+                                    case 'compareCategories':
+                                        $html = block_exacomp_get_string("import_category_mapping_needed");
+                                        break;
+                                    case 'selectGrids':
+                                        $html = block_exacomp_get_string("import_category_selectgrids_needed");
+                                        break;
+                                }
                                 echo $OUTPUT->box($html, 'alert alert-warning');
                                 $mform->setConfirmationData($importSuccess);
                                 $mform->display();
