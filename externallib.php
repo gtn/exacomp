@@ -5095,7 +5095,24 @@ class block_exacomp_external extends external_api {
 	                    throw new invalid_parameter_exception("some problem with the file occured");
 	                    //some problem with the file occured
 	                }
-	            }  
+	            }else if($filename == '')  {
+	                // copy the file from the old comment to the new comment
+	                $fs = get_file_storage();
+	                try {
+	                    $old = $fs->get_file(1, "block_exaport", "item_comment_file", $fileitemid, "/", $filename); // TODOOOOOOOO
+	                    if ($old) {
+	                        //TODO!!!!   contextid = 1 ?? immer??
+	                        $file_record = array('contextid' => 1, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
+	                            'itemid' => $commentid, 'filepath' => '/', 'filename' => $old->get_filename(),
+	                            'timecreated' => time(), 'timemodified' => time());
+	                        $fs->create_file_from_storedfile($file_record, $old->get_id());
+	                        $old->delete();
+	                    }
+	                } catch (Exception $e) {
+	                    throw new invalid_parameter_exception("some problem with the file occured");
+	                    //some problem with the file occured
+	                }
+	            }
 	        }
 	    }
 	    return array("success" => true, "exampleid" => $exampleid);
