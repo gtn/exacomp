@@ -325,6 +325,7 @@ $string['local'] = 'Local';
 $string['unknown_src'] = 'Unknown source';
 $string['override_notice1'] = 'This entry was editied by ';
 $string['override_notice2'] = ' before. Continue?';
+$string['dismiss_gradingisold'] = 'Do you want to dismiss this warning?';
 $string['unload_notice'] = 'Are you sure? Unsaved changes will be lost.';
 $string['example_sorting_notice'] = 'Please save the changes first.';
 $string['newsubmission'] = 'New Submission';

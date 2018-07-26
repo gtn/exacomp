@@ -676,7 +676,7 @@
 	});
 
 	// global var hack
-	i_want_my_reload = false;
+	i_want_my_reload = true;
 
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
 		if ($(this).is('.allow-submit')) return;
@@ -693,6 +693,7 @@
 			function all_done() {
 				if (reload) {
 					location.reload();
+					alert(M.util.get_string('save_changes_competence_evaluation','block_exacomp'));
 				} else {
 					document.location.href='#';
 					alert(M.util.get_string('save_changes_competence_evaluation','block_exacomp'));
@@ -788,7 +789,7 @@
 
 		return false;
 	});
-
+	
 	// Add Descriptor to crosssubjects
 	$(document).on('click', '#crosssubjects', function(event) {
 		event.preventDefault();
@@ -1113,6 +1114,7 @@
 
 	});
 
+
 	$(document).on('click', '#hide-solution', function(event) {
         event.preventDefault();
 
@@ -1205,6 +1207,25 @@
 
 		return false;
 	});
+	
+	$(document).on('click', '#gradingisold_warning', function(event) {
+    event.preventDefault();
+    
+    if (confirm(M.util.get_string('dismiss_gradingisold', 'block_exacomp'))) {
+      var descrid = $(this).attr('descrid');
+      var courseid = block_exacomp.get_param('courseid');
+      var studentid = $(this).attr('studentid');
+      
+      block_exacomp.call_ajax({
+        descrid : descrid,
+        courseid : courseid,
+        studentid : studentid,
+        action : 'dismiss_gradingisold_warning'
+      }).done(function() {
+        location.reload();
+      });
+    }
+  });
 
 	$(window).on('beforeunload', function (){
 		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0

@@ -35,6 +35,13 @@ $isTeacher = block_exacomp_is_teacher($courseid);
 require_sesskey();
 
 switch($action){
+    case ('dismiss_gradingisold_warning'):
+        $descrid = required_param('descrid', PARAM_INT);
+        $studentid = required_param('studentid', PARAM_INT);
+        
+        block_exacomp_set_descriptor_grading_timestamp($courseid,$descrid,$studentid);
+      
+        break;
 	case ('crosssubj-descriptors'):
 		$descrid = required_param('descrid', PARAM_INT);
 		$crosssubjects = required_param('crosssubjects', PARAM_TEXT);

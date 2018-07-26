@@ -325,6 +325,7 @@ $string['local'] = 'Lokal';
 $string['unknown_src'] = 'unbekannte Quelle';
 $string['override_notice1'] = 'Dieser Eintrag wurde von ';
 $string['override_notice2'] = ' bearbeitet. Wirklich ändern?';
+$string['dismiss_gradingisold'] = 'Wollen Sie die Warnung ignorieren?';
 $string['unload_notice'] = 'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.';
 $string['example_sorting_notice'] = 'Bitte zuerst die aktuellen Bewertungen speichern';
 $string['newsubmission'] = 'Erneute Abgabe';
