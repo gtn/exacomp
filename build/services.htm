@@ -1795,6 +1795,23 @@ Returns:<pre>[
         "description": "text null (description of cross subject)",
         "subjectid": "int null (subject id, cross subject is associated with)",
         "visible": "int null (visibility of crosssubject for selected student)",
+        "hasmaterial": "bool null (true or false if crossubject has material)",
+        "examples": [
+            {
+                "exampleid": "int null (id of example)",
+                "exampletitle": "text null (title of example)",
+                "examplestate": "int null (state of example, always 0 if for all students)",
+                "visible": "int null (visibility of example in current context)",
+                "used": "int null (used in current context)",
+                "teacherevaluation": "int null (example evaluation of teacher)",
+                "studentevaluation": "int null (example evaluation of student)",
+                "timestampteacher": "int null (timestamp of teacher evaluation)",
+                "timestampstudent": "int null (timestamp of student evaluation)",
+                "evalniveauid": "int null (evaluation niveau id)",
+                "solution_visible": "bool null (visibility for example solution in current context)"
+            },
+            "..."
+        ],
         "additionalinfo": "float null (additional grading)",
         "teacherevaluation": "int null (grading of child)",
         "evalniveauid": "int null (evaluation niveau id)",

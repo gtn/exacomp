@@ -4171,6 +4171,50 @@ class block_exacomp_external extends external_api {
 			if (array_key_exists($cross_subject->id, $cross_subjects_visible)) {
 				$cross_subject->visible = 1;
 			}
+			
+			
+			$cross_subject->examples = block_exacomp_get_examples_for_crossubject($cross_subject->id);
+			$cross_subject->hasmaterial = true;
+			if (empty($cross_subject->examples)) {
+			    $cross_subject->hasmaterial = false;
+			}
+			
+			$example_non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+			if (!$forall) {
+			    $example_non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+			}
+			
+			$examples_return = array();
+			foreach ($cross_subject->examples as $example) {
+			    $example_return = new stdClass();
+			    $example_return->exampleid = $example->id;
+			    $example_return->exampletitle = $example->title;
+			    $example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
+			    
+			    if ($forall) {
+			        $example_return->teacherevaluation = -1;
+			        $example_return->studentevaluation = -1;
+			        $example_return->evalniveauid = null;
+			        $example_return->timestampteacher = 0;
+			        $example_return->timestampstudent = 0;
+			        $example_return->solution_visible = 0;
+			    } else {
+			        $evaluation = (object)static::_get_example_information($courseid, $userid, $example->id);
+			        $example_return->teacherevaluation = $evaluation->teachervalue;
+			        $example_return->studentevaluation = $evaluation->studentvalue;
+			        $example_return->evalniveauid = $evaluation->evalniveauid;
+			        $example_return->timestampteacher = $evaluation->timestampteacher;
+			        $example_return->timestampstudent = $evaluation->timestampstudent;
+			        $example_return->solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+			    }
+			    $example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student)) || $forall)) ? 1 : 0;
+			    $example_return->used = (block_exacomp_example_used($courseid, $example, $userid)) ? 1 : 0;
+			    if (!array_key_exists($example->id, $examples_return)) {
+			        $examples_return[$example->id] = $example_return;
+			    }
+			}
+			
+			$cross_subject->examples = $examples_return;
 		}
 
 		if (!$forall && $userid) {
@@ -4198,6 +4242,21 @@ class block_exacomp_external extends external_api {
 				'description' => new external_value (PARAM_TEXT, 'description of cross subject'),
 				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
 				'visible' => new external_value (PARAM_INT, 'visibility of crosssubject for selected student'),
+		    
+		        'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if crossubject has material'),
+		        'examples' => new external_multiple_structure (new external_single_structure (array(
+    		        'exampleid' => new external_value (PARAM_INT, 'id of example'),
+    		        'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+    		        'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
+    		        'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+    		        'used' => new external_value (PARAM_INT, 'used in current context'),
+    		        'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
+    		        'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
+    		        'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
+    		        'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
+    		        'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+    		        'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+		        ))),
 			] + static::comp_eval_returns()));
 	}
 
