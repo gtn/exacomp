@@ -1508,12 +1508,13 @@ class block_exacomp_external extends external_api {
 			'name' => new external_value (PARAM_TEXT, 'title of example'),
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'externalurl' => new external_value (PARAM_TEXT, ''),
-			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma'),
+			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
 			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
 			'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
+		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crossubjectfile' , VALUE_DEFAULT, -1),
 		));
 	}
 
@@ -1530,13 +1531,13 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename) {
+	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
 			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
-
+		
 		static::validate_parameters(static::create_example_parameters(), array(
 			'name' => $name,
 			'description' => $description,
@@ -1547,6 +1548,7 @@ class block_exacomp_external extends external_api {
 			'taxonomies' => $taxonomies,
 			'courseid' => $courseid,
 			'filename' => $filename,
+		    'crosssubjectid' => $crosssubjectid,
 		));
 
 		// insert into examples and example_desc
@@ -1614,24 +1616,51 @@ class block_exacomp_external extends external_api {
 			$file->delete();
 		}
 
-		$descriptors = explode(',', $comps);
-		foreach ($descriptors as $descriptor) {
-			$insert = new stdClass ();
-			$insert->exampid = $id;
-			$insert->descrid = $descriptor;
-			$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-
-			//visibility entries for this example in course where descriptors are associated
-			$courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
-			foreach ($courseids as $courseid) {
-				$insert = new stdClass();
-				$insert->courseid = $courseid;
-				$insert->exampleid = $id;
-				$insert->studentid = 0;
-				$insert->visible = 1;
-				$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-			}
+		if($crosssubjectid != -1){
+		    $insert = new stdClass ();
+		    $insert->exampid = $id;
+		    $insert->id_foreign = $crosssubjectid;
+		    $insert->table_foreign = 'cross';
+		    $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+		    
+		    //vorerst notlösung:
+	        $insert = new stdClass();
+	        $insert->courseid = $courseid;
+	        $insert->exampleid = $id;
+	        $insert->studentid = 0;
+	        $insert->visible = 1;
+	        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+// 		    //visibility entries for this example in course where descriptors are associated
+// 		    $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
+// 		    foreach ($courseids as $courseid) {
+// 		        $insert = new stdClass();
+// 		        $insert->courseid = $courseid;
+// 		        $insert->exampleid = $id;
+// 		        $insert->studentid = 0;
+// 		        $insert->visible = 1;
+// 		        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+// 		    }
+		}else{
+		    $descriptors = explode(',', $comps);
+		    foreach ($descriptors as $descriptor) {
+		        $insert = new stdClass ();
+		        $insert->exampid = $id;
+		        $insert->descrid = $descriptor;
+		        $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+		        
+		        //visibility entries for this example in course where descriptors are associated
+		        $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
+		        foreach ($courseids as $courseid) {
+		            $insert = new stdClass();
+		            $insert->courseid = $courseid;
+		            $insert->exampleid = $id;
+		            $insert->studentid = 0;
+		            $insert->visible = 1;
+		            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+		        }
+		    }
 		}
+		
 
 		$taxonomies = trim($taxonomies) ? explode(',', trim($taxonomies)) : [];
 		foreach ($taxonomies as $taxid) {
