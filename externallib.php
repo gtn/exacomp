@@ -5609,7 +5609,7 @@ class block_exacomp_external extends external_api {
 	            } elseif (true) { // TODO: check if is teacher?
 	                if($itemcomment->timemodified > $timemodified_compareTeacher){
 	                    $data['teachercomment'] = $itemcomment->entry;
-	                    if ($itemcomment->file) {
+	                    if ($itemcomment->file) { //the most recent file is being kept, so if there is a newer comment without a file, the last file is still shown
 	                        $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
 	                            'userid' => $userid,
 	                            'itemid' => $itemInformation->id,
