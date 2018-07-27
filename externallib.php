@@ -5597,20 +5597,31 @@ class block_exacomp_external extends external_api {
 	        $data['teachercomment'] = '';
 	        $data['teacherfile'] = '';
 	        $itemcomments = \block_exaport\api::get_item_comments($itemInformation->id);
+	        //var_dump($itemcomments);
+	        $timemodified_compare = 0; //used for finding the most recent comment to display it in Dakora
+	        $timemodified_compareTeacher = 0;
 	        foreach ($itemcomments as $itemcomment) {
 	            if ($userid == $itemcomment->userid) {
-	                $data['studentcomment'] = $itemcomment->entry;
-	            } elseif (true) { // TODO: check if is teacher?
-	                $data['teachercomment'] = $itemcomment->entry;
-	                if ($itemcomment->file) {
-	                    $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-	                        'userid' => $userid,
-	                        'itemid' => $itemInformation->id,
-	                        'commentid' => $itemcomment->id,
-	                        'wstoken' => static::wstoken(),
-	                    ]);
-	                    $data['teacherfile'] = $fileurl;
+	                //var_dump($itemcomment->timemodified);
+	                if($itemcomment->timemodified > $timemodified_compare){
+	                    $data['studentcomment'] = $itemcomment->entry;
+	                    $timemodified_compare = $itemcomment->timemodified;
 	                }
+	            } elseif (true) { // TODO: check if is teacher?
+	                if($itemcomment->timemodified > $timemodified_compareTeacher){
+	                    $data['teachercomment'] = $itemcomment->entry;
+	                    if ($itemcomment->file) {
+	                        $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+	                            'userid' => $userid,
+	                            'itemid' => $itemInformation->id,
+	                            'commentid' => $itemcomment->id,
+	                            'wstoken' => static::wstoken(),
+	                        ]);
+	                        $data['teacherfile'] = $fileurl;
+	                    }
+	                    $timemodified_compareTeacher = $itemcomment->timemodified;
+	                }
+	                
 	            }
 	        }
 	    } else {
