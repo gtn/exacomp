@@ -5394,6 +5394,12 @@ class block_exacomp_external extends external_api {
 
 		$descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid)) ? 1 : 0;
 		$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
+		
+		if(!$forall){
+		    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+		}else{
+		    $descriptor_return->gradingisold = false;
+		}
 
 		return $descriptor_return;
 	}
@@ -5415,6 +5421,7 @@ class block_exacomp_external extends external_api {
 			'numbering' => new external_value (PARAM_TEXT, 'numbering'),
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 			'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
 			'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
 			'children' => new external_multiple_structure (new external_single_structure (array(
 			    'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
@@ -7284,12 +7291,12 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->visible = (!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student)) || $forall)) ? 1 : 0;
 							$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
 							//if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
-							$descriptors_return[] = $descriptor_return;
 							if(!$forall){
 							    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
 							}else{
 							    $descriptor_return->gradingisold = false;
 							}
+							$descriptors_return[] = $descriptor_return;
 						}
 					}
 				}
