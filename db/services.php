@@ -752,6 +752,14 @@ get admin evaluation configurations',
     'description' => 'set descriptor crosssubject association',
     'type' => 'write',
   ),
+  'dakora_dismiss_oldgrading_warning' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'dakora_dismiss_oldgrading_warning',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'set descriptor crosssubject association',
+    'type' => 'write',
+  ),
 );
 
 $services = array (
@@ -849,6 +857,7 @@ $services = array (
       83 => 'dakora_get_students_for_cross_subject',
       84 => 'dakora_set_cross_subject_student',
       85 => 'dakora_set_cross_subject_descriptor',
+      86 => 'dakora_dismiss_oldgrading_warning',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,

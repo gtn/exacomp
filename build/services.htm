@@ -3640,3 +3640,39 @@ Params: <table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
+<h2>dakora_dismiss_oldgrading_warning</h2>
+<div>set descriptor crosssubject association</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>descriptorid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value 0 or 1</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>

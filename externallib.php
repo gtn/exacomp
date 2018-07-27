@@ -7078,56 +7078,44 @@ class block_exacomp_external extends external_api {
 	}
 	
 	
-// 	public static function is_descriptor_grading_old() {
-// 	    return new external_function_parameters (array(
-// 	        'courseid' => new external_value (PARAM_INT, 'id of course'),
-// 	        'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
-// 	        'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
-// 	        'value' => new external_value (PARAM_INT, 'value 0 or 1'),
-// 	    ));
-// 	}
+	public static function dakora_dismiss_oldgrading_warning_parameters() {
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+	        'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+	        'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+	        'value' => new external_value (PARAM_INT, 'value 0 or 1'),
+	    ));
+	}
 	
-// 	/**
-// 	 * set descriptor crosssubject association
-// 	 * @ws-type-write
-// 	 * @param $courseid
-// 	 * @param $crosssubjid
-// 	 * @param $descriptorid
-// 	 * @param $value
-// 	 * @return array
-// 	 */
-// 	public static function is_descriptor_grading_old($courseid, $crosssubjid, $descriptorid, $value) {
-// 	    global $USER, $DB;
-// 	    static::validate_parameters(static::dakora_set_cross_subject_descriptor_parameters(), array(
-// 	        'courseid' => $courseid,
-// 	        'crosssubjid' => $crosssubjid,
-// 	        'descriptorid' => $descriptorid,
-// 	        'value' => $value,
-// 	    ));
+	/**
+	 * set descriptor crosssubject association
+	 * @ws-type-write
+	 * @param $courseid
+	 * @param $descriptorid
+	 * @param $studentid
+	 * @return array
+	 */
+	public static function dakora_dismiss_oldgrading_warning($courseid, $descriptorid, $studentid) {
+	    global $USER, $DB;
+	    static::validate_parameters(static::dakora_set_cross_subject_descriptor_parameters(), array(
+	        'courseid' => $courseid,
+	        'descriptorid' => $descriptorid,
+	        'studentid' => $studentid,
+	    ));
 	    
-// 	    static::require_can_access_course($courseid);
-// 	    block_exacomp_require_teacher($courseid);
+	    static::require_can_access_course($courseid);
+	    block_exacomp_require_teacher($courseid);
 	    
-// 	    if ($value == 1) {
-// 	        block_exacomp_set_cross_subject_descriptor($crosssubjid, $descriptorid);
-	        
-// 	        return array('success' => true);
-// 	    }
-	    
-// 	    if ($value == 0) {
-// 	        block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descriptorid);
-	        
-// 	        return array('success' => true);
-// 	    }
-	    
-// 	    return array('success' => false);
-// 	}
+	    block_exacomp_set_descriptor_grading_timestamp($courseid,$descriptorid,$studentid);
+
+	    return array('success' => true);
+	}
 	
-// 	public static function is_descriptor_grading_old() {
-// 	    return new external_single_structure (array(
-// 	        'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
-// 	    ));
-// 	}
+	public static function dakora_dismiss_oldgrading_warning_returns() {
+	    return new external_single_structure (array(
+	        'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+	    ));
+	}
 	
 
 	/**
