@@ -5079,7 +5079,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
 			'examplevalue' => new external_value (PARAM_INT, 'examplevalue'),
-		    'additionalinfo' => new external_value (PARAM_INT, 'additionalInfo'),
+		    'additionalinfo' => new external_value (PARAM_INT, 'additionalInfo', VALUE_DEFAULT, null),
 			'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'comment' => new external_value (PARAM_TEXT, 'comment', VALUE_DEFAULT, ''),
@@ -5102,7 +5102,7 @@ class block_exacomp_external extends external_api {
 	    static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
 	        'additionalinfo' => $additionalInfo ,'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
 	    if ($userid == 0) {
-	        $role = BLOCK_EXACOMP_ROLE_STUDENT;
+	        $role = BLOCK_EXACOMP_ROLE_STUDENT; // wann?
 	        $userid = $USER->id;
 	    } else {
 	        $role = BLOCK_EXACOMP_ROLE_TEACHER;
@@ -5114,7 +5114,7 @@ class block_exacomp_external extends external_api {
 	    static::require_can_access_course_user($courseid, $userid);
 	    static::require_can_access_example($exampleid, $courseid);
 	    block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid, $additionalInfo);
-	    if ($itemid > 0 && $userid > 0) {
+	    if ($itemid > 0 && $userid > 0) {    //So the student will never reach this part, either the itemid is null, or submit example is used
 	        $itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
 	        if (!$itemexample) {
 	            throw new invalid_parameter_exception("Wrong itemid given");
@@ -5124,28 +5124,27 @@ class block_exacomp_external extends external_api {
 	       
 	        $DB->update_record('block_exacompitemexample', $itemexample);
 	        if ($comment) {
-// 	            $commentExists = $DB->record_exists('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
-	            $oldComment = $DB->get_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
-	            if($oldComment){
-	                $oldComment->itemid = $itemid;
-	                $oldComment->userid = $USER->id;
-	                $oldComment->entry = $comment;
-	                $oldComment->timemodified = time();
-	                $DB->update_record('block_exaportitemcomm', $oldComment);
-	                $commentid = $oldComment->id;
+// 	            $oldComment = $DB->get_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+// 	            if($oldComment){
+// 	                $oldComment->itemid = $itemid;
+// 	                $oldComment->userid = $USER->id;
+// 	                $oldComment->entry = $comment;
+// 	                $oldComment->timemodified = time();
+// 	                $DB->update_record('block_exaportitemcomm', $oldComment);
+// 	                $commentid = $oldComment->id;
 	                
-	                //delete the old file if new one is uploaded
-	                if($filename != ''){
-	                    $DB->delete_records('files', array('itemid' => $commentid, 'userid' => $USER->id, 'filearea' => 'item_comment_file', 'component' => 'block_exaport'));
-	                }
-	            }else{
+// 	                //delete the old file if new one is uploaded
+// 	                if($filename != ''){
+// 	                    $DB->delete_records('files', array('itemid' => $commentid, 'userid' => $USER->id, 'filearea' => 'item_comment_file', 'component' => 'block_exaport'));
+// 	                }
+// 	            }else{
 	                $insert = new stdClass ();
 	                $insert->itemid = $itemid;
 	                $insert->userid = $USER->id;
 	                $insert->entry = $comment;
 	                $insert->timemodified = time();
 	                $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true); 
-	            }
+// 	            }
 	            
 	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment);
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
