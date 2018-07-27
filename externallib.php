@@ -5042,7 +5042,7 @@ class block_exacomp_external extends external_api {
 		    $itemexample->timemodified = time();
 		    $itemexample->studentvalue = $studentvalue;
 		    $DB->update_record('block_exacompitemexample', $itemexample);
-		    $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+		    //$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));   //DO NOT DELETE OLD COMMENTS, instead, only show newest
 		    if ($studentcomment != '') {
 		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
 		    }
