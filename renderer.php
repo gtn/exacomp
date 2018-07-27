@@ -2287,7 +2287,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
                                 if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
                                     //Hackable????
-                                    $gradingisoldwarning = html_writer::tag('a', ' !!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));                                    
+                                    $gradingisoldwarning = html_writer::tag('a', '!!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));                                    
                                     $teacher_evaluation_cell->text .= $gradingisoldwarning;
                                 }
                             }

@@ -5124,16 +5124,29 @@ class block_exacomp_external extends external_api {
 	       
 	        $DB->update_record('block_exacompitemexample', $itemexample);
 	        if ($comment) {
-	            $insert = new stdClass ();
-	            $insert->itemid = $itemid;
-	            $insert->userid = $USER->id;
-	            $insert->entry = $comment;
-	            $insert->timemodified = time();
-	            $DB->delete_records('block_exaportitemcomm', array(
-	                'itemid' => $itemid,
-	                'userid' => $USER->id,
-	            ));
-	            $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
+// 	            $commentExists = $DB->record_exists('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+	            $oldComment = $DB->get_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+	            if($oldComment){
+	                $oldComment->itemid = $itemid;
+	                $oldComment->userid = $USER->id;
+	                $oldComment->entry = $comment;
+	                $oldComment->timemodified = time();
+	                $DB->update_record('block_exaportitemcomm', $oldComment);
+	                $commentid = $oldComment->id;
+	                
+	                //delete the old file if new one is uploaded
+	                if($filename != ''){
+	                    $DB->delete_records('files', array('itemid' => $commentid, 'userid' => $USER->id, 'filearea' => 'item_comment_file', 'component' => 'block_exaport'));
+	                }
+	            }else{
+	                $insert = new stdClass ();
+	                $insert->itemid = $itemid;
+	                $insert->userid = $USER->id;
+	                $insert->entry = $comment;
+	                $insert->timemodified = time();
+	                $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true); 
+	            }
+	            
 	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment);
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 	            
@@ -5142,23 +5155,6 @@ class block_exacomp_external extends external_api {
 	                $fs = get_file_storage();
 	                try {
 	                    $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-	                    if ($old) {
-	                        //TODO!!!!   contextid = 1 ?? immer??
-	                        $file_record = array('contextid' => 1, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
-	                            'itemid' => $commentid, 'filepath' => '/', 'filename' => $old->get_filename(),
-	                            'timecreated' => time(), 'timemodified' => time());
-	                        $fs->create_file_from_storedfile($file_record, $old->get_id());
-	                        $old->delete();
-	                    }
-	                } catch (Exception $e) {
-	                    throw new invalid_parameter_exception("some problem with the file occured");
-	                    //some problem with the file occured
-	                }
-	            }else if($filename == '')  {
-	                // copy the file from the old comment to the new comment
-	                $fs = get_file_storage();
-	                try {
-	                    $old = $fs->get_file(1, "block_exaport", "item_comment_file", $fileitemid, "/", $filename); // TODOOOOOOOO
 	                    if ($old) {
 	                        //TODO!!!!   contextid = 1 ?? immer??
 	                        $file_record = array('contextid' => 1, 'component' => 'block_exaport', 'filearea' => 'item_comment_file',
