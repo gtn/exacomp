@@ -1205,11 +1205,11 @@ class global_config {
 	/**
 	 * Returns all values used for examples and child-descriptors
      * @param bool $include_empty
-     * @param integer $scheme
+     * @param integer $level
      * @return array
 	 */
-	static function get_student_eval_items($include_empty = false, $scheme = BLOCK_EXACOMP_TYPE_SUBJECT) {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty, $scheme) {
+	static function get_student_eval_items($include_empty = false, $level = BLOCK_EXACOMP_TYPE_SUBJECT) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty, $level) {
 			// if additional_grading is set, use global value scheme
 
 			if ($include_empty) {
@@ -1225,11 +1225,36 @@ class global_config {
                 */
                 $useEval = get_config('exacomp', 'assessment_SelfEval_useVerbose');
                 if ($useEval) {
-                    return $values + [
-                                    3 => block_exacomp_get_string('selfEvalVerbose.3'),
-                                    2 => block_exacomp_get_string('selfEvalVerbose.2'),
-                                    1 => block_exacomp_get_string('selfEvalVerbose.1'),
-                            ];
+                    // different for different levels
+                    // use integerand string variants
+                    switch (true) { // strange switch because $level can have different types
+                        case $level === 'crossubs':
+                        case $level === 'subjects':
+                        case $level === 'topics':
+                        case $level === 'competencies':
+                        case $level === BLOCK_EXACOMP_TYPE_CROSSSUB:
+                        case $level === BLOCK_EXACOMP_TYPE_SUBJECT:
+                        case $level === BLOCK_EXACOMP_TYPE_TOPIC:
+                        case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+                        case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
+                        case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
+                            return $values + [
+                                        4 => block_exacomp_get_string('selfEvalVerbose.4'),
+                                        3 => block_exacomp_get_string('selfEvalVerbose.3'),
+                                        2 => block_exacomp_get_string('selfEvalVerbose.2'),
+                                        1 => block_exacomp_get_string('selfEvalVerbose.1'),
+                                ];
+                            break;
+                        case $level === 'examples':
+                        case $level === BLOCK_EXACOMP_TYPE_EXAMPLE:
+                            return $values + [
+                                            3 => block_exacomp_get_string('selfEvalVerboseExample.3'),
+                                            2 => block_exacomp_get_string('selfEvalVerboseExample.2'),
+                                            1 => block_exacomp_get_string('selfEvalVerboseExample.1'),
+                                    ];
+                            break;
+                    }
+
                 } else {
                     return $values + [
                                     3 => ':-)',
@@ -1252,12 +1277,12 @@ class global_config {
 	 * Returns title for one value
 	 * @param id $id
 	 */
-	static function get_student_eval_title_by_id($id) {
+	static function get_student_eval_title_by_id($id, $type = BLOCK_EXACOMP_TYPE_SUBJECT) {
 		if ($id === null || $id < 0) {
 			return ' ';
 		}
 
-		return @static::get_student_eval_items()[$id];
+		return @static::get_student_eval_items(false, $type)[$id];
 	}
 
 	/**
@@ -1429,7 +1454,7 @@ class comp_eval extends db_record {
 
 	function get_value_title() {
 		if ($this->role == BLOCK_EXACOMP_ROLE_STUDENT) {
-			return global_config::get_student_eval_title_by_id($this->value);
+			return global_config::get_student_eval_title_by_id($this->value, $this->comptype);
 		} elseif ($this->role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			if ($this->comptype == BLOCK_EXACOMP_TYPE_EXAMPLE || $this->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 				return global_config::get_teacher_eval_title_by_id($this->value);
@@ -1520,9 +1545,9 @@ class comp_eval_merged {
 		}
 	}
 
-	function get_student_value_title() {
+	function get_student_value_title($type = BLOCK_EXACOMP_TYPE_SUBJECT) {
 		if (\block_exacomp\global_config::is_input_allowed($this->get_detailed_comptype(), BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION)) {
-			return global_config::get_student_eval_title_by_id($this->studentevaluation);
+			return global_config::get_student_eval_title_by_id($this->studentevaluation, $type);
 		}
 	}
 

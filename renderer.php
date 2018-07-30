@@ -3062,7 +3062,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if (strcmp($evaluation, 'teacher') == 0) {
 			$options = \block_exacomp\global_config::get_teacher_eval_items(0, false, $scheme);
 		} else {
-			$options = \block_exacomp\global_config::get_student_eval_items(true, $scheme);
+			$options = \block_exacomp\global_config::get_student_eval_items(true, $type);
 		}
 
 		if ($this->is_print_mode()) {
@@ -5475,7 +5475,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION])) {
                         echo '<div class="filter-input-student-eval">
                             <span class="filter-title">'.block_exacomp_get_string('selfevaluation').':</span>';
-                        foreach ([0 => block_exacomp_get_string('no_specification')] + \block_exacomp\global_config::get_student_eval_items(false) as $key => $value) {
+                        foreach ([0 => block_exacomp_get_string('no_specification')] + \block_exacomp\global_config::get_student_eval_items(false, $input_type) as $key => $value) {
                             $checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) ? 'checked="checked"' : '';
                                 echo '<label>
                                         <input type="checkbox" name="filter['.$input_type.']['.BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION.'][]" value="'.s($key).'" '.$checked.'/>  '.$value.'

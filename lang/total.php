@@ -774,14 +774,30 @@ return [
 		'Use verbose Options for Self evaluation',
 	],
 	'selfEvalVerbose.1' => [
+		'trifft nicht zu',
+		'does not apply',
+	],
+	'selfEvalVerbose.2' => [
+		'trifft eher nicht zu',
+		'rather not true',
+	],
+	'selfEvalVerbose.3' => [
+		'trifft eher zu',
+		'rather applies',
+	],
+	'selfEvalVerbose.4' => [
+		'trifft zu',
+		'true',
+	],
+	'selfEvalVerboseExample.1' => [
 		'nicht gelöst',
 		'unsolved',
 	],
-	'selfEvalVerbose.2' => [
+	'selfEvalVerboseExample.2' => [
 		'mit Hilfe gelöst',
 		'solved with help',
 	],
-	'selfEvalVerbose.3' => [
+	'selfEvalVerboseExample.3' => [
 		'selbstständig gelöst',
 		'solved independently',
 	],

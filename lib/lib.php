@@ -5525,7 +5525,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 
-			$student_title = \block_exacomp\global_config::get_student_eval_title_by_id($example->student_evaluation);
+			$student_title = \block_exacomp\global_config::get_student_eval_title_by_id($example->student_evaluation, 'examples');
 			$teacher_title = \block_exacomp\global_config::get_teacher_eval_title_by_id($example->teacher_evaluation);
 
 			$example_array['student_evaluation_title'] = (strcmp($student_title, ' ') == 0) ? '-' : $student_title;
@@ -8091,7 +8091,7 @@ function block_exacomp_group_reports_return_result($filter) {
 					echo '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				    $html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
-				echo '<td class="exarep_studentAssessment" style="padding: 0 10px;">'.$eval->get_student_value_title();
+				echo '<td class="exarep_studentAssessment" style="padding: 0 10px;">'.$eval->get_student_value_title($item::TYPE).'</td>';
 				echo '<td class="exarep_teacherAssessment" style="padding: 0 10px;">';
                 switch ($item_scheme) {
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
@@ -8114,8 +8114,9 @@ function block_exacomp_group_reports_return_result($filter) {
                         }
                         break;
                 }
-				echo '<td class="exarep_exa_evaluation" style="padding: 0 10px;">'.$eval->get_teacher_value_title();
-				echo '<td class="exarep_difficultyLevel" style="padding: 0 10px;">'.$eval->get_evalniveau_title();
+                echo '</td>';
+				echo '<td class="exarep_exa_evaluation" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>';
+				echo '<td class="exarep_difficultyLevel" style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
 
 				$walk_subs($level + 1);
 			});

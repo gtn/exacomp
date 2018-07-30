@@ -103,7 +103,7 @@ $value_titles = block_exacomp_array_filter_keys(\block_exacomp\global_config::ge
 $value_titles_long = block_exacomp_array_filter_keys(\block_exacomp\global_config::get_teacher_eval_items($courseid, false), function($k) {
 	return $k >= 0;
 });
-$value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items(true);
+$value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items(true, BLOCK_EXACOMP_TYPE_TOPIC);
 
 $graph_options->zLabels = array_fill(0, count($value_titles), '');
 
