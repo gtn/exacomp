@@ -201,6 +201,7 @@ $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungs
 $string['doimport'] = 'Bildungsstandards importieren';
 $string['doimport_again'] = 'Weitere Bildungsstandards importieren';
 $string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';
+$string['scheduler_import_settings'] = 'Settings for scheduler importing';
 $string['delete_own'] = 'Schulspezifische Bildungsstandards löschen';
 $string['delete_success'] = 'Schulspezifische Bildungsstandards wurden gelöscht';
 $string['delete_own_confirm'] = 'Schulspezifische Bildungsstandards wirklich löschen? Dieser Schritt kann nicht rückgängig gemacht werden.';
@@ -210,6 +211,11 @@ $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 $string['noxmlfile'] = 'Ein Import ist derzeit nicht möglich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';
 $string['oldxmlfile'] = 'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
 $string['do_demo_import'] = 'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Kompetenzraster funktioniert.';
+$string['schedulerimport'] = 'Scheduler import tasks';
+$string['add_new_importtask'] = 'Add new import task';
+$string['importtask_title'] = 'Title';
+$string['importtask_link'] = 'Link to source';
+$string['importtask_disabled'] = 'Disabled';
 
 
 // === Configuration ===
@@ -638,3 +644,4 @@ $string['import_category_mapping_column_exacomp'] = 'Exacomp difflevel title';
 $string['import_category_mapping_column_level'] = 'Niveau';
 $string['import_category_mapping_column_level_descriptor'] = 'Kompetenz / Teilkompetenz';
 $string['import_category_mapping_column_level_example'] = 'Material';
+$string['save'] = 'Speichern';

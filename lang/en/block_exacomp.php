@@ -201,6 +201,7 @@ $string['importpending'] = 'no data has been imported yet!';
 $string['doimport'] = 'Import outcomes/standards';
 $string['doimport_again'] = 'Import additional outcomes/standards';
 $string['doimport_own'] = 'Import individual outcomes/standards';
+$string['scheduler_import_settings'] = 'Settings for scheduler importing';
 $string['delete_own'] = 'Delete individual outcomes/standards';
 $string['delete_success'] = 'Individual outcomes/standards have been deleted';
 $string['delete_own_confirm'] = 'Are you sure to delete the individual outcomes/standards?';
@@ -210,6 +211,11 @@ $string['importfail'] = 'an error has occured during import';
 $string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
 $string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
 $string['do_demo_import'] = 'import demo data to see how Exabis Competence Grid works.';
+$string['schedulerimport'] = 'Scheduler import tasks';
+$string['add_new_importtask'] = 'Add new import task';
+$string['importtask_title'] = 'Title';
+$string['importtask_link'] = 'Link to source';
+$string['importtask_disabled'] = 'Disabled';
 
 
 // === Configuration ===
@@ -632,3 +638,4 @@ $string['import_category_mapping_column_exacomp'] = 'Exacomp difflevel title';
 $string['import_category_mapping_column_level'] = 'Level';
 $string['import_category_mapping_column_level_descriptor'] = 'Competence / Child competence';
 $string['import_category_mapping_column_level_example'] = 'Material';
+$string['save'] = 'Save';

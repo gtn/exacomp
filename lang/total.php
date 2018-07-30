@@ -667,6 +667,10 @@ return [
 		'Schulspezifische Bildungsstandards importieren',
 		'Import individual outcomes/standards',
 	],
+	'scheduler_import_settings' => [
+        'Settings for scheduler importing',
+		'Settings for scheduler importing',
+	],
 	'delete_own' => [
 		'Schulspezifische Bildungsstandards löschen',
 		'Delete individual outcomes/standards',
@@ -703,6 +707,30 @@ return [
 		'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Kompetenzraster funktioniert.',
 		'import demo data to see how Exabis Competence Grid works.',
 	],
+    'schedulerimport' => [
+        'Scheduler import tasks',
+        'Scheduler import tasks',
+    ],
+    'add_new_importtask' => [
+        'Add new import task',
+        'Add new import task',
+    ],
+    'importtask_title' => [
+        'Title',
+        'Title'
+    ],
+    'importtask_link' => [
+        'Link to source',
+        'Link to source'
+    ],
+    'importtask_link' => [
+        'Link to source',
+        'Link to source'
+    ],
+    'importtask_disabled' => [
+        'Disabled',
+        'Disabled'
+    ],
 
 
 	// === Configuration ===
@@ -2193,5 +2221,9 @@ return [
     'import_category_mapping_column_level_example' => [
             'Material',
             'Material'
+    ],
+    'save' => [
+            'Speichern',
+            'Save'
     ]
 ];

@@ -69,6 +69,7 @@ const BLOCK_EXACOMP_DB_EVALUATION_NIVEAU = 'block_exacompeval_niveau';
 const BLOCK_EXACOMP_DB_TOPICVISIBILITY = 'block_exacomptopicvisibility';
 const BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY = 'block_exacompsolutvisibility';
 const BLOCK_EXACOMP_DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
+const BLOCK_EXACOMP_DB_IMPORTTASKS = 'block_exacompimporttasks';
 
 /**
  * PLUGIN ROLES

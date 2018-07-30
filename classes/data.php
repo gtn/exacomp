@@ -1130,7 +1130,7 @@ class data_importer extends data {
 		return $ret;
 	}
 	
-	public static function do_import_url($url = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_url($url = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false) {
 		global $CFG;
 
 		if (!$url) {
@@ -1139,7 +1139,7 @@ class data_importer extends data {
 
 		if (file_exists($url)) {
 			// it's a file
-			return self::do_import_file($url, $par_source);
+			return self::do_import_file($url, $par_source, $simulate);
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1150,7 +1150,7 @@ class data_importer extends data {
 
 		file_put_contents($file, $handle);
 		
-		$ret = self::do_import_file($file, $par_source);
+		$ret = self::do_import_file($file, $par_source, $simulate);
 		
 		@unlink($file);
 		
@@ -1162,8 +1162,9 @@ class data_importer extends data {
 	 * @param String $data xml content
 	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects
 	 *         data from topic leven downwards (topics, descriptors, examples)
+     * @param bool $simulate need for simulate importing. We can get settings of importing without real importing
 	 */
-	public static function do_import_file($file = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_file($file = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false) {
 		if (!$file) {
 			throw new import_exception('filenotfound');
 		}
@@ -1257,10 +1258,10 @@ class data_importer extends data {
             // work with GetPost, because additional form settings are not initialized yet
             $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
             if ($newMapping) {
-                self::update_categorymapping_for_source(self::$import_source_local_id, $newMapping);
+                self::update_categorymapping_for_source(self::$import_source_local_id, $newMapping, $simulate);
             }
             $difflevels = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
-            $categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
+            $categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id, $simulate);
             $categories = array();
             $theSame = true;
             if (!$newMapping) {
@@ -1285,9 +1286,9 @@ class data_importer extends data {
             // work with GetPost, because additional form settings are not initialized yet
             $newSelecting = optional_param_array('selectedGrid', null, PARAM_RAW);
             if ($newSelecting && count($newSelecting) > 0) {
-                self::update_selectedgrids_for_source(self::$import_source_local_id, $newSelecting);
+                self::update_selectedgrids_for_source(self::$import_source_local_id, $newSelecting, $simulate);
             }
-            $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id);
+            $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id, $simulate);
 		    $grids = array();
 		    if (!$newSelecting) {
                 foreach ($xml->edulevels->edulevel as $edulevel) {
@@ -1312,6 +1313,11 @@ class data_importer extends data {
                 return array('result' => 'selectGrids', 'list' => $grids, 'sourceId' => self::$import_source_local_id);
             }
         }
+
+        if ($simulate) {
+		    return true; // stop importing. It is only simulating
+        }
+
 		// self::kompetenzraster_load_current_data_for_source();
 		// don't delete all mm_records, because if you import 2 partial xml files the 2nd would overwrite the 1st
 		// self::delete_mm_records(self::$import_source_local_id);
@@ -1523,13 +1529,17 @@ class data_importer extends data {
 		));
 	}
 
-    private static function update_categorymapping_for_source($sourceId = null, $newMapping = array()) {
+    private static function update_categorymapping_for_source($sourceId = null, $newMapping = array(), $forSchedulerTask = false) {
         $currentMapping = self::get_categorymapping_for_source($sourceId);
         if ($currentMapping) {
             $newMapping = $newMapping + $currentMapping;
         }
 	    $data = serialize($newMapping);
-        g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET category_mapping=? WHERE id=?", array($data, $sourceId));
+        if ($forSchedulerTask) {
+            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_IMPORTTASKS."} SET category_mapping=? WHERE id=?", array($data, $sourceId));
+        } else {
+            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET category_mapping=? WHERE id=?", array($data, $sourceId));
+        }
         // todo: why is this not working?!:
         /*g::$DB->update_record(BLOCK_EXACOMP_DB_DATASOURCES, array(
                 'category_mapping' => $data
@@ -1538,9 +1548,13 @@ class data_importer extends data {
         ));*/
     }
 
-    public static function get_categorymapping_for_source($sourceId = null) {
+    public static function get_categorymapping_for_source($sourceId = null, $forSchedulerTask = false) {
         $where = array('id' => $sourceId);
-        $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "category_mapping", $where);
+        if ($forSchedulerTask) {
+            $row = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "category_mapping", $where);
+        } else {
+            $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "category_mapping", $where);
+        }
         $result = unserialize($row);
         if (!is_array($result)) {
             $result = false;
@@ -1548,18 +1562,27 @@ class data_importer extends data {
         return $result;
     }
 
-    private static function update_selectedgrids_for_source($sourceId = null, $newSelected = array()) {
+    private static function update_selectedgrids_for_source($sourceId = null, $newSelected = array(), $forSchedulerTask = false) {
 	    $currentSelected = self::get_selectedgrids_for_source($sourceId);
 	    if ($currentSelected) {
             $newSelected = $newSelected + $currentSelected;
         }
 	    $data = serialize($newSelected);
-        g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET selected_grids=? WHERE id=?", array($data, $sourceId));
+        if ($forSchedulerTask) {
+            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_IMPORTTASKS."} SET selected_grids=? WHERE id=?", array($data, $sourceId));
+        } else {
+            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET selected_grids=? WHERE id=?", array($data, $sourceId));
+        }
     }
 
-    public static function get_selectedgrids_for_source($sourceId = null) {
+    public static function get_selectedgrids_for_source($sourceId = null, $forSchedulerTask = false) {
         $where = array('id' => $sourceId);
-        $result = unserialize(g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "selected_grids", $where));
+        if ($forSchedulerTask) {
+            $row = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "selected_grids", $where);
+        } else {
+            $row = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "selected_grids", $where);
+        }
+        $result = unserialize($row);
         if (!is_array($result)) {
             $result = false;
         }

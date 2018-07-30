@@ -1156,3 +1156,9 @@ ul.exacomp_import_grids_list {
 .exacomp_import a.exacomp_import_select_sublist:hover {
 	text-decoration: underline;
 }
+
+.exacomp_importtasks .exacomp_importtask_link span {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}

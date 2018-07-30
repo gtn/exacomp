@@ -3036,6 +3036,30 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018072401, 'exacomp');
     }
+
+    if ($oldversion < 2018072602) {
+        // Define table block_exacompimporttasks to be created.
+        $table = new xmldb_table('block_exacompimporttasks');
+
+        // Adding fields to table block_exacompimporttasks.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('link', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('category_mapping', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('selected_grids', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('source', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('disabled', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
+        // Adding keys to table block_exacompimporttasks.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for block_exacompimporttasks.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2018072602, 'exacomp');
+    }
 	
 	/*
 	 * insert new upgrade scripts before this comment section

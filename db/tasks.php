@@ -30,6 +30,15 @@ $tasks = array(
 		'dayofweek' => '*',
 	),
 	array(
+		'classname' => 'block_exacomp\task\import_additional',
+		'blocking' => 0,
+		'minute' => '0',
+		'hour' => '4',
+		'day' => '*',
+		'month' => '*',
+		'dayofweek' => '*',
+	),
+	array(
 		'classname' => 'block_exacomp\task\autotest',
 		'blocking' => 0,
 		'minute' => '*',

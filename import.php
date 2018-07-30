@@ -54,7 +54,6 @@ $PAGE->set_title(block_exacomp_get_string($page_identifier));
 $isAdmin = has_capability('block/exacomp:admin', $context);
 block_exacomp_require_teacher($context);
 
-$action = optional_param('action', "", PARAM_ALPHA);
 $importoption = optional_param('importoption', "", PARAM_ALPHA);
 $importtype = optional_param('importtype', '', PARAM_TEXT);
 $action = optional_param('action', '', PARAM_TEXT);
@@ -81,26 +80,33 @@ class generalxml_upload_form extends \moodleform {
 		$check = \block_exacomp\data::has_data();
 		if($importtype == 'custom') {
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));
-		}
-		elseif($check){
+		} elseif ($importtype == 'scheduler') {
+            $mform->addElement('header', 'comment', block_exacomp_get_string("scheduler_import_settings"));
+        } elseif ($check) {
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport"));
 		} else
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport_again"));
 
-		$mform->addElement('filepicker', 'file', block_exacomp_get_string("file"),null);
-		$mform->addRule('file', null, 'required', null, 'client');
+        if ($importtype != 'scheduler') {
+            $mform->addElement('filepicker', 'file', block_exacomp_get_string("file"), null);
+            $mform->addRule('file', null, 'required', null, 'client');
+        }
 
 	}
 
 	function definition_after_data() {
         global $CFG;
         //parent::definition_after_data();
+        $forSchedulerTask = false;
         $mform =& $this->_form;
         if ($this->_confirmationData && is_array($this->_confirmationData)) {
             $data = $this->_confirmationData;
+            if (isset($data['forSchedulerTask']) && $data['forSchedulerTask'] == true) {
+                $forSchedulerTask = true;
+            }
             switch ($data['result']) {
                 case 'compareCategories':
-                    $categoryMapping = \block_exacomp\data_importer::get_categorymapping_for_source($data['sourceId']);
+                    $categoryMapping = \block_exacomp\data_importer::get_categorymapping_for_source($data['sourceId'], $forSchedulerTask);
                     // input form for comparing categories
                     //print_r(block_exacomp_get_assessment_diffLevel_options());
                     $difflevels = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
@@ -128,7 +134,7 @@ class generalxml_upload_form extends \moodleform {
                         $mform->addElement('html', '</td>');
                         $mform->addElement('html', '<td>');
                         $select = $mform->addElement('select', 'changeTo['.$catId.']', null, $difflevels);
-                        if (array_key_exists($catId, $categoryMapping)) {
+                        if ($categoryMapping && array_key_exists($catId, $categoryMapping)) {
                             $select->setSelected($categoryMapping[$catId]);
                         }
                         $mform->addElement('html', '</td>');
@@ -143,7 +149,7 @@ class generalxml_upload_form extends \moodleform {
                     require_once(__DIR__.'/classes/import_selectgrid_checkbox.php');
                     MoodleQuickForm::registerElementType('import_selectgrid_checkbox', $CFG->dirroot.'/blocks/exacomp/classes/import_selectgrid_checkbox.php', 'block_exacomp_import_extraconfigcheckbox');
                     // if used preselected values - message
-                    $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId']);
+                    $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId'], $forSchedulerTask);
                     if ($currentSelected) {
                         $mform->addElement('html', '<div class="alert alert-info small">'.block_exacomp_get_string('import_used_preselected_from_previous').'</div>');
                     }
@@ -185,7 +191,11 @@ class generalxml_upload_form extends \moodleform {
             }
 
         }
-        $this->add_action_buttons(false, block_exacomp_get_string('add')); // we need buttons to bottom. so it is here
+        if ($forSchedulerTask) {
+            $this->add_action_buttons(false, block_exacomp_get_string('save')); // settings of scheduler importing
+        } else {
+            $this->add_action_buttons(false, block_exacomp_get_string('add')); // we need buttons to bottom. so it is here. usual importing
+        }
 
     }
 
@@ -197,6 +207,29 @@ class generalxml_upload_form extends \moodleform {
     }
 
 }
+
+class importtask_form extends \moodleform {
+
+    function definition() {
+        $mform = &$this->_form;
+
+        $this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
+        $this->_form->_attributes['class'] = "mform exacomp_importtask";
+
+        $mform->addElement('text', 'title', block_exacomp_get_string('importtask_title'), array('size' => '50'));
+        $mform->setType('title', PARAM_TEXT);
+        $mform->addRule('title', null, 'required', null, 'client');
+        $mform->addElement('text', 'link', block_exacomp_get_string('importtask_link'), array('size' => '50'));
+        $mform->setType('link', PARAM_TEXT);
+        //$mform->setType('link', PARAM_URL);
+        //$mform->addRule('link', null, 'required', null, 'client');
+        $mform->addElement('checkbox', 'disabled', block_exacomp_get_string('importtask_disabled'));
+
+        $this->add_action_buttons(block_exacomp_get_string('cancel'), block_exacomp_get_string('save'));
+
+    }
+}
+
 
 $mform = new generalxml_upload_form();
 
@@ -235,7 +268,7 @@ $pagenode = $blocknode->add(block_exacomp_get_string($page_identifier), $PAGE->u
 $pagenode->make_active();
 
 $delete = false;
-if(($isAdmin || block_exacomp_check_customupload()) && $action == 'delete') {
+if(($isAdmin || block_exacomp_check_customupload()) && ($action == 'delete' && $importtype != 'scheduler')) {
 		block_exacomp\data::delete_source(required_param('source', PARAM_INT));
 		$delete = true;
 }
@@ -315,9 +348,148 @@ if($isAdmin || block_exacomp_check_customupload()) {
                     echo $OUTPUT->box(block_exacomp_get_string("importsuccess").html_writer::empty_tag('br')
                         .html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
                         .html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid, 'fromimport'=>1)), $string));
-                }else{
+                } else {
                     echo $OUTPUT->box(block_exacomp_get_string("importfail"));
                     echo block_exacomp_get_renderer()->box_error($importException);
+                }
+                break;
+            case 'scheduler':
+                $taskform = new importtask_form();
+                $taskslist = function() use ($OUTPUT, $DB, $courseid) {
+                    // "add new" button
+                    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
+                            array('courseid'=>$courseid, 'importtype'=>'scheduler', 'action' => 'add')),
+                            block_exacomp_get_string('add_new_importtask'),
+                            array('class' => 'btn btn-default')));
+                    $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, null, 'title');
+                    $table = new html_table();
+                    $table->attributes['class'] = 'exacomp_importtasks';
+                    $rows = array();
+                    foreach ($tasks as $task ) {
+                        $row = new html_table_row();
+                        // title
+                        $cell = new html_table_cell();
+                        $cell->attributes['class'] = 'exacomp_importtask_title';
+                        $cell->text = $task->title.'&nbsp;&nbsp;&nbsp;';
+                        $row->cells[] = $cell;
+                        // link
+                        $cell = new html_table_cell();
+                        $cell->attributes['class'] = 'exacomp_importtask_link';
+                        $cell->text = '<span>'.$task->link.'</span>&nbsp;&nbsp;&nbsp;';
+                        $row->cells[] = $cell;
+                        // buttons
+                        $rows[] = $row;
+                        $cell = new html_table_cell();
+                        $cell->attributes['class'] = 'exacomp_importtask_buttons';
+                        $edit = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
+                                array('courseid'=>$courseid, 'importtype'=>'scheduler', 'action' => 'edit', 'id' => $task->id)),
+                                html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/edit.png'))),
+                                array('class' => ''));
+                        $settings = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
+                                array('courseid'=>$courseid, 'importtype'=>'scheduler', 'action' => 'settings', 'id' => $task->id)),
+                                html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/document_properties.png'))),
+                                array('class' => ''));
+                        $button_pic = $task->disabled ? 'completion-auto-fail.png' : 'completion-auto-enabled.png';
+                        $disable = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
+                                array('courseid'=>$courseid, 'importtype'=>'scheduler', 'action' => 'disable', 'id' => $task->id)),
+                                html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/'.$button_pic))),
+                                array('class' => ''));
+                        $delete = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
+                                array('courseid'=>$courseid, 'importtype'=>'scheduler', 'action' => 'delete', 'id' => $task->id)),
+                                html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/delete.png'))),
+                                array('class' => ''));
+                        $cell->text = $disable.'&nbsp;'.$edit.'&nbsp;'.$settings.'&nbsp;'.$delete.'&nbsp;';
+                        $row->cells[] = $cell;
+
+
+                        $row = new html_table_row();
+                        $row->attributes['class'] = 'highlight';
+                    }
+                    $table->data = $rows;
+                    echo html_writer::table($table);
+                };
+
+                switch ($action) {
+                    case 'add': // add new task
+                        if ($taskdata = $taskform->get_data()) {
+                            $taskdata->disabled = 1;
+                            // save data
+                            $DB->insert_record(BLOCK_EXACOMP_DB_IMPORTTASKS, $taskdata);
+                            $url = $PAGE->url;
+                            $url->param('importtype', 'scheduler');
+                            $taskslist();
+                        } else {
+                            $taskform->display();
+                        }
+                        break;
+                    case 'edit': // edit task
+                        $taskid = required_param('id', PARAM_INT);
+                        if ($taskid) {
+                            if ($taskdata = $taskform->get_data()) {
+                                // save data
+                                $taskdata->id = $taskid;
+                                if (!isset($taskdata->disabled)) { // form does not send unchecked checkboxes
+                                    $taskdata->disabled = 0;
+                                }
+                                $DB->update_record(BLOCK_EXACOMP_DB_IMPORTTASKS, $taskdata);
+                                $url = $PAGE->url;
+                                $url->param('importtype', 'scheduler');
+                                $taskslist();
+                            } else {
+                                $taskdata = $DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
+                                $taskform->set_data($taskdata);
+                                $taskform->display();
+                            }
+                        }
+                        break;
+                    case 'disable': // disable task
+                        $taskid = required_param('id', PARAM_INT);
+                        if ($taskid) {
+                            $taskdata = $DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
+                            $taskdata->disabled = $taskdata->disabled ? 0 : 1;
+                            $DB->update_record(BLOCK_EXACOMP_DB_IMPORTTASKS, $taskdata);
+                        }
+                        $taskslist();
+                        break;
+                    case 'delete': // delete task
+                        $taskid = required_param('id', PARAM_INT);
+                        if ($taskid) {
+                            $DB->delete_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
+                        }
+                        $taskslist();
+                        break;
+                    case 'settings': // edit settings: category_mapping, selected_grids
+                        // it is simulating of importing:
+                        // - download xml from link
+                        // - try to import
+                        // - get import settings (category_mapping, selected_grids) - like in manual importing
+                        // - NOT do real importing
+                        $taskid = required_param('id', PARAM_INT);
+                        if ($taskid) {
+                            $taskdata = $DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
+                            $url = $taskdata->link;
+                            $importSuccess = block_exacomp\data_importer::do_import_url($url, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, true);
+                            if (is_array($importSuccess)){
+                                // no errors for now, but the user needs to configure importing
+                                switch ($importSuccess['result']) {
+                                    case 'compareCategories':
+                                        $html = block_exacomp_get_string("import_category_mapping_needed");
+                                        break;
+                                    case 'selectGrids':
+                                        $html = block_exacomp_get_string("import_category_selectgrids_needed");
+                                        break;
+                                }
+                                echo $OUTPUT->box($html, 'alert alert-warning');
+                                $importSuccess['forSchedulerTask'] = true; // marker for simulating
+                                $mform->setConfirmationData($importSuccess);
+                                $mform->display();
+                            }
+                        }
+                        break;
+                    // list of scheduler import tasks
+                    default: // list of tasks
+                        $taskslist();
+                        break;
                 }
                 break;
 		} // switch
@@ -369,6 +541,9 @@ if($isAdmin || block_exacomp_check_customupload()) {
                                         block_exacomp_get_string('doimport')));
 					//echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'demo')), block_exacomp_get_string('do_demo_import')));
 				}
+                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
+                        array('courseid'=>$courseid, 'importtype'=>'scheduler')),
+                        block_exacomp_get_string('schedulerimport')));
 			}
 	
 			// export
