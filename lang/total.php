@@ -1147,6 +1147,10 @@ return [
         ' bearbeitet. Wirklich ändern?',
         ' before. Continue?',
     ],
+    'dismiss_gradingisold' => [
+        'Wollen Sie die Warnung ignorieren?',
+        'Do you want to dismiss this warning?',
+    ],    
 	'unload_notice' => [
 		'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.',
 		'Are you sure? Unsaved changes will be lost.',

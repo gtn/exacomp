@@ -1508,12 +1508,13 @@ class block_exacomp_external extends external_api {
 			'name' => new external_value (PARAM_TEXT, 'title of example'),
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'externalurl' => new external_value (PARAM_TEXT, ''),
-			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma'),
+			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
 			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
 			'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
+		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crossubjectfile' , VALUE_DEFAULT, -1),
 		));
 	}
 
@@ -1530,13 +1531,13 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename) {
+	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
 			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
-
+		
 		static::validate_parameters(static::create_example_parameters(), array(
 			'name' => $name,
 			'description' => $description,
@@ -1547,6 +1548,7 @@ class block_exacomp_external extends external_api {
 			'taxonomies' => $taxonomies,
 			'courseid' => $courseid,
 			'filename' => $filename,
+		    'crosssubjectid' => $crosssubjectid,
 		));
 
 		// insert into examples and example_desc
@@ -1614,24 +1616,51 @@ class block_exacomp_external extends external_api {
 			$file->delete();
 		}
 
-		$descriptors = explode(',', $comps);
-		foreach ($descriptors as $descriptor) {
-			$insert = new stdClass ();
-			$insert->exampid = $id;
-			$insert->descrid = $descriptor;
-			$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-
-			//visibility entries for this example in course where descriptors are associated
-			$courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
-			foreach ($courseids as $courseid) {
-				$insert = new stdClass();
-				$insert->courseid = $courseid;
-				$insert->exampleid = $id;
-				$insert->studentid = 0;
-				$insert->visible = 1;
-				$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-			}
+		if($crosssubjectid != -1){
+		    $insert = new stdClass ();
+		    $insert->exampid = $id;
+		    $insert->id_foreign = $crosssubjectid;
+		    $insert->table_foreign = 'cross';
+		    $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+		    
+		    //vorerst notlösung:
+	        $insert = new stdClass();
+	        $insert->courseid = $courseid;
+	        $insert->exampleid = $id;
+	        $insert->studentid = 0;
+	        $insert->visible = 1;
+	        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+// 		    //visibility entries for this example in course where descriptors are associated
+// 		    $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
+// 		    foreach ($courseids as $courseid) {
+// 		        $insert = new stdClass();
+// 		        $insert->courseid = $courseid;
+// 		        $insert->exampleid = $id;
+// 		        $insert->studentid = 0;
+// 		        $insert->visible = 1;
+// 		        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+// 		    }
+		}else{
+		    $descriptors = explode(',', $comps);
+		    foreach ($descriptors as $descriptor) {
+		        $insert = new stdClass ();
+		        $insert->exampid = $id;
+		        $insert->descrid = $descriptor;
+		        $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+		        
+		        //visibility entries for this example in course where descriptors are associated
+		        $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
+		        foreach ($courseids as $courseid) {
+		            $insert = new stdClass();
+		            $insert->courseid = $courseid;
+		            $insert->exampleid = $id;
+		            $insert->studentid = 0;
+		            $insert->visible = 1;
+		            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+		        }
+		    }
 		}
+		
 
 		$taxonomies = trim($taxonomies) ? explode(',', trim($taxonomies)) : [];
 		foreach ($taxonomies as $taxid) {
@@ -4171,6 +4200,50 @@ class block_exacomp_external extends external_api {
 			if (array_key_exists($cross_subject->id, $cross_subjects_visible)) {
 				$cross_subject->visible = 1;
 			}
+			
+			
+			$cross_subject->examples = block_exacomp_get_examples_for_crossubject($cross_subject->id);
+			$cross_subject->hasmaterial = true;
+			if (empty($cross_subject->examples)) {
+			    $cross_subject->hasmaterial = false;
+			}
+			
+			$example_non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+			if (!$forall) {
+			    $example_non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+			}
+			
+			$examples_return = array();
+			foreach ($cross_subject->examples as $example) {
+			    $example_return = new stdClass();
+			    $example_return->exampleid = $example->id;
+			    $example_return->exampletitle = $example->title;
+			    $example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
+			    
+			    if ($forall) {
+			        $example_return->teacherevaluation = -1;
+			        $example_return->studentevaluation = -1;
+			        $example_return->evalniveauid = null;
+			        $example_return->timestampteacher = 0;
+			        $example_return->timestampstudent = 0;
+			        $example_return->solution_visible = 0;
+			    } else {
+			        $evaluation = (object)static::_get_example_information($courseid, $userid, $example->id);
+			        $example_return->teacherevaluation = $evaluation->teachervalue;
+			        $example_return->studentevaluation = $evaluation->studentvalue;
+			        $example_return->evalniveauid = $evaluation->evalniveauid;
+			        $example_return->timestampteacher = $evaluation->timestampteacher;
+			        $example_return->timestampstudent = $evaluation->timestampstudent;
+			        $example_return->solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+			    }
+			    $example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student)) || $forall)) ? 1 : 0;
+			    $example_return->used = (block_exacomp_example_used($courseid, $example, $userid)) ? 1 : 0;
+			    if (!array_key_exists($example->id, $examples_return)) {
+			        $examples_return[$example->id] = $example_return;
+			    }
+			}
+			
+			$cross_subject->examples = $examples_return;
 		}
 
 		if (!$forall && $userid) {
@@ -4198,6 +4271,21 @@ class block_exacomp_external extends external_api {
 				'description' => new external_value (PARAM_TEXT, 'description of cross subject'),
 				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
 				'visible' => new external_value (PARAM_INT, 'visibility of crosssubject for selected student'),
+		    
+		        'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if crossubject has material'),
+		        'examples' => new external_multiple_structure (new external_single_structure (array(
+    		        'exampleid' => new external_value (PARAM_INT, 'id of example'),
+    		        'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+    		        'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
+    		        'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+    		        'used' => new external_value (PARAM_INT, 'used in current context'),
+    		        'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
+    		        'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
+    		        'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
+    		        'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
+    		        'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+    		        'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+		        ))),
 			] + static::comp_eval_returns()));
 	}
 
@@ -4983,7 +5071,7 @@ class block_exacomp_external extends external_api {
 		    $itemexample->timemodified = time();
 		    $itemexample->studentvalue = $studentvalue;
 		    $DB->update_record('block_exacompitemexample', $itemexample);
-		    $DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+		    //$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));   //DO NOT DELETE OLD COMMENTS, instead, only show newest
 		    if ($studentcomment != '') {
 		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
 		    }
@@ -5020,7 +5108,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
 			'examplevalue' => new external_value (PARAM_INT, 'examplevalue'),
-		    'additionalinfo' => new external_value (PARAM_INT, 'additionalInfo'),
+		    'additionalinfo' => new external_value (PARAM_INT, 'additionalInfo', VALUE_DEFAULT, null),
 			'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'comment' => new external_value (PARAM_TEXT, 'comment', VALUE_DEFAULT, ''),
@@ -5043,7 +5131,7 @@ class block_exacomp_external extends external_api {
 	    static::validate_parameters(static::dakora_grade_example_parameters(), array('userid' => $userid, 'courseid' => $courseid, 'exampleid' => $exampleid, 'examplevalue' => $examplevalue,
 	        'additionalinfo' => $additionalInfo ,'exampleevalniveauid' => $exampleevalniveauid, 'itemid' => $itemid, 'comment' => $comment,'url' => $url, 'filename' => $filename, 'fileitemid' => $fileitemid));
 	    if ($userid == 0) {
-	        $role = BLOCK_EXACOMP_ROLE_STUDENT;
+	        $role = BLOCK_EXACOMP_ROLE_STUDENT; // wann?
 	        $userid = $USER->id;
 	    } else {
 	        $role = BLOCK_EXACOMP_ROLE_TEACHER;
@@ -5055,7 +5143,7 @@ class block_exacomp_external extends external_api {
 	    static::require_can_access_course_user($courseid, $userid);
 	    static::require_can_access_example($exampleid, $courseid);
 	    block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid, $additionalInfo);
-	    if ($itemid > 0 && $userid > 0) {
+	    if ($itemid > 0 && $userid > 0) {    //So the student will never reach this part, either the itemid is null, or submit example is used
 	        $itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
 	        if (!$itemexample) {
 	            throw new invalid_parameter_exception("Wrong itemid given");
@@ -5065,16 +5153,28 @@ class block_exacomp_external extends external_api {
 	       
 	        $DB->update_record('block_exacompitemexample', $itemexample);
 	        if ($comment) {
-	            $insert = new stdClass ();
-	            $insert->itemid = $itemid;
-	            $insert->userid = $USER->id;
-	            $insert->entry = $comment;
-	            $insert->timemodified = time();
-	            $DB->delete_records('block_exaportitemcomm', array(
-	                'itemid' => $itemid,
-	                'userid' => $USER->id,
-	            ));
-	            $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
+// 	            $oldComment = $DB->get_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
+// 	            if($oldComment){
+// 	                $oldComment->itemid = $itemid;
+// 	                $oldComment->userid = $USER->id;
+// 	                $oldComment->entry = $comment;
+// 	                $oldComment->timemodified = time();
+// 	                $DB->update_record('block_exaportitemcomm', $oldComment);
+// 	                $commentid = $oldComment->id;
+	                
+// 	                //delete the old file if new one is uploaded
+// 	                if($filename != ''){
+// 	                    $DB->delete_records('files', array('itemid' => $commentid, 'userid' => $USER->id, 'filearea' => 'item_comment_file', 'component' => 'block_exaport'));
+// 	                }
+// 	            }else{
+	                $insert = new stdClass ();
+	                $insert->itemid = $itemid;
+	                $insert->userid = $USER->id;
+	                $insert->entry = $comment;
+	                $insert->timemodified = time();
+	                $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true); 
+// 	            }
+	            
 	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment);
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 	            
@@ -5095,7 +5195,7 @@ class block_exacomp_external extends external_api {
 	                    throw new invalid_parameter_exception("some problem with the file occured");
 	                    //some problem with the file occured
 	                }
-	            }  
+	            }
 	        }
 	    }
 	    return array("success" => true, "exampleid" => $exampleid);
@@ -5294,6 +5394,12 @@ class block_exacomp_external extends external_api {
 
 		$descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid)) ? 1 : 0;
 		$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
+		
+		if(!$forall){
+		    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+		}else{
+		    $descriptor_return->gradingisold = false;
+		}
 
 		return $descriptor_return;
 	}
@@ -5315,6 +5421,7 @@ class block_exacomp_external extends external_api {
 			'numbering' => new external_value (PARAM_TEXT, 'numbering'),
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 			'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
 			'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
 			'children' => new external_multiple_structure (new external_single_structure (array(
 			    'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
@@ -5525,20 +5632,31 @@ class block_exacomp_external extends external_api {
 	        $data['teachercomment'] = '';
 	        $data['teacherfile'] = '';
 	        $itemcomments = \block_exaport\api::get_item_comments($itemInformation->id);
+	        //var_dump($itemcomments);
+	        $timemodified_compare = 0; //used for finding the most recent comment to display it in Dakora
+	        $timemodified_compareTeacher = 0;
 	        foreach ($itemcomments as $itemcomment) {
 	            if ($userid == $itemcomment->userid) {
-	                $data['studentcomment'] = $itemcomment->entry;
-	            } elseif (true) { // TODO: check if is teacher?
-	                $data['teachercomment'] = $itemcomment->entry;
-	                if ($itemcomment->file) {
-	                    $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-	                        'userid' => $userid,
-	                        'itemid' => $itemInformation->id,
-	                        'commentid' => $itemcomment->id,
-	                        'wstoken' => static::wstoken(),
-	                    ]);
-	                    $data['teacherfile'] = $fileurl;
+	                //var_dump($itemcomment->timemodified);
+	                if($itemcomment->timemodified > $timemodified_compare){
+	                    $data['studentcomment'] = $itemcomment->entry;
+	                    $timemodified_compare = $itemcomment->timemodified;
 	                }
+	            } elseif (true) { // TODO: check if is teacher?
+	                if($itemcomment->timemodified > $timemodified_compareTeacher){
+	                    $data['teachercomment'] = $itemcomment->entry;
+	                    if ($itemcomment->file) { //the most recent file is being kept, so if there is a newer comment without a file, the last file is still shown
+	                        $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+	                            'userid' => $userid,
+	                            'itemid' => $itemInformation->id,
+	                            'commentid' => $itemcomment->id,
+	                            'wstoken' => static::wstoken(),
+	                        ]);
+	                        $data['teacherfile'] = $fileurl;
+	                    }
+	                    $timemodified_compareTeacher = $itemcomment->timemodified;
+	                }
+	                
 	            }
 	        }
 	    } else {
@@ -6960,56 +7078,44 @@ class block_exacomp_external extends external_api {
 	}
 	
 	
-// 	public static function is_descriptor_grading_old() {
-// 	    return new external_function_parameters (array(
-// 	        'courseid' => new external_value (PARAM_INT, 'id of course'),
-// 	        'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
-// 	        'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
-// 	        'value' => new external_value (PARAM_INT, 'value 0 or 1'),
-// 	    ));
-// 	}
+	public static function dakora_dismiss_oldgrading_warning_parameters() {
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+	        'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+	        'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+	        'value' => new external_value (PARAM_INT, 'value 0 or 1'),
+	    ));
+	}
 	
-// 	/**
-// 	 * set descriptor crosssubject association
-// 	 * @ws-type-write
-// 	 * @param $courseid
-// 	 * @param $crosssubjid
-// 	 * @param $descriptorid
-// 	 * @param $value
-// 	 * @return array
-// 	 */
-// 	public static function is_descriptor_grading_old($courseid, $crosssubjid, $descriptorid, $value) {
-// 	    global $USER, $DB;
-// 	    static::validate_parameters(static::dakora_set_cross_subject_descriptor_parameters(), array(
-// 	        'courseid' => $courseid,
-// 	        'crosssubjid' => $crosssubjid,
-// 	        'descriptorid' => $descriptorid,
-// 	        'value' => $value,
-// 	    ));
+	/**
+	 * set descriptor crosssubject association
+	 * @ws-type-write
+	 * @param $courseid
+	 * @param $descriptorid
+	 * @param $studentid
+	 * @return array
+	 */
+	public static function dakora_dismiss_oldgrading_warning($courseid, $descriptorid, $studentid) {
+	    global $USER, $DB;
+	    static::validate_parameters(static::dakora_set_cross_subject_descriptor_parameters(), array(
+	        'courseid' => $courseid,
+	        'descriptorid' => $descriptorid,
+	        'studentid' => $studentid,
+	    ));
 	    
-// 	    static::require_can_access_course($courseid);
-// 	    block_exacomp_require_teacher($courseid);
+	    static::require_can_access_course($courseid);
+	    block_exacomp_require_teacher($courseid);
 	    
-// 	    if ($value == 1) {
-// 	        block_exacomp_set_cross_subject_descriptor($crosssubjid, $descriptorid);
-	        
-// 	        return array('success' => true);
-// 	    }
-	    
-// 	    if ($value == 0) {
-// 	        block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descriptorid);
-	        
-// 	        return array('success' => true);
-// 	    }
-	    
-// 	    return array('success' => false);
-// 	}
+	    block_exacomp_set_descriptor_grading_timestamp($courseid,$descriptorid,$studentid);
+
+	    return array('success' => true);
+	}
 	
-// 	public static function is_descriptor_grading_old() {
-// 	    return new external_single_structure (array(
-// 	        'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
-// 	    ));
-// 	}
+	public static function dakora_dismiss_oldgrading_warning_returns() {
+	    return new external_single_structure (array(
+	        'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+	    ));
+	}
 	
 
 	/**
@@ -7173,12 +7279,12 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->visible = (!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student)) || $forall)) ? 1 : 0;
 							$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
 							//if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
-							$descriptors_return[] = $descriptor_return;
 							if(!$forall){
 							    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
 							}else{
 							    $descriptor_return->gradingisold = false;
 							}
+							$descriptors_return[] = $descriptor_return;
 						}
 					}
 				}

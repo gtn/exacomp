@@ -513,8 +513,9 @@ Params: <table>
 <td>comps</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(2) "-1"
+</td>
 <td>list of competencies, seperated by comma</td>
 <tr>
 <td>fileitemid</td>
@@ -555,6 +556,14 @@ Params: <table>
 <td>default: string(0) ""
 </td>
 <td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>crosssubjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the crosssubject if it is a crossubjectfile</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)"
@@ -1795,6 +1804,23 @@ Returns:<pre>[
         "description": "text null (description of cross subject)",
         "subjectid": "int null (subject id, cross subject is associated with)",
         "visible": "int null (visibility of crosssubject for selected student)",
+        "hasmaterial": "bool null (true or false if crossubject has material)",
+        "examples": [
+            {
+                "exampleid": "int null (id of example)",
+                "exampletitle": "text null (title of example)",
+                "examplestate": "int null (state of example, always 0 if for all students)",
+                "visible": "int null (visibility of example in current context)",
+                "used": "int null (used in current context)",
+                "teacherevaluation": "int null (example evaluation of teacher)",
+                "studentevaluation": "int null (example evaluation of student)",
+                "timestampteacher": "int null (timestamp of teacher evaluation)",
+                "timestampstudent": "int null (timestamp of student evaluation)",
+                "evalniveauid": "int null (evaluation niveau id)",
+                "solution_visible": "bool null (visibility for example solution in current context)"
+            },
+            "..."
+        ],
         "additionalinfo": "float null (additional grading)",
         "teacherevaluation": "int null (grading of child)",
         "evalniveauid": "int null (evaluation niveau id)",
@@ -2296,8 +2322,9 @@ Params: <table>
 <td>additionalinfo</td>
 <td>int</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: NULL
+</td>
 <td>additionalInfo</td>
 <tr>
 <td>exampleevalniveauid</td>
@@ -2406,6 +2433,7 @@ Returns:<pre>{
     "numbering": "text null (numbering)",
     "niveauid": "int null (id of niveau)",
     "niveautitle": "text null (title of niveau)",
+    "gradingisold": "bool null (true when there are newer gradings in the childcompetences)",
     "hasmaterial": "bool null (true or false if descriptor has material)",
     "children": [
         {
@@ -3577,6 +3605,42 @@ Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_set_cross_subject_descriptor</h2>
+<div>set descriptor crosssubject association</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>descriptorid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value 0 or 1</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
+<h2>dakora_dismiss_oldgrading_warning</h2>
 <div>set descriptor crosssubject association</div>
 <div>type: write</div>
 Params: <table>
