@@ -198,9 +198,6 @@ function block_exacomp_init_js_css() {
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 
-    $variables = array('gradingLimit' => block_exacomp_get_assessment_grade_limit());
-    $PAGE->requires->data_for_js('amVariables', $variables);
-
 	// Strings can be used in JavaScript: M.util.block_exacomp_get_string(identifier, component)
 	$PAGE->requires->strings_for_js([
 		'show', 'hide', 'all',
