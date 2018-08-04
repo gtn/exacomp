@@ -199,12 +199,6 @@
 			this.popup_close();
 			parent.location.href = url;
 		},
-		popup_close_and_forward: function (url) {
-			var parent = (window.opener || window.parent);
-
-			this.popup_close();
-			parent.location.href = url;
-		},
 
 		popup_close_and_reload: function () {
 			var parent = window.opener || window.parent;
