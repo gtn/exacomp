@@ -468,8 +468,8 @@ if($isAdmin || block_exacomp_check_customupload()) {
                         if ($taskid) {
                             $taskdata = $DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
                             $url = $taskdata->link;
-                            $importSuccess = block_exacomp\data_importer::do_import_url($url, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, true);
-                            if (is_array($importSuccess)){
+                            $importSuccess = block_exacomp\data_importer::do_import_url($url, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, true, $taskid);
+                            if (is_array($importSuccess)) {
                                 // no errors for now, but the user needs to configure importing
                                 switch ($importSuccess['result']) {
                                     case 'compareCategories':
@@ -483,6 +483,10 @@ if($isAdmin || block_exacomp_check_customupload()) {
                                 $importSuccess['forSchedulerTask'] = true; // marker for simulating
                                 $mform->setConfirmationData($importSuccess);
                                 $mform->display();
+                            } elseif ($importSuccess) {
+                                $taskslist();
+                            } else {
+                                print_error('somthing wrong!');
                             }
                         }
                         break;
