@@ -185,8 +185,11 @@
 		value = value.replace(",", ".");
 
 		// check for valid grading input range
-		if (value > 6.0) {
-			alert(M.util.get_string('value_too_large','block_exacomp'));
+		var grade_limit = Number($E.exacomp_config.grade_limit);
+		if (value > grade_limit) {
+			message = M.util.get_string('value_too_large','block_exacomp')
+            message = message.replace("{limit}", grade_limit);
+			alert(message);
 			value = null;
 			$(this).val(value);
 		}

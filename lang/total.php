@@ -1164,8 +1164,8 @@ return [
 		'New Submission',
 	],
 	'value_too_large' => [
-		'Fehler: Benotungen dürfen nicht größer als 6.0 sein!',
-		'Error: Values above 6.0 are not allowed',
+		'Fehler: Benotungen dürfen nicht größer als {limit} sein!',
+		'Error: Values above {limit} are not allowed',
 	],
 	'value_too_low' => [
 		'Fehler: Benotungen dürfen nicht kleiner als 1.0 sein!',

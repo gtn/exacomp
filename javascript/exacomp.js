@@ -34,6 +34,15 @@
 	}
 
 	window.block_exacomp = $E = {
+
+        exacomp_config: {
+            'grade_limit': 6, // default value
+        },
+
+        set_exacomp_config: function (params, config) {
+			$E.exacomp_config.grade_limit = config.grade_limit;
+		},
+
 		get_param: function (name) {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -184,6 +193,12 @@
 			this.popup_close();
 		},
 
+		popup_close_and_forward: function (url) {
+			var parent = (window.opener || window.parent);
+
+			this.popup_close();
+			parent.location.href = url;
+		},
 		popup_close_and_forward: function (url) {
 			var parent = (window.opener || window.parent);
 

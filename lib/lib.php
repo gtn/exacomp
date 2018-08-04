@@ -184,6 +184,10 @@ function block_exacomp_init_js_css() {
 	$js_inited = true;
 
 	// js/css for whole block
+    $exacomp_config = array( //
+            0 => array('grade_limit' => block_exacomp_get_assessment_grade_limit()),
+    );
+    $PAGE->requires->js_init_call('$E.set_exacomp_config', $exacomp_config);
 	$PAGE->requires->css('/blocks/exacomp/css/styles.css');
 	$PAGE->requires->jquery();
 	$PAGE->requires->jquery_plugin('ui');
@@ -193,6 +197,9 @@ function block_exacomp_init_js_css() {
 	$PAGE->requires->js("/blocks/exacomp/javascript/jquery.disablescroll.js", true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
+
+    $variables = array('gradingLimit' => block_exacomp_get_assessment_grade_limit());
+    $PAGE->requires->data_for_js('amVariables', $variables);
 
 	// Strings can be used in JavaScript: M.util.block_exacomp_get_string(identifier, component)
 	$PAGE->requires->strings_for_js([
@@ -205,7 +212,10 @@ function block_exacomp_init_js_css() {
 		'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation',
 	    'topic_3dchart_empty', 'columnselect', 'n1.unit', 'n2.unit', 'n3.unit', 'n4.unit', 'n5.unit', 'n6.unit', 'n7.unit',
 	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation',
-	], 'block_exacomp');
+	    ],
+        'block_exacomp'
+        //['5' => sprintf("%.1f", block_exacomp_get_assessment_grade_limit())] // Important to keep array keys!!  5 => value_too_large. Disabled now. Using JS direct value
+    );
 
 	// page specific js/css
 	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
