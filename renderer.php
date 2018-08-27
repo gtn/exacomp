@@ -5136,7 +5136,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$title,
 					($crosssub->has_capability(BLOCK_EXACOMP_CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '').
 					($crosssub->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")), array("onclick" => "if( confirm('".block_exacomp_get_string('confirm_delete')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")) : '').
-					html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'use_draft')), $this->pix_icon("i/manual_item", block_exacomp_trans("de:Vorlage verwenden"))),
+					html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'use_draft')), $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
 				]);
 				$row->attributes['class'] = 'rg2-level-1';
 				$table->data[] = $row;;
