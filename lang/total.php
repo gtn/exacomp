@@ -1442,7 +1442,7 @@ return [
 		'Type of report',
 	],
     'newer_grading_tooltip' => [
-	    'Die Beurteilung könnte veraltet sein.',
+	    'Überprüfen Sie die Beurteilung, da weitere Teilkompetenzen geändert wurden.',
 	    'Grading may not be up to date. </br> A childdescriptor has been graded.',
 	],
 

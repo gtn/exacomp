@@ -7081,9 +7081,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_dismiss_oldgrading_warning_parameters() {
 	    return new external_function_parameters (array(
 	        'courseid' => new external_value (PARAM_INT, 'id of course'),
-	        'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
-	        'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
-	        'value' => new external_value (PARAM_INT, 'value 0 or 1'),
+	        'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+	        'studentid' => new external_value (PARAM_INT, 'id of student'),
 	    ));
 	}
 	
@@ -7097,7 +7096,8 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_dismiss_oldgrading_warning($courseid, $descriptorid, $studentid) {
 	    global $USER, $DB;
-	    static::validate_parameters(static::dakora_set_cross_subject_descriptor_parameters(), array(
+	     
+	    static::validate_parameters(static::dakora_dismiss_oldgrading_warning_parameters(), array(
 	        'courseid' => $courseid,
 	        'descriptorid' => $descriptorid,
 	        'studentid' => $studentid,
