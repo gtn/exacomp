@@ -1223,7 +1223,10 @@ class global_config {
                     2 => '😔',
                     1 => '😓',
                 */
+			    
                 $useEval = get_config('exacomp', 'assessment_SelfEval_useVerbose');
+//                 var_dump($useEval);
+//                 throw new \coding_exception("haaalt stopp!!!!!!!!!!!!!!!!!!");
                 if ($useEval) {
                     // different for different levels
                     // use integerand string variants
@@ -1239,7 +1242,7 @@ class global_config {
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
                             return $values + [
-                                        4 => block_exacomp_get_string('selfEvalVerbose.4'),
+                                        4 => block_exacomp_get_string('selfEvalVerbose.4'), //not generic yet because not requested from customer
                                         3 => block_exacomp_get_string('selfEvalVerbose.3'),
                                         2 => block_exacomp_get_string('selfEvalVerbose.2'),
                                         1 => block_exacomp_get_string('selfEvalVerbose.1'),
@@ -1248,7 +1251,7 @@ class global_config {
                         case $level === 'examples':
                         case $level === BLOCK_EXACOMP_TYPE_EXAMPLE:
                             return $values + [
-                                            3 => block_exacomp_get_string('selfEvalVerboseExample.3'),
+                                            3 => block_exacomp_get_string('selfEvalVerboseExample.3'), //not generic yet because not requested from customer
                                             2 => block_exacomp_get_string('selfEvalVerboseExample.2'),
                                             1 => block_exacomp_get_string('selfEvalVerboseExample.1'),
                                     ];
@@ -1257,7 +1260,7 @@ class global_config {
 
                 } else {
                     return $values + [
-                                    3 => ':-)',
+                                    3 => ':-)', //not generic yet because not requested from customer
                                     2 => ':-|',
                                     1 => ':-(',
                             ];

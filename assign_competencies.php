@@ -19,6 +19,7 @@
 
 require __DIR__.'/inc.php';
 
+
 $courseid = required_param('courseid', PARAM_INT);
 $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
