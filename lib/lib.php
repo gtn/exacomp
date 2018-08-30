@@ -6143,7 +6143,9 @@ function block_exacomp_send_example_comment_notification($userfrom, $userto, $co
 	$course = get_course($courseid);
 	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 	$subject = block_exacomp_get_string('notification_example_comment_subject', null, array('example' => $example->title, 'site' => $SITE->fullname));
-	$subject .= "\n\r".$comment;
+	if($comment != "false"){
+	    $subject .= "\n\r".$comment;
+	}
 	$message = block_exacomp_get_string('notification_example_comment_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_example_comment_context');
 
