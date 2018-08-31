@@ -4770,6 +4770,10 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 	return $tree;
 }
 
+function block_exacomp_build_crossubject_example_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false) {
+    
+}
+
 /**
  * helper function for block_exacomp_build_example_association_tree
  * @param unknown $descriptor

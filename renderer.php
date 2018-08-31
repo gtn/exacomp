@@ -978,6 +978,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			    
 			    
 			    
+			    /* CROSSSUBJECTS */
 			    //crosssubjectfiles and total eval
 			    $checkboxname = "dataexamples";
 			    $example_scheme = block_exacomp_get_assessment_example_scheme();
@@ -4673,10 +4674,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
-// 	    include 'ChromePhp.php';
-// 	    ChromePhp::log('Hello console!');
-// // 	    ChromePhp::log($_SERVER);
-// 	    ChromePhp::warn('something went wrong!');
 	    
 		$html_tree = "";
 		$html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree ".($editmode ? 'exa-tree-reopen-checked' : 'exa-tree-open-all')));
