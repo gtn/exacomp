@@ -6255,7 +6255,7 @@ function block_exacomp_get_examples_by_course($courseid) {
 	return g::$DB->get_records_sql($sql, array($courseid));
 }
 
-function block_exacomp_get_crossubject_examples_by_course($courseid){
+function block_exacomp_get_crosssubject_examples_by_course($courseid){
     $sql = "SELECT ex.*
 		FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
 		WHERE ex.id IN (
@@ -7752,7 +7752,7 @@ function block_exacomp_require_item_capability($cap, $item) {
 		// find descriptor in course
 		$examples = block_exacomp_get_examples_by_course(g::$COURSE->id);
 		if (!isset($examples[$item->id])) {
-		    $examples = block_exacomp_get_crossubject_examples_by_course(g::$COURSE->id);
+		    $examples = block_exacomp_get_crosssubject_examples_by_course(g::$COURSE->id);
 		    if(!isset($examples[$item->id])){
 		        throw new block_exacomp_permission_exception('Not a course example');
 		    }
@@ -8717,10 +8717,10 @@ function block_exacomp_get_date_of_birth($userid) {
  }
  
  /**
-  * get all examples for a crossubject
-  * @param unknown $crossubjectid
+  * get all examples for a crosssubject
+  * @param unknown $crosssubjectid
   */
- function block_exacomp_get_examples_for_crossubject($crossubjectid) {
+ function block_exacomp_get_examples_for_crosssubject($crosssubjectid) {
      global $DB;
      
      $examples = \block_exacomp\example::get_objects_sql(
@@ -8729,7 +8729,7 @@ function block_exacomp_get_date_of_birth($userid) {
 			, mm.sorting, mm.id_foreign
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=?"
-         , array($crossubjectid));
+         , array($crosssubjectid));
      
      
 //      $examples = \block_exacomp\example::get_objects_sql(

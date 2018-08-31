@@ -96,7 +96,7 @@ switch ($style) {
         echo $output->example_based_list_tree($examples);
         break;
     case 2:
-        // get all crossubjects or for student
+        // get all crosssubjects or for student
         if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
             $crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
         } else {

@@ -1711,9 +1711,9 @@ return [
 		'',
 		'Use Draft',
 	],
-    'crossubject_files' => [
+    'crosssubject_files' => [
         'Materialien',
-        'crossubject files',
+        'crosssubject files',
     ],
     
 

@@ -497,7 +497,7 @@ $string['de:Freigegebene Kursthemen'] = 'Freigegebene Kursthemen';
 $string['de:Freigabe bearbeiten'] = 'Freigabe bearbeiten';
 $string['de:Kopie als Vorlage speichern'] = 'Kopie als Vorlage speichern';
 $string['de:Vorlage verwenden'] = '';
-$string['crossubject_files'] = 'Materialien';
+$string['crosssubject_files'] = 'Materialien';
 
 
 

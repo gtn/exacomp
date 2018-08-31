@@ -71,11 +71,11 @@ echo $output->header($context, $courseid, '', false);
 block_exacomp_require_teacher($context);
 $descrid = optional_param('descrid',-1, PARAM_INT);
 $topicid = optional_param('topicid',-1, PARAM_INT);
-$crossubjid = optional_param('crossubjid', -1, PARAM_INT);
+$crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
 
 
 
-// if($descid == -1 && $topicid == -1 && $crossubjid != -1){ //add to a crossubject
+// if($descid == -1 && $topicid == -1 && $crosssubjid != -1){ //add to a crosssubject
 
     
 // }else if($descrid != -1 && $topicid != -1){
@@ -123,9 +123,9 @@ $crossubjid = optional_param('crossubjid', -1, PARAM_INT);
     if($descrid != -1){
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
             array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
-    }else if($crossubjid != -1){
+    }else if($crosssubjid != -1){
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
-            array("crossubjid" => $crossubjid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
+            array("crosssubjid" => $crosssubjid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
     }
      
     if($formdata = $form->get_data()) {
@@ -185,10 +185,10 @@ $crossubjid = optional_param('crossubjid', -1, PARAM_INT);
     			}
     			//block_exacomp_globals::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
     		}
-    	}else if($crossubjid != -1){
+    	}else if($crosssubjid != -1){
     	    $insert = new stdClass();
     	    $insert->descrid = null;
-    	    $insert->id_foreign = $crossubjid;
+    	    $insert->id_foreign = $crosssubjid;
     	    $insert->table_foreign = "cross";
     	    $insert->exampid = $newExample->id;
     	    //$insert->sorting = $sorting;

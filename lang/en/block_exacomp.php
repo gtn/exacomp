@@ -491,7 +491,7 @@ $string['de:Freigegebene Kursthemen'] = 'Published Interdisciplinary Subjects';
 $string['de:Freigabe bearbeiten'] = 'Change Sharing';
 $string['de:Kopie als Vorlage speichern'] = 'Create Copy as Draft';
 $string['de:Vorlage verwenden'] = 'Use Draft';
-$string['crossubject_files'] = 'crossubject files';
+$string['crosssubject_files'] = 'crosssubject files';
 
 
 

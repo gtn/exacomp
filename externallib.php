@@ -1514,7 +1514,7 @@ class block_exacomp_external extends external_api {
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
 			'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
-		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crossubjectfile' , VALUE_DEFAULT, -1),
+		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
 		));
 	}
 
@@ -4202,7 +4202,7 @@ class block_exacomp_external extends external_api {
 			}
 			
 			
-			$cross_subject->examples = block_exacomp_get_examples_for_crossubject($cross_subject->id);
+			$cross_subject->examples = block_exacomp_get_examples_for_crosssubject($cross_subject->id);
 			$cross_subject->hasmaterial = true;
 			if (empty($cross_subject->examples)) {
 			    $cross_subject->hasmaterial = false;
@@ -4272,7 +4272,7 @@ class block_exacomp_external extends external_api {
 				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
 				'visible' => new external_value (PARAM_INT, 'visibility of crosssubject for selected student'),
 		    
-		        'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if crossubject has material'),
+		        'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if crosssubject has material'),
 		        'examples' => new external_multiple_structure (new external_single_structure (array(
     		        'exampleid' => new external_value (PARAM_INT, 'id of example'),
     		        'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
@@ -7687,10 +7687,10 @@ class block_exacomp_external extends external_api {
 			throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
 		} else {
 			$examples = block_exacomp_get_examples_by_course($courseid);
-			$examples_crossubj = block_exacomp_get_crossubject_examples_by_course($courseid);
+			$examples_crosssubj = block_exacomp_get_crosssubject_examples_by_course($courseid);
 			$found = false;
 			
-			if (isset($examples[$exampleid]) || isset($examples_crossubj[$exampleid])) {
+			if (isset($examples[$exampleid]) || isset($examples_crosssubj[$exampleid])) {
 				// ok: is course example
 			    $found = true;
 			} else {

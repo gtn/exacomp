@@ -1231,7 +1231,7 @@ class global_config {
                     // different for different levels
                     // use integerand string variants
                     switch (true) { // strange switch because $level can have different types
-                        case $level === 'crossubs':
+                        case $level === 'crosssubs':
                         case $level === 'subjects':
                         case $level === 'topics':
                         case $level === 'competencies':
