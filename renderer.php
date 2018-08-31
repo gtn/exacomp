@@ -977,7 +977,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			    $rows[] = $totalRow;
 			    
 			    
-			    
 			    /* CROSSSUBJECTS */
 			    //crosssubjectfiles and total eval
 			    $checkboxname = "dataexamples";
@@ -4672,11 +4671,70 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
+	
+	
+	
+	public function print_crossubjects_and_examples($crosssubjects, $isTeacher, $editmode, $show_examples = true){
+	    //hardcoded rg2-level-4 rg2 and rg2-level-3 rg2 classes... fix this!
+	    $html_tree = "";
+	    $html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree ".($editmode ? 'exa-tree-reopen-checked' : 'exa-tree-open-all')));
+	    
+	    foreach ($crosssubjects as $crosssubject) {
+	        echo "i'm in";
+// 	        $html_tree .= html_writer::start_tag("li",array('class' => ("rg2-level-4 rg2")));
+	        $html_tree .= html_writer::start_tag("li");
+            $html_tree .= $crosssubject->title;
+            
+            $examples = block_exacomp_get_examples_for_crosssubject($crosssubject->id);
+            foreach ($examples as $example) {
+                $exampleIcons = " ";
+//                 if ($url = $example->get_task_file_url()) {
+//                     $exampleIcons = html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array(
+//                         "target" => "_blank",
+//                     )
+//                         );
+//                 } elseif ($example->externaltask) {
+//                     $exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
+                        
+//                         "target" => "_blank",
+//                     )
+//                         );
+//                 }
+                
+//                 if ($example->externalurl) {
+//                     $exampleIcons .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl), array(
+//                         "target" => "_blank",
+//                     )
+//                         );
+//                 }
+                
+//                 $visible_solution = block_exacomp_is_example_solution_visible(g::$COURSE->id, $example, g::$USER->id);
+//                 if ($isTeacher || $visible_solution) {
+//                     if ($url = $example->get_solution_file_url()) {
+//                         $exampleIcons .= $this->example_solution_icon($url);
+//                     } elseif ($example->externalsolution) {
+//                         $exampleIcons .= html_writer::link($example->externalsolution, $this->pix_icon("e/fullpage", block_exacomp_get_string('solution')), array(
+//                             "target" => "_blank",
+//                         )
+//                             );
+//                     }
+//                 }
+               
+//                 $html_tree .= html_writer::tag("li", $example->title.$exampleIcons);
+                $html_tree .= html_writer::tag("li", $example->title.$exampleIcons);
+             }
+             $html_tree .= html_writer::end_tag("li");
+	    }
+	    $html_tree .= html_writer::end_tag("ul");
+	    
+	    return html_writer::div($html_tree, "associated_div", array('id' => "associated_div"));
+	}
 
 	public function competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
 	    
 		$html_tree = "";
-		$html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree ".($editmode ? 'exa-tree-reopen-checked' : 'exa-tree-open-all')));
+		$html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree ".($editmode ? 'exa-tree-reopen-checked' : 'exa-tree-open-all')));		
+		
 		foreach ($tree as $skey => $subject) {
 			if ($subject->associated == 1 || ($isTeacher && $editmode == 1)) {
 				$html_tree .= html_writer::start_tag("li", array('class' => ($subject->associated == 1) ? "associated" : ""));

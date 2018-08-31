@@ -73,6 +73,14 @@ switch ($style) {
 	case 0:
 	    $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 	    echo $output->competence_based_list_tree($tree, $isTeacher, false);
+	    
+	    //Crossubjects and crossubjectfiles
+	    //$crossubject_tree = block_exacomp_build_crossubject_example_tree($courseid, array(), 0, 0, true);
+	    
+	    /*
+	    $crossubjects = block_exacomp_get_cross_subjects_by_course($courseid);
+	    echo $output->print_crossubjects_and_examples($crossubjects, $isTeacher, false);
+	    */
 	    break;
     case 1:
         //could be optimized together with block_exacomp_build_example_tree

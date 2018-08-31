@@ -1498,6 +1498,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	if ($topicid && $calledfromoverview) {
 		$selectedTopic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid));
 	}
+	
 
 	// 1. GET SUBJECTS
 	if ($courseid == 0) {
@@ -4766,13 +4767,16 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 			}
 		}
 	}
-
+// 	var_dump($tree);
+// 	echo "\n \n\n";
 	return $tree;
 }
 
-function block_exacomp_build_crossubject_example_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false) {
-    
-}
+// function block_exacomp_build_crossubject_example_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false) {
+//     $tree = block_exacomp_get_cross_subjects_by_course($courseid);
+//     var_dump($tree);
+//     return $tree;
+// }
 
 /**
  * helper function for block_exacomp_build_example_association_tree
