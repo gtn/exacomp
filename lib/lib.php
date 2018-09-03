@@ -208,7 +208,7 @@ function block_exacomp_init_js_css() {
 		'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled',
 		'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation',
 	    'topic_3dchart_empty', 'columnselect', 'n1.unit', 'n2.unit', 'n3.unit', 'n4.unit', 'n5.unit', 'n6.unit', 'n7.unit',
-	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation',
+	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation', 'dismiss_gradingisold',
 	    ],
         'block_exacomp'
         //['5' => sprintf("%.1f", block_exacomp_get_assessment_grade_limit())] // Important to keep array keys!!  5 => value_too_large. Disabled now. Using JS direct value
