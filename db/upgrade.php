@@ -2981,8 +2981,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	
 	if ($oldversion < 2018051100) {
 	    $table = new xmldb_table('block_exacompschedule');
-	    $field = new xmldb_field('is_pps');
-	    $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
+	    $field = new xmldb_field('is_pps', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
 	    $dbman->add_field($table, $field);
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018051100, 'exacomp');
@@ -2990,13 +2989,11 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	
 	if ($oldversion < 2018071202) {
 	    $table = new xmldb_table('block_exacompdescrexamp_mm');
-	    $field = new xmldb_field('id_foreign');
-	    $field->set_attributes(XMLDB_TYPE_INTEGER, 11, null, null, null, null);
+	    $field = new xmldb_field('id_foreign', XMLDB_TYPE_INTEGER, 11, null, null, null, null);
 	    $dbman->add_field($table, $field);
 	    
 	    
-	    $field = new xmldb_field('table_foreign');
-	    $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, 'descr');
+	    $field = new xmldb_field('table_foreign', XMLDB_TYPE_TEXT, null, null, null, null, 'descr');
 	    $dbman->add_field($table, $field);
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018071202, 'exacomp');
@@ -3009,8 +3006,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
  	    $key = new xmldb_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'));
  	    $dbman->drop_key($table, $key);
 	    
-	    $field = new xmldb_field('descrid');
-	    $field->set_attributes(XMLDB_TYPE_INTEGER, 11, null, null, null, null);
+	    $field = new xmldb_field('descrid', XMLDB_TYPE_INTEGER, 11, null, null, null, null);
 	    $dbman->change_field_notnull($table, $field);
 	    
 	    $index = new xmldb_index('descrid',XMLDB_INDEX_NOTUNIQUE,array('descrid'));
