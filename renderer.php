@@ -5424,6 +5424,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     </div>
             </div>
             <?php
+                // Subject can only be chosen if the grading scheme configured is the same as topic.
+                if (block_exacomp_get_assessment_subject_scheme() == block_exacomp_get_assessment_topic_scheme()) {
+                    $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'report_subject');
+                }
+                // Topic can only be chosen if the grading scheme configured is the same as competence.
+                if (block_exacomp_get_assessment_topic_scheme() == block_exacomp_get_assessment_comp_scheme()) {
+                    $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'report_competencefield');
+                }
+                $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT, 'descriptor');
+                //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR, 'descriptor');
+                // Child-competence can only be chosen if the grading scheme configured is the same as competence.
+                if (block_exacomp_get_assessment_comp_scheme() == block_exacomp_get_assessment_childcomp_scheme()) {
+                    $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, 'descriptor_child');
+                }
+                //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_EXAMPLE, 'report_learniningmaterial');
+
                 echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html'), 'class' => 'btn btn-default'));
                 echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_docx'), 'class' => 'btn btn-default', 'name' => 'formatDocx'));
             ?>

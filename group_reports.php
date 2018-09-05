@@ -129,15 +129,7 @@ $extra = '<input type="hidden" name="action" value="search"/>';
 <?php
     $settings_subtree = array();
     $settings_subtree[] = new tabobject('tab_teacher_report_general', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType'=>'general')), block_exacomp_get_string("tab_teacher_report_general"), null, true);
-    // Add "Annex" report only if the Topic/Descriptor/Subdescriptor/Example has the same grading
-    $levels = array(BLOCK_EXACOMP_TYPE_TOPIC, BLOCK_EXACOMP_TYPE_DESCRIPTOR, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, BLOCK_EXACOMP_TYPE_EXAMPLE);
-    $grades = array();
-    foreach ($levels as $level) {
-        $grades[] = block_exacomp_additional_grading($level);
-    }
-    if (count(array_unique($grades)) === 1 && count($grades) > 0 && end($grades) > 0) {
-        $settings_subtree[] = new tabobject('tab_teacher_report_annex', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'annex')), block_exacomp_get_string("tab_teacher_report_annex"), null, true);
-    }
+    $settings_subtree[] = new tabobject('tab_teacher_report_annex', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'annex')), block_exacomp_get_string("tab_teacher_report_annex"), null, true);
     echo $OUTPUT->tabtree($settings_subtree, $page_identifier);
 ?>
 	<div class="block">

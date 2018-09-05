@@ -7925,16 +7925,18 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
 
     switch ($reportType) {
         case 'annex':
-            //if (!$filter) {
-            //default constants filter
-            @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
-            @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
-            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
-            //@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] = true;
-            @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
-            @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
-            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
-            //}
+            if (!$filter) {
+                //default constants filter
+                @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] = true;
+                //@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+            }
             //break;
         default:
             if (!$filter) {
@@ -7945,30 +7947,30 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
                 //@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] = true;
                 }
 
-            // active means, we also have to loop over those items
-            if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
-                @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
-            }
-            if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
-                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
-            }
-            if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
-                @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
-            }
-            //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
-            //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
-            //}
-            if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
-                @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
-            }
-            if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
-                @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
-            }
-
             if (@$filter['type'] != 'student_counts') {
                 $filter['type'] = 'students';
             }
     }
+    // active means, we also have to loop over those items
+    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
+        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+    }
+    //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+    //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
+    //}
+    if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+    }
+
     // removes all NULL, FALSE and Empty Strings but leaves 0 (zero) values
     $filter = block_exacomp_array_filter_recursive($filter, function($value) {
         return ($value !== null && $value !== false && $value !== '');
@@ -8359,6 +8361,7 @@ function block_exacomp_group_reports_annex_result($filter) {
             $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
             $item_type = $item::TYPE;
+            $item_scheme = block_exacomp_additional_grading($item_type);
             if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
                 $item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
             }
@@ -8367,6 +8370,10 @@ function block_exacomp_group_reports_annex_result($filter) {
             $item->visible = @$item_filter['visible'];
 
             if (!@$item_filter['active']) {
+                return false;
+            }
+            $filter_result = block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval);
+            if (!$filter_result) {
                 return false;
             }
 
@@ -8379,7 +8386,7 @@ function block_exacomp_group_reports_annex_result($filter) {
 
         // count of columns
         //$colCount = block_exacomp_get_grading_scheme($courseid);
-        $colCount = 4; // TODO: is always 4 columns, or...?
+        $colCount = block_exacomp_get_report_columns_count_by_assessment();
 
         if ($isDocx) {
             $dataRow[$studentid] = array();
@@ -8407,131 +8414,55 @@ function block_exacomp_group_reports_annex_result($filter) {
             ) {
                 $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
+                $tableHeader = function(&$has_subject_results, &$firstSubject, $item, $colCount) {
+                    $has_subject_results = false;
+                    // table wrapping with Subject title
+                    if (!$firstSubject) {
+                        echo "</tbody>";
+                        echo '</table>';
+                    } else {
+                        $firstSubject = false;
+                    }
+                    echo '<br><h3>'.$item->title.'</h3>';
+                    echo '<table class="report_table" border="1" width="100%" style="margin-bottom: 25px;">';
+                    echo '<thead>';
+                    echo '<tr>';
+                    echo '<th class="heading">'.block_exacomp_get_string('descriptor').'</th>';
+                    echo '<th class="heading">'.block_exacomp_get_string('taxonomy').'</th>';
+                    // FIRST WAY: 1 column with value:
+                    //echo '<th class="heading"></th>';
+                    // SECOND WAY: 4 columns
+                    for ($i = 0; $i <= $colCount; $i++) {
+                        echo '<th class="heading">'.$i.'</th>';
+                    }
+                    echo '</tr></thead>';
+                    echo "<tbody>";
+                };
+
+                //item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
+                $item_type = $item::TYPE;
+                $item_scheme = block_exacomp_additional_grading($item_type);
+
                 if (!$item->visible) {
+                    if ($item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+                        $tableHeader($has_subject_results, $firstSubject, $item, $colCount);
+                    }
                     // walk subs with same level
                     $walk_subs($level);
                     return;
                 }
-
-                $selectedEval = null;
-                //item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
-                $item_type = $item::TYPE;
-                $item_scheme = block_exacomp_additional_grading($item_type);
-                $formulaColumnByValue = function($maxColumn = 4, $minColumn = 1, $maxValue = 6, $minValue = 1, $value) {
-                    // formula for additionalinfo (grading by value)
-                    // Y = aX + B
-                    // y = grading by 1-3 (as in the report columns)
-                    // x - grading from input field from competences overview: 1-6
-                    // a = d2/d1
-                    // b = 1 - a
-                    // d1 = maxValue(by X) - minValue (we have 1)
-                    // d2 = maxValue(by Y) - 1 (we have 3-1 = 2)
-                    $d1 = $maxValue - $minValue;
-                    $d2 = $maxColumn - $minColumn;
-                    if ($d1 > 0) {
-                        $a = $d2 / $d1;
-                    } else {
-                        $a = 1;
-                    }
-                    $b = 1 - $a; // TODO: check if the mins are not 1
-                    $result = ($a * $value) + $b;
-                    return round($result);
-                };
-                switch ($item_scheme) {
-                    // FIRST way
-                    // we have ONE column and put value of evaluation, but not 'X' in the cells
-                    /*case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
-                        $selectedEval = '';
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                        if ($eval->additionalinfo >= 1) {
-                            $selectedEval = $eval->additionalinfo;
-                        } else {
-                            $selectedEval = 0;
-                        }
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                        $verboseTitles = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
-                        if (isset($verboseTitles[$eval->teacherevaluation])) {
-                            $selectedEval = $verboseTitles[$eval->teacherevaluation];
-                        }
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-                        if ($eval->teacherevaluation >= 1) {
-                            $selectedEval = $eval->teacherevaluation;
-                        } else {
-                            $selectedEval = 0;
-                        }
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-                        if ($eval->teacherevaluation >= 1) {
-                            $selectedEval = 'X';
-                        } else {
-                            $selectedEval = '';
-                        }
-                        break;*/
-                    // SECOND way
-                    // if we have always 4 columns in the template - use formula to calculate where is 'X'
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
-                        $selectedEval = '';
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                        // max of grade = 6, so the formula is:
-                        if ($eval->additionalinfo >= 1) {
-                            $selectedEval = $formulaColumnByValue(4, 1, 6, 1, $eval->additionalinfo);
-                        } else {
-                            $selectedEval = 0;
-                        }
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                        $verboseTitles = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
-                        $maxVerboses = count($verboseTitles) - 1;
-                        if (isset($verboseTitles[$eval->teacherevaluation])) {
-                            $selectedEval = $formulaColumnByValue(4, 1, $maxVerboses, 1, $eval->teacherevaluation);
-                        }
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-                        $maxPoints = block_exacomp_get_assessment_points_limit();
-                        if ($eval->teacherevaluation >= 1) {
-                            $selectedEval = $formulaColumnByValue(4, 1, $maxPoints, 1, $eval->teacherevaluation);
-                        } else {
-                            $selectedEval = 0;
-                        }
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-                        if ($eval->teacherevaluation >= 1) {
-                            $selectedEval = 4; // max column index
-                        } else {
-                            $selectedEval = 0;
-                        }
-                        break;
+                $filter_result = block_exacomp_group_reports_annex_result_filter_rules(($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT : $item_type), $item_scheme, $filter, $eval);
+                if (!$filter_result) {
+                    return false;
                 }
+
+                $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_scheme, $eval);
 
                 if ($selectedEval || $item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
                     switch ($item_type) {
                         case BLOCK_EXACOMP_TYPE_SUBJECT:
-                            $has_subject_results = false;
-                            // table wrapping with Subject title
-                            if (!$firstSubject) {
-                                echo "</tbody>";
-                                echo '</table>';
-                            } else {
-                                $firstSubject = false;
-                            }
-                            echo '<br><h3>'.$item->title.'</h3>';
-                            echo '<table class="report_table" border="1" width="100%" style="margin-bottom: 25px;">';
-                            echo '<thead>';
-                            echo '<tr>';
-                            echo '<th class="heading">'.block_exacomp_get_string('descriptor').'</th>';
-                            echo '<th class="heading">'.block_exacomp_get_string('taxonomy').'</th>';
-                            // FIRST WAY: 1 column with value:
-                            //echo '<th class="heading"></th>';
-                            // SECOND WAY: 4 columns
-                            for ($i = 0; $i <= $colCount; $i++) {
-                                echo '<th class="heading">'.$i.'</th>';
-                            }
-                            echo '</tr></thead>';
-                            echo "<tbody>";
+                            $tableHeader($has_subject_results, $firstSubject, $item, $colCount);
+                            echo '<tr class="exarep_subject_row">';
                             break;
                         case BLOCK_EXACOMP_TYPE_TOPIC:
                             echo '<tr class="exarep_topic_row">';
@@ -8548,7 +8479,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                             break;
                     }
 
-                    if ($item_type != BLOCK_EXACOMP_TYPE_SUBJECT) {
+                    if (1 == 1 || $item_type != BLOCK_EXACOMP_TYPE_SUBJECT) {
                         $has_subject_results = true;
                         echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.
                                 $item->get_numbering().' '.$item->title.'</td>';
@@ -8583,6 +8514,113 @@ function block_exacomp_group_reports_annex_result($filter) {
         exit;
     }
 
+}
+
+function block_exacomp_formulaColumnByValue($maxColumn = 4, $minColumn = 1, $maxValue = 6, $minValue = 1, $value) {
+    // formula for additionalinfo (grading by value)
+    // Y = aX + B
+    // y = grading by 1-3 (as in the report columns)
+    // x - grading from input field from competences overview: 1-6
+    // a = d2/d1
+    // b = 1 - a
+    // d1 = maxValue(by X) - minValue (we have 1)
+    // d2 = maxValue(by Y) - 1 (we have 3-1 = 2)
+    $d1 = $maxValue - $minValue;
+    $d2 = $maxColumn - $minColumn;
+    if ($d1 > 0) {
+        $a = $d2 / $d1;
+    } else {
+        $a = 1;
+    }
+    $b = 1 - $a; // TODO: check if the mins are not 1
+    $result = ($a * $value) + $b;
+    return round($result);
+};
+
+/**
+ * returns count of columns in annex report. Regarding to grading systems
+ * - if here is at least one BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE - use assessment_grade_limit value
+ * - if ... TODO: to figure rules
+ * first column is ZERO! (does not calculated in this function)
+ * @return int
+ */
+function block_exacomp_get_report_columns_count_by_assessment() {
+    $count = 4; // default value
+    return $count;
+}
+
+function block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_scheme, $eval) {
+    $selectedEval = null;
+    $column_count = block_exacomp_get_report_columns_count_by_assessment();
+    switch ($item_scheme) {
+        // FIRST way
+        // we have ONE column and put value of evaluation, but not 'X' in the cells
+        /*case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            $selectedEval = '';
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            if ($eval->additionalinfo >= 1) {
+                $selectedEval = $eval->additionalinfo;
+            } else {
+                $selectedEval = 0;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $verboseTitles = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
+            if (isset($verboseTitles[$eval->teacherevaluation])) {
+                $selectedEval = $verboseTitles[$eval->teacherevaluation];
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            if ($eval->teacherevaluation >= 1) {
+                $selectedEval = $eval->teacherevaluation;
+            } else {
+                $selectedEval = 0;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            if ($eval->teacherevaluation >= 1) {
+                $selectedEval = 'X';
+            } else {
+                $selectedEval = '';
+            }
+            break;*/
+        // SECOND way
+        // if we have always 4 columns in the template - use formula to calculate where is 'X'
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            $selectedEval = '';
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            if ($eval->additionalinfo >= 1) {
+                $selectedEval = block_exacomp_formulaColumnByValue($column_count, 1, block_exacomp_get_assessment_grade_limit(), 1, $eval->additionalinfo);
+            } else {
+                $selectedEval = 0;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $verboseTitles = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
+            $maxVerboses = count($verboseTitles) - 1;
+            if (isset($verboseTitles[$eval->teacherevaluation])) {
+                $selectedEval = block_exacomp_formulaColumnByValue($column_count, 1, $maxVerboses, 1, $eval->teacherevaluation);
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            $maxPoints = block_exacomp_get_assessment_points_limit();
+            if ($eval->teacherevaluation >= 1) {
+                $selectedEval = block_exacomp_formulaColumnByValue($column_count, 1, $maxPoints, 1, $eval->teacherevaluation);
+            } else {
+                $selectedEval = 0;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            if ($eval->teacherevaluation >= 1) {
+                $selectedEval = $column_count; // max column index
+            } else {
+                $selectedEval = 0;
+            }
+            break;
+    }
+    return $selectedEval;
 }
 
 

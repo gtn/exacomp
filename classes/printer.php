@@ -425,6 +425,8 @@ class printer {
 
         $templateProcessor->duplicateDocumentBody(count($dataRow));
         $toDeleteBlocks = 0;
+
+        $columnCount = block_exacomp_get_report_columns_count_by_assessment();
         foreach ($dataRow as $studentId => $reportData) {
             $templateProcessor->setValue('course', $reportData['courseData']->fullname, 1);
             $templateProcessor->setValue('student_name', fullname($reportData['studentData']), 1);
@@ -441,36 +443,49 @@ class printer {
             $lastSubjectKey = array_pop($subjectKeys);
             $subjectsCount = 0;
             foreach ($reportData['subjects'] as $subjKey => $subject) {
-                $templateProcessor->setValue('subject', $subject->title, 1);
-                // topics
+                $templateProcessor->setValue('mainsubject', $subject->title, 1);
                 $subjectEntries = 0;
+                // subject (in result table, if this filter is activated)
+                $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_subject_scheme(), $subject->evaluation);
+                $subjectEntries++;
+                //$templateProcessor->duplicateRow("subject");
+                $templateProcessor->setValue("subject", $subject->get_numbering().' '.$subject->title, 1);
+                $templateProcessor->setValue("n", $subject->evaluation->get_evalniveau_title(), 1);
+                $templateProcessor->setValue("nu", $selectedEval == 0 ? 'X' : '', 1);
+                $templateProcessor->setValue("ne", $selectedEval == 1 ? 'X' : '', 1);
+                $templateProcessor->setValue("tw", $selectedEval == 2 ? 'X' : '', 1);
+                $templateProcessor->setValue("ue", $selectedEval == 3 ? 'X' : '', 1);
+                $templateProcessor->setValue("ve", $selectedEval == 4 ? 'X' : '', 1);
+                // topics
                 foreach($subject->topics as $topic) {
                     $templateProcessor->cloneRowToEnd("topic");
                     $templateProcessor->cloneRowToEnd("descriptor");
-                    if ($topic->evaluation->teacherevaluation > 0) {
+                    if (isset($topic->evaluation) && $topic->evaluation->teacherevaluation > 0) {
                         $subjectEntries++;
+                        $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_topic_scheme(), $topic->evaluation);
                         $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
                         $templateProcessor->setValue("n", $topic->evaluation->get_evalniveau_title(), 1);
-                        $templateProcessor->setValue("nu", $topic->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ne", $topic->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
-                        $templateProcessor->setValue("tw", $topic->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ue", $topic->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ve", $topic->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                        $templateProcessor->setValue("nu", $selectedEval == 0 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ne", $selectedEval == 1 ? 'X' : '', 1);
+                        $templateProcessor->setValue("tw", $selectedEval == 2 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ue", $selectedEval == 3 ? 'X' : '', 1);
+                        $templateProcessor->setValue("ve", $selectedEval == 4 ? 'X' : '', 1);
                     } else {
                         $templateProcessor->deleteRow("topic");
                     }
                     // descriptors
                     foreach ($topic->descriptors as $descriptor) {
                         $templateProcessor->duplicateRow("descriptor");
-                        if ($descriptor->evaluation->teacherevaluation > 0) {
+                        if (isset($descriptor->evaluation) && $descriptor->evaluation->teacherevaluation > 0) {
                             $subjectEntries++;
+                            $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_topic_scheme(), $descriptor->evaluation);
                             $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
                             $templateProcessor->setValue("n", $descriptor->evaluation->get_evalniveau_title(), 1);
-                            $templateProcessor->setValue("nu", $descriptor->evaluation->teacherevaluation == 0 ? 'X' : '', 1);
-                            $templateProcessor->setValue("ne", $descriptor->evaluation->teacherevaluation == 1 ? 'X' : '', 1);
-                            $templateProcessor->setValue("tw", $descriptor->evaluation->teacherevaluation == 2 ? 'X' : '', 1);
-                            $templateProcessor->setValue("ue", $descriptor->evaluation->teacherevaluation == 3 ? 'X' : '', 1);
-                            $templateProcessor->setValue("ve", $descriptor->evaluation->teacherevaluation == 4 ? 'X' : '', 1);
+                            $templateProcessor->setValue("nu", $selectedEval == 0 ? 'X' : '', 1);
+                            $templateProcessor->setValue("ne", $selectedEval == 1 ? 'X' : '', 1);
+                            $templateProcessor->setValue("tw", $selectedEval == 2 ? 'X' : '', 1);
+                            $templateProcessor->setValue("ue", $selectedEval == 3 ? 'X' : '', 1);
+                            $templateProcessor->setValue("ve", $selectedEval == 4 ? 'X' : '', 1);
                         } else {
                             //$toDeleteDesc++;
                             $templateProcessor->deleteRow("descriptor");
