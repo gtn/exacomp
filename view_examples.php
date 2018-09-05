@@ -79,7 +79,7 @@ switch ($style) {
 	    
 	    /*
 	    $crossubjects = block_exacomp_get_cross_subjects_by_course($courseid);
-	    echo $output->print_crossubjects_and_examples($crossubjects, $isTeacher, false);
+	    echo $output->print_crosssubjects_and_examples($crossubjects, $isTeacher, false);
 	    */
 	    break;
     case 1:
