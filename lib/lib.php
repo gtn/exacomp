@@ -7182,13 +7182,15 @@ function block_exacomp_build_example_parent_names($courseid, $exampleid) {
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON d.id = de.descrid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
 			WHERE e.id = ? AND ct.courseid = ?";
+	
+	 
+	
 
 	$records = iterator_to_array(g::$DB->get_recordset_sql($sql, array($exampleid, $courseid)));
 
 	$flatTree = array();
 	foreach ($records as $record) {
 		$titles = [block_exacomp_get_topic_numbering(\block_exacomp\topic::get($record->topicid)).' '.$record->topictitle];
-
 		//check if parent descriptor or child
 		if ($record->parentid > 0) {    //child get parentdescriptor
 			$parent_descriptor = \block_exacomp\descriptor::get($record->parentid);
@@ -7203,7 +7205,22 @@ function block_exacomp_build_example_parent_names($courseid, $exampleid) {
 
 		$flatTree[join(' | ', $titles)] = $titles;
 	}
-
+	
+	if($records == null){
+	    $record = g::$DB->get_record_sql(
+	        "SELECT c.title
+			  FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} e
+              JOIN {".BLOCK_EXACOMP_DB_CROSSSUBJECTS."} c ON e.id_foreign=c.id
+			  WHERE exampid = ?"
+	        , [
+	            $exampleid
+	        ]);
+ 	    $flatTree = array();
+ 	    //var_dump($record->title);
+ 	    $titles[] = $record->title;
+ 	    $flatTree[join(' | ', $titles)] = $titles;
+	}
+    
 	return $flatTree;
 }
 

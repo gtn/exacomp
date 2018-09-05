@@ -1290,6 +1290,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			            $rows[] = $exampleRow;
 			        }
 			    }//end crosssubjectfiles and total evaluation
+			    
 			}
 			
 
@@ -4982,6 +4983,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$content .= $example->title.' '.$example->id.' '.$exampleIcons;
 
+			//var_dump($example);
 			$example_parent_names = block_exacomp_build_example_parent_names(g::$COURSE->id, $example->id);
 
 			$content .= '</td><td>'.join('<br/>', array_map(function($names) {

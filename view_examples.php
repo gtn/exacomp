@@ -112,7 +112,10 @@ switch ($style) {
         }
         echo html_writer::start_tag("table", array("class" => 'rg2'));
         foreach ($crosssubs as $cross) {
-            $examples = \block_exacomp\example::get_objects_sql("
+            //get files specifically for this cross:
+            $examples = block_exacomp_get_examples_for_crosssubject($cross->id);
+            //get files from competencies that are added to this cross: 
+            $examples += \block_exacomp\example::get_objects_sql("
                 SELECT DISTINCT e.*
                 FROM {".BLOCK_EXACOMP_DB_DESCCROSS."} dc                    
                     JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dc.descrid = de.descrid
@@ -120,6 +123,7 @@ switch ($style) {
                 WHERE dc.crosssubjid = ?
                 ORDER BY e.title
             ", [$cross->id]);
+           
             if (!$isTeacher) {
                 $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
                     return block_exacomp_is_example_visible($courseid, $example, $studentid);
