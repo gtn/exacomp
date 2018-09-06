@@ -89,6 +89,75 @@ class block_exacomp_simple_service {
 
 		// die;
 	}
+	
+	static function dakora_print_competence_grid() {
+// 	    $course = static::require_courseid();
+	    
+// 	    // CHECK TEACHER
+// 	    $isTeacher = block_exacomp_is_teacher($course->id);
+	    
+// 	    $studentid = block_exacomp_get_studentid();
+	    
+// 	    /* CONTENT REGION */
+// 	    if ($isTeacher) {
+// 	        $coursestudents = block_exacomp_get_students_by_course($course->id);
+// 	        if ($studentid <= 0) {
+// 	            $student = null;
+// 	        } else {
+// 	            //check permission for viewing students profile
+// 	            if (!array_key_exists($studentid, $coursestudents)) {
+// 	                print_error("nopermissions", "", "", "Show student profile");
+// 	            }
+	            
+// 	            $student = g::$DB->get_record('user', array('id' => $studentid));
+// 	        }
+// 	    } else {
+// 	        $student = g::$USER;
+// 	    }
+	    
+// 	    if (!$student) {
+// 	        print_error("student not found");
+// 	    }
+	    
+	    //\block_exacomp\printer::competence_overview($course, $student, optional_param('interval', 'week', PARAM_TEXT));
+	    $courseid = optional_param('courseid', 0, PARAM_INT);
+	    $subjectid = optional_param('subjectid', 0, PARAM_INT);
+	    $topicid = optional_param('topicid', 0, PARAM_INT);
+	    $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
+	    $isTeacher = optional_param('isTeacher', false, PARAM_BOOL);
+	    
+	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false , $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
+	    
+// 	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
+	    //$ret = block_exacomp_init_overview_data(1, 1, 1, 1, true, true, 1, true);
+	    if (!$ret) {
+	        print_error('not configured');
+	    }
+	    list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
+// 	    var_dump($courseSubjects);
+// 	    var_dump($courseTopics);
+// 	    var_dump($niveaus);
+// 	    var_dump($selectedSubject);
+// 	    echo "\n\n\n\n\n";
+// 	    var_dump($selectedTopic);
+// 	    echo "\n\n\n\n\n";
+// 	    var_dump($selectedNiveau);
+	    
+	    $output = block_exacomp_get_renderer();
+	    $html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+	    
+	    $course_settings = block_exacomp_get_settings_by_course($courseid);
+	    $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?$selectedSubject->id:null,$selectedTopic?$selectedTopic->id:null,false,$selectedNiveau?$selectedNiveau->id:null,
+	        ($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true, false, false, false, ($isTeacher)?false:true, false);
+
+	    $scheme = block_exacomp_get_grading_scheme($courseid);
+	    $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
+// 	    $html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
+	    $html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
+	    
+	    \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
+	    
+	}
 
 	/**
 	 * used own webservice, because moodle does not support indexed arrays (eg. [ 188 => object])
@@ -139,6 +208,8 @@ class block_exacomp_simple_service {
 
 		block_exacomp_group_reports_result($filter);
 	}
+	
+	
 
 	private static function require_courseid() {
 		$courseid = required_param('courseid', PARAM_INT);

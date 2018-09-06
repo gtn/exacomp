@@ -102,8 +102,9 @@ class printer {
 
 	static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
 	    ob_start();
-	    $pdf = new printer_TCPDF('L');
 
+	    $pdf = new printer_TCPDF('L');
+	    
 		$pdf->setStyle('
 			* {
 				font-size: 9pt;
@@ -133,7 +134,7 @@ class printer {
 				background-color: #e6e6e6;
 			}
 				');
-
+		
 		$pdf->setHeaderMargin(5);
 		$pdf->SetTopMargin(40);
 
@@ -162,9 +163,9 @@ class printer {
 			$pdf->AddPage();
 			$pdf->writeHTML($html_table);
 		}
-
+		
 		$pdf->Output();
-
+		
 		exit;
 	}
 
