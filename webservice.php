@@ -142,20 +142,40 @@ class block_exacomp_simple_service {
 // 	    var_dump($selectedTopic);
 // 	    echo "\n\n\n\n\n";
 // 	    var_dump($selectedNiveau);
+
+	    
+	    
 	    
 	    $output = block_exacomp_get_renderer();
 	    $html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 	    
 	    $course_settings = block_exacomp_get_settings_by_course($courseid);
+	    $isTeacher = true;
 	    $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?$selectedSubject->id:null,$selectedTopic?$selectedTopic->id:null,false,$selectedNiveau?$selectedNiveau->id:null,
 	        ($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true, false, false, false, ($isTeacher)?false:true, false);
-
+	    
+	    
+	    
+	    var_dump($competence_tree); 
+	    
+	    
+	    
 	    $scheme = block_exacomp_get_grading_scheme($courseid);
 	    $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
 // 	    $html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
 	    $html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
 	    
-	    \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
+// 	    echo "selectedSubject \n\n\n";
+// 	    var_dump($selectedSubject);
+	    // 	echo "selectedTopic \n\n\n";
+// 	     	var_dump($selectedTopic);
+	    // 	echo "selectedNiveau \n\n\n";
+// 	    	var_dump($selectedNiveau);
+	    // 	echo "html_header \n\n\n";
+// 	    	var_dump($html_header);
+	    // 	echo "html_tables \n\n\n";
+// 	    var_dump($html_tables);  //HIER IST DER HUND!  hier ist was verschieden
+	   // \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 	    
 	}
 

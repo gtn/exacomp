@@ -99,6 +99,10 @@ list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic,
 $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 if($course_settings->nostudents) $allCourseStudents = array();
 
+echo $courseid;
+echo $selectedSubject;
+
+
 $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?$selectedSubject->id:null,$selectedTopic?$selectedTopic->id:null,false,$selectedNiveau?$selectedNiveau->id:null,
 		($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true, false, false, false, ($isTeacher)?false:true, false);
 
@@ -140,7 +144,19 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		// $html .= "&nbsp;<br />";
 		$html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
 	}
-
+//   	echo "selectedSubject \n\n\n";
+//   	var_dump($selectedSubject);
+//  	echo "selectedTopic \n\n\n";
+//  	var_dump($selectedTopic);
+// 	echo "selectedNiveau \n\n\n";
+// 	var_dump($selectedNiveau);
+// 	echo "html_header \n\n\n";
+// 	var_dump($html_header);
+// 	echo "html_tables \n\n\n";
+// 	var_dump($html_tables);   //HIER IST DER HUND!  hier ist was verschieden
+	//var_dump($competence_tree);
+	
+	
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
 
