@@ -169,8 +169,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			if ($this->is_edit_mode()) {
-				$right_content .= html_writer::empty_tag('input', array('type' => 'button', 'id' => 'add_subject', 'value' => block_exacomp_trans('add_subject', ['de:Kompetenzraster anlegen', 'en:Create competence grid']),
-					'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
+				//$right_content .= html_writer::empty_tag('input', array('type' => 'button', 'id' => 'add_subject', 'value' => block_exacomp_trans('add_subject', ['de:Kompetenzraster anlegen', 'en:Create competence grid']),
+				//	'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
 			}
 
 			if ($students) {

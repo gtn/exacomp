@@ -99,8 +99,8 @@ list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic,
 $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 if($course_settings->nostudents) $allCourseStudents = array();
 
-echo $courseid;
-echo $selectedSubject;
+//echo $courseid;
+//echo $selectedSubject;
 
 
 $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?$selectedSubject->id:null,$selectedTopic?$selectedTopic->id:null,false,$selectedNiveau?$selectedNiveau->id:null,
