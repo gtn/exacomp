@@ -424,10 +424,38 @@ class printer {
         \PhpOffice\PhpWord\Settings::setTempDir($CFG->tempdir);
         $templateProcessor = new \block_exacomp\TemplateProcessor($templateFile);
 
+        $columnCount = block_exacomp_get_report_columns_count_by_assessment();
+        $columnStart = 0;
+        // make table columns before cloning
+        $templateProcessor->duplicateCell('c', $columnCount - 1);
+        $templateProcessor->duplicateCell('vs', $columnCount - 1);
+        $templateProcessor->duplicateCell('vt', $columnCount - 1);
+        $templateProcessor->duplicateCell('vd', $columnCount - 1);
+        // fill header titles
+        for ($i = $columnStart; $i < $columnCount; $i++) {
+            switch (block_exacomp_get_assessment_comp_scheme()) {
+                case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                    $templateProcessor->setValue("c", $i, 1);
+                    break;
+                case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                    $titles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+                    $templateProcessor->setValue("c", $titles[$i], 1);
+                    break;
+                case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                    $templateProcessor->setValue("c", $i, 1);
+                    break;
+                case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                    if ($i == 1) {
+                        $templateProcessor->setValue("c", block_exacomp_get_string('yes_no_Yes'), 1);
+                    } else {
+                        $templateProcessor->setValue("c", block_exacomp_get_string('yes_no_No'), 1);
+                    }
+                    break;
+            }
+        }
+
         $templateProcessor->duplicateDocumentBody(count($dataRow));
         $toDeleteBlocks = 0;
-
-        $columnCount = block_exacomp_get_report_columns_count_by_assessment();
         foreach ($dataRow as $studentId => $reportData) {
             $templateProcessor->setValue('course', $reportData['courseData']->fullname, 1);
             $templateProcessor->setValue('student_name', fullname($reportData['studentData']), 1);
@@ -450,43 +478,62 @@ class printer {
                 $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_subject_scheme(), $subject->evaluation);
                 $subjectEntries++;
                 //$templateProcessor->duplicateRow("subject");
-                $templateProcessor->setValue("subject", $subject->get_numbering().' '.$subject->title, 1);
-                $templateProcessor->setValue("n", $subject->evaluation->get_evalniveau_title(), 1);
-                $templateProcessor->setValue("nu", $selectedEval == 0 ? 'X' : '', 1);
-                $templateProcessor->setValue("ne", $selectedEval == 1 ? 'X' : '', 1);
-                $templateProcessor->setValue("tw", $selectedEval == 2 ? 'X' : '', 1);
-                $templateProcessor->setValue("ue", $selectedEval == 3 ? 'X' : '', 1);
-                $templateProcessor->setValue("ve", $selectedEval == 4 ? 'X' : '', 1);
+                $templateProcessor->setValue("subject_main", $subject->get_numbering().' '.$subject->title, 1);
+                if ($subject->visible) {
+                    $templateProcessor->setValue("subject", $subject->get_numbering().' '.$subject->title, 1);
+                    $templateProcessor->setValue("ns", $subject->evaluation->get_evalniveau_title(), 1);
+                    for ($i = $columnStart; $i < $columnCount; $i++) {
+                        if ($selectedEval == $i) {
+                            $templateProcessor->setValue("vs", 'X', 1);
+                        } else {
+                            $templateProcessor->setValue("vs", '', 1);
+                        }
+                    }
+                } else {
+                    $templateProcessor->deleteRow("subject");
+                }
                 // topics
                 foreach($subject->topics as $topic) {
                     $templateProcessor->cloneRowToEnd("topic");
                     $templateProcessor->cloneRowToEnd("descriptor");
-                    if (isset($topic->evaluation) && $topic->evaluation->teacherevaluation > 0) {
+                    if (isset($topic->evaluation)) {
                         $subjectEntries++;
                         $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_topic_scheme(), $topic->evaluation);
-                        $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
-                        $templateProcessor->setValue("n", $topic->evaluation->get_evalniveau_title(), 1);
-                        $templateProcessor->setValue("nu", $selectedEval == 0 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ne", $selectedEval == 1 ? 'X' : '', 1);
-                        $templateProcessor->setValue("tw", $selectedEval == 2 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ue", $selectedEval == 3 ? 'X' : '', 1);
-                        $templateProcessor->setValue("ve", $selectedEval == 4 ? 'X' : '', 1);
+                        if ($selectedEval != '') {
+                            $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
+                            $templateProcessor->setValue("nt", $topic->evaluation->get_evalniveau_title(), 1);
+                            for ($i = $columnStart; $i < $columnCount; $i++) {
+                                if ($selectedEval == $i) {
+                                    $templateProcessor->setValue("vt", 'X', 1);
+                                } else {
+                                    $templateProcessor->setValue("vt", '', 1);
+                                }
+                            }
+                        } else {
+                            $templateProcessor->deleteRow("topic");
+                        }
                     } else {
                         $templateProcessor->deleteRow("topic");
                     }
                     // descriptors
                     foreach ($topic->descriptors as $descriptor) {
                         $templateProcessor->duplicateRow("descriptor");
-                        if (isset($descriptor->evaluation) && $descriptor->evaluation->teacherevaluation > 0) {
+                        if (isset($descriptor->evaluation)) {
                             $subjectEntries++;
-                            $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_topic_scheme(), $descriptor->evaluation);
-                            $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
-                            $templateProcessor->setValue("n", $descriptor->evaluation->get_evalniveau_title(), 1);
-                            $templateProcessor->setValue("nu", $selectedEval == 0 ? 'X' : '', 1);
-                            $templateProcessor->setValue("ne", $selectedEval == 1 ? 'X' : '', 1);
-                            $templateProcessor->setValue("tw", $selectedEval == 2 ? 'X' : '', 1);
-                            $templateProcessor->setValue("ue", $selectedEval == 3 ? 'X' : '', 1);
-                            $templateProcessor->setValue("ve", $selectedEval == 4 ? 'X' : '', 1);
+                            $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_comp_scheme(), $descriptor->evaluation);
+                            if ($selectedEval != '' ) {
+                                $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
+                                $templateProcessor->setValue("nd", $descriptor->evaluation->get_evalniveau_title(), 1);
+                                for ($i = $columnStart; $i < $columnCount; $i++) {
+                                    if ($selectedEval == $i) {
+                                        $templateProcessor->setValue("vd", 'X', 1);
+                                    } else {
+                                        $templateProcessor->setValue("vd", '', 1);
+                                    }
+                                }
+                            } else {
+                                $templateProcessor->deleteRow("descriptor");
+                            }
                         } else {
                             //$toDeleteDesc++;
                             $templateProcessor->deleteRow("descriptor");
@@ -722,7 +769,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         return $parts;
     }
 
-    function rfindTagStart($tag, $offset)
+    function rfindTagStart($tag, $offset, $fromContent = '')
     {
         /*
          * if (!preg_match('!<w:'.$tag.'[\s>].*$!Uis', substr($this->tempDocumentMainPart, 0, $offset), $matches)) {
@@ -731,10 +778,16 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
          *
          * echo $offset - strlen($matches[0]);
          */
-        $tagStart = strrpos($this->tempDocumentMainPart, '<w:' . $tag . ' ', ((strlen($this->tempDocumentMainPart) - $offset) * - 1));
+        if ($fromContent) {
+            $searchIn = $fromContent;
+        } else {
+            $searchIn = $this->tempDocumentMainPart;
+        }
+
+        $tagStart = strrpos($searchIn, '<w:' . $tag . ' ', ((strlen($searchIn) - $offset) * - 1));
 
         if (! $tagStart) {
-            $tagStart = strrpos($this->tempDocumentMainPart, '<w:' . $tag . '>', ((strlen($this->tempDocumentMainPart) - $offset) * - 1));
+            $tagStart = strrpos($searchIn, '<w:' . $tag . '>', ((strlen($searchIn) - $offset) * - 1));
         }
         if (! $tagStart) {
             throw new Exception('Can not find the start position of tag ' . $tag . '.');
@@ -743,17 +796,53 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         return $tagStart;
     }
 
-    function findTagEnd($tag, $offset)
+    function findTagEnd($tag, $offset, $fromContent = '')
     {
         $search = '</w:' . $tag . '>';
-
-        return strpos($this->tempDocumentMainPart, $search, $offset) + strlen($search);
+        if ($fromContent) {
+            $searchIn = $fromContent;
+        } else {
+            $searchIn = $this->tempDocumentMainPart;
+        }
+        return strpos($searchIn, $search, $offset) + strlen($search);
     }
 
     function slice($string, $start, $end)
     {
         return new Slice($string, $start, $end);
     }
+
+    /**
+     * You need to do it with every row
+     * @param string $search
+     * @param int $numberOfCells
+     */
+    function duplicateCell($search, $numberOfCells = 1)
+    {
+        if ('${' !== substr($search, 0, 2) && '}' !== substr($search, - 1)) {
+            $search = '${' . $search . '}';
+        }
+
+        $tagPos = $this->tagPos($search);
+
+        $table = $this->slice($this->tempDocumentMainPart, $this->rfindTagStart('tbl', $tagPos), $this->findTagEnd('tbl', $tagPos));
+        $newTagPos = strpos($table->get(), $search);
+
+        $cellStartPos = $this->rfindTagStart('tc', $newTagPos, $table->get());
+        $cellEndPos = $this->findTagEnd('tc', $newTagPos, $table->get());
+        $cellToCopy = $this->slice($table->get(), $cellStartPos, $cellEndPos);
+
+        // add new cell after source cell
+        $resultCells = '';
+        for($i = 0; $i < $numberOfCells; $i++) {
+            $resultCells .= $cellToCopy->get();
+        }
+        $tableContent = substr_replace($table->get(), $resultCells, $cellEndPos, 0);
+
+        $table->set($tableContent);
+        $this->tempDocumentMainPart = $table->join();
+    }
+
 
     function duplicateCol($search, $numberOfCols = 1)
     {

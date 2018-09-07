@@ -8377,9 +8377,8 @@ function block_exacomp_group_reports_annex_result($filter) {
                 return false;
             }
 
-            $walk_subs($level + 1);
-
             $item->evaluation = $eval;
+            $walk_subs($level + 1);
         });
 
         //echo '<pre>';print_r($subjects); echo '<pre>';
@@ -8387,6 +8386,7 @@ function block_exacomp_group_reports_annex_result($filter) {
         // count of columns
         //$colCount = block_exacomp_get_grading_scheme($courseid);
         $colCount = block_exacomp_get_report_columns_count_by_assessment();
+        $startColumn = 0;
 
         if ($isDocx) {
             $dataRow[$studentid] = array();
@@ -8410,11 +8410,11 @@ function block_exacomp_group_reports_annex_result($filter) {
 
             ob_start();
             block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use (
-                    $studentid, $courseid, $filter, $colCount, &$firstSubject, &$has_subject_results
+                    $studentid, $courseid, $filter, $colCount, &$firstSubject, &$has_subject_results, $startColumn
             ) {
                 $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
-                $tableHeader = function(&$has_subject_results, &$firstSubject, $item, $colCount) {
+                $tableHeader = function(&$has_subject_results, &$firstSubject, $item, $colCount, $startColumn) {
                     $has_subject_results = false;
                     // table wrapping with Subject title
                     if (!$firstSubject) {
@@ -8432,9 +8432,30 @@ function block_exacomp_group_reports_annex_result($filter) {
                     // FIRST WAY: 1 column with value:
                     //echo '<th class="heading"></th>';
                     // SECOND WAY: 4 columns
-                    for ($i = 0; $i <= $colCount; $i++) {
-                        echo '<th class="heading">'.$i.'</th>';
+                    //for ($i = 0; $i <= $colCount; $i++) {
+                    //    echo '<th class="heading">'.$i.'</th>';
+                    //}
+                    // THIRD WAY: columns by selected grading system (grading for competences)
+                    for ($i = $startColumn; $i < $colCount; $i++) {
+                        echo '<th class="heading">';
+                        switch (block_exacomp_get_assessment_comp_scheme()) {
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                                echo $i;
+                                break;
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                                $titles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+                                echo $titles[$i];
+                                break;
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                                echo $i;
+                                break;
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                                echo $i == 1 ? block_exacomp_get_string('yes_no_Yes') : block_exacomp_get_string('yes_no_No');
+                                break;
+                        }
+                        echo '</th>';
                     }
+
                     echo '</tr></thead>';
                     echo "<tbody>";
                 };
@@ -8445,7 +8466,7 @@ function block_exacomp_group_reports_annex_result($filter) {
 
                 if (!$item->visible) {
                     if ($item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
-                        $tableHeader($has_subject_results, $firstSubject, $item, $colCount);
+                        $tableHeader($has_subject_results, $firstSubject, $item, $colCount, $startColumn);
                     }
                     // walk subs with same level
                     $walk_subs($level);
@@ -8458,10 +8479,10 @@ function block_exacomp_group_reports_annex_result($filter) {
 
                 $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_scheme, $eval);
 
-                if ($selectedEval || $item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+                if ($selectedEval != '' || $item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
                     switch ($item_type) {
                         case BLOCK_EXACOMP_TYPE_SUBJECT:
-                            $tableHeader($has_subject_results, $firstSubject, $item, $colCount);
+                            $tableHeader($has_subject_results, $firstSubject, $item, $colCount, $startColumn);
                             echo '<tr class="exarep_subject_row">';
                             break;
                         case BLOCK_EXACOMP_TYPE_TOPIC:
@@ -8488,7 +8509,15 @@ function block_exacomp_group_reports_annex_result($filter) {
                         // FIRST WAY: 1 column with value:
                         //echo '<td style="padding: 0 10px;">'.$selectedEval.'</td>';
                         // SECOND WAY: 4 columns
-                        for ($i = 0; $i <= $colCount; $i++) {
+                        /*for ($i = 0; $i <= $colCount; $i++) {
+                            echo '<td style="padding: 0 10px;">';
+                            if ($selectedEval == $i) {
+                                echo 'X';
+                            }
+                            echo '</td>';
+                        }*/
+                        // THIRD WAY: columns by selected grading system (grading for competences)
+                        for ($i = $startColumn; $i < $colCount; $i++) {
                             echo '<td style="padding: 0 10px;">';
                             if ($selectedEval == $i) {
                                 echo 'X';
@@ -8539,13 +8568,38 @@ function block_exacomp_formulaColumnByValue($maxColumn = 4, $minColumn = 1, $max
 
 /**
  * returns count of columns in annex report. Regarding to grading systems
- * - if here is at least one BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE - use assessment_grade_limit value
- * - if ... TODO: to figure rules
- * first column is ZERO! (does not calculated in this function)
+ * work with competence grading system. (TODO: is it ok?)
  * @return int
  */
 function block_exacomp_get_report_columns_count_by_assessment() {
-    $count = 4; // default value
+    switch (block_exacomp_get_assessment_comp_scheme()) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            $count = 0;
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            // first column with ZERO!
+            $count = block_exacomp_get_assessment_grade_limit();
+            $count++;
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $conf = block_exacomp_get_assessment_verbose_options();
+            if ($conf == '') {
+                $count = 0;
+            } else {
+                $titles = preg_split("/(\/|,) /", $conf);
+                $count = count($titles);
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            $count = block_exacomp_get_assessment_points_limit();
+            $count++; // With zero
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            $count = 2;
+            break;
+        default:
+            $count = 4; // default (old) value
+    }
     return $count;
 }
 
@@ -8587,7 +8641,7 @@ function block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_
             break;*/
         // SECOND way
         // if we have always 4 columns in the template - use formula to calculate where is 'X'
-        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+        /*case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             $selectedEval = '';
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
@@ -8615,6 +8669,35 @@ function block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
             if ($eval->teacherevaluation >= 1) {
                 $selectedEval = $column_count; // max column index
+            } else {
+                $selectedEval = 0;
+            }
+            break;*/
+        // THIRD way
+        // columns by selected grading system (grading for competences)
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            $selectedEval = '';
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            if ($eval->additionalinfo >= 1) {
+                $selectedEval = $eval->additionalinfo;
+            } else {
+                $selectedEval = 0;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $selectedEval = $eval->teacherevaluation;
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            if ($eval->teacherevaluation >= 1) {
+                $selectedEval = $eval->teacherevaluation;
+            } else {
+                $selectedEval = 0;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            if ($eval->teacherevaluation >= 1) {
+                $selectedEval = 1;
             } else {
                 $selectedEval = 0;
             }
