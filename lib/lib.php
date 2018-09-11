@@ -2641,6 +2641,44 @@ function block_exacomp_get_course_module_association($courseid) {
 	return $mm;
 }
 
+function block_exacomp_get_assigments_to_subjects($subjectids) {
+
+    $subjectidsArray = '';
+    
+    foreach($subjectids as $subjectid){
+        $subjectidsArray .= $subjectid;
+        $subjectidsArray .= ',';       
+    }
+    $subjectidsArray = substr($subjectidsArray, 0, -1);
+    
+    global $DB;
+    $records = $DB->get_records_sql('
+            SELECT mm.id, compid, comptype, activityid
+			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
+			JOIN {course_modules} m ON m.id = mm.activityid
+			WHERE compid IN (
+                SELECT DISTINCT d.id
+                FROM {block_exacompsubjects} s
+                JOIN {block_exacomptopics} t ON t.subjid = s.id
+                JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
+                JOIN {block_exacompdescriptors} d ON td.descrid = d.id
+                WHERE subjectid IN ('.$subjectidsArray.'))');
+     
+    $mm = new stdClass();
+    $mm->competencies = array();
+    $mm->topics = array();
+    
+    foreach ($records as $record) {
+        if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+            $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
+        } else {
+            $mm->topics[$record->compid][$record->activityid] = $record->activityid;
+        }
+    }
+    return $mm;
+    
+}
+
 function block_exacomp_get_allowed_course_modules_for_course($courseid) {
 	return \Super\Cache::staticCallback(__FUNCTION__, function($courseid) {
 		// TODO: optimieren

@@ -22,6 +22,7 @@ namespace block_exacomp;
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/../lib/exabis_special_id_generator.php';
+require_once __DIR__.'/../backup/test_backup.php';
 
 use block_exacomp\globals as g;
 use Super\Fs;
@@ -521,7 +522,8 @@ class data_exporter extends data {
 		self::export_crosssubjects($xml);
 		self::export_edulevels($xml);
 		self::export_sources($xml);
-
+		self::export_assignments($xml, $zip);
+		
 		$zipfile = $zip->filename;
 		
 		if (optional_param('as_text', false, PARAM_INT)) {
@@ -1059,8 +1061,79 @@ class data_exporter extends data {
 			$xmlSource = $xmlParent->sources->addchild('source');
 			$xmlSource['id'] = $source->source;
 			$xmlSource->name = $source->name;
-		}
-	}
+        }
+    }
+
+    private static function export_assignments(SimpleXMLElement $xmlParent, $zip)
+    {
+        global $CFG, $USER, $COURSE;
+
+        $cm_mm = block_exacomp_get_course_module_association(4);
+        // var_dump($cm_mm);
+        // $zip->addFromString('test.txt', 'hello');
+        // file_put_contents('test.txt', print_r($cm_mm->competencies, true));
+        // file_put_contents('test.txt', print_r($cm_mm->ctopics, true));
+        foreach ($cm_mm->competencies as $comp) {
+            foreach ($comp as $cmid) {
+
+                moodle_backup($cmid, $USER->id);
+
+                $source = glob($CFG->dataroot . '/temp/backup/*');
+                $source = array_filter($source, 'is_dir');
+                usort($source, function ($a, $b) {
+                    return filemtime($a) < filemtime($b);
+                });
+                if (! isset($source[0])) {
+                    die('backup not found');
+                }
+                $source = $source[0];
+
+                $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+                // $zip->addEmptyDir(basename($source));
+                foreach ($files as $name => $file) {
+                    // Skip directories (they would be added automatically)
+                    if (! $file->isDir()) {
+                        // Get real and relative path for current file
+                        $filePath = $file->getRealPath();
+                        $relativePath = basename($source) . '/' . substr($filePath, strlen($source) + 1);
+
+                        // Add current file to archive
+                        $zip->addFile($filePath, $relativePath);
+                    }
+                }
+            }
+        }
+
+        foreach ($cm_mm->topics as $comp) {
+            foreach ($comp as $cmid) {
+                moodle_backup($cmid, $USER->id);
+
+                $source = glob($CFG->dataroot . '/temp/backup/*');
+                $source = array_filter($source, 'is_dir');
+                usort($source, function ($a, $b) {
+                    return filemtime($a) < filemtime($b);
+                });
+                if (! isset($source[0])) {
+                    die('backup not found');
+                }
+                $source = $source[0];
+
+                $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+                // $zip->addEmptyDir(basename($source));
+                foreach ($files as $name => $file) {
+                    // Skip directories (they would be added automatically)
+                    if (! $file->isDir()) {
+                        // Get real and relative path for current file
+                        $filePath = $file->getRealPath();
+                        $relativePath = basename($source) . '/' . substr($filePath, strlen($source) + 1);
+
+                        // Add current file to archive
+                        $zip->addFile($filePath, $relativePath);
+                    }
+                }
+            }
+        }
+    }             
 }
 
 class data_course_backup extends data {
@@ -1169,6 +1242,8 @@ class data_importer extends data {
      * @param int $schedulerId if it is for scheduler task - id of task
 	 */
 	public static function do_import_file($file = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
+	    global $USER;
+	    
 		if (!$file) {
 			throw new import_exception('filenotfound');
 		}
@@ -1433,6 +1508,21 @@ class data_importer extends data {
 				self::insert_source($source);
 			}
 		}
+		
+		
+// 		$source = array_filter($file, 'is_dir');
+// 		usort($source, function ($a, $b) {
+// 		    return filemtime($a) < filemtime($b);
+// 		});
+// 		    if (! isset($source[0])) {
+// 		        die('backup not found');
+// 		    }
+// 		    foreach ($source as $name => $folder) {
+// 		        if($name != 'files'){
+// 		            moodle_restore($folder, 4 /*$courseid*/, $USER->id);
+// 		        }
+// 		    }
+		
 		
 		// self::kompetenzraster_clean_unused_data_from_source();
 		// TODO: was ist mit desccross?
