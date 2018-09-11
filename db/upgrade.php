@@ -2979,22 +2979,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    upgrade_block_savepoint(true, 2018040600, 'exacomp');
 	}
 	
-	if ($oldversion < 2018051100) {
-	    $table = new xmldb_table('block_exacompschedule');
-	    $field = new xmldb_field('is_pps', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
-	    $dbman->add_field($table, $field);
-	    // Exacomp savepoint reached.
-	    upgrade_block_savepoint(true, 2018051100, 'exacomp');
-	}
-	
 	if ($oldversion < 2018071202) {
 	    $table = new xmldb_table('block_exacompdescrexamp_mm');
 	    $field = new xmldb_field('id_foreign', XMLDB_TYPE_INTEGER, 11, null, null, null, null);
-	    $dbman->add_field($table, $field);
-	    
+	    if (!$dbman->field_exists($table, $field)) {
+	    	$dbman->add_field($table, $field);
+	    }
 	    
 	    $field = new xmldb_field('table_foreign', XMLDB_TYPE_TEXT, null, null, null, null, 'descr');
-	    $dbman->add_field($table, $field);
+	    if (!$dbman->field_exists($table, $field)) {
+		    $dbman->add_field($table, $field);
+		  }
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018071202, 'exacomp');
 	}
@@ -3019,7 +3014,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $table = new xmldb_table('block_exacompdatasources');
         $field = new xmldb_field('category_mapping');
         $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $dbman->add_field($table, $field);
+        if (!$dbman->field_exists($table, $field)) {
+        	$dbman->add_field($table, $field);
+        }
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018072301, 'exacomp');
     }
@@ -3028,7 +3025,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $table = new xmldb_table('block_exacompdatasources');
         $field = new xmldb_field('selected_grids');
         $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $dbman->add_field($table, $field);
+        if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+	      }
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018072401, 'exacomp');
     }
@@ -3056,6 +3055,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018072602, 'exacomp');
     }
+    
+    if ($oldversion < 2018091100) {
+        $table = new xmldb_table('block_exacompschedule');
+        $field = new xmldb_field('is_pps', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2018091100, 'exacomp');
+    }
 
 	if ($oldversion < 2018091700) {
         $table = new xmldb_table('block_exacompdatasources');
@@ -3069,6 +3079,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018091700, 'exacomp');
     }
+
+
+    
+	
 
 	/*
 	 * insert new upgrade scripts before this comment section
