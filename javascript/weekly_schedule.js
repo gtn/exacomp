@@ -446,8 +446,10 @@
 				var i = 0, unit = 0;
 				element.find('.fc-time').each(function(){
 					var slot = exacomp_calcendar_config.slots[i];
-					//manipulate the string in order to get it into a form that is allowed by the string system:
-					slot.name=slot.name.replace(" Einheit", "unit");
+					// manipulate the string in order to get it into a form that is allowed by the string system:
+					// slot.name=slot.name.replace(" Einheit", "unit");
+					slot.name=slot.name.replace(" Einheit:", "unit"); // for Deusch
+					slot.name=slot.name.replace(" unit", "unit"); // for English
 					this.innerHTML = '<span>'+(slot.name ? '<b>' + M.util.get_string("n"+slot.name, 'block_exacomp') + '</b><br />' + slot.time : '')
 						+ '<span style="font-size: 85%">'+'</span>'+'</span>';
 					i++;

@@ -5661,9 +5661,10 @@ function block_exacomp_build_json_time_slots($date = null) {
 
 		$entry = array();
 
-		//only write at the begin of every unit
+		// only write at the begin of every unit
 		if ($i % 4 == 0) {
-			$entry['name'] = ($i / 4 + 1).'. Einheit';
+			//$entry['name'] = ($i / 4 + 1).'. Einheit';
+            $entry['name'] = block_exacomp_get_string('n'.($i / 4 + 1).'.unit');
 			$entry['time'] = (isset($timeentries[$i / 4])) ? $timeentries[$i / 4] : '';
 		} else {
 			$entry['name'] = '';
@@ -6629,7 +6630,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		$data->niveaus[$niveau->title]->eval =
 		(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // DESCRIPTORS!!!
 		? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
-		: (($evaluation && $evaluation->value || ($evaluation->value=="0")) ? $evaluation->value : -1); //nuller anzeigen!
+		: (($evaluation && $evaluation->value || ($evaluation && $evaluation->value=="0")) ? $evaluation->value : -1); //nuller anzeigen!
 		//var_dump($evaluation);
 
 		//$data->niveaus[$niveau->title]->eval = 3;

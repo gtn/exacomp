@@ -48,6 +48,8 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', [
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
+$scheme = block_exacomp_get_assessment_theme_scheme();
+
 $output = block_exacomp_get_renderer();
 
 // build breadcrumbs navigation
@@ -129,6 +131,53 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 }
 
 $cross_subject = $crosssubjid ? \block_exacomp\cross_subject::get($crosssubjid, MUST_EXIST) : null;
+
+if (optional_param('print', false, PARAM_BOOL)) {
+    $output->print = true;
+    if ($cross_subject) {
+        $html_tables = array();
+        if ($isTeacher) {
+            $students = (!$cross_subject->is_draft() && $course_settings->nostudents != 1) ? block_exacomp_get_students_for_crosssubject($courseid, $cross_subject) : array();
+            if (!$students) {
+                $selectedStudentid = 0;
+                $studentid = 0;
+            } elseif (isset($students[$studentid])) {
+                $selectedStudentid = $studentid;
+            } else {
+                $selectedStudentid = 0;
+                $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+            }
+        } else {
+            $students = array($USER);
+            $selectedStudentid = $USER->id;
+            $studentid = $USER->id;
+        }
+        foreach ($students as $student) {
+            $student = block_exacomp_get_user_information_by_course($student, $courseid);
+        }
+        $subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,
+                                $cross_subject,
+                                !($course_settings->show_all_examples == 0 && !$isTeacher),
+                                $course_settings->filteredtaxonomies,
+                                ($studentid > 0 && !$isTeacher) ? $studentid : 0,
+                                ($isTeacher) ? false : true);
+
+        if ($subjects) {
+            //$html_pdf = $output->overview_legend($isTeacher);
+            $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
+            $html_pdf .= $output->competence_overview($subjects,
+                                $courseid,
+                                $students,
+                                $showevaluation,
+                                $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+                                $scheme,
+                                false,
+                                $cross_subject->id);
+            $html_tables[] = $html_pdf;
+        }
+        block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
+    }
+}
 
 if ($action == 'descriptor_selector') {
 	$cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
@@ -282,10 +331,10 @@ if ($isTeacher) {
 		$selectedStudentid = 0;
 		$studentid = 0;
 		$editmode = true;
-	} elseif($editmode) {
+	} elseif ($editmode) {
 		$selectedStudentid = 0;
 		$studentid = 0;
-	} elseif(!$students) {
+	} elseif (!$students) {
 		if ($cross_subject && !$cross_subject->is_draft() && $course_settings->nostudents != 1)
 			echo html_writer::div(block_exacomp_get_string('share_crosssub_for_further_use'),"alert alert-warning");
 		// $editmode = true;
@@ -335,9 +384,8 @@ $schooltype = substr($schooltype_title, 0, strlen($schooltype_title)-1);
 echo $output->overview_metadata_cross_subjects($cross_subject, $editmode);
 
 //$scheme = block_exacomp_get_grading_scheme($courseid);
-$scheme = block_exacomp_get_assessment_theme_scheme();
 
-if(!$isTeacher){
+if (!$isTeacher) {
 	$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
 
 	$cm_mm = block_exacomp_get_course_module_association($courseid);
@@ -352,18 +400,18 @@ if(!$isTeacher){
 
 echo $output->cross_subject_buttons($cross_subject, $students, $selectedStudentid, ($course_settings->nostudents!=1));
 
-if($isTeacher){
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+if ($isTeacher) {
+	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 		//$showevaluation = false;   why?
 	    $showevaluation = true;
 		echo $output->students_column_selector(count($students));
-	}elseif ($studentid == 0)
+	} elseif ($studentid == 0)
 		$students = array();
 	elseif (!empty($students[$studentid])) {
 		$students = array($students[$studentid]);
 		$showevaluation = true;
 	}
-}else{
+} else {
 	$showevaluation = true;
 }
 

@@ -21,6 +21,7 @@ require __DIR__.'/inc.php';
 
 global $DB, $OUTPUT, $PAGE;
 
+$outputContent = '';
 $courseid = required_param('courseid', PARAM_INT);
 $courseid_for_tree = $courseid;
 $sort = optional_param('sort', "desc", PARAM_ALPHA);
@@ -59,7 +60,18 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
-echo $output->header_v2($page_identifier);
+
+$isPrintView = false;
+if (optional_param('print', false, PARAM_BOOL)) {
+    $output->print = true;
+    $isPrintView = true;
+    $html_tables = array();
+    $html_headers = array(); // TODO:
+}
+
+$outputContent .= $output->header_v2($page_identifier);
+
+$outputContent .= $output->button_box('window.open(location.href+\'&print=1\');', '');
 
 if ($show_all_examples != 0) {
 	$courseid_for_tree = 0;
@@ -67,12 +79,16 @@ if ($show_all_examples != 0) {
 
 /* CONTENT REGION */
 
-echo $output->view_example_header();
+$outputContent .= $output->view_example_header();
 
 switch ($style) {
 	case 0:
 	    $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
-	    echo $output->competence_based_list_tree($tree, $isTeacher, false);
+        if ($isPrintView) {
+            $html_tables[] = $output->competence_based_list_tree($tree, $isTeacher, false);
+        } else {
+            $outputContent .= $output->competence_based_list_tree($tree, $isTeacher, false);
+        }
 	    
 	    //Crossubjects and crossubjectfiles
 	    //$crossubject_tree = block_exacomp_build_crossubject_example_tree($courseid, array(), 0, 0, true);
@@ -101,7 +117,11 @@ switch ($style) {
             });
         }
 
-        echo $output->example_based_list_tree($examples);
+        if ($isPrintView) {
+            $html_tables[] = $output->example_based_list_tree($examples);
+        } else {
+            $outputContent .= $output->example_based_list_tree($examples);
+        }
         break;
     case 2:
         // get all crosssubjects or for student
@@ -110,8 +130,9 @@ switch ($style) {
         } else {
             $crosssubs = block_exacomp_get_cross_subjects_by_course($courseid, $USER->id);
         }
-        echo html_writer::start_tag("table", array("class" => 'rg2'));
+        $outputContent .= html_writer::start_tag("table", array("class" => 'rg2'));
         foreach ($crosssubs as $cross) {
+            $crossContent = '';
             //get files specifically for this cross:
             $examples = block_exacomp_get_examples_for_crosssubject($cross->id);
             //get files from competencies that are added to this cross: 
@@ -129,21 +150,32 @@ switch ($style) {
                     return block_exacomp_is_example_visible($courseid, $example, $studentid);
                 });
             }
-            echo html_writer::start_tag("tr", array("class" => "rg2-level-0 rg2 rg2-header highlight"));
-            echo html_writer::start_tag("td", array("class" => "rg2-arrow rg2-indent"));
-                echo '<div>'.$cross->title.'</div>';
-            echo html_writer::end_tag("td");
-            echo html_writer::end_tag("tr");
-            echo html_writer::start_tag("tr", array("class" => "rg2-level-1 rg2"));
-            echo html_writer::start_tag("td", array("class" => "rg2-indent"));
-                    echo $output->cross_based_list_tree($examples, $cross->id);
-            echo html_writer::end_tag("td");
-            echo html_writer::end_tag("tr");
+            $crossContent .= html_writer::start_tag("tr", array("class" => "rg2-level-0 rg2 rg2-header highlight"));
+            $crossContent .= html_writer::start_tag("td", array("class" => "rg2-arrow rg2-indent"));
+                $crossContent .= '<div>'.$cross->title.'</div>';
+            $crossContent .= html_writer::end_tag("td");
+            $crossContent .= html_writer::end_tag("tr");
+            $crossContent .= html_writer::start_tag("tr", array("class" => "rg2-level-1 rg2"));
+            $crossContent .= html_writer::start_tag("td", array("class" => "rg2-indent"));
+            if ($isPrintView) {
+                $html_headers[] = $cross->title;
+                $html_tables[] = $output->cross_based_list_tree($examples, $cross->id);
+            } else {
+                $crossContent .= $output->cross_based_list_tree($examples, $cross->id);
+            }
+            $crossContent .= html_writer::end_tag("td");
+            $crossContent .= html_writer::end_tag("tr");
+            $outputContent .= $crossContent;
         }
-        echo html_writer::end_tag("table");
+        $outputContent .= html_writer::end_tag("table");
         break;
 }
 
+if ($isPrintView) {
+    block_exacomp\printer::view_examples($html_headers, $html_tables, $style);
+}
+
+echo $outputContent;
 /* END CONTENT REGION */
 echo $output->footer();
 

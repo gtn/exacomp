@@ -57,24 +57,24 @@ echo $output->header_v2($page_identifier);
 
 /* CONTENT REGION */
 
-if(!$isTeacher){
+if (!$isTeacher) {
 	$studentid = $USER->id;
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
-}else {
+} else {
 	
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	
 	echo '<div style="padding-bottom: 15px;">';
-	if($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+	if ($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 		echo html_writer::tag("p", block_exacomp_get_string("select_student"));
 		//print student selector
 		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
 		echo $output->footer();
 		die;
-	}else{
+	} else {
 		//check permission for viewing students profile
-		if(!array_key_exists($studentid, $coursestudents))
+		if (!array_key_exists($studentid, $coursestudents))
 			print_error("nopermissions","","","Show student profile");
 		
 		//print student selector

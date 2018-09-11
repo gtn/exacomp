@@ -168,6 +168,56 @@ class printer {
 		
 		exit;
 	}
+	static function crossubj_overview($cross_subject, $subjects, $students, $html_header, $html_tables) {
+	    //print_r($html_tables);exit;
+	    ob_start();
+
+	    $pdf = new printer_TCPDF('L');
+
+		$pdf->setStyle('
+			* {
+				font-size: 9pt;
+			}
+			div {
+				padding: 0;
+				margin: 0;
+			}
+			table td {
+				border: 0.2pt solid #555;
+				margin: 40px;
+			}
+			table {
+				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+			}
+			tr.highlight {
+				background-color: #e6e6e6;
+			}
+				');
+
+		$pdf->setHeaderMargin(5);
+		$pdf->SetTopMargin(20);
+
+		foreach ($html_tables as $html_table) {
+			// add spacing for examples
+			$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
+
+            if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
+                die('error #gg98daa');
+            }
+
+            $html_table = str_replace($matches[1], '', $html_table);
+            $html_table = str_replace('<tr ', '<tr nobr="true"', $html_table);
+
+            $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
+
+			$pdf->AddPage();
+			$pdf->writeHTML($html_table);
+		}
+
+		$pdf->Output();
+
+		exit;
+	}
 
 	static function weekly_schedule($course, $student, $interval /* week or day */) {
 		$first_day = optional_param('time', time(), PARAM_INT);
@@ -334,9 +384,11 @@ class printer {
 			if ($color_i % 2) {
 				$tbl .= ' style="background-color:#EEEEEE;"';
 			}
-			if(block_exacomp_get_string($slot['name'])!='[[]]'){
-			    $tbl .= '><td>'.block_exacomp_get_string($slot['name']).'</td>';
-			}else{
+			//if (block_exacomp_get_string($slot['name']) != '[[]]'){
+			//    $tbl .= '><td>'.block_exacomp_get_string($slot['name']).'</td>';
+            if ($slot['name'] != ''){
+			    $tbl .= '><td>'.$slot['name'].'</td>';
+			} else {
 			    $tbl .= '><td></td>';
 			}
 			foreach ($days as $day) {
@@ -402,6 +454,7 @@ class printer {
 		$pdf->Output();
 		exit;
 	}
+
     static function block_exacomp_generate_report_annex_docx($courseid, $dataRow) {
         global $CFG;
         $templateContents = '';
@@ -570,6 +623,82 @@ class printer {
         require_once $CFG->dirroot.'/lib/filelib.php';
         send_temp_file($temp_file, $resultFilename);
 
+    }
+
+    static function view_examples($html_headers = array(), $html_tables = array(), $style = 0) {
+        ob_start();
+
+        $pdf = new printer_TCPDF('L');
+
+        $pdf->setStyle('
+			* {
+				font-size: 9pt;
+			}
+			div {
+				padding: 0;
+				margin: 0;
+			}
+			table td {
+				border: 0.2pt solid #E3DFD4;
+				margin: 40px;
+			}
+			table {
+				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+				width: 100%;
+                border: 1px solid #E3DFD4;
+			}
+			
+			th {
+                background-color: #e6e6e6;			    
+			}
+				
+			tr.highlight {
+				background-color: #e6e6e6;
+			}
+				');
+
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(15);
+
+        foreach ($html_tables as $key => $html_table) {
+            // add spacing for examples
+            //$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
+
+            $html_table = preg_replace('!<a.*?>.*?</a>!is', '', $html_table);
+            $html_table = str_replace('&#x25B8;', ' > ', $html_table);
+            if ($style === 0) {
+                // convert ul-li to table
+                preg_match_all('!<li.*?>(.*?)(</li>|<ul>)!is', $html_table, $matches);
+                $texts = $matches[1];
+                $levels = $matches[2];
+                $tableContent = '<table>';
+                $currLevel = 0;
+                foreach ($texts as $key2 => $line) {
+                    $tableContent .= '<tr class="'.($levels[$key2] == '</li>' ? '' : 'highlight').'"><td>';
+                    if ($levels[$key2] != '</li>') {
+                        $tableContent .= str_repeat('&nbsp;', $currLevel * 3).trim($line);
+                        $currLevel++;
+                    } else {
+                        $tableContent .= str_repeat('&nbsp;', 12).trim($line);
+                        $currLevel = 1;
+                    }
+                    $tableContent .= '</td></tr>';
+                }
+                $tableContent .= '</table>';
+                /*$html_table = preg_replace('!<li.*?>(.*?)</li>!is', '<tr><td>\1</td></tr>', $html_table);*/
+                $html_table = $tableContent;
+            }
+
+            if (isset($html_headers[$key]) && $html_headers[$key] != '') {
+                $pdf->setHeaderHTML($html_headers[$key]);
+            }
+
+            $pdf->AddPage();
+            $pdf->writeHTML($html_table);
+        }
+
+        $pdf->Output();
+        exit;
     }
 
 }

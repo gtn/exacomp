@@ -1223,24 +1223,31 @@ class global_config {
                     2 => '😔',
                     1 => '😓',
                 */
-			    
+
                 $useEval = get_config('exacomp', 'assessment_SelfEval_useVerbose');
-//                 var_dump($useEval);
+                 //var_dump($useEval);
+                 //var_dump($level);
 //                 throw new \coding_exception("haaalt stopp!!!!!!!!!!!!!!!!!!");
                 if ($useEval) {
                     // different for different levels
-                    // use integerand string variants
+                    // use integer and string variants
                     switch (true) { // strange switch because $level can have different types
                         case $level === 'crosssubs':
                         case $level === 'subjects':
                         case $level === 'topics':
                         case $level === 'competencies':
                         case $level === BLOCK_EXACOMP_TYPE_CROSSSUB:
+                        case $level === BLOCK_EXACOMP_TYPE_CROSSSUB.'': // also it is possible as string id
                         case $level === BLOCK_EXACOMP_TYPE_SUBJECT:
+                        case $level === BLOCK_EXACOMP_TYPE_SUBJECT.'':
                         case $level === BLOCK_EXACOMP_TYPE_TOPIC:
+                        case $level === BLOCK_EXACOMP_TYPE_TOPIC.'':
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+                        case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR.'':
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
+                        case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT.'':
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
+                        case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD.'':
                             return $values + [
                                         4 => block_exacomp_get_string('selfEvalVerbose.4'), //not generic yet because not requested from customer
                                         3 => block_exacomp_get_string('selfEvalVerbose.3'),
@@ -1284,7 +1291,6 @@ class global_config {
 		if ($id === null || $id < 0) {
 			return ' ';
 		}
-
 		return @static::get_student_eval_items(false, $type)[$id];
 	}
 
