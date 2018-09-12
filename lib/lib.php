@@ -2679,6 +2679,23 @@ function block_exacomp_get_assigments_to_subjects($subjectids) {
     
 }
 
+function get_all_courses_key_value(){
+    global $DB;
+    $records = $DB->get_records_sql('
+        SELECT id, fullname
+        FROM mdl_course');
+    $ret = array();
+    $i=0;
+    
+    foreach ($records as $record){
+        $ret[$record->id] = $record->fullname;
+        $i++;
+    }
+    
+    
+    return $ret;
+}
+
 function block_exacomp_get_allowed_course_modules_for_course($courseid) {
 	return \Super\Cache::staticCallback(__FUNCTION__, function($courseid) {
 		// TODO: optimieren
