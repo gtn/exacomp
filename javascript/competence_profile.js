@@ -4,13 +4,13 @@ $(document).ready(function(){
 	 })
 });
 
-$(document).on('click', 'a.print', function(e) {
+/*$(document).on('click', 'a.print', function(e) {
 	$(document).find('.exa-collapsible').each(function () {
 		 $(this).addClass('exa-collapsible-open');	
 	})
 
 	window.print();
-});
+});*/
 		 
 (function ($) {
 	

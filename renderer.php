@@ -3864,15 +3864,41 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param unknown $student
 	 */
 	function competence_profile_metadata($student) {
-		$namediv = html_writer::div(html_writer::tag('b', $student->firstname.' '.$student->lastname)
-			.html_writer::div(block_exacomp_get_string('name'), ''), '');
+	    if ($this->is_print_mode()) {
+            $userPicWidth = 50;
+            $namediv = html_writer::div(html_writer::tag('h2', $student->firstname.' '.$student->lastname), 'pdf-username', ['align' => 'top']);
 
-		$imgdiv = html_writer::div($this->user_picture($student, array("size" => 100)), '');
+            $imgdiv = html_writer::div($this->user_picture($student, array("size" => $userPicWidth)), '', ['align' => 'top']);
 
-		(!empty($student->city)) ? $citydiv = html_writer::div($student->city
-			.html_writer::div(block_exacomp_get_string('city'), ''), '') : $citydiv = '';
+            (!empty($student->city)) ? $citydiv = html_writer::div($student->city, 'pdf-useraddress') : $citydiv = '';
+            $table = new html_table ();
+            $table->attributes['class'] = 'pdf-userdata';
+            $table->attributes['border'] = 0;
+            $rows = array();
+            $row = new html_table_row ();
+            $cell = new html_table_cell ();
+            $cell->text = $imgdiv;
+            $cell->attributes['width'] = $userPicWidth + 5;
+            $cell->attributes['valign'] = 'top';
+            $row->cells[] = $cell;
+            $cell = new html_table_cell ();
+            $cell->text = $namediv;
+            $cell->attributes['valign'] = 'top';
+            $row->cells[] = $cell;
+            $rows[] = $row;
+            $table->data = $rows;
+            return html_writer::table($table);
+        } else {
+            $namediv = html_writer::div(html_writer::tag('b', $student->firstname.' '.$student->lastname)
+                    .html_writer::div(block_exacomp_get_string('name'), ''), '');
 
-		return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata clearfix');
+            $imgdiv = html_writer::div($this->user_picture($student, array("size" => 100)), '');
+
+            (!empty($student->city)) ? $citydiv = html_writer::div($student->city
+                    .html_writer::div(block_exacomp_get_string('city'), ''), '') : $citydiv = '';
+
+            return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata clearfix');
+        }
 	}
 
 	function box_error($message) {
@@ -3900,14 +3926,32 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) {
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
-				$tables = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], block_exacomp_get_string('descriptors'));
-				$tables .= $this->subject_statistic_table($course->id, $stat['child_evaluations'], block_exacomp_get_string('childcompetencies_compProfile'));
+				$tables = array();
+				$tables[] = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], block_exacomp_get_string('descriptors'));
+				$tables[] = $this->subject_statistic_table($course->id, $stat['child_evaluations'], block_exacomp_get_string('childcompetencies_compProfile'));
 				if (block_exacomp_course_has_examples($course->id)) {
-				    $tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], block_exacomp_get_string('materials_compProfile'));
+				    $tables[] = $this->subject_statistic_table($course->id, $stat['example_evaluations'], block_exacomp_get_string('materials_compProfile'));
 				}
 
 				$innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'), array('class' => 'competence_profile_insectitle'));
-				$innersection .= html_writer::tag('div', $tables, array('class' => 'statistictables', 'exa-subjectid' => $subject->id, 'exa-courseid' => $course->id));
+				if ($this->is_print_mode()) {
+				    $tempTable = new html_table();
+				    $tempTable->attributes['class'] = 'statistictables';
+				    $tempTable->attributes['exa-subjectid'] = $subject->id;
+				    $tempTable->attributes['exa-courseid'] =  $course->id;
+				    $row = new html_table_row();
+				    foreach ($tables as $tableItem) {
+				        $cell = new html_table_cell();
+				        $cell->attributes['width'] = '33%';
+				        $cell->text = $tableItem;
+				        $row->cells[] = $cell;
+                    }
+                    $tempTable->data = array($row);
+                    $innersection .= '<br>'.html_writer::table($tempTable);
+                } else {
+                    $innersection .= html_writer::tag('div', implode(' ', $tables),
+                            array('class' => 'statistictables', 'exa-subjectid' => $subject->id, 'exa-courseid' => $course->id));
+                }
 				$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 
 			}
@@ -3918,8 +3962,34 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$innersection .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class' => 'comparisondiv'));
 			$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 
-			$innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs', 'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
-			$innersection .= html_writer::div($this->timeline_graph($course, $student), "competence_profile_timelinegraph");
+            $innersection = '';
+            if ($this->is_print_mode()) {
+                $height = 300;
+                $width = 600;
+                $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
+                        [   'height' => $height,
+                            'width' => $width,
+                            'courseid' => $course->id,
+                            'studentid' => $student->id
+                        ]);
+                $tempTable = new html_table();
+                $tempTable->attributes['class'] = 'competence_profile_timelinegraph';
+                $row = new html_table_row();
+                $cell = new html_table_cell();
+                //$cell->attributes['width'] = $width;
+                $cell->attributes['align'] = 'left';
+                $text = html_writer::div(block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs', 'en:Chronological sequence of gained outcomes']), 'competence_profile_insectitle');
+                $text .= html_writer::img($elementSrc, '', ['width' => $width / 1.6, 'height' => $height / 1.6, 'border' => 0]); // TODO: why '/ 1.6' ?
+                $cell->text = $text;
+                $row->cells[] = $cell;
+                $tempTable->data = array($row);
+                $innersection .= html_writer::table($tempTable);
+                //$innersection .= html_writer::div(html_writer::img($elementSrc, '',
+                //        ['width' => $width, 'height' => $height, 'border' => 0]), 'competence_profile_timelinegraph');
+            } else {
+                $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs', 'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
+                $innersection .= html_writer::div($this->timeline_graph($course, $student), "competence_profile_timelinegraph");
+            }
 			$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 		}
 
@@ -3927,18 +3997,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			return '';
 		}
 
-		$content .= "<script> $('div[class=\"container\"]').each(function () {
+        if (!$this->is_print_mode()) {
+            $content .= "<script> $('div[class=\"container\"]').each(function () {
                         $(this).find('canvas').each(function () {
 			
 					$(this).donut();
 				});
                     });    </script>";
-
+        }
 		return html_writer::div($content, "competence_profile_coursedata");
 	}
 
 	private function competence_profile_grid($courseid, $subject, $studentid, $max_scheme) {
-		global $DB;
+		global $DB, $CFG;
 
 		$content = '';
 
@@ -3958,6 +4029,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		// header
 		$row = new html_table_row ();
+        $row->attributes['class'] = 'pdf-highlight';
 
 		// first subject title cell
 		$cell = new html_table_cell ();
@@ -4001,18 +4073,44 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$element->eval = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 				}
 				$cell = new html_table_cell ();
-				$cell->text = $element->show ? html_writer::empty_tag('canvas', [
-					"id" => "chart"."-".$subject->id."-".$niveau,
-					"height" => "50",
-					"width" => "50",
-					"data-title" => $element->evalniveau,
 
-					"data-value" => $element->eval,
-					"data-valuemax" => $max_scheme,
-				]) : '';
+				if ($element->show) {
+                    $height = 50;
+                    $width = 50;
+                    $dataValue = $element->eval;
+                    $dataTitle = $element->evalniveau;
+                    $dataValueMax = $max_scheme;
+                    if ($this->is_print_mode()) {
+                        if ($element->visible && $rowcontent->visible) {
+                            $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php',
+                                    ['height' => $height,
+                                            'width' => $width,
+                                            'value' => $dataValue,
+                                            'title' => $dataTitle,
+                                            'valueMax' => $dataValueMax
+                                    ]);
+                            //$elementSrc = htmlspecialchars_decode($CFG->wwwroot.'/blocks/exacomp/pix/dynamic/ppie.php?height='.$height.'&width='.$width.'&value='.
+                            //        $dataValue.'&title='.$dataTitle.'&valueMax='.$dataValueMax);
+                            $cell->text = html_writer::img($elementSrc, '',
+                                    ['width' => $width * 0.60, 'height' => $height * 0.60, 'border' => 0]);
+                        } else {
+                            $cell->text = '';
+                        }
+                    } else {
+                        $cell->text = html_writer::empty_tag('canvas', [
+                                "id" => "chart"."-".$subject->id."-".$niveau,
+                                "height" => $height,
+                                "width" => $width,
+                                "data-title" => $dataTitle,
+                                "data-value" => $dataValue,
+                                "data-valuemax" => $dataValueMax,
+                        ]);
+                    }
+                }
 
 				$cell->attributes['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
 				$cell->attributes['exa-timestamp'] = $element->timestamp;
+                $cell->attributes['align'] = 'center';
 
 				if (in_array($niveau, $spanning_niveaus)) {
 					$cell->colspan = $spanning_colspan;
@@ -4028,18 +4126,42 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 
 				$topic_eval_cell = new html_table_cell ();
-				$topic_eval_cell->text = html_writer::empty_tag('canvas', [
-					"id" => "chart".$topic,
-					"height" => "50",
-					"width" => "50",
-					"data-title" => $rowcontent->topic_evalniveau,
+                $height = 50;
+                $width = 50;
+                $dataValue = $rowcontent->topic_eval;
+                $dataTitle = $rowcontent->topic_evalniveau;
+                $dataValueMax = $max_scheme;
+                if ($this->is_print_mode()) {
+                    if ($rowcontent->visible) {
+                        $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php',
+                                ['height' => $height,
+                                        'width' => $width,
+                                        'value' => $rowcontent->topic_eval,
+                                        'title' => $rowcontent->topic_evalniveau,
+                                        'valueMax' => $dataValueMax
+                                ]);
+                        //$elementSrc = $CFG->wwwroot.'/blocks/exacomp/pix/dynamic/ppie.php?height='.$height.'&width='.$width.'&value='.
+                        //        $dataValue.'&title='.$dataTitle.'&valueMax='.$dataValueMax;
+                        $topic_eval_cell->text = html_writer::img($elementSrc, '',
+                                ['width' => $width * 0.60, 'height' => $height * 0.60, 'border' => 0]);
+                    } else {
+                        $topic_eval_cell->text = '';
+                    }
+                } else {
+                    $topic_eval_cell->text = html_writer::empty_tag('canvas', [
+                            "id" => "chart".$topic,
+                            "height" => "50",
+                            "width" => "50",
+                            "data-title" => $rowcontent->topic_evalniveau,
 
-					"data-value" => $rowcontent->topic_eval,
-					"data-valuemax" => $max_scheme,
-				]);
+                            "data-value" => $rowcontent->topic_eval,
+                            "data-valuemax" => $max_scheme,
+                    ]);
+                }
 
 				$topic_eval_cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
 				$topic_eval_cell->attributes['exa-timestamp'] = $rowcontent->timestamp;
+                $topic_eval_cell->attributes['align'] = 'center';
 
 				$row->cells[] = $topic_eval_cell;
 			}
@@ -4062,6 +4184,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$subject_eval_cell->attributes['class'] = 'header';
 			$subject_eval_cell->attributes['exa-timestamp'] = $table_content->timestamp;
 			$row->cells[] = $subject_eval_cell;
+            $row->attributes['class'] = 'pdf-highlight';
 
 			$rows[] = $row;
 		}
@@ -4093,6 +4216,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell = new html_table_cell();
 		$cell->text = $stat_title;
 		$cell->colspan = count($value_titles);
+		$cell->attributes['align'] = 'center';
 		$row->cells[] = $cell;
 		$rows[] = $row;
 
@@ -4108,6 +4232,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell->text = $value;
 				$cell->attributes['class'] = 'cell-th';
 				$cell->attributes['title'] = $value_titles_long[$key];
+                $cell->attributes['align'] = 'center';
 				$row->cells[] = $cell;
 			}
 		}
@@ -4121,11 +4246,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell = new html_table_cell();
 			$cell->text = (block_exacomp_use_eval_niveau()) ? @$evaluation_niveaus[$niveau] : '';
 			$cell->attributes['class'] = 'cell-th';
+            $cell->attributes['align'] = 'center';
 			$row->cells[] = $cell;
 
 			foreach ($value_titles as $key => $tmp) {
 				$cell = new html_table_cell();
 				$cell->text = (int)@$data[$key];
+                $cell->attributes['align'] = 'center';
 				$row->cells[] = $cell;
 			}
 			$rows[] = $row;
@@ -4150,6 +4277,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//first table for descriptor evaluation
 		$table = new html_table();
 		$table->attributes['class'] = ' flexible boxaligncenter comparisontable';
+		$table->attributes['width'] = '100%';
 		$rows = array();
 
 		//header
@@ -4157,16 +4285,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		//first subject title cell
 		$cell = new html_table_cell();
-		$cell->text = $subject->title;//TODO not hardcoded
-		$cell->colspan = 2; //TODO not hardcoded
+		$cell->text = $subject->title; //TODO not hardcoded
+        $cell->attributes['class'] = 'col-title';
+        $cell->attributes['width'] = '45%';
+        if ($this->is_print_mode()) {
+            $celltempNumb = new html_table_cell();
+            $celltempNumb->attributes['class'] = 'col-numbering';
+            $row->cells[] = $celltempNumb;
+        } else {
+            $cell->colspan = 2; //TODO not hardcoded
+        }
+        //$cell->header = true;
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
 		$cell->text = block_exacomp_get_string('teacher_assessment');
+        $cell->attributes['class'] = 'col-eval';
+        $cell->attributes['align'] = 'center';
+        //$cell->header = true;
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
 		$cell->text = block_exacomp_get_string('student_assessment');
+        $cell->attributes['class'] = 'col-eval';
+        $cell->attributes['align'] = 'center';
+        //$cell->header = true;
 		$row->cells[] = $cell;
 
 		$rows[] = $row;
@@ -4179,9 +4322,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->attributes['class'] = 'comparison_topic';
 			$cell = new html_table_cell();
 			$cell->text = $topic->numbering;
+			$cell->attributes['class'] = 'col-numbering';
 			$row->cells[] = $cell;
 
 			$cell = new html_table_cell();
+            $cell->attributes['class'] = 'col-title';
 			$cell->text = $topic->title
 				.$this->topic_3dchart_icon($topic->id, $student->id, $courseid);
 			$row->cells[] = $cell;
@@ -4213,12 +4358,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 $cell->text .= $addtext;
 				$cell->attributes['exa-timestamp'] = $teacherEval->timestamp;
+				$cell->attributes['class'] = 'col-eval';
+				$cell->attributes['align'] = 'center';
 			}
 
 			$row->cells[] = $cell;
 
 			$cell = new html_table_cell();
 			$cell->text = $studentEval ? $studentEval->get_value_title() : '';
+            $cell->attributes['class'] = 'col-eval';
+            $cell->attributes['align'] = 'center';
 			$row->cells[] = $cell;
 			$rows[] = $row;
 
@@ -4230,10 +4379,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->attributes['class'] = 'comparison_desc';
 				$cell = new html_table_cell();
 				$cell->text = $descriptor->numbering;
+                $cell->attributes['class'] = 'col-numbering';
 				$row->cells[] = $cell;
 
 				$cell = new html_table_cell();
 				$cell->text = $descriptor->title;
+                $cell->attributes['class'] = 'col-title';
 				$row->cells[] = $cell;
 
 				$cell = new html_table_cell();
@@ -4263,11 +4414,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     }
                     $cell->text .= $addtext;
 					$cell->attributes['exa-timestamp'] = $teacherEval->timestamp;
+                    $cell->attributes['class'] = 'col-eval';
+                    $cell->attributes['align'] = 'center';
 				}
 				$row->cells[] = $cell;
 
 				$cell = new html_table_cell();
 				$cell->text = $studentEval ? $studentEval->get_value_title() : '';
+                $cell->attributes['class'] = 'col-eval';
+                $cell->attributes['align'] = 'center';
 				$row->cells[] = $cell;
 				$rows[] = $row;
 
@@ -4294,9 +4449,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$row = new html_table_row();
 					$row->attributes['class'] = 'comparison_mat comparmat_mathead';
 					$cell = new html_table_cell();
+                    $cell->attributes['class'] = 'col-numbering';
 					$row->cells[] = $cell;
 					$cell = new html_table_cell();
 					$cell->text = $title;
+                    $cell->attributes['class'] = 'col-title';
 					$cell->colspan = 3;
 					$row->cells[] = $cell;
 					$rows[] = $row;
@@ -4308,11 +4465,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$row = new html_table_row();
 						$row->attributes['class'] = 'comparison_mat';
 						$cell = new html_table_cell();
+                        $cell->attributes['class'] = 'col-numbering';
 						$cell->text = '';
 						$row->cells[] = $cell;
 
 						$cell = new html_table_cell();
 						$cell->text = $example->title;
+                        $cell->attributes['class'] = 'col-title';
 						$row->cells[] = $cell;
 
 						$cell = new html_table_cell();
@@ -4341,11 +4500,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                             $cell->text .= $addtext;
 							$cell->attributes['exa-timestamp'] = $teacherEval->timestamp;
+                            $cell->attributes['class'] = 'col-eval';
+                            $cell->attributes['align'] = 'center';
 						}
 						$row->cells[] = $cell;
 
 						$cell = new html_table_cell();
 						$cell->text = $studentEval ? $studentEval->get_value_title() : '';
+                        $cell->attributes['class'] = 'col-eval';
+                        $cell->attributes['align'] = 'center';
 						$row->cells[] = $cell;
 						$rows[] = $row;
 					}
@@ -4360,7 +4523,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function timeline_graph($course, $student) {
+	public function timeline_graph($course, $student, $returnData = false) {
 		$timeline_data = block_exacomp_get_gained_competences($course, $student);
 
 		list ($gained_competencies_teacher, $gained_competencies_student, $total_competencies) = $timeline_data;
@@ -4452,6 +4615,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$y_values_student[] = count($bracket->gained_competencies_student);
 			$y_values_total[] = $total_competencies;
 		}
+
+		// Return data for graph. Use for another graph generator
+		if ($returnData) {
+            $result = array(
+                    'teacher' => $y_values_teacher,
+                    'student' => $y_values_student,
+                    'total' => $y_values_total,
+                    'labels' => $y_labels
+            );
+            return $result;
+        }
 
 		$canvas_id = "canvas_timeline".str_replace('.', '', microtime(true));
 		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => $canvas_id)), 'timeline', array("style" => ""));

@@ -38,6 +38,44 @@ $studentid = block_exacomp_get_studentid() ;
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_profile_profile';
 
+$output = block_exacomp_get_renderer();
+
+if (optional_param('print', false, PARAM_BOOL)) {
+    $output->print = true;
+    if (!$isTeacher) {
+        $studentid = $USER->id;
+        $html_tables[] = $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
+    } else {
+        $html_content = '';
+        $html_header = '';
+        $student = $DB->get_record('user',array('id' => $studentid));
+        $possible_courses = block_exacomp_get_exacomp_courses($student);
+        block_exacomp_init_profile($possible_courses, $student->id);
+        $html_content .= $output->competence_profile_metadata($student);
+        //$html_header .= $output->competence_profile_metadata($student); // TODO: ??
+        $usebadges = get_config('exacomp', 'usebadges');
+        $profile_settings = block_exacomp_get_profile_settings($studentid);
+        $items = array();
+        $user_courses = array();
+        foreach($possible_courses as $course){
+            if(isset($profile_settings->exacomp[$course->id])){
+                $user_courses[$course->id] = $course;
+            }
+        }
+        if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
+            $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
+        foreach($user_courses as $course) {
+            // if selected
+            if (isset($profile_settings->exacomp[$course->id]))
+                $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
+        }
+        $html_tables[] = $html_content;
+
+    }
+    block_exacomp\printer::competenceprofile_overview($studentid, $html_header, $html_tables);
+}
+
+
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_profile.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
@@ -52,7 +90,6 @@ $PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$output = block_exacomp_get_renderer();
 echo $output->header_v2($page_identifier);
 
 /* CONTENT REGION */
@@ -97,12 +134,15 @@ if (!$isTeacher) {
 }
 $student = $DB->get_record('user',array('id' => $studentid));
 
-echo html_writer::div(html_writer::link('#',
-	html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')),
-	[
-		'title' => block_exacomp_get_string('print'),
-		'class'=>'print'
-	]), 'button-box');
+$printUrl = $PAGE->url->out(false, array('studentid' => $studentid, 'print' => 1));
+echo html_writer::div(html_writer::link($printUrl,
+        html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt' => 'print')),
+        [
+                //'target' => '_blank',
+                'title' => block_exacomp_get_string('print'),
+                'class' => 'print',
+                //'onclick' => 'window.open(location.href+\'&print=1\'); return false;',
+        ]), 'button-box');
 
 $possible_courses = block_exacomp_get_exacomp_courses($student);
 
@@ -127,8 +167,9 @@ foreach($possible_courses as $course){
 	}
 }
 
-if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
-	echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
+if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1) {
+    echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
+}
 
 foreach($user_courses as $course) {
 	//if selected

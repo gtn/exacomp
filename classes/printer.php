@@ -168,6 +168,101 @@ class printer {
 		
 		exit;
 	}
+	static function competenceprofile_overview($studentid, $html_header, $html_tables) {
+	    //print_r($html_tables); exit;
+	    ob_start();
+
+	    $pdf = new printer_TCPDF('P');
+
+		$pdf->setStyle('
+			* {
+				font-size: 9pt;
+			}
+			div {
+				padding: 0;
+				margin: 0;
+			}
+			h3.competence_profile_sectiontitle {
+			    font-size: 16pt;
+			}
+			h4.competence_profile_coursetitle {
+			    font-size: 14pt;
+			}
+			table td {
+				border: 0.2pt solid #555;
+				margin: 40px;
+			}
+			table {
+				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+			}
+			table.pdf-userdata, table.pdf-userdata td {
+			    border: none;
+			}			
+			table.statistictables, table.statistictables td {
+			    border: none;
+			}
+			table.statistictable {
+                width: 90%;			
+			}
+			table.statistictable td.cell-th {
+                background-color: #e6e6e6;
+			}
+			table.comparisontable {
+			    width: 100%;
+			}
+			table.comparisontable tr.comparison_topic {
+			    background-color: #e6e6e6;
+			}  			
+			table.comparisontable td.col-numbering {
+			    width: 5%;
+			}            			
+			table.competence_profile_timelinegraph, table.competence_profile_timelinegraph td {
+			    border: none;			 
+			}			
+									
+									
+			.exabis_comp_info {
+				background-color: #efefef;
+			}				
+			tr.pdf-highlight {
+				background-color: #e6e6e6;
+			}
+				');
+
+		$pdf->setHeaderMargin(5);
+		$pdf->SetTopMargin(10);
+
+		foreach ($html_tables as $html_table) {
+			// convert padding to spaces, because tcpdf doesn't support padding
+			/*
+			$html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
+				return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
+			}, $html_table);
+			*/
+			// echo $html_table; exit;
+
+			// ersten beide zeilen in den header geben
+			//if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
+			//	die('error #gg98daa');
+			//}
+
+            $html_table = preg_replace('/<a.*class=([^=]*)([^(a-z|A-Z|0-9|\-|_)])compprofpie("|([^(a-z|A-Z|0-9|\-|_)]).*").*<\/a>/i', '', $html_table);
+
+			//$html_table = str_replace($matches[1], '', $html_table);
+			$html_table = str_replace('<tr ', '<tr nobr="true" ', $html_table);
+            $html_table = htmlspecialchars_decode($html_table);
+
+			//$pdf->setHeaderHTML($html_header.$matches[0].'</table>');
+
+			$pdf->AddPage();
+			$pdf->writeHTML($html_table);
+		}
+
+		$pdf->Output();
+
+		exit;
+	}
+
 	static function crossubj_overview($cross_subject, $subjects, $students, $html_header, $html_tables) {
 	    //print_r($html_tables);exit;
 	    ob_start();

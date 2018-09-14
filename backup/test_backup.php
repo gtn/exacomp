@@ -24,11 +24,11 @@ require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
 
 function moodle_backup($activityid, $user_doing_the_backup){
-    
+
     if (!is_siteadmin()) {
         die('No Admin!');
     }
-    
+
     global $CFG;
     $CFG->keeptempdirectoriesonbackup = true;
     

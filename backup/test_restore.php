@@ -23,7 +23,7 @@ require_once ($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 function moodle_restore($data, $courseid, $userdoingrestore)
 {
     if (! is_siteadmin()) {
-        die('No Admin!');
+        //die('No Admin!');
     }
 
     $transaction = $DB->start_delegated_transaction();
