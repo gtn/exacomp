@@ -5691,7 +5691,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             </div>
             <?php
                 // Subject can only be chosen if the grading scheme configured is the same as topic.
-                if (block_exacomp_get_assessment_subject_scheme() == block_exacomp_get_assessment_topic_scheme()) {
+                if (block_exacomp_get_assessment_subject_scheme() == block_exacomp_get_assessment_comp_scheme()) {
                     $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'report_subject');
                 }
                 // Topic can only be chosen if the grading scheme configured is the same as competence.
