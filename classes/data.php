@@ -1338,21 +1338,21 @@ class data_importer extends data {
 
 		$source_local_id = self::$import_source_local_id;
 		if ($simulate) {
-            $source_local_id = required_param('id', PARAM_INT);
-            $schedulerTaskData = g::$DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $source_local_id));
-            if (!$schedulerTaskData) {
-                throw new import_exception('we have no this task!');
-            }
-            //self::$import_source_local_id = $source_local_id;  // TODO: check!
-        }
-        // or for scheduler task
-        if ($schedulerId > 0) {
-            $schedulerTaskData = g::$DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $schedulerId));
+            /*$schedulerTaskData = g::$DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $schedulerId));
             $source_data = g::$DB->get_record(BLOCK_EXACOMP_DB_DATASOURCES, array('source' => $schedulerTaskData->source));
             if (!$source_data && self::$import_source_global_id == self::get_my_source() ) {
                 $source_local_id = 0;
             } else {
                 $source_local_id = $source_data->id;
+            }*/
+            //self::$import_source_local_id = $source_local_id;  // TODO: check!
+        }
+        // or for scheduler task
+        if ($schedulerId > 0) {
+            $source_local_id = $schedulerId;
+            $schedulerTaskData = g::$DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $schedulerId));
+            if (!$schedulerTaskData) {
+                throw new import_exception('we have no this task!');
             }
             //$allsources = self::get_all_used_sources();
             //$sour
@@ -1396,13 +1396,18 @@ class data_importer extends data {
         }
 
         // select grids for importing
-        if(isset($xml->edulevels)) {
-            if ($newSelecting && count($newSelecting) > 0) {
+        if (isset($xml->edulevels)) {
+            $allGridSelected = optional_param('selectedGridAll', null, PARAM_INT);
+            if ($allGridSelected !== null) {
+                self::update_selectedgridsall_for_source($source_local_id, $allGridSelected, ($simulate || $schedulerId > 0 ? true : false));
+            }
+            if (!$allGridSelected && $newSelecting && count($newSelecting) > 0) {
+                // update selected grids only if not selected 'all subjects' checkbox
                 self::update_selectedgrids_for_source($source_local_id, $newSelecting, ($simulate || $schedulerId > 0 ? true : false));
             }
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
 		    $grids = array();
-		    if ((!$newSelecting && $schedulerId == 0 ) || ($simulate && !$newSelecting)) {
+		    if ((!$newSelecting && $allGridSelected === null && $schedulerId == 0 ) || ($simulate && !$newSelecting && $allGridSelected === null)) {
                 foreach ($xml->edulevels->edulevel as $edulevel) {
                     foreach ($edulevel->schooltypes->schooltype as $schooltype) {
                         foreach ($schooltype->subjects->subject as $subject) {
@@ -1422,7 +1427,8 @@ class data_importer extends data {
                         }
                     }
                 }
-                return array('result' => 'selectGrids', 'list' => $grids, 'sourceId' => $source_local_id);
+                $resultByGrids = 'selectGrids';
+                return array('result' => $resultByGrids, 'list' => $grids, 'sourceId' => $source_local_id);
             }
         }
 
@@ -1493,7 +1499,7 @@ class data_importer extends data {
 
 		if(isset($xml->edulevels)) {
 			foreach($xml->edulevels->edulevel as $edulevel) {
-				self::insert_edulevel($edulevel, $schedulerId);
+				self::insert_edulevel($edulevel, $source_local_id, $schedulerId);
 			}
 		}
 		
@@ -1543,13 +1549,23 @@ class data_importer extends data {
 
 	private static function get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId = 0) {
 	    $result = array();
-        $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
-        $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
-        $selectedGrids = array_keys($selectedGrids);
-        array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
-        $sujectsIds = implode(" or ", $selectedGrids);
+	    if (self::get_selectedallgrids_for_source($source_local_id, $schedulerId)) {
+	        // all subjects
+            $sujectsIds = '*';
+        } else {
+            $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
+            $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
+            $selectedGrids = array_keys($selectedGrids);
+            array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+            $sujectsIds = implode(" or ", $selectedGrids);
+        }
         if ($sujectsIds != '') {
-            $query = "//subjects/subject[".$sujectsIds."]/topics/topic/descriptors/descriptorid";
+            if ($sujectsIds == '*') {
+                // get from any subject
+                $query = "//subjects/subject/topics/topic/descriptors/descriptorid";
+            } else {
+                $query = "//subjects/subject[".$sujectsIds."]/topics/topic/descriptors/descriptorid";
+            }
             $tempXML = new \DOMDocument();
             $tempXML->loadXML($xml->asXML());
             $xpath = new \DOMXpath($tempXML);
@@ -1696,6 +1712,14 @@ class data_importer extends data {
         return $result;
     }
 
+    private static function update_selectedgridsall_for_source($sourceId = null, $selectedAll = 0, $forSchedulerTask = false) {
+        if ($forSchedulerTask) {
+            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_IMPORTTASKS."} SET all_grids=? WHERE id=?", array($selectedAll, $sourceId));
+        } else {
+            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET all_grids=? WHERE id=?", array($selectedAll, $sourceId));
+        }
+    }
+
     private static function update_selectedgrids_for_source($sourceId = null, $newSelected = array(), $forSchedulerTask = false) {
 	    $currentSelected = self::get_selectedgrids_for_source($sourceId, $forSchedulerTask);
 	    if ($currentSelected) {
@@ -1721,6 +1745,17 @@ class data_importer extends data {
         if (!is_array($result)) {
             $result = false;
         }
+        return $result;
+    }
+
+    public static function get_selectedallgrids_for_source($sourceId = null, $forSchedulerTask = false) {
+        if ($forSchedulerTask) {
+            $where = array('id' => $sourceId);
+            $result = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "all_grids", $where);
+        } else {
+            $where = array('id' => $sourceId);
+            $result = g::$DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, "all_grids", $where);
+        };
         return $result;
     }
 	
@@ -2055,10 +2090,16 @@ class data_importer extends data {
 		return $subject;
 	}
 
-	private static function insert_schooltype($xmlItem, $schedulerId = 0) {
+	private static function insert_schooltype($xmlItem, $source_local_id, $schedulerId = 0) {
 		$schooltype = self::parse_xml_item($xmlItem);
-        $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id, $schedulerId);
-        $subjectsExist = self::checkSelectedSubjectIdsInPath($xmlItem, $schedulerId);
+        if (self::get_selectedallgrids_for_source(self::$import_source_local_id, $schedulerId)) {
+            $subjectsExist = true;
+            $allSubjects = true;
+        } else {
+            $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id, $schedulerId);
+            $subjectsExist = self::checkSelectedSubjectIdsInPath($xmlItem, $source_local_id, $schedulerId);
+            $allSubjects = false;
+        }
         if (!$subjectsExist) {
             return $schooltype;
         }
@@ -2068,7 +2109,7 @@ class data_importer extends data {
 		foreach($xmlItem->subjects->subject as $subject) {
 			$subject->stid = $schooltype->id;
             $subjectId = intval($subject->attributes()->id);
-			if ($selectedGrids && array_key_exists($subjectId, $selectedGrids) && $selectedGrids[$subjectId] == 1) {
+			if ($allSubjects || ($selectedGrids && array_key_exists($subjectId, $selectedGrids) && $selectedGrids[$subjectId] == 1)) {
                 self::insert_subject($subject);
             }
 		}
@@ -2078,22 +2119,31 @@ class data_importer extends data {
 
     /**
      * @param \block_exacomp\SimpleXMLElement $xml
+     * @param integer $source_local_id
      * @param integer $schedulerId
      * @return bool
      */
-	private static function checkSelectedSubjectIdsInPath($xml, $schedulerId = 0) {
-	    //echo self::$import_source_local_id.'=='.$schedulerId;
-	    if ($schedulerId > 0) {
-            $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id, $schedulerId);
+	private static function checkSelectedSubjectIdsInPath($xml, $source_local_id, $schedulerId = 0) {
+        if (self::get_selectedallgrids_for_source($source_local_id, $schedulerId)) {
+            // all subjects
+            $sujectsIds = '*';
         } else {
-            $selectedGrids = self::get_selectedgrids_for_source(self::$import_source_local_id, false);
+            if ($schedulerId > 0) {
+                $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
+            } else {
+                $selectedGrids = self::get_selectedgrids_for_source($source_local_id, false);
+            }
+            $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
+            $selectedGrids = array_keys($selectedGrids);
+            array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+            $sujectsIds = implode(" or ", $selectedGrids);
         }
-        $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
-        $selectedGrids = array_keys($selectedGrids);
-        array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
-        $sujectsIds = implode(" or ", $selectedGrids);
         if ($sujectsIds != '') {
-            $query = "//subjects/subject[".$sujectsIds."]";
+            if ($schedulerId == '*') {
+                $query = "//subjects/subject";
+            } else {
+                $query = "//subjects/subject[".$sujectsIds."]";
+            }
             // does not work correctly!! why?
             //$subjectsExist = $xml->xpath($query);
             $tempXML = new \DOMDocument();
@@ -2109,12 +2159,13 @@ class data_importer extends data {
 
     /**
      * @param \block_exacomp\SimpleXMLElement $xmlItem
+     * @param integer source_local_id
      * @param integer schedulerId
      * @return array|mixed|object
      */
-	private static function insert_edulevel($xmlItem, $schedulerId = 0) {
+	private static function insert_edulevel($xmlItem, $source_local_id, $schedulerId = 0) {
 		$edulevel = self::parse_xml_item($xmlItem);
-        $subjectsExist = self::checkSelectedSubjectIdsInPath($xmlItem, $schedulerId);
+        $subjectsExist = self::checkSelectedSubjectIdsInPath($xmlItem, $source_local_id, $schedulerId);
         if (!$subjectsExist) {
             return $edulevel;
         }

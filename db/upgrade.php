@@ -3056,7 +3056,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018072602, 'exacomp');
     }
-	
+
+	if ($oldversion < 2018091700) {
+        $table = new xmldb_table('block_exacompdatasources');
+        $field = new xmldb_field('all_grids');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, null, null, 1, 'selected_grids');
+        $dbman->add_field($table, $field);
+        $table = new xmldb_table('block_exacompimporttasks');
+        $field = new xmldb_field('all_grids');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, null, null, 1, 'selected_grids');
+        $dbman->add_field($table, $field);
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2018091700, 'exacomp');
+    }
+
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

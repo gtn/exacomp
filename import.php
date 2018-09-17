@@ -148,11 +148,21 @@ class generalxml_upload_form extends \moodleform {
                 case 'selectGrids':
                     require_once(__DIR__.'/classes/import_selectgrid_checkbox.php');
                     MoodleQuickForm::registerElementType('import_selectgrid_checkbox', $CFG->dirroot.'/blocks/exacomp/classes/import_selectgrid_checkbox.php', 'block_exacomp_import_extraconfigcheckbox');
+                    $currentAllGrids = block_exacomp\data_importer::get_selectedallgrids_for_source($data['sourceId'], $forSchedulerTask);
                     // if used preselected values - message
                     $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId'], $forSchedulerTask);
-                    if ($currentSelected) {
+                    if ($currentSelected || $currentAllGrids == 1) {
                         $mform->addElement('html', '<div class="alert alert-info small">'.block_exacomp_get_string('import_used_preselected_from_previous').'</div>');
                     }
+                    // import all subjects
+                    $params = array('class' => 'import-all-subjects');
+                    if ($currentAllGrids == 1) {
+                        $params['checked'] = 'checked';
+                    }
+                    $mform->addElement('html', '<strong>');
+                    $mform->addElement('import_selectgrid_checkbox', 'selectedGridAll', '', block_exacomp_get_string('importtask_all_subjects'), $params);
+                    $mform->addElement('html', '</strong>');
+                    $mform->addElement('html', '<div id="import-subjects-list">');
                     // Add select/deselect buttons
                     $buttons = '<div><small>'.
                             '<a class="exacomp_import_select_sublist" data-targetList="-1" data-selected="1">'.block_exacomp_get_string('select_all').'</a>&nbsp;/&nbsp;'.
@@ -187,6 +197,7 @@ class generalxml_upload_form extends \moodleform {
                         $mform->addElement('html', '</li>');
                     }
                     $mform->addElement('html', '</ul>');
+                    $mform->addElement('html', '</div');
                     break;
             }
 
@@ -481,12 +492,13 @@ if($isAdmin || block_exacomp_check_customupload()) {
                                 }
                                 echo $OUTPUT->box($html, 'alert alert-warning');
                                 $importSuccess['forSchedulerTask'] = true; // marker for simulating
+                                //$importSuccess['allGrids'] = $taskdata->all_grids;
                                 $mform->setConfirmationData($importSuccess);
                                 $mform->display();
                             } elseif ($importSuccess) {
                                 $taskslist();
                             } else {
-                                print_error('somthing wrong!');
+                                print_error('something wrong!');
                             }
                         }
                         break;

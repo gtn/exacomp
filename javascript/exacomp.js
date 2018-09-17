@@ -846,20 +846,46 @@
 		}
 	});
 
-	// import: list of grids: select/deselect
+    // import: list of grids: select/deselect
     $(document).on('click', '.exacomp_import_select_sublist', function(e) {
-    	e.preventDefault();
-    	var index = $(this).attr('data-targetList');
-    	var result = $(this).attr('data-selected');
-    	if (index == -1) {
+        e.preventDefault();
+        var index = $(this).attr('data-targetList');
+        var result = $(this).attr('data-selected');
+        if (index == -1) {
             var checkboxes = $('ul.exacomp_import_grids_list').find('input:checkbox');
-		} else {
+        } else {
             var checkboxes = $('ul.exacomp_import_grids_list[data-pathIndex=' + index + ']').find('input:checkbox');
         }
-    	if (result == 1)
-    		checkboxes.prop('checked', true);
-    	else
+        if (result == 1)
+            checkboxes.prop('checked', true);
+        else
             checkboxes.prop('checked', false);
+    });
+
+	// import: click on 'All subjects'
+	function importAllSubjectsClicked(element) {
+        if ($(element).is(':checked')) {
+        	$('div#import-subjects-list .fitem_fcheckbox').each(function() {
+                $(this).find('input').attr('disabled', true);
+                $('#import-subjects-list h4').addClass('text-muted');
+                $('#import-subjects-list a.exacomp_import_select_sublist').closest('small').hide();
+                $(this).find('label').addClass('text-muted');
+            });
+		} else {
+            $('div#import-subjects-list .fitem_fcheckbox').each(function() {
+                $(this).find('input').attr('disabled', false);
+                $('#import-subjects-list h4').removeClass('text-muted');
+                $('#import-subjects-list a.exacomp_import_select_sublist').closest('small').show();
+                $(this).find('label').removeClass('text-muted');
+            });
+		}
+	};
+
+    $(document).on('change', 'input.import-all-subjects', function(e) {
+        importAllSubjectsClicked($(this));
 	});
+    $(function () {
+        importAllSubjectsClicked($('input.import-all-subjects'));
+    });
 
 }();

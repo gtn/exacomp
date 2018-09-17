@@ -731,6 +731,10 @@ return [
         'Disabled',
         'Disabled'
     ],
+    'importtask_all_subjects' => [
+        'Alle Bildungsstandard',
+        'All Subjects'
+    ],
 
 
 	// === Configuration ===

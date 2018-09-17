@@ -216,6 +216,7 @@ $string['add_new_importtask'] = 'Add new import task';
 $string['importtask_title'] = 'Title';
 $string['importtask_link'] = 'Link to source';
 $string['importtask_disabled'] = 'Disabled';
+$string['importtask_all_subjects'] = 'Alle Bildungsstandard';
 
 
 // === Configuration ===
