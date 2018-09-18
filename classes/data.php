@@ -1519,95 +1519,14 @@ class data_importer extends data {
 		}
 		
 		
-		$zip->extractTo($CFG->backuptempdir);
+
+		extract_zip_subdir($file, "activities", $CFG->tempdir .'/backup', $CFG->tempdir .'/backup');
+		$ret=true;
+		for($i=1;$ret;$i++){
+		    $ret = rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
+		}
 		
-		
-		// 		$file = tempnam($CFG->backuptempdir, "activities");
-		// 		file_put_contents($file, $zip);
-		
-		// 		echo $zip->getFromName('activity1');
-		
-		// 		die($zip->getFromName('activity1'));
-		
-		// 		recurse_copy($zip, $CFG->backuptempdir);
-		
-		// 		function recurse_copy($src,$dst) {
-		// 		    $dir = opendir($src);
-		// 		    @mkdir($dst);
-		// 		    while(false !== ( $file = readdir($dir)) ) {
-		// 		        if (( $file != '.' ) && ( $file != '..' )) {
-		// 		            if ( is_dir($src . '/' . $file) ) {
-		// 		                recurse_copy($src . '/' . $file,$dst . '/' . $file);
-		// 		            }
-		// 		            else {
-		// 		                copy($src . '/' . $file,$dst . '/' . $file);
-		// 		            }
-		// 		        }
-		// 		    }
-		// 		    closedir($dir);
-		// 		}
-		
-		// 		moodle_restore('asdf', 5/*$course_template*/, $USER->id);
-		
-		// 		$source = glob($zip);
-		
-		// 		$source = array_filter($zip, 'is_dir');
-		
-		// 		usort($source, function ($a, $b) {
-		// 		    return filemtime($a) < filemtime($b);
-		// 		});
-		// 		    if (! isset($source[0])) {
-		// 		        die('backup not found');
-		// 		    }
-		// 		die(basename($zip));
-		// 		    foreach ($source as $folder) {
-		
-		// 		        if(basename($folder) != 'files'){
-		// 		            moodle_restore($folder, 5/*$course_template*/, $USER->id);
-		// 		        }
-		// 		    }
-		
-		// 		$files = new \DirectoryIterator($zip);
-		
-		// 		foreach ($files as $name => $file) {
-		// 		    if ($file->isDir()) {
-		// 		        die($name);
-		// 		    }
-		// 		}
-		
-		
-		// 		if ($blub = $zip->getFromName('files/')) {
-		// 		    die('blabla');
-		// 		}
-		
-		// 		for($i=0; $zip->getNameIndex($i)!=false; $i++){
-		// 		    $a = $zip->getNameIndex($i);
-		// 		    $b = $zip->getFromName($a);
-		// 		    echo $a.'<br>';
-		
-		// 		   // echo $b;
-		// 		    $a = substr($a, 0, -1);
-		// 		    if(is_dir($b)){
-		// 		        die('blub');
-		// 		        $folder = $zip->getNameIndex($i);
-		// 	           if($folder != 'files'){
-		// 		          moodle_restore($folder, 5/*$course_template*/, $USER->id);
-		// 		      }
-		// 		    }
-		// 		}
-		// 		die;
-		
-		
-		// 		    for($i = 0; $i < $zip->numFiles; $i++)
-		    // 		    {
-		    // 		        $fp = $zip->getStream($zip->getNameIndex($i));
-		    // 		        if(!$fp) exit("failed\n");
-		    // 		        if(is_dir($fp)){
-		    // 		            die();
-		    // 		        }
-		    // 		        fclose($fp);
-		    // 		    }
-		
+		moodle_restore('activity1', 5, $USER->id);
 		
 		
 		
@@ -2372,6 +2291,84 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 		}
 	}
 	return $array_final;
+}
+
+// function to extract a folder of a zip-file to a destination path
+
+function extract_zip_subdir($zipfile, $subpath, $destination, $temp_cache, $traverse_first_subdir=true){
+    $zip = new ZipArchive;
+    echo "extracting $zipfile... ";
+    if(substr($temp_cache, -1) !== DIRECTORY_SEPARATOR) {
+        $temp_cache .= DIRECTORY_SEPARATOR;
+    }
+    $res = $zip->open($zipfile);
+    if ($res === TRUE) {
+        if ($traverse_first_subdir==true){
+            $zip_dir = $temp_cache . $zip->getNameIndex(0);
+        }
+        else {
+            $temp_cache = $temp_cache . basename($zipfile, ".zip");
+            $zip_dir = $temp_cache;
+        }
+        echo "  to $temp_cache... \n";
+        $zip->extractTo($temp_cache);
+        $zip->close();
+        echo "ok\n";
+        echo "moving subdir... ";
+        echo "\n $zip_dir / $subpath -- to -- >  $destination\n";
+        rename($zip_dir . DIRECTORY_SEPARATOR . $subpath, $destination);
+        echo "ok\n";
+        echo "cleaning extraction dir... ";
+        rrmdir($zip_dir);
+        echo "ok\n";
+    } else {
+        echo "failed\n";
+        die();
+    }
+}
+
+function rrmdir($source, $removeOnlyChildren = false)
+{
+    if(empty($source) || file_exists($source) === false)
+    {
+        return false;
+    }
+    
+    if(is_file($source) || is_link($source))
+    {
+        return unlink($source);
+    }
+    
+    $files = new \RecursiveIteratorIterator
+    (
+        new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
+        \RecursiveIteratorIterator::CHILD_FIRST
+        );
+    //fileInfo (SplFileInfo)
+    foreach($files as $fileinfo)
+    {
+        if($fileinfo->isDir())
+        {
+            if(rrmdir($fileinfo->getRealPath()) === false)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if(unlink($fileinfo->getRealPath()) === false)
+            {
+                return false;
+            }
+        }
+    }
+    
+    if($removeOnlyChildren === false)
+    {
+        return rmdir($source);
+    }
+    
+    return true;
 }
 
 class import_exception extends moodle_exception {
