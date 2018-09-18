@@ -90,6 +90,10 @@ class generalxml_upload_form extends \moodleform {
         if ($importtype != 'scheduler') {
             $mform->addElement('filepicker', 'file', block_exacomp_get_string("file"), null);
             $mform->addRule('file', null, 'required', null, 'client');
+            $mform->addElement('static', '','' ,'select template course' );
+            $mform->addElement('select', 'template', 'Vorlage', ['' => ''] + get_all_courses_key_value());
+            //$mform->addRule('template', null, 'required', null, 'client');
+            $mform->addElement('static', '','' ,'' );
         }
 
 	}
@@ -251,16 +255,19 @@ $importException = null;
 
 try {
     // check category renaming
-	if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
-		$importSuccess = block_exacomp\data_importer::do_import_string($data, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC);
-	} elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
-		$importSuccess = block_exacomp\data_importer::do_import_string($data, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT);
+    // check category renaming
+    $import_data = $mform->get_data();
+    $course_template = $import_data->template;
+    if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
+        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC);
+    } elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
+        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT);
 	} elseif ($isAdmin && ($importtype == 'demo')) {
 		//do demo import
 		
 		// TODO: catch exception
 		$file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
-		if ($importSuccess = block_exacomp\data_importer::do_import_url($file, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
+		if ($importSuccess = block_exacomp\data_importer::do_import_url($file, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
 			block_exacomp_settstamp();
 		}
 	}
@@ -479,7 +486,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
                         if ($taskid) {
                             $taskdata = $DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
                             $url = $taskdata->link;
-                            $importSuccess = block_exacomp\data_importer::do_import_url($url, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, true, $taskid);
+                            $importSuccess = block_exacomp\data_importer::do_import_url($url, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, true, $taskid);
                             if (is_array($importSuccess)) {
                                 // no errors for now, but the user needs to configure importing
                                 switch ($importSuccess['result']) {

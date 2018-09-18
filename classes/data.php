@@ -23,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/../lib/exabis_special_id_generator.php';
 require_once __DIR__.'/../backup/test_backup.php';
+require_once __DIR__.'/../backup/test_restore.php';
 
 use block_exacomp\globals as g;
 use Super\Fs;
@@ -1073,6 +1074,7 @@ class data_exporter extends data {
         // $zip->addFromString('test.txt', 'hello');
         // file_put_contents('test.txt', print_r($cm_mm->competencies, true));
         // file_put_contents('test.txt', print_r($cm_mm->ctopics, true));
+        $i = 1;
         foreach ($cm_mm->competencies as $comp) {
             foreach ($comp as $cmid) {
 
@@ -1095,15 +1097,15 @@ class data_exporter extends data {
                     if (! $file->isDir()) {
                         // Get real and relative path for current file
                         $filePath = $file->getRealPath();
-                        $relativePath = basename($source) . '/' . substr($filePath, strlen($source) + 1);
+                        $relativePath = 'activities/activity'.$i . '/' . substr($filePath, strlen($source) + 1);
 
                         // Add current file to archive
                         $zip->addFile($filePath, $relativePath);
                     }
                 }
             }
+            $i++;
         }
-
         foreach ($cm_mm->topics as $comp) {
             foreach ($comp as $cmid) {
                 moodle_backup($cmid, $USER->id);
@@ -1125,13 +1127,14 @@ class data_exporter extends data {
                     if (! $file->isDir()) {
                         // Get real and relative path for current file
                         $filePath = $file->getRealPath();
-                        $relativePath = basename($source) . '/' . substr($filePath, strlen($source) + 1);
+                        $relativePath = 'activities/activity'.$i . '/' . substr($filePath, strlen($source) + 1);
 
                         // Add current file to archive
                         $zip->addFile($filePath, $relativePath);
                     }
                 }
             }
+            $i++;
         }
     }             
 }
@@ -1190,7 +1193,7 @@ class data_importer extends data {
 	 */
 	private static $zip;
 	
-	public static function do_import_string($data = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_string($data = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT ) {
 		global $CFG;
 
 		if (!$data) {
@@ -1200,14 +1203,14 @@ class data_importer extends data {
 		$file = tempnam($CFG->tempdir, "zip");
 		file_put_contents($file, $data);
 		
-		$ret = self::do_import_file($file, $par_source);
+		$ret = self::do_import_file($file, $course_template,  $par_source);
 		
 		@unlink($file);
 		
 		return $ret;
 	}
 	
-	public static function do_import_url($url = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
+	public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
 		global $CFG;
 
 		if (!$url) {
@@ -1216,7 +1219,7 @@ class data_importer extends data {
 
 		if (file_exists($url)) {
 			// it's a file
-			return self::do_import_file($url, $par_source, $simulate, $schedulerId);
+		    return self::do_import_file($url, $course_template, $par_source, $simulate, $schedulerId);
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1226,7 +1229,7 @@ class data_importer extends data {
 		}
 
 		file_put_contents($file, $handle);
-		$ret = self::do_import_file($file, $par_source, $simulate, $schedulerId);
+		$ret = self::do_import_file($file, $course_template, $par_source, $simulate, $schedulerId);
 		
 		@unlink($file);
 		
@@ -1241,8 +1244,8 @@ class data_importer extends data {
      * @param bool $simulate need for simulate importing. We can get settings of importing without real importing
      * @param int $schedulerId if it is for scheduler task - id of task
 	 */
-	public static function do_import_file($file = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
-	    global $USER;
+	public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
+	    global $USER, $CFG;
 	    
 		if (!$file) {
 			throw new import_exception('filenotfound');
@@ -1516,18 +1519,106 @@ class data_importer extends data {
 		}
 		
 		
-// 		$source = array_filter($file, 'is_dir');
-// 		usort($source, function ($a, $b) {
-// 		    return filemtime($a) < filemtime($b);
-// 		});
-// 		    if (! isset($source[0])) {
-// 		        die('backup not found');
-// 		    }
-// 		    foreach ($source as $name => $folder) {
-// 		        if($name != 'files'){
-// 		            moodle_restore($folder, 4 /*$courseid*/, $USER->id);
-// 		        }
-// 		    }
+		$zip->extractTo($CFG->backuptempdir);
+		
+		
+		// 		$file = tempnam($CFG->backuptempdir, "activities");
+		// 		file_put_contents($file, $zip);
+		
+		// 		echo $zip->getFromName('activity1');
+		
+		// 		die($zip->getFromName('activity1'));
+		
+		// 		recurse_copy($zip, $CFG->backuptempdir);
+		
+		// 		function recurse_copy($src,$dst) {
+		// 		    $dir = opendir($src);
+		// 		    @mkdir($dst);
+		// 		    while(false !== ( $file = readdir($dir)) ) {
+		// 		        if (( $file != '.' ) && ( $file != '..' )) {
+		// 		            if ( is_dir($src . '/' . $file) ) {
+		// 		                recurse_copy($src . '/' . $file,$dst . '/' . $file);
+		// 		            }
+		// 		            else {
+		// 		                copy($src . '/' . $file,$dst . '/' . $file);
+		// 		            }
+		// 		        }
+		// 		    }
+		// 		    closedir($dir);
+		// 		}
+		
+		// 		moodle_restore('asdf', 5/*$course_template*/, $USER->id);
+		
+		// 		$source = glob($zip);
+		
+		// 		$source = array_filter($zip, 'is_dir');
+		
+		// 		usort($source, function ($a, $b) {
+		// 		    return filemtime($a) < filemtime($b);
+		// 		});
+		// 		    if (! isset($source[0])) {
+		// 		        die('backup not found');
+		// 		    }
+		// 		die(basename($zip));
+		// 		    foreach ($source as $folder) {
+		
+		// 		        if(basename($folder) != 'files'){
+		// 		            moodle_restore($folder, 5/*$course_template*/, $USER->id);
+		// 		        }
+		// 		    }
+		
+		// 		$files = new \DirectoryIterator($zip);
+		
+		// 		foreach ($files as $name => $file) {
+		// 		    if ($file->isDir()) {
+		// 		        die($name);
+		// 		    }
+		// 		}
+		
+		
+		// 		if ($blub = $zip->getFromName('files/')) {
+		// 		    die('blabla');
+		// 		}
+		
+		// 		for($i=0; $zip->getNameIndex($i)!=false; $i++){
+		// 		    $a = $zip->getNameIndex($i);
+		// 		    $b = $zip->getFromName($a);
+		// 		    echo $a.'<br>';
+		
+		// 		   // echo $b;
+		// 		    $a = substr($a, 0, -1);
+		// 		    if(is_dir($b)){
+		// 		        die('blub');
+		// 		        $folder = $zip->getNameIndex($i);
+		// 	           if($folder != 'files'){
+		// 		          moodle_restore($folder, 5/*$course_template*/, $USER->id);
+		// 		      }
+		// 		    }
+		// 		}
+		// 		die;
+		
+		
+		// 		    for($i = 0; $i < $zip->numFiles; $i++)
+		    // 		    {
+		    // 		        $fp = $zip->getStream($zip->getNameIndex($i));
+		    // 		        if(!$fp) exit("failed\n");
+		    // 		        if(is_dir($fp)){
+		    // 		            die();
+		    // 		        }
+		    // 		        fclose($fp);
+		    // 		    }
+		
+		
+		
+		
+		// self::kompetenzraster_clean_unused_data_from_source();
+		// TODO: was ist mit desccross?
+		
+		// deaktiviert, das geht so nicht mehr
+		// wenn von mehreren xmls mit gleichem source importiert wird, dann loescht der 2te import die descr vom 1ten
+		// besprechung 2015-10-06, logic zu delete source uebernehmen und kann dann geloescht werden.
+		// self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
+		
 		
 		
 		// self::kompetenzraster_clean_unused_data_from_source();

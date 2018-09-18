@@ -72,7 +72,7 @@ $trace->output("importing file '$file'...");
 \block_exacomp\data::prepare();
 
 try {
-	$importSuccess = block_exacomp\data_importer::do_import_file($file, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT);
+	$importSuccess = block_exacomp\data_importer::do_import_file($file, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT);
 
 	if ($importSuccess) {
 		\block_exacomp\event\import_completed::log(['objectid' => 0]);

@@ -26,7 +26,7 @@ function moodle_restore($data, $courseid, $userdoingrestore)
         die('No Admin!');
     }
 
-    $transaction = $DB->start_delegated_transaction();
+ //   $transaction = $DB->start_delegated_transaction();
     // Create new course.
     $folder = basename($data); // as found in: $CFG->dataroot . '/temp/backup/'
     $categoryid = 1; // e.g. 1 == Miscellaneous
@@ -34,12 +34,12 @@ function moodle_restore($data, $courseid, $userdoingrestore)
  // $courseid = restore_dbops::create_new_course('', '', $categoryid);
 
     // Restore backup into course.
-    $controller = new restore_controller($folder, $courseid, backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore, backup::TARGET_NEW_COURSE);
+    $controller = new restore_controller('activity1', $courseid, backup::INTERACTIVE_NO, backup::MODE_IMPORT, $userdoingrestore, backup::TARGET_CURRENT_ADDING);
     $controller->execute_precheck();
     $controller->execute_plan();
 
 //     var_dump($courseid);
 
     // Commit.
-    $transaction->allow_commit();
+ //   $transaction->allow_commit();
 }

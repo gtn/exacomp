@@ -41,7 +41,7 @@ class import extends \core\task\scheduled_task {
 		try {
 			\block_exacomp\data::prepare();
 
-			if (\block_exacomp\data_importer::do_import_url($xmlserverurl, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
+			if (\block_exacomp\data_importer::do_import_url($xmlserverurl, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
 				mtrace("import done");
 				block_exacomp_settstamp();
 			} else {

@@ -43,7 +43,7 @@ class import_additional extends \core\task\scheduled_task {
             try {
                 \block_exacomp\data::prepare();
 
-                if (\block_exacomp\data_importer::do_import_url($task->link, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, $task->id)) {
+                if (\block_exacomp\data_importer::do_import_url($task->link, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, $task->id)) {
                     mtrace("import done");
                     block_exacomp_settstamp();
                 } else {
