@@ -257,7 +257,11 @@ try {
     // check category renaming
     // check category renaming
     $import_data = $mform->get_data();
-    $course_template = $import_data->template;
+    if ($import_data) {
+        $course_template = $import_data->template;
+    } else {
+        $course_template = null;
+    }
     if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
         $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC);
     } elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {

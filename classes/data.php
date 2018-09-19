@@ -1228,7 +1228,7 @@ class data_importer extends data {
 		
 		$file = tempnam($CFG->tempdir, "zip");
 		file_put_contents($file, $data);
-		
+
 		$ret = self::do_import_file($file, $course_template,  $par_source);
 		
 		@unlink($file);
@@ -1303,7 +1303,7 @@ class data_importer extends data {
 		if ($ret === true) {
 			// a zip file
 			self::$zip = $zip;
-			
+
 			if (!$xml = $zip->getFromName('data.xml')) {
 				throw new import_exception('wrong zip file format');
 			}
@@ -1316,9 +1316,8 @@ class data_importer extends data {
 			if (!$xml) {
 				throw new import_exception('wrong zip data.xml content');
 			}
-		} else {
+		} elseif ($ret == ZipArchive::ER_NOZIP) {
 			// on error -> try as xml
-
 			/*
 			 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 			 * immediate useage
@@ -1545,16 +1544,17 @@ class data_importer extends data {
 		}
 		
 		
-
-		extract_zip_subdir($file, "activities", $CFG->tempdir .'/backup', $CFG->tempdir .'/backup');
-		$ret=true;
-		for($i=1;$ret;$i++){
-		    $ret = rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
+        if ($ret === true) { // only if it is zip
+            extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
+        }
+		$ret = true;
+		for ($i = 1; $ret; $i++){
+		    $ret = @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
 		}
-		
-		moodle_restore('activity1', 5, $USER->id);
-		
-		
+
+		// TODO: use correct course id ;-) temporary hidden
+		//moodle_restore('activity1', 5, $USER->id);
+
 		
 		// self::kompetenzraster_clean_unused_data_from_source();
 		// TODO: was ist mit desccross?
