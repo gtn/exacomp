@@ -39,7 +39,7 @@ $item = $id ? \block_exacomp\subject::get($id) : null;
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/subject.php', array('courseid' => $courseid));
 $PAGE->set_heading($item ? block_exacomp_trans(['de:Kompetenzraster bearbeiten', 'en:Modify competence grid']) : block_exacomp_trans(['de:Neuen Kompetenzraster anlegen', 'en:Create new competence grid']));
-if($embedded)
+if ($embedded)
 	$PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -55,9 +55,14 @@ if ($item) {
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
 	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
-	$item->delete();
-
-	echo $output->popup_close_and_reload();
+	//$item->delete();
+    block_exacomp_delete_tree($courseid, 'subject', $item->id);
+    $forward = optional_param('forward', '', PARAM_URL);
+    if ($forward) {
+        echo $output->popup_close_and_forward($forward);
+    } else {
+        echo $output->popup_close_and_reload();
+    }
 	exit;
 }
 
@@ -134,7 +139,7 @@ echo $output->header($context, $courseid, '', false);
 if ($item) {
 	// TODO: also check $item->can_delete
 	echo '<div style="position: absolute; top: 40px; right: 20px;">';
-	echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.block_exacomp_trans('de:Wirklich löschen?').'\');">';
+	echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.block_exacomp_get_string('really_delete').'\');">';
 	echo block_exacomp_get_string('delete');
 	echo '</a></div>';
 }

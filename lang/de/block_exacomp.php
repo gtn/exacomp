@@ -423,6 +423,10 @@ $string['statistic_type_descriptor'] = 'Wechsel zur Statistik der Teilkompetenze
 $string['statistic_type_example'] = 'Wechsel zur Statistik der Aufgaben';
 $string['reports'] = 'Berichte';
 $string['newer_grading_tooltip'] = 'Überprüfen Sie die Beurteilung, da weitere Teilkompetenzen geändert wurden.';
+$string['create_new_topic'] = 'Neuer Kompetenzbereich';
+$string['really_delete'] = 'Wirklich löschen?';
+$string['add_niveau'] = 'Lernfortschritt hinzufügen';
+$string['delete_niveau'] = 'Löschen hinzufügen';
 
 
 // === Competence Profile ===

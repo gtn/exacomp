@@ -1001,13 +1001,15 @@ class descriptor extends db_record {
 		$to_delete = $current = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, id');
 
 		// add new ones
-		foreach ($categories as $id) {
-			if (!isset($current[$id])) {
-				$DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id, 'catid' => $id));
-			} else {
-				unset($to_delete[$id]);
-			}
-		}
+        if (is_array($categories)) {
+            foreach ($categories as $id) {
+                if (!isset($current[$id])) {
+                    $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id, 'catid' => $id));
+                } else {
+                    unset($to_delete[$id]);
+                }
+            }
+        }
 
 		// delete old ones
 		$DB->delete_records_list(BLOCK_EXACOMP_DB_DESCCAT, 'id', $to_delete);

@@ -417,6 +417,10 @@ $string['statistic_type_descriptor'] = 'Change to descriptor statistics';
 $string['statistic_type_example'] = 'Change to example statistics';
 $string['reports'] = 'Type of report';
 $string['newer_grading_tooltip'] = 'Grading may not be up to date. </br> A childdescriptor has been graded.';
+$string['create_new_topic'] = 'New topic';
+$string['really_delete'] = 'Really to delete?';
+$string['add_niveau'] = 'Add niveau';
+$string['delete_niveau'] = 'Delete niveau';
 
 
 // === Competence Profile ===

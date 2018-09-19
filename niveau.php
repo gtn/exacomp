@@ -34,7 +34,7 @@ $output = block_exacomp_get_renderer();
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_trans(['de:Lernfortschritt hinzufügen', 'en:Add niveau']));
+$PAGE->set_heading(block_exacomp_get_string('add_niveau'));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -123,11 +123,18 @@ if ($item) {
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
 	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
-	$item->delete();
-
-	echo $output->popup_close_and_reload();
+    //$item->delete();
+    block_exacomp_delete_tree($courseid, 'niveau', $item->id);
+    $PAGE->set_heading(block_exacomp_get_string('delete_niveau'));
+    $forward = optional_param('forward', '', PARAM_URL);
+    if ($forward) {
+        echo $output->popup_close_and_forward($forward);
+    } else {
+        echo $output->popup_close_and_reload();
+    }
 	exit;
 }
+
 
 if (!$item) {
 	$topic = \block_exacomp\topic::get(required_param('topicid', PARAM_INT));

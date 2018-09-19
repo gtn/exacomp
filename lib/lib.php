@@ -707,6 +707,9 @@ function block_exacomp_get_topics_by_course($courseid, $showalldescriptors = fal
  * Gets all topics from a particular subject
  * @param int $courseid
  * @param int $subjectid
+ * @param bool $showalldescriptors
+ * @param bool $showonlyvisible
+ * @return array
  */
 function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false, $showonlyvisible = false) {
 	global $DB;
@@ -1422,16 +1425,17 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 
 	$sql = '
 		SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, d.requirement, d.knowledgecheck, d.benefit, d.sorting, d.parentid, n.title as cattitle
-		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '').'
-		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
-		JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0
-		LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
-		.($mind_visibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
-			.($showonlyvisible ? 'AND dvis.visible = 1 ' : '') : '')
-		.($showalldescriptors ? '' : '
-			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON d.id=ca.compid AND ca.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
-				AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
-		').'
+		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t 
+            JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '').'
+            JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
+            JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0
+            LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
+            .($mind_visibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
+                .($showonlyvisible ? 'AND dvis.visible = 1 ' : '') : '')
+            .($showalldescriptors ? '' : '
+                JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON d.id=ca.compid AND ca.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
+                    AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
+            ').'
 		ORDER BY d.sorting';
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
@@ -1473,11 +1477,31 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
 
 	return $DB->get_records_sql("
 		SELECT d.*, de.id AS descexampid
-		FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
+		FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d		
 		JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON de.descrid=d.id
 		WHERE de.exampid = ?
 	", [$exampleid]);
 }
+
+/**
+ * get descriptors associated with niveau
+ * @param int $courseid
+ * @param int $niveauid
+ * @param int $topicid filter by topic
+ * @return array
+ */
+function block_exacomp_get_descriptors_by_niveau($courseid, $niveauid, $topicid = 0) {
+	global $DB;
+	return $DB->get_records_sql('
+		SELECT d.id, d.*
+		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t 
+            JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ctmm ON ctmm.topicid = t.id AND ctmm.courseid = ? '.(($topicid > 0) ? ' AND t.id = '.intval($topicid).' ' : '').'
+            JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dtmm ON dtmm.topicid = t.id
+            JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON dtmm.descrid = d.id 
+		WHERE d.niveauid = ?
+	', [$courseid, $niveauid]);
+}
+
 
 /**
  * Gets an associative array that is used to display the whole hierarchie of subjects, topics and competencies within a course
@@ -1630,15 +1654,17 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	if (!$selectedSubject) {
 		// select the first subject
 		$selectedSubject = reset($courseSubjects);
-
-		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible ? (($isTeacher) ? false : true) : false));
-		// select first visible topic
-		foreach ($topics as $tmpTopic) {
-			if (block_exacomp_is_topic_visible($courseid, $tmpTopic, $studentid)) {
-				$selectedTopic = $tmpTopic;
-				break;
-			}
-		}
+        if ($selectedSubject) {
+            $topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false,
+                    ($showonlyvisible ? (($isTeacher) ? false : true) : false));
+            // select first visible topic
+            foreach ($topics as $tmpTopic) {
+                if (block_exacomp_is_topic_visible($courseid, $tmpTopic, $studentid)) {
+                    $selectedTopic = $tmpTopic;
+                    break;
+                }
+            }
+        }
 	}
 
 	// load all descriptors first (needed for teacher)
@@ -7935,7 +7961,12 @@ function block_exacomp_require_item_capability($cap, $item) {
 		if (!$item->shared && !block_exacomp_student_crosssubj($item->id, g::$USER->id)) {
 			throw new block_exacomp_permission_exception('No permission');
 		}
-	} else {
+	} elseif ($item instanceof \block_exacomp\niveau && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
+        if (!block_exacomp_is_teacher()) {
+            throw new block_exacomp_permission_exception('User is no teacher');
+        }
+        // TODO: other checking?
+    } else {
 		throw new \coding_exception("Capability $cap for item ".print_r($item, true)." not found");
 	}
 
@@ -8999,5 +9030,104 @@ function block_exacomp_get_date_of_birth($userid) {
          'compid' => $descriptorid,
          'role' => BLOCK_EXACOMP_ROLE_TEACHER,
      ]);
+ }
+
+/**
+ * @param int $courseid
+ * @param string $startlevel
+ * @param int $parentid
+ * @return bool
+ */
+ function block_exacomp_delete_tree($courseid = 0, $startlevel = '', $parentid = 0) {
+     global $DB;
+     if (!$courseid) {
+         $courseid = g::$COURSE->id;
+     }
+     $examplesToDelete = array();
+     $descriptorsToDelete = array();
+     $topicsToDelete = array();
+     $subjectsToDelete = array();
+     $niveausToDelete = array();
+     if (!$parentid) {
+         return false;
+     }
+     switch ($startlevel) {
+         case 'subject':
+             if ($startlevel == 'subject') {
+                 $subjectsToDelete[] = $parentid;
+             }
+             foreach ($subjectsToDelete as $subjectid) {
+                 $subjectObj = \block_exacomp\subject::get($subjectid);
+                 block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $subjectObj);
+                 $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM, array('subjectid' => $subjectid));
+                 $topicsToDelete = array_merge($topicsToDelete, array_keys(block_exacomp_get_topics_by_subject($courseid, $subjectid)));
+                 $subjectObj->delete();
+             }
+         case 'topic':
+             if ($startlevel == 'topic') {
+                 $topicsToDelete[] = $parentid;
+             }
+             foreach ($topicsToDelete as $topicid) {
+                 $topicObj = \block_exacomp\topic::get($topicid);
+                 block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $topicObj);
+                 $DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('topicid' => $topicid, 'courseid' => $courseid));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_DESCTOPICS, array('topicid' => $topicid));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array('topicid' => $topicid, 'courseid' => $courseid));
+                 $descriptorsToDelete = array_merge($descriptorsToDelete, block_exacomp_get_descriptors_by_topic($courseid, $topicid, true));
+                 $topicObj->delete();
+             }
+         case 'niveau':
+             // only for niveau
+             if ($startlevel == 'niveau') {
+                 $niveausToDelete [] = $parentid;
+                 foreach ($niveausToDelete as $niveauid) {
+                     $niveauObj = \block_exacomp\niveau::get($niveauid);
+                     block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $niveauObj);
+                     $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM, array('niveauid' => $niveauid));
+                     $descriptorsToDelete = array_merge($descriptorsToDelete, block_exacomp_get_descriptors_by_niveau($courseid, $niveauid));
+                     $niveauObj->delete();
+                 }
+             }
+         case 'descriptor':
+             if ($startlevel == 'descriptor') {
+                 $descriptorsToDelete[] = $parentid;
+             }
+             foreach ($descriptorsToDelete as $descriptor) {
+                 $descriptorObj = \block_exacomp\descriptor::get(intval($descriptor->id));
+                 block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $descriptorObj);
+                 $DB->delete_records(BLOCK_EXACOMP_DB_DESCBADGE, array('descid' => $descriptor->id));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $descriptor->id));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('descrid' => $descriptor->id));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid' => $descriptor->id));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('descrid' => $descriptor->id, 'courseid' => $courseid));
+                 $tempDescr = block_exacomp_get_examples_for_descriptor($descriptorObj);
+                 if ($tempDescr && $tempDescr->examples) {
+                     $examplesToDelete = array_merge($examplesToDelete, $tempDescr->examples);
+                 }
+                 $descriptorObj->delete();
+             }
+         case 'example':
+             if ($startlevel == 'example') {
+                 $examplesToDelete[] = $parentid;
+             }
+             if (count($examplesToDelete) > 0) {
+                 foreach ($examplesToDelete as $exampleid) {
+                     $exampleObj = \block_exacomp\example::get($exampleid);
+                     block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $exampleObj);
+                     $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, array('exampleid' => $exampleid));
+                     $DB->delete_records(BLOCK_EXACOMP_DB_ITEMEXAMPLE, array('exampleid' => $exampleid));
+                     $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('exampleid' => $exampleid, 'courseid' => $courseid));
+                     $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampleid' => $exampleid));
+                     $DB->delete_records(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('exampleid' => $exampleid));
+                     $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('exampleid' => $exampleid));
+                     $fs = get_file_storage();
+                     $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid);
+                     $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid);
+                     $exampleObj->delete();
+                 }
+             }
+             break;
+     }
  }
  

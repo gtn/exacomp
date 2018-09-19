@@ -1449,6 +1449,22 @@ return [
 	    'Überprüfen Sie die Beurteilung, da weitere Teilkompetenzen geändert wurden.',
 	    'Grading may not be up to date. </br> A childdescriptor has been graded.',
 	],
+    'create_new_topic' => [
+        'Neuer Kompetenzbereich',
+        'New topic'
+    ],
+    'really_delete' => [
+        'Wirklich löschen?',
+        'Really to delete?'
+    ],
+    'add_niveau' => [
+        'Lernfortschritt hinzufügen',
+        'Add niveau'
+    ],
+    'delete_niveau' => [
+        'Löschen hinzufügen',
+        'Delete niveau'
+    ],
 
 
 	// === Competence Profile ===
