@@ -2662,18 +2662,20 @@ function block_exacomp_get_assigments_to_subjects($subjectids) {
                 JOIN {block_exacomptopics} t ON t.subjid = s.id
                 JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
                 JOIN {block_exacompdescriptors} d ON td.descrid = d.id
-                WHERE subjectid IN ('.$subjectidsArray.'))');
+                WHERE subjid IN ('.$subjectidsArray.'))');
      
-    $mm = new stdClass();
-    $mm->competencies = array();
-    $mm->topics = array();
+//     $mm = new stdClass();
+//     $mm->activity = array();
+//     $mm->topics = array();
+       $mm = array();
     
     foreach ($records as $record) {
-        if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
-            $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
-        } else {
-            $mm->topics[$record->compid][$record->activityid] = $record->activityid;
-        }
+        $mm[$record->activityid][$record->compid] = $record->compid;
+//         if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+//             $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
+//         } else {
+//             $mm->topics[$record->compid][$record->activityid] = $record->activityid;
+//         }
     }
     return $mm;
     

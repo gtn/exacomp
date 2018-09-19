@@ -210,56 +210,81 @@ class data {
 	protected static function truncate_table($source, $table) {
 		g::$DB->delete_records($table, array("source" => $source));
 	}
-	/*
-	public static function delete_custom_competencies() {
-		global $DB;
-		
-		// TODO: geht so nicht mehr
-		$DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
-		$DB->delete_records(BLOCK_EXACOMP_DB_TOPICS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
-		$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
-		$examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
-		foreach($examples as $example) 
-			block_exacomp_delete_custom_example($example->id);
-		
-		return true;
-	}
-	*/
-	
-	public static function normalize_database() {
-		// delete entries with no source anymore
-		foreach (self::$sourceTables as $table) {
-			$sql = "DELETE FROM {{$table}} 
-						WHERE source >= ".data::MIN_SOURCE_ID."
-						AND source NOT IN (SELECT id FROM {".BLOCK_EXACOMP_DB_DATASOURCES."})
+
+        /*
+     * public static function delete_custom_competencies() {
+     * global $DB;
+     *
+     * // TODO: geht so nicht mehr
+     * $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
+     * $DB->delete_records(BLOCK_EXACOMP_DB_TOPICS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
+     * $DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
+     * $examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
+     * foreach($examples as $example)
+     * block_exacomp_delete_custom_example($example->id);
+     *
+     * return true;
+     * }
+     */
+    public static function normalize_database()
+    {
+        // delete entries with no source anymore
+        foreach (self::$sourceTables as $table) {
+            $sql = "DELETE FROM {{$table}} 
+						WHERE source >= " . data::MIN_SOURCE_ID . "
+						AND source NOT IN (SELECT id FROM {" . BLOCK_EXACOMP_DB_DATASOURCES . "})
 					";
-			g::$DB->execute($sql);
-		}
-		
-		// delete unused mms 
-		$tables = array(
-			array(
-				'table' => BLOCK_EXACOMP_DB_DESCTOPICS,
-				'needed1' => array('descrid', BLOCK_EXACOMP_DB_DESCRIPTORS),
-				'needed2' => array('topicid', BLOCK_EXACOMP_DB_TOPICS),
-			),
-			array(
-				'table' => BLOCK_EXACOMP_DB_DESCEXAMP,
-				'needed1' => array('descrid', BLOCK_EXACOMP_DB_DESCRIPTORS),
-				'needed2' => array('exampid', BLOCK_EXACOMP_DB_EXAMPLES),
-			),
-			array(
-				'table' => BLOCK_EXACOMP_DB_DESCCROSS,
-				'needed1' => array('descrid', BLOCK_EXACOMP_DB_DESCRIPTORS),
-				'needed2' => array('crosssubjid', BLOCK_EXACOMP_DB_CROSSSUBJECTS),
-			),
-			array(
-				'table' => BLOCK_EXACOMP_DB_EXAMPTAX,
-				'needed1' => array('exampleid', BLOCK_EXACOMP_DB_EXAMPLES),
-				'needed2' => array('taxid', BLOCK_EXACOMP_DB_TAXONOMIES),
-			),
-			array(
-				'table' => BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
+            g::$DB->execute($sql);
+        }
+
+        // delete unused mms
+        $tables = array(
+            array(
+                'table' => BLOCK_EXACOMP_DB_DESCTOPICS,
+                'needed1' => array(
+                    'descrid',
+                    BLOCK_EXACOMP_DB_DESCRIPTORS
+                ),
+                'needed2' => array(
+                    'topicid',
+                    BLOCK_EXACOMP_DB_TOPICS
+                )
+            ),
+            array(
+                'table' => BLOCK_EXACOMP_DB_DESCEXAMP,
+                'needed1' => array(
+                    'descrid',
+                    BLOCK_EXACOMP_DB_DESCRIPTORS
+                ),
+                'needed2' => array(
+                    'exampid',
+                    BLOCK_EXACOMP_DB_EXAMPLES
+                )
+            ),
+            array(
+                'table' => BLOCK_EXACOMP_DB_DESCCROSS,
+                'needed1' => array(
+                    'descrid',
+                    BLOCK_EXACOMP_DB_DESCRIPTORS
+                ),
+                'needed2' => array(
+                    'crosssubjid',
+                    BLOCK_EXACOMP_DB_CROSSSUBJECTS
+                )
+            ),
+            array(
+                'table' => BLOCK_EXACOMP_DB_EXAMPTAX,
+                'needed1' => array(
+                    'exampleid',
+                    BLOCK_EXACOMP_DB_EXAMPLES
+                ),
+                'needed2' => array(
+                    'taxid',
+                    BLOCK_EXACOMP_DB_TAXONOMIES
+                )
+            ),
+            array(
+                'table' => BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
 				'needed1' => array('exampleid', BLOCK_EXACOMP_DB_EXAMPLES),
 				// course / studentid exclusive!
 			),
@@ -1067,19 +1092,14 @@ class data_exporter extends data {
 
     private static function export_assignments(SimpleXMLElement $xmlParent, $zip)
     {
-        global $CFG, $USER, $COURSE;
+        global $CFG, $USER;
 
-        $cm_mm = block_exacomp_get_course_module_association(4);
-        // var_dump($cm_mm);
-        // $zip->addFromString('test.txt', 'hello');
-        // file_put_contents('test.txt', print_r($cm_mm->competencies, true));
-        // file_put_contents('test.txt', print_r($cm_mm->ctopics, true));
+        $mm = block_exacomp_get_assigments_to_subjects([1,2,3,4,5,6,7]/*$subjectids*/);
         $i = 1;
-        foreach ($cm_mm->competencies as $comp) {
-            foreach ($comp as $cmid) {
-
-                moodle_backup($cmid, $USER->id);
-
+        foreach ($mm as $activity) {
+            
+            moodle_backup(key($mm), $USER->id);
+                      
                 $source = glob($CFG->dataroot . '/temp/backup/*');
                 $source = array_filter($source, 'is_dir');
                 usort($source, function ($a, $b) {
@@ -1091,7 +1111,7 @@ class data_exporter extends data {
                 $source = $source[0];
 
                 $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
-                // $zip->addEmptyDir(basename($source));
+
                 foreach ($files as $name => $file) {
                     // Skip directories (they would be added automatically)
                     if (! $file->isDir()) {
@@ -1103,39 +1123,45 @@ class data_exporter extends data {
                         $zip->addFile($filePath, $relativePath);
                     }
                 }
+                
+                $i++;
+                
+                foreach ($activity as $compid) {
+                    
+                    
             }
-            $i++;
+           
         }
-        foreach ($cm_mm->topics as $comp) {
-            foreach ($comp as $cmid) {
-                moodle_backup($cmid, $USER->id);
+//         foreach ($cm_mm->topics as $comp) {
+//             foreach ($comp as $cmid) {
+//                 moodle_backup($cmid, $USER->id);
 
-                $source = glob($CFG->dataroot . '/temp/backup/*');
-                $source = array_filter($source, 'is_dir');
-                usort($source, function ($a, $b) {
-                    return filemtime($a) < filemtime($b);
-                });
-                if (! isset($source[0])) {
-                    die('backup not found');
-                }
-                $source = $source[0];
+//                 $source = glob($CFG->dataroot . '/temp/backup/*');
+//                 $source = array_filter($source, 'is_dir');
+//                 usort($source, function ($a, $b) {
+//                     return filemtime($a) < filemtime($b);
+//                 });
+//                 if (! isset($source[0])) {
+//                     die('backup not found');
+//                 }
+//                 $source = $source[0];
 
-                $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
-                // $zip->addEmptyDir(basename($source));
-                foreach ($files as $name => $file) {
-                    // Skip directories (they would be added automatically)
-                    if (! $file->isDir()) {
-                        // Get real and relative path for current file
-                        $filePath = $file->getRealPath();
-                        $relativePath = 'activities/activity'.$i . '/' . substr($filePath, strlen($source) + 1);
+//                 $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+//                 // $zip->addEmptyDir(basename($source));
+//                 foreach ($files as $name => $file) {
+//                     // Skip directories (they would be added automatically)
+//                     if (! $file->isDir()) {
+//                         // Get real and relative path for current file
+//                         $filePath = $file->getRealPath();
+//                         $relativePath = 'activities/activity'.$i . '/' . substr($filePath, strlen($source) + 1);
 
-                        // Add current file to archive
-                        $zip->addFile($filePath, $relativePath);
-                    }
-                }
-            }
-            $i++;
-        }
+//                         // Add current file to archive
+//                         $zip->addFile($filePath, $relativePath);
+//                     }
+//                 }
+//             }
+//             $i++;
+//         }
     }             
 }
 
