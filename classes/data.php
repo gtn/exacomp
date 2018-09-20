@@ -1093,44 +1093,66 @@ class data_exporter extends data {
     private static function export_assignments(SimpleXMLElement $xmlParent, $zip)
     {
         global $CFG, $USER;
-
-        $mm = block_exacomp_get_assigments_to_subjects([1,2,3,4,5,6,7]/*$subjectids*/);
+        $mm = block_exacomp_get_assigments_of_descrtopic(self::$filter_descriptors);
         $i = 1;
-        foreach ($mm as $activity) {
-            
-            moodle_backup(key($mm), $USER->id);
-                      
-                $source = glob($CFG->dataroot . '/temp/backup/*');
-                $source = array_filter($source, 'is_dir');
-                usort($source, function ($a, $b) {
-                    return filemtime($a) < filemtime($b);
-                });
-                if (! isset($source[0])) {
-                    die('backup not found');
-                }
-                $source = $source[0];
+        $dbItem = new \stdClass();
 
-                $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+        $xmlItems = $xmlParent->addChild('activities');
 
-                foreach ($files as $name => $file) {
-                    // Skip directories (they would be added automatically)
-                    if (! $file->isDir()) {
-                        // Get real and relative path for current file
-                        $filePath = $file->getRealPath();
-                        $relativePath = 'activities/activity'.$i . '/' . substr($filePath, strlen($source) + 1);
+        // echo '<pre>';
+        // print_r($mm);
+        // die();
 
-                        // Add current file to archive
-                        $zip->addFile($filePath, $relativePath);
+        foreach ($mm as $k => $activity) {
+            $xmlItem = $xmlItems->addChild('activity');
+            $dbItem->id = $k;
+            self::assign_source($xmlItem, $dbItem);
+
+            foreach ($activity as $ke => $comptype) {
+                if ($ke == 0) {
+                    $xmlItem->addChild('descriptors');
+                    foreach ($comptype as $compid) {
+                        $dbItem->id = $compid;
+                        $xmlDescriptor = $xmlItem->descriptors->addChild('descriptorid');
+                        self::assign_source($xmlDescriptor, $dbItem);
+                    }
+                } else {
+                    $xmlItem->addChild('topics');
+                    foreach ($comptype as $compid) {
+                        $dbItem->id = $compid;
+                        $xmlTopic = $xmlItem->topics->addChild('topicid');
+                        self::assign_source($xmlTopic, $dbItem);
                     }
                 }
-                
-                $i++;
-                
-                foreach ($activity as $compid) {
-                    
-                    
             }
-           
+
+            moodle_backup($k, $USER->id);
+
+            $source = glob($CFG->dataroot . '/temp/backup/*');
+            $source = array_filter($source, 'is_dir');
+            usort($source, function ($a, $b) {
+                return filemtime($a) < filemtime($b);
+            });
+            if (! isset($source[0])) {
+                die('backup not found');
+            }
+            $source = $source[0];
+
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+
+            foreach ($files as $name => $file) {
+                // Skip directories (they would be added automatically)
+                if (! $file->isDir()) {
+                    // Get real and relative path for current file
+                    $filePath = $file->getRealPath();
+                    $relativePath = 'activities/activity' . $i . '/' . substr($filePath, strlen($source) + 1);
+
+                    // Add current file to archive
+                    $zip->addFile($filePath, $relativePath);
+                }
+            }
+
+            $i ++;
         }
 //         foreach ($cm_mm->topics as $comp) {
 //             foreach ($comp as $cmid) {

@@ -2667,36 +2667,42 @@ function block_exacomp_get_course_module_association($courseid) {
 	return $mm;
 }
 
-function block_exacomp_get_assigments_to_subjects($subjectids) {
-
-    $subjectidsArray = '';
-    
-    foreach($subjectids as $subjectid){
-        $subjectidsArray .= $subjectid;
-        $subjectidsArray .= ',';       
-    }
-    $subjectidsArray = substr($subjectidsArray, 0, -1);
-    
+function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
     global $DB;
-    $records = $DB->get_records_sql('
+    if ($filter_descriptors) { 
+        $records = $DB->get_records_sql('
             SELECT mm.id, compid, comptype, activityid
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid
-			WHERE compid IN (
-                SELECT DISTINCT d.id
-                FROM {block_exacompsubjects} s
-                JOIN {block_exacomptopics} t ON t.subjid = s.id
-                JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
-                JOIN {block_exacompdescriptors} d ON td.descrid = d.id
-                WHERE subjid IN ('.$subjectidsArray.'))');
-     
+			WHERE (compid IN ('.join(',',$filter_descriptors).') AND comptype = 0 )
+            OR (compid IN (
+            SELECT topicid
+            FROM {'.BLOCK_EXACOMP_DB_DESCTOPICS.'}
+            WHERE descrid IN ('.join(',',$filter_descriptors).'))
+            AND comptype = 1 )');
+    } else {
+        $records = $DB->get_records_sql('
+            SELECT mm.id, compid, comptype, activityid
+			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
+			JOIN {course_modules} m ON m.id = mm.activityid');
+    }
+    
+
+    
+    
+//     SELECT DISTINCT d.id
+//     FROM {block_exacompsubjects} s
+//     JOIN {block_exacomptopics} t ON t.subjid = s.id
+//     JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
+//     JOIN {block_exacompdescriptors} d ON td.descrid = d.id
+//     WHERE subjid IN ('.$subjectidsArray.'))'
 //     $mm = new stdClass();
 //     $mm->activity = array();
 //     $mm->topics = array();
        $mm = array();
     
     foreach ($records as $record) {
-        $mm[$record->activityid][$record->compid] = $record->compid;
+        $mm[$record->activityid][$record->comptype][$record->compid] = $record->compid;
 //         if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 //             $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
 //         } else {
