@@ -46,7 +46,11 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     if (json_last_error() && $copyofget != '') {
                         return $copyofget; // return string if it is not json data
                     }
-                    $get = $get[$this->lang];
+                    if (isset($get[$this->lang])) {
+                        $get = $get[$this->lang];
+                    } else {
+                        $get = '';
+                    }
                     break;
                 default:
             }

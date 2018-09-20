@@ -30,7 +30,6 @@ class import_additional extends \core\task\scheduled_task {
 
 	public function execute() {
 	    global $DB;
-		$xmlserverurl = get_config('exacomp', 'xmlserverurl');
 
 		mtrace('Exabis Competence Grid: import task is running (with additional ifunctionality).');
 

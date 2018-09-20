@@ -1235,7 +1235,15 @@ class data_importer extends data {
 		
 		return $ret;
 	}
-	
+
+    /**
+     * @param null $url
+     * @param null $course_template
+     * @param int $par_source
+     * @param bool $simulate
+     * @param int $schedulerId 0 - not from scheduler; > 0 - scheduler task id, -1 - from main scheduler task '\block_exacomp\task\import'
+     * @return bool
+     */
 	public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
 		global $CFG;
 
@@ -1268,11 +1276,11 @@ class data_importer extends data {
 	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects
 	 *         data from topic leven downwards (topics, descriptors, examples)
      * @param bool $simulate need for simulate importing. We can get settings of importing without real importing
-     * @param int $schedulerId if it is for scheduler task - id of task
+     * @param int $schedulerId if it is for scheduler task - id of task; -1 if it is main scheduler task: \block_exacomp\task\import
 	 */
 	public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
 	    global $USER, $CFG;
-	    
+
 		if (!$file) {
 			throw new import_exception('filenotfound');
 		}
@@ -1435,7 +1443,7 @@ class data_importer extends data {
             }
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
 		    $grids = array();
-		    if ((!$newSelecting && $allGridSelected === null && $schedulerId == 0 ) || ($simulate && !$newSelecting && $allGridSelected === null)) {
+		    if ($schedulerId != -1 && (!$newSelecting && $allGridSelected === null && $schedulerId == 0 ) || ($simulate && !$newSelecting && $allGridSelected === null)) {
                 foreach ($xml->edulevels->edulevel as $edulevel) {
                     foreach ($edulevel->schooltypes->schooltype as $schooltype) {
                         foreach ($schooltype->subjects->subject as $subject) {
@@ -1785,7 +1793,7 @@ class data_importer extends data {
     }
 
     public static function get_selectedallgrids_for_source($sourceId = null, $forSchedulerTask = false) {
-        if ($forSchedulerTask) {
+        if ($forSchedulerTask > 0) {
             $where = array('id' => $sourceId);
             $result = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "all_grids", $where);
         } else {
