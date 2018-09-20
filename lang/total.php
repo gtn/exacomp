@@ -2200,6 +2200,14 @@ return [
         'is used preselected values from your previous importing from this source',
         'is used preselected values from your previous importing from this source'
     ],
+    'import_from_related_komet' => [
+        'Bildungsstandards aus zugehörigem KOMET importieren/aktualisieren',
+        'Import/update grids from related KOMET'
+    ],
+    'import_activate_scheduled_tasks' => [
+        'Activate these tasks',
+        'Activate these tasks'
+    ],
 
     // === API ====
     'yes_no_No' => [

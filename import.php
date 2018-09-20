@@ -377,12 +377,22 @@ if($isAdmin || block_exacomp_check_customupload()) {
                 break;
             case 'scheduler':
                 $taskform = new importtask_form();
-                $taskslist = function() use ($OUTPUT, $DB, $courseid) {
+                $taskslist = function() use ($OUTPUT, $DB, $courseid, $CFG, $isAdmin) {
                     // "add new" button
-                    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
-                            array('courseid'=>$courseid, 'importtype'=>'scheduler', 'action' => 'add')),
+                    $buttons = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
+                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'add')),
                             block_exacomp_get_string('add_new_importtask'),
-                            array('class' => 'btn btn-default')));
+                            array('class' => 'btn btn-default'));
+                    if ($CFG->version >= 2017022300 && $isAdmin) { // only from Moodle 3.3
+                        $buttons .= '&nbsp;&nbsp;&nbsp;'.html_writer::link(
+                                        new moodle_url('/admin/tool/task/schedule_task.php',
+                                                array('task' => 'block_exacomp\task\import_additional')),
+                                        html_writer::empty_tag('img',
+                                                array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage-icon.png'),
+                                                        'height' => 16, 'width' => 16)).'&nbsp;'.block_exacomp_get_string('import_activate_scheduled_tasks'),
+                                        array('target' => '_blank', 'class' => 'btn btn-default'));
+                    }
+                    echo $OUTPUT->box($buttons);
                     $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, null, 'title');
                     $table = new html_table();
                     $table->attributes['class'] = 'exacomp_importtasks';
@@ -549,10 +559,25 @@ if($isAdmin || block_exacomp_check_customupload()) {
 			if ($isAdmin) {
 				if ($hasData) {
 					echo $OUTPUT->box(block_exacomp_get_string("importdone"));
-					echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
-                                                        array('courseid'=>$courseid,
-                                                                'importtype'=>'normal')),
-                                                        block_exacomp_get_string('doimport_again')));
+
+                    echo $OUTPUT->box(html_writer::link(
+                            new moodle_url('/blocks/exacomp/import.php',
+                                    array('courseid'=>$courseid,
+                                            'importtype'=>'normal')),
+                            block_exacomp_get_string('doimport_again')));
+					if ($CFG->version >= 2017022300) { // only from Moodle 3.3
+                        $import_komet_html = html_writer::link(
+                                        new moodle_url('/admin/tool/task/schedule_task.php',
+                                                array('task' => 'block_exacomp\task\import')),
+                                        block_exacomp_get_string('import_from_related_komet'),
+                                        array('target' => '_blank'));
+                    } else if (!$CFG->cronclionly) { // for oldest versions
+                        $import_komet_html = html_writer::link(
+                                        new moodle_url('/admin/cron.php'),
+                                        block_exacomp_get_string('import_from_related_komet'),
+                                        array('target' => '_blank'));
+                    }
+					echo $OUTPUT->box($import_komet_html);
 				} else {
 					// no data yet, allow import or import demo data
 					echo $OUTPUT->box(html_writer::empty_tag('img',

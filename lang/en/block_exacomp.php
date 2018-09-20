@@ -631,6 +631,8 @@ $string['select_all'] = 'select all';
 $string['deselect_all'] = 'deselect all';
 $string['new'] = 'new';
 $string['import_used_preselected_from_previous'] = 'is used preselected values from your previous importing from this source';
+$string['import_from_related_komet'] = 'Import/update grids from related KOMET';
+$string['import_activate_scheduled_tasks'] = 'Activate these tasks';
 
 // === API ====
 $string['yes_no_No'] = 'No';

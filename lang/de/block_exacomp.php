@@ -637,6 +637,8 @@ $string['select_all'] = 'alle wählen';
 $string['deselect_all'] = 'alle abwählen';
 $string['new'] = 'neu';
 $string['import_used_preselected_from_previous'] = 'is used preselected values from your previous importing from this source';
+$string['import_from_related_komet'] = 'Bildungsstandards aus zugehörigem KOMET importieren/aktualisieren';
+$string['import_activate_scheduled_tasks'] = 'Activate these tasks';
 
 // === API ====
 $string['yes_no_No'] = 'Nein';
