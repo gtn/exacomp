@@ -91,92 +91,110 @@ class block_exacomp_simple_service {
 	}
 	
 	static function dakora_print_competence_grid() {
-// 	    $course = static::require_courseid();
+	    $courseid = required_param('courseid', PARAM_INT);
+	    $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
+	    $group = optional_param('group', 0, PARAM_INT);
 	    
-// 	    // CHECK TEACHER
-// 	    $isTeacher = block_exacomp_is_teacher($course->id);
-	    
-// 	    $studentid = block_exacomp_get_studentid();
-	    
-// 	    /* CONTENT REGION */
-// 	    if ($isTeacher) {
-// 	        $coursestudents = block_exacomp_get_students_by_course($course->id);
-// 	        if ($studentid <= 0) {
-// 	            $student = null;
-// 	        } else {
-// 	            //check permission for viewing students profile
-// 	            if (!array_key_exists($studentid, $coursestudents)) {
-// 	                print_error("nopermissions", "", "", "Show student profile");
-// 	            }
-	            
-// 	            $student = g::$DB->get_record('user', array('id' => $studentid));
-// 	        }
-// 	    } else {
-// 	        $student = g::$USER;
-// 	    }
-	    
-// 	    if (!$student) {
-// 	        print_error("student not found");
-// 	    }
-	    
-	    //\block_exacomp\printer::competence_overview($course, $student, optional_param('interval', 'week', PARAM_TEXT));
-	    $courseid = optional_param('courseid', 0, PARAM_INT);
+	    $editmode = optional_param('editmode', 0, PARAM_BOOL);
 	    $subjectid = optional_param('subjectid', 0, PARAM_INT);
+	    
 	    $topicid = optional_param('topicid', 0, PARAM_INT);
 	    $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
-	    $isTeacher = optional_param('isTeacher', false, PARAM_BOOL);
+	    require_login($courseid);
+	    
+	    // CHECK TEACHER
+	    $isTeacher = block_exacomp_is_teacher();
+	    if(!$isTeacher) $editmode = 0;
+	    $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
+	    
+	    $studentid = block_exacomp_get_studentid();
+	    if($studentid == 0){
+	        $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+	    }
+	        
+        $selectedStudentid = $studentid;
+        
+        if($editmode) {
+            $selectedStudentid = $studentid;
+            $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+        }
 	    
 	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false , $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
-	    
-// 	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
-	    //$ret = block_exacomp_init_overview_data(1, 1, 1, 1, true, true, 1, true);
 	    if (!$ret) {
 	        print_error('not configured');
 	    }
 	    list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
-// 	    var_dump($courseSubjects);
-// 	    var_dump($courseTopics);
-// 	    var_dump($niveaus);
-// 	    var_dump($selectedSubject);
-// 	    echo "\n\n\n\n\n";
-// 	    var_dump($selectedTopic);
-// 	    echo "\n\n\n\n\n";
-// 	    var_dump($selectedNiveau);
-
-	    
-	    
-	    
+ 
 	    $output = block_exacomp_get_renderer();
-	    $html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+	    
+	    // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
+	    $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
+	    if($course_settings->nostudents) $allCourseStudents = array();
 	    
 	    $course_settings = block_exacomp_get_settings_by_course($courseid);
 	    $isTeacher = true;
-	    $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?$selectedSubject->id:null,$selectedTopic?$selectedTopic->id:null,false,$selectedNiveau?$selectedNiveau->id:null,
-	        ($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true, false, false, false, ($isTeacher)?false:true, false);
-	    
-	    
-	    
-	    var_dump($competence_tree); 
-	    
-	    
+	    $competence_tree = block_exacomp_get_competence_tree($courseid,
+	                                                       $selectedSubject? $selectedSubject->id : null,
+	                                                       $selectedTopic? $selectedTopic->id : null,
+	                                                       false,
+	                                                       $selectedNiveau? $selectedNiveau->id : null,
+	                                                       ($course_settings->show_all_examples != 0 || $isTeacher),
+                                                	       $course_settings->filteredtaxonomies,
+                                                	       true,
+                                                	       false,
+                                                	       false,
+                                                	       false, 
+                                                	       ($isTeacher) ? false : true, 
+                                                	       false);
+  
 	    
 	    $scheme = block_exacomp_get_grading_scheme($courseid);
-	    $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
-// 	    $html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
-	    $html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0, $isEditingTeacher);
+	    $colselector="";
+	    if ($isTeacher) {	//mind nostudents setting
+	        if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
+	            $colselector = $output->students_column_selector(count($allCourseStudents));
+	        } elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
+	            $students = array();
+	        } else {
+	            $students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
+	        }
+	    }
 	    
-// 	    echo "selectedSubject \n\n\n";
-// 	    var_dump($selectedSubject);
-	    // 	echo "selectedTopic \n\n\n";
-// 	     	var_dump($selectedTopic);
-	    // 	echo "selectedNiveau \n\n\n";
-// 	    	var_dump($selectedNiveau);
-	    // 	echo "html_header \n\n\n";
-// 	    	var_dump($html_header);
-	    // 	echo "html_tables \n\n\n";
-// 	    var_dump($html_tables);  //HIER IST DER HUND!  hier ist was verschieden
-	   // \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
+	    foreach ($students as $student) {
+	        block_exacomp_get_user_information_by_course($student, $courseid);
+	    }
 	    
+	    $output->print = true;
+	    $html_tables = [];
+	    
+	    if ($group == -1) {
+	        // all students, do nothing
+	    } else {
+	        // get the students on this group
+	        $students = array_slice($students, $group * BLOCK_EXACOMP_STUDENTS_PER_COLUMN, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
+	    }
+	    
+	    // TODO: print column information for print
+	    
+	    // loop through all pages (eg. when all students should be printed)
+	    for ($group_i = 0; $group_i < count($students); $group_i += BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
+	        $students_to_print = array_slice($students, $group_i, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
+	        
+	        $html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+
+	        $html_tables[] = $output->competence_overview($competence_tree,
+	            $courseid,
+	            $students_to_print,
+	            $showevaluation,
+	            $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+	            $scheme,
+	            $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS,
+	            0,
+	            $isEditingTeacher);
+	    }
+
+	    \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
+	    die();
 	}
 
 	/**

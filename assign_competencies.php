@@ -117,6 +117,26 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,
                         ($isTeacher) ? false : true,
                         false);
 
+
+// 		var_dump($courseid,
+// 		    $selectedSubject ? $selectedSubject->id : null,
+// 		    $selectedTopic ? $selectedTopic->id : null,
+// 		    false,
+// 		    $selectedNiveau ? $selectedNiveau->id : null,
+// 		    ($course_settings->show_all_examples != 0 || $isTeacher),
+// 		    $course_settings->filteredtaxonomies,
+// 		    true,
+// 		    false,
+// 		    false,
+// 		    false,
+// 		    ($isTeacher) ? false : true,
+// 		    false);
+// 		die();
+//var_dump($selectedNiveau);
+//var_dump($selectedNiveau ? $selectedNiveau->id : null);
+
+
+
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
 if ($isTeacher) {	//mind nostudents setting
@@ -163,18 +183,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
                                                     0,
                                                     $isEditingTeacher);
 	}
-//   	echo "selectedSubject \n\n\n";
-//   	var_dump($selectedSubject); exit;
-//  	echo "selectedTopic \n\n\n";
-//  	var_dump($selectedTopic);
-// 	echo "selectedNiveau \n\n\n";
-// 	var_dump($selectedNiveau);
-// 	echo "html_header \n\n\n";
-// 	var_dump($html_header);
-// 	echo "html_tables \n\n\n";
-// 	var_dump($html_tables);   //HIER IST DER HUND!  hier ist was verschieden
-	//var_dump($competence_tree);
-	
+
 	
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
