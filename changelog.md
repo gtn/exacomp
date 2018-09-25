@@ -1,3 +1,17 @@
+v4.6.3
+themes can be assessed now
+file-upload with additional info for theme
+competency-based layout in additon
+group reports with assessment in tabular form
+change of theme-icon
+warning if child-competences have had additional assessment
+mapping to new difficulty levels during import of xml-file
+selection of xml-file (with more competence grids) during import
+
+v4.6.2
+changed wording of icons
+Bufixing
+
 v4.6.1
 * new Webservice token.php
 * Gruppenberichte
