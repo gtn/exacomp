@@ -91,23 +91,28 @@ class block_exacomp_simple_service {
 	}
 	
 	static function dakora_print_competence_grid() {
+	    $course = static::require_courseid();
+	    
 	    $courseid = required_param('courseid', PARAM_INT);
 	    $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 	    $group = optional_param('group', 0, PARAM_INT);
 	    
 	    $editmode = optional_param('editmode', 0, PARAM_BOOL);
 	    $subjectid = optional_param('subjectid', 0, PARAM_INT);
-	    
+
 	    $topicid = optional_param('topicid', 0, PARAM_INT);
 	    $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
-	    require_login($courseid);
+
+// 	    var_dump($courseid,$showevaluation,$group,$editmode,$subjectid,$topicid,$niveauid);
+// 	    die();
 	    
 	    // CHECK TEACHER
-	    $isTeacher = block_exacomp_is_teacher();
+	    $isTeacher = block_exacomp_is_teacher($courseid);
 	    if(!$isTeacher) $editmode = 0;
 	    $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
 	    
 	    $studentid = block_exacomp_get_studentid();
+
 	    if($studentid == 0){
 	        $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 	    }
@@ -117,7 +122,7 @@ class block_exacomp_simple_service {
         if($editmode) {
             $selectedStudentid = $studentid;
             $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
-        }
+        }  
 	    
 	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false , $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
 	    if (!$ret) {
@@ -145,12 +150,13 @@ class block_exacomp_simple_service {
                                                 	       false,
                                                 	       false, 
                                                 	       ($isTeacher) ? false : true, 
-                                                	       false);
-  
+                                                	       false);   
 	    
 	    $scheme = block_exacomp_get_grading_scheme($courseid);
 	    $colselector="";
 	    if ($isTeacher) {	//mind nostudents setting
+	       
+	        
 	        if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
 	            $colselector = $output->students_column_selector(count($allCourseStudents));
 	        } elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
@@ -159,6 +165,8 @@ class block_exacomp_simple_service {
 	            $students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	        }
 	    }
+	   
+	    
 	    
 	    foreach ($students as $student) {
 	        block_exacomp_get_user_information_by_course($student, $courseid);
@@ -174,7 +182,12 @@ class block_exacomp_simple_service {
 	        $students = array_slice($students, $group * BLOCK_EXACOMP_STUDENTS_PER_COLUMN, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
 	    }
 	    
+	    
+	   
+	    
 	    // TODO: print column information for print
+	    
+	    
 	    
 	    // loop through all pages (eg. when all students should be printed)
 	    for ($group_i = 0; $group_i < count($students); $group_i += BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
@@ -194,7 +207,7 @@ class block_exacomp_simple_service {
 	    }
 
 	    \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
-	    die();
+
 	}
 
 	/**
