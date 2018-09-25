@@ -3207,7 +3207,7 @@ class block_exacomp_external extends external_api {
 			'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
 			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-			'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),
+		    'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
 			'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 		));
