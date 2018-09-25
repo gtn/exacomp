@@ -100,7 +100,11 @@ class block_exacomp_simple_service {
 	    $editmode = optional_param('editmode', 0, PARAM_BOOL);
 	    $subjectid = optional_param('subjectid', 0, PARAM_INT);
 
-	    $topicid = optional_param('topicid', 0, PARAM_INT);
+	    $topicid = optional_param('topicid', BLOCK_EXACOMP_SHOW_ALL_TOPICS, PARAM_INT);
+	    if($topicid == null ){
+	        $topicid = BLOCK_EXACOMP_SHOW_ALL_TOPICS;
+	    }
+
 	    $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
 
 // 	    var_dump($courseid,$showevaluation,$group,$editmode,$subjectid,$topicid,$niveauid);
@@ -108,6 +112,7 @@ class block_exacomp_simple_service {
 	    
 	    // CHECK TEACHER
 	    $isTeacher = block_exacomp_is_teacher($courseid);
+
 	    if(!$isTeacher) $editmode = 0;
 	    $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
 	    
@@ -155,8 +160,6 @@ class block_exacomp_simple_service {
 	    $scheme = block_exacomp_get_grading_scheme($courseid);
 	    $colselector="";
 	    if ($isTeacher) {	//mind nostudents setting
-	       
-	        
 	        if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
 	            $colselector = $output->students_column_selector(count($allCourseStudents));
 	        } elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
@@ -182,12 +185,7 @@ class block_exacomp_simple_service {
 	        $students = array_slice($students, $group * BLOCK_EXACOMP_STUDENTS_PER_COLUMN, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
 	    }
 	    
-	    
-	   
-	    
 	    // TODO: print column information for print
-	    
-	    
 	    
 	    // loop through all pages (eg. when all students should be printed)
 	    for ($group_i = 0; $group_i < count($students); $group_i += BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
