@@ -7752,6 +7752,7 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 			'comptype' => $comptype,
 			'compid' => $compid,
 			'role' => $role,
+		    'gradingisold' => false,
 		]);
 	}
 }
