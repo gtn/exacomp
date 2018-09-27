@@ -6300,6 +6300,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 		$additionalinfo = null;
 	}
 	if(block_exacomp_is_teacher($courseid)){
+	    $record->gradingisold = 0;
     	if ($record) {
     		// falls sich die bewertung geändert hat, timestamp neu setzen
     		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
@@ -7745,14 +7746,14 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 			}
 		}
 
-
+		$data['gradingisold'] = 0;
 		g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
 			'courseid' => $courseid,
 			'userid' => $studentid,
 			'comptype' => $comptype,
 			'compid' => $compid,
 			'role' => $role,
-		    'gradingisold' => false,
+		    
 		]);
 	}
 }

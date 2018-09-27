@@ -3091,9 +3091,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     }
 
 
-    
-	
-
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
