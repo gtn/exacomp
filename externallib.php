@@ -7108,7 +7108,8 @@ class block_exacomp_external extends external_api {
 	    static::require_can_access_course($courseid);
 	    block_exacomp_require_teacher($courseid);
 	    
-	    block_exacomp_set_descriptor_grading_timestamp($courseid,$descriptorid,$studentid);
+	    //block_exacomp_set_descriptor_grading_timestamp($courseid,$descriptorid,$studentid);
+	    block_exacomp_unset_descriptor_gradingisold($courseid,$descriptorid,$studentid);
 
 	    return array('success' => true);
 	}

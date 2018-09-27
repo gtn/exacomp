@@ -39,7 +39,8 @@ switch($action){
         $descrid = required_param('descrid', PARAM_INT);
         $studentid = required_param('studentid', PARAM_INT);
         
-        block_exacomp_set_descriptor_grading_timestamp($courseid,$descrid,$studentid);
+        //block_exacomp_set_descriptor_grading_timestamp($courseid,$descrid,$studentid);
+        block_exacomp_unset_descriptor_gradingisold($courseid,$descrid,$studentid);
       
         break;
 	case ('crosssubj-descriptors'):

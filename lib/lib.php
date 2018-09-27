@@ -6300,8 +6300,8 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 		$additionalinfo = null;
 	}
 	if(block_exacomp_is_teacher($courseid)){
-	    $record->gradingisold = 0;
     	if ($record) {
+    	    $record->gradingisold = 0;
     		// falls sich die bewertung geändert hat, timestamp neu setzen
     		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
     			$record->timestamp = time();
@@ -6318,6 +6318,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             }
     	} else {
     		$insert = new stdClass();
+    		$insert->gradingisold = 0;
     		$insert->compid = $descriptorid;
     		$insert->userid = $studentid;
     		$insert->courseid = $courseid;
@@ -6330,6 +6331,8 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$insert->value = $value;
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}   
+    	//set the gradingisold flag of the parentdescriptor(if there is one) to "1"
+    	block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
 	}
 }
 
@@ -7753,8 +7756,10 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 			'comptype' => $comptype,
 			'compid' => $compid,
 			'role' => $role,
-		    
 		]);
+		
+		//set the gradingisold flag of the parentdescriptor(if there is one) to "1"
+		block_exacomp_set_descriptor_gradingisold($courseid, $compid, $studentid, $role);
 	}
 }
 
@@ -8929,32 +8934,31 @@ function block_exacomp_get_date_of_birth($userid) {
     return date('d.m.Y', $timestamp);
 }
 
+//  /**
+//  * @param unknown $descriptorid
+//  * @param unknown $studentid
+//  * @return boolean    true if there exists a childcomp grading that is newer than the parentgrading
+//  */
+//  function block_exacomp_is_descriptor_grading_old($descriptorid, $studentid){
 
-/**
- *
- * @param unknown $descriptorid
- * @param unknown $studentid
- * @return boolean    true if there exists a childcomp grading that is newer than the parentgrading
- */
- function block_exacomp_is_descriptor_grading_old($descriptorid, $studentid){
+//      global $CFG, $DB;
 
-     global $CFG, $DB;
+//      $query = 'SELECT gradings.id, descriptors.parentid
+//  	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} gradings
+//  	  JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} descriptors ON gradings.compid = descriptors.id
+//       WHERE descriptors.parentid = ? AND gradings.userid = ?  AND gradings.timestamp > 
+//         ((SELECT MAX(timestamp)
+//          FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
+//          WHERE compid = ? AND userid = ?))';
+//      //+30 sec weil innerhalb von 30 Sekunden die Ladezeit beim Hochladen sein kann??
 
-     $query = 'SELECT gradings.id, descriptors.parentid
- 	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} gradings
- 	  JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} descriptors ON gradings.compid = descriptors.id
-      WHERE descriptors.parentid = ? AND gradings.userid = ?  AND gradings.timestamp > 
-        ((SELECT MAX(timestamp)
-         FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
-         WHERE compid = ? AND userid = ?))';
-     //+30 sec weil innerhalb von 30 Sekunden die Ladezeit beim Hochladen sein kann??
+//      $condition = array($descriptorid, $studentid, $descriptorid, $studentid);
 
-     $condition = array($descriptorid, $studentid, $descriptorid, $studentid);
+//      $results = $DB->get_records_sql($query, $condition);
 
-     $results = $DB->get_records_sql($query, $condition);
+//      return $results != null;
+//  }
 
-     return $results != null;
- }
  
  /**
   * get all examples for a crosssubject
@@ -8970,7 +8974,7 @@ function block_exacomp_get_date_of_birth($userid) {
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=?"
          , array($crosssubjectid));
-     
+
      return $examples;
  }
  
@@ -8993,17 +8997,93 @@ function block_exacomp_get_date_of_birth($userid) {
   * @param unknown $descriptorid
   * @param unknown $studentid
   */
- function block_exacomp_set_descriptor_grading_timestamp($courseid, $descriptorid, $studentid) {
-     $data = array();
-     $data["timestamp"]=time();
+//  function block_exacomp_set_descriptor_grading_timestamp($courseid, $descriptorid, $studentid) {
+//      $data = array();
+//      $data["timestamp"]=time();
      
-     g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
+//      g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
+//          'courseid' => $courseid,
+//          'userid' => $studentid,
+//          'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR,
+//          'compid' => $descriptorid,
+//          'role' => BLOCK_EXACOMP_ROLE_TEACHER,
+//      ]);
+//  }
+
+ /**
+  * set descriptor gradingisold-attribute   (set it to true)
+  * @param unknown $courseid
+  * @param unknown $compid
+  * @param unknown $studentid
+  * @param unknown $role
+  */
+ function block_exacomp_set_descriptor_gradingisold($courseid, $compid, $studentid, $role) {
+     global $DB;
+//      $sql = 'UPDATE {'.BLOCK_EXACOMP_DB_COMPETENCES.'} SET gradingisold=1 
+//              WHERE compid=
+//                 (SELECT parentid FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} WHERE id=?)';
+//      var_dump($compid);
+//      echo "-----------------------------------------------------------";
+//      var_dump($sql);
+//     die();
+    
+//      $DB->execute($sql,[$compid]);
+   
+     //Find the id of the parent of the competence that has been changed
+     $record = $DB->get_record_sql('
+			SELECT parentid FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} WHERE id=?
+			', array($compid));
+
+     $data = array();
+     $data["gradingisold"] = 1;
+     //set the gradingisoldflag of the parent
+     g::$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
          'courseid' => $courseid,
          'userid' => $studentid,
          'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR,
-         'compid' => $descriptorid,
+         'compid' => $record->parentid,
+         'role' => $role,
+     ]);
+ }
+ 
+ /**
+  * unset descriptor gradingisold-attribute   (set it to false)
+  * @param unknown $courseid
+  * @param unknown $compid
+  * @param unknown $studentid
+  */
+ function block_exacomp_unset_descriptor_gradingisold($courseid, $compid, $studentid) {
+     global $DB;    
+     $data = array();
+     $data["gradingisold"] = 0;
+     //set the gradingisoldflag of the parent
+     g::$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
+         'courseid' => $courseid,
+         'userid' => $studentid,
+         'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR,
+         'compid' => $compid,
          'role' => BLOCK_EXACOMP_ROLE_TEACHER,
      ]);
+ }
+ 
+ /**
+  *
+  * @param unknown $descriptorid
+  * @param unknown $studentid
+  * @return unknown
+  */
+ function block_exacomp_is_descriptor_grading_old($descriptorid, $studentid){
+     global $CFG, $DB;
+     
+     $query = 'SELECT gradingisold
+     	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
+          WHERE compid = ? AND userid = ?';
+     
+     $condition = array($descriptorid, $studentid);
+     
+     $result = $DB->get_record_sql($query, $condition);
+     
+     return $result->gradingisold;
  }
 
 /**
