@@ -1103,11 +1103,11 @@ class data_exporter extends data {
         // print_r($mm);
         // die();
 
-        foreach ($mm as $k => $activity) {
+        foreach ($mm[0] as $k => $activity) {
             $xmlItem = $xmlItems->addChild('activity');
             $dbItem->id = $k;
             self::assign_source($xmlItem, $dbItem);
-
+            $xmlItem->addChildWithCDATAIfValue('title', $mm[1][$k]);
             foreach ($activity as $ke => $comptype) {
                 if ($ke == 0) {
                     $xmlItem->addChild('descriptors');
@@ -1152,7 +1152,7 @@ class data_exporter extends data {
                 }
             }
 
-            $i ++;
+            $i++;
         }
 //         foreach ($cm_mm->topics as $comp) {
 //             foreach ($comp as $cmid) {
@@ -1295,6 +1295,7 @@ class data_importer extends data {
 	/**
 	 *
 	 * @param String $data xml content
+	 * @param courseid of template-course for importing activities
 	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects
 	 *         data from topic leven downwards (topics, descriptors, examples)
      * @param bool $simulate need for simulate importing. We can get settings of importing without real importing
@@ -1501,6 +1502,7 @@ class data_importer extends data {
         // used for next lists
         $descriptorsFromSelectedGrids = self::get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
 
+
 		$skillsFromSelected = self::get_property_for_descriptors_from_xml($xml, 'skillid', $descriptorsFromSelectedGrids);
 		//self::truncate_table(self::$import_source_local_id, BLOCK_EXACOMP_DB_SKILLS);
 		if(isset($xml->skills)) {
@@ -1574,16 +1576,38 @@ class data_importer extends data {
 		}
 		
 		
-        if ($ret === true) { // only if it is zip
-            extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
-        }
-		$ret = true;
-		for ($i = 1; $ret; $i++){
-		    $ret = @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
-		}
+		
+		
+		
+		
+		if($course_template!=0){
+		    if ($ret === true) { // only if it is zip
+		        extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
+		    }
+		    
+		    for ($i = 1; @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i); $i++){
+		        moodle_restore('activity'. $i, $course_template, $USER->id);
+		    }
+		
+		
 
-		// TODO: use correct course id ;-) temporary hidden
-		//moodle_restore('activity1', 5, $USER->id);
+// TODO: Topics müssen auch noch geprüft werden
+		  if (isset($xml->activities)) {
+		      foreach($xml->activities->activity as $activity) {
+		           foreach($activity->descriptors->descriptorid as $descriptorid){
+  		               if (in_array($descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {		                 
+		                  self::insert_activity($activity);
+		                   continue;
+ 		               }
+		           }
+		      }
+		  }
+	   }
+		
+
+
+
+
 
 		
 		// self::kompetenzraster_clean_unused_data_from_source();
@@ -2256,6 +2280,19 @@ class data_importer extends data {
 		return $skill;
 	}
 	
+	private static function insert_activity($xmlItem){
+	    
+	    $activity = self::parse_xml_item($xmlItem);	    
+
+	    if (isset($xmlItem->descriptors)) {
+	        foreach($xmlItem->descriptors->descriptorid as $descriptor) {
+	            $descriptorid = self::get_database_id($descriptor);
+	            block_exacomp_set_compactivity($activity->id, $descriptorid, 0, $xmlItem->title);
+	        }
+	    }
+	    
+	    return $activity;
+	}
 	
 	
 	
@@ -2353,7 +2390,7 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 
 function extract_zip_subdir($zipfile, $subpath, $destination, $temp_cache, $traverse_first_subdir=true){
     $zip = new ZipArchive;
-    echo "extracting $zipfile... ";
+//     echo "extracting $zipfile... ";
     if(substr($temp_cache, -1) !== DIRECTORY_SEPARATOR) {
         $temp_cache .= DIRECTORY_SEPARATOR;
     }
@@ -2366,19 +2403,19 @@ function extract_zip_subdir($zipfile, $subpath, $destination, $temp_cache, $trav
             $temp_cache = $temp_cache . basename($zipfile, ".zip");
             $zip_dir = $temp_cache;
         }
-        echo "  to $temp_cache... \n";
+//         echo "  to $temp_cache... \n";
         $zip->extractTo($temp_cache);
         $zip->close();
-        echo "ok\n";
-        echo "moving subdir... ";
-        echo "\n $zip_dir / $subpath -- to -- >  $destination\n";
+//         echo "ok\n";
+//         echo "moving subdir... ";
+//         echo "\n $zip_dir / $subpath -- to -- >  $destination\n";
         rename($zip_dir . DIRECTORY_SEPARATOR . $subpath, $destination);
-        echo "ok\n";
-        echo "cleaning extraction dir... ";
+//         echo "ok\n";
+//         echo "cleaning extraction dir... ";
         rrmdir($zip_dir);
-        echo "ok\n";
+//         echo "ok\n";
     } else {
-        echo "failed\n";
+//         echo "failed\n";
         die();
     }
 }
