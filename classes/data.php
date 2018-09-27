@@ -2287,7 +2287,7 @@ class data_importer extends data {
 	    if (isset($xmlItem->descriptors)) {
 	        foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 	            $descriptorid = self::get_database_id($descriptor);
-	            block_exacomp_set_compactivity(intval($activity->sourceid), $descriptorid, 0, $activity->title);
+	            block_exacomp_set_compactivity(isset($activity->id) ? intval($activity->id) : intval($activity->sourceid), $descriptorid, 0, $activity->title);
 	        }
 	    }
 	    
