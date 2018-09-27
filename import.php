@@ -258,7 +258,7 @@ try {
     // check category renaming
     $import_data = $mform->get_data();
     if ($import_data) {
-        $course_template = $import_data->template;
+        $course_template = intval($import_data->template);
     } else {
         $course_template = null;
     }

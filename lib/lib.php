@@ -2671,7 +2671,7 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
     global $DB;
     if ($filter_descriptors) { 
         $records = $DB->get_records_sql('
-            SELECT mm.id, compid, comptype, activityid
+            SELECT mm.id, compid, comptype, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid
 			WHERE (compid IN ('.join(',',$filter_descriptors).') AND comptype = 0 )
@@ -2682,7 +2682,7 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
             AND comptype = 1 )');
     } else {
         $records = $DB->get_records_sql('
-            SELECT mm.id, compid, comptype, activityid
+            SELECT mm.id, compid, comptype, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid');
     }
@@ -2690,27 +2690,20 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
 
     
     
-//     SELECT DISTINCT d.id
-//     FROM {block_exacompsubjects} s
-//     JOIN {block_exacomptopics} t ON t.subjid = s.id
-//     JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
-//     JOIN {block_exacompdescriptors} d ON td.descrid = d.id
-//     WHERE subjid IN ('.$subjectidsArray.'))'
-//     $mm = new stdClass();
-//     $mm->activity = array();
-//     $mm->topics = array();
        $mm = array();
-    
-    foreach ($records as $record) {
-        $mm[$record->activityid][$record->comptype][$record->compid] = $record->compid;
-//         if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
-//             $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
-//         } else {
-//             $mm->topics[$record->compid][$record->activityid] = $record->activityid;
-//         }
-    }
-    return $mm;
-    
+       $ret = array();
+       
+       foreach ($records as $record) {
+           $mm[$record->activityid][$record->comptype][$record->compid] = $record->compid;
+           $ret[1][$record->activityid] = $record->activitytitle;
+           //         if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+           //             $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
+           //         } else {
+           //             $mm->topics[$record->compid][$record->activityid] = $record->activityid;
+           //         }
+       }
+       $ret[0]= $mm;
+       return $ret;
 }
 
 function get_all_courses_key_value(){
@@ -3286,15 +3279,17 @@ function block_exacomp_save_competences_activities($data, $courseid, $comptype) 
  * @param unknown_type $compid
  * @param unknown_type $comptype
  */
-function block_exacomp_set_compactivity($activityid, $compid, $comptype) {
+function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activitytitle = null) {
 	global $DB, $COURSE;
 
-	$cmmod = $DB->get_record('course_modules', array("id" => $activityid));
-	$modulename = $DB->get_record('modules', array("id" => $cmmod->module));
-	$instance = get_coursemodule_from_id($modulename->name, $activityid);
-
+	if($activitytitle == null){
+	   $cmmod = $DB->get_record('course_modules', array("id" => $activityid));
+	   $modulename = $DB->get_record('modules', array("id" => $cmmod->module));
+	   $instance = get_coursemodule_from_id($modulename->name, $activityid);
+	   $activitytitle = $instance->name;
+	}
 	$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype" => $comptype, "eportfolioitem" => 0));
-	$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype" => $comptype, "coursetitle" => $COURSE->shortname, 'activitytitle' => $instance->name));
+	$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype" => $comptype, "coursetitle" => $COURSE->shortname, 'activitytitle' => $activitytitle));
 }
 
 /**
