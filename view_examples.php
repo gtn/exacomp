@@ -133,24 +133,6 @@ switch ($style) {
         $outputContent .= html_writer::start_tag("table", array("class" => 'rg2'));
         foreach ($crosssubs as $cross) {
             
-            
-            //      global $CFG, $DB;
-            
-            //      $query = 'SELECT gradings.id, descriptors.parentid
-            //  	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} gradings
-            //  	  JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} descriptors ON gradings.compid = descriptors.id
-            //       WHERE descriptors.parentid = ? AND gradings.userid = ?  AND gradings.timestamp >
-            //         ((SELECT MAX(timestamp)
-            //          FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
-            //          WHERE compid = ? AND userid = ?))';
-            //      //+30 sec weil innerhalb von 30 Sekunden die Ladezeit beim Hochladen sein kann??
-            
-            //      $condition = array($descriptorid, $studentid, $descriptorid, $studentid);
-            
-            //      $results = $DB->get_records_sql($query, $condition);
-            
-            
-            
             $crossContent = '';
             //get files specifically for this cross:
             $examples = block_exacomp_get_examples_for_crosssubject($cross->id);
@@ -165,21 +147,9 @@ switch ($style) {
             ", [$cross->id]);
             
             
-            
-            
-            
-//             $assoc_descriptors = \block_exacomp\example::get_objects_sql("
-//                 SELECT descr.id, descr.parentid
-//                 FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} descr
-//                 JOIN {".BLOCK_EXACOMP_DB_DESCCROSS."}  dc ON descr.id = dc.descrid
-//                 WHERE dc.crosssubjid = ?
-//             ", [$cross->id]);
-
-            
             //get files from the childcompetencies of the competencies that are added
             //get descriptor sand check if they are parents
             //if they are parent --> get the examples of their children
-
             $assoc_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross);
  
             foreach ($assoc_descriptors as $descriptor) {
