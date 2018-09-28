@@ -155,7 +155,7 @@
         <FIELD NAME="exampid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="id_foreign" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="table_foreign" TYPE="text" NOTNULL="false" DEFAULT="descr" SEQUENCE="false" COMMENT="descr or cross or topic or subje"/>
+        <FIELD NAME="table_foreign" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="descr or cross or topic or subje"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

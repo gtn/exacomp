@@ -2986,7 +2986,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    	$dbman->add_field($table, $field);
 	    }
 	    
-	    $field = new xmldb_field('table_foreign', XMLDB_TYPE_TEXT, null, null, null, null, 'descr');
+	    $field = new xmldb_field('table_foreign', XMLDB_TYPE_TEXT, null, null, null, null, null);
 	    if (!$dbman->field_exists($table, $field)) {
 		    $dbman->add_field($table, $field);
 		  }
