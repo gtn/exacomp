@@ -2772,6 +2772,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
+	public function example_based_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $isEditingTeacher = true) {
+	    global $DB, $USER;
+	}
+	    
+	
 	public function preview_icon($alt = null) {
 		if ($alt == null) {
 			$alt = block_exacomp_get_string("preview");
@@ -4932,7 +4937,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = [html_writer::span(block_exacomp_get_string('tab_help'), 'exabis_comp_top_name'),
 				block_exacomp_get_string('help_crosssubject')];
 		}
-		
+
 // 		//Files
 // 		$titleCell = new html_table_cell();
 // 		if ($edit) {
@@ -4952,10 +4957,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 // // 		    var_dump("asdfasdfasdf");
 // 		}
 // 		$rows[] = [html_writer::span(block_exacomp_get_string('files'), 'exabis_comp_top_name'), $exampleuploadCell];
+
+
 		
 		$table->data = $rows;
 
 		$content = html_writer::table($table);
+		
+		//Add the two style buttons
+		global $PAGE;
+		$page_url = html_entity_decode($PAGE->url);
+		// remove existing 'style' parameter from GET
+		$page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
+		$content = html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/withsubcat.png'),
+		    'title' => block_exacomp_get_string('comp_based'))).' '.block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
+		        "onclick" => "document.location.href='".$page_url."&style=0';"));
+		
+		$content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/bullet_list.png'),
+		    'title' => block_exacomp_get_string('examp_based'))).' '.block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
+		        "onclick" => "document.location.href='".$page_url."&style=1';"));
 
 		return $content;
 	}

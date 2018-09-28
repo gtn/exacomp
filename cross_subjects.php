@@ -20,8 +20,9 @@
 require __DIR__.'/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
-$showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
+$showevaluation = optional_param('showevaluation', true, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
+$style = optional_param('style', 0, PARAM_INT);
 
 // CHECK TEACHER
 require_login($courseid);
@@ -61,6 +62,8 @@ $output->requires()->css('/blocks/exacomp/css/competence_tree_common.css');
 $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
 $PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
+
+// $output->requires()->css('/blocks/exacomp/css/example_tree_crosssubjects.css');
 
 if ($action == 'share') {
 	$cross_subject = \block_exacomp\cross_subject::get($crosssubjid, MUST_EXIST);
@@ -423,12 +426,52 @@ if ($cross_subject) {
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_subject, !($course_settings->show_all_examples == 0 && !$isTeacher), $course_settings->filteredtaxonomies, ($studentid>0 && !$isTeacher)?$studentid:0, ($isTeacher)?false:true);
 
 	if ($subjects) {
-		echo $output->overview_legend($isTeacher);
-		echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
-		echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-		echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
-		echo html_writer::end_tag("div");
-		echo html_writer::end_tag('form');
+	    if($style == 0){
+	        echo $output->overview_legend($isTeacher);
+	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
+	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
+	        echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
+	        echo html_writer::end_tag("div");
+	        echo html_writer::end_tag('form');
+	    }else if($style == 1){
+	        echo $output->overview_legend($isTeacher);
+	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
+	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
+	        echo $output->example_based_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
+	        echo html_writer::end_tag("div");
+	        echo html_writer::end_tag('form');
+	        
+	        
+	        
+// 	        //could be optimized together with block_exacomp_build_example_tree
+// 	        //non critical - only 1 additional query for whole loading process
+// 	        $examples = \block_exacomp\example::get_objects_sql("
+//                 SELECT DISTINCT e.*
+//                 FROM {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct
+//                 JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+//                 JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dt.descrid = de.descrid
+//                 JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
+//                 WHERE ct.courseid = ?
+//                 ORDER BY e.title
+//             ", [$courseid]);
+	        
+// 	        if (!$isTeacher) {
+// 	            $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
+// 	                return block_exacomp_is_example_visible($courseid, $example, $studentid);
+// 	            });
+// 	        }
+	        
+	        
+//             echo $output->example_based_list_tree($examples);
+	        
+// 	        echo $output->overview_legend($isTeacher);
+// 	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
+// 	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
+// 	        echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
+// 	        echo html_writer::end_tag("div");
+// 	        echo html_writer::end_tag('form');
+	    }
+		
 	} else {
 		echo html_writer::div(
 			block_exacomp_get_string('add_content_to_crosssub'),
