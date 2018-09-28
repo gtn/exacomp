@@ -2922,36 +2922,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     
                     $this_rg2_class = 'rg2-level-0'.$visible_css;
                     $sub_rg2_class = 'rg2-level-1';
-                    
-                    $crosssubjectrow = new html_table_row();
-                    $crosssubjectrow->attributes['class'] = $this_rg2_class.' highlight';
-                    // $crosssubjectrow->attributes['exa-rg2-id'] = 'topic-'.$topic->id;
-                    
+ 
                     $studentsCount = 0;
                     $checkboxname = 'datacrosssubs'; //?
                     //$student = array_values($students)[0];
                     
-                    $totalRow = new html_table_row();
-                    $totalRow->attributes['class'] = 'highlight';
-                    $totalRow->attributes['class'] = $this_rg2_class.' highlight';
-                    
-                    $firstCol = new html_table_cell();
-                    if($this->is_edit_mode()){
-                        $firstCol->text .= " ".html_writer::link(
-                            new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $courseid, "crosssubjid" => $crosssubjid)),
-                            html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
-                            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
-                    }
-                    $firstCol->text .= block_exacomp_get_string('total');
-                    
-                    $totalRow->cells[] = $firstCol;
-                    
-                    $outputnameCell = new html_table_cell();
-                    $outputname =  block_exacomp_get_string('crosssubject_files');
-                    $outputnameCell->text = html_writer::div($outputname);
-                    $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
-                    $totalRow->cells[] = $outputnameCell;
-                    $totalRow->cells[] = new html_table_cell();
+
                     
                     
                     foreach ($students as $student) {
@@ -3080,7 +3056,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             
                     }
                     
-                    $rows[] = $totalRow;
                     
                     
                     /* CROSSSUBJECTS */
@@ -3423,7 +3398,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $rows[] = $exampleRow;
                     }
                 }//end crosssubjectfiles and total evaluation
-                
+               
             }
             
             
@@ -3766,7 +3741,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             // 			echo "<br>";
             
             $row_cnt = count($rows); // save row count to calc print_width
-            $this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher); //renders the topics
+           //$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher); //renders the topics
             
             if ($this->is_print_mode()) {
                 $row = $rows[$row_cnt];
