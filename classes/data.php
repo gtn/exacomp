@@ -1501,6 +1501,7 @@ class data_importer extends data {
 
         // used for next lists
         $descriptorsFromSelectedGrids = self::get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
+        $topicsFromSelectedGrids = self::get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
 
 
 		$skillsFromSelected = self::get_property_for_descriptors_from_xml($xml, 'skillid', $descriptorsFromSelectedGrids);
@@ -1591,7 +1592,7 @@ class data_importer extends data {
 		
 		
 
-// TODO: Topics müssen auch noch geprüft werden
+
 		  if (isset($xml->activities)) {
 		      foreach($xml->activities->activity as $activity) {
 		           foreach($activity->descriptors->descriptorid as $descriptorid){
@@ -1600,6 +1601,13 @@ class data_importer extends data {
 		                   continue;
  		               }
 		           }
+		           foreach($activity->topics->topicid as $topicid){
+		               if (in_array($topicid->attributes()->id, $topicsFromSelectedGrids)) {
+		                   self::insert_activity($activity);
+		                   continue;
+		               }
+		           }
+		           
 		      }
 		  }
 	   }
@@ -1663,6 +1671,40 @@ class data_importer extends data {
             if ($descriptors->length) {
                 foreach ($descriptors as $descriptor) {
                     $result[] = $descriptor->getAttribute('id');
+                }
+            }
+        }
+        return $result;
+    }
+    
+    
+    
+    private static function get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId = 0) {
+        $result = array();
+        if (self::get_selectedallgrids_for_source($source_local_id, $schedulerId)) {
+            // all subjects
+            $sujectsIds = '*';
+        } else {
+            $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
+            $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
+            $selectedGrids = array_keys($selectedGrids);
+            array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+            $sujectsIds = implode(" or ", $selectedGrids);
+        }
+        if ($sujectsIds != '') {
+            if ($sujectsIds == '*') {
+                // get from any subject
+                $query = "//subjects/subject/topics/topic";
+            } else {
+                $query = "//subjects/subject[".$sujectsIds."]/topics/topic";
+            }
+            $tempXML = new \DOMDocument();
+            $tempXML->loadXML($xml->asXML());
+            $xpath = new \DOMXpath($tempXML);
+            $descriptors = $xpath->query($query);
+            if ($topics->length) {
+                foreach ($topics as $topic) {
+                    $result[] = $topic->getAttribute('id');
                 }
             }
         }
@@ -2288,6 +2330,12 @@ class data_importer extends data {
 	        foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 	            $descriptorid = self::get_database_id($descriptor);
 	            block_exacomp_set_compactivity(isset($activity->id) ? intval($activity->id) : intval($activity->sourceid), $descriptorid, 0, $activity->title);
+	        }
+	    }
+	    if (isset($xmlItem->topics)) {
+	        foreach($xmlItem->topics->topicid as $topic) {
+	            $topicid = self::get_database_id($topic);
+	            block_exacomp_set_compactivity(isset($activity->id) ? intval($activity->id) : intval($activity->sourceid), $topicid, 1, $activity->title);
 	        }
 	    }
 	    
