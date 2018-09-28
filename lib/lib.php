@@ -5443,7 +5443,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
-			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
+			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
 			WHERE s.studentid = ? AND s.deleted = 0 AND s.is_pps = 0 AND (
 				-- noch nicht auf einen tag geleg
@@ -5452,7 +5452,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
 			)
 			ORDER BY s.id";
-
+    
 	return $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
 }
 
@@ -9078,12 +9078,14 @@ function block_exacomp_get_date_of_birth($userid) {
      $query = 'SELECT gradingisold
      	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
           WHERE compid = ? AND userid = ?';
-     
      $condition = array($descriptorid, $studentid);
      
      $result = $DB->get_record_sql($query, $condition);
-     
-     return $result->gradingisold;
+     if ($result) {
+         return $result->gradingisold;
+     } else {
+         return false;
+     }
  }
 
 /**

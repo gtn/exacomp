@@ -29,9 +29,13 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform = & $this->_form;
 
 		$descrid = $this->_customdata['descrid'];
-		$crosssubjid = $this->_customdata['crosssubjid'];
+        if (array_key_exists('crosssubjid', $this->_customdata)) {
+            $crosssubjid = $this->_customdata['crosssubjid'];
+        } else {
+            $crosssubjid = null;
+        }
 		
-		if($descrid){
+		if($descrid) {
 		    $descrTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$descrid));
 		    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
 		    
@@ -54,7 +58,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		    $mform->addElement('hidden', 'action');
 		    $mform->setType('action', PARAM_ACTION);
 		    $mform->setDefault('action', 'add');
-		}else if($crosssubjid) {
+		} else if($crosssubjid) {
 		    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header"));
 		}
 

@@ -115,15 +115,17 @@ switch($action){
 			}
 			
 			echo block_exacomp_get_string('weekly_schedule_added_all');
-		}else if($studentid == 0){
-			if(!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
-				if(block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, null, null, 1))
+		} elseif ($studentid == 0){
+			if (!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
+				if (block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, null, null, 1))
 					echo block_exacomp_get_string('pre_planning_storage_added');
-			}else 
-				echo block_exacomp_get_string('pre_planning_storage_already_contains');
-		}else{
-			if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,null, null, 0) )
-				echo block_exacomp_get_string("weekly_schedule_added");
+			} else {
+                echo block_exacomp_get_string('pre_planning_storage_already_contains');
+            }
+		} else {
+			if (block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,null, null, 0) ) {
+                echo block_exacomp_get_string("weekly_schedule_added");
+            }
 		}
 		
 		exit;
@@ -292,7 +294,7 @@ switch($action){
 		if(!$studentid) $studentid = $USER->id;
 		
 		// -1 => teacher wants to add examples for all students to their schedule
-		if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+		if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 			// check for teacher permissions
 			block_exacomp_require_teacher();
 			// now we want to display the examples from the pre-plan-storage, which are the examples in the schedule database table
@@ -301,10 +303,12 @@ switch($action){
 		}
 		
 		$pool_course = required_param('pool_course', PARAM_INT);
-		if(!$pool_course)$pool_course = $courseid;
-		
+		if(!$pool_course) {
+            $pool_course = $courseid;
+        }
+
 		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course);
-		foreach($examples_pool as &$example_pool){
+		foreach ($examples_pool as &$example_pool){
 			$example_pool->state = block_exacomp_get_dakora_state_for_example($example_pool->courseid, $example_pool->exampleid, $studentid);
 		}
 		$json_examples_pool = block_exacomp_get_json_examples($examples_pool);
