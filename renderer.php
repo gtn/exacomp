@@ -3099,6 +3099,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         ORDER BY e.title
                     ", [$crosssubjid]);
                     
+                    //get files from the childcompetencies of the competencies that are added
+                    //get descriptor sand check if they are parents
+                    //if they are parent --> get the examples of their children
+                    $assoc_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid);
+                    
+                    foreach ($assoc_descriptors as $descriptor) {
+                        if($descriptor->parentid == 0){
+                            $childdescriptors = block_exacomp_get_child_descriptors($descriptor, $courseid);
+                            foreach ($childdescriptors as $childdescriptor){
+                                $examples_assoc_crosssubj = array_merge($examples_assoc_crosssubj,$childdescriptor->examples);
+                            }
+                        }
+                    }
                     
                     $examples_crosssubj = array_merge($examples_crosssubj, $examples_assoc_crosssubj);
                     
