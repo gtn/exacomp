@@ -1125,7 +1125,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                        
 			                        $titleCell->text .= $this->submission_icon($courseid, $example->id, $USER->id);
 			                        
-			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, false);
+// 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, false);
 			                        
 			                    } else if ($isEditingTeacher && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			                        $studentid = block_exacomp_get_studentid();
@@ -1140,10 +1140,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                                    array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $courseid));
 			                            }
 			                        }
-			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
+// 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
 			                        
 			                    }else if ($role == BLOCK_EXACOMP_ROLE_TEACHER){
-			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
+// 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
 			                    }
 			                }
 			                $titleCell->text .= '</span>';
