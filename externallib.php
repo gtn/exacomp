@@ -7752,8 +7752,8 @@ class block_exacomp_external extends external_api {
 	}
 
 	private static function format_url($url) {
-		$url_no_protocol = strtolower(preg_replace('!^.*://!', '', $url));
-		$www_root_no_protocol = strtolower(preg_replace('!^.*://!', '', g::$CFG->wwwroot));
+		$url_no_protocol = preg_replace('!^.*://!', '', $url);
+		$www_root_no_protocol = preg_replace('!^.*://!', '', g::$CFG->wwwroot);
 
 		if (strpos($url_no_protocol, $www_root_no_protocol) === 0) {
 			// is local moodle url
