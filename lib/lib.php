@@ -5002,15 +5002,17 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
 /**
  * visibility for example in course and user context
  * @param unknown $courseid
- * @param unknown $example
+ * @param unknown $example or exampleid  
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_is_example_visible($courseid, $exampleid, $studentid) {
+function block_exacomp_is_example_visible($courseid, $example, $studentid) {
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
 	if ($studentid <= 0) {
 		$studentid = 0;
 	}
+	
+	$exampleid = is_scalar($example) ? $example : $example->id;
 
 	// TODO: also need check descriptor? then we also need to check crossdescriptors!
 	/*
@@ -5020,14 +5022,16 @@ function block_exacomp_is_example_visible($courseid, $exampleid, $studentid) {
 	*/
 
 	$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$exampleid->id]) && !$visibilities[$exampleid->id]) {
+	if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
 		return false;
 	}
 
 	if ($studentid > 0) {
 		// also check student if set
  		$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
- 		if (isset($visibilities[$exampleid->id]) && !$visibilities[$exampleid->id]) {
+//  		var_dump($exampleid);
+//  		die();
+ 		if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
 			return false;
 		}
 	}
@@ -5038,7 +5042,7 @@ function block_exacomp_is_example_visible($courseid, $exampleid, $studentid) {
 /**
  * visibility for example solution in course and user context
  * @param unknown $courseid
- * @param unknown $example
+ * @param unknown $example or exampleid
  * @param unknown $studentid
  * @return boolean
  */
@@ -5048,15 +5052,17 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
 		$studentid = 0;
 	}
 
+	$exampleid = is_scalar($example) ? $example : $example->id;
+	
 	$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+	if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
 		return false;
 	}
 
 	if ($studentid > 0) {
 		// also check student if set
 		$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $studentid);
-		if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+		if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
 			return false;
 		}
 	}
