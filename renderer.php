@@ -690,7 +690,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table = new html_table();
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
-		if (block_exacomp_use_eval_niveau() && ($showevaluation || $role == BLOCK_EXACOMP_ROLE_TEACHER)) {
+		//if (block_exacomp_use_eval_niveau() && ($showevaluation || $role == BLOCK_EXACOMP_ROLE_TEACHER)) {
+		if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_any_diffLevel_exist()) {
 			$studentsColspan++;
 		}
 
