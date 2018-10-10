@@ -1099,9 +1099,8 @@ class data_exporter extends data {
 
         $xmlItems = $xmlParent->addChild('activities');
 
-        // echo '<pre>';
-        // print_r($mm);
-        // die();
+
+
 
         foreach ($mm[0] as $k => $activity) {
             $xmlItem = $xmlItems->addChild('activity');
@@ -1110,18 +1109,32 @@ class data_exporter extends data {
             $xmlItem->addChildWithCDATAIfValue('title', $mm[1][$k]);
             foreach ($activity as $ke => $comptype) {
                 if ($ke == 0) {
+                    
+                    $descriptors = g::$DB->get_records_sql("
+				        SELECT DISTINCT d.id, d.source, d.sourceid
+				        FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
+				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid
+				        WHERE de.activityid = ?
+			         ", array($dbItem->id));
+                    
                     $xmlItem->addChild('descriptors');
-                    foreach ($comptype as $compid) {
-                        $dbItem->id = $compid;
+                    foreach ($descriptors as $descriptor) {
                         $xmlDescriptor = $xmlItem->descriptors->addChild('descriptorid');
-                        self::assign_source($xmlDescriptor, $dbItem);
+                        self::assign_source($xmlDescriptor, $descriptor);
                     }
                 } else {
+                    
+                    $topics = g::$DB->get_records_sql("
+				        SELECT DISTINCT d.id, d.source, d.sourceid
+				        FROM {".BLOCK_EXACOMP_DB_TOPICS."} d
+				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid
+				        WHERE de.activityid = ?
+			         ", array($dbItem->id));
+                    
                     $xmlItem->addChild('topics');
-                    foreach ($comptype as $compid) {
-                        $dbItem->id = $compid;
+                    foreach ($topics as $topic) {
                         $xmlTopic = $xmlItem->topics->addChild('topicid');
-                        self::assign_source($xmlTopic, $dbItem);
+                        self::assign_source($xmlTopic, $topic);
                     }
                 }
             }
@@ -1590,13 +1603,11 @@ class data_importer extends data {
 		        moodle_restore('activity'. $i, $course_template, $USER->id);
 		    }
 		
-		
-
 
 		  if (isset($xml->activities)) {
 		      foreach($xml->activities->activity as $activity) {
 		           foreach($activity->descriptors->descriptorid as $descriptorid){
-  		               if (in_array($descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {		                 
+  		               if (in_array($descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {
 		                  self::insert_activity($activity);
 		                   continue;
  		               }
@@ -2323,12 +2334,10 @@ class data_importer extends data {
 	}
 	
 	private static function insert_activity($xmlItem){
-	    
 	    $activity = self::parse_xml_item($xmlItem);	
-
 	    if (isset($xmlItem->descriptors)) {
 	        foreach($xmlItem->descriptors->descriptorid as $descriptor) {
-	            $descriptorid = self::get_database_id($descriptor);
+	            $descriptorid = self::get_database_id($descriptor);	            
 	            block_exacomp_set_compactivity(isset($activity->id) ? intval($activity->id) : intval($activity->sourceid), $descriptorid, 0, $activity->title);
 	        }
 	    }
@@ -2387,6 +2396,7 @@ class data_importer extends data {
 			'taxonomyid' => BLOCK_EXACOMP_DB_TAXONOMIES,
 			'exampleid' => BLOCK_EXACOMP_DB_EXAMPLES,
 			'descriptorid' => BLOCK_EXACOMP_DB_DESCRIPTORS,
+		    'topicid' => BLOCK_EXACOMP_DB_TOPICS,
 			'categoryid' => BLOCK_EXACOMP_DB_CATEGORIES,
 			'niveauid' => BLOCK_EXACOMP_DB_NIVEAUS,
 			'niveau' => BLOCK_EXACOMP_DB_NIVEAUS,
