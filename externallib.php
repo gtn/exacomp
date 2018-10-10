@@ -6314,7 +6314,7 @@ class block_exacomp_external extends external_api {
 	 * get evaluation configuration
 	 * get admin evaluation configurations
 	 *
-	 * @deprecated use dakora_get_config instead         actually getting used a lot
+	 * @deprecated use dakora_get_config instead         actually getting called a lot but not used RW
 	 * @ws-type-read
 	 */
 	public static function dakora_get_evaluation_config() {
@@ -6326,7 +6326,7 @@ class block_exacomp_external extends external_api {
 		//echo('asdf');
 		
 		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
-			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
+// 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(true),
 			'values' => \block_exacomp\global_config::get_teacher_eval_items(),
 		);
@@ -6340,7 +6340,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_evaluation_config_returns() {
 		return new external_single_structure (array(
 			'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
-			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
+// 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
 			'evalniveaus' => new external_single_structure (array(
 				1 => new external_value (PARAM_TEXT, 'evaluation title for id = 1', VALUE_OPTIONAL),
 				2 => new external_value (PARAM_TEXT, 'evaluation title for id = 2', VALUE_OPTIONAL),
@@ -6387,7 +6387,7 @@ class block_exacomp_external extends external_api {
 		    'theme_diffLevel' => new external_value (PARAM_BOOL, 'theme_diffLevel'),
 		    'theme_SelfEval' => new external_value (PARAM_BOOL, 'theme_SelfEval'),
 			'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
-			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
+// 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
 			'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
 			'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 		    'teacherevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
@@ -6444,7 +6444,7 @@ class block_exacomp_external extends external_api {
 		    'theme_diffLevel' => block_exacomp_get_assessment_theme_diffLevel(),
 		    'theme_SelfEval' => block_exacomp_get_assessment_theme_SelfEval(),
 			'use_evalniveau' => block_exacomp_use_eval_niveau(),
-			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
+// 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
 		    'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,null,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
 		    'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,true,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),

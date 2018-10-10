@@ -148,7 +148,7 @@ switch ($style) {
             
             
             //get files from the childcompetencies of the competencies that are added
-            //get descriptor sand check if they are parents
+            //get descriptors and check if they are parents
             //if they are parent --> get the examples of their children
             $assoc_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross);
  
