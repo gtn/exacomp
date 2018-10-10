@@ -1701,7 +1701,7 @@ class data_importer extends data {
             $tempXML = new \DOMDocument();
             $tempXML->loadXML($xml->asXML());
             $xpath = new \DOMXpath($tempXML);
-            $descriptors = $xpath->query($query);
+            $topics = $xpath->query($query);
             if ($topics->length) {
                 foreach ($topics as $topic) {
                     $result[] = $topic->getAttribute('id');
