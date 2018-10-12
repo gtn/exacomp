@@ -455,6 +455,36 @@ function block_exacomp_get_assessment_theme_SelfEval() {
     return get_config('exacomp', 'assessment_theme_SelfEval');
 }
 
+function block_exacomp_get_assessment_max_value($type) {
+    $max = 0;
+    switch ($type) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            $max = block_exacomp_get_assessment_grade_limit();
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+            $max = count($verboses);
+            if ($max > 0) {
+                $max -= 1;  // because it is possible zero
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            $max = block_exacomp_get_assessment_points_limit();
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            $max = 1;
+            break;
+    }
+    return $max;
+}
+
+function block_exacomp_get_assessment_max_value_by_level($level) {
+    $type = block_exacomp_additional_grading($level);
+    return block_exacomp_get_assessment_max_value($type);
+}
+
 function block_exacomp_get_assessment_diffLevel($level) {
     switch ($level) {
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
@@ -6686,12 +6716,9 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 // 				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
 // 				: (($evaluation && $evaluation->value) ? $evaluation->value : -1);
 		$data->niveaus[$niveau->title]->eval =
-		(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // DESCRIPTORS!!!
-		? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
-		: (($evaluation && $evaluation->value || ($evaluation && $evaluation->value=="0")) ? $evaluation->value : -1); //nuller anzeigen!
-		//var_dump($evaluation);
-
-		//$data->niveaus[$niveau->title]->eval = 3;
+            (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // DESCRIPTORS!!!
+            ? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
+            : (($evaluation && $evaluation->value || ($evaluation && $evaluation->value == "0")) ? $evaluation->value : -1); //nuller anzeigen!
 
 		$data->niveaus[$niveau->title]->show = true;
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
@@ -9081,7 +9108,7 @@ function block_exacomp_get_date_of_birth($userid) {
  function block_exacomp_is_descriptor_grading_old($descriptorid, $studentid){
      global $CFG, $DB;
      
-     $query = 'SELECT gradingisold
+     $query = 'SELECT DISTINCT gradingisold
      	  FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'}
           WHERE compid = ? AND userid = ?';
      $condition = array($descriptorid, $studentid);

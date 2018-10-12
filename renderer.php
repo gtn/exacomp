@@ -4603,7 +4603,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'), array('class' => 'competence_profile_insectitle'));
 			$innersection .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id, $max_scheme), array('class' => 'container', 'id' => 'charts'));
-			$content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose', 'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
+			$content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose', 'class' => ' competence_profile_innersection exa-collapsible111111111111111111111111111111 exa-collapsible-open'));
 
 			if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) {
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
@@ -4678,14 +4678,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			return '';
 		}
 
-        if (!$this->is_print_mode()) {
+        /*if (!$this->is_print_mode()) {
             $content .= "<script> $('div[class=\"container\"]').each(function () {
                         $(this).find('canvas').each(function () {
 			
 					$(this).donut();
 				});
                     });    </script>";
-        }
+        }*/
 		return html_writer::div($content, "competence_profile_coursedata");
 	}
 
@@ -4748,46 +4748,79 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
 			$row->cells[] = $cell;
 
+			// competences
 			foreach ($rowcontent->niveaus as $niveau => $element) {
 
-				if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // TODO: TOPIC ?
-					$element->eval = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
-				}
+				//if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+				//	$element->eval = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
+				//}
 				$cell = new html_table_cell ();
 
 				if ($element->show) {
                     $height = 50;
                     $width = 50;
-                    $dataValue = $element->eval;
-                    $dataTitle = $element->evalniveau;
-                    $dataValueMax = $max_scheme;
+                    $imgWidth = $width; $imgHeight = $height;
+                    $image_resize = 20; // resize image if need border graph
+                    $params = ['height' => $height,
+                            'width' => $width,
+                            'evalValue' => $element->eval,
+                            'evalMax' => block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR),
+                            'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? $element->evalniveau : '',
+                            'diffLevel' => block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 1 : 0,
+                            'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
+                    ];
+                    // when the image must be resized (border graph is added)
+                    if ((block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
+                            && block_exacomp_get_assessment_comp_diffLevel()
+                            && ($element->eval > -1 && $element->evalniveau)
+                            )
+                        || (
+                            (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE && $element->eval > 0
+                                || block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS && $element->eval > -1) // zero is possible
+                            && block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
+                            && $element->evalniveau
+                            )
+                    ) {
+                            $imgWidth = $width + $image_resize;
+                            $imgHeight = $height + $image_resize;
+                    }
+                    if (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE) {
+                        $verboseTitles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+                        // use short: TODO: when we need to use long titles?
+                        $verboseTitlesShort = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options_short());
+                        if (array_key_exists($element->eval, $verboseTitles)) {
+                            $stringValue = preg_replace('/\s+/u', '-', $verboseTitles[$element->eval]);
+                            $params['stringValue'] = $stringValue;
+                            $params['stringValueShort'] = $verboseTitlesShort[$element->eval];
+                        } else {
+                            $params['stringValue'] = '';
+                            $params['stringValueShort'] = '';
+                        }
+                    }
                     if ($this->is_print_mode()) {
                         if ($element->visible && $rowcontent->visible) {
-                            $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php',
-                                    ['height' => $height,
-                                            'width' => $width,
-                                            'value' => $dataValue,
-                                            'title' => $dataTitle,
-                                            'valueMax' => $dataValueMax
-                                    ]);
-                            //$elementSrc = htmlspecialchars_decode($CFG->wwwroot.'/blocks/exacomp/pix/dynamic/ppie.php?height='.$height.'&width='.$width.'&value='.
-                            //        $dataValue.'&title='.$dataTitle.'&valueMax='.$dataValueMax);
+                            $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php', $params);
                             $cell->text = html_writer::img($elementSrc, '',
-                                    ['width' => $width * 0.60, 'height' => $height * 0.60, 'border' => 0]);
+                                    ['width' => $imgWidth * 0.60, 'height' => $imgHeight * 0.60, 'border' => 0]);
                         } else {
                             $cell->text = '';
                         }
                     } else {
-                        $cell->text = html_writer::empty_tag('canvas', [
+                        $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php', $params);
+                        $cell->text = html_writer::img($elementSrc, '',
+                                ['width' => $imgWidth, 'height' => $imgHeight, 'border' => 0]);
+                        //$cell->text .= print_r($element, true);
+                        /*$cell->text = html_writer::empty_tag('canvas', [
                                 "id" => "chart"."-".$subject->id."-".$niveau,
                                 "height" => $height,
                                 "width" => $width,
                                 "data-title" => $dataTitle,
                                 "data-value" => $dataValue,
                                 "data-valuemax" => $dataValueMax,
-                        ]);
+                        ]);*/
                     }
-                }
+				}
+                //$cell->text .= '<pre>'.print_r($element, true).'</pre>';
 
 				$cell->attributes['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
 				$cell->attributes['exa-timestamp'] = $element->timestamp;
@@ -4809,27 +4842,60 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topic_eval_cell = new html_table_cell ();
                 $height = 50;
                 $width = 50;
-                $dataValue = $rowcontent->topic_eval;
-                $dataTitle = $rowcontent->topic_evalniveau;
-                $dataValueMax = $max_scheme;
+                $imgWidth = $width; $imgHeight = $height;
+                $image_resize = 20; // resize image if need border graph
+                $params = ['height' => $height,
+                        'width' => $width,
+                        'evalValue' =>  $rowcontent->topic_eval,
+                        'evalMax' => block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_TOPIC),
+                        'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC) ? $rowcontent->topic_evalniveau : '',
+                        'diffLevel' => block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC) ? 1 : 0,
+                        'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)
+                ];
+                // when the image must be resized (border graph is added)
+                if ((block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
+                                && block_exacomp_get_assessment_topic_diffLevel()
+                                && ($rowcontent->eval > -1 && $rowcontent->topic_evalniveau)
+                        )
+                        || (
+                                (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE
+                                        || block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)
+                                && block_exacomp_get_assessment_topic_diffLevel()
+                                && $rowcontent->topic_eval > -1
+                                && $rowcontent->topic_evalniveau
+                        )
+                ) {
+                    $imgWidth = $width + $image_resize;
+                    $imgHeight = $height + $image_resize;
+                }
+                if (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE) {
+                    $verboseTitles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+                    // use short: TODO: when we need to use long titles?
+                    $verboseTitlesShort = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options_short());
+                    if (array_key_exists($element->eval, $verboseTitles)) {
+                        $stringValue = preg_replace('/\s+/u', '-', $verboseTitles[$element->eval]);
+                        $params['stringValue'] = $stringValue;
+                        $params['stringValueShort'] = $verboseTitlesShort[$element->eval];
+                    } else {
+                        $params['stringValue'] = '';
+                        $params['stringValueShort'] = '';
+                    }
+                }
                 if ($this->is_print_mode()) {
                     if ($rowcontent->visible) {
-                        $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php',
-                                ['height' => $height,
-                                        'width' => $width,
-                                        'value' => $rowcontent->topic_eval,
-                                        'title' => $rowcontent->topic_evalniveau,
-                                        'valueMax' => $dataValueMax
-                                ]);
+                        $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php', $params);
                         //$elementSrc = $CFG->wwwroot.'/blocks/exacomp/pix/dynamic/ppie.php?height='.$height.'&width='.$width.'&value='.
                         //        $dataValue.'&title='.$dataTitle.'&valueMax='.$dataValueMax;
                         $topic_eval_cell->text = html_writer::img($elementSrc, '',
-                                ['width' => $width * 0.60, 'height' => $height * 0.60, 'border' => 0]);
+                                ['width' => $imgWidth * 0.60, 'height' => $imgHeight * 0.60, 'border' => 0]);
                     } else {
                         $topic_eval_cell->text = '';
                     }
                 } else {
-                    $topic_eval_cell->text = html_writer::empty_tag('canvas', [
+                    $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php', $params);
+                    $topic_eval_cell->text = html_writer::img($elementSrc, '',
+                            ['width' => $imgWidth, 'height' => $imgHeight, 'border' => 0]);
+                    /*$topic_eval_cell->text = html_writer::empty_tag('canvas', [
                             "id" => "chart".$topic,
                             "height" => "50",
                             "width" => "50",
@@ -4837,7 +4903,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                             "data-value" => $rowcontent->topic_eval,
                             "data-valuemax" => $max_scheme,
-                    ]);
+                    ]);*/
                 }
 
 				$topic_eval_cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
