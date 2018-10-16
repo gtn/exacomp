@@ -4772,7 +4772,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     // when the image must be resized (border graph is added)
                     if ((block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
                             && block_exacomp_get_assessment_comp_diffLevel()
-                            && ($element->eval > -1 && $element->evalniveau)
+                            && (isset($element->eval) && $element->eval > -1 && $element->evalniveau)
                             )
                         || (
                             (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE && $element->eval > 0
@@ -4855,12 +4855,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 // when the image must be resized (border graph is added)
                 if ((block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
                                 && block_exacomp_get_assessment_topic_diffLevel()
-                                && ($rowcontent->eval > -1 && $rowcontent->topic_evalniveau)
+                                && (isset($rowcontent->topic_eval) && $rowcontent->topic_eval > -1 && $rowcontent->topic_evalniveau)
                         )
                         || (
                                 (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE
                                         || block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)
                                 && block_exacomp_get_assessment_topic_diffLevel()
+                                && $rowcontent->topic_eval
                                 && $rowcontent->topic_eval > -1
                                 && $rowcontent->topic_evalniveau
                         )

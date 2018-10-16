@@ -133,10 +133,10 @@ switch ($assessmentType) {
             $width = $width + (($outerMargin + $outerGraphWidth) * 2);
             $height = $height + (($outerMargin + $outerGraphWidth) * 2);
         } else if (!$diffLevel) {
-            if ($stringValueShort) {
+            /*if ($stringValueShort) { // for app
                 $centerText[0] = trim($stringValueShort);
                 $fontSize = 16;
-            } else if ($stringValue) {
+            } else*/ if ($stringValue) {
                 $string = explode('-', $stringValue);
                 foreach ($string as $key => $word) {
                     $centerText[$key] = $word;
@@ -192,6 +192,8 @@ switch ($assessmentType) {
     case 4: // Yes/No
         if ($evalValue > 0) {
             plusPicture();
+        } else if ($evalValue == -1) {
+            nullPicture(true);
         } else {
             nullPicture();
         }
