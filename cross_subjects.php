@@ -125,7 +125,7 @@ if ($action == 'share') {
 
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
-
+ 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
 	echo $output->header_v2('tab_cross_subjects');
 	echo $output->no_activities_warning($isTeacher);

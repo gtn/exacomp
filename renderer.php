@@ -5548,12 +5548,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($cross_subject && $this->is_edit_mode()) {
 			$left_content .= html_writer::tag("input", "", array("type" => "submit", "class" => 'allow-submit', "value" => block_exacomp_get_string("save_crosssub")));
 			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => block_exacomp_get_string('add_descriptors_to_crosssub'), 'exa-type' => "iframe-popup", 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$cross_subject->id));
+
 		}
 		if ($cross_subject && !$this->is_edit_mode() && $cross_subject->has_capability(BLOCK_EXACOMP_CAP_MODIFY) && !$cross_subject->is_draft()) {
 			if ($nostudents) {
-				$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => block_exacomp_get_string("share_crosssub"), 'exa-type' => 'iframe-popup', 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
+				$left_content .= html_writer::tag("input", " ", array("type" => "button", "value" => block_exacomp_get_string("share_crosssub"), 'exa-type' => 'iframe-popup', 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
 			}
-			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => block_exacomp_get_string("save_as_draft"), 'exa-type' => 'link', 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=save_as_draft'));
+			$left_content .= html_writer::tag("input", " ", array("type" => "button", "value" => block_exacomp_get_string("save_as_draft"), 'exa-type' => 'link', 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=save_as_draft'));
+			
+			//Add the two style buttons
+			$page_url = html_entity_decode($PAGE->url);
+			// remove existing 'style' parameter from GET
+			$page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
+			$left_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/withsubcat.png'),
+			    'title' => block_exacomp_get_string('comp_based'))).' '.block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
+			        "onclick" => "document.location.href='".$page_url."&style=0';"));
+			
+			$left_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/bullet_list.png'),
+			    'title' => block_exacomp_get_string('examp_based'))).' '.block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
+			        "onclick" => "document.location.href='".$page_url."&style=1';"));
 		}
 		$left_content .= html_writer::end_tag("p");
 
@@ -5601,9 +5614,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$right_content .= html_writer::empty_tag('input', array('type' => 'button', 'value' => block_exacomp_get_string('manage_crosssubs'),
 			"onclick" => "document.location.href='".block_exacomp\url::create('/blocks/exacomp/cross_subjects_overview.php', array('courseid' => $COURSE->id))."'"));
 
+		
 		$content = '';
 		$content .= $left_content;
 		$content .= html_writer::div($right_content, 'edit_buttons_float_right');
+		
+	   
 
 		return html_writer::div($content, '', array('id' => 'exabis_save_button'));
 	}
@@ -5688,19 +5704,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->data = $rows;
 
 		$content = html_writer::table($table);
-		
-		//Add the two style buttons
-		global $PAGE;
-		$page_url = html_entity_decode($PAGE->url);
-		// remove existing 'style' parameter from GET
-		$page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
-		$content = html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/withsubcat.png'),
-		    'title' => block_exacomp_get_string('comp_based'))).' '.block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
-		        "onclick" => "document.location.href='".$page_url."&style=0';"));
-		
-		$content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/bullet_list.png'),
-		    'title' => block_exacomp_get_string('examp_based'))).' '.block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
-		        "onclick" => "document.location.href='".$page_url."&style=1';"));
 
 		return $content;
 	}
