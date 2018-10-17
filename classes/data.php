@@ -1608,13 +1608,13 @@ class data_importer extends data {
 		      foreach($xml->activities->activity as $activity) {
 		           foreach($activity->descriptors->descriptorid as $descriptorid){
   		               if (in_array($descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {
-		                  self::insert_activity($activity);
+  		                   self::insert_activity($activity, $course_template);
 		                   continue;
  		               }
 		           }
 		           foreach($activity->topics->topicid as $topicid){
 		               if (in_array($topicid->attributes()->id, $topicsFromSelectedGrids)) {
-		                   self::insert_activity($activity);
+		                   self::insert_activity($activity, $course_template);
 		                   continue;
 		               }
 		           }
@@ -2333,24 +2333,31 @@ class data_importer extends data {
 		return $skill;
 	}
 	
-	private static function insert_activity($xmlItem){
+	private static function insert_activity($xmlItem, $course_template){
 	    $activity = self::parse_xml_item($xmlItem);	
 	    if (isset($xmlItem->descriptors)) {
 	        foreach($xmlItem->descriptors->descriptorid as $descriptor) {
-	            $descriptorid = self::get_database_id($descriptor);	            
-	            block_exacomp_set_compactivity(isset($activity->id) ? intval($activity->id) : intval($activity->sourceid), $descriptorid, 0, $activity->title);
+	            $descriptorid = self::get_database_id($descriptor);
+	            $activityid = self::get_new_activity_id($activity->title, $course_template);
+	            block_exacomp_set_compactivity($activityid, $descriptorid, 0, $activity->title); // isset($activity->id) ? intval($activityid) : intval($activity->sourceid)
 	        }
 	    }
 	    if (isset($xmlItem->topics)) {
 	        foreach($xmlItem->topics->topicid as $topic) {
 	            $topicid = self::get_database_id($topic);
-	            block_exacomp_set_compactivity(isset($activity->id) ? intval($activity->id) : intval($activity->sourceid), $topicid, 1, $activity->title);
+	            $activityid = self::get_new_activity_id($activity->title, $course_template);
+	            block_exacomp_set_compactivity($activityid, $topicid, 1, $activity->title); //isset($activity->id) ? intval($activityid) : intval($activity->sourceid)
 	        }
 	    }
 	    
 	    return $activity;
 	}
 	
+	private static function get_new_activity_id($activity_title, $course_template){
+	    global $DB;
+	    $ret = $DB->get_record('assign', array('name' => $activity_title, 'course' => $course_template));
+	    return $ret->id;
+	}
 	
 	
 	
