@@ -5108,7 +5108,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
 			'examplevalue' => new external_value (PARAM_INT, 'examplevalue'),
-		    'additionalinfo' => new external_value (PARAM_INT, 'additionalInfo', VALUE_DEFAULT, null),
+		    'additionalinfo' => new external_value (PARAM_FLOAT, 'additionalInfo'),
 			'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 			'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
 			'comment' => new external_value (PARAM_TEXT, 'comment', VALUE_DEFAULT, ''),

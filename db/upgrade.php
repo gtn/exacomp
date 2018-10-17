@@ -3080,14 +3080,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2018091700, 'exacomp');
     }
     
-    if ($oldversion < 2018092701) {
+    if ($oldversion < 2018101702) {
         $table = new xmldb_table('block_exacompcompuser');
         $field = new xmldb_field('gradingisold', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2018092701, 'exacomp');
+        upgrade_block_savepoint(true, 2018101702, 'exacomp');
     }
 
 
