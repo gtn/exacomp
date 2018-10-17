@@ -2758,7 +2758,6 @@ function block_exacomp_get_allowed_course_modules_for_course($courseid) {
 		// TODO: optimieren
 		$modinfo = get_fast_modinfo($courseid);
 		$modules = $modinfo->get_cms();
-
 		$active_modules = [];
 		foreach ($modules as $mod) {
 			$module = block_exacomp_get_coursemodule($mod);
@@ -2767,6 +2766,10 @@ function block_exacomp_get_allowed_course_modules_for_course($courseid) {
 			if (strcmp($module->name, block_exacomp_get_string('namenews', 'mod_forum')) == 0) {
 				continue;
 			}
+			// Skip deleted.
+            if ($module->deletioninprogress == 1) {
+                continue;
+            }
 
 			//skip News forum in any language, supported_modules[1] == forum
 			$forum = g::$DB->get_record('modules', array('name' => 'forum'));

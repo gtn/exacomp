@@ -22,8 +22,8 @@ require __DIR__.'/inc.php';
 global $DB, $OUTPUT, $PAGE;
 
 // TODO: was macht das? wieso brauchen wir das?
-if(strcmp("mysql",$CFG->dbtype)==0){
-	$sql5="SET @@group_concat_max_len = 5012";
+if (strcmp("mysql",$CFG->dbtype)==0) {
+	$sql5 = "SET @@group_concat_max_len = 5012";
 
 	$DB->execute($sql5);
 }
@@ -62,19 +62,21 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	// TOPIC DATA
 	block_exacomp_save_competences_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
 	
-	if(!isset($_POST['data']) && !isset($_POST['topicdata']))
-		$headertext = block_exacomp_get_string('tick_some');
-	else{
-		$headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
+	if (!isset($_POST['data']) && !isset($_POST['topicdata'])) {
+        $headertext = block_exacomp_get_string('tick_some');
+    } else {
+		$headertext = block_exacomp_get_string("save_success").html_writer::empty_tag('br')
 			.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
 			.block_exacomp_get_string('completed_config');
 	
 		$students = block_exacomp_get_students_by_course($courseid);
-		if(empty($students))
-			$headertext .= html_writer::empty_tag('br')
-				.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), block_exacomp_get_string('optional_step'));
+		if (empty($students)) {
+            $headertext .= html_writer::empty_tag('br')
+                    .html_writer::link(new moodle_url('/enrol/users.php', array('id' => $courseid)),
+                            block_exacomp_get_string('optional_step'));
+        }
 	}
-}else{
+} else {
 	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
 		.block_exacomp_get_string('teacher_third_configuration_step')
 		.html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), block_exacomp_get_string('teacher_third_configuration_step_link'));
@@ -88,12 +90,14 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 $selected_niveaus = array();
 $selected_modules = array();
 /* CONTENT REGION */
-if(($action = optional_param("action", "", PARAM_TEXT) ) == "filter"){
-	if(isset($_POST['niveau_filter']))
-		$selected_niveaus = $_POST['niveau_filter'];
+if (($action = optional_param("action", "", PARAM_TEXT) ) == "filter") {
+	if (isset($_POST['niveau_filter'])) {
+        $selected_niveaus = $_POST['niveau_filter'];
+    }
 		
-	if(isset($_POST['module_filter']))
-		$selected_modules = $_POST['module_filter'];
+	if (isset($_POST['module_filter'])) {
+        $selected_modules = $_POST['module_filter'];
+    }
 }
 
 
@@ -103,22 +107,24 @@ $modules = block_exacomp_get_allowed_course_modules_for_course($COURSE->id);
 $visible_modules = [];
 $modules_to_filter = [];
 
-if($modules){
-	foreach($modules as $module){
+if ($modules) {
+	foreach ($modules as $module) {
 		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
 			
 		$module->descriptors = array();
 		$module->topics = array();
 		
-		foreach($compsactiv as $comp){
-			if($comp->comptype == 0)
-				$module->descriptors[$comp->compid] = $comp->compid;
-			else 	
-				$module->topics[$comp->compid] = $comp->compid;
+		foreach ($compsactiv as $comp){
+			if ($comp->comptype == 0) {
+                $module->descriptors[$comp->compid] = $comp->compid;
+            } else {
+                $module->topics[$comp->compid] = $comp->compid;
+            }
 		}
 		
-		if(empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules))
-			$visible_modules[] = $module;
+		if (empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules)) {
+            $visible_modules[] = $module;
+        }
 		
 		$modules_to_filter[] = $module;
 	}
@@ -129,13 +135,13 @@ if($modules){
 
 	$topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 
-	if(!$topics_set){
+	if (!$topics_set) {
 		echo $output->activity_legend($headertext);
 		echo $output->no_topics_warning();
-	}else if(count($visible_modules)==0){
+	} else if(count($visible_modules)==0) {
 		echo $output->activity_legend($headertext);
 		echo $output->no_course_activities_warning();
-	}else{
+	} else {
 		echo $output->activity_legend($headertext);
 		echo $output->activity_content($subjects, $visible_modules);
 	}
