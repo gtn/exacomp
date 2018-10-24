@@ -49,6 +49,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
         $html_content = '';
         $html_header = '';
         $student = $DB->get_record('user',array('id' => $studentid));
+
         $possible_courses = block_exacomp_get_exacomp_courses($student);
         block_exacomp_init_profile($possible_courses, $student->id);
         $html_content .= $output->competence_profile_metadata($student);
@@ -72,6 +73,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
         $html_tables[] = $html_content;
 
     }
+
     block_exacomp\printer::competenceprofile_overview($studentid, $html_header, $html_tables);
 }
 

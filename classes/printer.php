@@ -168,6 +168,7 @@ class printer {
 		
 		exit;
 	}
+	
 	static function competenceprofile_overview($studentid, $html_header, $html_tables) {
 	    //print_r($html_tables); exit;
 	    ob_start();

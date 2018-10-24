@@ -85,9 +85,56 @@ class block_exacomp_simple_service {
 			print_error("student not found");
 		}
 
+		
 		\block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
 
 		// die;
+	}
+	
+	static function dakora_print_competence_profile() {
+	    global $OUTPUT, $USER, $DB;
+	    $course = static::require_courseid();
+	    
+	    $courseid = required_param('courseid', PARAM_INT);
+	    $context = context_course::instance($courseid);
+	    $studentid = block_exacomp_get_studentid();
+	    $page_identifier = 'tab_competence_profile_profile';
+	    $isTeacher = block_exacomp_is_teacher($courseid);
+	    $output = block_exacomp_get_renderer();
+	    
+	    if (!$isTeacher) {
+	        $studentid = $USER->id;
+	        $html_tables[] = $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
+	    } else {
+	        $html_content = '';
+	        $html_header = '';
+	        $student = $DB->get_record('user',array('id' => $studentid));
+
+	        $possible_courses = block_exacomp_get_exacomp_courses($student);
+	        block_exacomp_init_profile($possible_courses, $student->id);
+	        $html_content .= $output->competence_profile_metadata($student);
+	        //$html_header .= $output->competence_profile_metadata($student); // TODO: ??
+	        $usebadges = get_config('exacomp', 'usebadges');
+	        $profile_settings = block_exacomp_get_profile_settings($studentid);
+	        $items = array();
+	        $user_courses = array();
+	        foreach($possible_courses as $course){
+	            if(isset($profile_settings->exacomp[$course->id])){
+	                $user_courses[$course->id] = $course;
+	            }
+	        }
+	        if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
+	            $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
+	            foreach($user_courses as $course) {
+	                // if selected
+	                if (isset($profile_settings->exacomp[$course->id]))
+	                    $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
+	            }
+	            $html_tables[] = $html_content;
+	            
+	    }
+
+	    block_exacomp\printer::competenceprofile_overview($studentid, $html_header, $html_tables);
 	}
 	
 	static function dakora_print_competence_grid() {
@@ -142,7 +189,7 @@ class block_exacomp_simple_service {
 	    if($course_settings->nostudents) $allCourseStudents = array();
 	    
 	    $course_settings = block_exacomp_get_settings_by_course($courseid);
-	    $isTeacher = true;
+	    //$isTeacher = true; //???
 	    $competence_tree = block_exacomp_get_competence_tree($courseid,
 	                                                       $selectedSubject? $selectedSubject->id : null,
 	                                                       $selectedTopic? $selectedTopic->id : null,
