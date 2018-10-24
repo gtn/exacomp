@@ -178,6 +178,10 @@ if (optional_param('print', false, PARAM_BOOL)) {
                                 $cross_subject->id);
             $html_tables[] = $html_pdf;
         }
+//         var_dump($cross_subject, $subjects, $students, '', $html_tables);
+//         var_dump($subjects); //passt
+//         var_dump($html_tables);
+//         die();
         block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
     }
 }

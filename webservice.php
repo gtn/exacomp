@@ -91,6 +91,82 @@ class block_exacomp_simple_service {
 		// die;
 	}
 	
+	static function dakora_print_crosssubject() {
+	    global $OUTPUT, $USER, $DB;
+	    $course = static::require_courseid();
+	    
+	   
+	    
+	    $courseid = required_param('courseid', PARAM_INT);
+	    $crosssubjid = required_param('crosssubjectid', PARAM_INT);
+	    $context = context_course::instance($courseid);
+	    $studentid = block_exacomp_get_studentid();
+	    $page_identifier = 'tab_competence_profile_profile';
+	    $isTeacher = block_exacomp_is_teacher($courseid);
+	    $output = block_exacomp_get_renderer();
+	    
+	    $activities = block_exacomp_get_activities_by_course($courseid);
+	    $course_settings = block_exacomp_get_settings_by_course($courseid);
+	    
+	    if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
+	        echo $output->header_v2('tab_cross_subjects');
+	        echo $output->no_activities_warning($isTeacher);
+	        echo $output->footer();
+	        exit;
+	    }
+	    
+	    
+	    $cross_subject = $crosssubjid ? \block_exacomp\cross_subject::get($crosssubjid, MUST_EXIST) : null;
+
+	    if ($cross_subject) {
+	        $html_tables = array();
+	        if ($isTeacher) {
+	            $students = (!$cross_subject->is_draft() && $course_settings->nostudents != 1) ? block_exacomp_get_students_for_crosssubject($courseid, $cross_subject) : array();
+	            if (!$students) {
+	                $selectedStudentid = 0;
+	                $studentid = 0;
+	            } elseif (isset($students[$studentid])) {
+	                $selectedStudentid = $studentid;
+	            } else {
+	                $selectedStudentid = 0;
+	                $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+	            }
+	        } else {
+	            $students = array($USER);
+	            $selectedStudentid = $USER->id;
+	            $studentid = $USER->id;
+	        }
+	        foreach ($students as $student) {
+	            $student = block_exacomp_get_user_information_by_course($student, $courseid);
+	        }
+	        $subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,
+	            $cross_subject,
+	            !($course_settings->show_all_examples == 0 && !$isTeacher),
+	            $course_settings->filteredtaxonomies,
+	            ($studentid > 0 && !$isTeacher) ? $studentid : 0,
+	            ($isTeacher) ? false : true);
+	        
+	        if ($subjects) {
+	            //$html_pdf = $output->overview_legend($isTeacher);
+	            $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
+	            $html_pdf .= $output->competence_overview($subjects,
+	                $courseid,
+	                $students,
+	                $showevaluation,
+	                $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+	                $scheme,
+	                false,
+	                $cross_subject->id);
+	            $html_tables[] = $html_pdf;
+	        }
+// 	        var_dump($cross_subject, $subjects, $students, '', $html_tables);
+	       // var_dump($subjects);//passt
+// 	        var_dump($html_tables);
+// 	        die();
+	        block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
+	    }
+	}
+	
 	static function dakora_print_competence_profile() {
 	    global $OUTPUT, $USER, $DB;
 	    $course = static::require_courseid();
