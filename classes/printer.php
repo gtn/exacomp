@@ -797,6 +797,106 @@ class printer {
         exit;
     }
 
+    static function group_report($html_content) {
+        //echo '<textarea>';print_r($html_content);echo '</textarea>'; exit;
+        ob_start();
+
+        $pdf = new printer_TCPDF('L');
+
+        $pdf->setStyle('
+			* {
+				font-size: 9pt;
+			}
+			h3 {                
+                font-size: 24pt;
+            }
+			div {
+				padding: 0;
+				margin: 0;
+			}
+			table td {
+				border: 0.2pt solid #555;
+				margin: 40px;
+			}
+			table {
+				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+			}
+			tr.highlight {
+				background-color: #e6e6e6;
+			}
+				');
+
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(20);
+
+        //if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*<tr.*</tr>)!isU', $html_content, $matches)) {
+        //    die('error #gg98daa');
+        //}
+        //$html_content = str_replace($matches[1], '', $html_content);
+        $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
+        //$pdf->setHeaderHTML($html_content.$matches[0].'</table>');
+
+        //$pdf->AddPage();
+        $pdf->writeHTML($html_content);
+        $pdf->Output();
+        exit;
+    }
+
+    static function block_exacomp_generate_report_annex_pdf($html_content) {
+        //echo '<textarea>';print_r($html_content);echo '</textarea>'; exit;
+        ob_start();
+
+        $pdf = new printer_TCPDF('P');
+
+        $pdf->setStyle('
+			* {
+				font-size: 9pt;
+			}
+			h1 {                
+                font-size: 18pt;
+            }
+			h2 {                
+                font-size: 14pt;                
+            }
+			h3 {                
+                font-size: 14pt;                
+            }
+            .toCenter {
+                text-align:center;
+            }
+			div {
+				padding: 0;
+				margin: 0;
+			}
+			table td {
+				border: 0.2pt solid #555;
+				margin: 40px;
+			}
+			table {
+				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+			}
+			tr.highlight {
+				background-color: #e6e6e6;
+			}
+				');
+
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(20);
+
+
+        //if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*<tr.*</tr>)!isU', $html_content, $matches)) {
+        //    die('error #gg98daa');
+        //}
+        //$html_content = str_replace($matches[1], '', $html_content);
+        $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
+        //$pdf->setHeaderHTML($html_content.$matches[0].'</table>');
+
+        //$pdf->AddPage();
+        $pdf->writeHTML($html_content);
+        $pdf->Output();
+        exit;
+    }
+
 }
 
 class Slice

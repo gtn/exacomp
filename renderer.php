@@ -6421,7 +6421,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				</div>
 			</div>
 			<?php 
-			echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_report'), 'name' => 'generate'));
+			echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_report'), 'name' => 'generate', 'class' => 'btn btn-default'));
+            echo '&nbsp;';
+			echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_pdf'), 'name' => 'formatPdf', 'class' => 'btn btn-default'));
 			//echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'print report', 'name' => 'print'));
 			 //echo '<input type="submit" value='.block_exacomp_get_string('create_report').'/>' 
             ?>
@@ -6473,7 +6475,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_EXAMPLE, 'report_learniningmaterial');
 
                 echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html'), 'class' => 'btn btn-default'));
+                echo '&nbsp;';
                 echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_docx'), 'class' => 'btn btn-default', 'name' => 'formatDocx'));
+                echo '&nbsp;';
+                echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_pdf'), 'class' => 'btn btn-default', 'name' => 'formatPdf'));
             ?>
         </form>
         <?php

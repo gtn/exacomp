@@ -8158,11 +8158,16 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
 	}
 }
 
-function block_exacomp_group_reports_result($filter) {
-	echo block_exacomp_group_reports_return_result($filter);
+function block_exacomp_group_reports_result($filter, $isPdf = false) {
+	$content = block_exacomp_group_reports_return_result($filter, $isPdf);
+	if ($isPdf) {
+        block_exacomp\printer::group_report($content);
+    } else {
+	    echo $content;
+    }
 }
 
-function block_exacomp_group_reports_return_result($filter) {
+function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 	$courseid = g::$COURSE->id;
 	$students = block_exacomp_get_students_by_course($courseid);
 	$html = '';
@@ -8173,7 +8178,9 @@ function block_exacomp_group_reports_return_result($filter) {
 		if($filter['selectedStudent'] != 0){
 		    $students=array($students[$filter['selectedStudent']]);
  		}
+ 		$i = 0;
 		foreach ($students as $student) {
+		    $i++;
 			$studentid = $student->id;
 
 			$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
@@ -8229,7 +8236,7 @@ function block_exacomp_group_reports_return_result($filter) {
 
 
 			ob_start();
-			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter, $html) {
+			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter, $html, $isPdf) {
 				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
 				if (!$item->visible) {
@@ -8255,15 +8262,18 @@ function block_exacomp_group_reports_return_result($filter) {
 				    echo '<tr class="exarep_example_row">';
 				}
 				
-				echo '<td class="exarep_descriptor" style="white-space: nowrap">'.$item->get_numbering();
-				echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
+				echo '<td class="exarep_descriptor" width="4%" style="white-space: nowrap;">'.$item->get_numbering().'</td>';
+				echo '<td class="exarep_descriptorText" width="'.($isPdf ? '50%' : '65%').'" style="padding-left: '.(5 + $level * 15).'px;">'.
+                            ($isPdf ? str_repeat('&nbsp;&nbsp;&nbsp;', $level) : '').
+                            $item->title.
+                      '</td>';
 
 				if (@$filter['time']['active']) {
-					echo '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
-				    $html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
+					echo '<td width="5%" class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
+				    //$html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
-				echo '<td class="exarep_studentAssessment" style="padding: 0 10px;">'.$eval->get_student_value_title($item::TYPE).'</td>';
-				echo '<td class="exarep_teacherAssessment" style="padding: 0 10px;">';
+				echo '<td class="exarep_studentAssessment" width="10%" style="padding: 0 10px;">'.$eval->get_student_value_title($item::TYPE).'</td>';
+				echo '<td class="exarep_teacherAssessment" width="10%" style="padding: 0 10px;">';
                 switch ($item_scheme) {
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                         echo block_exacomp_format_eval_value($eval->additionalinfo);
@@ -8286,9 +8296,9 @@ function block_exacomp_group_reports_return_result($filter) {
                         break;
                 }
                 echo '</td>';
-				echo '<td class="exarep_exa_evaluation" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>';
-				echo '<td class="exarep_difficultyLevel" style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
-
+				echo '<td class="exarep_exa_evaluation" width="10%" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>';
+				echo '<td class="exarep_difficultyLevel" width="10%" style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
+                echo '</tr>';
 				$walk_subs($level + 1);
 			});
 			$output = ob_get_clean();
@@ -8299,13 +8309,18 @@ function block_exacomp_group_reports_return_result($filter) {
 // 				echo '<h3>'.fullname($student).'</h3>';
 // 				echo '<table class="report_table" border="1" width="100%">';
 // 				echo '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
-
+                if ($i != 1) {
+                    $html .= '<br pagebreak="true"/>';
+                }
 				$html .= '<h3>'.fullname($student).'</h3>';
 				$html .= '<table class="report_table" border="1" width="100%">';
-				$html .= '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
+				$html .= '<thead>';
+                $html .= '<tr>';
+				$html .= '<th width="4%" ></th>';
+                $html .= '<th width="'.($isPdf ? '50%' : '65%').'" ></th>';
 				if (@$filter['time']['active']) {
 // 				    echo '<th>'.block_exacomp_get_string('assessment_date').'</th>';
-				    $html .= '<th>'.block_exacomp_get_string('assessment_date').'</th>';
+				    $html .= '<th width="5%">'.block_exacomp_get_string('assessment_date').'</th>';
 				}
 				//echo html_writer::tag('th',block_exacomp_get_string('output_current_assessments'),array('colspan' => "4"));
 // 				echo '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
@@ -8320,16 +8335,23 @@ function block_exacomp_group_reports_return_result($filter) {
 //                 echo $output;
 // 				echo '</table>';
 
-				$html .= '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
+				$html .= '<th width="40%" colspan="'.(@$filter['time']['active'] ? 5 : 4).'">'.block_exacomp_get_string('output_current_assessments').'</th>';
+				$html .= '</tr>';
 				$html .= '<tr>';
 				$html .= '<th class="heading"></th>';
-				$html .= '<th class="heading"></th>';
-				$html .= '<th class="heading" class="studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
-				$html .= '<th class="heading" class="teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
-				$html .= '<th class="heading" class="exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
-				$html .= '<th class="heading"class="difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
+				$html .= '<th width="50%" class="heading"></th>';
+                if (@$filter['time']['active']) {
+                    $html .= '<th width="5%" class="heading"></th>';
+                }
+				$html .= '<th width="10%" class="heading studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
+				$html .= '<th width="10%" class="heading teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
+				$html .= '<th width="10%" class="heading exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
+				$html .= '<th width="10%" class="heading difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
+                $html .= '</tr>';
+                $html .= '</thead>';
 				$html .= "<tbody>";
 				$html .= $output;
+				$html .= "</tbody>";
 				$html .= '</table>';
 			}
 		}
@@ -8346,7 +8368,7 @@ function block_exacomp_group_reports_return_result($filter) {
 // 		echo '<table>';
 // 		echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
 		$html .= '<table>';
-		$html .= '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
+		$html .= '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
 
 		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students, $html) {
 
@@ -8381,9 +8403,10 @@ function block_exacomp_group_reports_return_result($filter) {
                 // 				echo '<td style="padding: 0 10px;">'.$count;
 
                 $html .= '<tr>';
-                $html .= '<td style="white-space: nowrap">'.$item->get_numbering();
-                $html .= '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
-                $html .= '<td style="padding: 0 10px;">'.$count;
+                $html .= '<td style="white-space: nowrap">'.$item->get_numbering().'</td>';
+                $html .= '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title.'</td>';
+                $html .= '<td style="padding: 0 10px;">'.$count.'</td>';
+                $html .= '</tr>';
 			}
 
 			$walk_subs($level + 1);
@@ -8483,12 +8506,19 @@ function block_exacomp_group_reports_annex_result($filter) {
     //print_r($filter);
     $has_output = false;
     $isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+    $isPdf = (bool)optional_param('formatPdf', false, PARAM_RAW);
     $dataRow = array();
+
+    if ($isPdf) {
+        ob_start();
+    }
 
     if ($filter['selectedStudent'] > 0){
         $students = array($students[$filter['selectedStudent']]);
     }
+    $i = 0;
     foreach ($students as $student) {
+        $i++;
         $studentid = $student->id;
 
         $subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
@@ -8535,10 +8565,16 @@ function block_exacomp_group_reports_annex_result($filter) {
 
             });*/
         } else {
-            echo '<hr>';
-            echo '<h1>'.block_exacomp_get_string('tab_teacher_report_annex_title').'</h1>';
-            echo '<h2>'.fullname($student).'</h2>';
-            echo '<h3>'.g::$COURSE->fullname.'</h3>';
+            if ($i != 1) {
+                if ($isPdf) {
+                    echo '<br pagebreak="true"/>';
+                } else {
+                    echo '<hr>';
+                }
+            }
+            echo '<h1 class="toCenter">'.block_exacomp_get_string('tab_teacher_report_annex_title').'</h1>';
+            echo '<h2 class="toCenter">'.fullname($student).'</h2>';
+            echo '<h3 class="toCenter">'.g::$COURSE->fullname.'</h3>';
 
             $firstSubject = true;
             $has_subject_results = false;
@@ -8563,7 +8599,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                     echo '<thead>';
                     echo '<tr>';
                     echo '<th class="heading">'.block_exacomp_get_string('descriptor').'</th>';
-                    echo '<th class="heading">'.block_exacomp_get_string('taxonomy').'</th>';
+                    echo '<th class="heading toCenter">'.block_exacomp_get_string('taxonomy').'</th>';
                     // FIRST WAY: 1 column with value:
                     //echo '<th class="heading"></th>';
                     // SECOND WAY: 4 columns
@@ -8572,7 +8608,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                     //}
                     // THIRD WAY: columns by selected grading system (grading for competences)
                     for ($i = $startColumn; $i < $colCount; $i++) {
-                        echo '<th class="heading">';
+                        echo '<th class="heading toCenter">';
                         switch (block_exacomp_get_assessment_comp_scheme()) {
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                                 echo $i;
@@ -8640,7 +8676,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                         echo '<td class="exarep_descriptorText" style="padding-left: '.(5 + $level * 15).'px">'.
                                 $item->get_numbering().' '.$item->title.'</td>';
                         //echo '<pre>'.print_r($item,true).'</pre>';
-                        echo '<td style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
+                        echo '<td class="toCenter" style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
                         // FIRST WAY: 1 column with value:
                         //echo '<td style="padding: 0 10px;">'.$selectedEval.'</td>';
                         // SECOND WAY: 4 columns
@@ -8653,7 +8689,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                         }*/
                         // THIRD WAY: columns by selected grading system (grading for competences)
                         for ($i = $startColumn; $i < $colCount; $i++) {
-                            echo '<td style="padding: 0 10px;">';
+                            echo '<td class="toCenter" style="padding: 0 10px;">';
                             if ($selectedEval == $i) {
                                 echo 'X';
                             }
@@ -8671,6 +8707,15 @@ function block_exacomp_group_reports_annex_result($filter) {
             }
         }
 
+    }
+
+    ob_end_flush();
+
+    if ($isPdf) {
+        ob_end_flush();
+        $html_content = ob_get_clean();
+        \block_exacomp\printer::block_exacomp_generate_report_annex_pdf($html_content);
+        exit;
     }
 
     if ($isDocx) {

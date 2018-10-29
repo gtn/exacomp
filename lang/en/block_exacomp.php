@@ -53,6 +53,7 @@ $string['tab_teacher_report_annex'] = 'Annex';
 $string['tab_teacher_report_annex_title'] = 'Annex to the learning development report';
 $string['create_html'] = 'generate HTML preview';
 $string['create_docx'] = 'generate docx';
+$string['create_pdf'] = 'generate pdf';
 $string['tab_teacher_report_annex_template'] = 'template docx';
 $string['tab_teacher_report_annex_delete_template'] = 'delete';
 

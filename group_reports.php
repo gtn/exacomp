@@ -32,6 +32,7 @@ $page_identifier = 'tab_teacher_report_'.$reportType;
 
 $action = optional_param('action', '', PARAM_TEXT);
 $isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+$isPdf = (bool)optional_param('formatPdf', false, PARAM_RAW);
 
 $isTemplateDeleting = (bool)optional_param('deleteTemplate', false, PARAM_RAW);
 block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
@@ -39,8 +40,19 @@ block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
 $filter = block_exacomp_group_reports_get_filter($reportType);
 
 // before all output
-if ($action == 'search' && $reportType == 'annex' && $isDocx) {
-    block_exacomp_group_reports_annex_result($filter);
+if ($action == 'search') {
+    switch ($reportType) {
+        case 'general':
+            if ($isPdf) {
+                block_exacomp_group_reports_result($filter, $isPdf);
+            }
+            break;
+        case 'annex':
+            if ($isDocx || $isPdf) {
+                block_exacomp_group_reports_annex_result($filter);
+            }
+            break;
+    }
 }
 
 $PAGE->set_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => $reportType));

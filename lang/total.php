@@ -136,6 +136,10 @@ return [
             'Zeugnis im docx-Format generieren',
             'generate docx',
     ],
+    'create_pdf' => [
+            'Zeugnis im pdf-Format generieren',
+            'generate pdf',
+    ],
     'tab_teacher_report_annex_template' => [
             'template docx',
             'template docx',
