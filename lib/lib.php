@@ -8565,6 +8565,7 @@ function block_exacomp_group_reports_annex_result($filter) {
 
             });*/
         } else {
+
             if ($i != 1) {
                 if ($isPdf) {
                     echo '<br pagebreak="true"/>';
@@ -8580,6 +8581,7 @@ function block_exacomp_group_reports_annex_result($filter) {
             $has_subject_results = false;
 
             ob_start();
+
             block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use (
                     $studentid, $courseid, $filter, $colCount, &$firstSubject, &$has_subject_results, $startColumn
             ) {
@@ -8700,6 +8702,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                 }
                 $walk_subs($level + 1);
             });
+            ob_end_flush();
             echo "</tbody>";
             echo '</table>';
             if (!$has_subject_results) {
@@ -8708,8 +8711,6 @@ function block_exacomp_group_reports_annex_result($filter) {
         }
 
     }
-
-    ob_end_flush();
 
     if ($isPdf) {
         ob_end_flush();
