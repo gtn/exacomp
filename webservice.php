@@ -338,10 +338,7 @@ class block_exacomp_simple_service {
 	    $filter = block_exacomp_group_reports_get_filter();
 	    $isPdf = optional_param('isPdf',false,PARAM_BOOL);
 	    
-	    var_dump($filter);
-	    die();
-	    
-	    if($idPdf){
+	    if($isPdf){
 	        block_exacomp_group_reports_result($filter,$isPdf);
 	    }else{
 	        block_exacomp_group_reports_result($filter);
@@ -395,9 +392,9 @@ class block_exacomp_simple_service {
 
 		$filter = block_exacomp_group_reports_get_filter();
 		$isPdf = optional_param('isPdf',false,PARAM_BOOL);
-        var_dump($filter);
-        die();
-		if($idPdf){
+
+		
+		if($isPdf){
 		    block_exacomp_group_reports_result($filter,$isPdf);
 		}else{
 		    block_exacomp_group_reports_result($filter);

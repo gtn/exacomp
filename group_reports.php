@@ -38,13 +38,16 @@ $isTemplateDeleting = (bool)optional_param('deleteTemplate', false, PARAM_RAW);
 block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
 
 $filter = block_exacomp_group_reports_get_filter($reportType);
-
+$output = block_exacomp_get_renderer();
 // before all output
 if ($action == 'search') {
+    $output->print = true;
+//     var_dump($action);
+//     die();
     switch ($reportType) {
         case 'general':
             if ($isPdf) {
-                block_exacomp_group_reports_result($filter, $isPdf);
+               block_exacomp_group_reports_result($filter, $isPdf); 
             }
             break;
         case 'annex':
