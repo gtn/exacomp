@@ -1104,9 +1104,12 @@ class data_exporter extends data {
 
         foreach ($mm[0] as $k => $activity) {
             $xmlItem = $xmlItems->addChild('activity');
+            $module_type = g::$DB->get_field('course_modules', 'module',array('id' => $k));
             $dbItem->id = $k;
+            
             self::assign_source($xmlItem, $dbItem);
             $xmlItem->addChildWithCDATAIfValue('title', $mm[1][$k]);
+            $xmlItem->addChildWithCDATAIfValue('type', $module_type);
             foreach ($activity as $ke => $comptype) {
                 if ($ke == 0) {
                     
@@ -2338,14 +2341,14 @@ class data_importer extends data {
 	    if (isset($xmlItem->descriptors)) {
 	        foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 	            $descriptorid = self::get_database_id($descriptor);
-	            $activityid = self::get_new_activity_id($activity->title, $course_template);
+	            $activityid = self::get_new_activity_id($activity->title, $activity->type, $course_template);
 	            block_exacomp_set_compactivity($activityid, $descriptorid, 0, $activity->title); // isset($activity->id) ? intval($activityid) : intval($activity->sourceid)
 	        }
 	    }
 	    if (isset($xmlItem->topics)) {
 	        foreach($xmlItem->topics->topicid as $topic) {
 	            $topicid = self::get_database_id($topic);
-	            $activityid = self::get_new_activity_id($activity->title, $course_template);
+	            $activityid = self::get_new_activity_id($activity->title, $activity->type, $course_template);
 	            block_exacomp_set_compactivity($activityid, $topicid, 1, $activity->title); //isset($activity->id) ? intval($activityid) : intval($activity->sourceid)
 	        }
 	    }
@@ -2353,10 +2356,11 @@ class data_importer extends data {
 	    return $activity;
 	}
 	
-	private static function get_new_activity_id($activity_title, $course_template){
+	private static function get_new_activity_id($activity_title, $activity_type, $course_template){
 	    global $DB;
- 	    $instance= $DB->get_field('assign', 'MAX(id)' , array('name' => $activity_title, 'course' => $course_template));
-	    $id = $DB->get_field('course_modules', 'id', array('instance' => intval($instance), 'deletioninprogress' => 0));
+	    $type = $DB->get_field('modules', 'name' , array('id' => $activity_type));
+ 	    $instance= $DB->get_field($type, 'MAX(id)' , array('name' => $activity_title, 'course' => $course_template));
+ 	    $id = $DB->get_field('course_modules', 'id', array('instance' => intval($instance), 'deletioninprogress' => 0, 'module' => $activity_type));
 	    return $id;
 	}
 	
