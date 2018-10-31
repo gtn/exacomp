@@ -6421,9 +6421,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				</div>
 			</div>
 			<?php 
-			echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_report'), 'name' => 'generate', 'class' => 'btn btn-default'));
+			echo html_writer::empty_tag('input', array('type' => 'submit','id' => 'generate', 'value' => block_exacomp_get_string('create_report'), 'name' => 'generate', 'class' => 'btn btn-default'));
             echo '&nbsp;';
-			echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_pdf'), 'name' => 'formatPdf', 'class' => 'btn btn-default'));
+            echo html_writer::empty_tag('input', array('type' => 'submit','id' => 'formatPdf', 'value' => block_exacomp_get_string('create_pdf'), 'name' => 'formatPdf', 'class' => 'btn btn-default'));
 			//echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'print report', 'name' => 'print'));
 			 //echo '<input type="submit" value='.block_exacomp_get_string('create_report').'/>' 
             ?>

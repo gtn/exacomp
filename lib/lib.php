@@ -8161,7 +8161,7 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
 function block_exacomp_group_reports_result($filter, $isPdf = false) {
 	$content = block_exacomp_group_reports_return_result($filter, $isPdf);
 	if ($isPdf) {
-        block_exacomp\printer::group_report($content);
+        \block_exacomp\printer::group_report($content);
     } else {
 	    echo $content;
     }
