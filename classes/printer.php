@@ -65,7 +65,7 @@ class printer_TCPDF extends \TCPDF {
 
 	public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '') {
 		$this->_initPage();
-
+		
 		$style = '';
 		if ($this->_style) {
 			$style = "<style> $this->_style </style>";
@@ -162,8 +162,9 @@ class printer {
 			$pdf->setHeaderHTML($html_header.$matches[0].'</table>');
 
 			$pdf->AddPage();
+			var_dump($html_table);
+			die();
 			$pdf->writeHTML($html_table);
-			//var_dump($html_table);
 		}
 
 		$pdf->Output();
@@ -315,7 +316,10 @@ class printer {
             $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
 
 			$pdf->AddPage();
+// 			var_dump($html_table);
+// 			die();
 			$pdf->writeHTML($html_table);
+			
 			//var_dump($html_table);
 		}
 		

@@ -106,7 +106,6 @@ class block_exacomp_simple_service {
 	    $studentid = block_exacomp_get_studentid();
 	    $page_identifier = 'tab_competence_profile_profile';
 	    $isTeacher = block_exacomp_is_teacher($courseid);
-	    $output = block_exacomp_get_renderer();
 	    
 	    $scheme = block_exacomp_get_assessment_theme_scheme();
 	    
@@ -161,6 +160,8 @@ class block_exacomp_simple_service {
 	        if ($subjects) {
 	            //$html_pdf = $output->overview_legend($isTeacher);
 	            $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
+// 	            var_dump($html_pdf);
+// 	            die();
 // 	            var_dump($html_pdf);
 // 	            die();
 	            $html_pdf .= $output->competence_overview($subjects,
