@@ -6850,7 +6850,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[0]->span = count($table_header);
 
 		$content_row->columns[1] = new stdClass();
-		$content_row->columns[1]->evaluation = empty($table_content->subject_eval) ? -1 : $table_content->subject_eval;
+		$content_row->columns[1]->evaluation = (empty($table_content->subject_eval) && $table_content->subject_eval!='0')  ? -1 : $table_content->subject_eval;
 		$content_row->columns[1]->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval));
 		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
 		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
