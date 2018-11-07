@@ -95,18 +95,25 @@ class block_exacomp_simple_service {
 	    global $OUTPUT, $USER, $DB;
 	    $course = static::require_courseid();
 	    
+	    $output = block_exacomp_get_renderer();
+	    $output->print = true;
 	   
 	    
 	    $courseid = required_param('courseid', PARAM_INT);
 	    $crosssubjid = required_param('crosssubjectid', PARAM_INT);
+	    $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 	    $context = context_course::instance($courseid);
 	    $studentid = block_exacomp_get_studentid();
 	    $page_identifier = 'tab_competence_profile_profile';
 	    $isTeacher = block_exacomp_is_teacher($courseid);
 	    $output = block_exacomp_get_renderer();
 	    
+	    $scheme = block_exacomp_get_assessment_theme_scheme();
+	    
 	    $activities = block_exacomp_get_activities_by_course($courseid);
 	    $course_settings = block_exacomp_get_settings_by_course($courseid);
+	    
+	    $user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid); //so the $USER has more data
 	    
 	    if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
 	        echo $output->header_v2('tab_cross_subjects');
@@ -121,7 +128,10 @@ class block_exacomp_simple_service {
 	    if ($cross_subject) {
 	        $html_tables = array();
 	        if ($isTeacher) {
+
 	            $students = (!$cross_subject->is_draft() && $course_settings->nostudents != 1) ? block_exacomp_get_students_for_crosssubject($courseid, $cross_subject) : array();
+	            //var_dump($students);
+	            //die();
 	            if (!$students) {
 	                $selectedStudentid = 0;
 	                $studentid = 0;
@@ -136,6 +146,8 @@ class block_exacomp_simple_service {
 	            $selectedStudentid = $USER->id;
 	            $studentid = $USER->id;
 	        }
+// 	        var_dump($students);
+// 	        die();
 	        foreach ($students as $student) {
 	            $student = block_exacomp_get_user_information_by_course($student, $courseid);
 	        }
@@ -149,6 +161,8 @@ class block_exacomp_simple_service {
 	        if ($subjects) {
 	            //$html_pdf = $output->overview_legend($isTeacher);
 	            $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
+// 	            var_dump($html_pdf);
+// 	            die();
 	            $html_pdf .= $output->competence_overview($subjects,
 	                $courseid,
 	                $students,
@@ -159,8 +173,20 @@ class block_exacomp_simple_service {
 	                $cross_subject->id);
 	            $html_tables[] = $html_pdf;
 	        }
-// 	        var_dump($cross_subject, $subjects, $students, '', $html_tables);
-	       // var_dump($subjects);//passt
+// 	        var_dump($courseid,$students,$showevaluation,$isTeacher,$scheme,$cross_subject->id);
+
+	        
+	        //var_dump($courseid); //same
+	     //   var_dump($students); //andere darstellung, vll problem
+	        //var_dump($showevaluation);//same
+	        //         var_dump($isTeacher);//same
+	        //         var_dump($scheme);//same
+	        //         var_dump($cross_subject->id);//same
+// 	        die();
+	        
+	        
+	//        var_dump($cross_subject, $subjects, $students, '', $html_tables);
+	//        var_dump($subjects);//passt
 // 	        var_dump($html_tables);
 // 	        die();
 	        block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
@@ -279,8 +305,8 @@ class block_exacomp_simple_service {
                                                 	       false, 
                                                 	       ($isTeacher) ? false : true, 
                                                 	       false);   
-	    
 	    $scheme = block_exacomp_get_grading_scheme($courseid);
+	    
 	    $colselector="";
 	    if ($isTeacher) {	//mind nostudents setting
 	        if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
@@ -301,7 +327,7 @@ class block_exacomp_simple_service {
 	    $output->print = true;
 	    $html_tables = [];
 	    
-	    if ($group == -1) {
+	    if ($group == 0) {
 	        // all students, do nothing
 	    } else {
 	        // get the students on this group

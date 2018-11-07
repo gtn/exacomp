@@ -139,6 +139,7 @@ class printer {
 		$pdf->SetTopMargin(40);
 
 		foreach ($html_tables as $html_table) {
+		    
 			// convert padding to spaces, because tcpdf doesn't support padding
 			/*
 			$html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
@@ -162,8 +163,9 @@ class printer {
 
 			$pdf->AddPage();
 			$pdf->writeHTML($html_table);
+			//var_dump($html_table);
 		}
-		
+
 		$pdf->Output();
 		
 		exit;
@@ -269,6 +271,7 @@ class printer {
 	    ob_start();
 
 	    $pdf = new printer_TCPDF('L');
+	    
 
 		$pdf->setStyle('
 			* {
@@ -293,8 +296,13 @@ class printer {
 		$pdf->setHeaderMargin(5);
 		$pdf->SetTopMargin(20);
 
-		foreach ($html_tables as $html_table) {
+		foreach ($html_tables as $html_table) {		    
 			// add spacing for examples
+			
+		    $html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
+		        return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
+		    }, $html_table);
+		    
 			$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
 
             if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
@@ -308,8 +316,9 @@ class printer {
 
 			$pdf->AddPage();
 			$pdf->writeHTML($html_table);
+			//var_dump($html_table);
 		}
-
+		
 		$pdf->Output();
 
 		exit;
