@@ -115,13 +115,13 @@ if($formdata = $form->get_data()) {
    //store item in the right portfolio category
 	$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
 	if(!$course_category) {
-		$course_category = block_exaport_create_user_category($course->fullname, $USER->id);
+		//$course_category = block_exaport_create_user_category($course->fullname, $USER->id);
 	}
 
 	$subjecttitle = block_exacomp_get_subjecttitle_by_example($newExample->id);
 	$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
 	if(!$subject_category) {
-		$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
+		//$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
 	}
 	
 	$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->title,'url'=>$formdata->externalurl,'intro'=>$formdata->description,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id));

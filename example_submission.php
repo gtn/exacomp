@@ -79,13 +79,14 @@ if($formdata = $form->get_data()) {
 	$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
 		
 	if(!$course_category) {
-		$course_category = block_exaport_create_user_category($course->fullname, $USER->id);
+		$course_category = block_exaport_create_user_category($course->fullname, $USER->id,0, $course->id);
 	}
 	
 	$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id'=>$exampleid));
 	$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
 	$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
 	if(!$subject_category) {
+
 		$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
 	}
 	
