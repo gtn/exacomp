@@ -142,8 +142,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
         if ($isTeacher) {
 
             $students = (!$cross_subject->is_draft() && $course_settings->nostudents != 1) ? block_exacomp_get_students_for_crosssubject($courseid, $cross_subject) : array();
-            //var_dump($students);
-            //die();
+
             if (!$students) {
                 $selectedStudentid = 0;
                 $studentid = 0;
@@ -158,8 +157,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
             $selectedStudentid = $USER->id;
             $studentid = $USER->id;
         }
-//         var_dump($students);
-//         die();
+
         foreach ($students as $student) {
             $student = block_exacomp_get_user_information_by_course($student, $courseid);
         }
@@ -173,8 +171,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
         if ($subjects) {
             //$html_pdf = $output->overview_legend($isTeacher);
             $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
-//             var_dump($html_pdf);
-//             die();
+
             $html_pdf .= $output->competence_overview($subjects,
                                 $courseid,
                                 $students,
@@ -185,22 +182,6 @@ if (optional_param('print', false, PARAM_BOOL)) {
                                 $cross_subject->id);
             $html_tables[] = $html_pdf;
         }
-        
-        //var_dump($courseid); //same
-      //   var_dump($students); //andere darstellung, vll problem
-        //var_dump($showevaluation);//same
-//         var_dump($isTeacher);//same
-//         var_dump($scheme);//same
-//         var_dump($cross_subject->id);//same
-//         die();
-        
-        
-//         var_dump($courseid,$students,$showevaluation,$isTeacher,$scheme,$cross_subject->id);
-//         die();
-     //   var_dump($cross_subject, $subjects, $students, '', $html_tables);
-        //var_dump($subjects); //passt
-//         var_dump($html_tables);
-//         die();
         block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
     }
 }
