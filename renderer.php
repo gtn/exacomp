@@ -4603,7 +4603,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'), array('class' => 'competence_profile_insectitle'));
 			$innersection .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id, $max_scheme), array('class' => 'container', 'id' => 'charts'));
-			$content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose', 'class' => ' competence_profile_innersection exa-collapsible111111111111111111111111111111 exa-collapsible-open'));
+			$content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose', 'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
 
 			if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) {
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
@@ -4873,7 +4873,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $verboseTitles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
                     // use short: TODO: when we need to use long titles?
                     $verboseTitlesShort = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options_short());
-                    if (array_key_exists($element->eval, $verboseTitles)) {
+                    if (isset($element->eval) && array_key_exists($element->eval, $verboseTitles)) {
                         $stringValue = preg_replace('/\s+/u', '-', $verboseTitles[$element->eval]);
                         $params['stringValue'] = $stringValue;
                         $params['stringValueShort'] = $verboseTitlesShort[$element->eval];

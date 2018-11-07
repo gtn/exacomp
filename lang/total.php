@@ -778,7 +778,7 @@ return [
 		'Use basic and extended competencies',
 	],
 	'assessment_SelfEval_useVerbose' => [
-		'Verbalisierte Schülerrückmeldung',
+		'verbalisiertes Schüler/innen-Feedback',
 		'verbose feedback options for students',
 	],
 	'selfEvalVerbose.1' => [
