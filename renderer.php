@@ -4282,9 +4282,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach ($modules as $module) {
 			$cell = new html_table_cell();
-			$cell->attributes['class'] = 'ec_tableheadwidth';
+			$cell->attributes['class'] = ' ec_tableheadwidth ';
+			if (count($modules) > 5) {
+                $cell->attributes['class'] .= ' verticalCell ';
+            }
 			$cell->attributes['module-type'] = $module->modname;
-			$cell->text = html_writer::link(block_exacomp_get_activityurl($module), $module->name);
+			$cell->text = '<span>'.html_writer::link(block_exacomp_get_activityurl($module), mb_strimwidth($module->name, 0, 33, "...")).'</span>'; // crop if > 30
 
 			$row->cells[] = $cell;
 		}
