@@ -1100,11 +1100,9 @@ class data_exporter extends data {
         $xmlItems = $xmlParent->addChild('activities');
 
 
-
-
         foreach ($mm[0] as $k => $activity) {
             $xmlItem = $xmlItems->addChild('activity');
-            $module_type = g::$DB->get_field('course_modules', 'module',array('id' => $k));
+            $module_type = g::$DB->get_field('course_modules', 'module', array('id' => $k));
             $dbItem->id = $k;
             
             self::assign_source($xmlItem, $dbItem);
@@ -1116,7 +1114,7 @@ class data_exporter extends data {
                     $descriptors = g::$DB->get_records_sql("
 				        SELECT DISTINCT d.id, d.source, d.sourceid
 				        FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
-				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid
+				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid AND de.comptype = 0
 				        WHERE de.activityid = ?
 			         ", array($dbItem->id));
                     
@@ -1130,7 +1128,7 @@ class data_exporter extends data {
                     $topics = g::$DB->get_records_sql("
 				        SELECT DISTINCT d.id, d.source, d.sourceid
 				        FROM {".BLOCK_EXACOMP_DB_TOPICS."} d
-				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid
+				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid AND de.comptype = 1
 				        WHERE de.activityid = ?
 			         ", array($dbItem->id));
                     
@@ -1597,11 +1595,11 @@ class data_importer extends data {
 		
 		
 		
-		if($course_template!=0){
+		if( $course_template != 0) {
 		    if ($ret === true) { // only if it is zip
 		        extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
 		    }
-		    
+
 		    for ($i = 1; @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i); $i++){
 		        moodle_restore('activity'. $i, $course_template, $USER->id);
 		    }
@@ -1609,18 +1607,22 @@ class data_importer extends data {
 
 		  if (isset($xml->activities)) {
 		      foreach($xml->activities->activity as $activity) {
-		           foreach($activity->descriptors->descriptorid as $descriptorid){
-  		               if (in_array($descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {
-  		                   self::insert_activity($activity, $course_template);
-		                   continue;
- 		               }
-		           }
-		           foreach($activity->topics->topicid as $topicid){
-		               if (in_array($topicid->attributes()->id, $topicsFromSelectedGrids)) {
-		                   self::insert_activity($activity, $course_template);
-		                   continue;
-		               }
-		           }
+                  if (isset($activity->descriptors)) {
+                      foreach ($activity->descriptors->descriptorid as $descriptorid) {
+                          if (in_array($descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {
+                              self::insert_activity($activity, $course_template);
+                              continue;
+                          }
+                      }
+                  }
+		           if (isset($activity->topics)) {
+                       foreach ($activity->topics->topicid as $topicid) {
+                           if (in_array($topicid->attributes()->id, $topicsFromSelectedGrids)) {
+                               self::insert_activity($activity, $course_template);
+                               continue;
+                           }
+                       }
+                   }
 		           
 		      }
 		  }
@@ -2479,7 +2481,7 @@ function extract_zip_subdir($zipfile, $subpath, $destination, $temp_cache, $trav
 //         echo "ok\n";
 //         echo "moving subdir... ";
 //         echo "\n $zip_dir / $subpath -- to -- >  $destination\n";
-        rename($zip_dir . DIRECTORY_SEPARATOR . $subpath, $destination);
+        @rename($zip_dir . DIRECTORY_SEPARATOR . $subpath, $destination);
 //         echo "ok\n";
 //         echo "cleaning extraction dir... ";
         rrmdir($zip_dir);

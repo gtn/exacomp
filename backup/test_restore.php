@@ -31,6 +31,7 @@ function moodle_restore($data, $courseid, $userdoingrestore)
     // Restore backup into course.
     $controller = new restore_controller($data, $courseid, backup::INTERACTIVE_NO, backup::MODE_IMPORT, $userdoingrestore, backup::TARGET_CURRENT_ADDING);
     $controller->execute_precheck();
+
     $controller->execute_plan();
 
 //     var_dump($courseid);
