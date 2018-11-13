@@ -2740,7 +2740,7 @@ function get_all_courses_key_value(){
     global $DB;
     $records = $DB->get_records_sql('
         SELECT id, fullname
-        FROM mdl_course');
+        FROM {course}');
     $ret = array();
     $i=0;
     
