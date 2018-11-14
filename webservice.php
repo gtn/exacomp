@@ -329,23 +329,24 @@ class block_exacomp_simple_service {
 	            $isEditingTeacher);
 	    }
 
+
 	    \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 
 	}
 	
 	
-	static function dakora_print_group_reports() {
-	    static::require_courseid();
+// 	static function dakora_print_group_reports() {
+// 	    static::require_courseid();
 	    
-	    $filter = block_exacomp_group_reports_get_filter();
-	    $isPdf = optional_param('isPdf',false,PARAM_BOOL);
+// 	    $filter = block_exacomp_group_reports_get_filter();
+// 	    $isPdf = optional_param('isPdf',false,PARAM_BOOL);
 	    
-	    if($isPdf){
-	        block_exacomp_group_reports_result($filter,$isPdf);
-	    }else{
-	        block_exacomp_group_reports_result($filter);
-	    }
-	}
+// 	    if($isPdf){
+// 	        block_exacomp_group_reports_result($filter,$isPdf);
+// 	    }else{
+// 	        block_exacomp_group_reports_result($filter);
+// 	    }
+// 	}
 
 	/**
 	 * used own webservice, because moodle does not support indexed arrays (eg. [ 188 => object])
@@ -395,8 +396,14 @@ class block_exacomp_simple_service {
 		$filter = block_exacomp_group_reports_get_filter();
 		$isPdf = optional_param('isPdf',false,PARAM_BOOL);
 
+		$_SESSION['bla'] = 6;
+		//var_dump($_SESSION['bla']);
 		
-		if($isPdf){
+		
+		if($_SESSION['bla'] == 6){
+		   // block_exacomp_group_reports_result($filter);
+		    //die();
+		    //echo $output->group_report_filters('webservice', $filter, $action, $extra, $courseid);
 		    block_exacomp_group_reports_result($filter,$isPdf);
 		}else{
 		    block_exacomp_group_reports_result($filter);

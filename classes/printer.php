@@ -167,6 +167,7 @@ class printer {
 			$pdf->writeHTML($html_table);
 		}
 
+// 		die();
 		$pdf->Output();
 		
 		exit;
