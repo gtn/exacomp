@@ -1308,7 +1308,7 @@ class data_importer extends data {
      * @param int $schedulerId if it is for scheduler task - id of task; -1 if it is main scheduler task: \block_exacomp\task\import
 	 */
 	public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
-	    global $USER, $CFG;
+	    global $USER, $CFG, $DB;
 
 		if (!$file) {
 			throw new import_exception('filenotfound');
@@ -1617,7 +1617,8 @@ class data_importer extends data {
                    }
 		           
 		      }
-		  }
+		  }	  
+		  $DB->set_field(BLOCK_EXACOMP_DB_SETTINGS, "istemplate", 1, array('courseid' => $course_template));
 	   }
 		
 

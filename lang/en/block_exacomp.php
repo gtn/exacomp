@@ -218,6 +218,7 @@ $string['importtask_title'] = 'Title';
 $string['importtask_link'] = 'Link to source';
 $string['importtask_disabled'] = 'Disabled';
 $string['importtask_all_subjects'] = 'All Subjects';
+$string['dest_course'] = 'Destiantion of imported activities';
 
 
 // === Configuration ===

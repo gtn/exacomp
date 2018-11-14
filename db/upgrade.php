@@ -3089,6 +3089,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018101702, 'exacomp');
     }
+    
+    if ($oldversion < 2018111400) {
+        $table = new xmldb_table('block_exacompsettings');
+        $field = new xmldb_field('istemplate', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2018111400, 'exacomp');
+    }
 
 
 	/*

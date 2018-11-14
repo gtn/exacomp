@@ -90,8 +90,8 @@ class generalxml_upload_form extends \moodleform {
         if ($importtype != 'scheduler') {
             $mform->addElement('filepicker', 'file', block_exacomp_get_string("file"), null);
             $mform->addRule('file', null, 'required', null, 'client');
-            $mform->addElement('static', '','' ,'select template course' );
-            $mform->addElement('select', 'template', 'Vorlage', ['' => ''] + get_all_courses_key_value());
+            $mform->addElement('static', '','' ,block_exacomp_get_string("dest_course"));
+            $mform->addElement('select', 'template', block_exacomp_get_string("choosecourse"), ['' => ''] + get_all_courses_key_value());
             //$mform->addRule('template', null, 'required', null, 'client');
             $mform->addElement('static', '','' ,'' );
         }

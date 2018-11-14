@@ -739,6 +739,10 @@ return [
         'Alle Bildungsstandard',
         'All Subjects'
     ],
+    'dest_course' => [
+        'Ziel der importierten Aktivitäten',
+        'Destiantion of imported activities'
+    ],
 
 
 	// === Configuration ===
