@@ -1140,18 +1140,10 @@ class data_exporter extends data {
                 }
             }
 
-            moodle_backup($k, $USER->id);
+            $backupid = moodle_backup($k, $USER->id);
+            
 
-            $source = glob($CFG->dataroot . '/temp/backup/*');
-            $source = array_filter($source, 'is_dir');
-            usort($source, function ($a, $b) {
-                return filemtime($a) < filemtime($b);
-            });
-            if (! isset($source[0])) {
-                die('backup not found');
-            }
-            $source = $source[0];
-
+            $source = $CFG->dataroot . '/temp/backup/'.$backupid;
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
 
             foreach ($files as $name => $file) {
