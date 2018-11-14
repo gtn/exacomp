@@ -2739,13 +2739,15 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
 function get_all_courses_key_value(){
     global $DB;
     $records = $DB->get_records_sql('
-        SELECT id, fullname
-        FROM {course}');
+        SELECT e.courseid, c.fullname
+        FROM {block_exacompsettings} e
+        JOIN {course} c ON e.courseid = c.id'
+        );
     $ret = array();
     $i=0;
     
     foreach ($records as $record){
-        $ret[$record->id] = $record->fullname;
+        $ret[$record->courseid] = $record->fullname;
         $i++;
     }
     
