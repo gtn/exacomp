@@ -78,7 +78,7 @@ class generalxml_upload_form extends \moodleform {
 		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
 		$this->_form->_attributes['class'] = "mform exacomp_import";
 		$check = \block_exacomp\data::has_data();
-		if($importtype == 'custom') {
+		if ($importtype == 'custom') {
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));
 		} elseif ($importtype == 'scheduler') {
             $mform->addElement('header', 'comment', block_exacomp_get_string("scheduler_import_settings"));
@@ -91,7 +91,7 @@ class generalxml_upload_form extends \moodleform {
             $mform->addElement('filepicker', 'file', block_exacomp_get_string("file"), null);
             $mform->addRule('file', null, 'required', null, 'client');
             $mform->addElement('static', '','' ,block_exacomp_get_string("dest_course"));
-            $mform->addElement('select', 'template', block_exacomp_get_string("choosecourse"), ['' => ''] + get_all_courses_key_value());
+            $mform->addElement('select', 'template', block_exacomp_get_string("choosecoursetemplate"), ['' => ''] + get_all_courses_key_value());
             //$mform->addRule('template', null, 'required', null, 'client');
             $mform->addElement('static', '','' ,'' );
         }

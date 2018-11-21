@@ -521,6 +521,7 @@ $string['select_student_weekly_schedule'] = 'Wählen Sie eine(n) Kursteilnehmer/
 $string['example_pool'] = 'Planungsspeicher';
 $string['example_trash'] = 'Papierkorb';
 $string['choosecourse'] = 'Kurs auswählen: ';
+$string['choosecoursetemplate'] = 'Bitte Vorlagenkurs für zu importierende Moodle Aktivitäten auswählen: ';
 $string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Kursteilnehmer/innen auf den Planungsspeicher im Wochenplan gelegt.';
 $string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem/r Schüler/in bereits im Planungsspeicher im Wochenplan.';
 $string['weekly_schedule_link_to_grid'] = 'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln';

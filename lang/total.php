@@ -1786,6 +1786,10 @@ return [
 		'Kurs auswählen: ',
 		'Select course: ',
 	],
+	'choosecoursetemplate' => [
+		'Bitte Vorlagenkurs für zu importierende Moodle Aktivitäten auswählen: ',
+		'Select template course: ',
+	],
 	'weekly_schedule_added_all' => [
 		'Die Aufgabe wurde bei allen Kursteilnehmer/innen auf den Planungsspeicher im Wochenplan gelegt.',
 		'Example added to the weekly schedule of all students.',
