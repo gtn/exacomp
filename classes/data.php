@@ -1661,9 +1661,9 @@ class data_importer extends data {
             $sujectsIds = '*';
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
-            $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
+            $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
             $selectedGrids = array_keys($selectedGrids);
-            array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+            array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
             $sujectsIds = implode(" or ", $selectedGrids);
         }
         if ($sujectsIds != '') {
@@ -1695,9 +1695,9 @@ class data_importer extends data {
             $sujectsIds = '*';
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
-            $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
+            $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
             $selectedGrids = array_keys($selectedGrids);
-            array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+            array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
             $sujectsIds = implode(" or ", $selectedGrids);
         }
         if ($sujectsIds != '') {
@@ -1723,7 +1723,7 @@ class data_importer extends data {
     // used for importing only needed skills, niveus... (from selected grids)
     private static function get_property_for_descriptors_from_xml($xml, $propertyName = 'skillid', $descriptors = array()) {
         $result = array();
-        array_walk($descriptors, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+        array_walk($descriptors, function(&$i) {$i = '@id="'.$i.'"';});
         $descriptors = implode(" or ", $descriptors);
         if ($descriptors != '') {
             $query = "//descriptors/descriptor[".$descriptors."]/".$propertyName;
@@ -1742,7 +1742,7 @@ class data_importer extends data {
 
     private static function get_examples_for_descriptors_from_xml($xml, $descriptors = array()) {
         $result = array();
-        array_walk($descriptors, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
+        array_walk($descriptors, function(&$i) {$i = '@id="'.$i.'"';});
         $descriptors = implode(" or ", $descriptors);
         if ($descriptors != '') {
             $query = "//examples/example/descriptors/descriptorid[".$descriptors."]";
@@ -2274,10 +2274,14 @@ class data_importer extends data {
             } else {
                 $selectedGrids = self::get_selectedgrids_for_source($source_local_id, false);
             }
-            $selectedGrids = array_filter($selectedGrids, create_function('$v', 'return ($v == 1);'));
-            $selectedGrids = array_keys($selectedGrids);
-            array_walk($selectedGrids, create_function('&$i', ' $i = \'@id="\'.$i.\'"\';'));
-            $sujectsIds = implode(" or ", $selectedGrids);
+            if (is_array($selectedGrids)) {
+                $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
+                $selectedGrids = array_keys($selectedGrids);
+                array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
+                $sujectsIds = implode(" or ", $selectedGrids);
+            } else {
+                $sujectsIds = '';
+            }
         }
         if ($sujectsIds != '') {
             if ($schedulerId == '*') {
