@@ -220,7 +220,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 	}*/
 	
 	class block_exacomp_admin_setting_preconfiguration extends admin_setting_configselect {
-		public function write_setting($data) {
+
+        public function write_setting($data) {
 			$ret = parent::write_setting($data);
 		   
 			if ($ret != '') {
@@ -231,6 +232,21 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 
 			return '';
 		}
+
+		public function get_setting() {
+            // cheat for Moodle api:
+            // if it is updating of plugin  - we do not need to see this param in the new plugin options list
+            // if it is main plugin settings page - all ok - show full code
+            $dTemp = debug_backtrace();
+            if (is_array($dTemp) && array_key_exists(1, $dTemp) && array_key_exists('function', $dTemp[1])) {
+                $fromFunction = $dTemp[1]['function'];
+                //echo "<pre>debug:<strong>settings.php:243</strong>\r\n"; print_r($dTemp[1]); echo '</pre>'; // !!!!!!!!!! delete it
+                if ($fromFunction == 'admin_output_new_settings_by_page' || $fromFunction == 'any_new_admin_settings') {
+                        return true; // may be this value already setted up
+                }
+            }
+            return parent::get_setting();
+        }
 
         public function load_choices() {
             $choices = array('0' => block_exacomp_get_string('settings_admin_preconfiguration_none'));

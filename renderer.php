@@ -934,7 +934,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                        'crosssubs',
 			                        $student,
 			                        "teacher",
-			                        $scheme,
+			                        1,
 			                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
 			                        null,
 			                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -1237,7 +1237,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                        'examples',
 			                        $student,
 			                        "teacher",
-			                        $example_scheme,
+			                        1,
 			                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
 			                        null,
 			                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -1479,7 +1479,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     'subjects',
                                     $student,
                                     $evaluation,
-                                    $scheme,
+                                    1,
                                     false,
                                     null,
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -1552,7 +1552,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     'subjects',
                                     $student,
                                     'teacher',
-                                    $scheme,
+                                    1,
                                     true,
                                     null,
                                     null);
@@ -1880,7 +1880,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         'topics',
                                         $student,
                                         "teacher",
-                                        $data->scheme,
+                                        1,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
                                         null,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -2295,7 +2295,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         'competencies',
                                         $student,
                                         "teacher",
-                                        $data->scheme,
+                                        1,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
                                         null,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -2657,7 +2657,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         'examples',
                                         $student,
                                         "teacher",
-                                        $example_scheme,
+                                        1,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
                                         null,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -2999,7 +2999,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     'crosssubs',
                                     $student,
                                     "teacher",
-                                    $scheme,
+                                    1,
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
                                     null,
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -3329,7 +3329,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     'examples',
                                     $student,
                                     "teacher",
-                                    $example_scheme,
+                                    1,
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
                                     null,
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
@@ -3685,7 +3685,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $checkbox html code for checkbox
 	 */
-	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null, $reviewerid = null) {
+	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $value, $disabled = false, $activityid = null, $reviewerid = null) {
 		global $USER;
 
 		$attributes = array();
@@ -3700,12 +3700,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$attributes['exa-userid'] = $student->id;
 		$attributes['exa-evaluation'] = $evaluation;
 
-		$content = html_writer::checkbox(
+		// $scheme <--> $value? TODO: check it
+		/*$content = html_writer::checkbox(
 			((isset($activityid)) ?
 				$name.'-'.$compid.'-'.$student->id.'-'.$activityid.'-'.$evaluation
 				: $name.'-'.$compid.'-'.$student->id.'-'.$evaluation),
-			$scheme,
+			$scheme.'-',
 			(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme / 2), null,
+			$attributes);*/
+        $content = html_writer::checkbox(
+			((isset($activityid)) ?
+				$name.'-'.$compid.'-'.$student->id.'-'.$activityid.'-'.$evaluation
+				: $name.'-'.$compid.'-'.$student->id.'-'.$evaluation),
+			$value,
+			(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] == 1, null,
 			$attributes);
 
 		return $content;
