@@ -3705,7 +3705,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			((isset($activityid)) ?
 				$name.'-'.$compid.'-'.$student->id.'-'.$activityid.'-'.$evaluation
 				: $name.'-'.$compid.'-'.$student->id.'-'.$evaluation),
-			$scheme.'-',
+			$scheme,
 			(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme / 2), null,
 			$attributes);*/
         $content = html_writer::checkbox(
