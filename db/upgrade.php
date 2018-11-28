@@ -3114,7 +3114,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2018112700, 'exacomp');
     }
 
-    if ($oldversion < 2018112800) {
+    if ($oldversion < 2018112801) {
         // upgrade old config to new assessment model
         $levels = array('example', 'childcomp', 'comp', 'topic', 'subject', 'theme');
         // adminscheme (diff_levels): if checked -> enable "Global assessment level" for all levels
@@ -3161,9 +3161,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         if (intval(get_config('exacomp', 'usetopicgrading')) === 0) { // disable assessment for topics
             set_config('assessment_topic_scheme', 0, 'exacomp');
         }
+        // max points from course settings
+        $courseGrades = $DB->get_fieldset_select('block_exacompsettings', 'grading', 'grading > 0 AND courseid > 0');
+        if ($courseGrades) {
+            $maxPoints = max($courseGrades);
+            set_config('assessment_points_limit', $maxPoints, 'exacomp');
+        }
 
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2018112800, 'exacomp');
+        upgrade_block_savepoint(true, 2018112801, 'exacomp');
     }
 
 
