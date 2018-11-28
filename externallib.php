@@ -5212,6 +5212,34 @@ class block_exacomp_external extends external_api {
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
 		));
 	}
+	
+	public static function dakora_get_descriptors_details_parameters() {
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value(PARAM_INT, 'courseid'),
+	        'descriptorid' => new external_value(PARAM_INT, 'descriptorid'),
+	        'userid' => new external_value (PARAM_INT, 'userid'),
+	        'forall' => new external_value (PARAM_BOOL, 'forall'),
+	        'crosssubjid' => new external_value (PARAM_INT, 'crosssubjid'),
+	    ));
+	}
+	
+	/**
+	 * get descriptor details incl. grading and children
+	 * @ws-type-read
+	 * @param $courseid
+	 * @param $descriptorid
+	 * @param $userid
+	 * @param $forall
+	 * @param $crosssubjid
+	 * @return stdClass
+	 */
+	public static function dakora_get_descriptors_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+	    
+	}
+	
+	public static function dakora_get_descriptors_details_returns() {
+	    
+	}
 
 	public static function dakora_get_descriptor_details_parameters() {
 		return new external_function_parameters (array(
@@ -6121,6 +6149,9 @@ class block_exacomp_external extends external_api {
 			$descriptor->studentevaluation = ((isset($student->competencies->student[$descriptor->id])) ? $student->competencies->student[$descriptor->id] : -1);
 			$descriptor->timestampstudent = ((isset($student->competencies->timestamp_student[$descriptor->id])) ? $student->competencies->timestamp_student[$descriptor->id] : 0);
 			$descriptor->examples = [];
+			
+			//$descriptor->niveauid;
+
 
 			$descriptor->subs = array();
 
@@ -6181,6 +6212,7 @@ class block_exacomp_external extends external_api {
 				'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation'),
 				'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading of descriptor'),
 				'evalniveauid' => new external_value (PARAM_INT, 'teacher evaluation niveau id'),
+			    'niveauid' => new external_value (PARAM_INT, 'niveau id (ger: lfs)'),
 				'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher descriptor evaluation'),
 				'studentevaluation' => new external_value (PARAM_INT, 'student evaluation'),
 				'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student descriptor evaluation'),
