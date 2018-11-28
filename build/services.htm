@@ -2377,6 +2377,174 @@ Returns:<pre>{
     "success": "bool null (status)",
     "exampleid": "int null (exampleid)"
 }</pre>
+<h2>dakora_get_descriptors_details</h2>
+<div>get descriptor details incl. grading and children</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>descriptorid</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>forall</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>crosssubjid</td>
+</table>
+Returns:<pre>{
+    "reviewerid": "int null (id of reviewer)",
+    "reviewername": "text null (name of reviewer)",
+    "descriptorid": "int null (id of descriptor)",
+    "parentid": "int null (id of parent of descriptor)",
+    "descriptortitle": "text null (title of descriptor)",
+    "teacherevaluation": "int null (teacher evaluation of descriptor)",
+    "studentevaluation": "int null (student evaluation of descriptor)",
+    "additionalinfo": "float null (additional grading for descriptor)",
+    "timestampteacher": "int null (timestamp for teacher evaluation)",
+    "timestampstudent": "int null (timestamp for student evaluation)",
+    "evalniveauid": "int null (evaluation niveau id)",
+    "numbering": "text null (numbering)",
+    "niveauid": "int null (id of niveau)",
+    "niveautitle": "text null (title of niveau)",
+    "gradingisold": "bool null (true when there are newer gradings in the childcompetences)",
+    "hasmaterial": "bool null (true or false if descriptor has material)",
+    "children": [
+        {
+            "reviewerid": "int null (id of reviewer)",
+            "reviewername": "text null (name of reviewer)",
+            "descriptorid": "int null (id of descriptor)",
+            "parentid": "int null (id of parent of descriptor)",
+            "descriptortitle": "text null (title of descriptor)",
+            "teacherevaluation": "int null (teacher evaluation of descriptor)",
+            "additionalinfo": "float null (additional grading for descriptor)",
+            "evalniveauid": "int null (evaluation niveau id)",
+            "timestampteacher": "int null (timestamp of teacher evaluation)",
+            "studentevaluation": "int null (student evaluation of descriptor)",
+            "timestampstudent": "int null (timestamp of student evaluation)",
+            "numbering": "text null (numbering)",
+            "hasmaterial": "bool null (true or false if descriptor has material)",
+            "examples": [
+                {
+                    "exampleid": "int null (id of example)",
+                    "exampletitle": "text null (title of example)",
+                    "examplestate": "int null (state of example, always 0 if for all students)",
+                    "visible": "int null (visibility of example in current context)",
+                    "used": "int null (used in current context)",
+                    "teacherevaluation": "int null (example evaluation of teacher)",
+                    "studentevaluation": "int null (example evaluation of student)",
+                    "timestampteacher": "int null (timestamp of teacher evaluation)",
+                    "timestampstudent": "int null (timestamp of student evaluation)",
+                    "evalniveauid": "int null (evaluation niveau id)",
+                    "solution_visible": "bool null (visibility for example solution in current context)"
+                },
+                "..."
+            ],
+            "examplestotal": "int null (total number of material)",
+            "examplesvisible": "int null (visible number of material)",
+            "examplesinwork": "int null (number of material in work)",
+            "visible": "int null (visibility of children in current context)",
+            "used": "int null (used in current context)",
+            "examplesedited": "int null (number of edited material)",
+            "examplegradings": {
+                "teacher": [
+                    {
+                        "evalniveauid": "int null (niveau id to according number)",
+                        "value": "int null (grading value)",
+                        "sum": "int null (number of gradings)"
+                    },
+                    "..."
+                ],
+                "student": [
+                    {
+                        "sum": "int null (number of gradings)"
+                    },
+                    "..."
+                ]
+            }
+        },
+        "..."
+    ],
+    "childrengradings": {
+        "teacher": [
+            {
+                "evalniveauid": "int null (niveau id to according number)",
+                "value": "int null (grading value)",
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ],
+        "student": [
+            {
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ]
+    },
+    "examples": [
+        {
+            "exampleid": "int null (id of example)",
+            "exampletitle": "text null (title of example)",
+            "examplestate": "int null (state of example, always 0 if for all students)",
+            "visible": "int null (visibility of example in current context)",
+            "used": "int null (used in current context)",
+            "teacherevaluation": "int null (example evaluation of teacher)",
+            "studentevaluation": "int null (example evaluation of student)",
+            "evalniveauid": "int null (evaluation niveau id)",
+            "timestampteacher": "int null (timestamp of teacher evaluation)",
+            "timestampstudent": "int null (timestamp of student evaluation)",
+            "solution_visible": "bool null (visibility for example solution in current context)"
+        },
+        "..."
+    ],
+    "examplestotal": "int null (total number of material)",
+    "examplesvisible": "int null (visible number of material)",
+    "examplesinwork": "int null (number of material in work)",
+    "examplesedited": "int null (number of edited material)",
+    "examplegradings": {
+        "teacher": [
+            {
+                "evalniveauid": "int null (niveau id to according number)",
+                "value": "int null (grading value)",
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ],
+        "student": [
+            {
+                "sum": "int null (number of gradings)"
+            },
+            "..."
+        ]
+    },
+    "visible": "int null (visibility of example in current context)",
+    "used": "int null (used in current context)"
+}</pre>
 <h2>dakora_get_descriptor_details</h2>
 <div>get descriptor details incl. grading and children</div>
 <div>type: read</div>

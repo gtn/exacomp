@@ -5233,12 +5233,129 @@ class block_exacomp_external extends external_api {
 	 * @param $crosssubjid
 	 * @return stdClass
 	 */
-	public static function dakora_get_descriptors_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+	public static function dakora_get_descriptors_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {    
+	    global $DB, $USER;
+	    static::validate_parameters(static::dakora_get_descriptor_details_parameters(),
+	        array('courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
 	    
+	    if (!$forall && $userid == 0) {
+	        $userid = $USER->id;
+	    }
+	    
+	    static::require_can_access_course_user($courseid, $userid);
+	    
+	    $descriptor_return = static::get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid);
+	    return $descriptor_return;
+// 	    return array("success" => true, "itemid" => 3);
 	}
 	
 	public static function dakora_get_descriptors_details_returns() {
-	    
+// 	    return new external_single_structure (array(
+// 	        'success' => new external_value (PARAM_BOOL, 'status'),
+// 	        'itemid' => new external_value (PARAM_INT, 'itemid'),
+// 	    ));
+	    return new external_single_structure (array(
+	        'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
+	        'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
+	        'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+	        'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
+	        'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
+	        'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
+	        'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
+	        'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
+	        'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
+	        'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
+	        'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
+	        'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+	        'numbering' => new external_value (PARAM_TEXT, 'numbering'),
+	        'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+	        'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+	        'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+	        'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
+	        'children' => new external_multiple_structure (new external_single_structure (array(
+	            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
+	            'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
+	            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+	            'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
+	            'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
+	            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
+	            'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
+	            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+	            'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
+	            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
+	            'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
+	            'numbering' => new external_value (PARAM_TEXT, 'numbering'),
+	            'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
+	            'examples' => new external_multiple_structure (new external_single_structure (array(
+	                'exampleid' => new external_value (PARAM_INT, 'id of example'),
+	                'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+	                'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
+	                'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+	                'used' => new external_value (PARAM_INT, 'used in current context'),
+	                'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
+	                'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
+	                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
+	                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
+	                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+	                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+	            ))),
+	            'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+	            'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+	            'examplesinwork' => new external_value (PARAM_INT, 'number of material in work'),
+	            'visible' => new external_value(PARAM_INT, 'visibility of children in current context'),
+	            'used' => new external_value (PARAM_INT, 'used in current context'),
+	            'examplesedited' => new external_value (PARAM_INT, 'number of edited material'),
+	            'examplegradings' => new external_single_structure (array(
+	                'teacher' => new external_multiple_structure (new external_single_structure (array(
+	                    'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+	                    'value' => new external_value (PARAM_INT, 'grading value', 0),
+	                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+	                ))),
+	                'student' => new external_multiple_structure (new external_single_structure (array(
+	                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+	                ))),
+	            )),
+	        ))),
+	        'childrengradings' => new external_single_structure (array(
+	            'teacher' => new external_multiple_structure (new external_single_structure (array(
+	                'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+	                'value' => new external_value (PARAM_INT, 'grading value', 0),
+	                'sum' => new external_value (PARAM_INT, 'number of gradings'),
+	            ))),
+	            'student' => new external_multiple_structure (new external_single_structure (array(
+	                'sum' => new external_value (PARAM_INT, 'number of gradings'),
+	            ))),
+	        )),
+	        'examples' => new external_multiple_structure (new external_single_structure (array(
+	            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+	            'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+	            'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
+	            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+	            'used' => new external_value (PARAM_INT, 'used in current context'),
+	            'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
+	            'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
+	            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+	            'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
+	            'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
+	            'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+	        ))),
+	        'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+	        'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+	        'examplesinwork' => new external_value (PARAM_INT, 'number of material in work'),
+	        'examplesedited' => new external_value (PARAM_INT, 'number of edited material'),
+	        'examplegradings' => new external_single_structure (array(
+	            'teacher' => new external_multiple_structure (new external_single_structure (array(
+	                'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+	                'value' => new external_value (PARAM_INT, 'grading value', 0),
+	                'sum' => new external_value (PARAM_INT, 'number of gradings'),
+	            ))),
+	            'student' => new external_multiple_structure (new external_single_structure (array(
+	                'sum' => new external_value (PARAM_INT, 'number of gradings'),
+	            ))),
+	        )),
+	        'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+	        'used' => new external_value (PARAM_INT, 'used in current context'),
+	    ));
 	}
 
 	public static function dakora_get_descriptor_details_parameters() {
@@ -5272,162 +5389,164 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 
-		$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
-		$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
-		$descriptor->topicid = $descriptor_topic_mm->topicid;
-
-		$descriptor_return = new stdClass();
-		$descriptor_return->descriptorid = $descriptorid;
-		$descriptor_return->parentid = $descriptor->parentid;
-		$descriptor_return->descriptortitle = $descriptor->title;
-		$descriptor_return->teacherevaluation = -1;
-		$descriptor_return->additionalinfo = null;
-		$descriptor_return->evalniveauid = null;
-		$descriptor_return->timestampteacher = 0;
-		$descriptor_return->reviewerid = 0;
-		$descriptor_return->reviewername = null;
-		if (!$forall) {
-			if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
-			    //var_dump($grading);
-			    //throw new invalid_parameter_exception ('STOPPPP');
-				$descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
-				$descriptor_return->additionalinfo = $grading->additionalinfo;
-				$descriptor_return->evalniveauid = $grading->evalniveauid;
-				$descriptor_return->timestampteacher = $grading->timestamp;
-				$descriptor_return->reviewerid = $grading->reviewerid;
-				
-				//Reviewername finden
-				$reviewerid = $grading->reviewerid;
-				$reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
-				$reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
-				$reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
-				if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
-				    $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
-				}else {
-				    $reviewername=$reviewerTeacherUsername;
-				}
-				$descriptor_return->reviewername = $reviewername;
-			}
-		}
-		$descriptor_return->studentevaluation = -1;
-		$descriptor_return->timestampstudent = 0;
-		if (!$forall) {
-			if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
-				$descriptor_return->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
-				$descriptor_return->timestampstudent = $grading->timestamp;
-			}
-		}
-
-		$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-
-		$descriptor_return->niveautitle = "";
-		$descriptor_return->niveauid = 0;
-		if ($descriptor->niveauid) {
-			$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
-			$descriptor_return->niveautitle = $niveau->title;
-			$descriptor_return->niveauid = $niveau->id;
-		}
-
-		$childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
-
-		$descriptor_return->children = $childsandexamples->children;
-
-		// summary for children gradings
-		$grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
-
-		$number_evalniveaus = 1;
-		if (block_exacomp_use_eval_niveau()) {
-			$number_evalniveaus = 4;
-		}
-
-		$children_teacherevaluation = array();
-		for ($i = 0; $i < $number_evalniveaus; $i++) {
-			$children_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
-		}
-
-		$children_studentevaluation = array_fill(0, $grading_scheme, 0);
-
-		foreach ($childsandexamples->children as $child) {
-			if ($child->teacherevaluation > -1) {
-				$children_teacherevaluation[($child->evalniveauid > 0) ? $child->evalniveauid : 0][$child->teacherevaluation]++;
-			}
-			if ($child->studentevaluation > -1) {
-				$children_studentevaluation[$child->studentevaluation]++;
-			}
-		}
-
-		$childrengradings = new stdClass();
-		$childrengradings->teacher = array();
-		$childrengradings->student = array();
-
-
-		foreach ($children_teacherevaluation as $niveauid => $gradings) {
-			foreach ($gradings as $key => $grading) {
-				$childrengradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
-			}
-
-		}
-		foreach ($children_studentevaluation as $key => $value) {
-			$childrengradings->student[$key] = array('sum' => $value);
-		}
-		$descriptor_return->childrengradings = $childrengradings;
-
-		// summary for example gradings
-		$descriptor_return->examples = $childsandexamples->examples;
-
-		$examples_teacherevaluation = array();
-		for ($i = 0; $i < $number_evalniveaus; $i++) {
-			$examples_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
-		}
-
-		$examples_studentevaluation = array_fill(0, $grading_scheme, 0);
-
-		foreach ($childsandexamples->examples as $example) {
-			if ($example->teacherevaluation > -1) {
-				$examples_teacherevaluation[($example->evalniveauid > 0) ? $example->evalniveauid : 0][$example->teacherevaluation]++;
-			}
-			if ($example->studentevaluation > -1) {
-				$examples_studentevaluation[$example->studentevaluation]++;
-			}
-
-			$example->id = $example->exampleid;
-			$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
-			$example->solution_visible = $solution_visible;
-		}
-		$examplegradings = new stdClass();
-		$examplegradings->teacher = array();
-		$examplegradings->student = array();
-
-		foreach ($examples_teacherevaluation as $niveauid => $gradings) {
-			foreach ($gradings as $key => $grading) {
-				$examplegradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
-			}
-
-		}
-
-		foreach ($examples_studentevaluation as $key => $value) {
-			$examplegradings->student[$key] = array('sum' => $value);
-		}
-		$descriptor_return->examplegradings = $examplegradings;
-		// example statistics
-		$descriptor_return->examplestotal = $childsandexamples->examplestotal;
-		$descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
-		$descriptor_return->examplesinwork = $childsandexamples->examplesinwork;
-		$descriptor_return->examplesedited = $childsandexamples->examplesedited;
-
-		$descriptor_return->hasmaterial = true;
-		if (empty($childsandexamples->examples)) {
-			$descriptor_return->hasmaterial = false;
-		}
-
-		$descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid)) ? 1 : 0;
-		$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
+		$descriptor_return = static::get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid);
 		
-		if(!$forall){
-		    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
-		}else{
-		    $descriptor_return->gradingisold = false;
-		}
+// 		$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
+// 		$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
+// 		$descriptor->topicid = $descriptor_topic_mm->topicid;
+
+// 		$descriptor_return = new stdClass();
+// 		$descriptor_return->descriptorid = $descriptorid;
+// 		$descriptor_return->parentid = $descriptor->parentid;
+// 		$descriptor_return->descriptortitle = $descriptor->title;
+// 		$descriptor_return->teacherevaluation = -1;
+// 		$descriptor_return->additionalinfo = null;
+// 		$descriptor_return->evalniveauid = null;
+// 		$descriptor_return->timestampteacher = 0;
+// 		$descriptor_return->reviewerid = 0;
+// 		$descriptor_return->reviewername = null;
+// 		if (!$forall) {
+// 			if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
+// 			    //var_dump($grading);
+// 			    //throw new invalid_parameter_exception ('STOPPPP');
+// 				$descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
+// 				$descriptor_return->additionalinfo = $grading->additionalinfo;
+// 				$descriptor_return->evalniveauid = $grading->evalniveauid;
+// 				$descriptor_return->timestampteacher = $grading->timestamp;
+// 				$descriptor_return->reviewerid = $grading->reviewerid;
+				
+// 				//Reviewername finden
+// 				$reviewerid = $grading->reviewerid;
+// 				$reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+// 				$reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+// 				$reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+// 				if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+// 				    $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+// 				}else {
+// 				    $reviewername=$reviewerTeacherUsername;
+// 				}
+// 				$descriptor_return->reviewername = $reviewername;
+// 			}
+// 		}
+// 		$descriptor_return->studentevaluation = -1;
+// 		$descriptor_return->timestampstudent = 0;
+// 		if (!$forall) {
+// 			if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
+// 				$descriptor_return->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
+// 				$descriptor_return->timestampstudent = $grading->timestamp;
+// 			}
+// 		}
+
+// 		$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+
+// 		$descriptor_return->niveautitle = "";
+// 		$descriptor_return->niveauid = 0;
+// 		if ($descriptor->niveauid) {
+// 			$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
+// 			$descriptor_return->niveautitle = $niveau->title;
+// 			$descriptor_return->niveauid = $niveau->id;
+// 		}
+
+// 		$childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
+
+// 		$descriptor_return->children = $childsandexamples->children;
+
+// 		// summary for children gradings
+// 		$grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
+
+// 		$number_evalniveaus = 1;
+// 		if (block_exacomp_use_eval_niveau()) {
+// 			$number_evalniveaus = 4;
+// 		}
+
+// 		$children_teacherevaluation = array();
+// 		for ($i = 0; $i < $number_evalniveaus; $i++) {
+// 			$children_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
+// 		}
+
+// 		$children_studentevaluation = array_fill(0, $grading_scheme, 0);
+
+// 		foreach ($childsandexamples->children as $child) {
+// 			if ($child->teacherevaluation > -1) {
+// 				$children_teacherevaluation[($child->evalniveauid > 0) ? $child->evalniveauid : 0][$child->teacherevaluation]++;
+// 			}
+// 			if ($child->studentevaluation > -1) {
+// 				$children_studentevaluation[$child->studentevaluation]++;
+// 			}
+// 		}
+
+// 		$childrengradings = new stdClass();
+// 		$childrengradings->teacher = array();
+// 		$childrengradings->student = array();
+
+
+// 		foreach ($children_teacherevaluation as $niveauid => $gradings) {
+// 			foreach ($gradings as $key => $grading) {
+// 				$childrengradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
+// 			}
+
+// 		}
+// 		foreach ($children_studentevaluation as $key => $value) {
+// 			$childrengradings->student[$key] = array('sum' => $value);
+// 		}
+// 		$descriptor_return->childrengradings = $childrengradings;
+
+// 		// summary for example gradings
+// 		$descriptor_return->examples = $childsandexamples->examples;
+
+// 		$examples_teacherevaluation = array();
+// 		for ($i = 0; $i < $number_evalniveaus; $i++) {
+// 			$examples_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
+// 		}
+
+// 		$examples_studentevaluation = array_fill(0, $grading_scheme, 0);
+
+// 		foreach ($childsandexamples->examples as $example) {
+// 			if ($example->teacherevaluation > -1) {
+// 				$examples_teacherevaluation[($example->evalniveauid > 0) ? $example->evalniveauid : 0][$example->teacherevaluation]++;
+// 			}
+// 			if ($example->studentevaluation > -1) {
+// 				$examples_studentevaluation[$example->studentevaluation]++;
+// 			}
+
+// 			$example->id = $example->exampleid;
+// 			$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+// 			$example->solution_visible = $solution_visible;
+// 		}
+// 		$examplegradings = new stdClass();
+// 		$examplegradings->teacher = array();
+// 		$examplegradings->student = array();
+
+// 		foreach ($examples_teacherevaluation as $niveauid => $gradings) {
+// 			foreach ($gradings as $key => $grading) {
+// 				$examplegradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
+// 			}
+
+// 		}
+
+// 		foreach ($examples_studentevaluation as $key => $value) {
+// 			$examplegradings->student[$key] = array('sum' => $value);
+// 		}
+// 		$descriptor_return->examplegradings = $examplegradings;
+// 		// example statistics
+// 		$descriptor_return->examplestotal = $childsandexamples->examplestotal;
+// 		$descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
+// 		$descriptor_return->examplesinwork = $childsandexamples->examplesinwork;
+// 		$descriptor_return->examplesedited = $childsandexamples->examplesedited;
+
+// 		$descriptor_return->hasmaterial = true;
+// 		if (empty($childsandexamples->examples)) {
+// 			$descriptor_return->hasmaterial = false;
+// 		}
+
+// 		$descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid)) ? 1 : 0;
+// 		$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
+		
+// 		if(!$forall){
+// 		    $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+// 		}else{
+// 		    $descriptor_return->gradingisold = false;
+// 		}
 
 		return $descriptor_return;
 	}
@@ -7152,6 +7271,173 @@ class block_exacomp_external extends external_api {
 	    ));
 	}
 	
+	/**
+	 * helper function to use same code for 2 ws
+	 */
+	private static function get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+	    global $DB, $USER;
+	    
+	    //copied from old get_descriptor_details so i can use it in get_descriptor_details and get_descriptors_details
+	    $descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
+	    $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
+	    $descriptor->topicid = $descriptor_topic_mm->topicid;
+	    
+	    $descriptor_return = new stdClass();
+	    $descriptor_return->descriptorid = $descriptorid;
+	    $descriptor_return->parentid = $descriptor->parentid;
+	    $descriptor_return->descriptortitle = $descriptor->title;
+	    $descriptor_return->teacherevaluation = -1;
+	    $descriptor_return->additionalinfo = null;
+	    $descriptor_return->evalniveauid = null;
+	    $descriptor_return->timestampteacher = 0;
+	    $descriptor_return->reviewerid = 0;
+	    $descriptor_return->reviewername = null;
+	    if (!$forall) {
+	        if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
+	            //var_dump($grading);
+	            //throw new invalid_parameter_exception ('STOPPPP');
+	            $descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
+	            $descriptor_return->additionalinfo = $grading->additionalinfo;
+	            $descriptor_return->evalniveauid = $grading->evalniveauid;
+	            $descriptor_return->timestampteacher = $grading->timestamp;
+	            $descriptor_return->reviewerid = $grading->reviewerid;
+	            
+	            //Reviewername finden
+	            $reviewerid = $grading->reviewerid;
+	            $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+	            $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+	            $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+	            if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+	                $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+	            }else {
+	                $reviewername=$reviewerTeacherUsername;
+	            }
+	            $descriptor_return->reviewername = $reviewername;
+	        }
+	    }
+	    $descriptor_return->studentevaluation = -1;
+	    $descriptor_return->timestampstudent = 0;
+	    if (!$forall) {
+	        if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
+	            $descriptor_return->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
+	            $descriptor_return->timestampstudent = $grading->timestamp;
+	        }
+	    }
+	    
+	    $descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+	    
+	    $descriptor_return->niveautitle = "";
+	    $descriptor_return->niveauid = 0;
+	    if ($descriptor->niveauid) {
+	        $niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
+	        $descriptor_return->niveautitle = $niveau->title;
+	        $descriptor_return->niveauid = $niveau->id;
+	    }
+	    
+	    $childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
+	    
+	    $descriptor_return->children = $childsandexamples->children;
+	    
+	    // summary for children gradings
+	    $grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
+	    
+	    $number_evalniveaus = 1;
+	    if (block_exacomp_use_eval_niveau()) {
+	        $number_evalniveaus = 4;
+	    }
+	    
+	    $children_teacherevaluation = array();
+	    for ($i = 0; $i < $number_evalniveaus; $i++) {
+	        $children_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
+	    }
+	    
+	    $children_studentevaluation = array_fill(0, $grading_scheme, 0);
+	    
+	    foreach ($childsandexamples->children as $child) {
+	        if ($child->teacherevaluation > -1) {
+	            $children_teacherevaluation[($child->evalniveauid > 0) ? $child->evalniveauid : 0][$child->teacherevaluation]++;
+	        }
+	        if ($child->studentevaluation > -1) {
+	            $children_studentevaluation[$child->studentevaluation]++;
+	        }
+	    }
+	    
+	    $childrengradings = new stdClass();
+	    $childrengradings->teacher = array();
+	    $childrengradings->student = array();
+	    
+	    
+	    foreach ($children_teacherevaluation as $niveauid => $gradings) {
+	        foreach ($gradings as $key => $grading) {
+	            $childrengradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
+	        }
+	        
+	    }
+	    foreach ($children_studentevaluation as $key => $value) {
+	        $childrengradings->student[$key] = array('sum' => $value);
+	    }
+	    $descriptor_return->childrengradings = $childrengradings;
+	    
+	    // summary for example gradings
+	    $descriptor_return->examples = $childsandexamples->examples;
+	    
+	    $examples_teacherevaluation = array();
+	    for ($i = 0; $i < $number_evalniveaus; $i++) {
+	        $examples_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
+	    }
+	    
+	    $examples_studentevaluation = array_fill(0, $grading_scheme, 0);
+	    
+	    foreach ($childsandexamples->examples as $example) {
+	        if ($example->teacherevaluation > -1) {
+	            $examples_teacherevaluation[($example->evalniveauid > 0) ? $example->evalniveauid : 0][$example->teacherevaluation]++;
+	        }
+	        if ($example->studentevaluation > -1) {
+	            $examples_studentevaluation[$example->studentevaluation]++;
+	        }
+	        
+	        $example->id = $example->exampleid;
+	        $solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+	        $example->solution_visible = $solution_visible;
+	    }
+	    $examplegradings = new stdClass();
+	    $examplegradings->teacher = array();
+	    $examplegradings->student = array();
+	    
+	    foreach ($examples_teacherevaluation as $niveauid => $gradings) {
+	        foreach ($gradings as $key => $grading) {
+	            $examplegradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
+	        }
+	        
+	    }
+	    
+	    foreach ($examples_studentevaluation as $key => $value) {
+	        $examplegradings->student[$key] = array('sum' => $value);
+	    }
+	    $descriptor_return->examplegradings = $examplegradings;
+	    // example statistics
+	    $descriptor_return->examplestotal = $childsandexamples->examplestotal;
+	    $descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
+	    $descriptor_return->examplesinwork = $childsandexamples->examplesinwork;
+	    $descriptor_return->examplesedited = $childsandexamples->examplesedited;
+	    
+	    $descriptor_return->hasmaterial = true;
+	    if (empty($childsandexamples->examples)) {
+	        $descriptor_return->hasmaterial = false;
+	    }
+	    
+	    $descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid)) ? 1 : 0;
+	    $descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
+	    
+	    if(!$forall){
+	        $descriptor_return->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+	    }else{
+	        $descriptor_return->gradingisold = false;
+	    }
+	    
+	    return $descriptor_return;
+	}
+	
 
 	/**
 	 * helper function to use same code for 2 ws
@@ -7448,6 +7734,7 @@ class block_exacomp_external extends external_api {
 	private static function cmp_niveausort($a, $b) {
 		return strcmp($a->niveausort, $b->niveausort);
 	}
+	
 
 	private static function dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0) {
 		global $DB;
