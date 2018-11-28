@@ -308,10 +308,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$extra = '';
 			if ($this->is_edit_mode() && $niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-				$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id]);
+				$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null,
+                                [   'class' => 'niveau-button',
+                                    'exa-type' => "iframe-popup",
+                                    'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id
+                                ]);
                 $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'forward' => g::$PAGE->url.'&editmode=1']));
                 $extra .= ''.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                                 null, [
+                                        'class' => 'niveau-button',
                                         'title' => block_exacomp_get_string("delete"),
                                         'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
                                 ]);
@@ -319,7 +324,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$content .= html_writer::tag('li',
 				html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
-					$title.($subtitle ? '<span class="subtitle">'.$subtitle.'</span>' : '').$extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $title.($subtitle ? ': '.$subtitle : '')))
+					'<span class="title">'.$title.'</span>'.($subtitle ? '<span class="subtitle">'.$subtitle.'</span>' : '').$extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $title.($subtitle ? ': '.$subtitle : '')))
 			);
 		}
 
@@ -3929,7 +3934,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         // if at least one level uses Points - we can set custom points limit for every course
         if (block_exacomp_additional_grading_used_type(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) && !$settings->useprofoundness) {
 			$input_grading = block_exacomp_get_string('points_limit_forcourse').": &nbsp"
-				.html_writer::empty_tag('input', array('type' => 'text', 'size' => 2, 'name' => 'grading', 'value' => block_exacomp_get_grading_scheme($courseid)))
+				.html_writer::empty_tag('input', array('type' => 'text', 'size' => 2, 'name' => 'grading', 'value' => $settings->grading))
 				.html_writer::empty_tag('br');
 		}
 
@@ -3954,7 +3959,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$input_taxonomies = '';
 		}
 
-		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin')));
+		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-default'));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save_coursesettings'));
 

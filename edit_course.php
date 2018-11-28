@@ -50,10 +50,10 @@ $headertext = '';
 
 if ($action == 'save_coursesettings') {
 	$settings = new stdClass;
-	$settings->grading = optional_param('grading', 3, PARAM_INT);
+	$settings->grading = optional_param('grading', 0, PARAM_INT);
 	
-	if($settings->grading == 0)
-		$settings->grading = 3;
+	/*if ($settings->grading == 0)
+		$settings->grading = 3;*/
 	
 	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
@@ -67,12 +67,12 @@ if ($action == 'save_coursesettings') {
 	
 	$headertext = "";
 	if($settings->uses_activities==1 && block_exacomp_check_user_evaluation_exists($courseid))
-		$headertext .= block_exacomp_get_string("warning_use_activities").html_writer::empty_tag('br');
+		$headertext .= html_writer::div(block_exacomp_get_string("warning_use_activities"), 'alert alert-warning');
 	
-	$headertext.=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
-		.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
+	$headertext .= html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
+		. html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
 		. html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), block_exacomp_get_string('next_step'));
-}else{
+} else {
 	$url = 'courseselection.php';
 	
 	$headertext = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('teacher_first_configuration_step')

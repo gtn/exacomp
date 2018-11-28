@@ -92,6 +92,7 @@ const BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT = 1001;
 const BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD = 1002;
 
 const BLOCK_EXACOMP_SETTINGS_MAX_SCHEME = 10;
+const BLOCK_EXACOMP_COURSE_POINT_LIMIT = 100;
 const BLOCK_EXACOMP_DATA_SOURCE_CUSTOM = 3;
 const BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER = 3;
 const BLOCK_EXACOMP_EXAMPLE_SOURCE_USER = 4;
@@ -374,16 +375,20 @@ function block_exacomp_additional_grading_used_type($type) {
 //     return array($points_limit,$grad_limit);
 // }
 
-function block_exacomp_get_assessment_points_limit() {
+function block_exacomp_get_assessment_points_limit($onlyGlobal = false) {
     global $DB;
-    // if we have courseid and we have at leat one level, which uses Points - we can use custom points limit for vourse
-    //
-    $courseid = optional_param('courseid', 0, PARAM_INT);
-    $useprofoundness = get_config('exacomp', 'useprofoundness'); // if not selected - can be used custom limits
-    if ($courseid && !$useprofoundness && block_exacomp_additional_grading_used_type(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)) {
-        $limitForCourse = $DB->get_field('block_exacompsettings', 'grading', ['courseid' => $courseid]);
-        if ($limitForCourse && $limitForCourse > 1) { // if = 1 - please use Yes/No type
-            return $limitForCourse;
+    if (!$onlyGlobal) {
+        // if we have courseid and we have at leat one level, which uses Points - we can use custom points limit for vourse
+        $courseid = optional_param('courseid', 0, PARAM_INT);
+        if (!$courseid) {
+            $courseid = g::$COURSE->id;
+        }
+        $useprofoundness = get_config('exacomp', 'useprofoundness'); // if not selected - can be used custom limits
+        if ($courseid && !$useprofoundness && block_exacomp_additional_grading_used_type(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)) {
+            $limitForCourse = $DB->get_field('block_exacompsettings', 'grading', ['courseid' => $courseid]);
+            if ($limitForCourse && $limitForCourse > 1) { // if = 1 - please use Yes/No type
+                return $limitForCourse;
+            }
         }
     }
     return get_config('exacomp', 'assessment_points_limit');
@@ -1198,7 +1203,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 		 $settings->grading = 2;
 		 } else*/
 	if (empty($settings->grading)) {
-		$settings->grading = 1;
+		$settings->grading = 0;
 	}
 	if (empty($settings->nostudents)) {
 		$settings->nostudents = 0;
@@ -2321,12 +2326,14 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 	global $DB;
 
 	$old_course_settings = block_exacomp_get_settings_by_course($courseid);
-
 	$DB->delete_records(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
 
-	if ($settings->grading > BLOCK_EXACOMP_SETTINGS_MAX_SCHEME) {
-		$settings->grading = BLOCK_EXACOMP_SETTINGS_MAX_SCHEME;
-	}
+/*	if ($settings->grading > block_exacomp_get_assessment_points_limit(true)) {
+		$settings->grading = block_exacomp_get_assessment_points_limit(true);
+	}*/
+    if ($settings->grading > BLOCK_EXACOMP_COURSE_POINT_LIMIT) {
+        $settings->grading = BLOCK_EXACOMP_COURSE_POINT_LIMIT;
+    }
 
 	//adapt old evaluation to new scheme
 	//update compcompuser && compcompuser_mm && exameval
