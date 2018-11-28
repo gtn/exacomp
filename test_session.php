@@ -104,7 +104,7 @@ switch ($action) {
         break;
     case 'get':
         echo $ws->readData($varName);
-        exit; // for ajax?  
+        exit; // for ajax?
         break;
 }
 

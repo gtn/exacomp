@@ -19,6 +19,7 @@
 
 use block_exacomp\globals as g;
 
+
 /**
  * logic copied from webservice/pluginfile.php
  */
@@ -37,6 +38,9 @@ define('NO_MOODLE_COOKIES', true);
 require __DIR__.'/inc.php';
 require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->dirroot.'/webservice/lib.php');
+require_once __DIR__."/../../config.php"; // path to Moodle's config.php
+require_once __DIR__.'/test_session.php';
+
 
 // Allow CORS requests.
 header('Access-Control-Allow-Origin: *');
@@ -396,9 +400,16 @@ class block_exacomp_simple_service {
 		$filter = block_exacomp_group_reports_get_filter();
 		$isPdf = optional_param('isPdf',false,PARAM_BOOL);
 
-		$_SESSION['bla'] = 6;
-		//var_dump($_SESSION['bla']);
+// 		$_SESSION['SESSION']->customVAR = array();
+// 		$_SESSION['SESSION']->customVAR['variable'] = 'value';
 		
+// 		$read = $_SESSION['SESSION']->customVAR['variable'];
+// 		var_dump($read);
+		
+		
+		$ws = new dakoraVariableWs();
+		$ws->saveData('variable', 'value');
+		die();
 		
 		if($_SESSION['bla'] == 6){
 		   // block_exacomp_group_reports_result($filter);
