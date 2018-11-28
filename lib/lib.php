@@ -352,6 +352,22 @@ function block_exacomp_additional_grading($level = null) {
 	//return get_config('exacomp', 'additional_grading');
 }
 
+/**
+ * is there used at least one levele with using of needed type
+ * @var int $type
+ * @return bool
+ */
+function block_exacomp_additional_grading_used_type($type) {
+    $levels = array(BLOCK_EXACOMP_TYPE_DESCRIPTOR, BLOCK_EXACOMP_TYPE_TOPIC, BLOCK_EXACOMP_TYPE_CROSSSUB,
+            BLOCK_EXACOMP_TYPE_SUBJECT, BLOCK_EXACOMP_TYPE_EXAMPLE, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD);
+    foreach ($levels as $level) {
+        if (block_exacomp_additional_grading($level) == $type) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // function block_exacomp_get_assessment_limits() {
 //     $points_limit = get_config('exacomp', 'assessment_points_limit');
 //     $grade_limit = get_config('exacomp', 'assessment_grade_limit');
@@ -359,6 +375,17 @@ function block_exacomp_additional_grading($level = null) {
 // }
 
 function block_exacomp_get_assessment_points_limit() {
+    global $DB;
+    // if we have courseid and we have at leat one level, which uses Points - we can use custom points limit for vourse
+    //
+    $courseid = optional_param('courseid', 0, PARAM_INT);
+    $useprofoundness = get_config('exacomp', 'useprofoundness'); // if not selected - can be used custom limits
+    if ($courseid && !$useprofoundness && block_exacomp_additional_grading_used_type(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)) {
+        $limitForCourse = $DB->get_field('block_exacompsettings', 'grading', ['courseid' => $courseid]);
+        if ($limitForCourse && $limitForCourse > 1) { // if = 1 - please use Yes/No type
+            return $limitForCourse;
+        }
+    }
     return get_config('exacomp', 'assessment_points_limit');
 }
 

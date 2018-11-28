@@ -765,6 +765,10 @@ return [
 		'Bewertungsschema',
 		'grading scheme',
 	],
+	'points_limit_forcourse' => [
+		'Höchste Punkteanzahl',
+		'Highest value for Points',
+	],
 	'uses_activities' => [
 		'Ich verwende Moodle Aktivitäten zur Beurteilung',
 		'I work with Moodle activites',

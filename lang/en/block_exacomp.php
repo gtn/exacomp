@@ -229,6 +229,7 @@ $string['save_success'] = 'changes were successful';
 
 // === Course-Configuration ===
 $string['grading_scheme'] = 'grading scheme';
+$string['points_limit_forcourse'] = 'Highest value for Points';
 $string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';

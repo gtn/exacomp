@@ -3925,22 +3925,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$input_grading = "";
 
-		if (!block_exacomp_additional_grading() && !$settings->useprofoundness) {
-			$input_grading = block_exacomp_get_string('grading_scheme').": &nbsp"
+		//if (!block_exacomp_additional_grading() && !$settings->useprofoundness) {
+        // if at least one level uses Points - we can set custom points limit for every course
+        if (block_exacomp_additional_grading_used_type(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS) && !$settings->useprofoundness) {
+			$input_grading = block_exacomp_get_string('points_limit_forcourse').": &nbsp"
 				.html_writer::empty_tag('input', array('type' => 'text', 'size' => 2, 'name' => 'grading', 'value' => block_exacomp_get_grading_scheme($courseid)))
 				.html_writer::empty_tag('br');
 		}
 
-		$input_activities = html_writer::checkbox('uses_activities', 1, $settings->uses_activities == 1, block_exacomp_get_string('uses_activities'))
+		$input_activities = html_writer::checkbox('uses_activities', 1, $settings->uses_activities == 1, '&nbsp;'.block_exacomp_get_string('uses_activities'))
 			.html_writer::empty_tag('br');
 
-		$input_descriptors = html_writer::checkbox('show_all_descriptors', 1, $settings->show_all_descriptors == 1, block_exacomp_get_string('show_all_descriptors'), ($settings->uses_activities != 1) ? array("disabled" => "disabled") : array())
+		$input_descriptors = html_writer::checkbox('show_all_descriptors', 1, $settings->show_all_descriptors == 1, '&nbsp;'.block_exacomp_get_string('show_all_descriptors'), ($settings->uses_activities != 1) ? array("disabled" => "disabled") : array())
 			.html_writer::empty_tag('br');
 
-		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, block_exacomp_get_string('show_all_examples'))
+		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, '&nbsp;'.block_exacomp_get_string('show_all_examples'))
 			.html_writer::empty_tag('br');
 
-		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents == 1, block_exacomp_get_string('usenostudents'))
+		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents == 1, '&nbsp;'.block_exacomp_get_string('usenostudents'))
 			.html_writer::empty_tag('br');
 
 		if (!block_exacomp_is_skillsmanagement()) {

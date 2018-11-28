@@ -3149,7 +3149,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             }
             set_config('assessment_example_scheme', 2, 'exacomp'); // Verbose
             set_config('assessment_childcomp_scheme', 2, 'exacomp'); // Verbose
-        } else { // if additional_grading disabled -> use Yes/No model for all levels
+        } else { // if additional_grading disabled -> use Points model for all levels
             foreach ($levels as $level) {
                 set_config('assessment_'.$level.'_scheme', 3, 'exacomp');
             }
@@ -3162,7 +3162,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             set_config('assessment_topic_scheme', 0, 'exacomp');
         }
         // max points from course settings
-        $courseGrades = $DB->get_fieldset_select('block_exacompsettings', 'grading', 'grading > 0 AND courseid > 0');
+        $courseGrades = $DB->get_fieldset_select('block_exacompsettings', 'grading', 'grading > 1 AND courseid > 0');
         if ($courseGrades) {
             $maxPoints = max($courseGrades);
             set_config('assessment_points_limit', $maxPoints, 'exacomp');
