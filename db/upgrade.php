@@ -3110,28 +3110,48 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2018112700, 'exacomp');
+    }
+
+    if ($oldversion < 2018112800) {
         // upgrade old config to new assessment model
         $levels = array('example', 'childcomp', 'comp', 'topic', 'subject', 'theme');
         // adminscheme (diff_levels): if checked -> enable "Global assessment level" for all levels
-        if (get_config('exacomp', 'adminscheme')) {
+        $oldDiffLevel = get_config('exacomp', 'adminscheme');
+        if ($oldDiffLevel) {
             $diffLevel = 1;
+            // convert old diff level titles to assessment_diffLevel_options
+            switch ($oldDiffLevel) {
+                case 1:
+                    set_config('assessment_diffLevel_options', 'G,M,E,Z', 'exacomp');
+                    break;
+                case 2:
+                    set_config('assessment_diffLevel_options', 'A,B,C', 'exacomp');
+                    break;
+                case 3:
+                    set_config('assessment_diffLevel_options', '*,**,***', 'exacomp');
+                    break;
+            }
         } else {
-            $diffLevel = 1;
+            $diffLevel = 0;
         }
+
         foreach ($levels as $level) {
                 set_config('assessment_'.$level.'_diffLevel', $diffLevel, 'exacomp');
-                set_config('assessment_'.$level.'_diffLevel', 0, 'exacomp');
         }
         // additional_grading
         $additional_grading = get_config('exacomp', 'additional_grading');
-        if ($additional_grading) { // if additional_grading enabled -> use Points model for all levels. And no niveaus (diff levels)!
+        if ($additional_grading) { // if additional_grading enabled -> use Grade and Verbose for examples and subdescr: email from 28.11.2018
             foreach ($levels as $level) {
-                set_config('assessment_'.$level.'_scheme', 3, 'exacomp');
-                set_config('assessment_'.$level.'_diffLevel', 0, 'exacomp');
+                set_config('assessment_'.$level.'_scheme', 1, 'exacomp'); // all to Grade
+                set_config('assessment_'.$level.'_diffLevel', $diffLevel, 'exacomp');
             }
+            set_config('assessment_example_scheme', 2, 'exacomp'); // Verbose
+            set_config('assessment_childcomp_scheme', 2, 'exacomp'); // Verbose
         } else { // if additional_grading disabled -> use Yes/No model for all levels
             foreach ($levels as $level) {
-                set_config('assessment_'.$level.'_scheme', 4, 'exacomp');
+                set_config('assessment_'.$level.'_scheme', 3, 'exacomp');
             }
         }
         if (intval(get_config('exacomp', 'usesubjectgrading')) === 0) { // disable assessment for subjects and themes
@@ -3143,7 +3163,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
 
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2018112700, 'exacomp');
+        upgrade_block_savepoint(true, 2018112800, 'exacomp');
     }
 
 
