@@ -18,6 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
+require_once __DIR__."/../../config.php"; // path to Moodle's config.php
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -45,9 +46,12 @@ if (optional_param('print', false, PARAM_BOOL)) {
     $html_tables = [];
 
     
-    var_dump($_SESSION['bla']);
+//     $read = $_SESSION['SESSION']->customVAR['variable'];
+    $ws = new dakoraVariableWs();
+    $read=$ws->readData('variable');
 
-    
+    var_dump($read);
+
 //     var_dump($filter);
 //     die();
     //block_exacomp_group_reports_result($filter, $isPdf);
