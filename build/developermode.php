@@ -41,7 +41,6 @@ call_user_func(function() {
 		if (!preg_match('!@ws-type-(read|write)!', $method->getDocComment(), $matches)) {
 			continue;
 		}
-
 		$description = preg_replace('!^[/\t \\*]+!m', '', $method->getDocComment());
 		$description = trim(preg_replace('!@.*!sm', '', $description));
 

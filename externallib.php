@@ -5234,11 +5234,11 @@ class block_exacomp_external extends external_api {
 	 * @return stdClass
 	 */
 	public static function dakora_get_descriptors_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
-	    
+
 	}
 	
 	public static function dakora_get_descriptors_details_returns() {
-	    
+	    return new external_function_parameters (array()); // !!!! TODO: temporary. without this - whole exacomp is broken in Developer mode
 	}
 
 	public static function dakora_get_descriptor_details_parameters() {

@@ -1084,21 +1084,21 @@ not used anymore?
 	max-width: 160px;
 	min-width: 60px;
 	white-space: nowrap;
-	overflow: hidden;
-    text-overflow: ellipsis;
+	/*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
 }
 
 #block_exacomp .niveaus_menu ul li a span.title {
 	/*position: relative;*/
 	/*display: inline-block;*/
 	/*width: 70%;*/
-	/*max-width: 140px;*/
-	/*overflow: hidden;*/
-	/*text-overflow: ellipsis;*/
+	max-width: 140px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #block_exacomp .niveaus_menu ul li a span.niveau-button {
-	/*float: right;*/
+	float: right;
 	/*display: inline-block;*/
 	/*position: relative;*/
 	/*width: 24px;*/

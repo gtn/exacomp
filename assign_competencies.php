@@ -19,7 +19,6 @@
 
 require __DIR__.'/inc.php';
 
-
 $courseid = required_param('courseid', PARAM_INT);
 $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
@@ -47,7 +46,6 @@ if($editmode) {
 	$selectedStudentid = $studentid;
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 }
-
 
 $page_identifier = 'tab_competence_overview';
 
