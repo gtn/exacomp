@@ -2,10 +2,6 @@
 
 require_once __DIR__."/../../config.php";
 
-$action = required_param('action', PARAM_RAW); // set, get, delete
-$varName = required_param('var_name', PARAM_RAW); // variable name
-$varValue = optional_param('var_value', '', PARAM_RAW); // variable value
-
 class dakoraVariableWs {
 
     protected $sessionHandler = null;
@@ -93,6 +89,11 @@ class dakoraVariableWs {
 
 }
 
+// example of using
+/*$action = required_param('action', PARAM_RAW); // set, get, delete
+$varName = required_param('var_name', PARAM_RAW); // variable name
+$varValue = optional_param('var_value', '', PARAM_RAW); // variable value
+
 $ws = new dakoraVariableWs();
 
 switch ($action) {
@@ -109,7 +110,7 @@ switch ($action) {
 }
 
 echo 'OK';  // for ajax?
-exit;
+exit;*/
 
 
 

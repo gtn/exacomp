@@ -3172,6 +3172,22 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2018112801, 'exacomp');
     }
 
+    if ($oldversion < 2018113000) {
+        $table = new xmldb_table('block_exacompwsdata');
+        // Adding fields to table block_exacompwsdata.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('token', XMLDB_TYPE_CHAR, '128', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('data', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        // Adding keys to table block_exacompwsdata.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Conditionally launch create table for block_exacompwsdata.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2018113000, 'exacomp');
+    }
 
 	/*
 	 * insert new upgrade scripts before this comment section

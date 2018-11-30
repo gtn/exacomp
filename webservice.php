@@ -39,7 +39,7 @@ require __DIR__.'/inc.php';
 require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->dirroot.'/webservice/lib.php');
 require_once __DIR__."/../../config.php"; // path to Moodle's config.php
-require_once __DIR__.'/test_session.php';
+require_once __DIR__.'/wsdatalib.php';
 
 
 // Allow CORS requests.
@@ -396,27 +396,31 @@ class block_exacomp_simple_service {
 
 	static function group_reports_result() {
 		static::require_courseid();
-
+        $wstoken = required_param('wstoken', PARAM_ALPHANUM);
 		$filter = block_exacomp_group_reports_get_filter();
-		$isPdf = optional_param('isPdf',false,PARAM_BOOL);
+		$isPdf = optional_param('isPdf', false, PARAM_BOOL);
 
-// 		$_SESSION['SESSION']->customVAR = array();
-// 		$_SESSION['SESSION']->customVAR['variable'] = 'value';
-		
-// 		$read = $_SESSION['SESSION']->customVAR['variable'];
-// 		var_dump($read);
-		
-		
-		$ws = new dakoraVariableWs();
-		$ws->saveData('variable', 'value');
+		// absolutely necessary to use $wstoken:
+		$wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
+		// or in this way:
+        //$wsDataHandler = new block_exacomp_ws_datahandler();
+        //$wsDataHandler->setToken($wstoken);
+
+		// example of saving data. It can be single param or array of params
+		$wsDataHandler->setParam('report_filter', $filter);
+		$wsDataHandler->setParam('isPdf', $isPdf);
+
+		// example of reading params
+		$filtersFromSession = $wsDataHandler->getParam('report_filter');
+		print_r($filtersFromSession);
 		die();
 		
-		if($_SESSION['bla'] == 6){
+		if ($isPdf) {
 		   // block_exacomp_group_reports_result($filter);
 		    //die();
 		    //echo $output->group_report_filters('webservice', $filter, $action, $extra, $courseid);
-		    block_exacomp_group_reports_result($filter,$isPdf);
-		}else{
+		    block_exacomp_group_reports_result($filter, $isPdf);
+		} else {
 		    block_exacomp_group_reports_result($filter);
 		}
 

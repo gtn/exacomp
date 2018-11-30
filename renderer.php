@@ -3970,7 +3970,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		if (!block_exacomp_is_skillsmanagement()) {
 			$alltax = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES => block_exacomp_get_string('show_all_taxonomies'));
-			$taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id,title');
+			$taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id, title');
 			$taxonomies = $alltax + $taxonomies;
 			$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies[]', $settings->filteredtaxonomies, false, array('multiple' => 'multiple'));
 		} else {

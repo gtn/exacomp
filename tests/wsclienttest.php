@@ -57,6 +57,14 @@ $resp_moodle = $curl->get($serverurl_exaport);
 $resp_moodle = json_decode($resp_moodle)->token;
 print_r($resp_moodle);
 
+/*echo 'My local:';
+$serverurl_moodle = 'http://localhost/Moodle32Dakora/login/token.php?username=teacher1&password=Teacher-111&service=moodle_mobile_app';
+$resp_moodle = $curl->get($serverurl_exaport);
+print_r($resp_moodle);
+$resp_moodle = json_decode($resp_moodle)->token;
+print_r($resp_moodle);
+echo '<br>end local!<br>';*/
+
 
 header('Content-Type: text/plain');
 
