@@ -11,6 +11,7 @@ class block_exacomp_ws_datahandler {
         if ($token) {
             $this->setToken($token);
         }
+        $this->cleanTable();
     }
 
     // token must be in {external_tokens}
