@@ -297,7 +297,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function niveaus_menu($niveaus, $selectedNiveau, $selectedTopic) {
-		global $CFG, $COURSE;
+		global $CFG, $COURSE, $PAGE;
 
 		$content = html_writer::start_div('niveaus_menu');
 		$content .= html_writer::start_tag('ul');
@@ -308,30 +308,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$extra = '';
 			if ($this->is_edit_mode() && $niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-				$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null,
-                                [   'class' => 'niveau-button',
-                                    'exa-type' => "iframe-popup",
-                                    'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id
-                                ]);
                 $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'forward' => g::$PAGE->url.'&editmode=1']));
-                $extra .= ''.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
+                $extra .= '&nbsp;'.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                                 null, [
                                         'class' => 'niveau-button',
                                         'title' => block_exacomp_get_string("delete"),
                                         'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
                                 ]);
+				$extra .= ''.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null,
+                                [   'class' => 'niveau-button',
+                                    'exa-type' => "iframe-popup",
+                                    'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id.'&backurl='.$PAGE->url
+                                ]);
 			}
-
+            $titleForTitle = $title;
+			if ($subtitle) {
+                $titleForTitle .= ': '.$subtitle;
+                $title .= '<span class="subtitle">'.$subtitle.'</span>';
+            }
+            if ($niveau->id == 99999999) {
+                $title = '<span class="titleAll">'.$title.'</span>'; // Wrap title
+            } else {
+                $title = '<span class="title">'.$title.'</span>'; // Wrap title
+            }
 			$content .= html_writer::tag('li',
 				html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
-					'<span class="title">'.$title.'</span>'.($subtitle ? '<span class="subtitle">'.$subtitle.'</span>' : '').$extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $title.($subtitle ? ': '.$subtitle : '')))
+					$title.$extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $titleForTitle))
 			);
 		}
 
 		if ($this->is_edit_mode()) {
 			// add niveau button
 			// nur erlauben, wenn auch ein einzelner topic ausgewählt wurde
-			$addNiveauContent = "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_trans(['de:Neuer Lernfortschritt', 'en:new level']);
+			$addNiveauContent = "<span class=\"niveau-button-add\"><img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /></span>&nbsp;".'<span class="title">'.block_exacomp_trans(['de:Neuer Lernfortschritt', 'en:new level']).'</span>';
 
 			if ($selectedTopic) {
 				$content .= html_writer::tag('li',
@@ -1694,7 +1703,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		if (!$this->is_print_mode()) {
 			if ($rows && !$this->is_edit_mode() && $students) {
-				$buttons = html_writer::tag("input", "", array("id" => "btn_submit", "name" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection")));
+				$buttons = html_writer::tag("input", "", array("id" => "btn_submit",
+                                                                "name" => "btn_submit",
+                                                                "type" => "submit",
+                                                                "class" => "btn btn-default",
+                                                                "value" => block_exacomp_get_string("save_selection")));
 				$table_html .= html_writer::div($buttons, '', array('id' => 'exabis_save_button'));
 			}
 
@@ -1990,7 +2003,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if ($niveauid) {
 						$cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
 					} else {
-						$cell->text .= html_writer::empty_tag('input', array('type' => 'button', 'value' => block_exacomp_get_string('add'), 'onclick' => 'alert('.json_encode(block_exacomp_trans('de:Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!')).')'));
+						$cell->text .= html_writer::empty_tag('input', array('type' => 'button', 'value' => block_exacomp_get_string('add'), 'onclick' => 'alert('.json_encode(block_exacomp_get_string('add_competence_insert_learning_progress')).')'));
 					}
 					$own_additionRow->cells[] = $cell;
 					$own_additionRow->cells[] = new html_table_cell();
@@ -3904,7 +3917,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save'));
-		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), '', array('id' => 'exabis_save_button'));
+		$innerdiv = html_writer::div(html_writer::empty_tag('input',
+                array('type' => 'submit',
+                        'class' => 'btn btn-default',
+                        'value' => block_exacomp_get_string('save_selection'))),
+                '',
+                array('id' => 'exabis_save_button'));
 
 		$table->data = $rows;
 
@@ -4063,7 +4081,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
-		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), '', array('id' => 'exabis_save_button'));
+		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit',
+                                                                                'class' => 'btn btn-default',
+                                                                                'value' => block_exacomp_get_string('save_selection'))),
+                                                                '', array('id' => 'exabis_save_button'));
 		$table_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
 
 		$examples_on_schedule = block_exacomp_any_examples_on_schedule($COURSE->id);
@@ -4151,7 +4172,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
 		$table = new html_table();
-		$table->attributes['class'] = 'exabis_comp_comp rg2';
+		$table->attributes['class'] = 'exabis_comp_comp rg2 exacomp_source_delete';
 		$rows = array();
 
 		foreach ($subjects as $subject) {
@@ -4159,9 +4180,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->attributes['class'] = 'exabis_comp_teilcomp highlight rg2-level-0';
 
 			$cell = new html_table_cell();
+            $notes = '';
+            $notes .= ($subject->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
 			$cell->text = html_writer::div('<input type="checkbox" exa-name="subjects" value="'.$subject->id.'"'.(!$subject->can_delete ? ' disabled="disabled"' : '').' />'.
-				html_writer::tag('b', $subject->title));
-			$cell->attributes['class'] = 'rg2-arrow';
+				html_writer::tag('b', $subject->title).$notes);
+            $cell->attributes['class'] = 'rg2-arrow';
 			$row->cells[] = $cell;
 			$rows[] = $row;
 
@@ -4170,9 +4193,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->attributes['class'] = 'exabis_comp_teilcomp rg2-level-1';
 
 				$cell = new html_table_cell();
+                $notes = '';
+                $notes .= ($topic->another_source ? '<span class="exacomp-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
+                $notes .= (!$topic->another_source && $topic->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
 				$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 				$cell->text = html_writer::div('<input type="checkbox" exa-name="topics" value="'.$topic->id.'"'.(!$topic->can_delete ? ' disabled="disabled"' : '').' />'.
-					$topic->numbering.' '.$topic->title, "desctitle");
+					$topic->numbering.' '.$topic->title.$notes, "desctitle");
 				$row->cells[] = $cell;
 
 				$rows[] = $row;
@@ -4182,9 +4208,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$row->attributes['class'] = 'rg2-level-2';
 
 					$cell = new html_table_cell();
+					$notes = '';
+                    $notes .= ($descriptor->another_source ? '<span class="exacomp-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
+                    $notes .= (!$descriptor->another_source && $descriptor->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
 					$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 					$cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$descriptor->id.'"'.(!$descriptor->can_delete ? ' disabled="disabled"' : '').' />'.
-						$descriptor->numbering.' '.$descriptor->title, "desctitle");
+						$descriptor->numbering.' '.$descriptor->title.$notes, "desctitle");
 					$row->cells[] = $cell;
 
 					$rows[] = $row;
@@ -4195,9 +4224,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$row->attributes['class'] = 'rg2-level-3';
 
 						$cell = new html_table_cell();
+                        $notes = '';
+                        $notes .= ($child_descriptor->another_source ? '<span class="exacomp-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
+                        $notes .= (!$child_descriptor->another_source && $child_descriptor->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
 						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 						$cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$child_descriptor->id.'"'.(!$child_descriptor->can_delete ? ' disabled="disabled"' : '').' />'.
-							$child_descriptor->numbering.' '.$child_descriptor->title, "desctitle");
+							$child_descriptor->numbering.' '.$child_descriptor->title.$notes, "desctitle");
 						$row->cells[] = $cell;
 
 						$rows[] = $row;
@@ -4208,9 +4240,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$row->attributes['class'] = 'rg2-level-4';
 
 							$cell = new html_table_cell();
+                            $notes = '';
+                            $notes .= ($example->another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
 							$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 							$cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete ? ' disabled="disabled"' : '').' />'.
-								$example->numbering.' '.$example->title, "desctitle");
+								$example->numbering.' '.$example->title.$notes, "desctitle");
 							$row->cells[] = $cell;
 
 							$rows[] = $row;
@@ -4223,9 +4257,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$row->attributes['class'] = 'rg2-level-3';
 
 						$cell = new html_table_cell();
+                        $notes = '';
+                        $notes .= ($example->another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
 						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 						$cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete ? ' disabled="disabled"' : '').' />'.
-							$example->numbering.' '.$example->title, "desctitle");
+							$example->numbering.' '.$example->title.$notes, "desctitle");
 						$row->cells[] = $cell;
 
 						$rows[] = $row;
@@ -4238,7 +4274,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
-		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'Löschen')), '', array('id' => 'exabis_save_button'));
+		$table_html .= html_writer::div(html_writer::empty_tag('input',
+                array('type' => 'submit',
+                        'value' => 'Löschen',
+                        'class' => 'btn btn-danger',
+                        'onClick' => 'return confirm(\''.block_exacomp_get_string('really_delete').'\');')),
+                '', array('id' => 'exabis_save_button'));
 
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'delete_selected')), "id" => "exa-selector"));
 	}

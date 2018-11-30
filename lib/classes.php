@@ -263,66 +263,95 @@ class db_layer_whole_moodle extends db_layer {
 
 		// check delete
 		foreach ($subjects as $subject) {
+		    // filter subjects by source. Other levels will be from needed subject trees
+            // before it was a simpossibble to delete subject/topic/..., but unclear why.
+            // now it is impossible to delete, but with the message about 'children from another source'
+		    if ($subject->source != $source) {
+		        unset($subjects[$subject->id]);
+            }
 			$subject->can_delete = ($subject->source == $source);
+            $subject->has_another_source = false;
 
 			foreach ($subject->topics as $topic) {
 				$topic->can_delete = ($topic->source == $source);
+                $topic->another_source = (!($topic->source == $source));
+                $topic->has_another_source = false;
 
 				foreach ($topic->descriptors as $descriptor) {
 					$descriptor->can_delete = ($descriptor->source == $source);
+                    $descriptor->another_source = (!($descriptor->source == $source));
+                    $descriptor->has_another_source = false;
 
 					// child descriptors
 					foreach ($descriptor->children as $child_descriptor) {
 						$child_descriptor->can_delete = ($child_descriptor->source == $source);
+                        $child_descriptor->another_source = (!($child_descriptor->source == $source));
+                        $child_descriptor->has_another_source = false;
 
 						$examples = array();
 						foreach ($child_descriptor->examples as $example) {
 							$example->can_delete = ($example->source == $source);
+                            $example->another_source = (!($example->source == $source));
 							if (!$example->can_delete) {
 								$child_descriptor->can_delete = false;
 							}
-
-							if ($example->source != $source) {
-								unset($child_descriptor->examples[$example->id]);
-							}
+                            if ($example->another_source) {
+                                $child_descriptor->has_another_source = true;
+                            }
+							//if ($example->source != $source) {
+							//	unset($child_descriptor->examples[$example->id]);
+							//}
 						}
 						$child_descriptor->examples = $examples;
 
 						if (!$child_descriptor->can_delete) {
 							$descriptor->can_delete = false;
 						}
-						if ($child_descriptor->source != $source && empty($child_descriptor->examples)) {
-							unset($descriptor->children[$child_descriptor->id]);
-						}
+                        if ($child_descriptor->another_source || $child_descriptor->has_another_source) {
+                            $descriptor->has_another_source = true;
+                        }
+						//if ($child_descriptor->source != $source && empty($child_descriptor->examples)) {
+						//	unset($descriptor->children[$child_descriptor->id]);
+						//}
 					}
 
 					foreach ($descriptor->examples as $example) {
 						$example->can_delete = ($example->source == $source);
+                        $example->another_source = (!($example->source == $source));
 						if (!$example->can_delete) {
 							$descriptor->can_delete = false;
 						}
-						if ($example->source != $source) {
-							unset($descriptor->examples[$example->id]);
-						}
-						if ($descriptor->source == $source || !empty($descriptor->examples)) {
-							unset($descriptor->children[$descriptor->id]);
-						}
+                        if ($example->another_source) {
+                            $descriptor->has_another_source = true;
+                        }
+						//if ($example->source != $source) {
+						//	unset($descriptor->examples[$example->id]);
+						//}
+						//if ($descriptor->source == $source || !empty($descriptor->examples)) {
+						//	unset($descriptor->children[$descriptor->id]);
+						//}
 					}
 
 					if (!$descriptor->can_delete) {
 						$topic->can_delete = false;
 					}
-					if ($descriptor->source != $source && empty($descriptor->examples)) {
-						unset($topic->descriptors[$descriptor->id]);
-					}
+                    if ($descriptor->another_source || $descriptor->has_another_source) {
+                        $topic->has_another_source = true;
+                    }
+					//if ($descriptor->source != $source && empty($descriptor->examples)) {
+					//	unset($topic->descriptors[$descriptor->id]);
+					//}
 				}
 
 				if (!$topic->can_delete) {
 					$subject->can_delete = false;
 				}
-				if ($topic->source != $source && empty($topic->descriptors)) {
-					unset($subject->topics[$topic->id]);
-				}
+                if ($topic->another_source || $topic->has_another_source) {
+                    $subject->has_another_source = true;
+                }
+				//if ($topic->source != $source && empty($topic->descriptors)) {
+				//	unset($subject->topics[$topic->id]);
+				//}
 			}
 
 			if ($subject->source != $source && empty($subject->topics)) {

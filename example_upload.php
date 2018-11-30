@@ -37,7 +37,18 @@ if ($exampleid) {
 
 $context = context_course::instance($courseid);
 
-if (optional_param('action', '', PARAM_TEXT) == 'delete') {
+$action = optional_param('action', 'add', PARAM_TEXT);
+
+/* PAGE URL - MUST BE CHANGED */
+$PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
+$PAGE->set_title(block_exacomp_get_string('blocktitle'));
+$PAGE->set_pagelayout('embedded');
+
+if ($action == 'serve') {
+    print_error('this function is not available anymore');
+}
+
+if ($action == 'delete') {
 	if (!$example) {
 		print_error('invalidexample', 'block_exacomp', $exampleid);
 	}
@@ -48,21 +59,11 @@ if (optional_param('action', '', PARAM_TEXT) == 'delete') {
 	redirect($returnurl);
 }
 
-/* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
-$PAGE->set_title(block_exacomp_get_string('blocktitle'));
-$PAGE->set_pagelayout('embedded');
-
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
 $blocknode->make_active();
 
-$action = optional_param('action', 'add', PARAM_TEXT);
-
-if($action == 'serve') {
-	print_error('this function is not available anymore');
-}
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
@@ -73,25 +74,23 @@ $descrid = optional_param('descrid',-1, PARAM_INT);
 $topicid = optional_param('topicid',-1, PARAM_INT);
 $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
 
-
-
 // if($descid == -1 && $topicid == -1 && $crosssubjid != -1){ //add to a crosssubject
 
-    
 // }else if($descrid != -1 && $topicid != -1){
     $taxonomies = $DB->get_records_menu("block_exacomptaxonomies",null,"","id, title");
     $topicsub = $DB->get_record("block_exacomptopics", array("id"=>$topicid));
     $topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'id, title');
     
     $example_descriptors = array();
-    if($exampleid>0)
-    	$example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+    if ($exampleid > 0) {
+        $example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid), '', 'descrid');
+    }
     
     $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
     $csettings = block_exacomp_get_settings_by_course($courseid);
     $example_activities = array();
     
-    if($csettings->uses_activities) {
+    if ($csettings->uses_activities) {
     	$example_activities[0] = block_exacomp_get_string('none');
     	
     	$modinfo = get_fast_modinfo($COURSE->id);
@@ -128,25 +127,25 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
             array("crosssubjid" => $crosssubjid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
     }
      
-    if($formdata = $form->get_data()) {
+    if ($formdata = $form->get_data()) {
     	$newExample = new stdClass();
     	$newExample->title = $formdata->title;
     	$newExample->description = $formdata->description;
     	$newExample->creatorid = $USER->id;
-    	if(!empty($formdata->externalurl))
+    	if (!empty($formdata->externalurl))
     		$newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
     	else
     		$newExample->externalurl = null;
     	$newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
     
     	$newExample->externaltask = '';
-    	if(!empty($formdata->assignment)) {
+    	if (!empty($formdata->assignment)) {
     		if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
     			$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
     		}
     	}
     	
-    	if($formdata->exampleid == 0) {
+    	if ($formdata->exampleid == 0) {
     		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
     		$newExample->sorting = $newExample->id;
     		$DB->update_record('block_exacompexamples', $newExample);
@@ -155,7 +154,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     		//update example
     		$newExample->id = $formdata->exampleid;
     		$DB->update_record('block_exacompexamples', $newExample);
-    		$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP,array('exampid' => $newExample->id));
+    		$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $newExample->id));
     	}
     
     	//insert taxid in exampletax_mm
@@ -167,6 +166,21 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     				'taxid' => $taxid
     			]);
     	}
+    	// or create a new taxonomy from example form
+        $newTax = trim(optional_param('newtaxonomy', '', PARAM_RAW));
+        if ($newTax != '') {
+            $newTaxonomy = new \stdClass();
+            $newTaxonomy->title = $newTax;
+            $newTaxonomy->parentid = 0;
+            $newTaxonomy->sorting = $DB->get_field(BLOCK_EXACOMP_DB_TAXONOMIES, 'MAX(sorting)', array()) + 1;
+            $newTaxonomy->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+            $newTaxonomy->sourceid = 0;
+            $newTaxonomy->id = $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, $newTaxonomy);
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
+                    'exampleid' => $newExample->id,
+                    'taxid' => $newTaxonomy->id
+            ]);
+        }
     	//add descriptor association
     	$descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
     	if ($descriptors) {

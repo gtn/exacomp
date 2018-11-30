@@ -931,6 +931,10 @@ return [
 		'Name',
 		'Name',
 	],
+	'example_add_taxonomy' => [
+		'Neue Niveaustufe erstellen',
+		'Add new taxonomy',
+	],
 	'comp_based' => [
 		'Nach Kompetenzen sortieren',
 		'sort by competencies',
@@ -2289,5 +2293,18 @@ return [
     'save' => [
             'Speichern',
             'Save'
-    ]
+    ],
+    'add_competence_insert_learning_progress' => [
+        'Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!',
+        'To insert a new competence, you must first select or add a difficulty level!'
+    ],
+    'delete_level_from_another_source' => [
+        'From another source!',
+        'From another source!'
+    ],
+    'delete_level_has_children_from_another_source' => [
+        'Has children from another source!',
+        'Has children from another source!'
+    ],
+
 ];

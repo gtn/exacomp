@@ -32,8 +32,7 @@ require_login($course);
 $context = context_course::instance($courseid);
 $output = block_exacomp_get_renderer();
 
-/* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/niveau.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp_get_string('add_niveau'));
 $PAGE->set_pagelayout('embedded');
 
@@ -97,11 +96,12 @@ class block_exacomp_local_item_form extends moodleform {
 class block_exacomp_local_item_edit_form extends moodleform {
 
 	function definition() {
-		global $CFG, $USER, $DB, $PAGE;
+		global $CFG, $USER, $DB, $PAGE, $COURSE;
 
 		$output = block_exacomp_get_renderer();
 
 		$mform = & $this->_form;
+        $niveauid = optional_param('id', 0, PARAM_INT);
 
 		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('title', PARAM_TEXT);
@@ -109,7 +109,14 @@ class block_exacomp_local_item_edit_form extends moodleform {
 		$mform->addElement('text', 'numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
 		$mform->setType('numb', PARAM_TEXT);
 
-		$this->add_action_buttons(false);
+        $buttonarray = array();
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+        $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveauid, 'action' => 'delete', 'forward' => optional_param('backurl' ,'', PARAM_URL).'&editmode=1']));
+        //$buttonarray[] = &$mform->createElement('button', 'delete', get_string('delete'));
+        $buttonarray[] = &$mform->createElement('static', '', '', '<a href="#" onClick="if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};" class="btn btn-danger">'.get_string('delete').'</a>');
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->closeHeaderBefore('buttonar');
+		//$this->add_action_buttons(false);
 	}
 }
 
@@ -149,7 +156,7 @@ if (!$item) {
 	$data->niveau_type = 'existing';
 	$form->set_data($data);
 
-	if($formdata = $form->get_data()) {
+	if ($formdata = $form->get_data()) {
 
 		if ($formdata->niveau_type == 'new') {
 			$niveau = new stdClass;
@@ -186,9 +193,11 @@ if (!$item) {
 	echo $output->footer();
 } else {
 	$form = new block_exacomp_local_item_edit_form($_SERVER['REQUEST_URI']);
-	if ($item) $form->set_data($item);
+	if ($item) {
+        $form->set_data($item);
+    }
 
-	if($formdata = $form->get_data()) {
+	if ($formdata = $form->get_data()) {
 
 		$new = new stdClass();
 		$new->title = $formdata->title;

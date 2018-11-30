@@ -25,7 +25,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		global $CFG, $USER, $DB, $PAGE;
 
 		$output = block_exacomp_get_renderer();
-		
+
 		$mform = & $this->_form;
 
 		$descrid = $this->_customdata['descrid'];
@@ -35,7 +35,7 @@ class block_exacomp_example_upload_form extends moodleform {
             $crosssubjid = null;
         }
 		
-		if($descrid) {
+		if ($descrid) {
 		    $descrTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$descrid));
 		    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
 		    
@@ -189,4 +189,24 @@ class block_exacomp_example_upload_form extends moodleform {
 		
 		return $mform;
 	}
+
+
+    public function display() {
+        ob_start();
+        parent::display();
+        $out = ob_get_contents();
+        ob_end_clean();
+        $doc = new DOMDocument();
+        @$doc->loadHTML(utf8_decode($out), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $selector = new DOMXPath($doc);
+        $newInput = $doc->createDocumentFragment();
+        $newInput->appendXML('<br /><span>'.block_exacomp_get_string('example_add_taxonomy').'</span> <input class="form-control" name="newtaxonomy" value="" size="10" />');
+        foreach ($selector->query('//select[@name=\'taxid[]\']') as $e) {
+            $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
+            $e->parentNode->appendChild($newInput);
+        }
+        $output = $doc->saveHTML($doc->documentElement);
+        print $output;
+    }
+
 }
