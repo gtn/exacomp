@@ -429,7 +429,7 @@ $string['reports'] = 'Berichte';
 $string['newer_grading_tooltip'] = 'Überprüfen Sie die Beurteilung, da weitere Teilkompetenzen geändert wurden.';
 $string['create_new_topic'] = 'Neuer Kompetenzbereich';
 $string['really_delete'] = 'Wirklich löschen?';
-$string['add_niveau'] = 'Lernfortschritt hinzufügen';
+$string['add_niveau'] = 'Neues Niveau hinzufügen';
 $string['delete_niveau'] = 'Löschen hinzufügen';
 
 
@@ -663,5 +663,5 @@ $string['import_category_mapping_column_level_descriptor'] = 'Kompetenz / Teilko
 $string['import_category_mapping_column_level_example'] = 'Material';
 $string['save'] = 'Speichern';
 $string['add_competence_insert_learning_progress'] = 'Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!';
-$string['delete_level_from_another_source'] = 'From another source!';
+$string['delete_level_from_another_source'] = 'Inhalte von anderer Quelle. Diese können nur vom Admin gelöscht werden.';
 $string['delete_level_has_children_from_another_source'] = 'Has children from another source!';

@@ -657,5 +657,5 @@ $string['import_category_mapping_column_level_descriptor'] = 'Competence / Child
 $string['import_category_mapping_column_level_example'] = 'Material';
 $string['save'] = 'Save';
 $string['add_competence_insert_learning_progress'] = 'To insert a new competence, you must first select or add a difficulty level!';
-$string['delete_level_from_another_source'] = 'From another source!';
+$string['delete_level_from_another_source'] = 'Content from another source. These can only be deleted by the admin.';
 $string['delete_level_has_children_from_another_source'] = 'Has children from another source!';
