@@ -709,7 +709,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsColspan++;
 		}
 
-		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
+		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip competence-overview';
 
 		// in the future maybe use lscache or some other method?
 		if ($crosssubjid) {

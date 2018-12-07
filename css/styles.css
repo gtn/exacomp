@@ -473,6 +473,14 @@ td.contentcell {
 	font-size: 0.85em
 }
 
+#block_exacomp table.competence-overview tr.exabis_comp_teilcomp > td:nth-child(2) {
+	min-width: 240px;
+}
+#block_exacomp table.competence-overview select {
+	max-width: 70px;
+	font-size: 0.85em;
+}
+
 #block_exacomp .exabis_comp_aufgabe {
 	font-size: 0.9em
 }
