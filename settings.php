@@ -115,7 +115,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         $br = $doc->createElement('br');
                         foreach($selector->query('//*[@name="s_exacomp_'.$this->name.'"]') as $e ) {
                             $span = $doc->createElement('span', $message);
-                            $span->setAttribute('class', 'text-info');
+                            $span->setAttribute('class', 'text-info small');
                             $e->parentNode->insertBefore($br, $e->nextSibling);
                             $e->parentNode->insertBefore($span, $e->nextSibling);
                         }
@@ -444,6 +444,248 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 		}
 	}
 
+	// Table for self evaluation options (verboses)
+    class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_setting_configempty {
+
+        private $lang = 'de';
+        //private $haserror = array();
+        private $targets = array('example', 'childcomp', 'comp', 'topic', 'subject', 'theme');
+        private $params = array('long', 'short');
+
+        /**
+         * @param string $name
+         * @param string $visiblename
+         * @param string $description
+         * @param string $defaultsetting
+         */
+        public function __construct($name, $visiblename, $description, $defaultsetting = '') {
+            $this->lang = current_language();
+            //$this->nosave = true;
+            $verbosesdefault = array();
+            // Default assessment settings.
+            if ($defaultsetting == '') {
+                foreach ($this->targets as $target) {
+                    foreach ($this->params as $param) {
+                        switch ($target) {
+                            case 'example':
+                                $value = block_exacomp_get_string('selfEvalVerboseExample.defaultValue_'.$param); break;
+                            default:
+                                $value = block_exacomp_get_string('selfEvalVerbose.defaultValue_'.$param); break;
+                        }
+                        $verbosesdefault[$target][$param] = $value;
+                    }
+                }
+            } else {
+                $verbosesdefault = $verbosesdefault;
+            }
+            parent::__construct($name, $visiblename, $description, $verbosesdefault);
+        }
+
+        public function get_setting() {
+            $result = array();
+            foreach ($this->targets as $target) {
+                foreach ($this->params as $param) {
+                    $targetparam = 'assessment_selfEvalVerbose_'.$target.'_'.$param;
+                    $value = $this->config_read($targetparam);
+
+                    $newvalue = null;
+                    $copyofvalue = trim($value);
+                    $get = json_decode($value, true);
+                    if (json_last_error() && $copyofvalue != '') {
+                        $newvalue = $copyofvalue; // return string if it is not json data
+                    }
+                    if (isset($get[$this->lang])) {
+                        $newvalue = $get[$this->lang];
+                    }
+                    if ($newvalue !== null) {
+                        $result[$target][$param] = $newvalue;
+                    } else {
+                        $result[$target][$param] = $this->defaultsetting[$target][$param];
+                    };
+                }
+            }
+            return $result;
+        }
+
+        public function write_setting($data) {
+            if(!is_array($data)) {
+                $data = $this->defaultsetting;
+            }
+            $result = '';
+            foreach ($data as $target => $parameters) {
+                foreach ($parameters as $param => $value) {
+                    $validated = $this->validate($target, $param, $value, 4, ($param == 'long' ? 20 : 3));
+                    if ($validated !== true) {
+                        return $validated;
+                    }
+                    $paramname = 'assessment_selfEvalVerbose_'.$target.'_'.$param;
+                    $olddata = get_config('exacomp', $paramname);
+                    $copyofold = trim($olddata);
+                    $olddata = json_decode($olddata, true);
+                    if (json_last_error() && $copyofold != '') { // Old data is not json
+                        $olddata['de'] = $copyofold;
+                    }
+                    $olddata[$this->lang] = trim($value);
+                    if (!isset($olddata['de'])) { // It is possible if the admin works only with EN
+                        $olddata['de'] = trim($value);
+                    }
+                    $data = json_encode($olddata);
+                    if (!$this->config_write($paramname, $data)) {
+                        $result = get_string('errorsetting', 'admin');
+                    }
+                }
+            }
+
+            return $result;
+        }
+
+        public function validate($level, $type, $value, $limit = 4, $maxlenght = 20) {
+            $allgood = true;
+            $params = array_map('trim', explode(';', $value));
+            if (count($params) == 1 && $params[0] == $value) { // for checking of delimeter. Must be ;
+                $paramsbad = array_map('trim', explode(',', $value));
+                if (count($paramsbad) > 1) {
+                    $allgood = false;
+                }
+            }
+            if (count($params) > $limit) { // not more than 4
+                $allgood = false;
+            }
+            if ($allgood) {
+                foreach ($params as $p) {
+                    if (mb_strlen($p) > $maxlenght) {
+                        $allgood = false;
+                        break;
+                    }
+                }
+            }
+            if (!$allgood) {
+                //$this->haserror[$level][$type] = true;
+                return block_exacomp_get_string('settings_assessment_SelfEval_verboses_validate_error_long');/*."\r\n".
+                        block_exacomp_get_string('settings_assessment_SelfEval_verboses_validate_error_short');*/
+            }
+            return true;
+        }
+
+        public function output_html($data, $query='') {
+            global $CFG;
+            // get errors for marking
+            $errors = admin_get_root()->errors;
+            $inputerrors = array();
+            if (array_key_exists('s_exacomp_assessment_SelfEval_verboses', $errors)) {
+                $dataerrors = $errors['s_exacomp_assessment_SelfEval_verboses']->data;
+                foreach ($this->targets as $target) {
+                    foreach ($this->params as $type) {
+                        if (!($this->validate($target, $type, $dataerrors[$target][$type], 4, ($type == 'long' ? 20 : 3)) === true)) {
+                            $inputerrors[$target][$type] = true;
+                        }
+                    }
+                }
+            }
+
+            $table = new html_table();
+            $return = '';
+            $return .= '<a href="#" onclick="editSelfEvalSettings(); return false;" >';
+            @$table->attributes['style'] .= ' display: block; ';
+            // if we have an error - disply the table
+            if (!(count($inputerrors) > 0)) {
+                @$table->attributes['style'] .= ' display: none; ';
+                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" />';
+                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" style="display:none;"/>';
+            } else {
+                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" style="display:none;"/>';
+                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" />';
+            }
+            $return .= block_exacomp_get_string('settings_assessment_SelfEval_verboses_edit').'</a>';
+            $table->attributes['class'] .= 'exacomp-selfEval-settings table table-condensed table-sm';
+            $table->id = 'editSelfEvalVerbosesTable';
+            $table->head = array();
+            // Add column names.
+            $table->head[] = ''; // Level.
+            $table->head[] = block_exacomp_get_string('settings_assessment_SelfEval_verboses_long_columntitle'); // Long verbose.
+            $table->head[] = block_exacomp_get_string('settings_assessment_SelfEval_verboses_short_columntitle'); // Short verbose.
+            // Targets:
+            foreach ($this->targets as $key => $target) {
+                $row = new html_table_row();
+                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_assessment_target_'.$target));
+                foreach ($this->params as $key => $paramname) {
+                    $id = $this->get_id().'_'.$target.'_'.$paramname.'_'.$key;
+                    $name = $this->get_full_name().'['.$target.']['.$paramname.']';
+                    $haserror = '';
+                    if (array_key_exists($target, $inputerrors)
+                            && array_key_exists($paramname, $inputerrors[$target])
+                            && $inputerrors[$target][$paramname]) {
+                        $haserror .= ' error ';
+                    }
+                    $input = html_writer::empty_tag('input',
+                            array(
+                                'type' => 'text',
+                                'id' => $id,
+                                'name' => $name,
+                                'value' => $data[$target][$paramname],
+                                'size' => ($paramname == 'long' ? 45 : 12),
+                                'class' => 'form-control exacomp_forpreconfig'.$haserror
+                            ));
+
+                    // add mesage about default (DE) value if the user uses not DE interface language
+                    if ($this->lang != 'de') { // only for NON DE
+                        $message = block_exacomp_get_string('settings_default_de_value').block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de');
+                        $input .= '<span class="text-info small">'.$message.'</span>';
+                    }
+
+                    $cell = new html_table_cell($input);
+                    $row->cells[] = $cell;
+                }
+                $table->data[] = $row;
+            }
+            $return .= html_writer::table($table);
+            // Add javascript.
+            $return .= '<script>';
+            $return .= 'function editSelfEvalSettings() {
+                            var table = document.getElementById("editSelfEvalVerbosesTable");
+                            var iconOpen = document.getElementById("editSelfEvalVerbosesIconOpen");
+                            var iconClose = document.getElementById("editSelfEvalVerbosesIconClose");
+                            var isHidden = false;
+                            if (table.offsetParent === null) {
+                                isHidden = true;
+                            } 
+                            if (isHidden) {
+                                table.style.display = \'block\';
+                                iconOpen.style.display = \'none\';
+                                iconClose.style.display = \'inline-block\';
+                            } else {
+                                table.style.display = \'none\';
+                                iconOpen.style.display = \'inline-block\';
+                                iconClose.style.display = \'none\';                            }
+                            
+                        }';
+            $return .= '</script>';
+
+            // Get standard settings parameters template.
+            $template = format_admin_setting($this, $this->visiblename, $return,
+                    $this->description, true, '', '', $query);
+
+            // Hide some html for better view of this settings.
+            $doc = new DOMDocument();
+            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $selector = new DOMXPath($doc);
+            // Delete div with classes.
+            $deletedivs = array('form-defaultinfo', 'form-description');
+            foreach ($deletedivs as $deletediv) {
+                foreach($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e ) {
+                    $e->parentNode->removeChild($e);
+                }
+            }
+            // Change col-sm-9 -> col-sm-12 if it is here.
+            //$template = str_replace('col-sm-9', 'col-sm-12', $template);*/
+            $template = $doc->saveHTML($doc->documentElement);
+            return $template;
+        }
+
+
+    }
+
+
 	// Table with Evaluation settings
     class block_exacomp_assessment_configtable extends admin_setting {
 
@@ -489,7 +731,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
         }
 
         public function write_setting($data) {
-            if(!is_array($data)) {
+            if (!is_array($data)) {
                 $data = $this->defaultsetting;
             }
             $result = '';
@@ -659,6 +901,8 @@ $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/usep
 $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/assessment_SelfEval_useVerbose',
         block_exacomp_get_string('assessment_SelfEval_useVerbose'),
         '', 0));
+$settings->add(new block_exacomp_selfevaluation_configtable('exacomp/assessment_SelfEval_verboses',
+        block_exacomp_get_string('settings_assessment_SelfEval_verboses'), '', '', ''));
 
 // Darstellung (visualisation).
 $settings->add(new admin_setting_heading('exacomp/heading_visualisation',

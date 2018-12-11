@@ -154,6 +154,11 @@ $string['settings_sourceId'] = 'Source ID';
 $string['settings_sourceId_description'] = 'Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden';
 $string['settings_admin_preconfiguration_none'] = 'Keine Vorkonfiguration verwenden';
 $string['settings_default_de_value'] = 'DE value: ';
+$string['settings_assessment_SelfEval_verboses'] = 'Verboses for self evaluations';
+$string['settings_assessment_SelfEval_verboses_long_columntitle'] = 'Long';
+$string['settings_assessment_SelfEval_verboses_short_columntitle'] = 'Short';
+$string['settings_assessment_SelfEval_verboses_edit'] = 'Bearbeiten';
+$string['settings_assessment_SelfEval_verboses_validate_error_long'] = 'Langformat: bis zu 4 Einträge, Trennzeichen Strichpunkt, max 20 Zeichen je Entrag (4 zum Kurzformat)';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -235,6 +240,10 @@ $string['show_all_descriptors'] = 'Alle Lernlisten im Überblick anzeigen';
 $string['show_all_examples'] = 'Externe Lernmaterialien für Kursteilnehmer/innen anzeigen';
 $string['useprofoundness'] = 'Grund- und Erweiterungskompetenzen verwenden';
 $string['assessment_SelfEval_useVerbose'] = 'verbalisiertes Schüler/innen-Feedback';
+$string['selfEvalVerbose.defaultValue_long'] = 'trifft nicht zu; trifft eher nicht zu; trifft eher zu; trifft zu';
+$string['selfEvalVerbose.defaultValue_short'] = 'tn; ten; te; tz';
+$string['selfEvalVerboseExample.defaultValue_long'] = 'nicht gelöst; mit Hilfe gelöst; selbstständig gelöst';
+$string['selfEvalVerboseExample.defaultValue_short'] = 'ng; hg; sg';
 $string['selfEvalVerbose.1'] = 'trifft nicht zu';
 $string['selfEvalVerbose.2'] = 'trifft eher nicht zu';
 $string['selfEvalVerbose.3'] = 'trifft eher zu';

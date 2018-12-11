@@ -415,6 +415,10 @@ function block_exacomp_get_assessment_verbose_options_short($getforlanguage = nu
     return block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
 }
 
+function block_exacomp_get_assessment_selfEval_verboses($level = 'example', $type = 'long', $getforlanguage = null) {
+    return block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
+}
+
 function block_exacomp_get_assessment_example_scheme() {
     return get_config('exacomp', 'assessment_example_scheme');
 }
@@ -8210,7 +8214,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 
 	if ($filter['type'] == 'students') {
 		$has_output = false;
-		
+
 		if($filter['selectedStudent'] != 0){
 		    $students=array($students[$filter['selectedStudent']]);
  		}
@@ -8270,7 +8274,6 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 				}
 			});
 
-
 			ob_start();
 			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter, $html, $isPdf) {
 				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
@@ -8278,7 +8281,6 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 				if (!$item->visible) {
 					// walk subs with same level
 					$walk_subs($level);
-
 					return;
 				}
 

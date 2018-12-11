@@ -154,6 +154,11 @@ $string['settings_sourceId'] = 'Source ID';
 $string['settings_sourceId_description'] = 'Automatically generated ID of this Exacomp installation. This ID can not be changed';
 $string['settings_admin_preconfiguration_none'] = 'No preconfiguration';
 $string['settings_default_de_value'] = 'DE value: ';
+$string['settings_assessment_SelfEval_verboses'] = 'Verboses for self evaluations';
+$string['settings_assessment_SelfEval_verboses_long_columntitle'] = 'Long';
+$string['settings_assessment_SelfEval_verboses_short_columntitle'] = 'Short';
+$string['settings_assessment_SelfEval_verboses_edit'] = 'Edit verboses';
+$string['settings_assessment_SelfEval_verboses_validate_error_long'] = 'Long titles: up to 4 entries, delimiter ";", maximum 20 characters per entry (4 for short form)';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -235,6 +240,10 @@ $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';
 $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['assessment_SelfEval_useVerbose'] = 'verbose feedback options for students';
+$string['selfEvalVerbose.defaultValue_long'] = 'does not apply; rather not true; rather applies; true';
+$string['selfEvalVerbose.defaultValue_short'] = 'na; rnt; ra; t';
+$string['selfEvalVerboseExample.defaultValue_long'] = 'unsolved; solved with help; solved independently';
+$string['selfEvalVerboseExample.defaultValue_short'] = 'un; sh; si';
 $string['selfEvalVerbose.1'] = 'does not apply';
 $string['selfEvalVerbose.2'] = 'rather not true';
 $string['selfEvalVerbose.3'] = 'rather applies';

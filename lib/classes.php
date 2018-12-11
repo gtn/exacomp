@@ -1237,10 +1237,11 @@ class global_config {
 	 * Returns all values used for examples and child-descriptors
      * @param bool $include_empty
      * @param integer $level
+     * @param bool $short 
      * @return array
 	 */
-	static function get_student_eval_items($include_empty = false, $level = BLOCK_EXACOMP_TYPE_SUBJECT) {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty, $level) {
+	static function get_student_eval_items($include_empty = false, $level = BLOCK_EXACOMP_TYPE_SUBJECT, $short = false) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty, $level, $short) {
 			// if additional_grading is set, use global value scheme
 
 			if ($include_empty) {
@@ -1259,43 +1260,71 @@ class global_config {
                  //var_dump($useEval);
                  //var_dump($level);
 //                 throw new \coding_exception("haaalt stopp!!!!!!!!!!!!!!!!!!");
+                $target = 'subject'; // For default.
                 if ($useEval) {
                     // different for different levels
                     // use integer and string variants
                     switch (true) { // strange switch because $level can have different types
                         case $level === 'crosssubs':
-                        case $level === 'subjects':
-                        case $level === 'topics':
-                        case $level === 'competencies':
                         case $level === BLOCK_EXACOMP_TYPE_CROSSSUB:
                         case $level === BLOCK_EXACOMP_TYPE_CROSSSUB.'': // also it is possible as string id
+                            $target = 'theme';
+                            break;
+                        case $level === 'subjects':
                         case $level === BLOCK_EXACOMP_TYPE_SUBJECT:
                         case $level === BLOCK_EXACOMP_TYPE_SUBJECT.'':
+                            $target = 'subject';
+                            break;
+                        case $level === 'topics':
                         case $level === BLOCK_EXACOMP_TYPE_TOPIC:
                         case $level === BLOCK_EXACOMP_TYPE_TOPIC.'':
+                            $target = 'topic';
+                            break;
+                        case $level === 'competencies':
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR:
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR.'':
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT.'':
+                            $target = 'comp';
+                            break;
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD.'':
-                            return $values + [
+                            $target = 'childcomp';
+                            /*return $values + [
                                         4 => block_exacomp_get_string('selfEvalVerbose.4'), //not generic yet because not requested from customer
                                         3 => block_exacomp_get_string('selfEvalVerbose.3'),
                                         2 => block_exacomp_get_string('selfEvalVerbose.2'),
                                         1 => block_exacomp_get_string('selfEvalVerbose.1'),
-                                ];
+                                ];*/
                             break;
                         case $level === 'examples':
                         case $level === BLOCK_EXACOMP_TYPE_EXAMPLE:
-                            return $values + [
+                        case $level === BLOCK_EXACOMP_TYPE_EXAMPLE.'':
+                            $target = 'example';
+                            /*return $values + [
                                             3 => block_exacomp_get_string('selfEvalVerboseExample.3'), //not generic yet because not requested from customer
                                             2 => block_exacomp_get_string('selfEvalVerboseExample.2'),
                                             1 => block_exacomp_get_string('selfEvalVerboseExample.1'),
-                                    ];
+                                    ];*/
                             break;
                     }
-
+                    if ($short) {
+                        $paramtype = 'short';
+                    } else {
+                        $paramtype = 'long';
+                    }
+                    $verbosesstring = block_exacomp_get_assessment_selfEval_verboses($target, $paramtype);
+                    if (!$verbosesstring) { // If no any value in the settings.
+                        $verbosesstring = block_exacomp_get_string('selfEvalVerbose'.($target == 'example' ? 'Example' : '').'.defaultValue_'.$paramtype);
+                    }
+                    $result = $values;
+                    $valuesadd = array_map('trim', explode(';', $verbosesstring));
+                    $i = 1;
+                    foreach ($valuesadd as $add) {
+                        $result[$i] = $add;
+                        $i++;
+                    }
+                    return $result;
                 } else {
                     return $values + [
                                     3 => ':-)', //not generic yet because not requested from customer

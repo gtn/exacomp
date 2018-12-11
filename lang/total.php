@@ -516,6 +516,30 @@ return [
         'DE value: ',
         'DE value: ',
     ],
+    'settings_assessment_SelfEval_verboses' => [
+        'Verboses for self evaluations',
+        'Verboses for self evaluations',
+    ],
+    'settings_assessment_SelfEval_verboses_long_columntitle' => [
+        'Long',
+        'Long',
+    ],
+    'settings_assessment_SelfEval_verboses_short_columntitle' => [
+        'Short',
+        'Short',
+    ],
+    'settings_assessment_SelfEval_verboses_edit' => [
+        'Bearbeiten',
+        'Edit verboses',
+    ],
+    'settings_assessment_SelfEval_verboses_validate_error_long' => [
+        'Langformat: bis zu 4 Einträge, Trennzeichen Strichpunkt, max 20 Zeichen je Entrag (4 zum Kurzformat)',
+        'Long titles: up to 4 entries, delimiter ";", maximum 20 characters per entry (4 for short form)'
+    ],/*
+    'settings_assessment_SelfEval_verboses_validate_error_short' => [
+        'Short titles: up to 4 entries, delimiter ; maximum 3 characters per entry',
+        'Short titles: up to 4 entries, delimiter ; maximum 3 characters per entry',
+    ],*/
 
 	// === Unit Tests ===
 	'unittest_string' => [
@@ -788,6 +812,22 @@ return [
 	'assessment_SelfEval_useVerbose' => [
 		'verbalisiertes Schüler/innen-Feedback',
 		'verbose feedback options for students',
+	],
+	'selfEvalVerbose.defaultValue_long' => [
+		'trifft nicht zu; trifft eher nicht zu; trifft eher zu; trifft zu',
+		'does not apply; rather not true; rather applies; true',
+	],
+	'selfEvalVerbose.defaultValue_short' => [
+		'tn; ten; te; tz',
+		'na; rnt; ra; t',
+	],
+	'selfEvalVerboseExample.defaultValue_long' => [
+		'nicht gelöst; mit Hilfe gelöst; selbstständig gelöst',
+		'unsolved; solved with help; solved independently',
+	],
+	'selfEvalVerboseExample.defaultValue_short' => [
+        'ng; hg; sg',
+		'un; sh; si',
 	],
 	'selfEvalVerbose.1' => [
 		'trifft nicht zu',
