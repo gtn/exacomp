@@ -539,7 +539,7 @@ Add student submission to example.',
     'classname' => 'block_exacomp_external',
     'methodname' => 'dakora_get_descriptors_details',
     'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => 'get descriptor details incl. grading and children',
+    'description' => 'get descriptor details incl. grading and children for many descriptors',
     'type' => 'read',
   ),
   'dakora_get_descriptor_details' => 

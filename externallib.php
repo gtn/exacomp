@@ -5216,7 +5216,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_descriptors_details_parameters() {
 	    return new external_function_parameters (array(
 	        'courseid' => new external_value(PARAM_INT, 'courseid'),
-	        'descriptorid' => new external_value(PARAM_INT, 'descriptorid'),
+	        'descriptorids' => new external_value(PARAM_TEXT, 'list of descriptors, seperated by comma'),
 	        'userid' => new external_value (PARAM_INT, 'userid'),
 	        'forall' => new external_value (PARAM_BOOL, 'forall'),
 	        'crosssubjid' => new external_value (PARAM_INT, 'crosssubjid'),
@@ -5224,7 +5224,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
-	 * get descriptor details incl. grading and children
+	 * get descriptor details incl. grading and children for many descriptors
 	 * @ws-type-read
 	 * @param $courseid
 	 * @param $descriptorid
@@ -5233,19 +5233,33 @@ class block_exacomp_external extends external_api {
 	 * @param $crosssubjid
 	 * @return stdClass
 	 */
-	public static function dakora_get_descriptors_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+	public static function dakora_get_descriptors_details($courseid, $descriptorids, $userid, $forall, $crosssubjid) {      
 	    global $DB, $USER;
-	    static::validate_parameters(static::dakora_get_descriptor_details_parameters(),
-	        array('courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
+	    static::validate_parameters(static::dakora_get_descriptors_details_parameters(),
+	        array('courseid' => $courseid, 'descriptorids' => $descriptorids, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
 
 	    if (!$forall && $userid == 0) {
 	        $userid = $USER->id;
 	    }
 
 	    static::require_can_access_course_user($courseid, $userid);
-
-	    $descriptor_return = static::get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid);
-	    return $descriptor_return;
+	    
+	    //get an arry of descriptorids
+	    $descriptors = explode(',', $descriptorids);
+	    $descriptors_return = array();
+	    $counter = 0;
+        foreach ($descriptors as $descriptor) {
+            if($descriptors_return == null){
+                $descriptors_return[$counter] = static::get_descriptor_details_private($courseid, $descriptor, $userid, $forall, $crosssubjid);
+            }else{
+                $descriptors_return[$counter] = static::get_descriptor_details_private($courseid, $descriptor, $userid, $forall, $crosssubjid);
+            }
+            $counter++;
+        }
+       
+        
+	    //$descriptors_return = static::get_descriptor_details_private($courseid, $descriptorids, $userid, $forall, $crosssubjid);
+	    return $descriptors_return;
 // 	    return array("success" => true, "itemid" => 3);
 	}
 
@@ -5254,7 +5268,7 @@ class block_exacomp_external extends external_api {
 // 	        'success' => new external_value (PARAM_BOOL, 'status'),
 // 	        'itemid' => new external_value (PARAM_INT, 'itemid'),
 // 	    ));
-	    return new external_single_structure (array(
+	       return new external_multiple_structure ( new external_single_structure (array(
 	        'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
 	        'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
 	        'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
@@ -5355,7 +5369,7 @@ class block_exacomp_external extends external_api {
 	        )),
 	        'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 	        'used' => new external_value (PARAM_INT, 'used in current context'),
-	    ));
+	    )));
 	}
 
 	public static function dakora_get_descriptor_details_parameters() {
@@ -7281,7 +7295,7 @@ class block_exacomp_external extends external_api {
 	    $descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 	    $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
 	    $descriptor->topicid = $descriptor_topic_mm->topicid;
-
+	    
 	    $descriptor_return = new stdClass();
 	    $descriptor_return->descriptorid = $descriptorid;
 	    $descriptor_return->parentid = $descriptor->parentid;
@@ -7292,10 +7306,9 @@ class block_exacomp_external extends external_api {
 	    $descriptor_return->timestampteacher = 0;
 	    $descriptor_return->reviewerid = 0;
 	    $descriptor_return->reviewername = null;
+	    
 	    if (!$forall) {
-	        if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
-	            //var_dump($grading);
-	            //throw new invalid_parameter_exception ('STOPPPP');
+	        if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) { 
 	            $descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
 	            $descriptor_return->additionalinfo = $grading->additionalinfo;
 	            $descriptor_return->evalniveauid = $grading->evalniveauid;
@@ -7315,6 +7328,7 @@ class block_exacomp_external extends external_api {
 	            $descriptor_return->reviewername = $reviewername;
 	        }
 	    }
+	   
 	    $descriptor_return->studentevaluation = -1;
 	    $descriptor_return->timestampstudent = 0;
 	    if (!$forall) {
@@ -7322,10 +7336,12 @@ class block_exacomp_external extends external_api {
 	            $descriptor_return->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
 	            $descriptor_return->timestampstudent = $grading->timestamp;
 	        }
+	        
 	    }
 
 	    $descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 
+	    
 	    $descriptor_return->niveautitle = "";
 	    $descriptor_return->niveauid = 0;
 	    if ($descriptor->niveauid) {
@@ -7333,14 +7349,15 @@ class block_exacomp_external extends external_api {
 	        $descriptor_return->niveautitle = $niveau->title;
 	        $descriptor_return->niveauid = $niveau->id;
 	    }
-
+	   
+	    
 	    $childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
 
 	    $descriptor_return->children = $childsandexamples->children;
 
 	    // summary for children gradings
 	    $grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
-
+	   
 	    $number_evalniveaus = 1;
 	    if (block_exacomp_use_eval_niveau()) {
 	        $number_evalniveaus = 4;
@@ -7352,7 +7369,7 @@ class block_exacomp_external extends external_api {
 	    }
 
 	    $children_studentevaluation = array_fill(0, $grading_scheme, 0);
-
+	   
 	    foreach ($childsandexamples->children as $child) {
 	        if ($child->teacherevaluation > -1) {
 	            $children_teacherevaluation[($child->evalniveauid > 0) ? $child->evalniveauid : 0][$child->teacherevaluation]++;
@@ -7366,7 +7383,7 @@ class block_exacomp_external extends external_api {
 	    $childrengradings->teacher = array();
 	    $childrengradings->student = array();
 
-
+	    
 	    foreach ($children_teacherevaluation as $niveauid => $gradings) {
 	        foreach ($gradings as $key => $grading) {
 	            $childrengradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
@@ -7377,7 +7394,7 @@ class block_exacomp_external extends external_api {
 	        $childrengradings->student[$key] = array('sum' => $value);
 	    }
 	    $descriptor_return->childrengradings = $childrengradings;
-
+	   
 	    // summary for example gradings
 	    $descriptor_return->examples = $childsandexamples->examples;
 
@@ -7385,9 +7402,9 @@ class block_exacomp_external extends external_api {
 	    for ($i = 0; $i < $number_evalniveaus; $i++) {
 	        $examples_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
 	    }
-
+	    
 	    $examples_studentevaluation = array_fill(0, $grading_scheme, 0);
-
+	    
 	    foreach ($childsandexamples->examples as $example) {
 	        if ($example->teacherevaluation > -1) {
 	            $examples_teacherevaluation[($example->evalniveauid > 0) ? $example->evalniveauid : 0][$example->teacherevaluation]++;
@@ -7410,7 +7427,7 @@ class block_exacomp_external extends external_api {
 	        }
 
 	    }
-
+	    
 	    foreach ($examples_studentevaluation as $key => $value) {
 	        $examplegradings->student[$key] = array('sum' => $value);
 	    }
@@ -7425,7 +7442,7 @@ class block_exacomp_external extends external_api {
 	    if (empty($childsandexamples->examples)) {
 	        $descriptor_return->hasmaterial = false;
 	    }
-
+	    
 	    $descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid)) ? 1 : 0;
 	    $descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
 
@@ -7434,7 +7451,9 @@ class block_exacomp_external extends external_api {
 	    }else{
 	        $descriptor_return->gradingisold = false;
 	    }
-
+	    
+	    
+	    
 	    return $descriptor_return;
 	}
 
