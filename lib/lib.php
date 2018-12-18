@@ -7201,12 +7201,21 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	$descriptorgradings = []; // array[niveauid][value][number of examples evaluated with this value and niveau]
 	$childgradings = [];
 	$examplegradings = [];
+	
+	$compAssessment = block_exacomp_get_assessment_comp_scheme(); //variable for faster program RW
 
 	// create grading statistic
 	//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid)); //deprecated/not generic? RW or just wrong?
-	$schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_comp_scheme());
-	var_dump($schemeItems_descriptors);
-	
+	if($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){ //if points: divide into 5 parts
+	    $limit = block_exacomp_get_assessment_points_limit();
+	    $schemeItems_descriptors = array();
+	    for($i=0; $i<5; $i++){
+	        $schemeItems_descriptors[$i]=($limit/5)*($i+1); //maximum number of points for this interval
+	    } 
+	}else{
+	    $schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,$compAssessment);	
+	}
+
 	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_example_scheme());
 	
 // 	var_dump(block_exacomp_get_assessment_comp_scheme());
@@ -7244,7 +7253,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		$childgradings[$niveaukey] = [];
 		$examplegradings[$niveaukey] = [];
 
-		foreach ($schemeItems_descriptors as $schemekey => $schemetitle) { // TODO: not only for descriptors, but also for example  RW
+		foreach ($schemeItems_descriptors as $schemekey => $schemetitle) { // TODO: not only for descriptors, but also for example  RW 
 			if ($schemekey > -1) {
 				$descriptorgradings[$niveaukey][$schemekey] = 0;
 				$childgradings[$niveaukey][$schemekey] = 0;
@@ -7252,7 +7261,9 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 			}
 		}
 	}
-
+	
+	
+	
 	
 	foreach ($descriptors as $descriptor) {
 	    $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
@@ -7262,20 +7273,26 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		// check if grading is within timeframe
 	    if ($eval && ($eval->value || $eval->additionalinfo) !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-			
             // increase counter in statistic
-            if (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // additionalinfo nutzen, nicht value
-                var_dump("einmal mindestens");
-                die();
+			if ($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // additionalinfo nutzen, nicht value
                 if (isset($descriptorgradings[$niveaukey][$eval->additionalinfo])) {
-                    
                     $descriptorgradings[$niveaukey][$eval->additionalinfo]++;
                 }
             } else {
-                if (isset($descriptorgradings[$niveaukey][$eval->value])) {
-                    
-                    $descriptorgradings[$niveaukey][$eval->value]++;
-			    }
+                if($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){ //calculate the fitting interval for points
+                    $incremented = false; //checks if an intervall has been incremented already ==> stop incrementing or the higher intervals would also be incremented
+                    for($i=0; $i<5 && $incremented==false; $i++){
+                        if ($eval->value <= $schemeItems_descriptors[$i]) {
+                            $descriptorgradings[$niveaukey][$i]++;
+                            $incremented = true;
+                        }    
+                    } 
+                }else{ //Verbose or YESNO
+                    if (isset($descriptorgradings[$niveaukey][$eval->value])) {
+                        $descriptorgradings[$niveaukey][$eval->value]++;
+                    }
+                }
+               
 			}   
 		}
 	}
