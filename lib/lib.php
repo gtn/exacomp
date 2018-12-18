@@ -375,7 +375,7 @@ function block_exacomp_additional_grading_used_type($type) {
 //     return array($points_limit,$grad_limit);
 // }
 
-function block_exacomp_get_assessment_points_limit($onlyGlobal = false) {
+function block_exacomp_get_assessment_points_limit($onlyGlobal = true) {
     global $DB;
     if (!$onlyGlobal) {
         // if we have courseid and we have at leat one level, which uses Points - we can use custom points limit for vourse
@@ -7205,6 +7205,8 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	// create grading statistic
 	//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid)); //deprecated/not generic? RW or just wrong?
 	$schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_comp_scheme());
+	var_dump($schemeItems_descriptors);
+	
 	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_example_scheme());
 	
 // 	var_dump(block_exacomp_get_assessment_comp_scheme());
@@ -7263,13 +7265,15 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 			
             // increase counter in statistic
             if (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // additionalinfo nutzen, nicht value
+                var_dump("einmal mindestens");
+                die();
                 if (isset($descriptorgradings[$niveaukey][$eval->additionalinfo])) {
-//                     var_dump("einmal mindestens");
-//                     die();
+                    
                     $descriptorgradings[$niveaukey][$eval->additionalinfo]++;
                 }
             } else {
                 if (isset($descriptorgradings[$niveaukey][$eval->value])) {
+                    
                     $descriptorgradings[$niveaukey][$eval->value]++;
 			    }
 			}   
