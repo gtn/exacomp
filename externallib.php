@@ -6160,37 +6160,41 @@ class block_exacomp_external extends external_api {
 	    static::validate_parameters(static::dakora_get_competence_profile_statistic_parameters(), array('courseid' => $courseid,
 	        'userid' => $userid, 'subjectid' => $subjectid, 'start_timestamp' => $start_timestamp, 'end_timestamp' => $end_timestamp));
 	    
-	    if ($userid == 0) {
-	        $userid = $USER->id;
-	    }
-	    
-	    static::require_can_access_course_user($courseid, $userid);
-	    
-	    $statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp);
-	    
-	    $statistics_return = array();
-	    
-	    foreach ($statistics as $key => $statistic) {
-	        $return = array();
-	        foreach ($statistic as $niveauid => $niveaustat) {
-	            $niveau = new stdClass();
-	            $niveau->id = $niveauid;
-	            
-	            $evaluations = array();
-	            foreach ($niveaustat as $evalvalue => $sum) {
-	                $eval = new stdClass();
-	                $eval->value = $evalvalue;
-	                $eval->sum = $sum;
-	                $evaluations[] = $eval;
-	            }
-	            $niveau->evaluations = $evaluations;
-	            
-	            $return[] = $niveau;
-	        }
-	        $statistics_return[$key]["niveaus"] = $return;
-	    }
-	    //var_dump($statistics_return[descriptor_evaluations]);
-	    return $statistics_return[descriptor_evaluations];
+        if ($userid == 0) {
+            $userid = $USER->id;
+        }
+        
+        static::require_can_access_course_user($courseid, $userid);
+        
+        $statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp, true);
+       
+        
+        $statistics_return = array();
+        
+        $counter=0;
+
+
+        $return = array();
+        foreach ($statistics as $niveauid => $niveaustat) {
+            $counter++;
+            $niveau = new stdClass();
+            $niveau->id = $niveauid;
+            
+            $evaluations = array();
+            foreach ($niveaustat as $evalvalue => $sum) {
+                $eval = new stdClass();
+                $eval->value = $evalvalue;
+                $eval->sum = $sum;
+                $evaluations[] = $eval;
+            }
+            $niveau->evaluations = $evaluations;
+            
+            $return[] = $niveau;
+        }
+        $statistics_return["niveaus"] = $return;
+        
+        //var_dump($statistics_return[descriptor_evaluations]);
+        return $statistics_return;
 	}
 	
 	/**

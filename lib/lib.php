@@ -7076,8 +7076,13 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  * evalniveauid = 0 if block_exacomp_use_eval_niveau() = false, otherwise -1, 1, 2, 3
  * evalvalue is 0 to 3, this statistic is not display if block_exacomp_additional_grading() = false
  *
+ *
+ *
+ *
+ * RW 2018:
+ * $onlyDescriptors for the webservice that only needs the descriptors (better performance)
  */
-function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0) {
+function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0, $onlyDescriptors = false) {
 	// TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
 	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
 	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
@@ -7121,39 +7126,47 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		}
 	}
 
-	foreach ($child_descriptors as $child) {
-		$eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child->id);
-
-		// check if grading is within timeframe
-		if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-
-			// increase counter in statistic
-			if (isset($childgradings[$niveaukey][$eval->value])) {
-				$childgradings[$niveaukey][$eval->value]++;
-			}
-		}
+	if(!$onlyDescriptors){
+	    foreach ($child_descriptors as $child) {
+	        $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child->id);
+	        
+	        // check if grading is within timeframe
+	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
+	            $niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+	            
+	            // increase counter in statistic
+	            if (isset($childgradings[$niveaukey][$eval->value])) {
+	                $childgradings[$niveaukey][$eval->value]++;
+	            }
+	        }
+	    }
 	}
-
-	foreach ($examples as $example) {
-		$eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_EXAMPLE, $example->id);
-
-		// check if grading is within timeframe
-		if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-
-			// increase counter in statistic
-			if (isset($examplegradings[$niveaukey][$eval->value])) {
-				$examplegradings[$niveaukey][$eval->value]++;
-			}
-		}
+	
+	if(!$onlyDescriptors){
+	    foreach ($examples as $example) {
+	        $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_EXAMPLE, $example->id);
+	        
+	        // check if grading is within timeframe
+	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
+	            $niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+	            
+	            // increase counter in statistic
+	            if (isset($examplegradings[$niveaukey][$eval->value])) {
+	                $examplegradings[$niveaukey][$eval->value]++;
+	            }
+	        }
+	    }
 	}
-
-	return [
-		"descriptor_evaluations" => $descriptorgradings,
-		"child_evaluations" => $childgradings,
-		"example_evaluations" => $examplegradings,
-	];
+	
+	if(!$onlyDescriptors){
+	    return [
+	        "descriptor_evaluations" => $descriptorgradings,
+	        "child_evaluations" => $childgradings,
+	        "example_evaluations" => $examplegradings,
+	    ];
+	}else{
+	    return $descriptorgradings;
+	}
 }
 
 /**
