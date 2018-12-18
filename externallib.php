@@ -6192,8 +6192,7 @@ class block_exacomp_external extends external_api {
             $return[] = $niveau;
         }
         $statistics_return["niveaus"] = $return;
-        
-        //var_dump($statistics_return[descriptor_evaluations]);
+
         return $statistics_return;
 	}
 	

@@ -7060,6 +7060,116 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
 	return $DB->get_records_sql($sql, $params);
 }
 
+
+// /**
+//  * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples
+//  * within given timeframe (if start and end = 0, all available data is used)
+//  * global use of evaluation_niveau is minded here
+//  *
+//  * @param int $courseid
+//  * @param int $subjectid
+//  * @param int $userid - not working for userid = 0 : no user_information available
+//  * @return array(["descriptor_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+//  *                 ["child_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+//  *                 ["example_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+//  *         )
+//  * this is representing the resulting matrix, use of evaluation niveaus is minded here
+//  * evalniveauid = 0 if block_exacomp_use_eval_niveau() = false, otherwise -1, 1, 2, 3
+//  * evalvalue is 0 to 3, this statistic is not display if block_exacomp_additional_grading() = false
+//  *
+//  *
+//  *
+//  *
+//  * RW 2018:
+//  * $onlyDescriptors for the webservice that only needs the descriptors (better performance)
+//  */
+// function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0, $onlyDescriptors = false) {
+//     // TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
+//     $descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
+//     $child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
+//     $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
+    
+//     $descriptorgradings = []; // array[niveauid][value][number of examples evaluated with this value and niveau]
+//     $childgradings = [];
+//     $examplegradings = [];
+    
+//     // create grading statistic
+//     $scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid));
+//     $evaluationniveau_items = block_exacomp_use_eval_niveau()
+//     ? \block_exacomp\global_config::get_evalniveaus()
+//     : ['0' => ''];
+    
+//     foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
+//         $descriptorgradings[$niveaukey] = [];
+//         $childgradings[$niveaukey] = [];
+//         $examplegradings[$niveaukey] = [];
+        
+//         foreach ($scheme_items as $schemekey => $schemetitle) {
+//             if ($schemekey > -1) {
+//                 $descriptorgradings[$niveaukey][$schemekey] = 0;
+//                 $childgradings[$niveaukey][$schemekey] = 0;
+//                 $examplegradings[$niveaukey][$schemekey] = 0;
+//             }
+//         }
+//     }
+    
+//     foreach ($descriptors as $descriptor) {
+//         $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+        
+//         // check if grading is within timeframe
+//         if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
+//             $niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+            
+//             // increase counter in statistic
+//             if (isset($descriptorgradings[$niveaukey][$eval->value])) {
+//                 $descriptorgradings[$niveaukey][$eval->value]++;
+//             }
+//         }
+//     }
+    
+//     if(!$onlyDescriptors){
+//         foreach ($child_descriptors as $child) {
+//             $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child->id);
+            
+//             // check if grading is within timeframe
+//             if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
+//                 $niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+                
+//                 // increase counter in statistic
+//                 if (isset($childgradings[$niveaukey][$eval->value])) {
+//                     $childgradings[$niveaukey][$eval->value]++;
+//                 }
+//             }
+//         }
+//     }
+    
+//     if(!$onlyDescriptors){
+//         foreach ($examples as $example) {
+//             $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_EXAMPLE, $example->id);
+            
+//             // check if grading is within timeframe
+//             if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
+//                 $niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+                
+//                 // increase counter in statistic
+//                 if (isset($examplegradings[$niveaukey][$eval->value])) {
+//                     $examplegradings[$niveaukey][$eval->value]++;
+//                 }
+//             }
+//         }
+//     }
+    
+//     if(!$onlyDescriptors){
+//         return [
+//             "descriptor_evaluations" => $descriptorgradings,
+//             "child_evaluations" => $childgradings,
+//             "example_evaluations" => $examplegradings,
+//         ];
+//     }else{
+//         return $descriptorgradings;
+//     }
+// }
+
 /**
  * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples
  * within given timeframe (if start and end = 0, all available data is used)
@@ -7093,17 +7203,51 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	$examplegradings = [];
 
 	// create grading statistic
-	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid));
+	//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid)); //deprecated/not generic? RW or just wrong?
+// 	if(block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS || block_exacomp_get_assessment_comp_scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE){
+	$schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_comp_scheme());
+// 	}else{ //Grades used
+// 	    block_exacomp_get_assessment_grade_limit();
+// 	}
+	
+	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_example_scheme());
+	
+// 	var_dump(block_exacomp_get_assessment_comp_scheme());
+// 	var_dump($schemeItems_descriptors);
+// 	die();
+	
+// 	switch (block_exacomp_get_assessment_comp_scheme()) {
+// 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+// 	        $schemeItems_descriptors = 
+// 	        break;
+// 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+// 	        $titles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+// 	        echo $titles[$i];
+// 	        break;
+// 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+// 	        echo $i;
+// 	        break;
+// 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+// 	        echo $i == 1 ? block_exacomp_get_string('yes_no_Yes') : block_exacomp_get_string('yes_no_No');
+// 	        break;
+// 	}
+	
+	// 	 $schemeItems_descriptors = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR); //get the generic schemeItems RW
+	
+	
 	$evaluationniveau_items = block_exacomp_use_eval_niveau()
-		? \block_exacomp\global_config::get_evalniveaus()
-		: ['0' => ''];
+		? \block_exacomp\global_config::get_evalniveaus() : [
+        '0' => ''
+    ];
+    
+	
 
 	foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
 		$descriptorgradings[$niveaukey] = [];
 		$childgradings[$niveaukey] = [];
 		$examplegradings[$niveaukey] = [];
 
-		foreach ($scheme_items as $schemekey => $schemetitle) {
+		foreach ($schemeItems_descriptors as $schemekey => $schemetitle) { // TODO: not only for descriptors, but also for example  RW
 			if ($schemekey > -1) {
 				$descriptorgradings[$niveaukey][$schemekey] = 0;
 				$childgradings[$niveaukey][$schemekey] = 0;
@@ -7112,9 +7256,11 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		}
 	}
 
+	
 	foreach ($descriptors as $descriptor) {
 		$eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-
+		//var_dump($eval);
+		
 		// check if grading is within timeframe
 		if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
@@ -7125,6 +7271,8 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 			}
 		}
 	}
+// 	var_dump($descriptorgradings);
+// 	die();
 
 	if(!$onlyDescriptors){
 	    foreach ($child_descriptors as $child) {
