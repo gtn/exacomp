@@ -1188,6 +1188,10 @@ class global_config {
                     // Options from plugin settings: assessment_grade_limit.
                     $result = array('0' => '') + range(0, block_exacomp_get_assessment_grade_limit());
                     break;
+                case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                    // Options from plugin settings: assessment_grade_limit.
+                    $result = range(0, 1);
+                    break;
                 default:
                     // Old code!
                     // if additional_grading is set, use global value scheme
