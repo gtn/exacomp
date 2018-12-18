@@ -6131,23 +6131,23 @@ class block_exacomp_external extends external_api {
 			))),
 		));
 	}
-
-
+	
+	
 	/**
 	 * Returns description of method parameters
 	 *
 	 * @return external_function_parameters
 	 */
 	public static function dakora_get_competence_profile_statistic_parameters() {
-		return new external_function_parameters (array(
-			'courseid' => new external_value (PARAM_INT, 'id of course'),
-			'userid' => new external_value (PARAM_INT, 'id of user'),
-			'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-			'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
-			'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range'),
-		));
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+	        'userid' => new external_value (PARAM_INT, 'id of user'),
+	        'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+	        'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
+	        'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range'),
+	    ));
 	}
-
+	
 	/**
 	 * get statistic in user and subject context
 	 *Get competence statistic for profile
@@ -6155,80 +6155,159 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 */
 	public static function dakora_get_competence_profile_statistic($courseid, $userid, $subjectid, $start_timestamp, $end_timestamp) {
-		global $USER;
-
-		static::validate_parameters(static::dakora_get_competence_profile_statistic_parameters(), array('courseid' => $courseid,
-			'userid' => $userid, 'subjectid' => $subjectid, 'start_timestamp' => $start_timestamp, 'end_timestamp' => $end_timestamp));
-
-		if ($userid == 0) {
-			$userid = $USER->id;
-		}
-
-		static::require_can_access_course_user($courseid, $userid);
-
-		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp);
-
-		$statistics_return = array();
-
-		foreach ($statistics as $key => $statistic) {
-			$return = array();
-			foreach ($statistic as $niveauid => $niveaustat) {
-				$niveau = new stdClass();
-				$niveau->id = $niveauid;
-
-				$evaluations = array();
-				foreach ($niveaustat as $evalvalue => $sum) {
-					$eval = new stdClass();
-					$eval->value = $evalvalue;
-					$eval->sum = $sum;
-					$evaluations[] = $eval;
-				}
-				$niveau->evaluations = $evaluations;
-
-				$return[] = $niveau;
-			}
-			$statistics_return[$key]["niveaus"] = $return;
-		}
-
-		return $statistics_return;
+	    global $USER;
+	    
+	    static::validate_parameters(static::dakora_get_competence_profile_statistic_parameters(), array('courseid' => $courseid,
+	        'userid' => $userid, 'subjectid' => $subjectid, 'start_timestamp' => $start_timestamp, 'end_timestamp' => $end_timestamp));
+	    
+	    if ($userid == 0) {
+	        $userid = $USER->id;
+	    }
+	    
+	    static::require_can_access_course_user($courseid, $userid);
+	    
+	    $statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp);
+	    
+	    $statistics_return = array();
+	    
+	    foreach ($statistics as $key => $statistic) {
+	        $return = array();
+	        foreach ($statistic as $niveauid => $niveaustat) {
+	            $niveau = new stdClass();
+	            $niveau->id = $niveauid;
+	            
+	            $evaluations = array();
+	            foreach ($niveaustat as $evalvalue => $sum) {
+	                $eval = new stdClass();
+	                $eval->value = $evalvalue;
+	                $eval->sum = $sum;
+	                $evaluations[] = $eval;
+	            }
+	            $niveau->evaluations = $evaluations;
+	            
+	            $return[] = $niveau;
+	        }
+	        $statistics_return[$key]["niveaus"] = $return;
+	    }
+	    //var_dump($statistics_return[descriptor_evaluations]);
+	    return $statistics_return[descriptor_evaluations];
 	}
-
+	
 	/**
 	 * Returns desription of method return values
 	 *
 	 * @return external_single_structure
 	 */
 	public static function dakora_get_competence_profile_statistic_returns() {
-		return new external_single_structure (array(
-			'descriptor_evaluations' => new external_single_structure (array(
-				'niveaus' => new external_multiple_structure (new external_single_structure(array(
-					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-					'evaluations' => new external_multiple_structure (new external_single_structure (array(
-						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
-					))),
-				))),
-			)),
-			'child_evaluations' => new external_single_structure (array(
-				'niveaus' => new external_multiple_structure (new external_single_structure(array(
-					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-					'evaluations' => new external_multiple_structure (new external_single_structure (array(
-						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
-					))),
-				))),
-			)),
-			'example_evaluations' => new external_single_structure (array(
-				'niveaus' => new external_multiple_structure (new external_single_structure(array(
-					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-					'evaluations' => new external_multiple_structure (new external_single_structure (array(
-						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
-					))),
-				))),
-			)),
-		));
+	    return new external_single_structure (array(
+            'niveaus' => new external_multiple_structure (new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'evalniveauid'),
+                'evaluations' => new external_multiple_structure (new external_single_structure (array(
+                    'value' => new external_value(PARAM_INT, 'value of evaluation'),
+                    'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+                ))),
+            ))),
+	    ));
 	}
+	
+
+
+// 	/**
+// 	 * Returns description of method parameters
+// 	 *
+// 	 * @return external_function_parameters
+// 	 */
+// 	public static function dakora_get_competence_profile_statistic_parameters() {
+// 		return new external_function_parameters (array(
+// 			'courseid' => new external_value (PARAM_INT, 'id of course'),
+// 			'userid' => new external_value (PARAM_INT, 'id of user'),
+// 			'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+// 			'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
+// 			'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range'),
+// 		));
+// 	}
+
+// 	/**
+// 	 * get statistic in user and subject context
+// 	 *Get competence statistic for profile
+// 	 *
+// 	 * @ws-type-read
+// 	 */
+// 	public static function dakora_get_competence_profile_statistic($courseid, $userid, $subjectid, $start_timestamp, $end_timestamp) {
+// 		global $USER;
+
+// 		static::validate_parameters(static::dakora_get_competence_profile_statistic_parameters(), array('courseid' => $courseid,
+// 			'userid' => $userid, 'subjectid' => $subjectid, 'start_timestamp' => $start_timestamp, 'end_timestamp' => $end_timestamp));
+
+// 		if ($userid == 0) {
+// 			$userid = $USER->id;
+// 		}
+
+// 		static::require_can_access_course_user($courseid, $userid);
+
+// 		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp);
+
+// 		$statistics_return = array();
+
+// 		foreach ($statistics as $key => $statistic) {
+// 			$return = array();
+// 			foreach ($statistic as $niveauid => $niveaustat) {
+// 				$niveau = new stdClass();
+// 				$niveau->id = $niveauid;
+
+// 				$evaluations = array();
+// 				foreach ($niveaustat as $evalvalue => $sum) {
+// 					$eval = new stdClass();
+// 					$eval->value = $evalvalue;
+// 					$eval->sum = $sum;
+// 					$evaluations[] = $eval;
+// 				}
+// 				$niveau->evaluations = $evaluations;
+
+// 				$return[] = $niveau;
+// 			}
+// 			$statistics_return[$key]["niveaus"] = $return;
+// 		}
+
+// 		return $statistics_return;
+// 	}
+
+// 	/**
+// 	 * Returns desription of method return values
+// 	 *
+// 	 * @return external_single_structure
+// 	 */
+// 	public static function dakora_get_competence_profile_statistic_returns() {
+// 		return new external_single_structure (array(
+// 			'descriptor_evaluations' => new external_single_structure (array(
+// 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+// 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
+// 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+// 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
+// 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+// 					))),
+// 				))),
+// 			)),
+// 			'child_evaluations' => new external_single_structure (array(
+// 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+// 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
+// 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+// 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
+// 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+// 					))),
+// 				))),
+// 			)),
+// 			'example_evaluations' => new external_single_structure (array(
+// 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+// 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
+// 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+// 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
+// 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+// 					))),
+// 				))),
+// 			)),
+// 		));
+// 	}
 
 	/**
 	 * Returns description of method parameters

@@ -2987,51 +2987,19 @@ Params: <table>
 <td>end timestamp for evaluation range</td>
 </table>
 Returns:<pre>{
-    "descriptor_evaluations": {
-        "niveaus": [
-            {
-                "id": "int null (evalniveauid)",
-                "evaluations": [
-                    {
-                        "value": "int null (value of evaluation)",
-                        "sum": "int null (sum of evaluations of current gradings)"
-                    },
-                    "..."
-                ]
-            },
-            "..."
-        ]
-    },
-    "child_evaluations": {
-        "niveaus": [
-            {
-                "id": "int null (evalniveauid)",
-                "evaluations": [
-                    {
-                        "value": "int null (value of evaluation)",
-                        "sum": "int null (sum of evaluations of current gradings)"
-                    },
-                    "..."
-                ]
-            },
-            "..."
-        ]
-    },
-    "example_evaluations": {
-        "niveaus": [
-            {
-                "id": "int null (evalniveauid)",
-                "evaluations": [
-                    {
-                        "value": "int null (value of evaluation)",
-                        "sum": "int null (sum of evaluations of current gradings)"
-                    },
-                    "..."
-                ]
-            },
-            "..."
-        ]
-    }
+    "niveaus": [
+        {
+            "id": "int null (evalniveauid)",
+            "evaluations": [
+                {
+                    "value": "int null (value of evaluation)",
+                    "sum": "int null (sum of evaluations of current gradings)"
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
 }</pre>
 <h2>dakora_get_competence_profile_comparison</h2>
 <div>get list for student and teacher comparison
