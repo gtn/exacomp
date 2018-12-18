@@ -19,7 +19,7 @@
 
 require __DIR__.'/inc.php';
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
 
 // TODO: was macht das? wieso brauchen wir das?
 if (strcmp("mysql",$CFG->dbtype)==0) {
@@ -82,6 +82,21 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 		.html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), block_exacomp_get_string('teacher_third_configuration_step_link'));
 }
 
+if (($action = optional_param("action", "", PARAM_TEXT) )== "import") {
+    
+    $records = $DB->get_records_sql('
+            SELECT mm.id, compid, comptype, activityid, activitytitle
+			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
+			JOIN {course_modules} m ON m.id = mm.activityid
+			WHERE '.$_POST["template"].' = m.course AND m.deletioninprogress = 0');
+    foreach(records as $record){
+        $backupid = moodle_backup($record->activityid, $USER->id);
+        moodle_restore($backupid, $COURSE->id, $USER->id);
+    }
+
+   
+}
+
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
 echo $output->header($context,$courseid, 'tab_teacher_settings');
@@ -99,6 +114,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "filter") {
         $selected_modules = $_POST['module_filter'];
     }
 }
+
 
 
 $subjects = block_exacomp_get_competence_tree($courseid, null, null, true, null, false, array(), false, true);
@@ -137,12 +153,15 @@ if ($modules) {
 
 	if (!$topics_set) {
 		echo $output->activity_legend($headertext);
+// 		echo $output->transfer_activities();
 		echo $output->no_topics_warning();
 	} else if(count($visible_modules)==0) {
 		echo $output->activity_legend($headertext);
+// 		echo $output->transfer_activities();
 		echo $output->no_course_activities_warning();
 	} else {
 		echo $output->activity_legend($headertext);
+// 		echo $output->transfer_activities();
 		echo $output->activity_content($subjects, $visible_modules);
 	}
 }

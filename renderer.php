@@ -4315,6 +4315,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $header.html_writer::tag('p', block_exacomp_get_string("explaineditactivities_subjects")).html_writer::empty_tag('br');
 
 	}
+	
+	public function transfer_activities(){
+	    global $PAGE;
+	    $import_activities = html_writer::select( ['' => ''] + get_all_template_courses_key_value(), "template", '', false, array('id' => 'template'));
+	    $import_activities .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'import')), '', array('id' => 'import'));
+	    $ret = html_writer::tag('form', $import_activities, array('id' => 'edit-activities', 'action' => $PAGE->url.'&action=import', 'method' => 'post'));
+	    return $ret;
+	}
 
 
 	public function activity_content($subjects, $modules) {

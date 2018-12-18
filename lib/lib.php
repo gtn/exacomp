@@ -2793,6 +2793,26 @@ function get_all_courses_key_value(){
     return $ret;
 }
 
+function get_all_template_courses_key_value(){
+    global $DB;
+    $records = $DB->get_records_sql('
+        SELECT e.courseid, c.fullname
+        FROM {block_exacompsettings} e
+        JOIN {course} c ON e.courseid = c.id
+        WHERE isTemplate = 1'
+        );
+    $ret = array();
+    $i=0;
+    
+    foreach ($records as $record){
+        $ret[$record->courseid] = $record->fullname;
+        $i++;
+    }
+    
+    
+    return $ret;
+}
+
 function block_exacomp_get_allowed_course_modules_for_course($courseid) {
 	return \Super\Cache::staticCallback(__FUNCTION__, function($courseid) {
 		// TODO: optimieren
