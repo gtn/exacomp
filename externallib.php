@@ -2064,6 +2064,7 @@ class block_exacomp_external extends external_api {
 								continue;
 							}
 
+							
 							$taxonomies = block_exacomp_get_taxonomies_by_example($example);
 							if (!empty($taxonomies)) {
 								$taxonomy = reset($taxonomies);
@@ -3801,6 +3802,24 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 
 		foreach ($examples as $example) {
+		    //Taxonomies:
+		    $taxonomies='';
+		    $taxids='';
+		    $taxes=block_exacomp_get_taxonomies_by_example($example->exampleid);
+		    foreach ($taxes as $tax) {
+		        
+		        if($taxonomies==''){ //first run, no ","
+		            $taxonomies .= $tax->title;
+		            $taxids .= $tax->id;
+		        }else{
+		            $taxonomies .= ','.$tax->title;
+		            $taxids .= ','.$tax->id;
+		        }
+		    }
+		    $example->exampletaxonomies = $taxonomies;
+		    $example->exampletaxids = $taxids;
+		    
+		    
 	        $example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 
 	        $example_course = $DB->get_record('course', array('id' => $example->courseid));
@@ -3828,6 +3847,8 @@ class block_exacomp_external extends external_api {
 			'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
 			'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
 			'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
+		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
 		)));
 	}
 
@@ -4089,7 +4110,23 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 
 		foreach ($examples as $example) {
-
+		    //Taxonomies:
+		    $taxonomies='';
+		    $taxids='';
+		    $taxes=block_exacomp_get_taxonomies_by_example($example->exampleid);
+		    foreach ($taxes as $tax) {
+		        
+		        if($taxonomies==''){ //first run, no ","
+		            $taxonomies .= $tax->title;
+		            $taxids .= $tax->id;
+		        }else{
+		            $taxonomies .= ','.$tax->title;
+		            $taxids .= ','.$tax->id;
+		        }
+		    }
+		    $example->exampletaxonomies = $taxonomies;
+		    $example->exampletaxids = $taxids;
+		    
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 			$example_course = $DB->get_record('course', array(
 				'id' => $example->courseid,
@@ -4122,6 +4159,8 @@ class block_exacomp_external extends external_api {
 			'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
 			'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
 			'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
+		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
 		)));
 	}
 

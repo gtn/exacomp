@@ -1465,6 +1465,8 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
  */
 function block_exacomp_get_taxonomies_by_example($example) {
 	global $DB;
+	
+	$exampleid = is_scalar($example) ? $example : $example->id;
 
 	return $DB->get_records_sql("
 		SELECT tax.*
@@ -1472,7 +1474,8 @@ function block_exacomp_get_taxonomies_by_example($example) {
 		JOIN {".BLOCK_EXACOMP_DB_EXAMPTAX."} et ON tax.id = et.taxid
 		WHERE et.exampleid = ?
 		ORDER BY tax.sorting
-	", array($example->id));
+	", array($exampleid));
+	
 }
 
 /**
