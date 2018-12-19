@@ -3187,6 +3187,21 @@ class block_exacomp_external extends external_api {
 		}
 
 		$example = static::get_example_by_id($exampleid);
+		
+	    //Taxonomies:
+	    $taxonomies='';
+	    $taxids='';
+	    foreach (block_exacomp_get_taxonomies_by_example($example->id) as $tax) {
+	        if($taxonomies==''){ //first run, no ","
+	            $taxonomies .= $tax->title;
+	            $taxids .= $tax->id;
+	        }else{
+	            $taxonomies .= ','.$tax->title;
+	            $taxids .= ','.$tax->id;
+	        }
+	    }
+	    $example->exampletaxonomies = $taxonomies;
+	    $example->exampletaxids = $taxids;
 
 		$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
 		$example->solution_visible = $solution_visible;
@@ -3211,6 +3226,8 @@ class block_exacomp_external extends external_api {
 		    'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
 			'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
 		));
 	}
 
@@ -3802,22 +3819,21 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 
 		foreach ($examples as $example) {
-		    //Taxonomies:
-		    $taxonomies='';
-		    $taxids='';
-		    $taxes=block_exacomp_get_taxonomies_by_example($example->exampleid);
-		    foreach ($taxes as $tax) {
+// 		    //Taxonomies:
+// 		    $taxonomies='';
+// 		    $taxids='';
+// 		    foreach (block_exacomp_get_taxonomies_by_example($example->exampleid) as $tax) {
 		        
-		        if($taxonomies==''){ //first run, no ","
-		            $taxonomies .= $tax->title;
-		            $taxids .= $tax->id;
-		        }else{
-		            $taxonomies .= ','.$tax->title;
-		            $taxids .= ','.$tax->id;
-		        }
-		    }
-		    $example->exampletaxonomies = $taxonomies;
-		    $example->exampletaxids = $taxids;
+// 		        if($taxonomies==''){ //first run, no ","
+// 		            $taxonomies .= $tax->title;
+// 		            $taxids .= $tax->id;
+// 		        }else{
+// 		            $taxonomies .= ','.$tax->title;
+// 		            $taxids .= ','.$tax->id;
+// 		        }
+// 		    }
+// 		    $example->exampletaxonomies = $taxonomies;
+// 		    $example->exampletaxids = $taxids;
 		    
 		    
 	        $example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
@@ -4110,22 +4126,21 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 
 		foreach ($examples as $example) {
-		    //Taxonomies:
-		    $taxonomies='';
-		    $taxids='';
-		    $taxes=block_exacomp_get_taxonomies_by_example($example->exampleid);
-		    foreach ($taxes as $tax) {
+// 		    //Taxonomies:
+// 		    $taxonomies='';
+// 		    $taxids='';
+// 		    foreach (block_exacomp_get_taxonomies_by_example($example->exampleid) as $tax) {
 		        
-		        if($taxonomies==''){ //first run, no ","
-		            $taxonomies .= $tax->title;
-		            $taxids .= $tax->id;
-		        }else{
-		            $taxonomies .= ','.$tax->title;
-		            $taxids .= ','.$tax->id;
-		        }
-		    }
-		    $example->exampletaxonomies = $taxonomies;
-		    $example->exampletaxids = $taxids;
+// 		        if($taxonomies==''){ //first run, no ","
+// 		            $taxonomies .= $tax->title;
+// 		            $taxids .= $tax->id;
+// 		        }else{
+// 		            $taxonomies .= ','.$tax->title;
+// 		            $taxids .= ','.$tax->id;
+// 		        }
+// 		    }
+// 		    $example->exampletaxonomies = $taxonomies;
+// 		    $example->exampletaxids = $taxids;
 		    
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 			$example_course = $DB->get_record('course', array(
