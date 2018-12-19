@@ -4787,6 +4787,34 @@ class block_exacomp_external extends external_api {
 			'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage'),
 		)));
 	}
+	
+	
+	
+	//RW CHANGES IN PROGRESS:
+// 	$return = array();
+// 	$return[0]=$students;
+// 	$return['testvalue']=10;
+// 	return $return;
+// }
+
+// /**
+//  * Returns desription of method return values
+//  *
+//  * @return external_multiple_structure
+//  */
+// public static function dakora_get_pre_planning_storage_students_returns() {
+//     return new external_single_structure (array(
+//         new external_multiple_structure (new external_single_structure (array(
+//             'studentid' => new external_value (PARAM_INT, 'id of student'),
+//             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
+//             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+//             'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage'),
+//         ))),
+//         'testvalue' => new external_value (PARAM_INT, 'some testvalue)'),
+//     ));
+// }
+	
+	
 
 	/**
 	 * Returns description of method parameters
