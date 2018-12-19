@@ -182,6 +182,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						'title' => block_exacomp_get_string('pre_planning_storage'),
 						'type' => 'button', /* browser default setting for html buttons is submit */
 						'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false),
+                        'class' => 'btn btn-default',
 					)
 				);
 			}
@@ -223,7 +224,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$edit = $this->is_edit_mode();
 
 		return html_writer::empty_tag('input', array('type' => 'button', 'id' => 'edit_mode_submit', 'name' => 'edit_mode_submit', 'value' => block_exacomp_get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
-			"exa-type" => 'link', 'exa-url' => $url));
+			"exa-type" => 'link', 'exa-url' => $url, 'class' => 'btn btn-default'));
 	}
 
 	public function subjects_menu($subjects, $selectedSubject, $selectedTopic, $students = array(), $editmode = false) {
@@ -3968,21 +3969,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents == 1, '&nbsp;'.block_exacomp_get_string('usenostudents'))
 			.html_writer::empty_tag('br');
 
-		if (!block_exacomp_is_skillsmanagement()) {
-			$alltax = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES => block_exacomp_get_string('show_all_taxonomies'));
-			$taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id, title');
-			$taxonomies = $alltax + $taxonomies;
-			$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies[]', $settings->filteredtaxonomies, false, array('multiple' => 'multiple'));
-		} else {
-			$input_taxonomies = '';
-		}
-
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-default'));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-			$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_nostudents.$input_taxonomies.$input_submit,
+			$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_nostudents.$input_submit,
 			array('action' => 'edit_course.php?courseid='.$courseid, 'method' => 'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div", $header.$div, array("id" => "exabis_competences_block"));
@@ -6024,22 +6016,60 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function view_example_header() {
-		global $PAGE;
+	public function view_example_header($courseSettings, $style = 0) {
+		global $PAGE, $DB;
 		$page_url = html_entity_decode($PAGE->url);
 		// remove existing 'style' parameter from GET
 		$page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
-		$content = html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/withsubcat.png'),
-				'title' => block_exacomp_get_string('comp_based'))).' '.block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
-			"onclick" => "document.location.href='".$page_url."&style=0';"));
+		// sort by competencies
+		$buttoncontent = html_writer::empty_tag('img',
+                            array('src' => new moodle_url('/pix/i/withsubcat.png'), 'title' => block_exacomp_get_string('comp_based')));
+        $buttoncontent .= ' '.block_exacomp_get_string('comp_based');
+		$content = html_writer::tag('button', $buttoncontent,
+                                array('type' => 'button',
+                                        'id' => 'comp_based',
+                                        'name' => 'comp_based',
+                                        'class' => 'view_examples_icon btn btn-default',
+                                        "onclick" => "document.location.href='".$page_url."&style=0';"));
+        // sort by examples
+        $buttoncontent = html_writer::empty_tag('img',
+                            array('src' => new moodle_url('/pix/e/bullet_list.png'), 'title' => block_exacomp_get_string('examp_based')));
+        $buttoncontent .= ' '.block_exacomp_get_string('examp_based');
+		$content .= html_writer::tag('button', $buttoncontent,
+                                array('type' => 'button',
+                                        'id' => 'examp_based',
+                                        'name' => 'examp_based',
+                                        'class' => 'view_examples_icon btn btn-default',
+			                            "onclick" => "document.location.href='".$page_url."&style=1';"));
+		// For interdisciplinary subjects
+		$buttoncontent = html_writer::empty_tag('img',
+                            array('src' => new moodle_url('/pix/e/find_replace.png'), 'title' => block_exacomp_get_string('cross_based')));
+        $buttoncontent .= ' '.block_exacomp_get_string('cross_based');
+		$content .= html_writer::tag('button', $buttoncontent,
+                                array('type' => 'button',
+                                        'id' => 'cross_based',
+                                        'name' => 'cross_based',
+                                        'class' => 'view_examples_icon btn btn-default',
+			                            "onclick" => "document.location.href='".$page_url."&style=2';"));
 
-		$content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/bullet_list.png'),
-				'title' => block_exacomp_get_string('examp_based'))).' '.block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
-			"onclick" => "document.location.href='".$page_url."&style=1';"));
+        if (!block_exacomp_is_skillsmanagement() && $style == 0) { // TODO: only for $style==0 ?
+            $hidden = html_writer::empty_tag('input', ['name' => 'action', 'value' => 'save_filtersettings', 'type' => 'hidden']);
+            $input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filter'), 'class' => 'btn btn-default'));
 
-		$content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/find_replace.png'),
-				'title' => block_exacomp_get_string('cross_based'))).' '.block_exacomp_get_string('cross_based'), array('type' => 'button', 'id' => 'cross_based', 'name' => 'cross_based', 'class' => 'view_examples_icon',
-			"onclick" => "document.location.href='".$page_url."&style=2';"));
+            $alltax = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES => block_exacomp_get_string('show_all_taxonomies'));
+            $taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id, title');
+            $taxonomies = $alltax + $taxonomies;
+            $input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies,
+                            'filteredtaxonomies[]',
+                            $courseSettings->filteredtaxonomies,
+                            false,
+                            array('multiple' => 'multiple'));
+            $input_taxonomies = html_writer::div(html_writer::tag('form', $hidden.$input_taxonomies.$input_submit,
+                    array('action' => 'view_examples.php?courseid='.$courseSettings->courseid.'&style='.$style, 'method' => 'post')), 'block_exacomp_center');
+        } else {
+            $input_taxonomies = '';
+        }
+        $content .= $input_taxonomies;
 
 		return html_writer::div($content, '', array('id' => 'view_examples_header'));
 	}
@@ -6373,7 +6403,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	function daterangepicker() {
 		return html_writer::tag('input', '', array('size' => '27', 'id' => 'daterangepicker', 'title' => block_exacomp_get_string("choosedaterange")))
-			.' '.html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range'));
+			.' '.html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range', 'class' => 'btn btn-default'));
 	}
 
 	/**
@@ -6489,7 +6519,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						<input placeholder=<?= block_exacomp_get_string('to') ?> size="3" data-exa-type="datetime" name="filter[<?= $input_type ?>][to]" value="<?= s(@$input_filter['to']) ?>"/>
 					</span>
 					<?php
-						echo html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range', 'type' => 'button'))
+						echo html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range', 'type' => 'button', 'class' => 'btn btn-default'))
 					?>
 				</div>
 			</div>

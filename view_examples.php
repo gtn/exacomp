@@ -27,6 +27,7 @@ $courseid_for_tree = $courseid;
 $sort = optional_param('sort', "desc", PARAM_ALPHA);
 $show_all_examples = optional_param('showallexamples_check', '0', PARAM_INT);
 $style = optional_param('style', 0, PARAM_INT);
+$action = optional_param('action', '', PARAM_RAW);
 
 if (!$course = $DB->get_record('course', array(
 	'id' => $courseid,
@@ -43,6 +44,14 @@ $context = context_course::instance($courseid);
 $isTeacher = block_exacomp_is_teacher($context);
 
 $studentid = block_exacomp_get_studentid();
+
+// save filtering (now in the course settings, as it was before)
+$courseSettings = block_exacomp_get_settings_by_course($courseid);
+if ($action == 'save_filtersettings') {
+    $courseSettings->filteredtaxonomies = json_encode((isset($_POST['filteredtaxonomies'])) ? array_values($_POST['filteredtaxonomies']) :
+            BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
+    block_exacomp_save_coursesettings($courseid, $courseSettings);
+}
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_examples';
@@ -78,8 +87,8 @@ if ($show_all_examples != 0) {
 }
 
 /* CONTENT REGION */
-
-$outputContent .= $output->view_example_header();
+$courseSettings = block_exacomp_get_settings_by_course($courseid); // Reload settings
+$outputContent .= $output->view_example_header($courseSettings, $style);
 
 switch ($style) {
 	case 0:

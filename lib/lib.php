@@ -6145,6 +6145,7 @@ function block_exacomp_get_message_icon($userid) {
 			'href' => new moodle_url('message_to_course.php', array('courseid' => $COURSE->id)),
 			'exa-width' => '340px',
 			'exa-height' => '340px',
+            'class' => 'btn btn-default'
 		);
 
 		return html_writer::tag('button',

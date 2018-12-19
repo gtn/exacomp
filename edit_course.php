@@ -49,9 +49,9 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $headertext = '';
 
 if ($action == 'save_coursesettings') {
-	$settings = new stdClass;
+    $settings = block_exacomp_get_settings_by_course($courseid);
+	//$settings = new stdClass;
 	$settings->grading = optional_param('grading', 0, PARAM_INT);
-	
 	/*if ($settings->grading == 0)
 		$settings->grading = 3;*/
 	
@@ -59,7 +59,7 @@ if ($action == 'save_coursesettings') {
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
 	$settings->show_all_examples = optional_param('show_all_examples', "", PARAM_INT);
 	$settings->nostudents = optional_param('nostudents', 0, PARAM_INT);
-	$settings->filteredtaxonomies = json_encode((isset($_POST['filteredtaxonomies'])) ? array_values($_POST['filteredtaxonomies']) : BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
+    $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies);
 	
 	block_exacomp_save_coursesettings($courseid, $settings);	
 	
