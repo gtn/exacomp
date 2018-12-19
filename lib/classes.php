@@ -1276,28 +1276,20 @@ class global_config {
                         case $level === 'crosssubs':
                         case $level === BLOCK_EXACOMP_TYPE_CROSSSUB:
                         case $level === BLOCK_EXACOMP_TYPE_CROSSSUB.'': // also it is possible as string id
-                            $target = 'theme';
-                            break;
                         case $level === 'subjects':
                         case $level === BLOCK_EXACOMP_TYPE_SUBJECT:
                         case $level === BLOCK_EXACOMP_TYPE_SUBJECT.'':
-                            $target = 'subject';
-                            break;
                         case $level === 'topics':
                         case $level === BLOCK_EXACOMP_TYPE_TOPIC:
                         case $level === BLOCK_EXACOMP_TYPE_TOPIC.'':
-                            $target = 'topic';
-                            break;
                         case $level === 'competencies':
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR:
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR.'':
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT.'':
-                            $target = 'comp';
-                            break;
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
                         case $level === BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD.'':
-                            $target = 'childcomp';
+                            $target = 'comp';
                             /*return $values + [
                                         4 => block_exacomp_get_string('selfEvalVerbose.4'), //not generic yet because not requested from customer
                                         3 => block_exacomp_get_string('selfEvalVerbose.3'),

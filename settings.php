@@ -448,8 +448,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
     class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_setting_configempty {
 
         private $lang = 'de';
-        //private $haserror = array();
-        private $targets = array('example', 'childcomp', 'comp', 'topic', 'subject', 'theme');
+        //private $targets = array('example', 'childcomp', 'comp', 'topic', 'subject', 'theme');
+        private $targets = array('example', 'comp'); // comp - for all levels, except 'example'
         private $params = array('long', 'short');
 
         /**
@@ -973,5 +973,4 @@ $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading',
 $settings->add(new admin_setting_configcheckbox('exacomp/usesubjectgrading',
         block_exacomp_get_string('usesubjectgrading'),
 	    '', 0));*/
-
 

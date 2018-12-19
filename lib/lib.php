@@ -416,6 +416,9 @@ function block_exacomp_get_assessment_verbose_options_short($getforlanguage = nu
 }
 
 function block_exacomp_get_assessment_selfEval_verboses($level = 'example', $type = 'long', $getforlanguage = null) {
+    if ($level != 'example') {
+        $level = 'comp';
+    }
     return block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
 }
 
