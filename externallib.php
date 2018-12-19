@@ -5312,6 +5312,8 @@ class block_exacomp_external extends external_api {
 	                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
 	                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 	                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+	                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+	                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
 	            ))),
 	            'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	            'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -5352,6 +5354,8 @@ class block_exacomp_external extends external_api {
 	            'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
 	            'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
 	            'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+	            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+	            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
 	        ))),
 	        'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	        'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -5404,7 +5408,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 
 		$descriptor_return = static::get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid);
-
+		
 // 		$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 // 		$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
 // 		$descriptor->topicid = $descriptor_topic_mm->topicid;
@@ -5610,6 +5614,8 @@ class block_exacomp_external extends external_api {
 					'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
 					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 					'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+				    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+				    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
 				))),
 				'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 				'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -5650,6 +5656,8 @@ class block_exacomp_external extends external_api {
 				'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
 				'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
 				'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+			    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+			    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
 			))),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -7562,8 +7570,6 @@ class block_exacomp_external extends external_api {
 	        $descriptor_return->gradingisold = false;
 	    }
 	    
-	    
-	    
 	    return $descriptor_return;
 	}
 
@@ -7590,7 +7596,7 @@ class block_exacomp_external extends external_api {
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
 
 		$children = block_exacomp_get_child_descriptors($parent_descriptor, $courseid, false, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, true);
-
+		
 		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 
 		if ($crosssubjid > 0) {
@@ -7633,7 +7639,8 @@ class block_exacomp_external extends external_api {
 			}
 
 			foreach ($parent_descriptor->examples as $example) {
-
+// 			    var_dump($example);
+			    $example_return->tax = "A";
 				$example_return = new stdClass();
 				$example_return->exampleid = $example->id;
 				$example_return->exampletitle = $example->title;
@@ -7904,7 +7911,21 @@ class block_exacomp_external extends external_api {
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
 			$example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
-
+			//taxonomies and taxids: RW
+			$taxonomies='';
+			$taxids='';
+			foreach ($example->taxonomies as $tax) {
+			    if($taxonomies==''){ //first run, no ","
+			        $taxonomies .= $tax->title;
+			        $taxids .= $tax->id;
+			    }else{
+			        $taxonomies .= ','.$tax->title;
+			        $taxids .= ','.$tax->id;
+			    }  
+			}
+			$example_return->exampletaxonomies = $taxonomies;
+			$example_return->exampletaxids = $taxids;	
+			
 			if ($forall) {
 				$example_return->teacherevaluation = -1;
 				$example_return->studentevaluation = -1;
