@@ -7338,7 +7338,9 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        "example_evaluations" => $examplegradings,
 	    ];
 	}else{
-	    return $descriptorgradings;
+	    return [
+	        "descriptor_evaluations" => $descriptorgradings,
+	    ];
 	}
 }
 
