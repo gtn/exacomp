@@ -81,7 +81,7 @@ if ($action == 'save_coursesettings') {
 
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
-echo $output->header($context,$courseid, 'tab_teacher_settings');
+echo $output->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 /* CONTENT REGION */
 $courseSettings = block_exacomp_get_settings_by_course($courseid);

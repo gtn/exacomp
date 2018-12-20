@@ -1482,6 +1482,22 @@ function block_exacomp_get_taxonomies_by_example($example) {
 }
 
 /**
+ * get taxonomies
+ * @param integer $sourceid
+ * @return mixed
+ */
+function block_exacomp_get_taxonomies($sourceid = null) {
+	global $DB;
+	return $DB->get_records_sql("
+		SELECT tax.*
+		FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} tax	
+		".($sourceid ? " WHERE tax.source = ? " : "")."
+		ORDER BY tax.source, tax.sorting
+	", array($sourceid));
+
+}
+
+/**
  * Returns descriptors for a given topic
  *
  * @param int $courseid
@@ -2037,16 +2053,17 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
 	$usebadges = get_config('exacomp', 'usebadges');
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$settings_subtree = array();
-
+    // Edit course parameters submenu
 	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_configuration"), null, true);
+	// Subject selection submenu
 	$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_selection"), null, true);
-
+    // Activities submenu
 	if (block_exacomp_is_activated($courseid)) {
 		if ($courseSettings->uses_activities) {
 			$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
 		}
 	}
-
+    // Badges submenu
 	if ($usebadges) {
 		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
 	}
@@ -2063,16 +2080,21 @@ function block_exacomp_build_navigation_tabs_admin_settings($courseid) {
 	$checkImport = block_exacomp\data::has_data();
 
 	$settings_subtree = array();
-
+    // Standards pre-selection submenu
 	if ($checkImport && has_capability('block/exacomp:admin', context_system::instance())) {
 		$settings_subtree[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_admin_configuration'), null, true);
 	}
-
+    // Taxonomies submenu
+    if (!block_exacomp_is_skillsmanagement()) {
+        $settings_subtree[] = new tabobject('tab_admin_taxonomies', new moodle_url('/blocks/exacomp/edit_taxonomies.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_taxonomies"), null, true);
+    }
+    // Import submenu
 	$settings_subtree[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_admin_import"), null, true);
-
+    // "Assign external trainers" submenu
 	if (get_config('exacomp', 'external_trainer_assign') && has_capability('block/exacomp:assignstudents', context_system::instance())) {
 		$settings_subtree[] = new tabobject('tab_external_trainer_assign', new moodle_url('/blocks/exacomp/externaltrainers.php', array('courseid' => $courseid)), block_exacomp_get_string("block_exacomp_external_trainer_assign"), null, true);
 	}
+	// Webservices submenu
 	$settings_subtree[] = new tabobject('tab_webservice_status', new moodle_url('/blocks/exacomp/webservice_status.php', array('courseid' => $courseid)), block_exacomp_trans(['de:Webservice Status', 'en:Check Webservices']), null, true);
 
 	return $settings_subtree;

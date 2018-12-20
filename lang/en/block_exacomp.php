@@ -38,6 +38,7 @@ $string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_settings'] = 'Admin Settings';
 $string['tab_admin_configuration'] = 'Standards pre-selection';
 $string['admin_config_pending'] = 'Standards pre-selection needs to be performed by the Moodle administrator';
+$string['tab_admin_taxonomies'] = 'Taxonomies';
 
 
 // === Teacher Tabs ===
@@ -48,6 +49,7 @@ $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_teacher_settings_new_subject'] = 'Create new subject';
+$string['tab_teacher_settings_taxonomies'] = 'Taxonomies';
 $string['tab_teacher_report_general'] = 'General report';
 $string['tab_teacher_report_annex'] = 'Annex';
 $string['tab_teacher_report_annex_title'] = 'Annex to the learning development report';
@@ -434,7 +436,11 @@ $string['create_new_topic'] = 'New topic';
 $string['really_delete'] = 'Really to delete?';
 $string['add_niveau'] = 'Add niveau';
 $string['delete_niveau'] = 'Delete niveau';
-
+$string['add_new_taxonomie'] = 'Add a new taxonomie';
+$string['taxonomy_was_deleted'] = 'Taxonomy was deleted';
+$string['move_up'] = 'Move up';
+$string['move_down'] = 'Move down';
+$string['also_taxonomies_from_import'] = 'There are also taxonomies from import';
 
 // === Competence Profile ===
 $string['name'] = 'Name';

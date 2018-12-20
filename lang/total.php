@@ -84,6 +84,10 @@ return [
 		'Vorauswahl der Kompetenzen durch den Administrator notwendig',
 		'Standards pre-selection needs to be performed by the Moodle administrator',
 	],
+    'tab_admin_taxonomies' => [
+            'Taxonomien',
+            'Taxonomies',
+    ],
 
 
 	// === Teacher Tabs ===
@@ -114,6 +118,10 @@ return [
 	'tab_teacher_settings_new_subject' => [
 		'Neuen Kompetenzraster anlegen',
 		'Create new subject',
+	],
+	'tab_teacher_settings_taxonomies' => [
+		'Taxonomien',
+		'Taxonomies',
 	],
 
     'tab_teacher_report_general' => [
@@ -1521,7 +1529,26 @@ return [
         'Löschen hinzufügen',
         'Delete niveau'
     ],
-
+    'add_new_taxonomie' => [
+        'Add a new taxonomie',
+        'Add a new taxonomie',
+    ],
+    'taxonomy_was_deleted' => [
+        'Taxonomy was deleted',
+        'Taxonomy was deleted',
+    ],
+    'move_up' => [
+        'Move up',
+        'Move up',
+    ],
+    'move_down' => [
+        'Move down',
+        'Move down',
+    ],
+    'also_taxonomies_from_import' => [
+        'There are also taxonomies from import',
+        'There are also taxonomies from import',
+    ],
 
 	// === Competence Profile ===
 	'name' => [
@@ -2189,58 +2216,76 @@ return [
     'difficulty_group_report' => [
         'Niveau',
         'difficulty level',
-    ],'no_entries_found' => [
+    ],
+    'no_entries_found' => [
         'Keine Einträge gefunden',
         'no entries found',
-    ],'assessment_date' => [
+    ],
+    'assessment_date' => [
         'Bewertungsdatum',
         'assessment date',
-    ],'number_of_found_students' => [
+    ],
+    'number_of_found_students' => [
         'Anzahl gefundener Schüler',
         'number of found students',
-    ],'display_settings' => [
+    ],
+    'display_settings' => [
         'Anzeigeoptionen',
         'display settings',
-    ],'create_report' => [
+    ],
+    'create_report' => [
         'Bericht erstellen',
         'generate report',
-    ],'students_competences' => [
+    ],
+    'students_competences' => [
         'Schüler Kompetenzen',
         'students\' competences',
-    ],'number_of_students' => [
+    ],
+    'number_of_students' => [
         'Schüler Anzahl',
         'number of students',
-    ],'no_specification' => [
+    ],
+    'no_specification' => [
         'ohne Angabe',
         'not specified',
-    ],'period' => [
+    ],
+    'period' => [
         'Zeitintervall',
         'time interval',
-    ],'from' => [
+    ],
+    'from' => [
         'von',
         'from',
-    ],'to' => [
+    ],
+    'to' => [
         'bis',
         'to',
-    ],'report_type' => [
+    ],
+    'report_type' => [
         'Report Typ',
         'type of report',
-    ],'report_subject' => [
+    ],
+    'report_subject' => [
         'Bildungsstandard',
         'educational standard',
-    ],'report_learniningmaterial' => [
+    ],
+    'report_learniningmaterial' => [
         'Lernmaterial',
         'learning material',
-    ],'report_competencefield' => [
+    ],
+    'report_competencefield' => [
         'Kompetenzbereich',
         'competence field',
-    ], 'all_students' => [
+    ],
+    'all_students' => [
         'Alle Schüler',
         'all students',
-    ], 'export_all_standards' => [
+    ],
+    'export_all_standards' => [
         'Alle Kompetenzraster dieser Moodle Instanz exportieren',
         'Export all competence grids of this Moodle installation',
-    ], 'export_selective' => [
+    ],
+    'export_selective' => [
         'Selektiver Export',
         'Select competence grids for export',
     ],

@@ -888,4 +888,29 @@
         importAllSubjectsClicked($('input.import-all-subjects'));
     });
 
+    // add new taxonomy button
+    $(document).on('click', '#exacomp_add_taxonomy_button' , function(e) {
+    	e.preventDefault();
+    	if ($('#exacomp-table-taxonomies').length) {
+            $('#exacomp-table-taxonomies > tbody:last-child').append('<tr><td class="cell"><input type="text" name="datanew[]" value="" placeholder="" class="form-control " /></td><td class="cell" colspan="10">&nbsp;</td></tr>');
+		}
+	});
+
+    // collapsible content
+    $(document).on('click', '.exacomp-collapse-toggler', function() {
+        var target = $(this).attr('data-target');
+        var state = $(this).attr('data-expanded');
+        if (state == 1) {
+            $(this).attr('data-expanded', 0);
+            $('#'+target).hide();
+            $(this).find('.collapsed_icon').show();
+            $(this).find('.expanded_icon').hide();
+        } else {
+            $(this).attr('data-expanded', 1);
+            $('#'+target).show();
+            $(this).find('.collapsed_icon').hide();
+            $(this).find('.expanded_icon').show();
+        }
+    })
+
 }();

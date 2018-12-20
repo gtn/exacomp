@@ -3936,6 +3936,124 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
+	public function edit_taxonomies($courseid) {
+	    $content = '';
+        // local moodle taxonomies
+        $tablecontent = '';
+        $table = new html_table();
+        $table->id = 'exacomp-table-taxonomies';
+        $table->attributes['class'] = ' ';
+        $table->attributes['border'] = 0;
+        $rows = array();
+        $taxonomies = block_exacomp_get_taxonomies(BLOCK_EXACOMP_DATA_SOURCE_CUSTOM);
+        if ($taxonomies && count($taxonomies) > 0) {
+            foreach ($taxonomies as $taxkey => $taxonomy) {
+                $row = new html_table_row();
+                $cell = new html_table_cell();
+                //$cell->attributes['width'] = '50%';
+                $cell->text = html_writer::empty_tag('input',
+                                array('type' => 'text',
+                                        'name' => 'data['.$taxonomy->id.']',
+                                        'value' => $taxonomy->title,
+                                        'class' => 'form-control '));
+                $row->cells[] = $cell;
+                // up/down buttons
+                end($taxonomies);
+                if ($taxkey !== key($taxonomies)) {
+                    $row->cells[] = '<a href="'.$_SERVER['REQUEST_URI'].'&action=sorting&dir=down&taxid='.intval($taxonomy->id).'"                                     
+                                    class="small">'
+                            .html_writer::span($this->pix_icon("i/down", block_exacomp_get_string("move_down")))
+                            .'</a>';
+                } else {
+                    $row->cells[] = '';
+                }
+                reset($taxonomies);
+                if ($taxkey !== key($taxonomies)) {
+                    $row->cells[] = '<a href="'.$_SERVER['REQUEST_URI'].'&action=sorting&dir=up&taxid='.intval($taxonomy->id).'"                                     
+                                    class="small">'
+                            .html_writer::span($this->pix_icon("i/up", block_exacomp_get_string("move_up")))
+                            .'</a>';
+                } else {
+                    $row->cells[] = '';
+                }
+                // Delimeter
+                $row->cells[] = '&nbsp;';
+                // Delete button
+                $row->cells[] = '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete&taxid='.intval($taxonomy->id).'"
+                                    onclick="return confirm(\''.block_exacomp_get_string('really_delete').'\');"
+                                    class="small">'
+                                    .html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")))
+                                    .'</a>';
+                $rows[] = $row;
+            }
+        } else {
+            $row = new html_table_row();
+            $row->cells[] = block_exacomp_get_string('no_entries_found');
+            $rows[] = $row;
+        }
+        $table->data = $rows;
+        $tablecontent = html_writer::table($table);
+
+        $buttons = html_writer::tag('button',
+                                    block_exacomp_get_string('add_new_taxonomie'),
+                                    ['class' => 'btn btn-default',
+                                    'id' => 'exacomp_add_taxonomy_button',
+                                    'name' => 'add',
+                                    'value' => 'add',
+                                    'onclick' => 'return false;']);
+        $buttons .= '&nbsp;'.html_writer::tag('button',
+                                    block_exacomp_get_string('save'),
+                                    ['type' => 'submit',
+                                    'class' => 'btn btn-default',
+                                    'name' => 'action',
+                                    'value' => 'save']);
+        $buttons = html_writer::div($buttons);
+        $form = html_writer::div(
+                    html_writer::tag('form',
+                            $tablecontent.$buttons,
+                            array('action' => 'edit_taxonomies.php?courseid='.$courseid,
+                                    'method' => 'post',
+                                    'class' => 'form-vertical')));
+
+        $content .= $form;
+	    return $content;
+    }
+
+    public function imported_taxonomies($courseid) {
+	    global $CFG, $DB;
+        $content = '';
+        $taxonomies = $DB->get_records_sql("SELECT tax.*, ds.name as sourcename 
+		                    FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} tax
+		                    JOIN {".BLOCK_EXACOMP_DB_DATASOURCES."} ds ON ds.id = tax.source
+		                    WHERE tax.source != ? 
+		                    ORDER BY ds.name, tax.sorting", [BLOCK_EXACOMP_DATA_SOURCE_CUSTOM]);
+        if ($taxonomies && count($taxonomies) > 0) {
+            $content .= '<br />';
+            $title = '<img class="collapsed_icon" src="'.$CFG->wwwroot.'/blocks/exastud/pix/collapsed.png" width="16" height="16" title="'.block_exacomp_get_string('collapse').'" />
+                      <img class="expanded_icon" src="'.$CFG->wwwroot.'/blocks/exastud/pix/expanded.png" width="16" height="16" title="'.block_exacomp_get_string('collapse').'" style="display: none;"/>';
+            $title .= block_exacomp_get_string('also_taxonomies_from_import');
+            $content .= html_writer::tag('h4', $title, array('class' => 'exacomp-collapse-toggler', 'data-target' => 'taxonomies_from_import_list'));
+            $currentsourse = '-.-.-';
+            $table = new html_table();
+            $rows = array();
+            foreach ($taxonomies as $taxkey => $taxonomy) {
+                if ($currentsourse != $taxonomy->sourcename) {
+                    $currentsourse = $taxonomy->sourcename;
+                    $row = new html_table_row();
+                    $row->cells[] = html_writer::tag('strong', $currentsourse);
+                    $rows[] = $row;
+                }
+                $row = new html_table_row();
+                $row->cells[] = $taxonomy->title;
+                $rows[] = $row;
+            }
+            $table->data = $rows;
+            $taxonomieslist = html_writer::table($table);
+            $content .= html_writer::div($taxonomieslist, '', ['id' => 'taxonomies_from_import_list', 'style' => 'display: none;']);
+        }
+        return $content;
+    }
+
 	/**
 	 * NOTICE: after adding new fields here, they also need to be added in course backup/restore and block_exacomp_get_settings_by_course()
 	 * @param unknown $settings
@@ -5676,8 +5794,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             'onclick' => 'window.open(location.href+\'&print=1\'); return false;',
                     ]);
         }
-		$right_content .= html_writer::empty_tag('input', array('type' => 'button', 'value' => block_exacomp_get_string('manage_crosssubs'),
-			"onclick" => "document.location.href='".block_exacomp\url::create('/blocks/exacomp/cross_subjects_overview.php', array('courseid' => $COURSE->id))."'"));
+		$right_content .= html_writer::empty_tag('input', array('type' => 'button',
+                                        'value' => block_exacomp_get_string('manage_crosssubs'),
+			                            'class' => 'btn btn-default',
+			                            "onclick" => "document.location.href='".block_exacomp\url::create('/blocks/exacomp/cross_subjects_overview.php',
+                                                            array('courseid' => $COURSE->id))."'"));
 
 		
 		$content = '';
@@ -6056,14 +6177,44 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $hidden = html_writer::empty_tag('input', ['name' => 'action', 'value' => 'save_filtersettings', 'type' => 'hidden']);
             $input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filter'), 'class' => 'btn btn-default'));
 
-            $alltax = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES => block_exacomp_get_string('show_all_taxonomies'));
-            $taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id, title');
-            $taxonomies = $alltax + $taxonomies;
-            $input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies,
+            //$alltax = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES => block_exacomp_get_string('show_all_taxonomies'));
+            //$taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id, title');
+            //$taxonomies = $alltax + $taxonomies;
+            $taxonomies = $DB->get_records_sql("SELECT tax.*, ds.name as sourcename
+		                    FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} tax
+		                    LEFT JOIN {".BLOCK_EXACOMP_DB_DATASOURCES."} ds ON ds.id = tax.source		                     
+		                    ORDER BY ds.name, tax.sorting");
+            $input_taxonomies = html_writer::empty_tag('br');
+            if ($taxonomies && count($taxonomies) > 0) {
+                $currentsourse = '-.-.-';
+                $firstgroup = false;
+                $input_taxonomies .= '<select id="menufilteredtaxonomies" width="200" class="select custom-select menufilteredtaxonomies" multiple="multiple" name = "filteredtaxonomies[]">';
+                foreach ($taxonomies as $taxonomy) {
+                    if ($currentsourse != $taxonomy->sourcename) {
+                        if ($firstgroup) {
+                            $input_taxonomies .= '</optgroup>';
+                        }
+                        $currentsourse = $taxonomy->sourcename;
+                        $input_taxonomies .= '<optgroup label="'.$currentsourse.'">';
+                    }
+                    $attributes = array();
+                    $attributes['value'] = $taxonomy->id;
+                    if (in_array($taxonomy->id, $courseSettings->filteredtaxonomies)) {
+                        $attributes['selected'] = 'selected';
+                    }
+                    $input_taxonomies .= html_writer::tag('option',
+                                            $taxonomy->title,
+                                            $attributes);
+                    $firstgroup = true;
+                }
+                $input_taxonomies .= '</select>';
+            }
+
+            /*$input_taxonomies .=html_writer::select($taxonomies,
                             'filteredtaxonomies[]',
                             $courseSettings->filteredtaxonomies,
                             false,
-                            array('multiple' => 'multiple'));
+                            array('multiple' => 'multiple'));*/
             $input_taxonomies = html_writer::div(html_writer::tag('form', $hidden.$input_taxonomies.$input_submit,
                     array('action' => 'view_examples.php?courseid='.$courseSettings->courseid.'&style='.$style, 'method' => 'post')), 'block_exacomp_center');
         } else {

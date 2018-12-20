@@ -38,6 +38,7 @@ $string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_settings'] = 'Website-Einstellungen';
 $string['tab_admin_configuration'] = 'Vorauswahl der Standards';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
+$string['tab_admin_taxonomies'] = 'Taxonomien';
 
 
 // === Teacher Tabs ===
@@ -48,6 +49,7 @@ $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neuen Kompetenzraster anlegen';
+$string['tab_teacher_settings_taxonomies'] = 'Taxonomien';
 $string['tab_teacher_report_general'] = 'General report';
 $string['tab_teacher_report_annex'] = 'Zeugnisse ';
 $string['tab_teacher_report_annex_title'] = 'Anlage zum Lernentwicklungsbericht';
@@ -440,7 +442,11 @@ $string['create_new_topic'] = 'Neuer Kompetenzbereich';
 $string['really_delete'] = 'Wirklich löschen?';
 $string['add_niveau'] = 'Neues Niveau hinzufügen';
 $string['delete_niveau'] = 'Löschen hinzufügen';
-
+$string['add_new_taxonomie'] = 'Add a new taxonomie';
+$string['taxonomy_was_deleted'] = 'Taxonomy was deleted';
+$string['move_up'] = 'Move up';
+$string['move_down'] = 'Move down';
+$string['also_taxonomies_from_import'] = 'There are also taxonomies from import';
 
 // === Competence Profile ===
 $string['name'] = 'Name';

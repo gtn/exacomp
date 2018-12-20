@@ -1215,3 +1215,14 @@ table.exacomp_source_delete td {
 	font-size: 0.75em;
 	text-decoration-line: none !important;
 }
+
+#exacomp-table-taxonomies {
+	margin-bottom: 20px;
+}
+#exacomp-table-taxonomies .cell {
+	border: none;
+}
+#exacomp-table-taxonomies .cell .icon {
+	margin-left: 0px;
+	margin-right: 0px;
+}
