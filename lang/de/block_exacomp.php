@@ -156,9 +156,9 @@ $string['settings_sourceId'] = 'Source ID';
 $string['settings_sourceId_description'] = 'Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden';
 $string['settings_admin_preconfiguration_none'] = 'Keine Vorkonfiguration verwenden';
 $string['settings_default_de_value'] = 'DE value: ';
-$string['settings_assessment_SelfEval_verboses'] = 'Verboses for self evaluations';
-$string['settings_assessment_SelfEval_verboses_long_columntitle'] = 'Long';
-$string['settings_assessment_SelfEval_verboses_short_columntitle'] = 'Short';
+$string['settings_assessment_SelfEval_verboses'] = 'Werte für verbalisiertes Schüler/innen-Feedback';
+$string['settings_assessment_SelfEval_verboses_long_columntitle'] = 'Lang';
+$string['settings_assessment_SelfEval_verboses_short_columntitle'] = 'Kurz';
 $string['settings_assessment_SelfEval_verboses_edit'] = 'Bearbeiten';
 $string['settings_assessment_SelfEval_verboses_validate_error_long'] = 'Langformat: bis zu 4 Einträge, Trennzeichen Strichpunkt, max 20 Zeichen je Entrag (4 zum Kurzformat)';
 

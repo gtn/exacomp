@@ -525,15 +525,15 @@ return [
         'DE value: ',
     ],
     'settings_assessment_SelfEval_verboses' => [
-        'Verboses for self evaluations',
+        'Werte für verbalisiertes Schüler/innen-Feedback',
         'Verboses for self evaluations',
     ],
     'settings_assessment_SelfEval_verboses_long_columntitle' => [
-        'Long',
+        'Lang',
         'Long',
     ],
     'settings_assessment_SelfEval_verboses_short_columntitle' => [
-        'Short',
+        'Kurz',
         'Short',
     ],
     'settings_assessment_SelfEval_verboses_edit' => [
