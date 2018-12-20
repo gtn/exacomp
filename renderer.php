@@ -6137,10 +6137,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	    return $this->example_based_list_tree($examples, $crosssubjectid);
     }
 
-	public function pre_planning_storage_students($students, $examples) {
+	public function pre_planning_storage_students($students, $examples, $groups) {
 		global $COURSE;
 
 		$content = html_writer::start_tag('ul');
+		foreach($groups as $group){
+		    
+		    $content .= html_writer::start_tag('li');
+		    $content .= html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'group_examp_mm', 'groupid' => $group->id));
+		    $content .= html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $COURSE->id, 'studentid' => 0)),
+		        $group->name, array('target' => '_blank', 'title' => block_exacomp_get_string('to_weekly_schedule')));
+		    $content .= html_writer::end_tag('li');		    
+		}
+		
 		foreach ($students as $student) {
 			$student_has_examples = false;
 			foreach ($student->pool_examples as $example) {

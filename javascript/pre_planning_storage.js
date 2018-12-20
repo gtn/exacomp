@@ -67,6 +67,21 @@
 		}
 	});
 	
+	var groups = [];
+  $(document).on('click', '#group_examp_mm', function(event) {
+
+    var groupid = $(this).attr('groupid');
+
+    if (this.checked) {
+      groups[groupid] = groupid;
+      $(this).parent().addClass('has_examples_temp');
+    } else {
+      groups[groupid] = 0;
+      $(this).parent().removeClass('has_examples_temp');
+    }
+  });
+	
+	
 	$(document).on('click', '#save_pre_planning_storage', function(event) {
 		
 		$('#sortable').each(function (event) {
@@ -84,21 +99,27 @@
 						}
 					 });
 					 
+					 groups.forEach(function(group){
+	            if(group && group != 0){
+	              block_exacomp_add_to_learning_calendar(null, exampleid, group);
+	            }
+	           });					 
 				 }
 			});
 		   
 		});
 		
-		alert('Ausgewählte Materialien wurden den ausgewählten Schülern zugeteilt.');
+		alert('Ausgewählte Materialien wurden den ausgewählten Schülern/Gruppen zugeteilt.');
 		$("input:checkbox").attr('checked', false);
 	});
 	
-	function block_exacomp_add_to_learning_calendar(studentid, exampleid) {
-		console.log('exacomp_add_event', studentid, exampleid);
+	function block_exacomp_add_to_learning_calendar(studentid, exampleid, groupid) {
+		console.log('exacomp_add_event', studentid, exampleid, groupid);
 		
 		block_exacomp.call_ajax({
 			studentid : studentid,
 			exampleid: exampleid,
+			groupid: groupid,
 			action : 'add-example-to-schedule'
 		});
 	}

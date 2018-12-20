@@ -103,31 +103,41 @@ switch($action){
 		block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $studentid);
 		break;
 	case('add-example-to-schedule'):
-		$studentid = required_param('studentid', PARAM_INT);
+	    $studentid = optional_param('studentid',null, PARAM_INT);
+		$groupid = optional_param('groupid',null, PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$creatorid = $USER->id;
 		
-		if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
-			$course_students = block_exacomp_get_students_by_course($courseid);
-			
-			foreach($course_students as $student){
-				block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
-			}
-			
-			echo block_exacomp_get_string('weekly_schedule_added_all');
-		} elseif ($studentid == 0){
-			if (!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
-				if (block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, null, null, 1))
-					echo block_exacomp_get_string('pre_planning_storage_added');
-			} else {
-                echo block_exacomp_get_string('pre_planning_storage_already_contains');
-            }
-		} else {
-			if (block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,null, null, 0) ) {
-                echo block_exacomp_get_string("weekly_schedule_added");
-            }
+		if($groupid!=null){ //add for group
+		    $groupmembers = groups_get_members($groupid);
+		    foreach($groupmembers as $member){
+		        //var_dump($member);
+		        if (block_exacomp_add_example_to_schedule($member->id,$exampleid,$creatorid,$courseid,null, null, 0) ) {
+		            echo block_exacomp_get_string("weekly_schedule_added");
+		        }
+		    }
+		}else{ //add for student
+		    if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+		        $course_students = block_exacomp_get_students_by_course($courseid);
+		        
+		        foreach($course_students as $student){
+		            block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
+		        }
+		        
+		        echo block_exacomp_get_string('weekly_schedule_added_all');
+		    } elseif ($studentid == 0){
+		        if (!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
+		            if (block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, null, null, 1))
+		                echo block_exacomp_get_string('pre_planning_storage_added');
+		        } else {
+		            echo block_exacomp_get_string('pre_planning_storage_already_contains');
+		        }
+		    } else {
+		        if (block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,null, null, 0) ) {
+		            echo block_exacomp_get_string("weekly_schedule_added");
+		        }
+		    }
 		}
-		
 		exit;
 	case 'multi':
 		$data = (object)block_exacomp\param::required_json('data');

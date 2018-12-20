@@ -22,6 +22,7 @@ require __DIR__.'/inc.php';
 global $DB, $OUTPUT, $PAGE;
 
 $courseid = required_param('courseid', PARAM_INT);
+$groupid = optional_param('groupid', null, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);

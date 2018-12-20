@@ -1816,6 +1816,20 @@ function block_exacomp_get_students_by_course($courseid) {
 
 /**
  *
+ * Returns all groups created in a particular course
+ * @param unknown_type $courseid
+ */
+function block_exacomp_get_groups_by_course($courseid) {
+
+    $groups = groups_get_all_groups($courseid);
+    
+    return $groups;
+}
+
+
+
+/**
+ *
  * Returns all teacher enroled to a course
  * @param unknown_type $courseid
  */

@@ -45,6 +45,7 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
 $students = block_exacomp_get_students_by_course($courseid);
+$groups = block_exacomp_get_groups_by_course($courseid);
 
 if(!$students) {
 	echo block_exacomp_get_string('nostudents');
@@ -76,9 +77,11 @@ foreach($schedules as $schedule){
 echo html_writer::start_tag('form', array('action'=>$PAGE->url->out(false).'&action=empty', 'method'=>'post'));
 
 echo $output->pre_planning_storage_pool();
-echo $output->pre_planning_storage_students($students, $examples);
+echo $output->pre_planning_storage_students($students, $examples, $groups);
 echo $output->example_trash(array(), false);
 echo $output->create_blocking_event();
+
+
 
 echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 
 	'value'=>block_exacomp_get_string('save_pre_planning_selection'))).
@@ -86,4 +89,5 @@ echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'i
 	'value'=>block_exacomp_get_string('empty_pre_planning_storage'), 'onclick'=>"return confirm('".block_exacomp_get_string('empty_pre_planning_confirm')."')")),'', array('id'=>'save_button'));
 
 echo html_writer::end_tag('form');
+
 echo $output->footer();
