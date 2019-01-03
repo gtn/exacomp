@@ -2139,6 +2139,28 @@ Returns:<pre>[
     },
     "..."
 ]</pre>
+<h2>dakora_get_pre_planning_storage_groups</h2>
+<div>get students for pre planning storage
+get pre planning storage students for current teacher</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>[
+    {
+        "studentid": "int null (id of student)",
+        "firstname": "text null (firstname of student)",
+        "lastname": "text null (lastname of student)",
+        "has_examples": "bool null (already has examples from current pre planning storage)"
+    },
+    "..."
+]</pre>
 <h2>dakora_has_items_in_pre_planning_storage</h2>
 <div>return 0 if no items, 1 otherwise
 get pre planning storage students for current teacher</div>

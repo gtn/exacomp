@@ -4790,6 +4790,77 @@ class block_exacomp_external extends external_api {
 	
 	
 	
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 *
+	 */
+	public static function dakora_get_pre_planning_storage_groups_parameters() {
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+	    ));
+	}
+	
+	/**
+	 * get students for pre planning storage
+	 * get pre planning storage students for current teacher
+	 *
+	 * @ws-type-read
+	 * @param int courseid
+	 * @return examples
+	 */
+	public static function dakora_get_pre_planning_storage_groups($courseid) {
+	    global $USER;
+	    static::validate_parameters(static::dakora_get_pre_planning_storage_groups_parameters(), array(
+	        'courseid' => $courseid,
+	    ));
+	    
+	    block_exacomp_require_teacher($courseid);
+	    
+	    $creatorid = $USER->id;
+	    
+// 	    $examples = array();
+// 	    $schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
+// 	    foreach ($schedules as $schedule) {
+// 	        if (!in_array($schedule->exampleid, $examples)) {
+// 	            $examples[] = $schedule->exampleid;
+// 	        }
+// 	    }
+	    
+// 	    $students = block_exacomp_get_students_by_course($courseid);
+// 	    $students = block_exacomp_get_student_pool_examples($students, $courseid);
+
+	    $groups = block_exacomp_get_groups_by_course($courseid);
+	    var_dump($groups);
+	    
+// 	    foreach ($students as $student) {
+// 	        $student_has_examples = false;
+// 	        foreach ($student->pool_examples as $example) {
+// 	            if (in_array($example->exampleid, $examples)) {
+// 	                $student_has_examples = true;
+// 	            }
+// 	        }
+// 	        $student->studentid = $student->id;
+// 	        $student->has_examples = $student_has_examples;
+// 	    }
+	    
+	    return $groups;
+	}
+	
+	public static function dakora_get_pre_planning_storage_groups_returns() {
+	    return new external_multiple_structure (new external_single_structure (array(
+	        'studentid' => new external_value (PARAM_INT, 'id of student'),
+	        'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
+	        'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+	        'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage'),
+	    )));
+	}
+	
+	
+	
+	
 	//RW CHANGES IN PROGRESS:
 // 	$return = array();
 // 	$return[0]=$students;
@@ -4987,7 +5058,7 @@ class block_exacomp_external extends external_api {
 	 * @param int courseid
 	 * @return examples
 	 */
-	public static function dakora_add_examples_to_students_schedule($courseid, $examples, $students) {
+	public static function dakora_add_examples_to_students_schedule($courseid, $examples, $students, $groups) {
 		global $USER;
 		static::validate_parameters(static::dakora_add_examples_to_students_schedule_parameters(), array(
 			'courseid' => $courseid,
