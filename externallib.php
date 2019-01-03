@@ -4846,10 +4846,12 @@ class block_exacomp_external extends external_api {
 // 	        $student->has_examples = $student_has_examples;
 // 	    }
 	    
+	    $groups=null;
 	    return $groups;
 	}
 	
 	public static function dakora_get_pre_planning_storage_groups_returns() {
+// 	    return null;
 	    return new external_multiple_structure (new external_single_structure (array(
 	        'studentid' => new external_value (PARAM_INT, 'id of student'),
 	        'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
