@@ -4975,6 +4975,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'examples' => new external_value (PARAM_TEXT, 'json array of examples'),
 			'students' => new external_value (PARAM_TEXT, 'json array of students'),
+		    'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL),
 		));
 	}
 
@@ -4992,6 +4993,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => $courseid,
 			'examples' => $examples,
 			'students' => $students,
+		    'groups' => $groups,
 		));
 
 		static::require_can_access_course_user($courseid, $USER->id);
@@ -5001,8 +5003,15 @@ class block_exacomp_external extends external_api {
 		// TODO: input parameter prüfen? \block_exacomp\param::json()?
 		$examples = json_decode($examples);
 		$students = json_decode($students);
+		$groups = json_decode($groups);
 
 		foreach ($examples as $example) {
+		    foreach ($groups as $group){
+		        $groupmembers = groups_get_members($group);
+		        foreach ($groupmembers as $member){
+		            block_exacomp_add_example_to_schedule($member->id,$example,$creatorid,$courseid,null, null, 0);
+		        }
+		    }
 			foreach ($students as $student) {
 				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid, null, null, 0);
 			}
