@@ -4821,41 +4821,34 @@ class block_exacomp_external extends external_api {
 	    
 	    $creatorid = $USER->id;
 	    
-// 	    $examples = array();
-// 	    $schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
-// 	    foreach ($schedules as $schedule) {
-// 	        if (!in_array($schedule->exampleid, $examples)) {
-// 	            $examples[] = $schedule->exampleid;
-// 	        }
-// 	    }
-	    
-// 	    $students = block_exacomp_get_students_by_course($courseid);
-// 	    $students = block_exacomp_get_student_pool_examples($students, $courseid);
+	    $examples = array();
+	    $schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
+
+	    foreach ($schedules as $schedule) {
+	        if (!in_array($schedule->exampleid, $examples)) {
+	            $examples[] = $schedule->exampleid;
+	        }
+	    }
 
 
 	    $groups = groups_get_all_groups($courseid);
-	    //var_dump($groups);
-// 	    foreach ($groups as $group){
-// 	        $group['members'] = groups_get_members($group->id);
-// 	    }
-	   
-// 	    var_dump($groups);
-// not needed to return members, just return groups.... when addind material to these groups THEN the members will be queried
-	    
-// 	    foreach ($students as $student) {
-// 	        $student_has_examples = false;
-// 	        foreach ($student->pool_examples as $example) {
-// 	            if (in_array($example->exampleid, $examples)) {
-// 	                $student_has_examples = true;
-// 	            }
-// 	        }
-// 	        $student->studentid = $student->id;
-// 	        $student->has_examples = $student_has_examples;
-// 	    }
-	    
-// 	    $groups=null;
-// 	    return $groups;
-	    
+
+	    foreach ($groups as $group){
+	        $group->has_examples = true;
+	        $students = groups_get_members($group->id);
+	        $students = block_exacomp_get_student_pool_examples($students, $courseid);
+	        
+    	    foreach ($students as $student) {
+    	        foreach ($student->pool_examples as $example) {
+    	            if (in_array($example->exampleid, $examples)) {
+    	                $student->has_examples = true;
+    	            }
+    	        }
+    	        if(!$student->has_examples){ //if one of the students does not have an example, the group as a whole is not marked with "has_examples"
+    	            $group->has_examples = false;
+    	        }
+    	    }
+	    }
 	    return $groups;
 	}
 	
@@ -4863,6 +4856,7 @@ class block_exacomp_external extends external_api {
 	    return new external_multiple_structure (new external_single_structure (array(
 	        'id' => new external_value (PARAM_INT, 'id of group'),
 	        'name' => new external_value (PARAM_TEXT, 'name of group'),
+	        'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage')
 	    )));
 	}
 	
