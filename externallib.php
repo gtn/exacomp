@@ -4832,8 +4832,15 @@ class block_exacomp_external extends external_api {
 // 	    $students = block_exacomp_get_students_by_course($courseid);
 // 	    $students = block_exacomp_get_student_pool_examples($students, $courseid);
 
-	    $groups = block_exacomp_get_groups_by_course($courseid);
-	    var_dump($groups);
+
+	    $groups = groups_get_all_groups($courseid);
+	    //var_dump($groups);
+// 	    foreach ($groups as $group){
+// 	        $group['members'] = groups_get_members($group->id);
+// 	    }
+	   
+// 	    var_dump($groups);
+// not needed to return members, just return groups.... when addind material to these groups THEN the members will be queried
 	    
 // 	    foreach ($students as $student) {
 // 	        $student_has_examples = false;
@@ -4846,17 +4853,16 @@ class block_exacomp_external extends external_api {
 // 	        $student->has_examples = $student_has_examples;
 // 	    }
 	    
-	    $groups=null;
+// 	    $groups=null;
+// 	    return $groups;
+	    
 	    return $groups;
 	}
 	
 	public static function dakora_get_pre_planning_storage_groups_returns() {
-// 	    return null;
 	    return new external_multiple_structure (new external_single_structure (array(
-	        'studentid' => new external_value (PARAM_INT, 'id of student'),
-	        'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-	        'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-	        'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage'),
+	        'id' => new external_value (PARAM_INT, 'id of group'),
+	        'name' => new external_value (PARAM_TEXT, 'name of group'),
 	    )));
 	}
 	
