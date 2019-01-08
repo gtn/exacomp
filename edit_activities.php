@@ -17,7 +17,12 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+use block_exacomp\data_importer;
+
 require __DIR__.'/inc.php';
+require_once __DIR__.'/backup/test_backup.php';
+require_once __DIR__.'/backup/test_restore.php';
+require_once __DIR__.'/classes/data.php';
 
 global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
 
@@ -83,15 +88,23 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 }
 
 if (($action = optional_param("action", "", PARAM_TEXT) )== "import") {
-    
-    $records = $DB->get_records_sql('
-            SELECT mm.id, compid, comptype, activityid, activitytitle
+    $backuprecords = $DB->get_records_sql('
+            SELECT DISTINCT mm.activityid
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid
 			WHERE '.$_POST["template"].' = m.course AND m.deletioninprogress = 0');
-    foreach(records as $record){
+    $records = $DB->get_records_sql('
+            SELECT mm.compid, mm.comptype, mm.activityid, mm.activitytitle, m.module
+			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
+			JOIN {course_modules} m ON m.id = mm.activityid
+			WHERE '.$_POST["template"].' = m.course AND m.deletioninprogress = 0');
+    foreach($backuprecords as $record){
         $backupid = moodle_backup($record->activityid, $USER->id);
         moodle_restore($backupid, $COURSE->id, $USER->id);
+    }
+    foreach($records as $record){
+        $activityid = data_importer::get_new_activity_id($record->activitytitle, $record->module, $COURSE->id);
+        block_exacomp_set_compactivity($activityid, $record->compid, $record->comptype, $record->activitytitle);
     }
 
    
@@ -153,17 +166,19 @@ if ($modules) {
 
 	if (!$topics_set) {
 		echo $output->activity_legend($headertext);
-// 		echo $output->transfer_activities();
+		echo $output->transfer_activities();
 		echo $output->no_topics_warning();
 	} else if(count($visible_modules)==0) {
 		echo $output->activity_legend($headertext);
-// 		echo $output->transfer_activities();
+		echo $output->transfer_activities();
 		echo $output->no_course_activities_warning();
 	} else {
 		echo $output->activity_legend($headertext);
-// 		echo $output->transfer_activities();
+		echo $output->transfer_activities();
 		echo $output->activity_content($subjects, $visible_modules);
 	}
+} else {
+    echo $output->transfer_activities();
 }
 
 /* END CONTENT REGION */

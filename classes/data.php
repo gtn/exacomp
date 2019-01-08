@@ -2355,7 +2355,7 @@ class data_importer extends data {
 	    return $activity;
 	}
 	
-	private static function get_new_activity_id($activity_title, $activity_type, $course_template){
+	public static function get_new_activity_id($activity_title, $activity_type, $course_template){
 	    global $DB;
 	    $type = $DB->get_field('modules', 'name' , array('id' => $activity_type));
  	    $instance= $DB->get_field($type, 'MAX(id)' , array('name' => $activity_title, 'course' => $course_template));
