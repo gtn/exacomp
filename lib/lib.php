@@ -7310,9 +7310,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	
 	foreach ($descriptors as $descriptor) {
 	    $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-		
-		//var_dump($eval);
-		
+
 		// check if grading is within timeframe
 	    if ($eval && ($eval->value || $eval->additionalinfo) !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
@@ -7320,6 +7318,8 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 			if ($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // additionalinfo nutzen, nicht value
                 if (isset($descriptorgradings[$niveaukey][$eval->additionalinfo])) {
                     $descriptorgradings[$niveaukey][$eval->additionalinfo]++;
+                }else{
+                    $descriptorgradings[-1][$eval->additionalinfo]++;
                 }
             } else {
                 if($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){ //calculate the fitting interval for points
@@ -7333,14 +7333,14 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
                 }else{ //Verbose or YESNO
                     if (isset($descriptorgradings[$niveaukey][$eval->value])) {
                         $descriptorgradings[$niveaukey][$eval->value]++;
+                    }else{
+                        $descriptorgradings[-1][$eval->value]++;
                     }
                 }
                
 			}   
 		}
 	}
-// 	var_dump($descriptorgradings);
-// 	die();
 
 	if(!$onlyDescriptors){
 	    foreach ($child_descriptors as $child) {
@@ -7373,7 +7373,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        }
 	    }
 	}
-	
+
 	if(!$onlyDescriptors){
 	    return [
 	        "descriptor_evaluations" => $descriptorgradings,
@@ -7383,6 +7383,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	}else{
 	    return [
 	        "descriptor_evaluations" => $descriptorgradings,
+	        "descriptorsToGain" => count($descriptors),
 	    ];
 	}
 }

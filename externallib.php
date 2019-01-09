@@ -6340,6 +6340,8 @@ class block_exacomp_external extends external_api {
 
 		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp,true);
 
+// 		var_dump($statistics);
+		
 		$statistics_return = array();
 
 		foreach ($statistics as $key => $statistic) {
@@ -6362,6 +6364,7 @@ class block_exacomp_external extends external_api {
 			$statistics_return[$key]["niveaus"] = $return;
 		}
 
+		$statistics_return['descriptor_evaluations']['descriptorsToGain'] = $statistics["descriptorsToGain"];
 		return $statistics_return;
 	}
 	
@@ -6391,6 +6394,7 @@ class block_exacomp_external extends external_api {
 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
 					))),
 				))),
+			    'descriptorsToGain' => new external_value(PARAM_INT, 'maximum number of descripotrs/competencies one can gain'),
 			)),
 // 			'child_evaluations' => new external_single_structure (array(
 // 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
