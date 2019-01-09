@@ -21,7 +21,6 @@ require __DIR__.'/inc.php';
 require_once __DIR__."/../../config.php"; // path to Moodle's config.php
 require_once __DIR__.'/wsdatalib.php';
 
-
 $courseid = required_param('courseid', PARAM_INT);
 
 
@@ -29,7 +28,21 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-require_login($course);
+
+//To log in from Dakora:
+$wstoken = optional_param('wstoken', null, PARAM_RAW);
+
+require_once($CFG->dirroot.'/webservice/lib.php');
+
+$authenticationinfo = null;
+if ($wstoken) {
+    $webservicelib = new \webservice();
+    $authenticationinfo = $webservicelib->authenticate_user($wstoken);
+    require_login($course);
+} else {
+    require_login($course);
+}
+
 
 $reportType = optional_param('reportType', 'general', PARAM_ALPHANUM);
 $page_identifier = 'tab_teacher_report_'.$reportType;
@@ -45,25 +58,13 @@ block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
 $output = block_exacomp_get_renderer();
 
 if (optional_param('print', false, PARAM_BOOL)) {
-//     //authenticate the user
-//     $wstoken = required_param('wstoken', PARAM_ALPHANUM);
-//     $webservicelib = new \webservice();
-//     $authenticationinfo = $webservicelib->authenticate_user($wstoken);
-    
-//     // check if it is a exacomp token
-//     if ($authenticationinfo['service']->name != 'exacompservices') {
-//         throw new moodle_exception('not an exacomp webservice token');
-//     }
-    
     $output->print = true;
-    $html_tables = [];
-
-    $wstoken = required_param('wstoken', PARAM_ALPHANUM);
     $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
     $filter = $wsDataHandler->getParam('report_filter');
 }else{
     $filter = block_exacomp_group_reports_get_filter($reportType);
 }
+   
     // before all output
 
     if ($action == 'search') {
