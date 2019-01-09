@@ -411,9 +411,10 @@ class block_exacomp_simple_service {
 		$wsDataHandler->setParam('isPdf', $isPdf);
 
 		// example of reading params
-		$filtersFromSession = $wsDataHandler->getParam('report_filter');
-		print_r($filtersFromSession);
-		die();
+// 		$filtersFromSession = $wsDataHandler->getParam('report_filter');
+//  		print_r($filtersFromSession);
+// // 		var_dump($filtersFromSession);
+// 		die();
 		
 		if ($isPdf) {
 		   // block_exacomp_group_reports_result($filter);

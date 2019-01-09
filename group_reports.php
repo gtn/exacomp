@@ -19,8 +19,11 @@
 
 require __DIR__.'/inc.php';
 require_once __DIR__."/../../config.php"; // path to Moodle's config.php
+require_once __DIR__.'/wsdatalib.php';
+
 
 $courseid = required_param('courseid', PARAM_INT);
+
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -38,34 +41,34 @@ $isPdf = (bool)optional_param('formatPdf', false, PARAM_RAW);
 $isTemplateDeleting = (bool)optional_param('deleteTemplate', false, PARAM_RAW);
 block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
 
-$filter = block_exacomp_group_reports_get_filter($reportType);
+
 $output = block_exacomp_get_renderer();
 
 if (optional_param('print', false, PARAM_BOOL)) {
+//     //authenticate the user
+//     $wstoken = required_param('wstoken', PARAM_ALPHANUM);
+//     $webservicelib = new \webservice();
+//     $authenticationinfo = $webservicelib->authenticate_user($wstoken);
+    
+//     // check if it is a exacomp token
+//     if ($authenticationinfo['service']->name != 'exacompservices') {
+//         throw new moodle_exception('not an exacomp webservice token');
+//     }
+    
     $output->print = true;
     $html_tables = [];
 
-    
-//     $read = $_SESSION['SESSION']->customVAR['variable'];
-    $ws = new dakoraVariableWs();
-    $read=$ws->readData('variable');
-
-    var_dump($read);
-
-//     var_dump($filter);
-//     die();
-    //block_exacomp_group_reports_result($filter, $isPdf);
-    //block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
+    $wstoken = required_param('wstoken', PARAM_ALPHANUM);
+    $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
+    $filter = $wsDataHandler->getParam('report_filter');
 }else{
+    $filter = block_exacomp_group_reports_get_filter($reportType);
+}
     // before all output
 
     if ($action == 'search') {
         $output->print = true;
-        //     var_dump($action);
-        //     die();
         switch ($reportType) {
-//                 var_dump($filter);
-//                  die();
             case 'general':
                 if ($isPdf) {
                     block_exacomp_group_reports_result($filter, $isPdf);
@@ -175,13 +178,13 @@ if (optional_param('print', false, PARAM_BOOL)) {
                 block_exacomp_group_reports_annex_result($filter);
                 break;
             default:
-                block_exacomp_group_reports_result($filter);
+                block_exacomp_group_reports_result($filter, $isPdf);
         }
     }
     
     
     echo $output->footer();
-}
+
 
 
 
