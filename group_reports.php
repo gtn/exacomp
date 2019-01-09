@@ -38,11 +38,8 @@ $authenticationinfo = null;
 if ($wstoken) {
     $webservicelib = new \webservice();
     $authenticationinfo = $webservicelib->authenticate_user($wstoken);
-    require_login($course);
-} else {
-    require_login($course);
-}
-
+} 
+ require_login($course);
 
 $reportType = optional_param('reportType', 'general', PARAM_ALPHANUM);
 $page_identifier = 'tab_teacher_report_'.$reportType;
