@@ -4428,9 +4428,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 	public function transfer_activities(){
 	    global $PAGE;
-	    $import_activities = html_writer::select( ['' => ''] + get_all_template_courses_key_value(), "template", '', false, array('id' => 'template', 'style' => 'float:left'));
+	    $import_activities = '<p>'.block_exacomp_get_string("import_activities").'</p>';
+	    $import_activities .= html_writer::select( ['' => ''] + get_all_template_courses_key_value(), "template", '', false, array('id' => 'template', 'style' => 'float:left'));
 	    $import_activities .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'import', 'class' => 'btn btn-primary')), '', array('id' => 'import'));
 	    $ret = html_writer::tag('form', $import_activities, array('id' => 'edit-activities', 'action' => $PAGE->url.'&action=import', 'method' => 'post'));
+	    $ret .= '<br/>';
 	    return $ret;
 	}
 

@@ -226,6 +226,8 @@ $string['importtask_link'] = 'Link to source';
 $string['importtask_disabled'] = 'Disabled';
 $string['importtask_all_subjects'] = 'All Subjects';
 $string['dest_course'] = 'Destiantion of imported activities';
+$string['import_activities'] = 'Import activities of a template course into your course';
+
 
 
 // === Configuration ===

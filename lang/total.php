@@ -775,6 +775,11 @@ return [
         'Ziel der importierten Aktivitäten',
         'Destiantion of imported activities'
     ],
+    'import_activities' => [
+        'Importieren Sie Aktivitäten vom Vorlagekurs in Ihren Kurs',
+        'Import activities of a template course into your course'
+    ],
+    
 
 
 	// === Configuration ===

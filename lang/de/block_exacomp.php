@@ -226,6 +226,8 @@ $string['importtask_link'] = 'Link to source';
 $string['importtask_disabled'] = 'Disabled';
 $string['importtask_all_subjects'] = 'Alle Bildungsstandard';
 $string['dest_course'] = 'Ziel der importierten Aktivitäten';
+$string['import_activities'] = 'Importieren Sie Aktivitäten vom Vorlagekurs in Ihren Kurs';
+
 
 
 // === Configuration ===
