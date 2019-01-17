@@ -2841,7 +2841,7 @@ function get_all_template_courses_key_value(){
         SELECT e.courseid, c.fullname
         FROM {block_exacompsettings} e
         JOIN {course} c ON e.courseid = c.id
-        WHERE isTemplate = 1'
+        WHERE e.istemplate = 1'
         );
     $ret = array();
     $i=0;
@@ -2850,8 +2850,7 @@ function get_all_template_courses_key_value(){
         $ret[$record->courseid] = $record->fullname;
         $i++;
     }
-    
-    
+
     return $ret;
 }
 

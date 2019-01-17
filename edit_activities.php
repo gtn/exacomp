@@ -88,16 +88,17 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 }
 
 if (($action = optional_param("action", "", PARAM_TEXT) )== "import") {
+    $template = required_param('template', PARAM_INT);
     $backuprecords = $DB->get_records_sql('
             SELECT DISTINCT mm.activityid
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid
-			WHERE '.$_POST["template"].' = m.course AND m.deletioninprogress = 0');
+			WHERE '.$template.' = m.course AND m.deletioninprogress = 0');
     $records = $DB->get_records_sql('
             SELECT mm.compid, mm.comptype, mm.activityid, mm.activitytitle, m.module
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid
-			WHERE '.$_POST["template"].' = m.course AND m.deletioninprogress = 0');
+			WHERE '.$template.' = m.course AND m.deletioninprogress = 0');
     foreach($backuprecords as $record){
         $backupid = moodle_backup($record->activityid, $USER->id);
         moodle_restore($backupid, $COURSE->id, $USER->id);
