@@ -346,10 +346,10 @@ return 1 for trainer
 0 if false',
     'type' => 'read',
   ),
-  'dakora_get_students_for_course' => 
+  'dakora_get_students_and_groups_for_course' => 
   array (
     'classname' => 'block_exacomp_external',
-    'methodname' => 'dakora_get_students_for_course',
+    'methodname' => 'dakora_get_students_and_groups_for_course',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => 'get list of students for course',
     'type' => 'read',
@@ -827,7 +827,7 @@ $services = array (
       36 => 'dakora_get_topic_grading',
       37 => 'dakora_get_subject_grading',
       38 => 'dakora_get_user_role',
-      39 => 'dakora_get_students_for_course',
+      39 => 'dakora_get_students_and_groups_for_course',
       40 => 'dakora_get_examples_pool',
       41 => 'dakora_get_examples_trash',
       42 => 'dakora_set_example_time_slot',

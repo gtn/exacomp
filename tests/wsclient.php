@@ -348,8 +348,8 @@ echo "
 
 ";
 
-//REST CALL dakora_get_students_for_course
-$functionname = 'dakora_get_students_for_course';
+//REST CALL dakora_get_students_and_groups_for_course
+$functionname = 'dakora_get_students_and_groups_for_course';
 
 $params = new stdClass();
 $params->courseid = 3;

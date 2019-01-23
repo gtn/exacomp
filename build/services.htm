@@ -955,6 +955,13 @@ Params: <table>
 <td>default: int(0)
 </td>
 <td>for all users = true, for one user = false</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
 </table>
 Returns:<pre>[
     {
@@ -1405,6 +1412,13 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>for all users = true, for one user = false</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of group</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -1568,7 +1582,7 @@ Params: <table>
 Returns:<pre>{
     "role": "int null (1=trainer, 2=student)"
 }</pre>
-<h2>dakora_get_students_for_course</h2>
+<h2>dakora_get_students_and_groups_for_course</h2>
 <div>get list of students for course</div>
 <div>type: read</div>
 Params: <table>
@@ -1580,15 +1594,25 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 </table>
-Returns:<pre>[
-    {
-        "studentid": "int null (id of student)",
-        "firstname": "text null (firstname of student)",
-        "lastname": "text null (lastname of student)",
-        "profilepicture": "text null (link to  profile picture)"
-    },
-    "..."
-]</pre>
+Returns:<pre>{
+    "students": [
+        {
+            "studentid": "int null (id of student)",
+            "firstname": "text null (firstname of student)",
+            "lastname": "text null (lastname of student)",
+            "profilepicture": "text null (link to  profile picture)"
+        },
+        "..."
+    ],
+    "groups": [
+        {
+            "id": "int null (id of group)",
+            "name": "text null (name of group)",
+            "picture": "text null (link to  picture)"
+        },
+        "..."
+    ]
+}</pre>
 <h2>dakora_get_examples_pool</h2>
 <div>get list of examples for weekly schedule pool
 Get examples for pool</div>

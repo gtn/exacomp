@@ -2737,6 +2737,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
+		    'groupid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_OPTIONAL),
 		));
 	}
 
@@ -2747,20 +2748,21 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return array of user courses
 	 */
-	public static function dakora_get_all_topics_by_course($courseid, $userid, $forall) {
+	public static function dakora_get_all_topics_by_course($courseid, $userid, $forall, $groupid=-1) {
 		global $USER;
 
 		static::validate_parameters(static::dakora_get_all_topics_by_course_parameters(), array(
 			'courseid' => $courseid,
 			'userid' => $userid,
 			'forall' => $forall,
+		    'groupid' => $groupid,
 		));
 
 		if ($userid == 0 && $forall == false) {
 			$userid = $USER->id;
 		}
 
-		return static::dakora_get_topics_by_course_common($courseid, false, $userid);
+		return static::dakora_get_topics_by_course_common($courseid, false, $userid, $groupid);
 	}
 
 	/**
@@ -3243,6 +3245,7 @@ class block_exacomp_external extends external_api {
 			'creatorid' => new external_value (PARAM_INT, 'id of creator'),
 			'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+		    'groupid' => new external_value (PARAM_INT, 'id of group',VALUE_OPTIONAL)
 		));
 	}
 
@@ -3253,7 +3256,7 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-write
 	 * @return array of user courses
 	 */
-	public static function dakora_add_example_to_learning_calendar($courseid, $exampleid, $creatorid, $userid, $forall) {
+	public static function dakora_add_example_to_learning_calendar($courseid, $exampleid, $creatorid, $userid, $forall,$groupid=0) {
 		global $DB, $USER;
 		static::validate_parameters(static::dakora_add_example_to_learning_calendar_parameters(), array(
 			'courseid' => $courseid,
@@ -3261,6 +3264,7 @@ class block_exacomp_external extends external_api {
 			'creatorid' => $creatorid,
 			'userid' => $userid,
 			'forall' => $forall,
+		    'groupid' => $groupid,
 		));
 
 		if ($creatorid == 0) {
@@ -3293,9 +3297,20 @@ class block_exacomp_external extends external_api {
 		    //Add to the teacher planning Storage, not to the students themselves    otherwise they would have it in the schedule as well as in the pool which
 		    //could lead to mnay issues (not technical, but logical for them)
 		    //block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
-		    if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
-		        block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
-			}
+		    if($groupid!=0){ //add for group
+		        $students = groups_get_members($groupid);
+		        foreach ($students as $student) {
+		            if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
+		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
+		            }
+		        }
+		    }else{ // add for single student
+		        if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
+		            block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
+		        }
+		    }
+		    
+			
 		}
 
 		return array(
@@ -3733,7 +3748,7 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return external_function_parameters
 	 */
-	public static function dakora_get_students_for_course_parameters() {
+	public static function dakora_get_students_and_groups_for_course_parameters() {
 		return new external_function_parameters (array(
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 		));
@@ -3745,15 +3760,23 @@ class block_exacomp_external extends external_api {
 	 * @param $courseid
 	 * @return array
 	 */
-	public static function dakora_get_students_for_course($courseid) {
+	public static function dakora_get_students_and_groups_for_course($courseid) {
 		global $PAGE;
-		static::validate_parameters(static::dakora_get_students_for_course_parameters(), array(
+		static::validate_parameters(static::dakora_get_students_and_groups_for_course_parameters(), array(
 			'courseid' => $courseid,
 		));
 
 		static::require_can_access_course($courseid);
 		// TODO: only for teacher? fjungwirth: not necessary, students can also see other course participants in Moodle
 
+		$studentsAndGroups = array();
+		
+		//TODO: check if the groups are needed, some schools don't user this RW
+		//a setting from exacomp or a parameter from dakora... setting from exacomp preferred
+		//Add groups as well:
+		$groups = groups_get_all_groups($courseid);
+		$studentsAndGroups['groups'] = $groups;
+		
 		$students = block_exacomp_get_students_by_course($courseid);
 
 		foreach ($students as $student) {
@@ -3762,9 +3785,10 @@ class block_exacomp_external extends external_api {
 			$picture = new user_picture($student);
 			$picture->size = 50;
 			$student->profilepicture = $picture->get_url($PAGE)->out();
-		}
+		}		
+		$studentsAndGroups['students'] = $students;
 
-		return $students;
+		return $studentsAndGroups;
 	}
 
 	/**
@@ -3772,14 +3796,47 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return external_multiple_structure
 	 */
-	public static function dakora_get_students_for_course_returns() {
-		return new external_multiple_structure (new external_single_structure (array(
+	public static function dakora_get_students_and_groups_for_course_returns() {
+	    return new external_single_structure (array(
+		'students' => new external_multiple_structure (new external_single_structure (array(
 			'studentid' => new external_value (PARAM_INT, 'id of student'),
 			'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
 			'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
 			'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
-		)));
+ 		))),
+	   'groups' => new external_multiple_structure (new external_single_structure (array(
+		        'id' => new external_value (PARAM_INT, 'id of group'),
+		        'name' => new external_value (PARAM_TEXT, 'name of group'),
+		        'picture' => new external_value(PARAM_TEXT, 'link to  picture'),
+		)))));
 	}
+	
+// 	$studentsAndGroups = array();
+// 	$studentsAndGroups['students'] = $students;
+// 	$studentsAndGroups['groups'] = $students;
+// 	return $studentsAndGroups;
+// }
+
+// /**
+//  * Returns desription of method return values
+//  *
+//  * @return external_multiple_structure
+//  */
+// public static function dakora_get_students_and_groups_for_course_returns() {
+//     return new external_single_structure (array(
+//         'students' => new external_multiple_structure (new external_single_structure (array(
+//             'studentid' => new external_value (PARAM_INT, 'id of student'),
+//             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
+//             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+//             'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
+//         ))),
+//         'groups' => new external_multiple_structure (new external_single_structure (array(
+//             'studentid' => new external_value (PARAM_INT, 'id of student'),
+//             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
+//             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+//             'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
+//         )))));
+// }
 
 	/**
 	 * Returns description of method parameters
@@ -7369,7 +7426,7 @@ class block_exacomp_external extends external_api {
 		$crosssub = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
 		$students = block_exacomp_get_students_for_crosssubject($courseid, $crosssub);
 
-		$coursestudents = static::dakora_get_students_for_course($courseid);
+		$coursestudents = static::dakora_get_students_and_groups_for_course($courseid);
 		foreach ($coursestudents as $student) {
 			if (array_key_exists($student->id, $students)) {
 				$student->visible = 1;
@@ -7836,7 +7893,7 @@ class block_exacomp_external extends external_api {
 		return $return;
 	}
 
-	private static function dakora_get_topics_by_course_common($courseid, $only_associated, $userid = 0) {
+	private static function dakora_get_topics_by_course_common($courseid, $only_associated, $userid = 0, $groupid = -1) {
 
 		static::require_can_access_course($courseid);
 
