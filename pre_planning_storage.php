@@ -45,7 +45,7 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
 $students = block_exacomp_get_students_by_course($courseid);
-$groups = block_exacomp_get_groups_by_course($courseid);
+$groups = groups_get_all_groups($courseid);
 
 if(!$students) {
 	echo block_exacomp_get_string('nostudents');

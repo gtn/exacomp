@@ -1835,12 +1835,12 @@ function block_exacomp_get_students_by_course($courseid) {
  * Returns all groups created in a particular course    actually not usefull, could use the moodle function directly RW
  * @param unknown_type $courseid
  */
-function block_exacomp_get_groups_by_course($courseid) {
+// function block_exacomp_get_groups_by_course($courseid) {
 
-    $groups = groups_get_all_groups($courseid);
+//     $groups = groups_get_all_groups($courseid);
     
-    return $groups;
-}
+//     return $groups;
+// }
 
 
 

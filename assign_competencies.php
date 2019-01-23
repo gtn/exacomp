@@ -95,7 +95,19 @@ list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic,
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
+//Add the local groups
+$groups = ($isTeacher) ? groups_get_all_groups($courseid) : array();
+// if($isTeacher){
+//     $groups = groups_get_all_groups($courseid);
+    
+    
+// //     foreach($groups as $group){
+// //         $students = array_merge($students,groups_get_members($group->id));
+// //     }
+// //     $allCourseStudents = $students;
+// }
 if($course_settings->nostudents) $allCourseStudents = array();
+
 
 //echo $courseid;
 //echo $selectedSubject;
@@ -176,7 +188,7 @@ echo $colselector;
 echo $output->competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 
 //dropdowns for subjects and topics and students -> if user is teacher and working with students
-echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $selectedStudentid, $isTeacher, $isEditingTeacher);
+echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $selectedStudentid, $isTeacher, $isEditingTeacher,$groups);
 
 echo '<div class="clearfix"></div>';
 

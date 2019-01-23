@@ -139,7 +139,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	/**
 	 * Prints 2 select inputs for subjects and topics
 	 */
-	public function overview_dropdowns($type, $students, $selectedStudent = -1, $isTeacher = false, $isEditingTeacher = true) {
+	public function overview_dropdowns($type, $students, $selectedStudent = -1, $isTeacher = false, $isEditingTeacher = true, $groups = null) {
 		global $COURSE, $USER;
 
 		$content = "";
@@ -153,7 +153,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			} elseif ($students) {
 				$content .= '<div style="padding-bottom: 5px;">';
 				$content .= block_exacomp_get_string("choosestudent");
-				$content .= $this->studentselector($students, $selectedStudent, static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+				$content .= $this->studentselector($students, $selectedStudent, static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN, $groups);
 
 				$content .= '</div><div style="padding-bottom: 15px;">';
 
@@ -6529,13 +6529,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	/**
-	 * Generates html dropdown for students
+	 * Generates html dropdown for students and groups
 	 *
 	 * @param array $students
 	 * @param object $selected
 	 * @param moodle_url $url
 	 */
-	function studentselector($students, $selected, $option = null) {
+	function studentselector($students, $selected, $option = null, $groups = null) {
 		$studentsAssociativeArray = array();
 		$spacer = true;
 
@@ -6552,13 +6552,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		// add a spacer line
 		if ($studentsAssociativeArray && $spacer) {
-			$studentsAssociativeArray[BLOCK_EXACOMP_DEFAULT_STUDENT] = '--------------------';
+			$studentsAssociativeArray["defaultstudent"] = '--------------------';
+		}
+		
+		//add local groups:
+		foreach ($groups as $group){
+		    $studentsAssociativeArray[-($group->id+1)] = $group->name;
 		}
 
 		foreach ($students as $student) {
 			$studentsAssociativeArray[$student->id] = fullname($student);
 		}
-
+		
 		return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student', $selected, true,
 			array("disabled" => $this->is_edit_mode() ? "disabled" : ""));
 	}
