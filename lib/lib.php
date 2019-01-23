@@ -8466,8 +8466,13 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 	if ($filter['type'] == 'students') {
 		$has_output = false;
 
-		if($filter['selectedStudent'] != 0){
-		    $students=array($students[$filter['selectedStudent']]);
+		if($filter['selectedStudentOrGroup'] != 0){
+		    if($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
+		        $groupid = (-1)*$filter['selectedStudentOrGroup'] - 1;
+		        $students = groups_get_members($groupid);
+		    }else {
+		        $students=array($students[$filter['selectedStudentOrGroup']]);
+		    }
  		}
  		$i = 0;
 		foreach ($students as $student) {
@@ -8801,9 +8806,14 @@ function block_exacomp_group_reports_annex_result($filter) {
     if ($isPdf) {
         ob_start();
     }
-
-    if ($filter['selectedStudent'] > 0){
-        $students = array($students[$filter['selectedStudent']]);
+    
+    if($filter['selectedStudentOrGroup'] != 0){
+        if($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
+            $groupid = (-1)*$filter['selectedStudentOrGroup'] - 1;
+            $students = groups_get_members($groupid);
+        }else {
+            $students=array($students[$filter['selectedStudentOrGroup']]);
+        }
     }
     $i = 0;
     foreach ($students as $student) {

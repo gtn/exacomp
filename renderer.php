@@ -6640,10 +6640,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
             			$studentsAssociativeArray = array();
             			$students=block_exacomp_get_students_by_course($courseid);
             			$studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
+            			//add local groups:
+            			$groups = groups_get_all_groups($courseid);
+            			foreach ($groups as $group){
+            			    $studentsAssociativeArray[-($group->id+1)] = $group->name;
+            			}
             			foreach ($students as $student) {
             			    $studentsAssociativeArray[$student->id] = fullname($student);
             			}
-            			echo $this->select($studentsAssociativeArray,'filter[selectedStudent]',block_exacomp_get_string('all_students'),true);	
+            			echo $this->select($studentsAssociativeArray,'filter[selectedStudentOrGroup]',block_exacomp_get_string('all_students'),true);	
             			?>	
 							
 						<br><label><input type="radio" name="filter[type]" value="student_counts" <?php if (@$filter['type'] == 'student_counts') echo 'checked="checked"'; ?>/>
@@ -6719,10 +6724,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $studentsAssociativeArray = array();
                             $students = block_exacomp_get_students_by_course($courseid);
                             $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
+                            $groups = groups_get_all_groups($courseid);
+                            foreach ($groups as $group){
+                                $studentsAssociativeArray[-($group->id+1)] = $group->name;
+                            }
                             foreach ($students as $student) {
                                 $studentsAssociativeArray[$student->id] = fullname($student);
                             }
-                            echo $this->select($studentsAssociativeArray, 'filter[selectedStudent]', @$filter['selectedStudent'], true, array('class' => 'form-control'));
+                            echo $this->select($studentsAssociativeArray, 'filter[selectedStudentOrGroup]', @$filter['selectedStudentOrGroup'], true, array('class' => 'form-control'));
                             ?>
                         </div>
                     </div>
