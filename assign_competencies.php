@@ -97,21 +97,11 @@ list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic,
 $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 //Add the local groups
 $groups = ($isTeacher) ? groups_get_all_groups($courseid) : array();
-// if($isTeacher){
-//     $groups = groups_get_all_groups($courseid);
-    
-    
-// //     foreach($groups as $group){
-// //         $students = array_merge($students,groups_get_members($group->id));
-// //     }
-// //     $allCourseStudents = $students;
-// }
 if($course_settings->nostudents) $allCourseStudents = array();
 
 
 //echo $courseid;
 //echo $selectedSubject;
-
 
 $competence_tree = block_exacomp_get_competence_tree($courseid,
                         $selectedSubject ? $selectedSubject->id : null,
@@ -131,13 +121,16 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
 if ($isTeacher) {	//mind nostudents setting
-    
 	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
 		$colselector = $output->students_column_selector(count($allCourseStudents));
 		
 	} elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
 		$students = array();
-		
+	} else if($studentid < -1){
+    	//MAYBE CHANGE WORDING   studentId is actually student or localgroup id.... if it is a localgroup, the value is negative and the groupid can be caluclated as follows:
+    	//((-1)*dropdownvalue)-1   the -1 is used for ALL_STUDENTS, this is why i calculate it like this    RW
+	    $groupid = (-1)*$studentid - 1;
+	    $students = groups_get_members($groupid);
 	} else {
 		$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	}
@@ -228,6 +221,7 @@ if ($course_settings->nostudents != 1)
 if ($course_settings->nostudents != 1 && $studentid)
 	echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
 
+	
 echo $output->competence_overview($competence_tree,
                                     $courseid,
                                     $students,

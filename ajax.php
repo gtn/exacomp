@@ -111,7 +111,6 @@ switch($action){
 		if($groupid!=null){ //add for group
 		    $groupmembers = groups_get_members($groupid);
 		    foreach($groupmembers as $member){
-		        //var_dump($member);
 		        if (block_exacomp_add_example_to_schedule($member->id,$exampleid,$creatorid,$courseid,null, null, 0) ) {
 		            echo block_exacomp_get_string("weekly_schedule_added");
 		        }
@@ -119,7 +118,6 @@ switch($action){
 		}else{ //add for student
 		    if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 		        $course_students = block_exacomp_get_students_by_course($courseid);
-		        
 		        foreach($course_students as $student){
 		            block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
 		        }

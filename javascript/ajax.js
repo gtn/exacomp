@@ -1163,12 +1163,22 @@
 	$(document).on('click','[exa-type=add-example-to-schedule]', function(event) {
 		var exampleid = $(this).attr('exampleid');
 		var studentid = $(this).attr('studentid');
+		var groupid;
 
 		if(studentid == -1){
 			if (confirm("Möchten Sie das Beispiel wirklich bei allen Schülern auf den Planungsspeicher legen?")) {
 				block_exacomp.call_ajax({
 					exampleid : exampleid,
 					studentid : studentid,
+					action : 'add-example-to-schedule'
+				}).done(function(msg) { alert(msg) });
+			}
+		}else if(studentid < -1){ //add to selected group.... when group is selected, the groupid = (-1)*studentid -1   this has been done, because groups were not intended from the start
+			groupid = (-1)*studentid - 1;
+			if (confirm("Möchten Sie das Beispiel wirklich allen Schülern dieser Gruppe auf den Planungsspeicher legen?")) {
+				block_exacomp.call_ajax({
+					exampleid : exampleid,
+					groupid : groupid,
 					action : 'add-example-to-schedule'
 				}).done(function(msg) { alert(msg) });
 			}
