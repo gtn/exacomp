@@ -3517,7 +3517,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//works only if exaport is installed
 			if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $exampleid)) {
 				return html_writer::link($url,
-					$this->pix_icon("i/manual_item", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
+					$this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
 					array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 			} else {
 				return "";
