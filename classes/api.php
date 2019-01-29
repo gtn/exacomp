@@ -240,17 +240,17 @@ class api {
 			            if ($record->additionalinfo !== null && !isset($teacher_additional_grading_competencies[$record->compid])) {
 			                    if(get_config('exacomp', 'use_grade_verbose_competenceprofile')){
 			                        if($record->additionalinfo < 1.5){
-			                            $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('grade_Verygood');
+                                        $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('grade_Verygood');
 			                        }else if($record->additionalinfo < 2.5){
-			                            $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('grade_good');
+                                        $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('grade_good');
 			                        }else if($record->additionalinfo < 3.5){
-			                            $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('grade_Satisfactory');
+                                        $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('grade_Satisfactory');
 			                        }else if($record->additionalinfo < 4.5){
-			                            $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('grade_Sufficient');
+                                        $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('grade_Sufficient');
 			                        }else if($record->additionalinfo < 5.5){
-			                            $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('grade_Deficient');
+                                        $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('grade_Deficient');
 			                        }else {
-			                            $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('grade_Insufficient');
+                                        $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('grade_Insufficient');
 			                        }
 			                    }else {
 			                        $teacher_additional_grading_competencies[$record->compid] = $record->additionalinfo;
@@ -270,10 +270,10 @@ class api {
 			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
 			            if (!isset($teacher_additional_grading_competencies[$record->compid])) {
 			                if($record->value == 0 || $record->value == null){
-			                    $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('yes_no_No');
+                                $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('yes_no_No');
 			                }
 			                if($record->value >= 1){
-			                    $teacher_additional_grading_topics[$record->compid] = block_exacomp_get_string('yes_no_Yes');
+                                $teacher_additional_grading_competencies[$record->compid] = block_exacomp_get_string('yes_no_Yes');
 			                }
 			            }
 			            continue;
