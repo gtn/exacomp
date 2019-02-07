@@ -519,6 +519,32 @@ function block_exacomp_get_assessment_max_value($type) {
     return $max;
 }
 
+function block_exacomp_get_assessment_max_good_value($type) { // for example 1 - good, 6 - bad
+    $max = 0;
+    switch ($type) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            $max = 1;
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+            $max = count($verboses);
+            if ($max > 0) {
+                $max -= 1;  // because it is possible zero
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            $max = block_exacomp_get_assessment_points_limit();
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            $max = 1;
+            break;
+    }
+    return $max;
+}
+
+
 function block_exacomp_get_assessment_max_value_by_level($level) {
     $type = block_exacomp_additional_grading($level);
     return block_exacomp_get_assessment_max_value($type);
@@ -3301,6 +3327,48 @@ function block_exacomp_get_active_tests_by_course($courseid) {
 }
 
 /**
+ * Returns activities, which related to competences
+ * @param mixed $courseid
+ * @param array $conditions
+ * @return array
+ */
+function block_exacomp_get_related_activities($courseid, $conditions = array()) {
+	global $DB;
+	
+/*	$cms = get_course_mods($courseid);
+	
+	if (count($conditions) > 0) {
+	    foreach ($cms as $cm) {
+
+        }
+    }
+	
+	return $cms;*/
+
+	$sql = "SELECT DISTINCT cm.*, m.name as modname
+        FROM {block_exacompcompactiv_mm} activ 
+            JOIN {course_modules} cm ON cm.id = activ.activityid 
+            JOIN {modules} m ON m.id = cm.module              
+		WHERE cm.course = ?";
+
+	$cond = array($courseid);
+
+	if ($conditions['availability']) {
+	    $sql .= ' AND availability IS NOT NULL ';
+    }
+	$acts = $DB->get_records_sql($sql, $cond);
+    
+	foreach ($acts as $activ) {
+        $activ->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
+        $activ->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
+    }
+	
+	return $acts;
+}
+
+/**
  *
  * Returns all course ids where an instance of Exabis Competences is installed
  */
@@ -3448,11 +3516,11 @@ function block_exacomp_delete_competences_activities() {
  */
 function block_exacomp_get_activities($compid, $courseid = null, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR) { //alle assignments die einem bestimmten descriptor zugeordnet sind
 	global $CFG, $DB;
-	$query = 'SELECT mm.id as uniqueid,a.id,ass.grade,a.instance
-	FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
-	INNER JOIN {course_modules} a ON a.id=mm.activityid
-	LEFT JOIN {assign} ass ON ass.id=a.instance
-	WHERE mm.compid=? AND mm.comptype = ?';
+	$query = 'SELECT mm.id as uniqueid, a.id, ass.grade, a.instance
+	            FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
+	                INNER JOIN {course_modules} a ON a.id = mm.activityid
+	                LEFT JOIN {assign} ass ON ass.id = a.instance
+	            WHERE mm.compid=? AND mm.comptype = ?';
 
 	$condition = array($compid, $comptype);
 
@@ -3475,9 +3543,10 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = BLO
  */
 function block_exacomp_get_activities_by_course($courseid) {
 	global $DB;
-	$query = 'SELECT DISTINCT mm.activityid as id, mm.activitytitle as title FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
-		INNER JOIN {course_modules} a ON a.id=mm.activityid
-		WHERE a.course = ? AND mm.eportfolioitem=0';
+	$query = 'SELECT DISTINCT mm.activityid as id, mm.activitytitle as title 
+        FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
+		    INNER JOIN {course_modules} a ON a.id = mm.activityid
+		WHERE a.course = ? AND mm.eportfolioitem = 0';
 
 	return $DB->get_records_sql($query, array($courseid));
 }
@@ -3929,7 +3998,7 @@ function block_exacomp_settstamp() {
  * coresponding setting is activated.
  */
 function block_exacomp_perform_auto_test() {
-	global $DB;
+	global $CFG, $DB, $USER;
 
 	$autotest = get_config('exacomp', 'autotest');
 	$testlimit = get_config('exacomp', 'testlimit');
@@ -3946,11 +4015,44 @@ function block_exacomp_perform_auto_test() {
 		//get all tests that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
+        $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
+        $mod_info = get_fast_modinfo($courseid);
+		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 
-		$grading_scheme = block_exacomp_get_grading_scheme($courseid);
+        //assign competences to student
+		$assign_competence = function($courseid, $studentid, $topics, $descriptors) {
+            if (isset($descriptors)) {
+                $grading_scheme = block_exacomp_get_assessment_comp_scheme();
+                foreach ($descriptors as $descriptor) {
+                    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+                        //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
+                        block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme), $comptype = 0);
+                    }
+
+                    //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+                    block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme));
+                    mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
+                }
+            }
+            if (isset($topics)) {
+                $grading_scheme = block_exacomp_get_assessment_topic_scheme();
+                foreach ($topics as $topic) {
+                    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) {
+                        //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
+                        block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme), $comptype = 1);
+                    }
+
+                    //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+                    block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme));
+                    mtrace("set topic competence ".$topic->compid." for user ".$studentid.'<br>');
+
+                }
+            }
+        };
 
 		//get student grading for each test
 		foreach ($students as $student) {
+            $changedquizes = array();
 			foreach ($tests as $test) {
 				//get grading for each test and assign topics and descriptors
 				$quiz = $DB->get_record('quiz_grades', array('quiz' => $test->id, 'userid' => $student->id));
@@ -3958,32 +4060,8 @@ function block_exacomp_perform_auto_test() {
 
 				// assign competencies if test is successfully completed AND test grade update since last auto assign
 				if (isset($quiz->grade) && (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)) {
-					//assign competences to student
-					if (isset($test->descriptors)) {
-						foreach ($test->descriptors as $descriptor) {
-							if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
-								block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $student->id,
-									\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
-							}
-
-							block_exacomp_set_user_competence($student->id, $descriptor->compid,
-								0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-							mtrace("set competence ".$descriptor->compid." for user ".$student->id.'<br>');
-						}
-					}
-					if (isset($test->topics)) {
-						foreach ($test->topics as $topic) {
-							if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) {
-								block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $student->id,
-									\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-							}
-
-							block_exacomp_set_user_competence($student->id, $topic->compid,
-								1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-							mtrace("set topic competence ".$topic->compid." for user ".$student->id.'<br>');
-
-						}
-					}
+				    $changedquizes[$quiz->quiz] = $quiz->timemodified;
+                    $assign_competence($courseid, $student->id, $test->topics, $test->descriptors);
 
 					if (!$quiz_assignment) {
 						$quiz_assignment = new \stdClass();
@@ -3997,6 +4075,93 @@ function block_exacomp_perform_auto_test() {
 					}
 				}
 			}
+
+            // TODO: may be add adding of self-completention?
+
+			// activities with restrict access
+			if ($CFG->enableavailability && count($cms) > 0) {
+                foreach ($cms as $cm) {
+                    if ($cm->availability && block_exacomp_cmodule_is_autocompetence($cm->id)) {
+                        /** course_modinfo $mod_info */
+                        if (array_key_exists($cm->id, $mod_info->cms)) {
+                            $modInfo = $mod_info->cms[$cm->id];
+                        } else {
+                            continue;
+                        }
+
+                        $info = new \core_availability\info_module($modInfo);
+                        $tree = new \core_availability\tree(json_decode($cm->availability));
+                        $result = $tree->check_available(false, $info, true, $student->id);
+                        $information = $tree->get_result_information($info, $result);
+                        if ($result->is_available() && !$information) { // the user have got access to this module
+                            $relatedData = array();
+                            $existing = $DB->get_record('block_exacompcmassign',
+                                    [   'coursemoduleid' => $cm->id,
+                                        'userid' => $student->id
+                                    ], '*');
+                            // the value will be changed if:
+                            // - the timemodified of root activity will be changed
+                            // - the timemodified at least one of child activities will be changed
+                            // - the timemodified of fixed value for student<->activity is changed (now it is only quizes)
+                            // is it ok?
+
+                            //$modIst = get_coursemodule_from_instance();
+
+                            // root activity timemodified
+                            $rootTs = $DB->get_field_sql('SELECT DISTINCT t.timemodified as timemodified
+                                                            FROM {'.$cm->modname.'} t
+                                                            WHERE t.id = ? ', [$cm->instance]);
+                            $relatedData['roottimemodified'] = $rootTs;
+                            // availability settings
+                            $relatedData['availability'] = json_decode($cm->availability);
+                            // data of related activities
+                            $relData = array();
+                            foreach($relatedData['availability']->c as $relObj) {
+                                $modparam = $DB->get_record_sql('SELECT DISTINCT cm.instance as modid, m.name as modname
+                                                            FROM {course_modules} cm
+                                                            JOIN {modules} m ON cm.module = m.id 
+                                                            WHERE cm.id = ? ', [$relObj->id]);
+                                if ($modparam) {
+                                    //echo "<pre>debug:<strong>lib.php:4124</strong>\r\n";print_r($relObj);echo '</pre>'; // !!!!!!!!!! delete it
+                                    //echo "<pre>debug:<strong>lib.php:4084</strong>\r\n";print_r($modparam);echo '</pre>'; // !!!!!!!!!! delete it
+                                    // the timemodified gets from last saved student answer or from DB if the user is not changed the grading
+                                    if (!array_key_exists($modparam->modid, $changedquizes)) {
+                                        $modts = $DB->get_field_sql('SELECT DISTINCT t.timemodified as timemodified
+                                                            FROM {'.$modparam->modname.'} t                                                            
+                                                            WHERE t.id = ? ', [$modparam->modid]);
+                                    } else {
+                                        $modts = $changedquizes[$modparam->modid];
+                                    }
+                                    $relObj->timemodified = $modts;
+                                    $relatedData[$relObj->id] = array();
+                                    $relatedData[$relObj->id]['timemodified'] = $relObj->timemodified;
+                                }
+                            }
+                            $datatoDB = array();
+                            $datatoDB['coursemoduleid'] = $cm->id;
+                            $datatoDB['userid'] = $student->id;
+                            $datatoDB['timemodified'] = $rootTs;
+                            $datatoDB['relateddata'] = serialize($relatedData);
+                            if (11==11 || !$existing ||
+                                    ($existing && unserialize($existing->relateddata) != unserialize($datatoDB['relateddata']))) {
+                                // data was changed - save grading to competences!
+                                $assign_competence($courseid, $student->id, $cm->topics, $cm->descriptors);
+                                //echo "<pre>debug:<strong>lib.php:4149</strong>\r\n"; print_r($cm->topics); echo '</pre>'; // !!!!!!!!!! delete it
+                                //echo "<pre>debug:<strong>lib.php:4150</strong>\r\n"; print_r($cm->descriptors); echo '</pre>'; // !!!!!!!!!! delete it
+                                //echo "<pre>debug:<strong>lib.php:4103</strong>\r\n"; print_r('CHANGED!!!!!!!'); echo '</pre>'; // !!!!!!!!!! delete it
+                            } else {
+                                // data was not changed. nothing to do
+                                //echo "<pre>debug:<strong>lib.php:4103</strong>\r\n"; print_r('NOT!!!!!!!'); echo '</pre>'; // !!!!!!!!!! delete it
+                            }
+                            $DB->delete_records('block_exacompcmassign',
+                                    ['coursemoduleid' => $cm->id, 'userid' => $student->id]);
+                            $DB->insert_record('block_exacompcmassign', $datatoDB);
+                        }
+                    }
+
+                }
+
+            }
 		}
 	}
 
@@ -9567,4 +9732,9 @@ function block_exacomp_get_date_of_birth($userid) {
              break;
      }
  }
+
+function block_exacomp_cmodule_is_autocompetence($cmid) {
+    global $DB;
+    return $DB->get_field('block_exacompcmsettings', 'value', ['name' => 'exacompUseAutoCompetences', 'coursemoduleid' => $cmid]);
+}
  

@@ -101,3 +101,74 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 	send_stored_file($file, 0, 0, $forcedownload, $options);
 	exit;
 }
+
+/**
+ * Inject the exacomp element into all moodle module settings forms.
+ *
+ * @param moodleform $formwrapper The moodle quickforms wrapper object.
+ * @param MoodleQuickForm $mform The actual form object (required to modify the form).
+ */
+function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
+    global $CFG, $COURSE, $DB;
+
+    if (!empty($CFG->enableavailability)) {
+        $cmid = optional_param('update', 0, PARAM_INT);
+        $exacompUseAutoCompetencesVal = block_exacomp_cmodule_is_autocompetence($cmid);
+        $mform->addElement('checkbox', 'exacompUseAutoCompetences', block_exacomp_get_string('module_used_availabilitycondition_competences'));
+        $mform->setType('exacompUseAutoCompetences', PARAM_INT);
+        if ($exacompUseAutoCompetencesVal) {
+            $mform->setDefault('exacompUseAutoCompetences', true);
+        }
+        // sorting all elements - we need to add our element before 'Restrict access' element
+        $allelements = $mform->_elementIndex;
+        //$DB->delete_records('block_exacompcmsettings', ['name' => 'exacompUseAutoCompetnces']);
+        $exacompElementInd = $allelements['exacompUseAutoCompetences'];
+        $exacompElement = $mform->_elements[$exacompElementInd];
+        unset($mform->_elements[$exacompElementInd]);
+        //echo "<pre>debug:<strong>lib.php:124</strong>\r\n"; print_r($mform); echo '</pre>'; exit; // !!!!!!!!!! delete it
+        if (array_key_exists('availabilityconditionsjson', $allelements)) {
+            $avacondintionsElementInd = $allelements['availabilityconditionsjson'];
+            //echo "<pre>debug:<strong>lib.php:133</strong>\r\n"; print_r($mform->_elements[$avacondintionsElementInd]); echo '</pre>'; exit; // !!!!!!!!!! delete it
+            // go insert
+            array_splice($mform->_elements, $avacondintionsElementInd, 0, array($exacompElement)); // splice in at position 3
+            // reformat indexes
+            foreach ($mform->_elements as $key => $el) {
+                if ($el->_attributes['name']) {
+                    $mform->_elementIndex[$el->_attributes['name']] = $key;
+                }
+            }
+            //echo "<pre>debug:<strong>lib.php:133</strong>\r\n"; print_r($mform->_elements); echo '</pre>'; exit; // !!!!!!!!!! delete it
+        }
+
+    }
+
+    return;
+}
+
+/**
+ * exabis field of the course module.
+ *
+ * @param stdClass $data Data from the form submission.
+ * @param stdClass $course The course.
+ * @return stdClass
+ */
+function block_exacomp_coursemodule_edit_post_actions($data, $course) {
+    global $CFG, $DB;
+    if (!empty($CFG->enableavailability)) {
+        $DB->delete_records('block_exacompcmsettings', ['name' => 'exacompUseAutoCompetences']);
+        if (isset($data->exacompUseAutoCompetences)) {
+            $insert = new stdClass();
+            $insert->coursemoduleid = $data->coursemodule;
+            $insert->name = 'exacompUseAutoCompetences';
+            $insert->value = 1;
+            $DB->insert_record('block_exacompcmsettings', $insert);
+        }
+    }
+    return $data;
+}
+
+// possibility to look into this way 'cm_info_dynamic'... now it is not success
+//function block_exacomp_cm_info_dynamic() {
+//    echo "<pre>debug:<strong>lib.php:189</strong>\r\n"; print_r('------------------'); echo '</pre>'; exit; // !!!!!!!!!! delete it
+//}
+

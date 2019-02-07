@@ -682,3 +682,4 @@ $string['save'] = 'Speichern';
 $string['add_competence_insert_learning_progress'] = 'Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!';
 $string['delete_level_from_another_source'] = 'Inhalte von anderer Quelle. Diese können nur vom Admin gelöscht werden.';
 $string['delete_level_has_children_from_another_source'] = 'Has children from another source!';
+$string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';

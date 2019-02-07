@@ -2397,4 +2397,9 @@ return [
         'Has children from another source!'
     ],
 
+    'module_used_availabilitycondition_competences' => [
+        'Grant related exabis competencies when condition is met',
+        'Grant related exabis competencies when condition is met',
+    ]
+
 ];

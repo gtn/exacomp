@@ -676,3 +676,4 @@ $string['save'] = 'Save';
 $string['add_competence_insert_learning_progress'] = 'To insert a new competence, you must first select or add a difficulty level!';
 $string['delete_level_from_another_source'] = 'Content from another source. These can only be deleted by the admin.';
 $string['delete_level_has_children_from_another_source'] = 'Has children from another source!';
+$string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';

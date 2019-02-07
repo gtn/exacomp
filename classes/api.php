@@ -312,10 +312,10 @@ class api {
 						// \block_exacomp\global_config::get_teacher_eval_title_by_id
 						//$descriptor->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_competencies[$descriptor->id]);
 					    $descriptor->teacher_eval_additional_grading = $teacher_additional_grading_competencies[$descriptor->id];
-                        $descriptor->teacher_eval_additional_grading_real = $teacher_additional_grading_competencies_real[$descriptor->id];
+                        //$descriptor->teacher_eval_additional_grading_real = $teacher_additional_grading_competencies_real[$descriptor->id];
 					} else {
 						$descriptor->teacher_eval_additional_grading = null;
-						$descriptor->teacher_eval_additional_grading_real = null;
+						//$descriptor->teacher_eval_additional_grading_real = null;
 					}
 
 					if (!$descriptor->teacher_eval_niveau_text && !$descriptor->teacher_eval_additional_grading) {
@@ -328,10 +328,10 @@ class api {
 					// \block_exacomp\global_config::get_teacher_eval_title_by_id
 					//$topic->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_topics[$topic->id]);
 				    $topic->teacher_eval_additional_grading = $teacher_additional_grading_topics[$topic->id];
-				    $topic->teacher_eval_additional_grading_real = $teacher_additional_grading_topics_real[$topic->id];
+				    //$topic->teacher_eval_additional_grading_real = $teacher_additional_grading_topics_real[$topic->id];
 				} else {
 					$topic->teacher_eval_additional_grading = null;
-					$topic->teacher_eval_additional_grading_real = null;
+					//$topic->teacher_eval_additional_grading_real = null;
 				}
 
 				if (!$topic->descriptors && !$topic->teacher_eval_niveau_text && !$topic->teacher_eval_additional_grading) {

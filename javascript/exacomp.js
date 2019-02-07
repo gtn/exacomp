@@ -228,7 +228,7 @@
 				});
 
 				var item_count = (table_total_colspan - options.title_colspan) / options.item_colspan;
-				var items_per_page = 6;
+				var items_per_page = 25;
 				var $content = $('#col_selector_content');
 
 				if (item_count <= items_per_page) {
