@@ -3298,7 +3298,7 @@ class block_exacomp_external extends external_api {
 		    //could lead to mnay issues (not technical, but logical for them)
 		    //block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
 		    if($groupid!=0){ //add for group
-		        $students = groups_get_members($groupid);
+		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		        foreach ($students as $student) {
 		            if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
 		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
@@ -4892,7 +4892,7 @@ class block_exacomp_external extends external_api {
 
 	    foreach ($groups as $group){
 	        $group->has_examples = true;
-	        $students = groups_get_members($group->id);
+	        $students = block_exacomp_groups_get_members($courseid,$groupid);
 	        $students = block_exacomp_get_student_pool_examples($students, $courseid);
 	        
     	    foreach ($students as $student) {
@@ -5137,7 +5137,7 @@ class block_exacomp_external extends external_api {
 
 		foreach ($examples as $example) {
 		    foreach ($groups as $group){
-		        $groupmembers = groups_get_members($group);
+		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		        foreach ($groupmembers as $member){
 		            block_exacomp_add_example_to_schedule($member->id,$example,$creatorid,$courseid,null, null, 0);
 		        }

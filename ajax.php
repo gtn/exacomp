@@ -105,14 +105,16 @@ switch($action){
 	case('add-example-to-schedule'):
 	    $studentid = optional_param('studentid',null, PARAM_INT);
 		$groupid = optional_param('groupid',null, PARAM_INT);
+		$courseid = optional_param('courseid',null, PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$creatorid = $USER->id;
 		
+		
 		if($groupid!=null){ //add for group
-		    $groupmembers = groups_get_members($groupid);
+		    $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
 		    foreach($groupmembers as $member){
 		        if (block_exacomp_add_example_to_schedule($member->id,$exampleid,$creatorid,$courseid,null, null, 0) ) {
-		            echo block_exacomp_get_string("weekly_schedule_added");
+		            echo block_exacomp_get_string("weekly_schedule_added").": ".$member->firstname." ".$member->lastname."\n";
 		        }
 		    }
 		}else{ //add for student

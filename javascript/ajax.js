@@ -1164,6 +1164,7 @@
 		var exampleid = $(this).attr('exampleid');
 		var studentid = $(this).attr('studentid');
 		var groupid;
+		var courseid = block_exacomp.get_param('courseid');
 
 		if(studentid == -1){
 			if (confirm("Möchten Sie das Beispiel wirklich bei allen Schülern auf den Planungsspeicher legen?")) {
@@ -1179,6 +1180,7 @@
 				block_exacomp.call_ajax({
 					exampleid : exampleid,
 					groupid : groupid,
+					courseid : courseid,
 					action : 'add-example-to-schedule'
 				}).done(function(msg) { alert(msg) });
 			}

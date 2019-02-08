@@ -8649,7 +8649,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 		if($filter['selectedStudentOrGroup'] != 0){
 		    if($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
 		        $groupid = (-1)*$filter['selectedStudentOrGroup'] - 1;
-		        $students = groups_get_members($groupid);
+		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		    }else {
 		        $students=array($students[$filter['selectedStudentOrGroup']]);
 		    }
@@ -8990,7 +8990,7 @@ function block_exacomp_group_reports_annex_result($filter) {
     if($filter['selectedStudentOrGroup'] != 0){
         if($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
             $groupid = (-1)*$filter['selectedStudentOrGroup'] - 1;
-            $students = groups_get_members($groupid);
+            $students = block_exacomp_groups_get_members($courseid,$groupid);
         }else {
             $students=array($students[$filter['selectedStudentOrGroup']]);
         }
