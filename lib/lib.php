@@ -1868,6 +1868,21 @@ function block_exacomp_get_students_by_course($courseid) {
 //     return $groups;
 // }
 
+/**
+ *
+ * Returns all STUDENTS of this group... needed because teachers can also be in groups, but often you only need the students
+ * @param unknown_type $courseid
+ */
+function block_exacomp_groups_get_members($courseid,$groupid) {
+    $students = groups_get_members($groupid); //with teachers
+    foreach($students as $student){
+        if(block_exacomp_is_teacher($courseid,$student->id)){
+            unset($students[$student->id]);
+        }
+    }
+    return $students;
+}
+
 
 
 /**
