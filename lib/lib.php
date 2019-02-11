@@ -5279,6 +5279,35 @@ function block_exacomp_is_topic_visible($courseid, $topic, $studentid) {
 }
 
 /**
+ * visibility for topic in course and group context
+ * @param unknown $courseid
+ * @param unknown $topic
+ * @param unknown $groupid
+ * @return boolean
+ */
+function block_exacomp_is_topic_visible_for_group($courseid, $topic, $groupid) {
+    global $DB;
+
+    $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
+    foreach($groupmembers as $student){
+        $visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, 0);
+        if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
+            return false;
+        }
+        
+        if ($studentid > 0) {
+            // also check student if set
+            $visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
+            if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+/**
  * visibility for descriptor in course and user context
  * @param unknown $courseid
  * @param unknown $descriptor

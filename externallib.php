@@ -7900,6 +7900,9 @@ class block_exacomp_external extends external_api {
 		//TODO if added for 1 student -> mind visibility for this student
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
+		//TODO, finish this to distinguish between groups, students and forall
+		if($groupid != -1) $userid = 0;
+		
 		$topics_return = array();
 		foreach ($tree as $subject) {
 			foreach ($subject->topics as $topic) {
@@ -7910,6 +7913,13 @@ class block_exacomp_external extends external_api {
 					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
 					$topic_return->subjectid = $subject->id;
 					$topic_return->subjecttitle = $subject->title;
+// 					if($groupid != -1){//for group //TODO, finish this to distinguish between groups, students and forall
+// 					    $topic_return->visible = (block_exacomp_is_topic_visible_for_group($courseid, $topic, $userid)) ? 1 : 0;
+// 					    $topic_return->used = (block_exacomp_is_topic_used_for_group($courseid, $topic, $userid)) ? 1 : 0;
+// 					}else{//for user or forall
+// 					    $topic_return->visible = (block_exacomp_is_topic_visible($courseid, $topic, $userid)) ? 1 : 0;
+// 					    $topic_return->used = (block_exacomp_is_topic_used($courseid, $topic, $userid)) ? 1 : 0;
+// 					}
 					$topic_return->visible = (block_exacomp_is_topic_visible($courseid, $topic, $userid)) ? 1 : 0;
 					$topic_return->used = (block_exacomp_is_topic_used($courseid, $topic, $userid)) ? 1 : 0;
 					$topics_return[] = $topic_return;
