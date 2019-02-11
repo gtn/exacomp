@@ -7106,6 +7106,7 @@ class block_exacomp_external extends external_api {
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
 			'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
+		    'groupid' => new external_value (PARAM_INT, 'id of group',VALUE_OPTIONAL),
 		));
 	}
 
@@ -7119,7 +7120,7 @@ class block_exacomp_external extends external_api {
 	 * @param $visible
 	 * @return array
 	 */
-	public static function dakora_set_topic_visibility($courseid, $topicid, $userid, $forall, $visible) {
+	public static function dakora_set_topic_visibility($courseid, $topicid, $userid, $forall, $visible, $groupid=-1) {
 		global $USER;
 		static::validate_parameters(static::dakora_set_topic_visibility_parameters(), array(
 			'courseid' => $courseid,
@@ -7127,6 +7128,7 @@ class block_exacomp_external extends external_api {
 			'userid' => $userid,
 			'forall' => $forall,
 			'visible' => $visible,
+		    'groupid' => $groupid,
 		));
 
 		if ($userid == 0 && !$forall) {
@@ -7135,8 +7137,12 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 
-		block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $userid);
-
+		if($groupid != -1){
+		    block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
+		}else{
+		    block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $userid);
+		}
+		
 		return array('success' => true);
 	}
 
