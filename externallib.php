@@ -5618,14 +5618,14 @@ class block_exacomp_external extends external_api {
 	 * @return stdClass
 	 */
 	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
-		global $DB, $USER;
+		global $DB, $USER, $CFG;
  		static::validate_parameters(static::dakora_get_descriptor_details_parameters(),
  			array('courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $userid, 'forall' => $forall, 'crosssubjid' => $crosssubjid));
 
 		if (!$forall && $userid == 0) {
 			$userid = $USER->id;
 		}
-
+		
 		static::require_can_access_course_user($courseid, $userid);
 
 		$descriptor_return = static::get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid);

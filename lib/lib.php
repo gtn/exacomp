@@ -6424,9 +6424,17 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 // 	}
 
 	require_once($CFG->dirroot.'/message/lib.php');
+	
+	
+// 	var_dump($CFG->version);
+// 	die();
 
-	$eventdata = new stdClass ();
-	$eventdata = core\message\message(); //works but is it inteded like that? moodle 3.6 RW TODO
+	if((float)$CFG->version >= 2018120301){
+	    $eventdata = new core\message\message(); //works but is it inteded like that? moodle 3.6 RW TODO
+	}else{
+	    $eventdata = new stdClass ();
+	}
+
 	$eventdata->modulename = 'block_exacomp';
 	$eventdata->userfrom = $userfrom;
 	$eventdata->userto = $userto;
@@ -6442,9 +6450,10 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	$eventdata->contexturl = $contexturl;
 	$eventdata->contexturlname = $context;
 
-	//$eventdata->notification = 1; //TODO, only when moodle 3.5 or 3.6
+	if((float)$CFG->version >= 2018120301){
+	    $eventdata->notification = 1; //TODO, only when moodle 3.5 or 3.6
+	}
     message_send($eventdata);
-
 }
 
 /**
