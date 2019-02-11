@@ -944,6 +944,14 @@ $settings->add(new block_exacomp_admin_setting_source('exacomp/mysource',
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/xmlserverurl',
         block_exacomp_get_string('settings_xmlserverurl'),
         block_exacomp_get_string('settings_configxmlserverurl'), "", PARAM_URL));
+$options = array('' => block_exacomp_get_string('settings_addblock_to_newcourse_option_no'),
+            //BLOCK_POS_LEFT  => block_exacomp_get_string('settings_addblock_to_newcourse_option_left'),
+            //BLOCK_POS_RIGHT => block_exacomp_get_string('settings_addblock_to_newcourse_option_right'),
+            BLOCK_POS_LEFT => block_exacomp_get_string('settings_addblock_to_newcourse_option_yes'),
+            );
+$settings->add(new admin_setting_configselect('exacomp/addblock_to_new_course',
+        block_exacomp_get_string('settings_addblock_to_newcourse'),
+        block_exacomp_get_string('settings_addblock_to_newcourse_description'), '', $options));
 
 // Apps-Einstellungen (configuration for apps).
 $settings->add(new admin_setting_heading('exacomp/heading_apps',

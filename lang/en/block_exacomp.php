@@ -161,6 +161,13 @@ $string['settings_assessment_SelfEval_verboses_long_columntitle'] = 'Long';
 $string['settings_assessment_SelfEval_verboses_short_columntitle'] = 'Short';
 $string['settings_assessment_SelfEval_verboses_edit'] = 'Edit verboses';
 $string['settings_assessment_SelfEval_verboses_validate_error_long'] = 'Long titles: up to 4 entries, delimiter ";", maximum 20 characters per entry (4 for short form)';
+$string['settings_addblock_to_newcourse'] = 'Add block to new courses';
+$string['settings_addblock_to_newcourse_description'] = 'The block "Exabis competence Grid" will be added to every new course automatically. Position of inserted block depends on selected Moodle theme';
+$string['settings_addblock_to_newcourse_option_no'] = 'No';
+$string['settings_addblock_to_newcourse_option_yes'] = 'Yes';
+$string['settings_addblock_to_newcourse_option_left'] = 'to the Left region';
+$string['settings_addblock_to_newcourse_option_right'] = 'to the Right region';
+
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';

@@ -548,6 +548,31 @@ return [
         'Short titles: up to 4 entries, delimiter ; maximum 3 characters per entry',
         'Short titles: up to 4 entries, delimiter ; maximum 3 characters per entry',
     ],*/
+    'settings_addblock_to_newcourse' => [
+        'Add block to new courses',
+        'Add block to new courses',
+    ],
+    'settings_addblock_to_newcourse_description' => [
+        'The block "Exabis competence Grid" will be added to every new course automatically. Position of inserted block depends on selected Moodle theme',
+        'The block "Exabis competence Grid" will be added to every new course automatically. Position of inserted block depends on selected Moodle theme',
+    ],
+    'settings_addblock_to_newcourse_option_no' => [
+        'Nein',
+        'No',
+    ],
+    'settings_addblock_to_newcourse_option_yes' => [
+        'Ja',
+        'Yes',
+    ],
+    'settings_addblock_to_newcourse_option_left' => [
+        'to the Left region',
+        'to the Left region',
+    ],
+    'settings_addblock_to_newcourse_option_right' => [
+        'to the Right region',
+        'to the Right region',
+    ],
+
 
 	// === Unit Tests ===
 	'unittest_string' => [
