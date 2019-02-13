@@ -519,12 +519,24 @@ function block_exacomp_get_assessment_max_value($type) {
     return $max;
 }
 
-function block_exacomp_get_assessment_max_good_value($type) { // for example 1 - good, 6 - bad
-    $max = 0;
+function block_exacomp_get_assessment_max_good_value($type, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) { // for example 1 - good, 6 - bad
+    $max = 0; // it is the best for used assessment type
+    $real = 0; // it is regarding student real results (with percent of grading)
+    if ($maxGrade > 0 && $studentGradeResult > 0) {
+        $percent = $studentGradeResult / $maxGrade * 100;
+    } else {
+        $percent = 0;
+    }
     switch ($type) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            $limit = block_exacomp_get_assessment_grade_limit();
+            if ($percent > 0) {
+                $k = ($limit - 1) / 100;
+                $x = $limit - ($percent * $k);
+                $real = round($x, 1); // TODO: is it possible to be float?;
+            }
             $max = 1;
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
@@ -533,15 +545,35 @@ function block_exacomp_get_assessment_max_good_value($type) { // for example 1 -
             if ($max > 0) {
                 $max -= 1;  // because it is possible zero
             }
+            if ($percent > 0) {
+                $k = ($max) / 100;
+                $x = ($percent * $k);
+                $real = round($x);
+            }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
             $max = block_exacomp_get_assessment_points_limit();
+            if ($percent > 0) {
+                $k = ($max) / 100;
+                $x = ($percent * $k);
+                $real = round($x);
+            }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            if ($percent > 50) {
+                $real = 1;
+            } else {
+                $real = 0;
+            }
             $max = 1;
             break;
     }
-    return $max;
+    if ($userrealvalue) {
+        return $real;
+    } else {
+        return $max;
+    }
+    //return $max;
 }
 
 
@@ -3325,11 +3357,12 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids) {
 function block_exacomp_get_active_tests_by_course($courseid) {
 	global $DB;
 
-	$sql = "SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade FROM {block_exacompcompactiv_mm} activ "
-		."JOIN {course_modules} cm ON cm.id = activ.activityid "
-		."JOIN {modules} m ON m.id = cm.module "
-		."JOIN {quiz} q ON cm.instance = q.id "
-		."WHERE m.name='quiz' AND cm.course=?";
+	$sql = "SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
+            FROM {block_exacompcompactiv_mm} activ 
+              JOIN {course_modules} cm ON cm.id = activ.activityid 
+              JOIN {modules} m ON m.id = cm.module 
+              JOIN {quiz} q ON cm.instance = q.id 
+            WHERE m.name = 'quiz' AND cm.course = ?";
 
 	$tests = $DB->get_records_sql($sql, array($courseid));
 
@@ -4033,50 +4066,28 @@ function block_exacomp_perform_auto_test() {
         $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
         $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
-
-        //assign competences to student
-		$assign_competence = function($courseid, $studentid, $topics, $descriptors) {
-            if (isset($descriptors)) {
-                $grading_scheme = block_exacomp_get_assessment_comp_scheme();
-                foreach ($descriptors as $descriptor) {
-                    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
-                        //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
-                        block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme), $comptype = 0);
-                    }
-
-                    //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-                    block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme));
-                    mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
-                }
-            }
-            if (isset($topics)) {
-                $grading_scheme = block_exacomp_get_assessment_topic_scheme();
-                foreach ($topics as $topic) {
-                    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) {
-                        //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                        block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme), $comptype = 1);
-                    }
-
-                    //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-                    block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme));
-                    mtrace("set topic competence ".$topic->compid." for user ".$studentid.'<br>');
-
-                }
-            }
-        };
-
+        
 		//get student grading for each test
 		foreach ($students as $student) {
             $changedquizes = array();
 			foreach ($tests as $test) {
+
 				//get grading for each test and assign topics and descriptors
 				$quiz = $DB->get_record('quiz_grades', array('quiz' => $test->id, 'userid' => $student->id));
 				$quiz_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $test->id, 'userid' => $student->id));
 
+                //$maxGrade = quiz_format_grade($quiz, $quiz->grade);
+                $maxGrade = $test->grade;
+                if ($quiz) {
+                    $studentGradeResult = $quiz->grade;
+                } else {
+                    $studentGradeResult = 0;
+                }
+
 				// assign competencies if test is successfully completed AND test grade update since last auto assign
 				if (isset($quiz->grade) && (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)) {
 				    $changedquizes[$quiz->quiz] = $quiz->timemodified;
-                    $assign_competence($courseid, $student->id, $test->topics, $test->descriptors);
+                    block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, true, $maxGrade, $studentGradeResult);
 
 					if (!$quiz_assignment) {
 						$quiz_assignment = new \stdClass();
@@ -4131,14 +4142,14 @@ function block_exacomp_perform_auto_test() {
                             $relatedData['availability'] = json_decode($cm->availability);
                             // data of related activities
                             $relData = array();
+                            $maxResults = 0;
+                            $studentResults = 0;
                             foreach($relatedData['availability']->c as $relObj) {
                                 $modparam = $DB->get_record_sql('SELECT DISTINCT cm.instance as modid, m.name as modname
                                                             FROM {course_modules} cm
                                                             JOIN {modules} m ON cm.module = m.id 
                                                             WHERE cm.id = ? ', [$relObj->id]);
                                 if ($modparam) {
-                                    //echo "<pre>debug:<strong>lib.php:4124</strong>\r\n";print_r($relObj);echo '</pre>'; // !!!!!!!!!! delete it
-                                    //echo "<pre>debug:<strong>lib.php:4084</strong>\r\n";print_r($modparam);echo '</pre>'; // !!!!!!!!!! delete it
                                     // the timemodified gets from last saved student answer or from DB if the user is not changed the grading
                                     if (!array_key_exists($modparam->modid, $changedquizes)) {
                                         $modts = $DB->get_field_sql('SELECT DISTINCT t.timemodified as timemodified
@@ -4150,6 +4161,17 @@ function block_exacomp_perform_auto_test() {
                                     $relObj->timemodified = $modts;
                                     $relatedData[$relObj->id] = array();
                                     $relatedData[$relObj->id]['timemodified'] = $relObj->timemodified;
+                                    // for calculate average (now only for quizes): sum of max grades and sum of student results
+                                    if ($modparam->modname == 'quiz') {
+                                        $studentResult = $DB->get_field('quiz_grades', 'grade', array('quiz' => $modparam->modid, 'userid' => $student->id));
+                                        if ($studentResult) {
+                                            $studentResults += $studentResult;
+                                        }
+                                        $maxResult = $DB->get_field('quiz', 'grade', array('id' => $modparam->modid));
+                                        if ($maxResult) {
+                                            $maxResults += $maxResult;
+                                        }
+                                    }
                                 }
                             }
                             $datatoDB = array();
@@ -4157,16 +4179,12 @@ function block_exacomp_perform_auto_test() {
                             $datatoDB['userid'] = $student->id;
                             $datatoDB['timemodified'] = $rootTs;
                             $datatoDB['relateddata'] = serialize($relatedData);
-                            if (11==11 || !$existing ||
+                            if (!$existing ||
                                     ($existing && unserialize($existing->relateddata) != unserialize($datatoDB['relateddata']))) {
                                 // data was changed - save grading to competences!
-                                $assign_competence($courseid, $student->id, $cm->topics, $cm->descriptors);
-                                //echo "<pre>debug:<strong>lib.php:4149</strong>\r\n"; print_r($cm->topics); echo '</pre>'; // !!!!!!!!!! delete it
-                                //echo "<pre>debug:<strong>lib.php:4150</strong>\r\n"; print_r($cm->descriptors); echo '</pre>'; // !!!!!!!!!! delete it
-                                //echo "<pre>debug:<strong>lib.php:4103</strong>\r\n"; print_r('CHANGED!!!!!!!'); echo '</pre>'; // !!!!!!!!!! delete it
+                                block_exacomp_assign_competences($courseid, $student->id, $cm->topics, $cm->descriptors, true, $maxResults, $studentResults);
                             } else {
                                 // data was not changed. nothing to do
-                                //echo "<pre>debug:<strong>lib.php:4103</strong>\r\n"; print_r('NOT!!!!!!!'); echo '</pre>'; // !!!!!!!!!! delete it
                             }
                             $DB->delete_records('block_exacompcmassign',
                                     ['coursemoduleid' => $cm->id, 'userid' => $student->id]);
@@ -4181,6 +4199,36 @@ function block_exacomp_perform_auto_test() {
 	}
 
 	return true;
+}
+
+function block_exacomp_assign_competences($courseid, $studentid, $topics, $descriptors, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) {
+    if (isset($descriptors)) {
+        $grading_scheme = block_exacomp_get_assessment_comp_scheme();
+        foreach ($descriptors as $descriptor) {
+            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+                //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
+                block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), $comptype = 0);
+            }
+
+            //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+            block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
+        }
+    }
+    if (isset($topics)) {
+        $grading_scheme = block_exacomp_get_assessment_topic_scheme();
+        foreach ($topics as $topic) {
+            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) {
+                //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
+                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), $comptype = 1);
+            }
+
+            //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+            block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            mtrace("set topic competence ".$topic->compid." for user ".$studentid.'<br>');
+
+        }
+    }
 }
 
 function block_exacomp_get_gained_competences($course, $student) {
