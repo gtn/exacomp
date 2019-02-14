@@ -127,12 +127,12 @@ if ($isTeacher) {	//mind nostudents setting
 	} elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
 		$students = array();
 	} else if($studentid < -1){
-	    $colselector = $output->students_column_selector(count($allCourseStudents));
     	//MAYBE CHANGE WORDING   studentId is actually student or localgroup id.... if it is a localgroup, the value is negative and the groupid can be caluclated as follows:
     	//((-1)*dropdownvalue)-1   the -1 is used for ALL_STUDENTS, this is why i calculate it like this    RW
 	    $groupid = (-1)*$studentid - 1;
 // 	    $students = groups_get_members($groupid);
 	    $students = block_exacomp_groups_get_members($courseid,$groupid);
+	    $colselector = $output->students_column_selector(count($students));
 	} else {
 		$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	}
