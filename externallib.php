@@ -6910,6 +6910,7 @@ class block_exacomp_external extends external_api {
 			'taxonomies' => new external_multiple_structure (new external_single_structure ([
 				'id' => new external_value (PARAM_INT, 'id'),
 				'title' => new external_value (PARAM_TEXT, 'name'),
+			    'source' => new external_value (PARAM_TEXT, 'source'),
 			]), 'values'),
 			'version' => new external_value (PARAM_FLOAT, 'mooodle version number in YYYYMMDDXX format'),
 			'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
@@ -6959,7 +6960,7 @@ class block_exacomp_external extends external_api {
 			'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
 		    'studentevalitems_examples' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE)),
 			'gradingperiods' => $gradingperiods,
-			'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'sorting', 'id, title'),
+			'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'source', 'id, title, source'),
 			'version' => $info->versiondb,
 			'release' => $info->release,
 		);
