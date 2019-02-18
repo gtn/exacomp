@@ -6810,6 +6810,72 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function diggr_create_cohort_parameters() {
+	    return new external_function_parameters(array(
+	                        'name' => new external_value(PARAM_RAW, 'cohort name'),
+	                        'idnumber' => new external_value(PARAM_RAW, 'cohort idnumber'),
+	                        'description' => new external_value(PARAM_RAW, 'cohort description', VALUE_OPTIONAL),
+	                        'descriptionformat' => new external_format_value('description', VALUE_DEFAULT),
+	                        'visible' => new external_value(PARAM_BOOL, 'cohort visible', VALUE_OPTIONAL, true),
+	        ));
+	}
+	
+	
+	
+	/**
+	 * Create one or more cohorts
+	 *
+	 * @param array $cohorts An array of cohorts to create.
+	 * @since Moodle 2.5
+	 * 
+	 * @ws-type-write
+	 * @return array An array of arrays
+	 */
+	public static function diggr_create_cohort($name, $idnumber, $descrption, $descriptionformat, $visible) {
+	    global $DB;
+	    
+	   $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array('name' => $name, 'idnumber' => $idnumber, 
+	        'description' => $descrption, 'descriptionformat' => $descriptionformat, 'visible' => $visible));
+	    
+	        
+	        
+	        // Make sure that the idnumber doesn't already exist.
+	        if ($DB->record_exists('cohort', array('idnumber' => $idnumber))) {
+	            throw new invalid_parameter_exception('record already exists: idnumber='.$idnumber);
+	        }
+	        
+	        // Validate format.
+	        $DB->insert_record('cohort', array("contextid" => 1, "name" => $name, "idnumber" => $idnumber, "description" => $descrption,
+	            "descriptionformat" => $descriptionformat, "visible" => $visible, "timecreated" => time(), "timemodified" => time()));
+
+	    return $parameters;
+	}
+	
+	/**
+	 * Returns description of method result value
+	 *
+	 * @return external_description
+	 * @since Moodle 2.5
+	 */
+	public static function diggr_create_cohort_returns() {
+	    return  new external_single_structure(
+	            array(
+	                'name' => new external_value(PARAM_RAW, 'cohort name'),
+	                'idnumber' => new external_value(PARAM_RAW, 'cohort idnumber'),
+	                'description' => new external_value(PARAM_RAW, 'cohort description'),
+	                'descriptionformat' => new external_format_value('description'),
+	                'visible' => new external_value(PARAM_BOOL, 'cohort visible'),
+	            )
+	          );
+	}
+	
+	
 	/**
 	 * Returns description of method parameters
 	 * @return external_function_parameters
