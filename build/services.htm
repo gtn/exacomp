@@ -3189,6 +3189,68 @@ Params: <table>
 Returns:<pre>{
     "enabled": "bool null ()"
 }</pre>
+<h2>block_exacomp_diggr_create_cohort</h2>
+<div>Create one or more cohorts</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>name</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>cohort name</td>
+<tr>
+<td>skz</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>school number</td>
+<tr>
+<td>cohortcode</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>code to enter cohort</td>
+<tr>
+<td>idnumber</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>cohort idnumber</td>
+<tr>
+<td>description</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>cohort description</td>
+<tr>
+<td>descriptionformat</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(1) "1"
+</td>
+<td>description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>cohort visible</td>
+</table>
+Returns:<pre>{
+    "name": "raw null (cohort name)",
+    "idnumber": "raw null (cohort idnumber)",
+    "description": "raw null (cohort description)",
+    "descriptionformat": "int null (description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN))",
+    "visible": "bool null (cohort visible)"
+}</pre>
 <h2>dakora_get_evaluation_config</h2>
 <div>get evaluation configuration
 get admin evaluation configurations</div>

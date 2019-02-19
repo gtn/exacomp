@@ -6819,6 +6819,8 @@ class block_exacomp_external extends external_api {
 	public static function diggr_create_cohort_parameters() {
 	    return new external_function_parameters(array(
 	                        'name' => new external_value(PARAM_RAW, 'cohort name'),
+	                        'skz' => new external_value(PARAM_RAW, 'school number'),
+	                        'cohortcode' => new external_value(PARAM_RAW, 'code to enter cohort'),
 	                        'idnumber' => new external_value(PARAM_RAW, 'cohort idnumber'),
 	                        'description' => new external_value(PARAM_RAW, 'cohort description', VALUE_OPTIONAL),
 	                        'descriptionformat' => new external_format_value('description', VALUE_DEFAULT),
@@ -6837,11 +6839,11 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-write
 	 * @return array An array of arrays
 	 */
-	public static function diggr_create_cohort($name, $idnumber, $descrption, $descriptionformat, $visible) {
+	public static function diggr_create_cohort($name, $skz, $cohortcode, $idnumber, $descrption, $descriptionformat, $visible) {
 	    global $DB;
 	    
-	   $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array('name' => $name, 'idnumber' => $idnumber, 
-	        'description' => $descrption, 'descriptionformat' => $descriptionformat, 'visible' => $visible));
+	   $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array('name' => $name, 'skz' => $skz, 'cohortcode' => $cohortcode,
+	       'idnumber' => $idnumber, 'description' => $descrption, 'descriptionformat' => $descriptionformat, 'visible' => $visible));
 	    
 	        
 	        
@@ -6853,7 +6855,8 @@ class block_exacomp_external extends external_api {
 	        // Validate format.
 	        $DB->insert_record('cohort', array("contextid" => 1, "name" => $name, "idnumber" => $idnumber, "description" => $descrption,
 	            "descriptionformat" => $descriptionformat, "visible" => $visible, "timecreated" => time(), "timemodified" => time()));
-
+	        $cohortid = $DB->get_field('cohort', 'MAX(id)' , array('name' => $name));
+	        $DB->insert_record('block_exacompcohortcode', array("cohortid" => $cohortid, "cohortcode" => $cohortcode, "skz" => $skz));
 	    return $parameters;
 	}
 	
