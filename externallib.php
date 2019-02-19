@@ -6821,10 +6821,6 @@ class block_exacomp_external extends external_api {
 	                        'name' => new external_value(PARAM_RAW, 'cohort name'),
 	                        'skz' => new external_value(PARAM_RAW, 'school number'),
 	                        'cohortcode' => new external_value(PARAM_RAW, 'code to enter cohort'),
-	                        'idnumber' => new external_value(PARAM_RAW, 'cohort idnumber'),
-	                        'description' => new external_value(PARAM_RAW, 'cohort description', VALUE_OPTIONAL),
-	                        'descriptionformat' => new external_format_value('description', VALUE_DEFAULT),
-	                        'visible' => new external_value(PARAM_BOOL, 'cohort visible', VALUE_OPTIONAL, true),
 	        ));
 	}
 	
@@ -6839,22 +6835,14 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-write
 	 * @return array An array of arrays
 	 */
-	public static function diggr_create_cohort($name, $skz, $cohortcode, $idnumber, $descrption, $descriptionformat, $visible) {
+	public static function diggr_create_cohort($name, $skz, $cohortcode) {
 	    global $DB;
 	    
-	   $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array('name' => $name, 'skz' => $skz, 'cohortcode' => $cohortcode,
-	       'idnumber' => $idnumber, 'description' => $descrption, 'descriptionformat' => $descriptionformat, 'visible' => $visible));
+	   $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array('name' => $name, 'skz' => $skz, 'cohortcode' => $cohortcode));
 	    
-	        
-	        
-	        // Make sure that the idnumber doesn't already exist.
-	        if ($DB->record_exists('cohort', array('idnumber' => $idnumber))) {
-	            throw new invalid_parameter_exception('record already exists: idnumber='.$idnumber);
-	        }
-	        
 	        // Validate format.
-	        $DB->insert_record('cohort', array("contextid" => 1, "name" => $name, "idnumber" => $idnumber, "description" => $descrption,
-	            "descriptionformat" => $descriptionformat, "visible" => $visible, "timecreated" => time(), "timemodified" => time()));
+	        $DB->insert_record('cohort', array("contextid" => 1, "name" => $name,
+	            "descriptionformat" => 1, "timecreated" => time(), "timemodified" => time()));
 	        $cohortid = $DB->get_field('cohort', 'MAX(id)' , array('name' => $name));
 	        $DB->insert_record('block_exacompcohortcode', array("cohortid" => $cohortid, "cohortcode" => $cohortcode, "skz" => $skz));
 	    return $parameters;
@@ -6870,10 +6858,6 @@ class block_exacomp_external extends external_api {
 	    return  new external_single_structure(
 	            array(
 	                'name' => new external_value(PARAM_RAW, 'cohort name'),
-	                'idnumber' => new external_value(PARAM_RAW, 'cohort idnumber'),
-	                'description' => new external_value(PARAM_RAW, 'cohort description'),
-	                'descriptionformat' => new external_format_value('description'),
-	                'visible' => new external_value(PARAM_BOOL, 'cohort visible'),
 	            )
 	          );
 	}
