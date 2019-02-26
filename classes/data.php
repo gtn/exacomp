@@ -1573,9 +1573,11 @@ class data_importer extends data {
                                 $where = array('source' => $source, 'sourceid' => $sourceid);
                                 if ($dbExist = g::$DB->get_record($tablename, $where)) {
                                     $data = array($fieldname => $dbExist->id);
-                                    $where = [$fieldname => $sourceid, 'source' => $source];
-                                    g::$DB->update_record($tablename, $data, $where);
+                                } else {
+                                    $data = array($fieldname => 0);
                                 }
+                                $where = [$fieldname => $sourceid, 'source' => $source];
+                                g::$DB->update_record($tablename, $data, $where);
                             }
                         }
                     }
