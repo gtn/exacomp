@@ -3238,6 +3238,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019021901, 'exacomp');
     }
+
+    if ($oldversion < 2019022601) {
+        //adding a new table to save cohortcodes for diggr
+        $table = new xmldb_table('block_exacompexamples');
+        $field = new xmldb_field('ethema_ismain', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('ethema_issubcategory', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('ethema_parent', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2019022601, 'exacomp');
+    }
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

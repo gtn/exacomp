@@ -25,7 +25,7 @@ if(isset($lang) && substr( $lang, 0, 2) === 'de'){
 	$de = true;
 }
 
-if($de)
+if ($de)
 	define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/deutsch/exacomp_data.xml');
 else 
 	define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/english/exacomp_data.xml');
@@ -255,7 +255,6 @@ $importException = null;
 
 try {
     // check category renaming
-    // check category renaming
     $import_data = $mform->get_data();
     if ($import_data) {
         $course_template = intval($import_data->template);
@@ -302,7 +301,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($course
 /* CONTENT REGION */
 
 /* Admins are allowed to import data, or a special capability for custom imports */
-if($isAdmin || block_exacomp_check_customupload()) {
+if ($isAdmin || block_exacomp_check_customupload()) {
 	
 	if ($importtype) {
 	    switch ($importtype) {

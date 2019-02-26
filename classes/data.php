@@ -1239,6 +1239,7 @@ class data_importer extends data {
 	private static $import_source_type;
 	private static $import_source_global_id;
 	private static $import_source_local_id;
+	private static $updateLaterBySources;
 	
 	private static $import_time = null;
 
@@ -1324,6 +1325,7 @@ class data_importer extends data {
 		
 		self::$import_source_type = $par_source;
 		self::$import_time = time();
+        self::$updateLaterBySources = array();
 
 		// lock import, so only one import is running at the same time
 		$lock = Fs::getLock(g::$CFG->tempdir.'/exacomp_import.lock', 0);
@@ -1562,6 +1564,23 @@ class data_importer extends data {
                     self::insert_example($example);
                 }
 			}
+			// update eTheMa parents
+            if (count(self::$updateLaterBySources) > 0) {
+                foreach (self::$updateLaterBySources as $tablename => $tabledata) {
+                    foreach ($tabledata as $fieldname => $fielddata) {
+                        foreach ($fielddata as $source => $sourcedata) {
+                            foreach ($sourcedata as $sourceid) {
+                                $where = array('source' => $source, 'sourceid' => $sourceid);
+                                if ($dbExist = g::$DB->get_record($tablename, $where)) {
+                                    $data = array($fieldname => $dbExist->id);
+                                    $where = [$fieldname => $sourceid, 'source' => $source];
+                                    g::$DB->update_record($tablename, $data, $where);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 		}
 
 		if(isset($xml->edulevels)) {
@@ -1772,7 +1791,7 @@ class data_importer extends data {
 		}
 
 		// before inserting decode html entities if needed
-		foreach ($item as $key=>$value) {
+		foreach ($item as $key => $value) {
 			if (is_string($value) && strpos($value, 'uml;')) {
 				$item->$key = html_entity_decode($value);
 			}
@@ -2013,10 +2032,24 @@ class data_importer extends data {
 	private static function insert_example($xmlItem, $parent = 0) {
 		$item = self::parse_xml_item($xmlItem);
 		$item->parentid = $parent;
-		
-		self::insert_or_update_item(BLOCK_EXACOMP_DB_EXAMPLES, $item);
+
+        // eTheMa parent - update later
+        if (isset($item->ethema_parent)
+                && array_key_exists('@attributes', $item->ethema_parent)
+                && array_key_exists('id', $item->ethema_parent['@attributes'])
+                && $item->ethema_parent['@attributes']['id'] > 0) {
+            if (@$item->ethema_parent['@attributes']['source']) {
+                $tempsource = self::add_source_if_not_exists($item->ethema_parent['@attributes']['source']);
+            } else {
+                $tempsource = self::get_my_source();
+            }
+            self::$updateLaterBySources[BLOCK_EXACOMP_DB_EXAMPLES]['ethema_parent'][$tempsource][] = $item->ethema_parent['@attributes']['id'];
+            $item->ethema_parent = $item->ethema_parent['@attributes']['id'];
+        }
+
+        self::insert_or_update_item(BLOCK_EXACOMP_DB_EXAMPLES, $item);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_EXAMPLES, $item);
-		
+
 		// if local example, move to source teacher
 		if (!$item->source) {
 			g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLES, array('source' => BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null), array("id"=>$item->id));
