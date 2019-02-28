@@ -98,7 +98,9 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		$topic->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbTopics));
 
 		$course_settings = block_exacomp_get_settings_by_course($this->get_courseid());
-		if ($course_settings->filteredtaxonomies) {
+		if ($course_settings->filteredtaxonomies
+                && is_array($course_settings->filteredtaxonomies)
+                && count($course_settings->filteredtaxonomies) > 0) {
 			$dbTaxonomies = $DB->get_records_sql("
 				SELECT DISTINCT t.id, t.source, t.sourceid, 'dummy' as dummy
 				FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} t
