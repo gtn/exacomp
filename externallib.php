@@ -2774,6 +2774,7 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure (new external_single_structure (array(
 			'topicid' => new external_value (PARAM_INT, 'id of topic'),
 			'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+ 		    'topicdescription' => new external_value (PARAM_TEXT, 'description of topic'),
 			'numbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
 			'subjectid' => new external_value (PARAM_INT, 'id of subject'),
 			'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
@@ -7970,6 +7971,7 @@ class block_exacomp_external extends external_api {
 					$topic_return = new stdClass();
 					$topic_return->topicid = $topic->id;
 					$topic_return->topictitle = $topic->title;
+					$topic_return->topicdescription = "description";
 					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
 					$topic_return->subjectid = $subject->id;
 					$topic_return->subjecttitle = $subject->title;
