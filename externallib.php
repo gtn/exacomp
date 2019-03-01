@@ -2832,6 +2832,7 @@ class block_exacomp_external extends external_api {
 			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 			'numbering' => new external_value (PARAM_TEXT, 'numbering for descriptor'),
 			'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+ 		    'niveaudescription' => new external_value (PARAM_TEXT, 'description of niveau'),
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
@@ -2887,6 +2888,7 @@ class block_exacomp_external extends external_api {
 			'numbering' => new external_value (PARAM_TEXT, 'numbering for descriptor'),
 			'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+		    'niveaudescription' => new external_value (PARAM_TEXT, 'description of niveau'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
 		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false)
@@ -8020,6 +8022,7 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->descriptorid = $descriptor->id;
 							$descriptor_return->descriptortitle = $descriptor->title;
 							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+							$descriptor_return->niveaudescription = "";
 							$descriptor_return->niveautitle = "";
 							$descriptor_return->niveausort = "";
 							$descriptor_return->niveauid = 0;
@@ -8029,6 +8032,9 @@ class block_exacomp_external extends external_api {
 								$descriptor_return->niveautitle = $niveau->title;
 								$descriptor_return->niveausort = $niveau->title;
 								$descriptor_return->niveauid = $niveau->id;
+								
+								$niveau = $DB->get_record('block_exacompsubjniveau_mm', array('subjectid' => $subject->id, 'niveauid' => $niveau->id));
+								$descriptor_return->niveaudescription = $niveau->subtitle;
 							}
 							$descriptor_return->visible = (!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student)) || $forall)) ? 1 : 0;
 							$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
