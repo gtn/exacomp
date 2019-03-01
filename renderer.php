@@ -279,6 +279,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						'topicid' => $topic->id,
 					]), block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array(
 						'class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '',
+                        'title' => $topic->description,
 					)));
 				}
 			}
