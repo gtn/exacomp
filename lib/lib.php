@@ -1362,7 +1362,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
  */
 function block_exacomp_get_categories_for_descriptor($descriptor) {
 	global $DB;
-	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst sp�ter akutalisiert wird
+	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst spï¿½ter akutalisiert wird
 	static $table_exists = false;
 	if (!$table_exists) {
 		$dbman = $DB->get_manager();
@@ -2231,7 +2231,7 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
 			// $rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_competence_grid'), null, true);
 		}
 		if ($isTeacherOrStudent && $ready_for_use) {
-			//Kompetenzüberblick
+			//KompetenzÃ¼berblick
 			$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_overview'), null, true);
 
 			if ($isTeacher || block_exacomp_get_cross_subjects_by_course($courseid, $USER->id)) {
@@ -3845,7 +3845,7 @@ function block_exacomp_truncate_all_data() {
 	$sql = "TRUNCATE {block_exacompdatasources}";
 	$DB->execute($sql);
 
-	// TODO: tabellen block_exacompdescrvisibility, block_exacompitemexample, block_exacompschedule gehören auch gelöscht?
+	// TODO: tabellen block_exacompdescrvisibility, block_exacompitemexample, block_exacompschedule gehÃ¶ren auch gelÃ¶scht?
 }
 
 /**
@@ -4596,7 +4596,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subje
 		if (isset($assignedDescriptors[$descriptor->id])) {
 			// assigned, ok
 		} else {
-			// not assigned = nicht direkt ausgewählt => children checken
+			// not assigned = nicht direkt ausgewÃ¤hlt => children checken
 			foreach ($descriptor->children as $child_descriptor) {
 				if (!isset($assignedDescriptors[$child_descriptor->id])) {
 					unset($descriptor->children[$child_descriptor->id]);
@@ -5123,7 +5123,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 
 	$timecreated = $timemodified = time();
 
-	// prüfen, ob element schon zur gleichen zeit im wochenplan ist
+	// prÃ¼fen, ob element schon zur gleichen zeit im wochenplan ist
 	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
@@ -5167,6 +5167,37 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 	g::$DB->delete_records_list(BLOCK_EXACOMP_DB_SCHEDULE, 'id', array_keys($examples));
 
 	return true;
+}
+
+/**
+ * add example to all planning storages for all students of group
+ * @param unknown $courseid
+ * @param unknown $groupid
+ * @return boolean
+ */
+function block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid) {
+    // Check Permission
+    block_exacomp_require_teacher($courseid);
+    // Get all examples to add:
+    //    -> studentid 0: on teachers schedule
+    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
+    
+    // Get all students for the given group
+    $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
+
+    // Add examples for all users of group
+    foreach ($examples as $example) {
+        foreach ($groupmembers as $student) {
+            if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
+                block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, 0);
+            }
+        }
+    }
+    
+    // Delete records from the teacher's schedule
+    g::$DB->delete_records_list(BLOCK_EXACOMP_DB_SCHEDULE, 'id', array_keys($examples));
+    
+    return true;
 }
 
 /**
@@ -5825,7 +5856,7 @@ function block_exacomp_get_url_for_file($file, $context = null) {
  * @param unknown $studentid
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_for_pool($studentid, $courseid) {
+function block_exacomp_get_examples_for_pool($studentid, $courseid, $pp=0) {
 	global $DB;
 
 	if (date('w', time()) == 1) {
@@ -5842,7 +5873,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
-			WHERE s.studentid = ? AND s.deleted = 0 AND s.is_pps = 0 AND (
+			WHERE s.studentid = ? AND s.deleted = 0 AND s.is_pps = '$pp' AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
 				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
@@ -6712,7 +6743,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 	if(block_exacomp_is_teacher($courseid)){
     	if ($record) {
     	    $record->gradingisold = 0;
-    		// falls sich die bewertung geändert hat, timestamp neu setzen
+    		// falls sich die bewertung geÃ¤ndert hat, timestamp neu setzen
     		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
     			$record->timestamp = time();
     		}
@@ -6941,7 +6972,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *       xx_eval is additional grading (not mapped!) if block_exacomp_additional_grading() = true
  *               and value if block_exacomp_additional_grading() = false
  *       show = false, if niveau not used within current topic
- *       span = 1 or 0 inidication if niveau is across (übergreifend)
+ *       span = 1 or 0 inidication if niveau is across (Ã¼bergreifend)
  */
 function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid) {
     
@@ -6967,7 +6998,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
 
-		// gesamt für topic
+		// gesamt fÃ¼r topic
 		$data->topic_evalniveauid =
 			(($use_evalniveau) ?
 				((isset($user->topics->niveau[$topic->id]))
@@ -7012,7 +7043,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		((isset($user->subjects->teacher_additional_grading[$subject->id]))
 			? $user->subjects->teacher_additional_grading[$subject->id] : '')
 		: ((isset($user->subjects->teacher[$subject->id]))
-		    ? $user->subjects->teacher[$subject->id] : '')); //$scheme_items[$user->subjects->teacher[$subject->id]] wäre der String
+		    ? $user->subjects->teacher[$subject->id] : '')); //$scheme_items[$user->subjects->teacher[$subject->id]] wÃ¤re der String
 
 	$table_content->timestamp = (isset($user->subjects->timestamp_teacher[$subject->id]))
 		? $user->subjects->timestamp_teacher[$subject->id] : '';
@@ -7025,7 +7056,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		} elseif ($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
 			foreach ($table_content->content as $row) {
 				if ($row->span != 1) {
-					if (!array_key_exists($niveau->title, $row->niveaus)) { //Hier werden die Total bewertungen von den Topics überschrieben!
+					if (!array_key_exists($niveau->title, $row->niveaus)) { //Hier werden die Total bewertungen von den Topics Ã¼berschrieben!
 						$row->niveaus[$niveau->title] = new stdClass();
 						$row->niveaus[$niveau->title]->eval = '';
 						$row->niveaus[$niveau->title]->evalniveau = '';
@@ -7077,7 +7108,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->niveaus[$niveau->title]->evalniveauid = $evaluation->evalniveauid ?: -1;
 		} else {
 			$data->niveaus[$niveau->title]->evalniveau = '';
-			$data->niveaus[$niveau->title]->evalniveauid = -1;  //ändert für jeden LFS was
+			$data->niveaus[$niveau->title]->evalniveauid = -1;  //Ã¤ndert fÃ¼r jeden LFS was
 		}
 
 		//var_dump($evaluation->value);
@@ -7395,7 +7426,7 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
 //  * $onlyDescriptors for the webservice that only needs the descriptors (better performance)
 //  */
 // function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0, $onlyDescriptors = false) {
-//     // TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
+//     // TODO: is visibility hier fÃ¼rn hugo? Bewertungen kann es eh nur fÃ¼r sichtbare geben ...
 //     $descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
 //     $child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
 //     $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
@@ -7504,7 +7535,7 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  * $onlyDescriptors for the webservice that only needs the descriptors (better performance)
  */
 function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0, $onlyDescriptors = false) {
-	// TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
+	// TODO: is visibility hier fÃ¼rn hugo? Bewertungen kann es eh nur fÃ¼r sichtbare geben ...
 	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
 	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
 	$examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);

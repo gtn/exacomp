@@ -1967,10 +1967,18 @@ return [
 		'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
 		'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.',
 	],
+    'add_example_for_group_to_schedule' => [
+        'Achtung: Sie sind dabei Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
+        'Attention: Here you can add examples to the schedules of all students of the selected group. This requires extra confirmation.',
+    ],
 	'add_example_for_all_students_to_schedule_confirmation' => [
 		'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?',
 		'You are about to add the examples to the schedules of all students, do you want to continue?',
 	],
+    'add_example_for_group_to_schedule_confirmation' => [
+        'Sind Sie sicher, dass Sie die Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan legen möchten?',
+        'You are about to add the examples to the schedules of all students of this group, do you want to continue?',
+    ],
     'participating_student' => [
         'Kursteilnehmer/in',
         'student',

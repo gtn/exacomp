@@ -51,6 +51,19 @@
         }
     });
 	
+	$(document).on('click', '#add-examples-to-schedule-for-group', function(event) {
+        if (confirm(M.util.get_string('add_example_for_group_to_schedule_confirmation', 'block_exacomp'))) {
+        	var groupid = $(this).attr('groupid');
+        	alert(groupid);
+            block_exacomp.call_ajax({
+            	groupid : groupid, //get groupid from the button or event etc RW todo
+                action : 'add-examples-to-schedule-for-group'
+            }).done(function(msg) {
+                location.reload();
+            });
+        }
+    });
+	
 	function exacomp_calendar_copy_event(scheduleid) {
 		console.log('exacomp_calendar_copy_event', scheduleid);
 		
@@ -65,7 +78,7 @@
 	
 	function exacomp_calendar_add_event(event) {
 		console.log('exacomp_calendar_add_event', event.id, event.title, event.start, event.end, event.scheduleid);
-		
+		debugger
 		block_exacomp.call_ajax({
 			scheduleid : event.scheduleid,
 			start: event.start.format('X'),
@@ -211,7 +224,7 @@
 		
 		$eventDiv.empty();
 		$eventDiv.append(title);
-		
+		debugger
 		block_exacomp_get_configuration(function(configuration) {
 			$.extend(exacomp_calcendar_config, configuration);
 			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
@@ -480,7 +493,7 @@
 						$('#calendar').fullCalendar('removeEvents', event._id);
 						// fullcalendar bug
 						delete event.source;
-	
+						debugger
 						add_pool_item(event);
 						exacomp_calendar_remove_event(event, 0);
 					}else if(event.deleted == 1){

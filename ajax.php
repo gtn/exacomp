@@ -301,7 +301,9 @@ switch($action){
 		exit;
 	case 'get-weekly-schedule-configuration':
 		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
+		if(!$studentid){
+		    $studentid = $USER->id;
+		}
 		
 		// -1 => teacher wants to add examples for all students to their schedule
 		if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
@@ -310,6 +312,8 @@ switch($action){
 			// now we want to display the examples from the pre-plan-storage, which are the examples in the schedule database table
 			// with studentid 0
 			$studentid = 0;
+		}else if ($studentid < -1) { // smaller -1, teacher wants to add examples for a group
+		    $studentid = 0;
 		}
 		
 		$pool_course = required_param('pool_course', PARAM_INT);
@@ -317,7 +321,7 @@ switch($action){
             $pool_course = $courseid;
         }
 
-		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course);
+		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course,1);
 		foreach ($examples_pool as &$example_pool){
 			$example_pool->state = block_exacomp_get_dakora_state_for_example($example_pool->courseid, $example_pool->exampleid, $studentid);
 		}
@@ -357,6 +361,11 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		block_exacomp_add_examples_to_schedule_for_all($courseid);
 		break;
+	case 'add-examples-to-schedule-for-group':
+	    $courseid = required_param('courseid', PARAM_INT);
+	    $groupid = required_param('groupid', PARAM_INT);
+	    block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid);
+	    break;
 	case('example-sorting'):
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$descrid = required_param('descrid', PARAM_INT);

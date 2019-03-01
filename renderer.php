@@ -6085,6 +6085,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function example_pool($examples = array()) {
+	    
 		$studentid = block_exacomp_get_studentid();
 		if ($studentid > 0) {
 			$content = html_writer::tag('h4', block_exacomp_get_string('example_pool'));
@@ -6102,6 +6103,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function side_wrap_weekly_schedule() {
 		$pool = $this->example_pool();
+// 		var_dump($pool);
 		$calendar = html_writer::div('', '', array('id' => 'calendar'));
 		$trash = $this->example_trash();
 		$clear = html_writer::div('', '', array('style' => 'clear:both'));
