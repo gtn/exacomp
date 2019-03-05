@@ -69,9 +69,15 @@ if(!empty($studentExamples->teacher[$exampleid])) {
 		die(block_exacomp_get_string('isgraded'));
 }
 
-$form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array("exampleid"=>$exampleid));
+$isTeacher = block_exacomp_is_teacher();
+$visible_solution = block_exacomp_is_example_solution_visible($courseid, $exampleid, $USER->id);
+$form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'],
+                        array(  'exampleid' => $exampleid,
+                                'isTeacher' => $isTeacher,
+                                'studentid' => $USER->id,
+                                'visible_solution' => $visible_solution));
 
-if($formdata = $form->get_data()) {
+if ($formdata = $form->get_data()) {
 	
 	$type = 'file';
 	

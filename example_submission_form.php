@@ -27,20 +27,25 @@ class block_exacomp_example_submission_form extends moodleform {
 		$mform = & $this->_form;
 
 		$exampleid = $this->_customdata['exampleid'];
-		
+		$isTeacher = $this->_customdata['isTeacher'];
+		$studentid = $this->_customdata['studentid'];
+        $visible_solution = $this->_customdata['visible_solution'];
+
 		//$exampleTitle = $DB->get_field('block_exacompexamples', 'title', array("id" => $exampleid));
+        $isTeacher = block_exacomp_is_teacher();
         // complex $exampleTitle
         $example = $DB->get_record('block_exacompexamples', ['id' => $exampleid]);
         $exampleObj = block_exacomp\example::get($exampleid);
         $output = block_exacomp_get_renderer();
-        $fileLink = function($url, $img = null) use ($output) {
+        $fileLink = function($url, $img = null, $title = '') use ($output) {
             if (!$img) {
                 $img = 'globesearch.png';
             }
-            return html_writer::span($output->local_pix_icon($img, $url),
+            return html_writer::span($output->local_pix_icon($img, $title),
                     '',
                     array('onclick' => 'window.open("'.$url.'"); return false;',
-                            'style' => 'cursor: pointer;')
+                            'style' => 'cursor: pointer;',
+                            'title' => $title)
             );
         };
         $exampleTitle = '';
@@ -53,16 +58,17 @@ class block_exacomp_example_submission_form extends moodleform {
             }
             // external url
             if ($parentExample->externalurl) {
-                $exampleTitle .= ' '.$fileLink($parentExample->externalurl, 'globesearch.png');
+                $exampleTitle .= ' '.$fileLink($parentExample->externalurl, 'globesearch.png', block_exacomp_get_string('preview'));
             }
             // file task
             if ($taskurl = $parentExampleObj->get_task_file_url()) {
-                $exampleTitle .= ' '.$fileLink($taskurl, 'filesearch.png');
+                $exampleTitle .= ' '.$fileLink($taskurl, 'filesearch.png', block_exacomp_get_string('preview'));
             }
-            // file solution: TODO: disabled, because has rules in the block_exacomp_renderer
-            /*if ($solutionurl = $parentExampleObj->get_solution_file_url()) {
-                $exampleTitle .= ' '.$fileLink($solutionurl, 'filesearch.png');
-            }*/
+            // file solution: TODO: check permissions (block_exacomp_renderer.php)
+            $solutionurl = $parentExampleObj->get_solution_file_url();
+            if (($isTeacher || $visible_solution) && $solutionurl) {
+                $exampleTitle .= ' '.$fileLink($solutionurl, 'fullpage.png', block_exacomp_get_string('solution'));
+            }
         }
         //echo "<pre>debug:<strong>example_submission_form.php:47</strong>\r\n"; print_r($exampleTitleArr); echo '</pre>'; exit; // !!!!!!!!!! delete it
         if ($exampleTitle) {
@@ -74,16 +80,17 @@ class block_exacomp_example_submission_form extends moodleform {
         }
         // external url
         if ($example->externalurl) {
-            $exampleTitle .= ' '.$fileLink($example->externalurl, 'globesearch.png');
+            $exampleTitle .= ' '.$fileLink($example->externalurl, 'globesearch.png', block_exacomp_get_string('preview'));
         }
         // file task
         if ($taskurl = $exampleObj->get_task_file_url()) {
-            $exampleTitle .= ' '.$fileLink($taskurl, 'filesearch.png');
+            $exampleTitle .= ' '.$fileLink($taskurl, 'filesearch.png', block_exacomp_get_string('preview'));
         }
-        // file solution: TODO: disabled, because has rules in the block_exacomp_renderer
-        /*if ($solutionurl = $exampleObj->get_solution_file_url()) {
-            $exampleTitle .= ' '.$fileLink($solutionurl, 'filesearch.png');
-        }*/
+        // file solution: TODO: check permissions (block_exacomp_renderer.php)
+        $solutionurl = $exampleObj->get_solution_file_url();
+        if (($isTeacher || $visible_solution) && $solutionurl) {
+            $exampleTitle .= ' '.$fileLink($solutionurl, 'fullpage.png', block_exacomp_get_string('solution'));
+        }
 		//$mform->addElement('header', 'general', block_exacomp_get_string("example_submission_header", null, $exampleTitle));
 		$mform->addElement('header', 'general', $exampleTitle);
 
