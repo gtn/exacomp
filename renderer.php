@@ -2442,10 +2442,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$checkboxname = "dataexamples";
                 $example_scheme = block_exacomp_get_assessment_example_scheme();
 				foreach ($descriptor->examples as $example) {
+
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
 
 					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
 					$visible_solution = block_exacomp_is_example_solution_visible($data->courseid, $example, $studentid);
+
+					// hide ethema_issubcategory for students
+					if ($data->role != BLOCK_EXACOMP_ROLE_TEACHER && $example->ethema_issubcategory) {
+					    continue;
+                    }
 
 					if ($data->role != BLOCK_EXACOMP_ROLE_TEACHER && !$visible_example) {
 						// do not display
@@ -6208,6 +6214,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     }
                     $attributes = array();
                     $attributes['value'] = $taxonomy->id;
+                    if (!is_array($courseSettings->filteredtaxonomies)) {
+                        $courseSettings->filteredtaxonomies = array($courseSettings->filteredtaxonomies);
+                    }
                     if (in_array($taxonomy->id, $courseSettings->filteredtaxonomies)) {
                         $attributes['selected'] = 'selected';
                     }

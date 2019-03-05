@@ -286,8 +286,11 @@ switch($action){
 		block_exacomp_copy_example_from_schedule($scheduleid);
 		break;
 	case 'get-examples-for-start-end':
-		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
+		//$studentid = required_param('studentid', PARAM_INT);
+		$studentid = optional_param('studentid', null, PARAM_INT);
+		if (!$studentid) {
+		    $studentid = $USER->id;
+        }
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
 		
@@ -300,8 +303,9 @@ switch($action){
 		echo json_encode($json_examples);
 		exit;
 	case 'get-weekly-schedule-configuration':
-		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid){
+		//$studentid = required_param('studentid', PARAM_INT);
+		$studentid = optional_param('studentid', null, PARAM_INT);
+		if (!$studentid){
 		    $studentid = $USER->id;
 		}
 		
@@ -316,8 +320,9 @@ switch($action){
 		    $studentid = 0;
 		}
 		
-		$pool_course = required_param('pool_course', PARAM_INT);
-		if(!$pool_course) {
+		//$pool_course = required_param('pool_course', PARAM_INT);
+		$pool_course = optional_param('pool_course', null, PARAM_INT);
+		if (!$pool_course) {
             $pool_course = $courseid;
         }
 
@@ -341,8 +346,11 @@ switch($action){
 		
 		exit;
 	case 'empty-trash':
-		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
+		//$studentid = required_param('studentid', PARAM_INT);
+		$studentid = optional_param('studentid', null, PARAM_INT);
+		if (!$studentid) {
+		    $studentid = $USER->id;
+        }
 		
 		$schedules = block_exacomp_get_examples_for_trash($studentid, $courseid);
 		foreach($schedules as $schedule){

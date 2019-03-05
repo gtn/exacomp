@@ -1458,8 +1458,9 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 
 	$examples = \block_exacomp\example::get_objects_sql(
 		"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
-			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
-			, de.sorting
+			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
+            e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent,
+            de.sorting
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
 		." WHERE "
@@ -1493,7 +1494,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$example->tax = $taxtitle;
 	}
 	$filtered_examples = array();
-	if (!in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) {
+	if ($filteredtaxonomies && is_array($filteredtaxonomies) && !in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) {
 		$filtered_taxonomies = implode(",", $filteredtaxonomies);
 
 		foreach ($examples as $example) {
@@ -5131,8 +5132,8 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 	//if not given by the function call, find out the ethema parameter:
 	if($ethema_ismain == -1 && $ethema_issubcategory == -1){
 	    $example = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
-	    $ethema_ismain = $example->ethema_ismain;
-	    $ethema_issubcategory = $example->ethema_issubcategory;
+	    $ethema_ismain = isset($example->ethema_ismain) ? $example->ethema_ismain : 0;
+	    $ethema_issubcategory = isset($example->ethema_issubcategory) ? $example->ethema_issubcategory : 0;
 	}
 	
 	$DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated, 
