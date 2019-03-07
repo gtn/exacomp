@@ -1731,6 +1731,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$child_level = $level;
 		}
 
+		
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach ($topics as $topic) {
@@ -2020,9 +2021,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
         $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
-
+        
 		foreach ($descriptors as $descriptor) {
-		    
 			$descriptor_parent_visible = $parent_visible;
 
 			if (!$editmode) {
@@ -2138,11 +2138,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$nivCell = new html_table_cell();
 
 				$nivText = [];
+// 				var_dump($descriptor->categories);
+// 				die();
 				foreach ($descriptor->categories as $cat) {
 					$nivText[] = $cat->title;
 				}
 				$nivCell->text = join(' ', $nivText);
+				
+				//--------------
+				if ($editmode) {
+				    $nivCell->text .= html_writer::link(
+				        new moodle_url('/blocks/exacomp/update_categories.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id)),
+				        $this->pix_icon("i/edit", block_exacomp_get_string("edit")),
+				        array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+				}
+				//------------
 				$descriptorRow->cells[] = $nivCell;
+				
+				
+				
 
 				foreach ($students as $student) {
 				    //echo "GEHT IM EDITMODE NICHT HIER REIN";

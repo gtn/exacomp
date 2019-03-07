@@ -226,6 +226,8 @@ if ($course_settings->nostudents != 1 && $studentid)
 	echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
 
 	
+// var_dump($competence_tree);
+// die();
 echo $output->competence_overview($competence_tree,
                                     $courseid,
                                     $students,
