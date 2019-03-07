@@ -1026,7 +1026,7 @@ function block_exacomp_get_all_topics($subjectid = null, $showonlyvisible = fals
 	global $DB;
 
 	$topics = $DB->get_records_sql('
-			SELECT t.id, t.sorting, t.numb, t.title, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+			SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 			FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 			JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 			'.($subjectid == null ? '' : '

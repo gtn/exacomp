@@ -7973,7 +7973,7 @@ class block_exacomp_external extends external_api {
 					$topic_return = new stdClass();
 					$topic_return->topicid = $topic->id;
 					$topic_return->topictitle = $topic->title;
-					$topic_return->topicdescription = "description";
+					$topic_return->topicdescription = ($topic->description) ? $topic->description : "description" ;
 					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
 					$topic_return->subjectid = $subject->id;
 					$topic_return->subjecttitle = $subject->title;
