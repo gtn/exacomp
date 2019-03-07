@@ -5122,13 +5122,16 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
 function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $is_pps, $ethema_ismain = -1, $ethema_issubcategory = -1) {
 	global $USER, $DB;
 
+// 	var_dump("start");
+// 	var_dump($exampleid);
 	$timecreated = $timemodified = time();
 	
 	// prÃ¼fen, ob element schon zur gleichen zeit im wochenplan ist
 	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
+// 	    var_dump($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start)));
 		return true;
 	}
-
+// 	var_dump($ethema_issubcategory);
 	//if not given by the function call, find out the ethema parameter:
 	if($ethema_ismain == -1 && $ethema_issubcategory == -1){
 	    $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
@@ -5142,19 +5145,22 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 	    'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0,'is_pps' => $is_pps, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory));
         
     // check if it is an eThema parent... either main or subcategory
+	
 	if ($ethema_ismain) {
         $subcategoryexamples = block_exacomp_get_eThema_subcategories($exampleid);
         foreach ($subcategoryexamples as $example) {
             if($example->ethema_issubcategory){
-                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, null, 0, 1);
+//                 var_dump("subaufruf");
+                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps, 0, 1);
             }else{
-                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid);
+                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps);
             }
         }
 	} else if ($ethema_issubcategory) {
+// 	    var_dump("subausf�rhung");
         $childexamples = block_exacomp_get_eThema_children($exampleid);
         foreach ($childexamples as $example) {
-            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid);
+            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps);
         }
 	}
 	    
@@ -5175,7 +5181,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
  * @return examples
  */
 function block_exacomp_get_eThema_subcategories($exampleid){
-    global $USER, $DB;
+    global $DB;
     return $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('ethema_parent' => $exampleid));
 }
 
