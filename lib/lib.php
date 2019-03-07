@@ -5922,7 +5922,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid, $pp=0) {
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
-			WHERE s.studentid = ? AND s.deleted = 0 AND s.is_pps = '$pp' AND (
+			WHERE s.studentid = ? AND s.deleted = 0 AND s.is_pps = ? AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
 				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
@@ -5930,7 +5930,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid, $pp=0) {
 			)
 			ORDER BY s.id";
     
-	return $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
+	return $DB->get_records_sql($sql, array($courseid, $studentid, $pp, $beginning_of_week));
 }
 
 /**

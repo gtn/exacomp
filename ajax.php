@@ -326,7 +326,11 @@ switch($action){
             $pool_course = $courseid;
         }
 
-		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course,1);
+        if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+            $examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course,1);
+        }else{
+            $examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course,0);
+        }
 		foreach ($examples_pool as &$example_pool){
 			$example_pool->state = block_exacomp_get_dakora_state_for_example($example_pool->courseid, $example_pool->exampleid, $studentid);
 		}
