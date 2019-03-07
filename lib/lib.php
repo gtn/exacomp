@@ -5123,18 +5123,20 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
-
+	
 	// prÃ¼fen, ob element schon zur gleichen zeit im wochenplan ist
 	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
-	
+
 	//if not given by the function call, find out the ethema parameter:
 	if($ethema_ismain == -1 && $ethema_issubcategory == -1){
-	    $example = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+	    $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 	    $ethema_ismain = isset($example->ethema_ismain) ? $example->ethema_ismain : 0;
 	    $ethema_issubcategory = isset($example->ethema_issubcategory) ? $example->ethema_issubcategory : 0;
 	}
+	
+	
 	
 	$DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated, 
 	    'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0,'is_pps' => $is_pps, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory));
