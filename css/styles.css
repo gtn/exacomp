@@ -1226,3 +1226,14 @@ table.exacomp_source_delete td {
 	margin-left: 0px;
 	margin-right: 0px;
 }
+
+.exacomp-submission-subcategory-title {
+	margin-top: 15px;
+}
+.exacomp-submission-example-title {
+	margin-top: 15px;
+}
+.exacomp-submission-subcategory-links,
+.exacomp-submission-example-links {
+	display: block;
+}

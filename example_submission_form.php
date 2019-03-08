@@ -52,47 +52,56 @@ class block_exacomp_example_submission_form extends moodleform {
         if ($example->ethema_parent > 0) {
             $parentExample = $DB->get_record('block_exacompexamples', ['id' => $example->ethema_parent]);
             $parentExampleObj = block_exacomp\example::get($example->ethema_parent);
-            $exampleTitle .= $parentExample->title;
+            $exampleTitle .= '<h3 class="exacomp-submission-subcategory-title">'.$parentExample->title.'</h3>';
             if ($parentExample->description) {
-                $exampleTitle .= '<br>'.$parentExample->description;
+                $exampleTitle .= '<span class="exacomp-submission-subcategory-desription">'.$parentExample->description.'</span>';
             }
             // external url
+            $sublinks = '';
             if ($parentExample->externalurl) {
-                $exampleTitle .= ' '.$fileLink($parentExample->externalurl, 'globesearch.png', block_exacomp_get_string('preview'));
+                $sublinks .= ' '.$fileLink($parentExample->externalurl, 'globesearch.png', block_exacomp_get_string('preview').': '.$parentExample->externalurl);
             }
             // file task
             if ($taskurl = $parentExampleObj->get_task_file_url()) {
-                $exampleTitle .= ' '.$fileLink($taskurl, 'filesearch.png', block_exacomp_get_string('preview'));
+                $sublinks .= ' '.$fileLink($taskurl, 'filesearch.png', block_exacomp_get_string('preview').': '.$taskurl);
             }
             // file solution: TODO: check permissions (block_exacomp_renderer.php)
             $solutionurl = $parentExampleObj->get_solution_file_url();
             if (($isTeacher || $visible_solution) && $solutionurl) {
-                $exampleTitle .= ' '.$fileLink($solutionurl, 'fullpage.png', block_exacomp_get_string('solution'));
+                $sublinks .= ' '.$fileLink($solutionurl, 'fullpage.png', block_exacomp_get_string('solution').': '.$solutionurl);
+            }
+            if ($sublinks) {
+                $exampleTitle .= '<span class="exacomp-submission-subcategory-links">'.block_exacomp_get_string('files').': '.$sublinks.'</span>';
             }
         }
         //echo "<pre>debug:<strong>example_submission_form.php:47</strong>\r\n"; print_r($exampleTitleArr); echo '</pre>'; exit; // !!!!!!!!!! delete it
-        if ($exampleTitle) {
-            $exampleTitle .= '<br>';
-        }
-        $exampleTitle .= $example->title;
+        //if ($exampleTitle) {
+        //    $exampleTitle .= '<br>';
+        //}
+        $exampleTitle .= '<h3 class="exacomp-submission-example-title">'.$example->title.'</h3>';
         if ($example->description) {
-            $exampleTitle .= '<br>'.$example->description;
+            $exampleTitle .= '<span class="exacomp-submission-example-description">'.$example->description.'</span>';
         }
+        $links = '';
         // external url
         if ($example->externalurl) {
-            $exampleTitle .= ' '.$fileLink($example->externalurl, 'globesearch.png', block_exacomp_get_string('preview'));
+            $links .= ' '.$fileLink($example->externalurl, 'globesearch.png', block_exacomp_get_string('preview').': '.$example->externalurl);
         }
         // file task
         if ($taskurl = $exampleObj->get_task_file_url()) {
-            $exampleTitle .= ' '.$fileLink($taskurl, 'filesearch.png', block_exacomp_get_string('preview'));
+            $links .= ' '.$fileLink($taskurl, 'filesearch.png', block_exacomp_get_string('preview').': '.$taskurl);
         }
         // file solution: TODO: check permissions (block_exacomp_renderer.php)
         $solutionurl = $exampleObj->get_solution_file_url();
         if (($isTeacher || $visible_solution) && $solutionurl) {
-            $exampleTitle .= ' '.$fileLink($solutionurl, 'fullpage.png', block_exacomp_get_string('solution'));
+            $links .= ' '.$fileLink($solutionurl, 'fullpage.png', block_exacomp_get_string('solution').': '.$solutionurl);
+        }
+        if ($links) {
+            $exampleTitle .= '<span class="exacomp-submission-example-links">'.block_exacomp_get_string('files').': '.$links.'</span>';
         }
 		//$mform->addElement('header', 'general', block_exacomp_get_string("example_submission_header", null, $exampleTitle));
-		$mform->addElement('header', 'general', $exampleTitle);
+		//$mform->addElement('header', 'general', $exampleTitle);
+		$mform->addElement('html', $exampleTitle);
 
 		$mform->addElement('static', 'info', block_exacomp_get_string('description'),
 				block_exacomp_get_string("example_submission_info", null, $example->title));
