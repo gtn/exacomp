@@ -1098,6 +1098,10 @@ return [
 		'Link',
 		'Link',
 	],
+	'links' => [
+		'Links',
+		'Links',
+	],
 	'dataerr' => [
 		'Es muss zumindest ein Link oder eine Datei hochgeladen werden!',
 		'At least a link or a file are required!',

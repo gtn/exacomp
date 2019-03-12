@@ -321,6 +321,7 @@ $string['submission'] = 'Submission';
 $string['assignments'] = 'Assignments';
 $string['files'] = 'Files';
 $string['link'] = 'Link';
+$string['links'] = 'Links';
 $string['dataerr'] = 'At least a link or a file are required!';
 $string['linkerr'] = 'The given link is not valid!';
 $string['isgraded'] = 'The example is already graded and therefore a submission is not possible anymore';

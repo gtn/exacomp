@@ -1234,6 +1234,8 @@ table.exacomp_source_delete td {
 	margin-top: 15px;
 }
 .exacomp-submission-subcategory-links,
+.exacomp-submission-subcategory-files,
+.exacomp-submission-example-files,
 .exacomp-submission-example-links {
 	display: block;
 }

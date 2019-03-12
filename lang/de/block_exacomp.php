@@ -321,6 +321,7 @@ $string['submission'] = 'Abgabe';
 $string['assignments'] = 'Moodle Aktivitäten';
 $string['files'] = 'Dateien';
 $string['link'] = 'Link';
+$string['links'] = 'Links';
 $string['dataerr'] = 'Es muss zumindest ein Link oder eine Datei hochgeladen werden!';
 $string['linkerr'] = 'Bitte geben Sie einen korrekten Link ein!';
 $string['isgraded'] = 'Die Aufgabe wurde bereits beurteilt und kann daher nicht mehr eingereicht werden.';
