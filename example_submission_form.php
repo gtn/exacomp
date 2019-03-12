@@ -63,7 +63,7 @@ class block_exacomp_example_submission_form extends moodleform {
                 $subfiles .= ' '.$fileLink($parentExample->completefile, 'globesearch.png', block_exacomp_get_string('preview').': '.$parentExample->completefile);
             }
             // externaltask
-            if ($example->externaltask) {
+            if ($parentExample->externaltask) {
                 $subfiles .= ' '.$fileLink($parentExample->externaltask, 'globesearch.png', block_exacomp_get_string('preview').': '.$parentExample->externaltask);
             }
             if ($subfiles) {
