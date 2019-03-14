@@ -5827,7 +5827,7 @@ class block_exacomp_external extends external_api {
 				'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
 				'examples' => new external_multiple_structure (new external_single_structure (array(
 					'exampleid' => new external_value (PARAM_INT, 'id of example'),
-					'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+					'exampletitle' => new external_value (PARAM_RAW, 'title of example'),
 					'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
 					'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 					'used' => new external_value (PARAM_INT, 'used in current context'),
@@ -5869,7 +5869,7 @@ class block_exacomp_external extends external_api {
 			)),
 			'examples' => new external_multiple_structure (new external_single_structure (array(
 				'exampleid' => new external_value (PARAM_INT, 'id of example'),
-				'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+				'exampletitle' => new external_value (PARAM_RAW, 'title of example'),
 				'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
 				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 				'used' => new external_value (PARAM_INT, 'used in current context'),
@@ -7696,6 +7696,7 @@ class block_exacomp_external extends external_api {
 	private static function get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
 	    global $DB, $USER;
 
+	    
 	    //copied from old get_descriptor_details so i can use it in get_descriptor_details and get_descriptors_details
 	    $descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 	    $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
