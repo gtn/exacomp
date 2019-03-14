@@ -67,6 +67,7 @@ if ($formdata = $form->get_data()) {
         $newCategory->sorting = $DB->get_field(BLOCK_EXACOMP_DB_CATEGORIES, 'MAX(sorting)', array()) + 1;
         $newCategory->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER; //RW what does source mean here?
         $newCategory->sourceid = 0;
+        $newCategory->lvl = 5;
         $newCategory->id = $DB->insert_record(BLOCK_EXACOMP_DB_CATEGORIES, $newCategory);
         $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
             'descrid' => $descrid,
