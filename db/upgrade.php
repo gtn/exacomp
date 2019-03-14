@@ -584,7 +584,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2013100400, 'exacomp');
 	}
 
-	if ($oldversion < 2013100900) {
+/*	if ($oldversion < 2013100900) {
 
 		// Define field show_all_examples to be added to block_exacompsettings
 		$table = new xmldb_table('block_exacompsettings');
@@ -597,7 +597,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
 		// exacomp savepoint reached
 		upgrade_block_savepoint(true, 2013100900, 'exacomp');
-	}
+	} */
 
 	if ($oldversion < 2013102501) {
 

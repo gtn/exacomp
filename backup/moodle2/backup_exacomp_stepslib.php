@@ -41,7 +41,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 
 		$exacomp = new backup_nested_element('exacomp', array('id'), null);
 
-		$settings = new backup_nested_element('settings', array(), array('courseid', 'grading', 'tstamp', 'uses_activities', 'show_all_descriptors', 'show_all_examples', 'nostudents'
+		$settings = new backup_nested_element('settings', array(), array('courseid', 'grading', 'tstamp', 'uses_activities', 'show_all_descriptors', 'nostudents'
 			// TODO: is this one still needed? always null
 		, 'activities',
 		));

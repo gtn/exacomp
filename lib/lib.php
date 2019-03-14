@@ -1278,9 +1278,6 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (!isset($settings->uses_activities)) {
 		$settings->uses_activities = 0;
 	}
-	if (!isset($settings->show_all_examples)) {
-		$settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
-	}
 	if (!$settings->uses_activities) {
 		$settings->show_all_descriptors = 1;
 	}
@@ -7974,10 +7971,11 @@ function block_exacomp_build_example_parent_names($courseid, $exampleid) {
 	        , [
 	            $exampleid
 	        ]);
- 	    $flatTree = array();
- 	    //var_dump($record->title);
- 	    $titles[] = $record->title;
- 	    $flatTree[join(' | ', $titles)] = $titles;
+ 	    if ($record) {
+            $flatTree = array();
+            $titles[] = $record->title;
+            $flatTree[join(' | ', $titles)] = $titles;
+        }
 	}
     
 	return $flatTree;

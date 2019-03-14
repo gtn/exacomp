@@ -150,7 +150,7 @@ class block_exacomp_simple_service {
 	        }
 	        $subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,
 	            $cross_subject,
-	            !($course_settings->show_all_examples == 0 && !$isTeacher),
+                $isTeacher, //!($course_settings->show_all_examples == 0 && !$isTeacher),
 	            $course_settings->filteredtaxonomies,
 	            ($studentid > 0 && !$isTeacher) ? $studentid : 0,
 	            ($isTeacher) ? false : true);
@@ -277,7 +277,7 @@ class block_exacomp_simple_service {
 	                                                       $selectedTopic? $selectedTopic->id : null,
 	                                                       false,
 	                                                       $selectedNiveau? $selectedNiveau->id : null,
-	                                                       ($course_settings->show_all_examples != 0 || $isTeacher),
+	                                                       true,
                                                 	       $course_settings->filteredtaxonomies,
                                                 	       true,
                                                 	       false,

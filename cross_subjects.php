@@ -163,7 +163,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
         }
         $subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,
                                 $cross_subject,
-                                !($course_settings->show_all_examples == 0 && !$isTeacher),
+                                $isTeacher, //!($course_settings->show_all_examples == 0 && !$isTeacher),
                                 $course_settings->filteredtaxonomies,
                                 ($studentid > 0 && !$isTeacher) ? $studentid : 0,
                                 ($isTeacher) ? false : true);
@@ -427,7 +427,7 @@ if ($editmode) {
 }
 
 if ($cross_subject) {
-	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_subject, !($course_settings->show_all_examples == 0 && !$isTeacher), $course_settings->filteredtaxonomies, ($studentid>0 && !$isTeacher)?$studentid:0, ($isTeacher)?false:true);
+	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_subject, $isTeacher /*!($course_settings->show_all_examples == 0 && !$isTeacher)*/, $course_settings->filteredtaxonomies, ($studentid>0 && !$isTeacher)?$studentid:0, ($isTeacher)?false:true);
 
 	if ($subjects) {
 	    if($style == 0){

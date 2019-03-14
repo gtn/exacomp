@@ -248,7 +248,6 @@ $string['grading_scheme'] = 'Bewertungsschema';
 $string['points_limit_forcourse'] = 'Höchste Punkteanzahl';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Lernlisten im Überblick anzeigen';
-$string['show_all_examples'] = 'Externe Lernmaterialien für Kursteilnehmer/innen anzeigen';
 $string['useprofoundness'] = 'Grund- und Erweiterungskompetenzen verwenden';
 $string['assessment_SelfEval_useVerbose'] = 'verbalisiertes Schüler/innen-Feedback';
 $string['selfEvalVerbose.defaultValue_long'] = 'trifft nicht zu; trifft eher nicht zu; trifft eher zu; trifft zu';

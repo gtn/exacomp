@@ -4102,9 +4102,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_descriptors = html_writer::checkbox('show_all_descriptors', 1, $settings->show_all_descriptors == 1, '&nbsp;'.block_exacomp_get_string('show_all_descriptors'), ($settings->uses_activities != 1) ? array("disabled" => "disabled") : array())
 			.html_writer::empty_tag('br');
 
-		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, '&nbsp;'.block_exacomp_get_string('show_all_examples'))
-			.html_writer::empty_tag('br');
-
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents == 1, '&nbsp;'.block_exacomp_get_string('usenostudents'))
 			.html_writer::empty_tag('br');
 
@@ -4113,7 +4110,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-			$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_nostudents.$input_submit,
+			$input_grading.$input_activities.$input_descriptors./*$input_examples.*/$hiddenaction.$input_nostudents.$input_submit,
 			array('action' => 'edit_course.php?courseid='.$courseid, 'method' => 'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div", $header.$div, array("id" => "exabis_competences_block"));

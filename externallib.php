@@ -7876,8 +7876,7 @@ class block_exacomp_external extends external_api {
 
 		$coursesettings = block_exacomp_get_settings_by_course($courseid);
 
-		$isTeacher = (static::dakora_get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER);
-		$showexamples = ($isTeacher) ? true : $coursesettings->show_all_examples;
+		$showexamples = true;
 
 		$parent_descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 		$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $parent_descriptor->id));
@@ -8187,8 +8186,7 @@ class block_exacomp_external extends external_api {
 		$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 		$coursesettings = block_exacomp_get_settings_by_course($courseid);
 
-		$isTeacher = (static::dakora_get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER);
-		$showexamples = ($isTeacher) ? true : $coursesettings->show_all_examples;
+		$showexamples = true;
 
 		if ($crosssubjid > 0) {
 			$cross_subject_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid);

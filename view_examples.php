@@ -25,7 +25,6 @@ $outputContent = '';
 $courseid = required_param('courseid', PARAM_INT);
 $courseid_for_tree = $courseid;
 $sort = optional_param('sort', "desc", PARAM_ALPHA);
-$show_all_examples = optional_param('showallexamples_check', '0', PARAM_INT);
 $style = optional_param('style', 0, PARAM_INT);
 $action = optional_param('action', '', PARAM_RAW);
 
@@ -82,9 +81,9 @@ $outputContent .= $output->header_v2($page_identifier);
 
 $outputContent .= $output->button_box('window.open(location.href+\'&print=1\');', '');
 
-if ($show_all_examples != 0) {
+/*if ($show_all_examples != 0) {
 	$courseid_for_tree = 0;
-}
+}*/
 
 /* CONTENT REGION */
 $courseSettings = block_exacomp_get_settings_by_course($courseid); // Reload settings

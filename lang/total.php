@@ -839,10 +839,6 @@ return [
 		'Alle Lernlisten im Überblick anzeigen',
 		'Show all outcomes in overview',
 	],
-	'show_all_examples' => [
-		'Externe Lernmaterialien für Kursteilnehmer/innen anzeigen',
-		'Show external examples for students',
-	],
 	'useprofoundness' => [
 		'Grund- und Erweiterungskompetenzen verwenden',
 		'Use basic and extended competencies',

@@ -111,7 +111,6 @@ $string['save_success'] = 'els canvis s\'han aplicat';
 $string['grading_scheme'] = 'esquema d\'avaluació';
 $string['uses_activities'] = 'treballo amb activitats';
 $string['show_all_descriptors'] = 'mostra totes les descripcions en la visió de conjunt';
-$string['show_all_examples'] = 'Show all examples in overview';
 
 //Badges
 $string['mybadges'] = 'My badges';

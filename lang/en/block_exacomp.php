@@ -248,7 +248,6 @@ $string['grading_scheme'] = 'grading scheme';
 $string['points_limit_forcourse'] = 'Highest value for Points';
 $string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
-$string['show_all_examples'] = 'Show external examples for students';
 $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['assessment_SelfEval_useVerbose'] = 'verbose feedback options for students';
 $string['selfEvalVerbose.defaultValue_long'] = 'does not apply; rather not true; rather applies; true';
