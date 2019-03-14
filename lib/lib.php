@@ -5138,62 +5138,48 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 	    $ethema_ismain = isset($example->ethema_ismain) ? $example->ethema_ismain : 0;
 	    $ethema_issubcategory = isset($example->ethema_issubcategory) ? $example->ethema_issubcategory : 0;
 	}
-	
-	
-	
-	$DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated, 
-	    'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0,'is_pps' => $is_pps, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory));
-        
+
     // check if it is an eThema parent... either main or subcategory
-	
 	if ($ethema_ismain) {
-        $subcategoryexamples = block_exacomp_get_eThema_subcategories($exampleid);
+	    $subcategoryexamples = block_exacomp_get_eThema_children($exampleid);
         foreach ($subcategoryexamples as $example) {
             if($example->ethema_issubcategory){
 //                 var_dump("subaufruf");
                 block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps, 0, 1);
             }else{
-                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps);
+                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps, 0, 0);
             }
         }
 	} else if ($ethema_issubcategory) {
-// 	    var_dump("subausfürhung");
+// 	    var_dump("subausfï¿½rhung");
         $childexamples = block_exacomp_get_eThema_children($exampleid);
         foreach ($childexamples as $example) {
-            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps);
+            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, $is_pps, 0, 0);
         }
-	}
+	}else {
+	    $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated,
+	        'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0,'is_pps' => $is_pps, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory));
 	    
+	    //only send a notification if a teacher adds an example for a student and not for pre planning storage
+	    if ($creatorid != $studentid && $studentid > 0) {
+	        block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+	    }
 	    
-	//only send a notification if a teacher adds an example for a student and not for pre planning storage
-	if ($creatorid != $studentid && $studentid > 0) {
-		block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+	    \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
 	}
-
-	\block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
-	
 	return true;
 }
 
 /**
- * get all subcategory examples of this main example
- * @param exampleid
- * @return examples
- */
-function block_exacomp_get_eThema_subcategories($exampleid){
-    global $DB;
-    return $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('ethema_parent' => $exampleid));
-}
-
-/**
- * get all child examples of this subcategory example
+ * get all subcategory examples and childexamples of this main or subcategory example
  * @param exampleid
  * @return examples
  */
 function block_exacomp_get_eThema_children($exampleid){
-    global $USER, $DB;
+    global $DB;
     return $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('ethema_parent' => $exampleid));
 }
+
 
 /**
  * add example to all planning storages for all students in course
