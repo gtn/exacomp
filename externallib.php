@@ -6967,7 +6967,8 @@ class block_exacomp_external extends external_api {
 				'title' => new external_value (PARAM_TEXT, 'name'),
 			    'source' => new external_value (PARAM_TEXT, 'source'),
 			]), 'values'),
-			'version' => new external_value (PARAM_FLOAT, 'mooodle version number in YYYYMMDDXX format'),
+			'version' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
+		    'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
 			'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
 		));
 	}
@@ -6978,8 +6979,9 @@ class block_exacomp_external extends external_api {
 	 * @return array
 	 */
 	public static function dakora_get_config() {
-		static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
-
+	    global $CFG;
+	    static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
+		
 		$info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
 		$gradingperiods = block_exacomp_is_exastud_installed() ? \block_exastud\api::get_periods() : [];
@@ -7017,6 +7019,7 @@ class block_exacomp_external extends external_api {
 			'gradingperiods' => $gradingperiods,
 			'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'source', 'id, title, source'),
 			'version' => $info->versiondb,
+		    'moodleversion' => $CFG->version,
 			'release' => $info->release,
 		);
 	}
