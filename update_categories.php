@@ -40,9 +40,40 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
 /* CONTENT REGION */
-$categories = $DB->get_records_menu("block_exacompcategories",null,"","id, title");
+$categories = $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES,null,"","id, title");
 $form = new block_exacomp_update_categories_form($_SERVER['REQUEST_URI'],
-    array("descrid" => $descrid,"categories"=>$categories,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
+    array("descrid" => $descrid,"categories"=>$categories));
+
+if ($formdata = $form->get_data()) {
+//     echo "<pre>";
+//     var_dump($formdata->catid);
+//     echo "</pre>";
+    
+    //insert taxid in exampletax_mm
+    $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, ['descrid' => $descrid]);
+    if (!empty($formdata->catid)) {
+        foreach($formdata->catid as $cat => $catid)
+            $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
+                'descrid' => $descrid,
+                'catid' => $catid
+            ]);
+    }
+    // or create a new category from example form
+    $newCat = trim(optional_param('newcategory', '', PARAM_RAW));
+    if ($newCat != '') {
+        $newCategory = new \stdClass();
+        $newCategory->title = $newCat;
+        $newCategory->parentid = 0;
+        $newCategory->sorting = $DB->get_field(BLOCK_EXACOMP_DB_CATEGORIES, 'MAX(sorting)', array()) + 1;
+        $newCategory->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER; //RW what does source mean here?
+        $newCategory->sourceid = 0;
+        $newCategory->id = $DB->insert_record(BLOCK_EXACOMP_DB_CATEGORIES, $newCategory);
+        $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
+            'descrid' => $descrid,
+            'catid' => $newCategory->id
+        ]);
+    }
+}
 
 $form->display();
 
