@@ -404,6 +404,9 @@ $string['competence_grid_additionalinfo'] = 'Note';
 $string['descriptor'] = 'Kompetenz';
 $string['descriptor_child'] = 'Teilkompetenz';
 $string['assigndone'] = 'Aufgabe erledigt: ';
+$string['descriptor_categories'] = 'Kategorien: ';
+$string['descriptor_add_category'] = 'Kategorie hinzufügen: ';
+
 // === metadata ===
 $string['subject_singular'] = 'Fach';
 $string['comp_field_idea'] = 'Kompetenzbereich/Leitidee';

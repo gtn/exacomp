@@ -74,6 +74,9 @@ if ($formdata = $form->get_data()) {
             'catid' => $newCategory->id
         ]);
     }
+    
+    echo $output->popup_close_and_reload();
+    exit;
 }
 
 $form->display();

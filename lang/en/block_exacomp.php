@@ -404,6 +404,9 @@ $string['competence_grid_additionalinfo'] = 'grade';
 $string['descriptor'] = 'competence';
 $string['descriptor_child'] = 'child competence';
 $string['assigndone'] = 'task done: ';
+$string['descriptor_categories'] = 'Categories: ';
+$string['descriptor_add_category'] = 'Add category ';
+
 // === metadata ===
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';

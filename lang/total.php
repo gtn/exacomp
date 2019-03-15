@@ -1418,6 +1418,15 @@ return [
 		'Aufgabe erledigt: ',
 		'task done: ',
 	],
+    'descriptor_categories' => [
+        'Kategorien: ',
+        'Categories: ',
+    ],
+    'descriptor_add_category' => [
+        'Neue Kategorie hinzufügen: ',
+        'Add new category ',
+    ],
+    
 	// === metadata ===
 	'subject_singular' => [
 		'Fach',
