@@ -4815,10 +4815,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) {
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
 				$tables = array();
-				$tables[] = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], block_exacomp_get_string('descriptors'));
-				$tables[] = $this->subject_statistic_table($course->id, $stat['child_evaluations'], block_exacomp_get_string('childcompetencies_compProfile'));
+				$tables[] = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], block_exacomp_get_string('descriptors'), block_exacomp_get_assessment_comp_diffLevel());
+				$tables[] = $this->subject_statistic_table($course->id, $stat['child_evaluations'], block_exacomp_get_string('childcompetencies_compProfile'), block_exacomp_get_assessment_childcomp_diffLevel());
 				if (block_exacomp_course_has_examples($course->id)) {
-				    $tables[] = $this->subject_statistic_table($course->id, $stat['example_evaluations'], block_exacomp_get_string('materials_compProfile'));
+				    $tables[] = $this->subject_statistic_table($course->id, $stat['example_evaluations'], block_exacomp_get_string('materials_compProfile'), block_exacomp_get_assessment_example_diffLevel());
 				}
 
 				$innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'), array('class' => 'competence_profile_insectitle'));
@@ -5153,7 +5153,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 
-	function subject_statistic_table($courseid, $stat, $stat_title) {
+	function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true) {
 		$content = '';
 
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
@@ -5200,6 +5200,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		// remove first empty title
 		//array_shift($value_titles);
+
+        // hide all diffLevels if it is not configured in the block settings
+        if (!$showdifflevel) {
+            $stat = array_intersect_key( $stat, array_flip( array(-1)) ); // leave only with key = '-1'
+        }
 
 		foreach ($stat as $niveau => $data) {
 			$row = new html_table_row();

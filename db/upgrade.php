@@ -3239,7 +3239,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019021901, 'exacomp');
     }
 
-    if ($oldversion < 2019022601) {
+    if ($oldversion < 2019031802) {
         //adding a new table to save cohortcodes for diggr
         $table = new xmldb_table('block_exacompexamples');
         $field = new xmldb_field('ethema_ismain', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
@@ -3255,7 +3255,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2019022601, 'exacomp');
+        upgrade_block_savepoint(true, 2019031802, 'exacomp');
     }
 	/*
 	 * insert new upgrade scripts before this comment section
