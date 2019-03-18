@@ -7656,7 +7656,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
                 if (isset($descriptorgradings[$niveaukey][$eval->additionalinfo])) {
                     $descriptorgradings[$niveaukey][$eval->additionalinfo]++;
                 }else{
-                    $descriptorgradings[-1][$eval->additionalinfo]++;
+                    @$descriptorgradings[-1][$eval->additionalinfo]++;
                 }
             } else {
                 if($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){ //calculate the fitting interval for points
@@ -7671,7 +7671,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
                     if (isset($descriptorgradings[$niveaukey][$eval->value])) {
                         $descriptorgradings[$niveaukey][$eval->value]++;
                     }else{
-                        $descriptorgradings[-1][$eval->value]++;
+                        @$descriptorgradings[-1][$eval->value]++;
                     }
                 }
                

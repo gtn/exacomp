@@ -4900,15 +4900,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $DB, $CFG;
 
 		$content = '';
+        $columnscounter = 0;
 
 		list ($course_subjects, $table_column, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id);
 
-		$spanning_niveaus = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_NIVEAUS, 'title', 'span=?', array(
-			1,
-		));
+        $spanning_niveaus = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_NIVEAUS, 'title', 'span=?', array(1));
 
 		// calculate the col span for spanning niveaus
-
 		$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
 
 		$table = new html_table ();
@@ -4923,16 +4921,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell = new html_table_cell ();
 		$cell->text = ''; // $table_content->subject_title;
 		$row->cells[] = $cell;
+        $columnscounter++; // topic title column
 
 		// niveaus
 		foreach ($table_header as $element) {
-
 			if ($element->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
 
 				$cell = new html_table_cell ();
 				$cell->text = $element->title;
 				$cell->attributes['class'] = 'header';
 				$row->cells[] = $cell;
+                $columnscounter++;
 			}
 		}
 
@@ -4942,6 +4941,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topic_eval_header->text = block_exacomp_get_string('total');
 			$topic_eval_header->attributes['class'] = 'header';
 			$row->cells[] = $topic_eval_header;
+            $columnscounter++;
 		}
 
 		$rows[] = $row;
@@ -5130,7 +5130,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$subject_empty_cell = new html_table_cell ();
 			$subject_empty_cell->text = block_exacomp_get_string('total');
-			$subject_empty_cell->colspan = count($table_header);
+			//$subject_empty_cell->colspan = count($table_header);
+            $subject_empty_cell->colspan = $columnscounter - 1; // except last column with total value
 			$subject_empty_cell->attributes['class'] = 'header';
 
 			$row->cells[] = $subject_empty_cell;
@@ -5157,7 +5158,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
 		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, true);
+        $value_titles = array_filter($value_titles, 'strlen'); // remove empty, but except '0'
+        $count_values = count($value_titles);
 		$value_titles_long = \block_exacomp\global_config::get_teacher_eval_items($courseid, false);
+        $value_titles_long = array_filter($value_titles_long, 'strlen');
 
 		//first table for descriptor evaluation
 		$table = new html_table();
@@ -5170,7 +5174,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//first subject title cell
 		$cell = new html_table_cell();
 		$cell->text = $stat_title;
-		$cell->colspan = count($value_titles);
+		//$cell->colspan = count($value_titles);
+        $cell->colspan = $count_values + 1;
 		$cell->attributes['align'] = 'center';
 		$row->cells[] = $cell;
 		$rows[] = $row;
@@ -5194,7 +5199,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rows[] = $row;
 
 		// remove first empty title
-		array_shift($value_titles);
+		//array_shift($value_titles);
 
 		foreach ($stat as $niveau => $data) {
 			$row = new html_table_row();
@@ -6583,13 +6588,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		
 		//add local groups:
-		foreach ($groups as $group){
-		    $studentsAssociativeArray[-($group->id+1)] = $group->name;
-		}
+        if (count($groups) > 0) {
+            foreach ($groups as $group) {
+                $studentsAssociativeArray[-($group->id + 1)] = $group->name;
+            }
+        }
 
-		foreach ($students as $student) {
-			$studentsAssociativeArray[$student->id] = fullname($student);
-		}
+        if (count($students) > 0) {
+            foreach ($students as $student) {
+                $studentsAssociativeArray[$student->id] = fullname($student);
+            }
+        }
 		
 		return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student', $selected, true,
 			array("disabled" => $this->is_edit_mode() ? "disabled" : ""));
