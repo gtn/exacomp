@@ -5159,6 +5159,92 @@ class block_exacomp_external extends external_api {
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
 		));
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 *
+	 */
+	public static function dakora_add_examples_to_selected_students_schedule_parameters() {
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value (PARAM_INT, 'id of course'),
+	        'students' => new external_value (PARAM_TEXT, 'json array of students'),
+	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL),
+	    ));
+	}
+	
+	/**
+	 * add examples from current pre planning storage to students weekly schedule
+	 * add example to current pre planning storage
+	 *
+	 * @ws-type-write
+	 * @param int courseid
+	 * @return examples
+	 */
+	public static function dakora_add_examples_to_selected_students_schedule($courseid, $students, $groups) {
+	    global $USER;
+	    static::validate_parameters(static::dakora_add_examples_to_students_schedule_parameters(), array(
+	        'courseid' => $courseid,
+	        'students' => $students,
+	        'groups' => $groups,
+	    ));
+	    
+	    static::require_can_access_course_user($courseid, $USER->id);
+	    
+	    $creatorid = $USER->id;
+	    
+	    // TODO: input parameter prüfen? \block_exacomp\param::json()?
+	    $students = json_decode($students);
+	    $groups = json_decode($groups);
+    
+        foreach ($groups as $group){
+            block_exacomp_add_examples_to_schedule_for_group($courseid, $group);
+        }
+        block_exacomp_add_examples_to_schedule_for_students($courseid, $students);
+	    
+	    return array(
+	        "success" => true,
+	    );
+	}
+	
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_examples_to_selected_students_schedule_returns() {
+	    return new external_single_structure (array(
+	        'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+	    ));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 

@@ -5207,6 +5207,7 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 	return true;
 }
 
+
 /**
  * add example to all planning storages for all students of group
  * @param unknown $courseid
@@ -5228,6 +5229,35 @@ function block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid) {
         foreach ($groupmembers as $student) {
             if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
                 block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory);
+            }
+        }
+    }
+    
+    // Delete records from the teacher's schedule
+    g::$DB->delete_records_list(BLOCK_EXACOMP_DB_SCHEDULE, 'id', array_keys($examples));
+    
+    return true;
+}
+
+
+/**
+ * add example to all planning storages for students
+ * @param unknown $courseid
+ * @param array $students
+ * @return boolean
+ */
+function block_exacomp_add_examples_to_schedule_for_students($courseid,$students) {
+    // Check Permission
+    block_exacomp_require_teacher($courseid);
+    // Get all examples to add:
+    //    -> studentid 0: on teachers schedule
+    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
+    
+    // Add examples for all users of group
+    foreach ($examples as $example) {
+        foreach ($students as $student) {
+            if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
+                block_exacomp_add_example_to_schedule($student, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory);
             }
         }
     }
