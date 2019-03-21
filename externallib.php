@@ -6955,6 +6955,7 @@ class block_exacomp_external extends external_api {
 			'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 		    'teacherevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 			'studentevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+		    'studentevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 		    'studentevalitems_examples' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 			'gradingperiods' => new external_multiple_structure (new external_single_structure ([
 				'id' => new external_value (PARAM_INT, 'id'),
@@ -7015,6 +7016,7 @@ class block_exacomp_external extends external_api {
 		    'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,null,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
 		    'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,true,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
 			'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
+		    'studentevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,null,true)),
 		    'studentevalitems_examples' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE)),
 			'gradingperiods' => $gradingperiods,
 			'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'source', 'id, title, source'),
