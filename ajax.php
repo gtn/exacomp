@@ -113,7 +113,7 @@ switch($action){
 		if($groupid!=null){ //add for group
 		    $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
 		    foreach($groupmembers as $member){
-		        if (block_exacomp_add_example_to_schedule($member->id,$exampleid,$creatorid,$courseid,null, null, 0) ) {
+		        if (block_exacomp_add_example_to_schedule($member->id,$exampleid,$creatorid,$courseid) ) {
 		            echo block_exacomp_get_string("weekly_schedule_added").": ".$member->firstname." ".$member->lastname."\n";
 		        }
 		    }
@@ -121,19 +121,19 @@ switch($action){
 		    if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 		        $course_students = block_exacomp_get_students_by_course($courseid);
 		        foreach($course_students as $student){
-		            block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
+		            block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 		        }
 		        
 		        echo block_exacomp_get_string('weekly_schedule_added_all');
 		    } elseif ($studentid == 0){
 		        if (!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
-		            if (block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, null, null, 1))
+		            if (block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid))
 		                echo block_exacomp_get_string('pre_planning_storage_added');
 		        } else {
 		            echo block_exacomp_get_string('pre_planning_storage_already_contains');
 		        }
 		    } else {
-		        if (block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,null, null, 0) ) {
+		        if (block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) ) {
 		            echo block_exacomp_get_string("weekly_schedule_added");
 		        }
 		    }
@@ -326,11 +326,8 @@ switch($action){
             $pool_course = $courseid;
         }
 
-        if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
-            $examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course,1);
-        }else{
-            $examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course,0);
-        }
+        $examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course,0);
+
 		foreach ($examples_pool as &$example_pool){
 			$example_pool->state = block_exacomp_get_dakora_state_for_example($example_pool->courseid, $example_pool->exampleid, $studentid);
 		}

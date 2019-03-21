@@ -3293,27 +3293,22 @@ class block_exacomp_external extends external_api {
             //Add to all the students
 			foreach ($students as $student) {
 			    if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
-			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
+			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 				}
 			}
 		} else {
-		    //Add to the teacher planning Storage, not to the students themselves    otherwise they would have it in the schedule as well as in the pool which
-		    //could lead to mnay issues (not technical, but logical for them)
-		    //block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
 		    if($groupid!=0){ //add for group
 		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		        foreach ($students as $student) {
 		            if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
-		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid, null, null, 0);
+		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 		            }
 		        }
 		    }else{ // add for single student
 		        if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
-		            block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, 0);
+		            block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
 		        }
-		    }
-		    
-			
+		    }	
 		}
 
 		return array(
@@ -5077,7 +5072,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course($courseid);
 		static::require_can_access_example($exampleid, $courseid);
 
-		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid, null, null, 1);
+		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
 		//block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
 
 		return array(
@@ -5141,11 +5136,11 @@ class block_exacomp_external extends external_api {
 		    foreach ($groups as $group){
 		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		        foreach ($groupmembers as $member){
-		            block_exacomp_add_example_to_schedule($member->id,$example,$creatorid,$courseid,null, null, 0);
+		            block_exacomp_add_example_to_schedule($member->id,$example,$creatorid,$courseid);
 		        }
 		    }
 			foreach ($students as $student) {
-				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid, null, null, 0);
+				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid);
 			}
 		}
 
