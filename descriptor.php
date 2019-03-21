@@ -114,12 +114,11 @@ if($formdata = $form->get_data()) {
 			'topicid' => $new->id
 		));
 	} else {
-		$item->update($new);
+	    $item->update($new);
 	}
+	$item->store_categories($formdata->categories);
 	
-	$item->store_categories(!empty($formdata->categories) ?: array());
-	
-	echo $output->popup_close_and_reload();
+ 	echo $output->popup_close_and_reload();
 	exit;
 }
 
