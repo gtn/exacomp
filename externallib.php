@@ -5194,7 +5194,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_add_examples_to_selected_students_schedule($courseid, $students, $groups) {
 	    global $USER;
-	    static::validate_parameters(static::dakora_add_examples_to_students_schedule_parameters(), array(
+	    static::validate_parameters(static::dakora_add_examples_to_selected_students_schedule_parameters(), array(
 	        'courseid' => $courseid,
 	        'students' => $students,
 	        'groups' => $groups,
