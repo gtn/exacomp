@@ -3989,3 +3989,32 @@ Params: <table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
+<h2>dakora_send_message</h2>
+<div>send message</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>messagetext</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>text of message</td>
+<tr>
+<td>userfrom</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user that sends the message</td>
+<tr>
+<td>userto</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user message is sent to</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)"
+}</pre>

@@ -794,6 +794,14 @@ get admin evaluation configurations',
     'description' => 'set descriptor crosssubject association',
     'type' => 'write',
   ),
+  'dakora_send_message' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'dakora_send_message',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'send message',
+    'type' => 'write',
+  ),
 );
 
 $services = array (
@@ -896,6 +904,7 @@ $services = array (
       88 => 'dakora_set_cross_subject_student',
       89 => 'dakora_set_cross_subject_descriptor',
       90 => 'dakora_dismiss_oldgrading_warning',
+      91 => 'dakora_send_message',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,

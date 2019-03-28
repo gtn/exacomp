@@ -6555,7 +6555,7 @@ function block_exacomp_get_message_icon($userid) {
  * @param unknown $context
  * @param unknown $contexturl
  */
-function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {
+function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl=null) {
 	global $CFG, $DB;
 
 	if (!get_config('exacomp', 'notifications')) {
@@ -6571,10 +6571,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 // 	}
 
 	require_once($CFG->dirroot.'/message/lib.php');
-	
-	
-// 	var_dump($CFG->version);
-// 	die();
+
 
 	if((float)$CFG->version >= 2018120300){ //bigger than 3.6
 	    $eventdata = new core\message\message(); //works but is it inteded like that? RW TODO
@@ -6597,10 +6594,29 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	$eventdata->contexturl = $contexturl;
 	$eventdata->contexturlname = $context;
 
-	if((float)$CFG->version >= 2018051700){ //bigger than 3.5
+	if((float)$CFG->version >= 2018051700 && $notificationtype!="message"){ //bigger than 3.5 and not of messageType
 	    $eventdata->notification = 1;
 	}
+
     message_send($eventdata);
+}
+
+/**
+ * send message:
+ * @param unknown $userfrom
+ * @param unknown $userto
+ * @param unknown $messagetext
+ */
+function block_exacomp_send_message($userfrom, $userto, $messagetext, $date, $time) {
+  global $CFG, $USER, $SITE;
+
+  $subject = block_exacomp_get_string('notification_submission_subject', null, array('site' => $SITE->fullname, 'student' => fullname($userfrom)));
+  $subject .= "\n\r".$messagetext;
+
+  $message = block_exacomp_get_string('notification_submission_body', null, array('student' => fullname($userfrom), 'date' => $date, 'time' => $time, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
+  $context = block_exacomp_get_string('notification_submission_context');
+
+  block_exacomp_send_notification("message", $userfrom, $userto, $subject, $message, $context);
 }
 
 /**
