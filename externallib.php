@@ -6901,10 +6901,9 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function diggr_create_cohort_parameters() {
 	    return new external_function_parameters(array(
-	                        'name' => new external_value(PARAM_RAW, 'cohort name'),
-	                        'skz' => new external_value(PARAM_RAW, 'school number'),
-	                        'cohortcode' => new external_value(PARAM_RAW, 'code to enter cohort'),
-	        ));
+	        'name' => new external_value(PARAM_RAW, 'cohort name'),
+	        'skz' => new external_value(PARAM_RAW, 'school number'),
+	    ));
 	}
 	
 	
@@ -6912,23 +6911,48 @@ class block_exacomp_external extends external_api {
 	/**
 	 * Create one or more cohorts
 	 *
-	 * @param array $cohorts An array of cohorts to create.
+	 * @param array $cohorts
+	 *            An array of cohorts to create.
 	 * @since Moodle 2.5
-	 * 
+	 *
 	 * @ws-type-write
 	 * @return array An array of arrays
 	 */
-	public static function diggr_create_cohort($name, $skz, $cohortcode) {
+	public static function diggr_create_cohort($name, $skz)
+	{
 	    global $DB;
 	    
-	   $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array('name' => $name, 'skz' => $skz, 'cohortcode' => $cohortcode));
+	    $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array(
+	        'name' => $name,
+	        'skz' => $skz,
+	    ));
+	    do {
+	        $nps = "";
+	        for ($i = 0; $i < 6; $i ++) {
+	            $nps .= chr((mt_rand(1, 36) <= 26) ? mt_rand(97, 122) : mt_rand(48, 57));
+	        }
+	    } while($DB->get_field('block_exacompcohortcode', 'id', array('cohortcode' => $nps)));
 	    
-	        // Validate format.
-	        $DB->insert_record('cohort', array("contextid" => 1, "name" => $name,
-	            "descriptionformat" => 1, "timecreated" => time(), "timemodified" => time()));
-	        $cohortid = $DB->get_field('cohort', 'MAX(id)' , array('name' => $name));
-	        $DB->insert_record('block_exacompcohortcode', array("cohortid" => $cohortid, "cohortcode" => $cohortcode, "skz" => $skz));
-	    return $parameters;
+	    $cohortcode_return = array();
+	    
+	    $DB->insert_record('cohort', array(
+	        "contextid" => 1,
+	        "name" => $skz.''.$name,
+	        "descriptionformat" => 1,
+	        "timecreated" => time(),
+	        "timemodified" => time()
+	    ));
+	    $cohortid = $DB->get_field('cohort', 'MAX(id)', array(
+	        'name' => $skz.''.$name
+	    ));
+	    $DB->insert_record('block_exacompcohortcode', array(
+	        "cohortid" => $cohortid,
+	        "cohortcode" => $nps,
+	        "skz" => $skz
+	    ));
+	    
+	    $cohortcode_return['cohortcode'] = $nps;
+	    return $cohortcode_return;
 	}
 	
 	/**
@@ -6939,10 +6963,10 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function diggr_create_cohort_returns() {
 	    return  new external_single_structure(
-	            array(
-	                'name' => new external_value(PARAM_RAW, 'cohort name'),
-	            )
-	          );
+	        array(
+	            'cohortcode' => new external_value(PARAM_RAW, 'cohortcode'),
+	        )
+	        );
 	}
 	
 	
