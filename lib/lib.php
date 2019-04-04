@@ -6586,6 +6586,9 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 
 
     if($notificationtype=="instantmessage"){
+//        if((float)$CFG->version < 2018051700){//if lower than version 3.5
+            $eventdata->subject = $subject;
+//        }
         $eventdata->notification = 0;
         $eventdata->component = "moodle";
         $eventdata->fullmessageformat = 0;
@@ -6615,7 +6618,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 function block_exacomp_send_message($userfrom, $userto, $messagetext, $date, $time) {
   global $CFG, $USER, $SITE;
 
-  $subject = "message";
+  $subject = "new message from "+fullname($userfrom);
   $context = "message";
 
   block_exacomp_send_notification("instantmessage", $userfrom, $userto, $subject, $messagetext, $context);
