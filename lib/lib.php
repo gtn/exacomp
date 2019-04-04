@@ -6603,8 +6603,6 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 
     }
 
-//	var_dump($eventdata);
-//	die();
     message_send($eventdata);
 }
 
@@ -6617,11 +6615,8 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 function block_exacomp_send_message($userfrom, $userto, $messagetext, $date, $time) {
   global $CFG, $USER, $SITE;
 
-  $subject = block_exacomp_get_string('notification_submission_subject', null, array('site' => $SITE->fullname, 'student' => fullname($userfrom)));
-  $subject .= "\n\r".$messagetext;
-
-  $message = block_exacomp_get_string('notification_submission_body', null, array('student' => fullname($userfrom), 'date' => $date, 'time' => $time, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
-  $context = block_exacomp_get_string('notification_submission_context');
+  $subject = "message";
+  $context = "message";
 
   block_exacomp_send_notification("instantmessage", $userfrom, $userto, $subject, $messagetext, $context);
 }
