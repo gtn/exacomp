@@ -6594,7 +6594,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	$eventdata->contexturl = $contexturl;
 	$eventdata->contexturlname = $context;
 
-	if((float)$CFG->version >= 2018051700 && $notificationtype!="message"){ //bigger than 3.5 and not of messageType
+	if($notificationtype!="message"){
 	    $eventdata->notification = 1;
 	}
 
