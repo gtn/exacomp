@@ -3808,7 +3808,7 @@ class block_exacomp_external extends external_api {
 		        'picture' => new external_value(PARAM_TEXT, 'link to  picture'),
 		)))));
 	}
-	
+
 
     /**
      * Returns description of method parameters
@@ -7860,7 +7860,7 @@ class block_exacomp_external extends external_api {
 
 
         $timecreated = time();
-        block_exacomp_send_message($userfrom, $userto, "asdfTEEEXT", date("D, d.m.Y", $timecreated), date("H:s", $timecreated));
+        block_exacomp_send_message($userfrom, $userto, $messagetext, date("D, d.m.Y", $timecreated), date("H:s", $timecreated));
 
         return array('success' => true);
     }
