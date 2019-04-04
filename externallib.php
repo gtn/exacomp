@@ -3857,6 +3857,53 @@ class block_exacomp_external extends external_api {
         )));
     }
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_get_teachers_for_student_parameters() {
+        return new external_function_parameters (array(
+            'userid' => new external_value (PARAM_INT, 'id of user'),
+        ));
+    }
+
+    /**
+     * get list of teachers in any course of the student
+     * @ws-type-read
+     * @param userid
+     * @return array
+     */
+    public static function dakora_get_teachers_for_student($userid) {
+        global $PAGE;
+        static::validate_parameters(static::dakora_get_teachers_for_student_parameters(), array(
+            'userid' => $userid,
+        ));
+
+        $teachers = array();
+        $courses = block_exacomp_get_exacomp_courses($userid);
+
+        foreach($courses as $course){
+            $teachers = ($teachers + block_exacomp_get_teachers_by_course($course->id));
+        }
+
+        return $teachers;
+
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakora_get_teachers_for_student_returns() {
+        return new external_multiple_structure (new external_single_structure (array(
+            'id' => new external_value (PARAM_INT, 'id of teacher'),
+            'firstname' => new external_value (PARAM_TEXT, 'firstname of teacher'),
+            'lastname' => new external_value (PARAM_TEXT, 'lastname of teacher'),
+        )));
+    }
+
 
 	/**
 	 * Returns description of method parameters
