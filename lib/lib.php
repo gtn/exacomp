@@ -6579,25 +6579,33 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	    $eventdata = new stdClass ();
 	}
 
-	$eventdata->modulename = 'block_exacomp';
-	$eventdata->userfrom = $userfrom;
-	$eventdata->userto = $userto;
-	$eventdata->subject = $subject;
-	$eventdata->fullmessageformat = FORMAT_HTML;
-	$eventdata->fullmessagehtml = $message;
-	$eventdata->fullmessage = $message;
-	$eventdata->smallmessage = $subject;
+    $eventdata->modulename = 'block_exacomp';
+    $eventdata->userfrom = $userfrom;
+    $eventdata->userto = $userto;
+    $eventdata->fullmessage = $message;
+    $eventdata->name = $notificationtype;
 
-	$eventdata->name = $notificationtype;
-	$eventdata->component = 'block_exacomp';
-	$eventdata->notification = 0;
-	$eventdata->contexturl = $contexturl;
-	$eventdata->contexturlname = $context;
 
-	if($notificationtype!="message"){
-	    $eventdata->notification = 1;
-	}
+    if($notificationtype=="instantmessage"){
+        $eventdata->notification = 0;
+        $eventdata->component = "moodle";
+        $eventdata->fullmessageformat = 0;
+        $eventdata->courseid = 0; //must be integer.. probably legacy... moodle always sends "1" in Moodle3.6
+        $eventdata->smallmessage = $message;
+    }else{
+        $eventdata->subject = $subject;
+        $eventdata->fullmessageformat = FORMAT_HTML;
+        $eventdata->fullmessagehtml = $message;
+        $eventdata->smallmessage = $subject;
+        $eventdata->component = 'block_exacomp';
+        $eventdata->notification = 1;
+        $eventdata->contexturl = $contexturl;
+        $eventdata->contexturlname = $context;
 
+    }
+
+//	var_dump($eventdata);
+//	die();
     message_send($eventdata);
 }
 
@@ -6616,7 +6624,7 @@ function block_exacomp_send_message($userfrom, $userto, $messagetext, $date, $ti
   $message = block_exacomp_get_string('notification_submission_body', null, array('student' => fullname($userfrom), 'date' => $date, 'time' => $time, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
   $context = block_exacomp_get_string('notification_submission_context');
 
-  block_exacomp_send_notification("message", $userfrom, $userto, $subject, $message, $context);
+  block_exacomp_send_notification("instantmessage", $userfrom, $userto, $subject, $messagetext, $context);
 }
 
 /**
