@@ -7928,57 +7928,6 @@ class block_exacomp_external extends external_api {
     }
 
 
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function dakora_send_message_parameters() {
-        return new external_function_parameters (array(
-            'messagetext' => new external_value (PARAM_TEXT, 'text of message'),
-            'userfrom' => new external_value (PARAM_INT, 'id of user that sends the message'),
-            'userto' => new external_value (PARAM_INT, 'id of user message is sent to'),
-        ));
-    }
-
-
-    /**
-     * get all students
-     * @ws-type-write
-     * @return
-     */
-    public static function dakora_send_message($messagetext, $userfrom, $userto) {
-        global $USER;
-        if ($userfrom == 0) {
-            $userfrom = $USER->id;
-        }
-
-        static::validate_parameters(static::dakora_send_message_parameters(), array(
-            'messagetext' => $messagetext,
-            'userfrom' => $userfrom,
-            'userto' => $userto,
-        ));
-
-
-        $timecreated = time();
-        block_exacomp_send_message($userfrom, $userto, "asdfTEEEXT", date("D, d.m.Y", $timecreated), date("H:s", $timecreated));
-
-        return array('success' => true);
-    }
-
-    /**
-     * Returns desription of method return values
-     *
-     * @return external_multiple_structure
-     */
-    public static function dakora_send_message_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status')
-        ));
-    }
-
-
-
 
     /**
 	 * helper function to use same code for 2 ws

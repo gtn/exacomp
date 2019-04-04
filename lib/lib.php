@@ -279,18 +279,18 @@ function block_exacomp_is_teacher_in_any_course() {
 	return false;
 }
 
-//Get all courses a teacher is enrolled
-function block_exacomp_get_courses_of_teacher($userid) {
-    $courses = block_exacomp_get_courseids();
-    $teachersCourses = array();
-
-    foreach ($courses as $course) {
-        if (block_exacomp_is_teacher($course)) {
-            array_push($teachersCourses, $course);
-        }
-    }
-    return $teachersCourses;
-}
+////Get all courses a teacher is enrolled
+//function block_exacomp_get_courses_of_teacher($userid) {
+//    $courses = block_exacomp_get_courseids();
+//    $teachersCourses = array();
+//
+//    foreach ($courses as $course) {
+//        if (block_exacomp_is_teacher($course)) {
+//            array_push($teachersCourses, $course);
+//        }
+//    }
+//    return $teachersCourses;
+//}
 
 /**
  *
