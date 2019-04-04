@@ -3808,33 +3808,106 @@ class block_exacomp_external extends external_api {
 		        'picture' => new external_value(PARAM_TEXT, 'link to  picture'),
 		)))));
 	}
-	
-// 	$studentsAndGroups = array();
-// 	$studentsAndGroups['students'] = $students;
-// 	$studentsAndGroups['groups'] = $students;
-// 	return $studentsAndGroups;
-// }
 
-// /**
-//  * Returns desription of method return values
-//  *
-//  * @return external_multiple_structure
-//  */
-// public static function dakora_get_students_and_groups_for_course_returns() {
-//     return new external_single_structure (array(
-//         'students' => new external_multiple_structure (new external_single_structure (array(
-//             'studentid' => new external_value (PARAM_INT, 'id of student'),
-//             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-//             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-//             'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
-//         ))),
-//         'groups' => new external_multiple_structure (new external_single_structure (array(
-//             'studentid' => new external_value (PARAM_INT, 'id of student'),
-//             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-//             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-//             'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
-//         )))));
-// }
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_get_students_for_teacher_parameters() {
+        return new external_function_parameters (array(
+            'userid' => new external_value (PARAM_INT, 'id of user'),
+        ));
+    }
+
+    /**
+     * get list of students that are enrolled in any course of a teacher
+     * @ws-type-read
+     * @param userid
+     * @return array
+     */
+    public static function dakora_get_students_for_teacher($userid) {
+        global $PAGE;
+        static::validate_parameters(static::dakora_get_students_for_teacher_parameters(), array(
+            'userid' => $userid,
+        ));
+
+
+        $courses = block_exacomp_get_courses_of_teacher($userid);
+        $students = array();
+        foreach($courses as $course){
+            array_push($students, block_exacomp_get_students_by_course($course));
+        }
+
+//        foreach ($students as $student) {
+//            $student->studentid = $student->id;
+//            $student->imagealt = '';
+//            $picture = new user_picture($student);
+//            $picture->size = 50;
+//            $student->profilepicture = $picture->get_url($PAGE)->out();
+//        }
+
+        return $students;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakora_get_students_for_teacher_returns() {
+        return new external_single_structure (array(
+            'students' => new external_multiple_structure (new external_single_structure (array(
+                'studentid' => new external_value (PARAM_INT, 'id of student'),
+                'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
+                'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+                'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
+            ))),
+            'groups' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, 'id of group'),
+                'name' => new external_value (PARAM_TEXT, 'name of group'),
+                'picture' => new external_value(PARAM_TEXT, 'link to  picture'),
+            )))));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Returns description of method parameters
@@ -7821,6 +7894,56 @@ class block_exacomp_external extends external_api {
 
     /**
      * send message
+     * @ws-type-write
+     * @return
+     */
+    public static function dakora_send_message($messagetext, $userfrom, $userto) {
+        global $USER;
+        if ($userfrom == 0) {
+            $userfrom = $USER->id;
+        }
+
+        static::validate_parameters(static::dakora_send_message_parameters(), array(
+            'messagetext' => $messagetext,
+            'userfrom' => $userfrom,
+            'userto' => $userto,
+        ));
+
+
+        $timecreated = time();
+        block_exacomp_send_message($userfrom, $userto, "asdfTEEEXT", date("D, d.m.Y", $timecreated), date("H:s", $timecreated));
+
+        return array('success' => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakora_send_message_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status')
+        ));
+    }
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_send_message_parameters() {
+        return new external_function_parameters (array(
+            'messagetext' => new external_value (PARAM_TEXT, 'text of message'),
+            'userfrom' => new external_value (PARAM_INT, 'id of user that sends the message'),
+            'userto' => new external_value (PARAM_INT, 'id of user message is sent to'),
+        ));
+    }
+
+
+    /**
+     * get all students
      * @ws-type-write
      * @return
      */
