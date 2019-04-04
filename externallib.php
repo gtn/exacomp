@@ -6903,6 +6903,7 @@ class block_exacomp_external extends external_api {
 	    return new external_function_parameters(array(
 	        'name' => new external_value(PARAM_RAW, 'cohort name'),
 	        'skz' => new external_value(PARAM_RAW, 'school number'),
+	        'userid' => new external_value(PARAM_RAW, 'userid trainer'),
 	    ));
 	}
 	
@@ -6918,13 +6919,14 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-write
 	 * @return array An array of arrays
 	 */
-	public static function diggr_create_cohort($name, $skz)
+	public static function diggr_create_cohort($name, $skz, $userid)
 	{
 	    global $DB;
 	    
 	    $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array(
 	        'name' => $name,
 	        'skz' => $skz,
+	        'userid' => $userid,
 	    ));
 	    do {
 	        $nps = "";
@@ -6948,7 +6950,8 @@ class block_exacomp_external extends external_api {
 	    $DB->insert_record('block_exacompcohortcode', array(
 	        "cohortid" => $cohortid,
 	        "cohortcode" => $nps,
-	        "skz" => $skz
+	        "skz" => $skz,
+	        "trainerid" => $userid
 	    ));
 	    
 	    $cohortcode_return['cohortcode'] = $nps;

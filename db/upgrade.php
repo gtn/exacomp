@@ -3269,6 +3269,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019032100, 'exacomp');
     }
     
+    if ($oldversion < 2019040401) {
+        //adding a new table to save cohortcodes for diggr
+        $table = new xmldb_table('block_exacompcohortcode');
+        $field = new xmldb_field('trainerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2019040401, 'exacomp');
+    }
+    
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
