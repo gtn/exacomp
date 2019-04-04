@@ -279,18 +279,19 @@ function block_exacomp_is_teacher_in_any_course() {
 	return false;
 }
 
-////Get all courses a teacher is enrolled
-//function block_exacomp_get_courses_of_teacher($userid) {
-//    $courses = block_exacomp_get_courseids();
-//    $teachersCourses = array();
-//
-//    foreach ($courses as $course) {
-//        if (block_exacomp_is_teacher($course)) {
-//            array_push($teachersCourses, $course);
-//        }
-//    }
-//    return $teachersCourses;
-//}
+//Get all courses a teacher is enrolled
+function block_exacomp_get_courses_of_teacher($userid) {
+    $courses = block_exacomp_get_courseids();
+    $teachersCourses = array();
+
+    var_dump($courses);
+    foreach ($courses as $course) {
+        if (block_exacomp_is_teacher($course)) {
+            $teachersCourses[] = $course;
+        }
+    }
+    return $teachersCourses;
+}
 
 /**
  *
@@ -3427,7 +3428,7 @@ function block_exacomp_get_related_activities($courseid, $conditions = array()) 
 	return $acts;
 }
 
-/**
+/**block_instances
  *
  * Returns all course ids where an instance of Exabis Competences is installed
  */
@@ -3465,21 +3466,6 @@ function block_exacomp_get_exacomp_courses($userid) {
 	}
 
 	return $user_courses;
-}
-
-/**
- * get all courses where a given user is enrolled as teacher
- * @param unknown_type $userid
- */
-function block_exacomp_get_teacher_courses($userid) {
-	$courses = block_exacomp_get_exacomp_courses($userid);
-	foreach ($courses as $key => $course) {
-		if (!block_exacomp_is_teacher(context_course::instance($course->id))) {
-			// unset($courses[$key]);
-		}
-	}
-
-	return $courses;
 }
 
 /**

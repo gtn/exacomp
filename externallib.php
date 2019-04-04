@@ -3808,11 +3808,7 @@ class block_exacomp_external extends external_api {
 		        'picture' => new external_value(PARAM_TEXT, 'link to  picture'),
 		)))));
 	}
-
-
-
-
-
+	
 
     /**
      * Returns description of method parameters
@@ -3837,22 +3833,15 @@ class block_exacomp_external extends external_api {
             'userid' => $userid,
         ));
 
-
-        $courses = block_exacomp_get_courses_of_teacher($userid);
         $students = array();
+        $courses = block_exacomp_get_exacomp_courses($userid);
+
         foreach($courses as $course){
-            array_push($students, block_exacomp_get_students_by_course($course));
+            $students = ($students + block_exacomp_get_students_by_course($course->id));
         }
 
-//        foreach ($students as $student) {
-//            $student->studentid = $student->id;
-//            $student->imagealt = '';
-//            $picture = new user_picture($student);
-//            $picture->size = 50;
-//            $student->profilepicture = $picture->get_url($PAGE)->out();
-//        }
-
         return $students;
+
     }
 
     /**
@@ -3861,52 +3850,12 @@ class block_exacomp_external extends external_api {
      * @return external_multiple_structure
      */
     public static function dakora_get_students_for_teacher_returns() {
-        return new external_single_structure (array(
-            'students' => new external_multiple_structure (new external_single_structure (array(
-                'studentid' => new external_value (PARAM_INT, 'id of student'),
-                'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-                'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-                'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
-            ))),
-            'groups' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of group'),
-                'name' => new external_value (PARAM_TEXT, 'name of group'),
-                'picture' => new external_value(PARAM_TEXT, 'link to  picture'),
-            )))));
+        return new external_multiple_structure (new external_single_structure (array(
+            'id' => new external_value (PARAM_INT, 'id of student'),
+            'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
+            'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+        )));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	/**

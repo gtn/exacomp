@@ -1616,6 +1616,26 @@ Returns:<pre>{
         "..."
     ]
 }</pre>
+<h2>dakora_get_students_for_teacher</h2>
+<div>get list of students that are enrolled in any course of a teacher</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+</table>
+Returns:<pre>[
+    {
+        "id": "int null (id of student)",
+        "firstname": "text null (firstname of student)",
+        "lastname": "text null (lastname of student)"
+    },
+    "..."
+]</pre>
 <h2>dakora_get_examples_pool</h2>
 <div>get list of examples for weekly schedule pool
 Get examples for pool</div>
