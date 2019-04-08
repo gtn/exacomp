@@ -167,6 +167,9 @@ $string['settings_addblock_to_newcourse_option_no'] = 'No';
 $string['settings_addblock_to_newcourse_option_yes'] = 'Yes';
 $string['settings_addblock_to_newcourse_option_left'] = 'to the Left region';
 $string['settings_addblock_to_newcourse_option_right'] = 'to the Right region';
+$string['settings_example_autograding'] = 'automatic assessment of parent materials';
+$string['settings_example_autograding_description'] = 'when all child examples have been graded, the parent material should be assessed automatically.';
+
 
 
 // === Unit Tests ===

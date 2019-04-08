@@ -181,6 +181,9 @@ switch($action){
 			foreach($examples as $example){
 				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $example->value, $example->niveauid);
 			}
+            if ($isTeacher) {
+                block_exacomp_etheme_autograde_examples_tree($courseid, $examples);
+            }
 		}
 
 /*		if(!empty($data->examples_additional_grading)){

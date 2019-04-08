@@ -1470,7 +1470,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 	$examples = \block_exacomp\example::get_objects_sql(
 		"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
 			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
-            e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent,
+            e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important,
             de.sorting
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
@@ -5113,6 +5113,8 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
  * @param unknown $courseid
  * @param unknown $start
  * @param unknown $end
+ * @param int $ethema_ismain
+ * @param int $ethema_issubcategory
  * @return boolean
  */
 function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1) {
@@ -9962,4 +9964,115 @@ function block_exacomp_cmodule_is_autocompetence($cmid) {
     global $DB;
     return $DB->get_field('block_exacompcmsettings', 'value', ['name' => 'exacompUseAutoCompetences', 'coursemoduleid' => $cmid]);
 }
+
+/**
+ * for eThema
+ * @param int $courseid
+ * @param array $examples
+ * @return bool
+ */
+function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
+    if (!get_config('exacomp', 'example_autograding')) {
+        return true;
+    }
+    // for every USER:
+    // 1. get changed examples (from ajax request)
+    // 2. get all parent examples (these parents we need to look on needed recalculating of average value)
+    // 3. get all childs for parents (from database): field ethema_important = 1
+    // 4. calculate average value for parents
+    // 5. the same process for 'subcategory' examples
+
+    // get all changed example ids (different for every graded user)
+    $examplechangedids = array();
+    foreach ($examples as $example) {
+        $userid = $example->userid;
+        if (!array_key_exists($userid, $examplechangedids)) {
+            $examplechangedids[$userid] = array();
+        }
+        $examplechangedids[$userid][] = $example->exampleid;
+    }
+    if (!(count($examplechangedids) > 0)) {
+        return true;
+    }
+
+    $averagecalcualtingprocess = function($userid, $exampleids, $forsubcategory = false) use ($courseid) {
+        $torecalculate = array();
+        if (count($exampleids) > 0) {
+            $psql = 'SELECT DISTINCT e2.*, ee.*
+                        FROM {block_exacompexamples} e
+                          JOIN {block_exacompexamples} e2 ON e2.ethema_parent = e.ethema_parent
+                          LEFT JOIN {block_exacompexameval} ee ON ee.studentid = ? AND ee.exampleid = e2.id 
+                        WHERE e.id IN ('.implode(',', $exampleids).') 
+                            AND e.ethema_important = 1 '.
+                            ($forsubcategory ? ' AND e.ethema_issubcategory = 1 ' : '');
+            $allchilds = g::$DB->get_records_sql($psql, [$userid]);
+            foreach ($allchilds as $child) {
+                if (!array_key_exists($child->ethema_parent, $torecalculate)) {
+                    $torecalculate[$child->ethema_parent] = array();
+                }
+                $torecalculate[$child->ethema_parent][] = $child->teacher_evaluation;
+            }
+            // check on empty (not graded) child examples
+            foreach (array_keys($torecalculate) as $parentid) {
+                if (count(array_filter($torecalculate[$parentid])) != count($torecalculate[$parentid])) {
+                    unset($torecalculate[$parentid]);
+                }
+            }
+            foreach ($torecalculate as $parentid => $values) {
+                $averagevalue = block_exacomp_etheme_getaverage_example_grading($values);
+                if ($averagevalue == -1) {
+                    return true;
+                }
+                block_exacomp_set_user_example($userid, $parentid, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $averagevalue); // TODO: niveau?
+            }
+            return array_keys($torecalculate); // return parents. for next checking of subcategory/main
+        }
+        return array();
+    };
+
+    $subcategories = array();
+    // get parent ids and get all list of all child examples
+    foreach ($examplechangedids as $userid => $exampleids) {
+        $subs = $averagecalcualtingprocess($userid, $exampleids);
+        if (count($subs) > 0) {
+            if (!array_key_exists($userid, $subcategories)) {
+                $subcategories[$userid] = array();
+            }
+            $subcategories[$userid] = array_merge($subcategories[$userid], $subs);
+        }
+    }
+    // calculate average value of main example from child subcategory examples
+    foreach ($subcategories as $userid => $exampleids) {
+        $averagecalcualtingprocess($userid, $exampleids, true);
+    }
+
+}
+
+function block_exacomp_etheme_getaverage_example_grading($values) {
+    $averagevalue = array_sum($values)/count($values);
+    switch (block_exacomp_get_assessment_example_scheme()) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE;
+            return -1; // we do not need grade at all
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            // round to bigger
+            $averagevalue = ceil($averagevalue);
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            // round to bigger
+            $averagevalue = ceil($averagevalue);
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            // round to lower
+            $averagevalue = floor($averagevalue);
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            if ($averagevalue < 1) {
+                $averagevalue = 0; // if at least one value is NO - average is NO
+            }
+            break;
+    }
+    return $averagevalue;
+}
+
  

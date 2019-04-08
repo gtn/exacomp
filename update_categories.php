@@ -25,9 +25,9 @@ $courseid = required_param('courseid', PARAM_INT);
 $descrid = required_param('descrid', PARAM_INT);
 
 require_login($courseid);
+$context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 
-$context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */ //why though? RW
 $PAGE->set_url('/blocks/exacomp/update_categories.php', array('courseid' => $courseid));

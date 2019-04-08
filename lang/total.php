@@ -572,6 +572,15 @@ return [
         'to the Right region',
         'to the Right region',
     ],
+    'settings_example_autograding' => [
+        'übergeordnete Materialien automatische Beurteilung',
+        'automatic assessment of parent materials',
+    ],
+    'settings_example_autograding_description' => [
+        'wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.',
+        'when all child examples have been graded, the parent material should be assessed automatically.',
+    ],
+
 
 
 	// === Unit Tests ===
@@ -1423,7 +1432,7 @@ return [
         'Categories: ',
     ],
     'descriptor_add_category' => [
-        'Neue Kategorie hinzuf�gen: ',
+        'Neue Kategorie hinzuf�gen: ',
         'Add new category ',
     ],
     

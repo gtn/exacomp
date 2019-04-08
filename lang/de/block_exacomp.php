@@ -167,6 +167,9 @@ $string['settings_addblock_to_newcourse_option_no'] = 'Nein';
 $string['settings_addblock_to_newcourse_option_yes'] = 'Ja';
 $string['settings_addblock_to_newcourse_option_left'] = 'to the Left region';
 $string['settings_addblock_to_newcourse_option_right'] = 'to the Right region';
+$string['settings_example_autograding'] = 'übergeordnete Materialien automatische Beurteilung';
+$string['settings_example_autograding_description'] = 'wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
+
 
 
 // === Unit Tests ===
@@ -405,7 +408,7 @@ $string['descriptor'] = 'Kompetenz';
 $string['descriptor_child'] = 'Teilkompetenz';
 $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['descriptor_categories'] = 'Kategorien: ';
-$string['descriptor_add_category'] = 'Neue Kategorie hinzuf�gen: ';
+$string['descriptor_add_category'] = 'Neue Kategorie hinzuf�gen: ';
 
 // === metadata ===
 $string['subject_singular'] = 'Fach';

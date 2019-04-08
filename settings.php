@@ -903,6 +903,10 @@ $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/asse
         '', 0));
 $settings->add(new block_exacomp_selfevaluation_configtable('exacomp/assessment_SelfEval_verboses',
         block_exacomp_get_string('settings_assessment_SelfEval_verboses'), '', '', ''));
+$settings->add(new admin_setting_configcheckbox('exacomp/example_autograding',
+        block_exacomp_get_string('settings_example_autograding'),
+        block_exacomp_get_string('settings_example_autograding_description'), 0));
+
 
 // Darstellung (visualisation).
 $settings->add(new admin_setting_heading('exacomp/heading_visualisation',
@@ -963,7 +967,6 @@ $settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_asse
 $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign',
         block_exacomp_get_string('block_exacomp_external_trainer_assign_head'),
         block_exacomp_get_string('block_exacomp_external_trainer_assign_body'), 0));
-
 
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
