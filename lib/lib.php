@@ -10059,16 +10059,19 @@ function block_exacomp_etheme_getaverage_example_grading($values) {
             $averagevalue = ceil($averagevalue);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            // round to bigger
-            $averagevalue = ceil($averagevalue);
+            // round
+            $averagevalue = round($averagevalue);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-            // round to lower
-            $averagevalue = floor($averagevalue);
+            // round
+            $averagevalue = round($averagevalue);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-            if ($averagevalue < 1) {
-                $averagevalue = 0; // if at least one value is NO - average is NO
+            // 2 yes, 1 no -> yes
+            // 1 yes, 1 no -> yes
+            // 1 yes, 2 no -> no
+            if ($averagevalue < 0.5) {
+                $averagevalue = 0; 
             }
             break;
     }
