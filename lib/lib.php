@@ -9997,15 +9997,16 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
 
     $averagecalcualtingprocess = function($userid, $exampleids, $forsubcategory = false) use ($courseid) {
         $torecalculate = array();
+        $toreturn = array();
         if (count($exampleids) > 0) {
             $psql = 'SELECT DISTINCT e2.*, ee.*
                         FROM {block_exacompexamples} e
                           JOIN {block_exacompexamples} e2 ON e2.ethema_parent = e.ethema_parent
-                          LEFT JOIN {block_exacompexameval} ee ON ee.studentid = ? AND ee.exampleid = e2.id 
+                          LEFT JOIN {block_exacompexameval} ee ON ee.courseid = ? AND ee.studentid = ? AND ee.exampleid = e2.id 
                         WHERE e.id IN ('.implode(',', $exampleids).') 
-                            AND e.ethema_important = 1 '.
-                            ($forsubcategory ? ' AND e.ethema_issubcategory = 1 ' : '');
-            $allchilds = g::$DB->get_records_sql($psql, [$userid]);
+                            AND e.ethema_important = 1 '
+                            /*.($forsubcategory ? ' AND e.ethema_issubcategory = 1 ' : '') // do not need, because JOIN*/;
+            $allchilds = g::$DB->get_records_sql($psql, [$courseid, $userid]);
             foreach ($allchilds as $child) {
                 if (!array_key_exists($child->ethema_parent, $torecalculate)) {
                     $torecalculate[$child->ethema_parent] = array();
@@ -10015,6 +10016,14 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
             // check on empty (not graded) child examples
             foreach (array_keys($torecalculate) as $parentid) {
                 if (count(array_filter($torecalculate[$parentid])) != count($torecalculate[$parentid])) {
+                    // empty parent if it is not full graded (delete from database)
+                    //block_exacomp_set_user_example($userid, $parentid, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, '');
+                    g::$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLEEVAL,[
+                                'exampleid' => $parentid,
+                                'courseid' => $courseid,
+                                'studentid' => $userid,
+                            ]);
+                    $toreturn[] = $parentid; // for recalculate of main examples
                     unset($torecalculate[$parentid]);
                 }
             }
@@ -10025,7 +10034,8 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
                 }
                 block_exacomp_set_user_example($userid, $parentid, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $averagevalue); // TODO: niveau?
             }
-            return array_keys($torecalculate); // return parents. for next checking of subcategory/main
+            $toreturn = array_merge(array_keys($torecalculate), $toreturn);
+            return $toreturn; // return parents. for next checking of subcategory/main
         }
         return array();
     };
@@ -10078,4 +10088,13 @@ function block_exacomp_etheme_getaverage_example_grading($values) {
     return $averagevalue;
 }
 
- 
+function block_exacomp_is_autograding_example($exampleid) {
+    // if the autograding is enabled
+    if (!get_config('exacomp', 'example_autograding')) {
+        return false;
+    }
+    // if example has at least one child example - it is autograded example
+    $result = g::$DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, ['ethema_parent' => $exampleid], '*', IGNORE_MULTIPLE);
+    return (bool) $result;
+}
+

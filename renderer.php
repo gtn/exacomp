@@ -2682,7 +2682,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 'reviewername' => $reviewername,
                         );
 
-						if (!$visible_student_example || $data->role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
+						if (!$visible_student_example
+                                || $data->role == BLOCK_EXACOMP_ROLE_STUDENT
+                                || !$isEditingTeacher
+                                || block_exacomp_is_autograding_example($example->id)
+                        ) {
                             $example_params['disabled'] = 'disabled';
 						}
 					
