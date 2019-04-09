@@ -1866,7 +1866,10 @@ return [
         'Materialien',
         'crosssubject files',
     ],
-    
+    'new_niveau' => [
+        'neuer Lernfortschritt',
+        'New learning progress'
+    ],
 
 
 	// === Associations ===

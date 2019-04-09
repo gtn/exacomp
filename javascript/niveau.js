@@ -35,7 +35,8 @@
 			$(':input[name=descriptor_id]').closest('.fitem').show();
 		}
 
-		var niveau_type = $(':radio[name=niveau_type]:checked').val();
+		// 09.04.2019 disabled
+		/*var niveau_type = $(':radio[name=niveau_type]:checked').val();
 		if (niveau_type == 'new') {
 			// moodle 30: still needed?
 			$('#fitem_id_niveau_title').show();
@@ -54,7 +55,7 @@
 			$(':input[name=niveau_title]').closest('.fitem').hide();
 			$(':input[name=niveau_numb]').closest('.fitem').hide();
 			$(':input[name=niveau_id]').closest('.fitem').show();
-		}
+		}*/
 	}
 	
 	$(function(){

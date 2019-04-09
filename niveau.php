@@ -55,14 +55,15 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform = & $this->_form;
 
-		$niveaus = block_exacomp_get_select_niveau_items();
+		//$niveaus = block_exacomp_get_select_niveau_items();
+		$niveaus = null;
 
-		$radioarray=array();
+		/*$radioarray=array();
 		if ($niveaus) {
 			$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_trans(['de:vorhandener Lernfortschritt', 'en:Existing niveau']), 'existing');
 		}
-		$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_trans(['de:neuer Lernfortschritt', 'en:New learning progress']), 'new');
-		$mform->addGroup($radioarray, 'radioar', '', array(' '), false);
+		$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_get_string('new_niveau'), 'new');
+		$mform->addGroup($radioarray, 'radioar', '', array(' '), false);*/
 		
 		$mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('niveau_title', PARAM_TEXT);
@@ -71,7 +72,7 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
 		$mform->setType('niveau_numb', PARAM_TEXT);
 
-		$mform->addElement('selectgroups', 'niveau_id', block_exacomp_get_string('niveau'), $niveaus);
+		//$mform->addElement('selectgroups', 'niveau_id', block_exacomp_get_string('niveau'), $niveaus);
 		
 		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfortschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
 		
@@ -153,12 +154,13 @@ if (!$item) {
 
 	$data = new stdClass;
 	$data->descriptor_type = $descriptors ? 'existing' : 'new';
-	$data->niveau_type = 'existing';
+	//$data->niveau_type = 'new'; //'existing';
 	$form->set_data($data);
 
 	if ($formdata = $form->get_data()) {
 
-		if ($formdata->niveau_type == 'new') {
+		//if ($formdata->niveau_type == 'new') {
+		if (empty($formdata->niveau_id)) {
 			$niveau = new stdClass;
 			$niveau->sorting = $DB->get_field(BLOCK_EXACOMP_DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
 			$niveau->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
