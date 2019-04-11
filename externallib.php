@@ -7111,12 +7111,76 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function diggr_get_students_of_cohort_returns() {
 	    return new external_multiple_structure (new external_single_structure (array(
-	        'cohortid' => new external_value (PARAM_INT, 'id of user'),
-	        'cohortcode' => new external_value (PARAM_TEXT, 'name of user'),
+	        'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
+	        'cohortcode' => new external_value (PARAM_TEXT, 'code of cohort'),
 	        'students' => new external_multiple_structure (new external_single_structure (array(
-	            'userid' => new external_value (PARAM_INT, 'id of cohort'),
-	            'name' => new external_value (PARAM_TEXT, 'title of cohort'),
+	            'userid' => new external_value (PARAM_INT, 'id of student'),
+	            'name' => new external_value (PARAM_TEXT, 'name of student'),
 	        )))
+	    )));
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function diggr_get_cohorts_of_trainer_parameters() {
+	    return new external_function_parameters(array(
+	        'trainerid' => new external_value(PARAM_RAW, 'trainer id'),
+	    ));
+	}
+	
+	
+	
+	/**
+	 * Create one or more cohorts
+	 *
+	 * @param array $cohorts
+	 *            An array of cohorts to create.
+	 * @since Moodle 2.5
+	 *
+	 * @ws-type-read
+	 * @return array An array of arrays
+	 */
+	public static function diggr_get_cohorts_of_trainer($trainerid)
+	{
+	    global $DB;
+	    
+	    $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array(
+	        'trainerid' => $trainerid,
+	    ));
+	    
+
+	    $returndata = array();
+	    
+	    $cohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$trainerid));
+	    foreach($cohorts as $cohort){
+	        $cohortname = $DB->get_field('cohort', 'name' , array(
+	            'id' => $cohort->cohortid,
+	        ));
+	        $returndataObject = new stdClass ();
+	        $returndataObject->name = $cohortname;
+	        $returndataObject->cohortid = $cohort->cohortid;
+	        $returndataObject->cohortcode = $cohort->cohortcode;
+	        $returndata[] = $returndataObject;
+	    }
+	    
+	    
+	    return $returndata;
+	}
+	
+	/**
+	 * Returns description of method result value
+	 *
+	 * @return external_description
+	 * @since Moodle 2.5
+	 */
+	public static function diggr_get_cohorts_of_trainer_returns() {
+	    return new external_multiple_structure (new external_single_structure (array(
+	        'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
+	        'name' => new external_value (PARAM_TEXT, 'name of user'),
+	        'cohortcode' => new external_value (PARAM_TEXT, 'code of cohort'),
 	    )));
 	}
 	

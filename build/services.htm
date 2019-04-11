@@ -3305,15 +3305,35 @@ Params: <table>
 </table>
 Returns:<pre>[
     {
-        "cohortid": "int null (id of user)",
-        "cohortcode": "text null (name of user)",
+        "cohortid": "int null (id of cohort)",
+        "cohortcode": "text null (code of cohort)",
         "students": [
             {
-                "userid": "int null (id of cohort)",
-                "name": "text null (title of cohort)"
+                "userid": "int null (id of student)",
+                "name": "text null (name of student)"
             },
             "..."
         ]
+    },
+    "..."
+]</pre>
+<h2>block_exacomp_diggr_get_cohorts_of_trainer</h2>
+<div>Create one or more cohorts</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>trainerid</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>trainer id</td>
+</table>
+Returns:<pre>[
+    {
+        "cohortid": "int null (id of cohort)",
+        "name": "text null (name of user)",
+        "cohortcode": "text null (code of cohort)"
     },
     "..."
 ]</pre>
