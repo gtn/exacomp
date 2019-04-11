@@ -7044,6 +7044,84 @@ class block_exacomp_external extends external_api {
 	
 	/**
 	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function diggr_get_students_of_cohort_parameters() {
+	    return new external_function_parameters(array(
+	        'cohortid' => new external_value(PARAM_RAW, 'cohort id'),
+	    ));
+	}
+	
+	
+	
+	/**
+	 * Create one or more cohorts
+	 *
+	 * @param array $cohorts
+	 *            An array of cohorts to create.
+	 * @since Moodle 2.5
+	 *
+	 * @ws-type-read
+	 * @return array An array of arrays
+	 */
+	public static function diggr_get_students_of_cohort($cohortid)
+	{
+	    global $DB;
+	    
+	    $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array(
+	        'cohortid' => $cohortid,
+	    ));
+
+	    $studentids = array();
+	    $students = array();
+	    $returndata = new stdClass ();
+	    
+	    $studentids = $DB->get_fieldset_select('cohort_members', 'userid', array('cohortid'=>$cohortid));
+	    foreach($studentids as $studentid){
+	        $studentObject = $DB->get_record('user', array(
+	            'id' => $studentid,
+	        ));
+	        $returndataObject = new stdClass ();
+	        $returndataObject->name = fullname($studentObject);
+	        $returndataObject->userid = $studentid;
+	        $students[] = $returndataObject;
+	    }
+	    
+
+	    
+
+	    $returndataObject->cohortcode = $DB->get_field('block_exacompcohortcode', 'cohortcode' , array(
+	        "cohortid" => $cohortid,
+	    ));
+	    
+	    $returndata->cohortcode = $cohortcode;
+	    $returndata->cohortid = $cohortid;
+	    $returndata->students = $students;
+	    
+
+	    return $returndata;
+	}
+	
+	/**
+	 * Returns description of method result value
+	 *
+	 * @return external_description
+	 * @since Moodle 2.5
+	 */
+	public static function diggr_get_students_of_cohort_returns() {
+	    return new external_multiple_structure (new external_single_structure (array(
+	        'cohortid' => new external_value (PARAM_INT, 'id of user'),
+	        'cohortcode' => new external_value (PARAM_TEXT, 'name of user'),
+	        'students' => new external_multiple_structure (new external_single_structure (array(
+	            'userid' => new external_value (PARAM_INT, 'id of cohort'),
+	            'name' => new external_value (PARAM_TEXT, 'title of cohort'),
+	        )))
+	    )));
+	}
+	
+	/**
+	 * Returns description of method parameters
 	 * @return external_function_parameters
 	 */
 	public static function dakora_get_evaluation_config_parameters() {

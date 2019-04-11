@@ -3291,6 +3291,32 @@ Params: <table>
 Returns:<pre>{
     "cohortcode": "raw null (cohortcode)"
 }</pre>
+<h2>block_exacomp_diggr_get_students_of_cohort</h2>
+<div>Create one or more cohorts</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>cohortid</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>cohort id</td>
+</table>
+Returns:<pre>[
+    {
+        "cohortid": "int null (id of user)",
+        "cohortcode": "text null (name of user)",
+        "students": [
+            {
+                "userid": "int null (id of cohort)",
+                "name": "text null (title of cohort)"
+            },
+            "..."
+        ]
+    },
+    "..."
+]</pre>
 <h2>dakora_get_evaluation_config</h2>
 <div>get evaluation configuration
 get admin evaluation configurations</div>
