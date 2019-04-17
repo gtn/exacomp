@@ -10007,7 +10007,7 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
         if (count($exampleids) > 0) {
             $psql = 'SELECT DISTINCT e2.*, ee.*
                         FROM {block_exacompexamples} e
-                          JOIN {block_exacompexamples} e2 ON e2.ethema_parent = e.ethema_parent
+                          JOIN {block_exacompexamples} e2 ON e2.ethema_parent = e.ethema_parent AND e2.ethema_important = 1
                           LEFT JOIN {block_exacompexameval} ee ON ee.courseid = ? AND ee.studentid = ? AND ee.exampleid = e2.id 
                         WHERE e.id IN ('.implode(',', $exampleids).') 
                             AND e.ethema_important = 1 '
@@ -10059,7 +10059,7 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
     }
     // calculate average value of main example from child subcategory examples
     foreach ($subcategories as $userid => $exampleids) {
-        $averagecalcualtingprocess($userid, $exampleids, true);
+        $res2 = $averagecalcualtingprocess($userid, $exampleids, true);
     }
 
 }
