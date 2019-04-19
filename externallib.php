@@ -7152,20 +7152,23 @@ class block_exacomp_external extends external_api {
 	    ));
 	    
 
-	    $returndata = array();
 	    
-	    $cohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$trainerid));
-	    foreach($cohorts as $cohort){
+	    $returndata = new stdClass ();
+	    $returndata->cohorts = array();
+	    
+	    $dbCohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$trainerid));
+	    foreach($dbCohorts as $cohort){
 	        $cohortname = $DB->get_field('cohort', 'name' , array(
 	            'id' => $cohort->cohortid,
 	        ));
 	        $returndataObject = new stdClass ();
+	       
 	        $returndataObject->name = $cohortname;
 	        $returndataObject->cohortid = $cohort->cohortid;
 	        $returndataObject->cohortcode = $cohort->cohortcode;
-	        $returndata[] = $returndataObject;
+	        $returndata->cohorts[] = $returndataObject;
 	    }
-	    
+	   
 	    
 	    return $returndata;
 	}
@@ -7177,11 +7180,12 @@ class block_exacomp_external extends external_api {
 	 * @since Moodle 2.5
 	 */
 	public static function diggr_get_cohorts_of_trainer_returns() {
-	    return new external_multiple_structure (new external_single_structure (array(
-	        'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
-	        'name' => new external_value (PARAM_TEXT, 'name of user'),
-	        'cohortcode' => new external_value (PARAM_TEXT, 'code of cohort'),
-	    )));
+	    return new external_single_structure (array(
+	        'cohorts' => new external_multiple_structure (new external_single_structure(array(
+	           'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
+	           'name' => new external_value (PARAM_TEXT, 'name of user'),
+	           'cohortcode' => new external_value (PARAM_TEXT, 'code of cohort'),
+	    )))));
 	}
 	
 	/**

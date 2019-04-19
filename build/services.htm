@@ -3329,14 +3329,16 @@ Params: <table>
 <td></td>
 <td>trainer id</td>
 </table>
-Returns:<pre>[
-    {
-        "cohortid": "int null (id of cohort)",
-        "name": "text null (name of user)",
-        "cohortcode": "text null (code of cohort)"
-    },
-    "..."
-]</pre>
+Returns:<pre>{
+    "cohorts": [
+        {
+            "cohortid": "int null (id of cohort)",
+            "name": "text null (name of user)",
+            "cohortcode": "text null (code of cohort)"
+        },
+        "..."
+    ]
+}</pre>
 <h2>dakora_get_evaluation_config</h2>
 <div>get evaluation configuration
 get admin evaluation configurations</div>
