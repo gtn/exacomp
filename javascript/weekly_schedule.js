@@ -461,14 +461,23 @@
 					var slot = exacomp_calcendar_config.slots[i];
 					// manipulate the string in order to get it into a form that is allowed by the string system:
 					// slot.name=slot.name.replace(" Einheit", "unit");
-					slot.name=slot.name.replace(" Einheit:", "unit"); // for Deusch
-					slot.name=slot.name.replace(" unit", "unit"); // for English
-					this.innerHTML = '<span>'+(slot.name ? '<b>' + M.util.get_string("n"+slot.name, 'block_exacomp') + '</b><br />' + slot.time : '')
-						+ '<span style="font-size: 85%">'+'</span>'+'</span>';
+					slot.name = slot.name.replace(" Einheit:", "unit"); // for Deutsch
+					slot.name = slot.name.replace(" unit", "unit"); // for English
+                    var slotName = '';
+                    if (slot.name == '--fromConfig--') {
+                        slotName = '<b>' + slot.time + '</b><br>&nbsp;';
+                    } else if (slot.name) {
+                        slotName = '<b>' + M.util.get_string("n" + slot.name, 'block_exacomp') + '</b><br />' + slot.time
+					}
+					console.log(slotName);
+					this.innerHTML = '<span>' + slotName + '<span style="font-size: 85%"></span></span>';
 					i++;
-					if (slot.name) unit++;
-					if (unit%2)
+					if (slot.name) {
+						unit++;
+                    }
+					if (unit % 2) {
 						$(this).closest('tr').css('background-color', 'rgba(0, 0, 0, 0.08)');
+                    }
 				});
 				
 				view.updateSize();

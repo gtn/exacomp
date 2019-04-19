@@ -2737,7 +2737,8 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
-		    'groupid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_OPTIONAL),
+		    //'groupid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
+		    'groupid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT),
 		));
 	}
 
@@ -3248,7 +3249,8 @@ class block_exacomp_external extends external_api {
 			'creatorid' => new external_value (PARAM_INT, 'id of creator'),
 			'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-		    'groupid' => new external_value (PARAM_INT, 'id of group',VALUE_OPTIONAL)
+		    //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL) // ERROR! top level optional parameter!!!
+		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT)
 		));
 	}
 
@@ -5171,7 +5173,8 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'examples' => new external_value (PARAM_TEXT, 'json array of examples'),
 			'students' => new external_value (PARAM_TEXT, 'json array of students'),
-		    'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL),
+		    //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
+		    'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT),
 		));
 	}
 
@@ -5249,7 +5252,8 @@ class block_exacomp_external extends external_api {
 	    return new external_function_parameters (array(
 	        'courseid' => new external_value (PARAM_INT, 'id of course'),
 	        'students' => new external_value (PARAM_TEXT, 'json array of students'),
-	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL),
+	        //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
+	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT),
 	    ));
 	}
 	
@@ -7502,7 +7506,8 @@ class block_exacomp_external extends external_api {
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
 			'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
-		    'groupid' => new external_value (PARAM_INT, 'id of group',VALUE_OPTIONAL),
+		    //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
+		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT),
 		));
 	}
 

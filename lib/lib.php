@@ -6207,8 +6207,14 @@ function block_exacomp_build_json_time_slots($date = null) {
 		// only write at the begin of every unit
 		if ($i % 4 == 0) {
 			//$entry['name'] = ($i / 4 + 1).'. Einheit';
-            $entry['name'] = block_exacomp_get_string('n'.($i / 4 + 1).'.unit');
-			$entry['time'] = (isset($timeentries[$i / 4])) ? $timeentries[$i / 4] : '';
+            if (isset($timeentries[$i / 4])) {
+                $entry['name'] = '--fromConfig--';
+            } else {
+                //$entry['name'] = '';
+                $entry['name'] = block_exacomp_get_string('n'.($i / 4 + 1).'.unit');
+            }
+            //$entry['name'] = block_exacomp_get_string('n'.($i / 4 + 1).'.unit');
+            $entry['time'] = (isset($timeentries[$i / 4])) ? $timeentries[$i / 4] : '';
 		} else {
 			$entry['name'] = '';
 			$entry['time'] = '';
