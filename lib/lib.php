@@ -10021,7 +10021,16 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
             }
             // check on empty (not graded) child examples
             foreach (array_keys($torecalculate) as $parentid) {
-                if (count(array_filter($torecalculate[$parentid])) != count($torecalculate[$parentid])) {
+                switch (block_exacomp_get_assessment_example_scheme()) {
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                        // possible "0" value
+                        $filtered_array = array_filter($torecalculate[$parentid], 'is_numeric');
+                        break;
+                    default:
+                        $filtered_array = array_filter($torecalculate[$parentid]);
+                }
+                if (count($filtered_array) != count($torecalculate[$parentid])) {
                     // empty parent if it is not full graded (delete from database)
                     //block_exacomp_set_user_example($userid, $parentid, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, '');
                     g::$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLEEVAL,[

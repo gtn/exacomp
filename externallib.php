@@ -5516,6 +5516,16 @@ class block_exacomp_external extends external_api {
 	    static::require_can_access_course_user($courseid, $userid);
 	    static::require_can_access_example($exampleid, $courseid);
 	    block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid, $additionalInfo);
+        if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+            $example = (object)array(
+                    'userid' => $userid,
+                    'exampleid' => $exampleid,
+                    'value' => $examplevalue,
+                    'niveauid' => $exampleevalniveauid,
+            );
+            $examples = array($example);
+            block_exacomp_etheme_autograde_examples_tree($courseid, $examples);
+        }
 	    if ($itemid > 0 && $userid > 0) {    //So the student will never reach this part, either the itemid is null, or submit example is used
 	        $itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
 	        if (!$itemexample) {
