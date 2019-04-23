@@ -3945,6 +3945,8 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 
 		foreach ($examples as $example) {
+		    // it seems like dakora_get_examples_pool_returns has problems with the example titles which contain html tags, so:
+            $example->title = strip_tags($example->title);
 // 		    //Taxonomies:
 		    $taxonomies='';
 		    $taxids='';
@@ -3967,7 +3969,6 @@ class block_exacomp_external extends external_api {
 	        $example->courseshortname = $example_course->shortname;
 	        $example->coursefullname = $example_course->fullname;
 		}
-
 		return $examples;
 	}
 
@@ -4771,7 +4772,6 @@ class block_exacomp_external extends external_api {
 			$period_return->title = $period;
 			$periods_return[] = $period_return;
 		}
-
 		return array("units" => $units, "interval" => $interval, "begin" => $time, "periods" => $periods_return);
 	}
 
@@ -5174,7 +5174,7 @@ class block_exacomp_external extends external_api {
 			'examples' => new external_value (PARAM_TEXT, 'json array of examples'),
 			'students' => new external_value (PARAM_TEXT, 'json array of students'),
 		    //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
-		    'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT),
+		    'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
 		));
 	}
 
@@ -5253,7 +5253,7 @@ class block_exacomp_external extends external_api {
 	        'courseid' => new external_value (PARAM_INT, 'id of course'),
 	        'students' => new external_value (PARAM_TEXT, 'json array of students'),
 	        //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
-	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT),
+	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
 	    ));
 	}
 	
@@ -7507,7 +7507,7 @@ class block_exacomp_external extends external_api {
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
 			'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
 		    //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
-		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT),
+		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, 0),
 		));
 	}
 
