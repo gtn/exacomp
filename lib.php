@@ -125,10 +125,8 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
         $exacompElementInd = $allelements['exacompUseAutoCompetences'];
         $exacompElement = $mform->_elements[$exacompElementInd];
         unset($mform->_elements[$exacompElementInd]);
-        //echo "<pre>debug:<strong>lib.php:124</strong>\r\n"; print_r($mform); echo '</pre>'; exit; // !!!!!!!!!! delete it
         if (array_key_exists('availabilityconditionsjson', $allelements)) {
             $avacondintionsElementInd = $allelements['availabilityconditionsjson'];
-            //echo "<pre>debug:<strong>lib.php:133</strong>\r\n"; print_r($mform->_elements[$avacondintionsElementInd]); echo '</pre>'; exit; // !!!!!!!!!! delete it
             // go insert
             array_splice($mform->_elements, $avacondintionsElementInd, 0, array($exacompElement)); // splice in at position 3
             // reformat indexes
@@ -137,7 +135,6 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
                     $mform->_elementIndex[$el->_attributes['name']] = $key;
                 }
             }
-            //echo "<pre>debug:<strong>lib.php:133</strong>\r\n"; print_r($mform->_elements); echo '</pre>'; exit; // !!!!!!!!!! delete it
         }
 
     }
@@ -169,6 +166,6 @@ function block_exacomp_coursemodule_edit_post_actions($data, $course) {
 
 // possibility to look into this way 'cm_info_dynamic'... now it is not success
 //function block_exacomp_cm_info_dynamic() {
-//    echo "<pre>debug:<strong>lib.php:189</strong>\r\n"; print_r('------------------'); echo '</pre>'; exit; // !!!!!!!!!! delete it
+
 //}
 

@@ -240,7 +240,6 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $dTemp = debug_backtrace();
             if (is_array($dTemp) && array_key_exists(1, $dTemp) && array_key_exists('function', $dTemp[1])) {
                 $fromFunction = $dTemp[1]['function'];
-                //echo "<pre>debug:<strong>settings.php:243</strong>\r\n"; print_r($dTemp[1]); echo '</pre>'; // !!!!!!!!!! delete it
                 if ($fromFunction == 'admin_output_new_settings_by_page' || $fromFunction == 'any_new_admin_settings') {
                         return true; // may be this value already setted up
                 }

@@ -1458,7 +1458,6 @@ class data_importer extends data {
                                 }
                             }
                         }
-                        //echo "<pre>debug:<strong>data.php:1461</strong>\r\n"; var_dump($theSame); echo '</pre>'; exit; // !!!!!!!!!! delete it
                         if ((count($categories) > 0 && !$theSame) // for common importing
                                 || ($simulate && (!$newMapping && !$newSelecting))) // for scheduler importing
                         {
@@ -2165,8 +2164,6 @@ class data_importer extends data {
 		if ($xmlItem->categories) {
 			foreach ($xmlItem->categories->categoryid as $category) {
 				if ($categoryid = self::get_database_id($category)) {
-				    //echo "<pre>debug:<strong>data.php:2170</strong>\r\n"; print_r($categoryid); echo '</pre>'; // !!!!!!!!!! delete it
-				    //echo "<pre>debug:<strong>data.php:2170</strong>\r\n"; print_r($categoryMapping); echo '</pre>'; // !!!!!!!!!! delete it
 
 				    // TODO: /mantis/view.php?id=3173 - categories (niveaus) are disabled?
 					//g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));

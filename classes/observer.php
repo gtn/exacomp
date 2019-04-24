@@ -41,12 +41,8 @@ class block_exacomp_observer {
                 || (isset($CFG->defaultblocks) && strpos($CFG->defaultblocks, 'exacomp') !== false)
                 || (isset($CFG->{'defaultblocks_'.$course->format}) && strpos($CFG->{'defaultblocks_'.$course->format}, 'exacomp') !== false)
             ) {
-                //echo "<pre>debug:<strong>observer.php:37</strong>\r\n"; print_r($course); echo '</pre>'; // !!!!!!!!!! delete it
-                //echo "<pre>debug:<strong>observer.php:44</strong>\r\n"; print_r($CFG); echo '</pre>'; exit; // !!!!!!!!!! delete it
                 return true;
             }
-            //echo "<pre>debug:<strong>observer.php:37</strong>\r\n"; print_r($event->get_data()); echo '</pre>'; // !!!!!!!!!! delete it
-            //echo "<pre>debug:<strong>observer.php:37</strong>\r\n"; print_r($course); echo '</pre>'; // !!!!!!!!!! delete it
             // Check to see if this block is already on the default /my page.
             // another checking
             //$page = new moodle_page();

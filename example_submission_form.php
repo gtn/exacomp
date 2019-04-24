@@ -88,7 +88,6 @@ class block_exacomp_example_submission_form extends moodleform {
                 $exampleTitle .= '<span class="exacomp-submission-subcategory-links">'.block_exacomp_get_string('files').': '.$sublinks.'</span>';
             }
         }
-        //echo "<pre>debug:<strong>example_submission_form.php:47</strong>\r\n"; print_r($exampleTitleArr); echo '</pre>'; exit; // !!!!!!!!!! delete it
         //if ($exampleTitle) {
         //    $exampleTitle .= '<br>';
         //}

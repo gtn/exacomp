@@ -71,7 +71,6 @@ class dakoraVariableWs {
                 }
                 break;
             /*case '\core\session\database':
-                echo "<pre>debug:<strong>test_session.php:76</strong>\r\n"; print_r($this->sessionHandler->handler_read($this->sessionId)); echo '</pre>'; // !!!!!!!!!! delete it
                 $data = unserialize($this->sessionHandler->handler_read($this->sessionId));
                 if (array_key_exists($name, $data['SESSION'])) {
                     $result = $data[$name];

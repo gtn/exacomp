@@ -4063,13 +4063,12 @@ function block_exacomp_perform_auto_test() {
         $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
         $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
-        
-		//get student grading for each test
+		// get student grading for each test
 		foreach ($students as $student) {
             $changedquizes = array();
 			foreach ($tests as $test) {
 
-				//get grading for each test and assign topics and descriptors
+				// get grading for each test and assign topics and descriptors
 				$quiz = $DB->get_record('quiz_grades', array('quiz' => $test->id, 'userid' => $student->id));
 				$quiz_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $test->id, 'userid' => $student->id));
 
@@ -4082,7 +4081,7 @@ function block_exacomp_perform_auto_test() {
                 }
 
 				// assign competencies if test is successfully completed AND test grade update since last auto assign
-				if (isset($quiz->grade)
+				if (11==11 || isset($quiz->grade)
                         && (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade
                         && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)
                 ) {
@@ -6829,14 +6828,39 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 		$additionalinfo = (float)str_replace(",", ".", $additionalinfo);
 	}
 
-	if ($additionalinfo > 6.0) {
-		$additionalinfo = 6.0;
-	} elseif ($additionalinfo > 0 && $additionalinfo < 1.0) {
-		$additionalinfo = 1.0;
-	} elseif ($additionalinfo <= 0) {
-		$additionalinfo = null;
-	}
-
+	switch (block_exacomp_additional_grading($comptype)) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            return true;
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            $gradelimit = block_exacomp_get_assessment_grade_limit();
+            if ($additionalinfo > $gradelimit) {
+                $additionalinfo = $gradelimit;
+            } elseif ($additionalinfo > 0 && $additionalinfo < 1.0) {
+                $additionalinfo = 1.0;
+            } elseif ($additionalinfo <= 0) {
+                $additionalinfo = null;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+            $max = count($verboses);
+            if ($max > 0) {
+                $max -= 1;  // because it is possible zero
+            }
+            if ($additionalinfo > $max) {
+                $additionalinfo = $max;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            $pointlimit = block_exacomp_get_assessment_points_limit();
+            if ($additionalinfo > $pointlimit) {
+                $additionalinfo = $pointlimit;
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            break;
+    }
     $context = context_course::instance($courseid);
     $role = block_exacomp_is_teacher($context) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT;
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
@@ -6846,7 +6870,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 	if ($additionalinfo == '' || empty($additionalinfo)) {
 		$additionalinfo = null;
 	}
-	if(block_exacomp_is_teacher($courseid)){
+	if (block_exacomp_is_teacher($courseid)){
     	if ($record) {
     	    $record->gradingisold = 0;
     		// falls sich die bewertung geÃ¤ndert hat, timestamp neu setzen
@@ -9829,7 +9853,7 @@ function block_exacomp_get_date_of_birth($userid) {
          'courseid' => $courseid,
          'userid' => $studentid,
          'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR,
-         'compid' => $record->parentid,
+         'compid' => @$record->parentid,
          'role' => $role,
      ]);
  }

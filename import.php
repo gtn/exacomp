@@ -163,8 +163,6 @@ class generalxml_upload_form extends \moodleform {
                     //$mform->setType('currentImportStep', PARAM_TEXT);
                     //$mform->setDefault('currentImportStep', 'selectGrids');
                     $mform->addElement('html', '<input type="hidden" name="currentImportStep" value="selectGrids">');
-                    //parent::set_data(['currentImportStep' => '1111']);
-                    //echo "<pre>debug:<strong>import.php:163</strong>\r\n"; print_r($mform->da); echo '</pre>'; // !!!!!!!!!! delete it
                     // if used preselected values - message
                     $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId'], $forSchedulerTask);
                     if ($currentSelected || $currentAllGrids == 1) {
