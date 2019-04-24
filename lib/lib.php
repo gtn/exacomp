@@ -4082,7 +4082,10 @@ function block_exacomp_perform_auto_test() {
                 }
 
 				// assign competencies if test is successfully completed AND test grade update since last auto assign
-				if (isset($quiz->grade) && (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)) {
+				if (isset($quiz->grade)
+                        && (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade
+                        && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)
+                ) {
 				    $changedquizes[$quiz->quiz] = $quiz->timemodified;
                     block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, true, $maxGrade, $studentGradeResult);
 

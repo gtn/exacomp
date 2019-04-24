@@ -408,7 +408,7 @@ $string['descriptor'] = 'Kompetenz';
 $string['descriptor_child'] = 'Teilkompetenz';
 $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['descriptor_categories'] = 'Kategorien: ';
-$string['descriptor_add_category'] = 'Neue Kategorie hinzuf�gen: ';
+$string['descriptor_add_category'] = 'Neue Kategorie hinzufügen: ';
 
 // === metadata ===
 $string['subject_singular'] = 'Fach';

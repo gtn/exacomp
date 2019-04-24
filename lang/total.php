@@ -1432,7 +1432,7 @@ return [
         'Categories: ',
     ],
     'descriptor_add_category' => [
-        'Neue Kategorie hinzuf�gen: ',
+        'Neue Kategorie hinzufügen: ',
         'Add new category ',
     ],
     

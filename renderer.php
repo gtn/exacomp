@@ -2075,7 +2075,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
 			//TODO: if used, always visible?
 			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid);
-
+            $reviewername = '';
 			if ($data->role == BLOCK_EXACOMP_ROLE_TEACHER || $visible) {
 				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
 
@@ -2316,15 +2316,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $niveau_cell->text = '';
                         }
 
-					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
-					    //the warning contains the name of the reviewer
-					    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
-					    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
-					    $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
-					    if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
-					        $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
-					    }else {
-					        $reviewername=$reviewerTeacherUsername;
+					    // Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
+					    // the warning contains the name of the reviewer
+					    $reviewerTeacherFirstname = $DB->get_field('user','firstname',array('id' => $reviewerid));
+					    $reviewerTeacherLastname = $DB->get_field('user','lastname',array('id' => $reviewerid));
+					    $reviewerTeacherUsername = $DB->get_field('user','username',array('id' => $reviewerid));
+					    if ($reviewerTeacherFirstname != NULL && $reviewerTeacherLastname != NULL){
+					        $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+					    } else {
+					        $reviewername = $reviewerTeacherUsername;
 					    }
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$descriptor->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
@@ -2655,7 +2655,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					    //echo "GEHT IM EDITMODE NICHT HIER REIN22222";
 						$columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
 
-						if (!$one_student && $descriptor_parent_visible[$student->id] == false) {
+						if (!$one_student && array_key_exists($student->id, $descriptor_parent_visible) && $descriptor_parent_visible[$student->id] == false) {
 							$visible_student_example = false;
 						} elseif (!$one_student && !$editmode) {
 							$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
@@ -3527,7 +3527,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$info = "";
 		if ($sourceid == BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER) {
 			$info = block_exacomp_get_string('local');
-		} elseif ($sourceid && $source = $DB->get_record("block_exacompdatasources", array('id' => $sourceid))) {
+		} elseif ($sourceid && $source = $DB->get_record(BLOCK_EXACOMP_DB_DATASOURCES, array('id' => $sourceid))) {
 			$info = $source->name;
 		}
 		if (empty($info)) {

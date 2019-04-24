@@ -1332,7 +1332,7 @@ class data_importer extends data {
 		$lock->lock();
 
         if (!$simulate) {
-            $transaction = g::$DB->start_delegated_transaction();
+            //$transaction = g::$DB->start_delegated_transaction();
         }
 		
 		// guess it's a zip file
@@ -1431,72 +1431,83 @@ class data_importer extends data {
 
         // work with GetPost, because additional form settings are not initialized yet
         $newSelecting = optional_param_array('selectedGrid', null, PARAM_RAW);
-        // we need to compare assessment_diffLevel_options with XML categories and rename it if needed
-        // DISABLED NOW !!!!!
-        if (isset($xml->categories) && 2==1) {
-            // work with GetPost, because additional form settings are not initialized yet
-            $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
-            if ($newMapping) {
-                self::update_categorymapping_for_source($source_local_id, $newMapping, $simulate);
-            }
-            $difflevels = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
-            $categoryMapping = self::get_categorymapping_for_source($source_local_id, ($simulate || $schedulerId > 0 ? true : false));
-            $categories = array();
-            $theSame = true;
-            if (!$newMapping) {
-                foreach ($xml->categories->category as $category) {
-                    $categories[] = $category;
-                    // mapping must be from real plugin settings
-                    $mappingExists = $categoryMapping
-                                            && array_key_exists(intval($category->attributes()->id), $categoryMapping)
-                                            && in_array($categoryMapping[intval($category->attributes()->id)], $difflevels);
-                    if (!in_array(trim($category->title), $difflevels) && !$mappingExists) {
-                        $theSame = false;
-                    }
-                }
-            }
-            if ((count($categories) > 0 && !$theSame) // for common importing
-                    || ($simulate && (!$newMapping && !$newSelecting)) ) // for scheduler importing
-            {
-                return array('result' => 'compareCategories', 'list' => $categories, 'sourceId' => $source_local_id);
-            }
-        }
-
-        // select grids for importing
-        if (isset($xml->edulevels)) {
-            $allGridSelected = optional_param('selectedGridAll', null, PARAM_INT);
-            if ($allGridSelected !== null) {
-                self::update_selectedgridsall_for_source($source_local_id, $allGridSelected, ($simulate || $schedulerId > 0 ? true : false));
-            }
-            if (!$allGridSelected && $newSelecting && count($newSelecting) > 0) {
-                // update selected grids only if not selected 'all subjects' checkbox
-                self::update_selectedgrids_for_source($source_local_id, $newSelecting, ($simulate || $schedulerId > 0 ? true : false));
-            }
-            $selectedGrids = self::get_selectedgrids_for_source($source_local_id, ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
-		    $grids = array();
-		    if ($schedulerId != -1 && (!$newSelecting && $allGridSelected === null && $schedulerId == 0 ) || ($simulate && !$newSelecting && $allGridSelected === null)) {
-                foreach ($xml->edulevels->edulevel as $edulevel) {
-                    foreach ($edulevel->schooltypes->schooltype as $schooltype) {
-                        foreach ($schooltype->subjects->subject as $subject) {
-                            $subjectUid = intval($subject->attributes()->id);
-                            $subject->pathname = $edulevel->title.' &#9656; '.$schooltype->title;
-                            // selected on previous importing
-                            if ($selectedGrids && array_key_exists($subjectUid, $selectedGrids) && $selectedGrids[$subjectUid] == 1) {
-                                $subject->selected = true;
-                            } elseif (!$selectedGrids && !$newSelecting) { // first importing for this source
-                                $subject->selected = true; // all subjects are selected
+        $currentImportStep = optional_param('currentImportStep', 'compareCategories', PARAM_RAW);
+        switch ($currentImportStep) {
+            case 'compareCategories':
+                // we need to compare assessment_diffLevel_options with XML categories and rename it if needed
+                if (isset($xml->categories)) {
+                    // work with GetPost, because additional form settings are not initialized yet
+                    $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
+                    if ($newMapping) {
+                        self::update_categorymapping_for_source($source_local_id, $newMapping, $simulate);
+                    } else {
+                        $difflevels = preg_split("/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+                        $categoryMapping = self::get_categorymapping_for_source($source_local_id,
+                                ($simulate || $schedulerId > 0 ? true : false));
+                        $categories = array();
+                        $theSame = true;
+                        if (!$newMapping) {
+                            foreach ($xml->categories->category as $category) {
+                                $categories[] = $category;
+                                // mapping must be from real plugin settings
+                                /*$mappingExists = $categoryMapping
+                                        && array_key_exists(intval($category->attributes()->id), $categoryMapping)
+                                        && in_array($categoryMapping[intval($category->attributes()->id)], $difflevels);*/
+                                if (!in_array(trim($category->title), $difflevels)/* && !$mappingExists*/) {
+                                    $theSame = false;
+                                }
                             }
-                            // it is new for importing from this source
-                            if ($selectedGrids && !array_key_exists($subjectUid, $selectedGrids)) {
-                                $subject->newForSelected = true;
-                            }
-                            $grids[$subjectUid] = $subject;
+                        }
+                        //echo "<pre>debug:<strong>data.php:1461</strong>\r\n"; var_dump($theSame); echo '</pre>'; exit; // !!!!!!!!!! delete it
+                        if ((count($categories) > 0 && !$theSame) // for common importing
+                                || ($simulate && (!$newMapping && !$newSelecting))) // for scheduler importing
+                        {
+                            return array('result' => 'compareCategories', 'list' => $categories, 'sourceId' => $source_local_id);
                         }
                     }
                 }
-                $resultByGrids = 'selectGrids';
-                return array('result' => $resultByGrids, 'list' => $grids, 'sourceId' => $source_local_id);
-            }
+            case 'selectGrids':
+                // select grids for importing
+                if (isset($xml->edulevels)) {
+                    $allGridSelected = optional_param('selectedGridAll', null, PARAM_INT);
+                    if ($allGridSelected !== null) {
+                        self::update_selectedgridsall_for_source($source_local_id, $allGridSelected, ($simulate || $schedulerId > 0 ? true : false));
+                    } elseif (!$allGridSelected && $newSelecting && count($newSelecting) > 0) {
+                        // update selected grids only if not selected 'all subjects' checkbox
+                        self::update_selectedgrids_for_source($source_local_id, $newSelecting, ($simulate || $schedulerId > 0 ? true : false));
+                    } else {
+                        $selectedGrids = self::get_selectedgrids_for_source($source_local_id,
+                                ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
+                        $grids = array();
+                        if ($schedulerId != -1 && (!$newSelecting && $allGridSelected === null && $schedulerId == 0) ||
+                                ($simulate && !$newSelecting && $allGridSelected === null)) {
+                            foreach ($xml->edulevels->edulevel as $edulevel) {
+                                foreach ($edulevel->schooltypes->schooltype as $schooltype) {
+                                    foreach ($schooltype->subjects->subject as $subject) {
+                                        $subjectUid = intval($subject->attributes()->id);
+                                        $subject->pathname = $edulevel->title.' &#9656; '.$schooltype->title;
+                                        // selected on previous importing
+                                        if ($selectedGrids && array_key_exists($subjectUid, $selectedGrids) &&
+                                                $selectedGrids[$subjectUid] == 1) {
+                                            $subject->selected = true;
+                                        } else if (!$selectedGrids && !$newSelecting) { // first importing for this source
+                                            $subject->selected = true; // all subjects are selected
+                                        }
+                                        // it is new for importing from this source
+                                        if ($selectedGrids && !array_key_exists($subjectUid, $selectedGrids)) {
+                                            $subject->newForSelected = true;
+                                        }
+                                        $grids[$subjectUid] = $subject;
+                                    }
+                                }
+                            }
+                            $resultByGrids = 'selectGrids';
+                            return array('result' => $resultByGrids, 'list' => $grids, 'sourceId' => $source_local_id);
+                        }
+                    }
+                }
+            //default:
+            //    return array('result' => 'goRealImporting');
         }
 
         if ($simulate) {
@@ -1538,10 +1549,10 @@ class data_importer extends data {
 			}
 		}
 
+        $categoryMapping = self::get_categorymapping_for_source($source_local_id, ($simulate || $schedulerId > 0 ? true : false));
         $categoryFromSelected = self::get_property_for_descriptors_from_xml($xml, 'categories/categoryid', $descriptorsFromSelectedGrids);
 		if(isset($xml->categories)) {
             //$categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
-            $categoryMapping = self::get_categorymapping_for_source($source_local_id, ($simulate || $schedulerId > 0 ? true : false));
 			foreach($xml->categories->category as $category) {
                 if (in_array($category->attributes()->id, $categoryFromSelected)) {
                     self::insert_category($category, 0, $categoryMapping);
@@ -1552,7 +1563,7 @@ class data_importer extends data {
 		if (isset($xml->descriptors)) {
 			foreach($xml->descriptors->descriptor as $descriptor) {
 			    if (in_array($descriptor->attributes()->id, $descriptorsFromSelectedGrids)) {
-                    self::insert_descriptor($descriptor);
+                    self::insert_descriptor($descriptor, 0, 0, $categoryMapping);
                 }
 			}
 		}
@@ -1577,7 +1588,8 @@ class data_importer extends data {
                                     $data = array($fieldname => 0);
                                 }
                                 $where = [$fieldname => $sourceid, 'source' => $source];
-                                g::$DB->update_record($tablename, $data, $where);
+                                //g::$DB->update_record($tablename, $data, $where); // not for multiple
+                                $DB->set_field($tablename, $fieldname, $data[$fieldname], $where);
                             }
                         }
                     }
@@ -1670,7 +1682,7 @@ class data_importer extends data {
 	
 		block_exacomp_settstamp();
 
-		$transaction->allow_commit();
+		//$transaction->allow_commit();
 		
 		return true;
 	}
@@ -1818,6 +1830,7 @@ class data_importer extends data {
 				g::$DB->execute("UPDATE {".$table."} SET id=? WHERE id=?", array($item->id, $new_id));
 			}
 		}
+		return $item->id;
 	}
 	
 	private static function insert_source($xmlItem) {
@@ -1841,16 +1854,17 @@ class data_importer extends data {
             $newMapping = $newMapping + $currentMapping;
         }
 	    $data = serialize($newMapping);
-        //echo $sourceId.'----'.$data;
+        //$datasql = new \stdClass();
+        //$datasql->id = $sourceId;
+        //$datasql->category_mapping = $data;
         if ($forSchedulerTask) {
-            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_IMPORTTASKS."} SET category_mapping=? WHERE id=?", array($data, $sourceId));
-            //$obj = new \stdClass();
-            //$obj->id = $sourceId;
-            //$obj->category_mapping = $data;
-            //$res = $DB->update_record(BLOCK_EXACOMP_DB_IMPORTTASKS, $obj);
-            //var_dump($res); exit;
+            $DB->execute("UPDATE {".BLOCK_EXACOMP_DB_IMPORTTASKS."} SET category_mapping = ? WHERE id = ?", array($data, $sourceId));
         } else {
-            g::$DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET category_mapping=? WHERE id=?", array($data, $sourceId));
+            //$DB->update_record(BLOCK_EXACOMP_DB_DATASOURCES, $datasql);
+            //$transaction->allow_commit();
+            $DB->execute("UPDATE {".BLOCK_EXACOMP_DB_DATASOURCES."} SET category_mapping = ? WHERE id = ?", array($data, $sourceId));
+            //print_object($rrr);
+            //exit;
         }
         // todo: why is this not working?!:
         /*g::$DB->update_record(BLOCK_EXACOMP_DB_DATASOURCES, array(
@@ -1858,6 +1872,7 @@ class data_importer extends data {
         ), array(
                 'id' => $sourceId
         ));*/
+        return true;
     }
 
     public static function get_categorymapping_for_source($sourceId = null, $forSchedulerTask = false) {
@@ -2110,14 +2125,14 @@ class data_importer extends data {
 		
 		if ($xmlItem->children) {
 			foreach($xmlItem->children->category as $child) {
-				self::insert_category($child, $item->id);
+				self::insert_category($child, $item->id, $categoryMapping);
 			}
 		}
 		
 		return $item;
 	}
 		
-	private static function insert_descriptor($xmlItem, $parent = 0, $sorting = 0) {
+	private static function insert_descriptor($xmlItem, $parent = 0, $sorting = 0, $categoryMapping) {
 		$descriptor = self::parse_xml_item($xmlItem);
 		$descriptor->crdate = self::$import_time;
 		
@@ -2150,9 +2165,14 @@ class data_importer extends data {
 		if ($xmlItem->categories) {
 			foreach ($xmlItem->categories->categoryid as $category) {
 				if ($categoryid = self::get_database_id($category)) {
+				    //echo "<pre>debug:<strong>data.php:2170</strong>\r\n"; print_r($categoryid); echo '</pre>'; // !!!!!!!!!! delete it
+				    //echo "<pre>debug:<strong>data.php:2170</strong>\r\n"; print_r($categoryMapping); echo '</pre>'; // !!!!!!!!!! delete it
+
 				    // TODO: /mantis/view.php?id=3173 - categories (niveaus) are disabled?
 					//g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
-                    g::$DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
+                    //g::$DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
+                    // 24.04.2019. enable again?
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
 				}
 			}
 		}
@@ -2160,7 +2180,7 @@ class data_importer extends data {
 		if ($xmlItem->children) {
 			$sorting = 1;
 			foreach ($xmlItem->children->descriptor as $child){
-				self::insert_descriptor($child, $descriptor->id, $sorting);
+				self::insert_descriptor($child, $descriptor->id, $sorting, $categoryMapping);
 				$sorting++;
 			}
 		}

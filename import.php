@@ -78,6 +78,7 @@ class generalxml_upload_form extends \moodleform {
 		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
 		$this->_form->_attributes['class'] = "mform exacomp_import";
 		$check = \block_exacomp\data::has_data();
+
 		if ($importtype == 'custom') {
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));
 		} elseif ($importtype == 'scheduler') {
@@ -103,6 +104,7 @@ class generalxml_upload_form extends \moodleform {
         //parent::definition_after_data();
         $forSchedulerTask = false;
         $mform =& $this->_form;
+
         if ($this->_confirmationData && is_array($this->_confirmationData)) {
             $data = $this->_confirmationData;
             if (isset($data['forSchedulerTask']) && $data['forSchedulerTask'] == true) {
@@ -110,6 +112,10 @@ class generalxml_upload_form extends \moodleform {
             }
             switch ($data['result']) {
                 case 'compareCategories':
+                    //$mform->addElement('hidden', 'currentImportStep');
+                    //$mform->setType('currentImportStep', PARAM_TEXT);
+                    //$mform->setDefault('currentImportStep', 'compareCategories');
+                    $mform->addElement('html', '<input type="hidden" name="currentImportStep" value="compareCategories">');
                     $categoryMapping = \block_exacomp\data_importer::get_categorymapping_for_source($data['sourceId'], $forSchedulerTask);
                     // input form for comparing categories
                     //print_r(block_exacomp_get_assessment_diffLevel_options());
@@ -153,6 +159,12 @@ class generalxml_upload_form extends \moodleform {
                     require_once(__DIR__.'/classes/import_selectgrid_checkbox.php');
                     MoodleQuickForm::registerElementType('import_selectgrid_checkbox', $CFG->dirroot.'/blocks/exacomp/classes/import_selectgrid_checkbox.php', 'block_exacomp_import_extraconfigcheckbox');
                     $currentAllGrids = block_exacomp\data_importer::get_selectedallgrids_for_source($data['sourceId'], $forSchedulerTask);
+                    //$mform->addElement('hidden', 'currentImportStep');
+                    //$mform->setType('currentImportStep', PARAM_TEXT);
+                    //$mform->setDefault('currentImportStep', 'selectGrids');
+                    $mform->addElement('html', '<input type="hidden" name="currentImportStep" value="selectGrids">');
+                    //parent::set_data(['currentImportStep' => '1111']);
+                    //echo "<pre>debug:<strong>import.php:163</strong>\r\n"; print_r($mform->da); echo '</pre>'; // !!!!!!!!!! delete it
                     // if used preselected values - message
                     $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId'], $forSchedulerTask);
                     if ($currentSelected || $currentAllGrids == 1) {
@@ -328,15 +340,18 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                                 }
 
                                 echo $OUTPUT->box($html);
-                            } else if (is_array($importSuccess)){
+                            } else if (is_array($importSuccess) && $importSuccess['result'] != 'goRealImporting'){
                                 // no errors for now, but the user needs to configure importing
+                                $html = '';
                                 switch ($importSuccess['result']) {
                                     case 'compareCategories':
-                                        $html = block_exacomp_get_string("import_category_mapping_needed");
-                                        break;
+                                        if ($html == '') {
+                                            $html = block_exacomp_get_string("import_category_mapping_needed");
+                                        }
                                     case 'selectGrids':
-                                        $html = block_exacomp_get_string("import_category_selectgrids_needed");
-                                        break;
+                                        if ($html == '') {
+                                            $html = block_exacomp_get_string("import_category_selectgrids_needed");
+                                        }
                                 }
                                 echo $OUTPUT->box($html, 'alert alert-warning');
                                 $mform->setConfirmationData($importSuccess);
