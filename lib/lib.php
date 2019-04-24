@@ -278,6 +278,15 @@ function block_exacomp_is_teacher_in_any_course() {
 
 	return false;
 }
+function block_exacomp_get_teacher_courses($userid) {
+	$courses = block_exacomp_get_exacomp_courses($userid);
+	foreach ($courses as $key => $course) {
+		if (!block_exacomp_is_teacher(context_course::instance($course->id))) {
+			// unset($courses[$key]);
+		}
+	}
+	return $courses;
+}
 
 //Get all courses a teacher is enrolled
 function block_exacomp_get_courses_of_teacher($userid) {
