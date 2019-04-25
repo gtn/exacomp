@@ -3761,7 +3761,7 @@ class block_exacomp_external extends external_api {
 	 * @return array
 	 */
 	public static function dakora_get_students_and_groups_for_course($courseid) {
-		global $PAGE;
+		global $PAGE,$OUTPUT;
 		static::validate_parameters(static::dakora_get_students_and_groups_for_course_parameters(), array(
 			'courseid' => $courseid,
 		));
@@ -3776,7 +3776,17 @@ class block_exacomp_external extends external_api {
 		//Add groups as well:
 		$groups = groups_get_all_groups($courseid);
 		$studentsAndGroups['groups'] = $groups;
-		
+        foreach($groups as $group){
+            $picture = get_group_picture_url($group, $courseid);
+            if($picture != null) {
+                $picture->size = 50;
+                $group->picture = $picture->out();
+            }else{
+                $group->picture = $OUTPUT->pix_url('i/group','')->out();
+            }
+
+        }
+
 		$students = block_exacomp_get_students_by_course($courseid);
 
 		foreach ($students as $student) {
