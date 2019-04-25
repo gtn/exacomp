@@ -80,6 +80,9 @@ if ($formdata = $form->get_data()) {
     
     echo $output->popup_close_and_reload();
     exit;
+}else if($form->is_cancelled()){
+    echo $output->popup_close_and_reload();
+    exit;
 }
 
 $form->display();
