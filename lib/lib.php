@@ -293,7 +293,7 @@ function block_exacomp_get_courses_of_teacher($userid) {
     $courses = block_exacomp_get_courseids();
     $teachersCourses = array();
 
-    var_dump($courses);
+    //var_dump($courses);
     foreach ($courses as $course) {
         if (block_exacomp_is_teacher($course)) {
             $teachersCourses[] = $course;

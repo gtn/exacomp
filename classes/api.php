@@ -132,7 +132,8 @@ class api {
 	static function get_subjects_with_grade_for_teacher_and_student($teacherid, $studentid) {
 		$resultSubjects = [];
 
-		$courses = block_exacomp_get_teacher_courses($teacherid);
+		//$courses = block_exacomp_get_teacher_courses($teacherid);
+		$courses = block_exacomp_get_courses_of_teacher($teacherid);
 		foreach ($courses as $course) {
 			$subjects = db_layer_course::create($course->id)->get_subjects();
 			foreach ($subjects as $subject) {
