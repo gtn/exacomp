@@ -7093,35 +7093,33 @@ class block_exacomp_external extends external_api {
 	{
 	    global $DB;
 	    
-	    $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array(
+	    $parameters = static::validate_parameters(static::diggr_get_students_of_cohort_parameters(), array(
 	        'cohortid' => $cohortid,
 	    ));
 
-	    $studentids = array();
-	    $students = array();
+	    $returnStudents = array();
 	    $returndata = new stdClass ();
 	    
-	    $studentids = $DB->get_fieldset_select('cohort_members', 'userid', array('cohortid'=>$cohortid));
-	    foreach($studentids as $studentid){
+	    $students = $DB->get_records('cohort_members', array('cohortid'=>$cohortid));
+	    foreach($students as $student){
 	        $studentObject = $DB->get_record('user', array(
-	            'id' => $studentid,
+	            'id' => $student->userid,
 	        ));
 	        $returndataObject = new stdClass ();
+	        $returndataObject->userid = $student->userid;
 	        $returndataObject->name = fullname($studentObject);
-	        $returndataObject->userid = $studentid;
-	        $students[] = $returndataObject;
+	        $returnStudents[] = $returndataObject;
 	    }
 	    
 
 	    
 
-	    $returndataObject->cohortcode = $DB->get_field('block_exacompcohortcode', 'cohortcode' , array(
+	    $returndata->cohortcode = $DB->get_field('block_exacompcohortcode', 'cohortcode' , array(
 	        "cohortid" => $cohortid,
 	    ));
 	    
-	    $returndata->cohortcode = $cohortcode;
 	    $returndata->cohortid = $cohortid;
-	    $returndata->students = $students;
+	    $returndata->students = $returnStudents;
 	    
 
 	    return $returndata;
@@ -7134,14 +7132,14 @@ class block_exacomp_external extends external_api {
 	 * @since Moodle 2.5
 	 */
 	public static function diggr_get_students_of_cohort_returns() {
-	    return new external_multiple_structure (new external_single_structure (array(
+	    return new external_single_structure (array(
 	        'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
 	        'cohortcode' => new external_value (PARAM_TEXT, 'code of cohort'),
 	        'students' => new external_multiple_structure (new external_single_structure (array(
 	            'userid' => new external_value (PARAM_INT, 'id of student'),
 	            'name' => new external_value (PARAM_TEXT, 'name of student'),
 	        )))
-	    )));
+	    ));
 	}
 	
 	/**
@@ -7150,7 +7148,7 @@ class block_exacomp_external extends external_api {
 	 * @return external_function_parameters
 	 */
 	public static function diggr_get_cohorts_of_trainer_parameters() {
-	    return new external_function_parameters(array(
+	    return new external_function_parameters (array(
 	        'trainerid' => new external_value(PARAM_RAW, 'trainer id'),
 	    ));
 	}
@@ -7171,14 +7169,16 @@ class block_exacomp_external extends external_api {
 	{
 	    global $DB;
 	    
-	    $parameters = static::validate_parameters(static::diggr_create_cohort_parameters(), array(
+	    
+	    
+	    $parameters = static::validate_parameters(static::diggr_get_cohorts_of_trainer_parameters(), array(
 	        'trainerid' => $trainerid,
 	    ));
-	    
+// 	    var_dump("asdf");
 
 	    
-	    $returndata = new stdClass ();
-	    $returndata->cohorts = array();
+	    $returndata = array();
+	    $cohorts = array();
 	    
 	    $dbCohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$trainerid));
 	    foreach($dbCohorts as $cohort){
@@ -7190,11 +7190,12 @@ class block_exacomp_external extends external_api {
 	        $returndataObject->name = $cohortname;
 	        $returndataObject->cohortid = $cohort->cohortid;
 	        $returndataObject->cohortcode = $cohort->cohortcode;
-	        $returndata->cohorts[] = $returndataObject;
+	        $cohorts[] = $returndataObject;
 	    }
 	   
 	    
-	    return $returndata;
+	     $returndata["cohorts"] = $cohorts;
+	     return $returndata;
 	}
 	
 	/**
