@@ -1550,7 +1550,7 @@ class data_importer extends data {
 
         $categoryMapping = self::get_categorymapping_for_source($source_local_id, ($simulate || $schedulerId > 0 ? true : false));
         $categoryFromSelected = self::get_property_for_descriptors_from_xml($xml, 'categories/categoryid', $descriptorsFromSelectedGrids);
-		if(isset($xml->categories)) {
+		if (isset($xml->categories)) {
             //$categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
 			foreach($xml->categories->category as $category) {
                 if (in_array($category->attributes()->id, $categoryFromSelected)) {
@@ -2112,9 +2112,17 @@ class data_importer extends data {
 	private static function insert_category($xmlItem, $parent = 0, $categoryMapping = array()) {
 		$item = self::parse_xml_item($xmlItem);
 
-		// change category title bu category mapping
+		// change category title bн category mapping
 		if (is_array($categoryMapping) && array_key_exists($item->sourceid, $categoryMapping)) {
-		    $item->title = trim($categoryMapping[$item->sourceid]);
+		    $mappedCategory = $categoryMapping[$item->sourceid];
+		    if ($mappedCategory == '--as_is--') {
+		        // leave as it is. nothing to do
+            } elseif ($mappedCategory == '--delete--') {
+		        // delete category
+                return false;
+            } else {
+                $item->title = trim($categoryMapping[$item->sourceid]);
+            }
         }
 		
 		$item->parentid = $parent;
@@ -2140,13 +2148,15 @@ class data_importer extends data {
 			$descriptor->sorting = $sorting;
 		}
 		
-		if ($xmlItem->niveauid)
-			$descriptor->niveauid = self::get_database_id($xmlItem->niveauid);
-		if ($xmlItem->skillid)
-			$descriptor->skillid = self::get_database_id($xmlItem->skillid);
-		if (!isset($descriptor->profoundness))
-			$descriptor->profoundness = 0;
-		
+		if ($xmlItem->niveauid) {
+            $descriptor->niveauid = self::get_database_id($xmlItem->niveauid);
+        }
+		if ($xmlItem->skillid) {
+            $descriptor->skillid = self::get_database_id($xmlItem->skillid);
+        }
+		if (!isset($descriptor->profoundness)) {
+            $descriptor->profoundness = 0;
+        }
 
 		self::insert_or_update_item(BLOCK_EXACOMP_DB_DESCRIPTORS, $descriptor);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_DESCRIPTORS, $descriptor);
@@ -2159,18 +2169,32 @@ class data_importer extends data {
 		if ($xmlItem->examples) {
 			throw new moodle_exception('oldxmlfile');
 		}
-		
+
+		// mm relations
 		//self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_DESCCAT, 'descrid', $descriptor->id);
 		if ($xmlItem->categories) {
 			foreach ($xmlItem->categories->categoryid as $category) {
-				if ($categoryid = self::get_database_id($category)) {
-
-				    // TODO: /mantis/view.php?id=3173 - categories (niveaus) are disabled?
-					//g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
+			    $originCatId = $category['id']->__toString();
+                if (is_array($categoryMapping) && array_key_exists($originCatId, $categoryMapping)) {
+                    $mappedCategory = $categoryMapping[$originCatId];
+                    if ($mappedCategory == '--as_is--') {
+                        // leave as is: nothing to do
+                    } elseif ($mappedCategory == '--delete--') {
+                        // delete: miss this category
+                        continue;
+                    } else {
+                        // change category
+                        // but it was already changed before, when categories were imported
+                        // so - nothing to do now.
+                    }
+                }
+                if ($categoryid = self::get_database_id($category)) {
+                    // TODO: /mantis/view.php?id=3173 - categories (niveaus) are disabled?
+                    //g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
                     //g::$DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
                     // 24.04.2019. enable again?
-                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
-				}
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $descriptor->id, "catid" => $categoryid));
+                }
 			}
 		}
 		

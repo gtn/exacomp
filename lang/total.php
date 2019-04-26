@@ -2411,7 +2411,7 @@ return [
         'Select subjects for importing:',
     ],
     'import_category_mapping_needed' => [
-        'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:',
+        'Das importierte Kompetenzraster enthält ein anderes Niveaukonzept als an Ihrer Schule. Die entsprechenden Niveaueintragungen werden gelöscht. Sie können diese nachträglich selbst editieren.',
         'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:',
     ],
     'import_category_mapping_column_xml' => [
@@ -2433,6 +2433,14 @@ return [
     'import_category_mapping_column_level_example' => [
             'Material',
             'Material'
+    ],
+    'import_mapping_as_is' => [
+            'Use as is',
+            'Use as is',
+    ],
+    'import_mapping_delete' => [
+            'Delete',
+            'Delete',
     ],
     'save' => [
             'Speichern',

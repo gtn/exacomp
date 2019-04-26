@@ -112,15 +112,16 @@ class generalxml_upload_form extends \moodleform {
             }
             switch ($data['result']) {
                 case 'compareCategories':
-                    //$mform->addElement('hidden', 'currentImportStep');
-                    //$mform->setType('currentImportStep', PARAM_TEXT);
-                    //$mform->setDefault('currentImportStep', 'compareCategories');
+
                     $mform->addElement('html', '<input type="hidden" name="currentImportStep" value="compareCategories">');
                     $categoryMapping = \block_exacomp\data_importer::get_categorymapping_for_source($data['sourceId'], $forSchedulerTask);
                     // input form for comparing categories
-                    //print_r(block_exacomp_get_assessment_diffLevel_options());
                     $difflevels = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
                     $difflevels = array_combine($difflevels, $difflevels);
+                    $difflevels = array(
+                                    '--as_is--' => block_exacomp_get_string('import_mapping_as_is'),
+                                    '--delete--' => block_exacomp_get_string('import_mapping_delete')
+                            ) + $difflevels;
 
                     $mform->addElement('html', '<table class="table">
                                                 <thead><tr>
