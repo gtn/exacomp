@@ -3215,7 +3215,7 @@ class block_exacomp_external extends external_api {
 		if (!$isTeacher && !$solution_visible) {
 			$example->solution = "";
 		}
-
+        $example->title = strip_tags($example->title);
 		return $example;
 	}
 
@@ -6398,6 +6398,7 @@ class block_exacomp_external extends external_api {
 		$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, false);
 
 		foreach ($examples as $example) {
+            $example->title = strip_tags($example->title);
 			if ($example->teacherevaluation == $grading) {
 				if (!array_key_exists($example->exampleid, $examples_return)) {
 					$examples_return[$example->exampleid] = $example;
@@ -6409,6 +6410,7 @@ class block_exacomp_external extends external_api {
 			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->descriptorid, $userid, false);
 
 			foreach ($examples as $example) {
+                $example->title = strip_tags($example->title);
 				if ($example->teacherevaluation == $grading && $example->visible == 1) {
 					if (!array_key_exists($example->exampleid, $examples_return)) {
 						$examples_return[$example->exampleid] = $example;
@@ -8609,6 +8611,7 @@ class block_exacomp_external extends external_api {
 
 		$examples_return = array();
 		foreach ($descriptor->examples as $example) {
+            $example->title = strip_tags($example->title);
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
