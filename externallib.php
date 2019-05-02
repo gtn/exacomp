@@ -7146,9 +7146,7 @@ class block_exacomp_external extends external_api {
 	 * @return external_function_parameters
 	 */
 	public static function diggr_get_cohorts_of_trainer_parameters() {
-	    return new external_function_parameters (array(
-	        'trainerid' => new external_value(PARAM_RAW, 'trainer id'),
-	    ));
+	    return new external_function_parameters(array());
 	}
 	
 	
@@ -7163,22 +7161,19 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return array An array of arrays
 	 */
-	public static function diggr_get_cohorts_of_trainer($trainerid)
+	public static function diggr_get_cohorts_of_trainer()
 	{
-	    global $DB;
+	    global $DB, $USER;
 	    
 	    
 	    
-	    $parameters = static::validate_parameters(static::diggr_get_cohorts_of_trainer_parameters(), array(
-	        'trainerid' => $trainerid,
-	    ));
-// 	    var_dump("asdf");
+	    $parameters = static::validate_parameters(static::diggr_get_cohorts_of_trainer_parameters(), array());
 
 	    
 	    $returndata = array();
 	    $cohorts = array();
 	    
-	    $dbCohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$trainerid));
+	    $dbCohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$USER->id));
 	    foreach($dbCohorts as $cohort){
 	        $cohortname = $DB->get_field('cohort', 'name' , array(
 	            'id' => $cohort->cohortid,
