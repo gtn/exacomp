@@ -4042,6 +4042,7 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
 
 		foreach ($examples as $example) {
+            $example->title = strip_tags($example->title);
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 
 			$example_course = $DB->get_record('course', array('id' => $example->courseid));
@@ -4262,11 +4263,11 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 
 		foreach ($examples as $example) {
+            $example->title = strip_tags($example->title);
 // 		    //Taxonomies:
 		    $taxonomies='';
 		    $taxids='';
 		    foreach (block_exacomp_get_taxonomies_by_example($example->exampleid) as $tax) {
-		        
 		        if($taxonomies==''){ //first run, no ","
 		            $taxonomies .= $tax->title;
 		            $taxids .= $tax->id;
