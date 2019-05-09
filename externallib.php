@@ -7108,7 +7108,12 @@ class block_exacomp_external extends external_api {
 	        ));
 	        $returndataObject = new stdClass ();
 	        $returndataObject->userid = $student->userid;
-	        $returndataObject->name = fullname($studentObject);
+	        if(fullname($studentObject) != ' '){
+	            $returndataObject->name = fullname($studentObject);
+	        } else {
+	            $returndataObject->name = $studentObject->username;
+	        }
+	        
 	        $returnStudents[] = $returndataObject;
 	    }
 	    
