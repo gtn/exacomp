@@ -5340,7 +5340,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_submit_example_parameters() {
 		return new external_function_parameters (array(
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
-			'studentvalue' => new external_value (PARAM_INT, 'studentvalue', VALUE_DEFAULT, -1),
+			'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1),
 			'url' => new external_value (PARAM_URL, 'url'),
 			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
 			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
