@@ -38,14 +38,23 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 	// Extract the filename / filepath from the $args array.
 	$filename = array_pop($args); // The last item in the $args array.
 
+//    $position =
+
 	if ($filearea == 'example_task') {
+
+
+
 		$example = block_exacomp\example::get($itemid);
 		if (!$example) {
 			throw new block_exacomp_permission_exception('file not found');
 		}
 		$example->require_capability(BLOCK_EXACOMP_CAP_VIEW);
 
-		$file = block_exacomp_get_file($example, $filearea);
+//		$file = block_exacomp_get_file($example, $filearea,0);
+        $file = block_exacomp_get_file($example, $filearea);
+//        $files = block_exacomp_get_files($example, $filearea);
+//        var_dump($file);
+//        die();
 		if (!$file) {
 			return false;
 		}
@@ -98,7 +107,15 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
 	// We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
 	// From Moodle 2.3, use send_stored_file instead.
+//    echo "ayy";
+
+//    die();
 	send_stored_file($file, 0, 0, $forcedownload, $options);
+
+//	foreach($files as $file){
+//        send_stored_file($file, 0, 0, $forcedownload, $options);
+//    }
+
 	exit;
 }
 

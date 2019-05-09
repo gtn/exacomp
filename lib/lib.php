@@ -5892,14 +5892,38 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
  * @param array|object $item database item
  * @param string $type
  */
-function block_exacomp_get_file($item, $type) {
+function block_exacomp_get_file($item, $type, $position=-1) {
 	// this function reads the associated file from the moodle file storage
 
 	$fs = get_file_storage();
 	$files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
+//
+//    var_dump(array_slice($files,0,1));
+//    die();
 
 	// return first file
-	return reset($files);
+    if($position  == -1){
+        return reset($files);
+    }else{
+//        return array_slice($files,0,1)["9804eda8b991e364f2af15a9b690726a1cfa8fb6"];
+        return array_shift(array_slice($files,$position,1));
+    }
+
+}
+
+/**
+ * @return stored_file
+ * @param array|object $item database item
+ * @param string $type
+ */
+function block_exacomp_get_files($item, $type) {
+    // this function reads the associated file from the moodle file storage
+
+    $fs = get_file_storage();
+    $files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
+
+    // return  files
+    return $files;
 }
 
 /**

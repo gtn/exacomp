@@ -80,9 +80,9 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
 		$mform->setType('externalurl', PARAM_TEXT);
 		
-		$mform->addElement('header', 'files', block_exacomp_get_string('files'));
+		$mform->addElement('header', 'filesheader', block_exacomp_get_string('files'));
 		
-		$mform->addElement('filemanager', 'file', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
+		$mform->addElement('filemanager', 'files', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 2));
 		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
 		
 		if( $this->_customdata['uses_activities'] ) {
