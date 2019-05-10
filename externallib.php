@@ -3215,7 +3215,7 @@ class block_exacomp_external extends external_api {
 		if (!$isTeacher && !$solution_visible) {
 			$example->solution = "";
 		}
-
+        $example->title = strip_tags($example->title);
 		return $example;
 	}
 
@@ -4042,6 +4042,7 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
 
 		foreach ($examples as $example) {
+            $example->title = strip_tags($example->title);
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 
 			$example_course = $DB->get_record('course', array('id' => $example->courseid));
@@ -4262,11 +4263,11 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 
 		foreach ($examples as $example) {
+            $example->title = strip_tags($example->title);
 // 		    //Taxonomies:
 		    $taxonomies='';
 		    $taxids='';
 		    foreach (block_exacomp_get_taxonomies_by_example($example->exampleid) as $tax) {
-		        
 		        if($taxonomies==''){ //first run, no ","
 		            $taxonomies .= $tax->title;
 		            $taxids .= $tax->id;
@@ -5339,7 +5340,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_submit_example_parameters() {
 		return new external_function_parameters (array(
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
-			'studentvalue' => new external_value (PARAM_INT, 'studentvalue', VALUE_DEFAULT, -1),
+			'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1),
 			'url' => new external_value (PARAM_URL, 'url'),
 			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
 			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
@@ -6397,6 +6398,7 @@ class block_exacomp_external extends external_api {
 		$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, false);
 
 		foreach ($examples as $example) {
+            $example->title = strip_tags($example->title);
 			if ($example->teacherevaluation == $grading) {
 				if (!array_key_exists($example->exampleid, $examples_return)) {
 					$examples_return[$example->exampleid] = $example;
@@ -6408,6 +6410,7 @@ class block_exacomp_external extends external_api {
 			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->descriptorid, $userid, false);
 
 			foreach ($examples as $example) {
+                $example->title = strip_tags($example->title);
 				if ($example->teacherevaluation == $grading && $example->visible == 1) {
 					if (!array_key_exists($example->exampleid, $examples_return)) {
 						$examples_return[$example->exampleid] = $example;
@@ -7105,7 +7108,12 @@ class block_exacomp_external extends external_api {
 	        ));
 	        $returndataObject = new stdClass ();
 	        $returndataObject->userid = $student->userid;
-	        $returndataObject->name = fullname($studentObject);
+	        if(fullname($studentObject) != " " && fullname($studentObject) != "" && fullname($studentObject) != null ){
+	            $returndataObject->name = fullname($studentObject);
+	        } else {
+	            $returndataObject->name = $studentObject->username;
+	        }
+	        
 	        $returnStudents[] = $returndataObject;
 	    }
 	    
@@ -7146,9 +7154,7 @@ class block_exacomp_external extends external_api {
 	 * @return external_function_parameters
 	 */
 	public static function diggr_get_cohorts_of_trainer_parameters() {
-	    return new external_function_parameters (array(
-	        'trainerid' => new external_value(PARAM_RAW, 'trainer id'),
-	    ));
+	    return new external_function_parameters(array());
 	}
 	
 	
@@ -7163,22 +7169,19 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return array An array of arrays
 	 */
-	public static function diggr_get_cohorts_of_trainer($trainerid)
+	public static function diggr_get_cohorts_of_trainer()
 	{
-	    global $DB;
+	    global $DB, $USER;
 	    
 	    
 	    
-	    $parameters = static::validate_parameters(static::diggr_get_cohorts_of_trainer_parameters(), array(
-	        'trainerid' => $trainerid,
-	    ));
-// 	    var_dump("asdf");
+	    $parameters = static::validate_parameters(static::diggr_get_cohorts_of_trainer_parameters(), array());
 
 	    
 	    $returndata = array();
 	    $cohorts = array();
 	    
-	    $dbCohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$trainerid));
+	    $dbCohorts = $DB->get_records('block_exacompcohortcode',array('trainerid'=>$USER->id));
 	    foreach($dbCohorts as $cohort){
 	        $cohortname = $DB->get_field('cohort', 'name' , array(
 	            'id' => $cohort->cohortid,
@@ -8613,6 +8616,7 @@ class block_exacomp_external extends external_api {
 
 		$examples_return = array();
 		foreach ($descriptor->examples as $example) {
+            $example->title = strip_tags($example->title);
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;

@@ -229,8 +229,8 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	block_exacomp_settstamp();
     	
     	// save file
-    	file_save_draft_area_files($formdata->file, context_system::instance()->id, 'block_exacomp', 'example_task',
-    			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
+    	file_save_draft_area_files($formdata->files, context_system::instance()->id, 'block_exacomp', 'example_task',
+    			$newExample->id, array('subdirs' => 0, 'maxfiles' => 2));
     	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
     			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
     
@@ -251,7 +251,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	
     	$draftitemid = file_get_submitted_draft_itemid('file');
     	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid,
-    			array('subdirs' => 0, 'maxfiles' => 1));
+    			array('subdirs' => 0, 'maxfiles' => 2));
     	$example->file = $draftitemid;
     	
     	$draftitemid = file_get_submitted_draft_itemid('solution');
