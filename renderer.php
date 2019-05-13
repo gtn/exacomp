@@ -4343,15 +4343,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exacomp_source_delete';
 		$rows = array();
 
+        $another_source_message = '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>';
+        $another_childern_source_message = '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>';
+
 		foreach ($subjects as $subject) {
 			$row = new html_table_row();
 			$row->attributes['class'] = 'exabis_comp_teilcomp highlight rg2-level-0';
 
 			$cell = new html_table_cell();
-            $notes = '';
-            $notes .= ($subject->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
-			$cell->text = html_writer::div('<input type="checkbox" exa-name="subjects" value="'.$subject->id.'"'.(!$subject->can_delete ? ' disabled="disabled"' : '').' />'.
-				html_writer::tag('b', $subject->title).$notes);
+            if ($subject->has_another_source) {
+                $notes = $another_childern_source_message;
+            } else {
+                $notes = '';
+            }
+			$cell->text = html_writer::div('<input type="checkbox" 
+			                                        exa-name="subjects" 
+                                                    id="subject_'.$subject->id.'" 
+			                                        value="'.$subject->id.'"'.
+                                                    (!$subject->can_delete ? ' class="be-sure"' : '').
+                                                    //(!$subject->can_delete ? ' disabled="disabled"' : '').
+                                            ' />'.
+                                            html_writer::tag('b', $subject->title).$notes);
             $cell->attributes['class'] = 'rg2-arrow';
 			$row->cells[] = $cell;
 			$rows[] = $row;
@@ -4362,11 +4374,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$cell = new html_table_cell();
                 $notes = '';
-                $notes .= ($topic->another_source ? '<span class="exacomp-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
-                $notes .= (!$topic->another_source && $topic->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
+                if ($topic->another_source) {
+                    $notes .= $another_source_message;
+                }
+                if (!$topic->another_source && $topic->has_another_source) {
+                    $notes .= $another_childern_source_message;
+                }
 				$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-				$cell->text = html_writer::div('<input type="checkbox" exa-name="topics" value="'.$topic->id.'"'.(!$topic->can_delete ? ' disabled="disabled"' : '').' />'.
-					$topic->numbering.' '.$topic->title.$notes, "desctitle");
+				$cell->text = html_writer::div('<input type="checkbox" 
+				                                        exa-name="topics" 
+				                                        id="topic_'.$topic->id.'"
+				                                        value="'.$topic->id.'"'.
+                                                        (!$topic->can_delete ? ' class="be-sure"' : '').
+                                                        //(!$topic->can_delete ? ' disabled="disabled"' : '').
+                                                ' />'.
+					                            $topic->numbering.' '.$topic->title.$notes,
+                                                "desctitle");
 				$row->cells[] = $cell;
 
 				$rows[] = $row;
@@ -4376,12 +4399,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$row->attributes['class'] = 'rg2-level-2';
 
 					$cell = new html_table_cell();
-					$notes = '';
-                    $notes .= ($descriptor->another_source ? '<span class="exacomp-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
-                    $notes .= (!$descriptor->another_source && $descriptor->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
+                    $notes = '';
+                    if ($descriptor->another_source) {
+                        $notes .= $another_source_message;
+                    }
+                    if (!$descriptor->another_source && $descriptor->has_another_source) {
+                        $notes .= $another_childern_source_message;
+                    }
 					$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-					$cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$descriptor->id.'"'.(!$descriptor->can_delete ? ' disabled="disabled"' : '').' />'.
-						$descriptor->numbering.' '.$descriptor->title.$notes, "desctitle");
+					$cell->text = html_writer::div('<input type="checkbox" 
+					                                        exa-name="descriptors" 
+					                                        id="descriptor_'.$descriptor->id.'"
+					                                        value="'.$descriptor->id.'"'.
+                                                            (!$descriptor->can_delete ? ' class="be-sure"' : '').
+                                                            //(!$descriptor->can_delete ? ' disabled="disabled"' : '').
+                                                    ' />'.
+						                            $descriptor->numbering.' '.$descriptor->title.$notes,
+                                                    "desctitle");
 					$row->cells[] = $cell;
 
 					$rows[] = $row;
@@ -4393,11 +4427,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$cell = new html_table_cell();
                         $notes = '';
-                        $notes .= ($child_descriptor->another_source ? '<span class="exacomp-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
-                        $notes .= (!$child_descriptor->another_source && $child_descriptor->has_another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_has_children_from_another_source').'</span>' : '');
+                        if ($child_descriptor->another_source) {
+                            $notes .= $another_source_message;
+                        }
+                        if (!$child_descriptor->another_source && $child_descriptor->has_another_source) {
+                            $notes .= $another_childern_source_message;
+                        }
 						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-						$cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$child_descriptor->id.'"'.(!$child_descriptor->can_delete ? ' disabled="disabled"' : '').' />'.
-							$child_descriptor->numbering.' '.$child_descriptor->title.$notes, "desctitle");
+						$cell->text = html_writer::div('<input type="checkbox" 
+						                                        exa-name="descriptors" 
+						                                        id="descriptor_'.$child_descriptor->id.'"
+						                                        value="'.$child_descriptor->id.'"'.
+                                                                (!$child_descriptor->can_delete ? ' class="be-sure"' : '').
+                                                                //(!$child_descriptor->can_delete ? ' disabled="disabled"' : '').
+                                                        ' />'.
+                                                        $child_descriptor->numbering.' '.$child_descriptor->title.$notes,
+                                                        "desctitle");
 						$row->cells[] = $cell;
 
 						$rows[] = $row;
@@ -4409,10 +4454,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 							$cell = new html_table_cell();
                             $notes = '';
-                            $notes .= ($example->another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
+                            if ($example->another_source) {
+                                $notes .= $another_source_message;
+                            }
 							$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-							$cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete ? ' disabled="disabled"' : '').' />'.
-								$example->numbering.' '.$example->title.$notes, "desctitle");
+							$cell->text = html_writer::div('<input type="checkbox" 
+							                                        exa-name="examples" 
+							                                        id="example_'.$example->id.'"
+                                                                    value="'.$example->id.'"'.
+                                                                    (!$example->can_delete ? ' class="be-sure"' : '').
+                                                                    //(!$example->can_delete ? ' disabled="disabled"' : '').
+                                                            ' />'.
+								                            $example->numbering.' '.$example->title.$notes,
+                                                            "desctitle");
 							$row->cells[] = $cell;
 
 							$rows[] = $row;
@@ -4426,10 +4480,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$cell = new html_table_cell();
                         $notes = '';
-                        $notes .= ($example->another_source ? '<span class="exacomp-has-another-source">&nbsp;'.block_exacomp_get_string('delete_level_from_another_source').'</span>' : '');
+                        if ($example->another_source) {
+                            $notes .= $another_source_message;
+                        }
 						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-						$cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete ? ' disabled="disabled"' : '').' />'.
-							$example->numbering.' '.$example->title.$notes, "desctitle");
+						$cell->text = html_writer::div('<input type="checkbox" 
+						                                        exa-name="examples" 
+						                                        id="example_'.$example->id.'"
+                                                                value="'.$example->id.'"'.
+                                                                (!$example->can_delete ? ' class="be-sure"' : '').
+                                                                //(!$example->can_delete ? ' disabled="disabled"' : '').
+                                                        ' />'.
+							                            $example->numbering.' '.$example->title.$notes,
+                                                        "desctitle");
 						$row->cells[] = $cell;
 
 						$rows[] = $row;
@@ -4439,7 +4502,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$table->data = $rows;
-
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
 		$table_html .= html_writer::div(html_writer::empty_tag('input',

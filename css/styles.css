@@ -394,7 +394,7 @@ td.contentcell {
 }
 
 #block_exacomp #linkback {
-	font-family: Arial, #block_exacomp Verdana, #block_exacomp Helvetica, #block_exacomp sans-serif
+	font-family: Arial, Verdana, Helvetica, sans-serif
 }
 
 #block_exacomp .helpdiv h3 {
@@ -1238,4 +1238,9 @@ table.exacomp_source_delete td {
 .exacomp-submission-example-files,
 .exacomp-submission-example-links {
 	display: block;
+}
+
+input[type=checkbox].be-sure {
+	border-color: red !important;
+	outline: 1px solid red;
 }

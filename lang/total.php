@@ -2451,11 +2451,11 @@ return [
         'To insert a new competence, you must first select or add a difficulty level!'
     ],
     'delete_level_from_another_source' => [
-        'Inhalte von anderer Quelle. Diese können nur vom Admin gelöscht werden.',
+        'Importierter Kompetenzraster hat Inhalte einer anderen Quelle. Diese können nur vom Admin gelöscht werden.',
         'Content from another source. These can only be deleted by the admin.'
     ],
     'delete_level_has_children_from_another_source' => [
-        'Has children from another source!',
+        'Importierter Kompetenzraster wurde in dieser Installation weiterbearbeitet. Diese Ergänzungen werden ausgewiesen und müssen gelöscht werden, bevor der gesamte Kompetenzraster löschbar wird.',
         'Has children from another source!'
     ],
 

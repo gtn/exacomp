@@ -74,34 +74,34 @@ if ($action == 'delete_selected') {
 	
 	// rechte hier nochmal pruefen!
 	foreach ($subjects as $subject) {
-		if (!empty($post_subjects[$subject->id]) && $subject->can_delete) {
+		if (!empty($post_subjects[$subject->id]) /*&& $subject->can_delete*/) {
 			$delete_subjects[$subject->id] = $subject->id;
 		}
 	
 		foreach ($subject->topics as $topic) {
-			if (!empty($post_topics[$topic->id]) && $topic->can_delete) {
+			if (!empty($post_topics[$topic->id]) /*&& $topic->can_delete*/) {
 				$delete_topics[$topic->id] = $topic->id;
 			}
 			
 			foreach($topic->descriptors as $descriptor){
-				if (!empty($post_descriptors[$descriptor->id]) && $descriptor->can_delete) {
+				if (!empty($post_descriptors[$descriptor->id]) /*&& $descriptor->can_delete*/) {
 					$delete_descriptors[$descriptor->id] = $descriptor->id;
 				}
 				
 				foreach($descriptor->children as $child_descriptor){
-					if (!empty($post_descriptors[$child_descriptor->id]) && $child_descriptor->can_delete) {
+					if (!empty($post_descriptors[$child_descriptor->id]) /*&& $child_descriptor->can_delete*/) {
 						$delete_descriptors[$child_descriptor->id] = $child_descriptor->id;
 					}
 					
 					foreach ($child_descriptor->examples as $example){
-						if (!empty($post_examples[$example->id]) && $example->can_delete) {
+						if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
 							$delete_examples[$example->id] = $example->id;
 						}
 					}
 				}
 	
 				foreach ($descriptor->examples as $example){
-					if (!empty($post_examples[$example->id]) && $example->can_delete) {
+					if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
 						$delete_examples[$example->id] = $example->id;
 					}
 				}
