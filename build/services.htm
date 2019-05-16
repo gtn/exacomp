@@ -1467,11 +1467,17 @@ Returns:<pre>[
     {
         "descriptorid": "int null (id of descriptor)",
         "title": "text null (title of descriptor)",
-        "evaluation": "int null (evaluation of descriptor)",
+        "teacherevaluation": "int null (evaluation of descriptor)",
+        "studentevaluation": "int null (student evaluation of descriptor)",
+        "evalniveauid": "int null (evaluation niveau id)",
+        "niveauid": "int null (id of niveau)",
         "topicid": "int null (id of topic)",
         "numbering": "text null (descriptor numbering)",
         "child": "bool null (true: child, false: parent)",
-        "parentid": "int null (parentid if child, 0 otherwise)"
+        "parentid": "int null (parentid if child, 0 otherwise)",
+        "gradingisold": "bool null (true when there are newer gradings in the childcompetences)",
+        "reviewerid": "int null (id of reviewer)",
+        "reviewername": "text null (name of reviewer)"
     },
     "..."
 ]</pre>

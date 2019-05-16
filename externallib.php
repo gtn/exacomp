@@ -3383,7 +3383,7 @@ class block_exacomp_external extends external_api {
 		$final_descriptors = array();
 		foreach ($descriptors as $descriptor) {
 			$descriptor->id = $descriptor->descriptorid;
-
+            $descriptor->evalniveauid = null;
 			$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 
@@ -3392,14 +3392,191 @@ class block_exacomp_external extends external_api {
 				$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 				$descriptor->child = (($parentid = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS, 'parentid', array('id' => $descriptor->id))) > 0) ? 1 : 0;
 				$descriptor->parentid = $parentid;
+                //new 16.05.2019 rw:
+                $descriptor->teacherevaluation = $descriptor->evaluation; //redundant? getting block_exacomp_get_comp_eval anyway
+                $descriptor->studentevaluation = -1;
+                $descriptor->timestampstudent = 0;
+                if (!$forall) {
+                    if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id )) {
+                        $descriptor->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
+                        $descriptor->timestampstudent = $grading->timestamp;
+                    }
+                }
+
+                if (!$forall) {
+                    if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id )) {
+                        $descriptor->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
+//                        $descriptor->additionalinfo = $grading->additionalinfo;
+                        $descriptor->evalniveauid = $grading->evalniveauid;
+                        $descriptor->timestampteacher = $grading->timestamp;
+                        $descriptor->reviewerid = $grading->reviewerid;
+
+                        //Reviewername finden
+                        $reviewerid = $grading->reviewerid;
+                        $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+                        $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+                        $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+                        if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+                            $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                        }else {
+                            $reviewername=$reviewerTeacherUsername;
+                        }
+                        $descriptor->reviewername = $reviewername;
+                    }
+                }
+
+                if(!$forall){
+                    $descriptor->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+                }else{
+                    $descriptor->gradingisold = false;
+                }
+
 				if (!in_array($descriptor->descriptorid, $non_visibilities) && ((!$forall && !in_array($descriptor->descriptorid, $non_visibilities_student)) || $forall)) {
 					$final_descriptors[] = $descriptor;
 				}
 			}
 		}
 
+//        var_dump($final_descriptors);
+//        die();
+
 		return $final_descriptors;
+
+
+
+//
+
+//
+//
+//
+//        $descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+//
+//
+//        $descriptor_return->niveautitle = "";
+//        $descriptor_return->niveauid = 0;
+//        if ($descriptor->niveauid) {
+//            $niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
+//            $descriptor_return->niveautitle = $niveau->title;
+//            $descriptor_return->niveauid = $niveau->id;
+//        }
+//
+//
+//        $childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
+//
+//        $descriptor_return->children = $childsandexamples->children;
+//
+//        // summary for children gradings
+//        $grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
+//
+//        $number_evalniveaus = 1;
+//        if (block_exacomp_use_eval_niveau()) {
+//            $number_evalniveaus = 4;
+//        }
+//
+//        $children_teacherevaluation = array();
+//        for ($i = 0; $i < $number_evalniveaus; $i++) {
+//            $children_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
+//        }
+//
+//        $children_studentevaluation = array_fill(0, $grading_scheme, 0);
+//
+//        foreach ($childsandexamples->children as $child) {
+//            if ($child->teacherevaluation > -1) {
+//                $children_teacherevaluation[($child->evalniveauid > 0) ? $child->evalniveauid : 0][$child->teacherevaluation]++;
+//            }
+//            if ($child->studentevaluation > -1) {
+//                $children_studentevaluation[$child->studentevaluation]++;
+//            }
+//        }
+//
+//        $childrengradings = new stdClass();
+//        $childrengradings->teacher = array();
+//        $childrengradings->student = array();
+//
+//
+//        foreach ($children_teacherevaluation as $niveauid => $gradings) {
+//            foreach ($gradings as $key => $grading) {
+//                $childrengradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
+//            }
+//
+//        }
+//        foreach ($children_studentevaluation as $key => $value) {
+//            $childrengradings->student[$key] = array('sum' => $value);
+//        }
+//        $descriptor_return->childrengradings = $childrengradings;
+//
+//        // summary for example gradings
+//        $descriptor_return->examples = $childsandexamples->examples;
+//
+//        $examples_teacherevaluation = array();
+//        for ($i = 0; $i < $number_evalniveaus; $i++) {
+//            $examples_teacherevaluation[$i] = array_fill(0, $grading_scheme, 0);
+//        }
+//
+//        $examples_studentevaluation = array_fill(0, $grading_scheme, 0);
+//
+//        foreach ($childsandexamples->examples as $example) {
+//            if ($example->teacherevaluation > -1) {
+//                $examples_teacherevaluation[($example->evalniveauid > 0) ? $example->evalniveauid : 0][$example->teacherevaluation]++;
+//            }
+//            if ($example->studentevaluation > -1) {
+//                $examples_studentevaluation[$example->studentevaluation]++;
+//            }
+//
+//            $example->id = $example->exampleid;
+//            $solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+//            $example->solution_visible = $solution_visible;
+//        }
+//        $examplegradings = new stdClass();
+//        $examplegradings->teacher = array();
+//        $examplegradings->student = array();
+//
+//        foreach ($examples_teacherevaluation as $niveauid => $gradings) {
+//            foreach ($gradings as $key => $grading) {
+//                $examplegradings->teacher[] = array('evalniveauid' => $niveauid, 'value' => $key, 'sum' => $grading);
+//            }
+//
+//        }
+//
+//        foreach ($examples_studentevaluation as $key => $value) {
+//            $examplegradings->student[$key] = array('sum' => $value);
+//        }
+//        $descriptor_return->examplegradings = $examplegradings;
+//        // example statistics
+//        $descriptor_return->examplestotal = $childsandexamples->examplestotal;
+//        $descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
+//        $descriptor_return->examplesinwork = $childsandexamples->examplesinwork;
+//        $descriptor_return->examplesedited = $childsandexamples->examplesedited;
+//
+//        $descriptor_return->hasmaterial = true;
+//        if (empty($childsandexamples->examples)) {
+//            $descriptor_return->hasmaterial = false;
+//        }
+//
+//        $descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid)) ? 1 : 0;
+//        $descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
+//
+
+//
+//        return $descriptor_return;
 	}
+
+	/*
+	 * descriptorid
+	 * teacherevaluation
+	 * numbering
+	 * parentid
+	 * title
+	 * topicid
+	 * studentevaluation
+	 * gradingisold
+	 * niveauid
+	 *
+	 *
+	 *
+	 *
+	 *
+	 */
 
 	/**
 	 * Returns desription of method return values
@@ -3410,14 +3587,26 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure (new external_single_structure (array(
 			'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
 			'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-			'evaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
+			'teacherevaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
+            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
+            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+//            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
 		    //'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
 			'topicid' => new external_value (PARAM_INT, 'id of topic'),
 			'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
 			'child' => new external_value (PARAM_BOOL, 'true: child, false: parent'),
 			'parentid' => new external_value (PARAM_INT, 'parentid if child, 0 otherwise'),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
+            'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
 		)));
 	}
+
+
+
+
+
 
 	/**
 	 * Returns description of method parameters
