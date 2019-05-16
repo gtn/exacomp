@@ -4575,10 +4575,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell->colspan = 2;
 
 		$row->cells[] = $cell;
+
+        $headArr = array();
+        $headArr[] = $cell;
         
 /*		$moduleNameLengths = array_map(function($m) {return strlen($m->name);}, $modules);
 		$maxLength = max($moduleNameLengths);*/
-		
+
+
 		foreach ($modules as $module) {
 			$cell = new html_table_cell();
             $moduleName = mb_strimwidth($module->name, 0, 33, "..."); // crop if > 30
@@ -4592,9 +4596,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 			$cell->attributes['module-type'] = $module->modname;
 			$row->cells[] = $cell;
+            $headArr[] = $cell;
 		}
 
-		$rows[] = $row;
+        $table->head = $headArr;
+//		$rows[] = $row;
+
 		foreach ($subjects as $subject) {
 			$row = new html_table_row();
 			$row->attributes['class'] = 'ec_heading';
@@ -4607,7 +4614,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		$table->data = $rows;
 
-		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
+		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader floating-header');
 		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
 		$div .= html_writer::div(html_writer::empty_tag('input', array(
 		                                    'type' => 'submit',

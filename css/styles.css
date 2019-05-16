@@ -1017,6 +1017,18 @@ not used anymore?
 .exabis_competencies_lis .gridlayout > div:first-child {
 	width: 210px;
 }
+
+.exabis_competencies_lis > .floating-header {
+	overflow-y: auto;
+	height: 80vh;
+}
+
+.exabis_competencies_lis > .floating-header thead th{
+	position: sticky;
+	top: 0;
+}
+
+
 #block_exacomp .row  {
 	display: table-row;
 }
