@@ -1619,7 +1619,6 @@ class data_importer extends data {
 		
 		
 		if( $course_template != 0) {
-		    @rmdir($CFG->tempdir . '/backup/activities');
 		    if ($ret === true) { // only if it is zip
 		        extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
 		    }
