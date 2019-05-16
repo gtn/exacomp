@@ -244,6 +244,23 @@
 
 					$table.find('tr').each(function(){
 						var rowColSpan = 0;
+						$(this).find('th,tr').each(function(i, col){
+							if (rowColSpan < options.title_colspan) {
+								// nothing, always show title
+							} else if (groupid === 'all') {
+								$(col).show();
+							} else if (Math.floor((rowColSpan - options.title_colspan) / items_per_page) == groupid) {
+								$(col).show();
+							} else {
+								$(col).hide();
+							}
+
+							rowColSpan += this.colSpan;
+						});
+					});
+
+					$table.find('tr').each(function(){
+						var rowColSpan = 0;
 						$(this).find('td,tr').each(function(i, col){
 							if (rowColSpan < options.title_colspan) {
 								// nothing, always show title
@@ -258,6 +275,8 @@
 							rowColSpan += this.colSpan;
 						});
 					});
+
+
 
 					return false;
 				}

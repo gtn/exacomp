@@ -190,7 +190,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if($isEditingTeacher){
 			    $right_content .= $this->edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
 			}
-			
+
 		} else {
 			foreach (block_exacomp_get_teachers_by_course($COURSE->id) as $teacher) {
 				$right_content .= block_exacomp_get_message_icon($teacher->id);
@@ -730,9 +730,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		} else {
 			$eportfolioitems = array();
 		}
-				
-		
-		
+
+
+
 
 		/* SUBJECTS */
 		$first = true;
@@ -844,26 +844,26 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			        $profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 			        $evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
 			        $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
-			        
+
 			        $examples_crosssubj = block_exacomp_get_examples_for_crosssubject($crosssubjid);
 
 			        $visible_css = block_exacomp_get_visible_css(true, $role);
-			        
+
 			        $this_rg2_class = 'rg2-level-0'.$visible_css;
 			        $sub_rg2_class = 'rg2-level-1';
-			        
+
 			        $crosssubjectrow = new html_table_row();
 			        $crosssubjectrow->attributes['class'] = $this_rg2_class.' highlight';
 			        // $crosssubjectrow->attributes['exa-rg2-id'] = 'topic-'.$topic->id;
-			        
+
 			        $studentsCount = 0;
 			        $checkboxname = 'datacrosssubs'; //?
 			        //$student = array_values($students)[0];
-			        
+
 			        $totalRow = new html_table_row();
 			        $totalRow->attributes['class'] = 'highlight';
 			        $totalRow->attributes['class'] = $this_rg2_class.' highlight';
-			        
+
 			        $firstCol = new html_table_cell();
 			        if($this->is_edit_mode()){
 			            $firstCol->text .= " ".html_writer::link(
@@ -872,17 +872,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 			        }
 			        $firstCol->text .= block_exacomp_get_string('total');
-			        
+
 			        $totalRow->cells[] = $firstCol;
-			        
+
 			        $outputnameCell = new html_table_cell();
 			        $outputname =  block_exacomp_get_string('crosssubject_files');
 			        $outputnameCell->text = html_writer::div($outputname);
 			        $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			        $totalRow->cells[] = $outputnameCell;
 			        $totalRow->cells[] = new html_table_cell();
-			        
-			        
+
+
 			        foreach ($students as $student) {
 			            if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			                $reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, "reviewerid", array("userid" => $student->id, "compid" => $crosssubjid, "courseid" => $courseid, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB));
@@ -891,17 +891,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                }
 			            }
 			            $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
-			            
+
 			            $student_evaluation_cell = new html_table_cell();
 			            $student_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-			            
+
 			            $teacher_evaluation_cell = new html_table_cell();
 			            $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-			            
+
 			            $niveau_cell = new html_table_cell();
 			            $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
 			            $niveau_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
-			            
+
 			            if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_theme_diffLevel() == 1) {
 			                $niveau_cell->text = $this->generate_niveau_select(
 			                    'niveau_crosssub',
@@ -913,7 +913,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			            } else {
 			                $niveau_cell->text = '';
 			            }
-			            
+
 			            //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
 			            //the warning contains the name of the reviewer
 			            if (isset($reviewerid) && $reviewerid > 0) {
@@ -934,11 +934,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                block_exacomp_format_eval_value($student->crosssubs->teacher_additional_grading[$crosssubjid]) : "",
 			                'exa-compid' => $crosssubjid, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_CROSSSUB,
 			                'reviewername' => $reviewername);
-			                
+
 			                if ($role == BLOCK_EXACOMP_ROLE_STUDENT  || !$isEditingTeacher) {
 			                    $params['disabled'] = 'disabled';
 			                }
-			                
+
 			                //student show evaluation
 			                if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB)) {
 			                    switch ($scheme) {
@@ -975,7 +975,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 			                    }
 			                }
-			                
+
 			                if (block_exacomp_get_assessment_theme_SelfEval() == 1) {
 			                    // Only emojis?
 			                    $student_evaluation_cell->text = $this->generate_select(
@@ -990,7 +990,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 			                }
 			                $student_evaluation_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
-			                
+
 			                // Different order of options for students and teachers:
 			                // Student
 			                if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
@@ -1010,37 +1010,37 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                    }
 			                    $totalRow->cells[] = $teacher_evaluation_cell;
 			                }
-			                
+
 			        }
-			        
+
 			        $rows[] = $totalRow;
-			        
-			        
+
+
 			        /* CROSSSUBJECTS */
 			        //crosssubjectfiles and total eval
 			        $checkboxname = "dataexamples";
 			        $example_scheme = block_exacomp_get_assessment_example_scheme();
 			        foreach ($examples_crosssubj as $example) {
 			            $example_used = block_exacomp_example_used($courseid, $example, $studentid);
-			            
+
 			            $visible_example = block_exacomp_is_example_visible($courseid, $example, $studentid);
 			            $visible_solution = block_exacomp_is_example_solution_visible($courseid, $example, $studentid);
-			            
+
 			            if ($role != BLOCK_EXACOMP_ROLE_TEACHER && !$visible_example) {
 			                // do not display
 			                continue;
 			            }
-			            
+
 			            $visible_example_css = block_exacomp_get_visible_css($visible_example, $role);
-			            
+
 			            $studentsCount = 0;
 			            $exampleRow = new html_table_row();
 			            $exampleRow->attributes['class'] = 'exabis_comp_aufgabe block_exacomp_example '.$sub_rg2_class.$visible_example_css;
 			            $exampleRow->cells[] = new html_table_cell();
-			            
-			            
+
+
 			            $title = [];
-			            
+
 			            if ($author = $example->get_author()) {
 			                $title[] = block_exacomp_get_string('author', 'repository').": ".$author;
 			            }
@@ -1053,47 +1053,47 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			            if (trim($example->tips)) {
 			                $title[] = $example->tips;
 			            }
-			            
+
 			            $title = join('<br />', $title);
-			            
+
 			            $titleCell = new html_table_cell();
 			            $titleCell->attributes['class'] = 'rg2-indent';
 			            $titleCell->style = 'padding-left: 30px;';
 			            $titleCell->text = html_writer::div(html_writer::tag('span', $example->title), '', ['title' => $title]);
 
 			            if (!$this->is_print_mode()) {
-			                
+
 			                if ($editmode) {
 			                    $titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
-			                    
+
 			                    if (block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
 			                        $titleCell->text .= html_writer::link(
 			                            // 	                            new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id, "topicid" => $descriptor->topicid, "exampleid" => $example->id)),
 			                            // 	                            $this->pix_icon("i/edit", block_exacomp_get_string("edit")),
 			                            // 	                            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
-			                            
+
 			                            new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $courseid, "crosssubjid" => $crosssubjid, "exampleid" => $example->id)),
 			                            $this->pix_icon("i/edit", block_exacomp_get_string("edit")),
 			                            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 			                    }
-			                    
+
 			                    if (!$example_used) {
 			                        $titleCell->text .= html_writer::link(new \block_exacomp\url('example_upload.php', ['action' => 'delete', 'exampleid' => $example->id, 'courseid' => $COURSE->id, 'returnurl' => g::$PAGE->url->out_as_local_url(false)]),
 			                            $this->pix_icon("t/delete", block_exacomp_get_string("delete")),
 			                            array("onclick" => "return confirm(".json_encode(block_exacomp_get_string('delete_confirmation', null, $example->title)).")"));
 			                    }
-			                    
+
 			                    //print up & down icons
 			                    $titleCell->text .= html_writer::link("#", $this->pix_icon("t/up", block_exacomp_get_string('up')), array("exa-type" => "example-sorting", 'exa-direction' => 'up', "exa-exampleid" => $example->id, "exa-descrid" => $descriptor->id));
 			                    $titleCell->text .= html_writer::link("#", $this->pix_icon("t/down", block_exacomp_get_string('down')), array("exa-type" => "example-sorting", 'exa-direction' => 'down', "exa-exampleid" => $example->id, "exa-descrid" => $descriptor->id));
-			                    
+
 			                    $titleCell->text .= '</span>';
 			                }
-			                
+
 			                if ($isEditingTeacher && ($role == BLOCK_EXACOMP_ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($courseid, $example, 0)))) {
 			                    if ($example_used) {
 			                        $titleCell->text .= html_writer::span($this->local_pix_icon("visibility_lock.png", block_exacomp_get_string('competence_locked'), array('height' => '18')), 'imglocked', array('title' => block_exacomp_get_string('competence_locked')));
-			                        
+
 			                    } else {
 			                        $titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
 			                    }
@@ -1106,16 +1106,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                                 }
                             }
-			                
-			                
+
+
 			                if ($example->externalurl) {
 			                    $titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
 			                }
-			                
+
 			                if ($example->externaltask) {
 			                    $titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
 			                }
-			                
+
 			                $solution_url = $example->get_solution_file_url();
 			                // Display Icons to hide/unhide example solution visibility
 			                if ($isEditingTeacher && $solution_url && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
@@ -1131,70 +1131,70 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                            $titleCell->text .= $this->visibility_icon_example_solution($visible_solution, $example->id);
 			                        }
 			                    }
-			                    
+
 			                }
-			                
+
 			                if (($role == BLOCK_EXACOMP_ROLE_TEACHER || $visible_solution) && $solution_url) {
 			                    $titleCell->text .= $this->example_solution_icon($solution_url);
 			                }
-			                
+
 			                if ($this->is_print_mode()) {
 			                    // no icons in print mode
 			                } else {
 			                    if (!$example->externalurl && !$example->externaltask && !block_exacomp_get_file_url($example, 'example_solution') && !block_exacomp_get_file_url($example, 'example_task') && $example->description) {
 			                        $titleCell->text .= $this->pix_icon("i/preview", $example->description);
 			                    }
-			                    
+
 			                    if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
 			                        $titleCell->text .= $this->schedule_icon($example->id, $USER->id, $courseid);
-			                        
+
 			                        $titleCell->text .= $this->submission_icon($courseid, $example->id, $USER->id);
-			                        
+
 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, false);
-			                        
+
 			                    } else if ($isEditingTeacher && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			                        $studentid = block_exacomp_get_studentid();
-			                        
+
 			                        //auch für alle schüler auf wochenplan legen
 			                        if (!$this->is_edit_mode()) {
 			                            if ($visible_example) { //prevent errors
 			                                $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
-			                                
+
 			                                $titleCell->text .= html_writer::link("#",
 			                                    html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title' => block_exacomp_get_string('pre_planning_storage'))),
 			                                    array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $courseid));
 			                            }
 			                        }
 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
-			                        
+
 			                    }else if ($role == BLOCK_EXACOMP_ROLE_TEACHER){
 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
 			                    }
 			                }
 			                $titleCell->text .= '</span>';
-			                
+
 			            }
 			            $exampleRow->cells[] = $titleCell;
-			            
+
 			            $nivCell = new html_table_cell();
-			            
+
 			            $nivText = [];
 			            // 	        foreach ($example->taxonomies as $tax) {
 			            // 	            $nivText[] = $tax->title;
 			            // 	        }
 			            $nivCell->text = join(' ', $nivText);
 			            $exampleRow->cells[] = $nivCell;
-			            
+
 			            $visible_student_example = $visible_example;
 			            foreach ($students as $student) {
 			                $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
-			                
+
 			                // 			        if (!$one_student && $descriptor_parent_visible[$student->id] == false) {
 			                // 			            $visible_student_example = false;
 			                // 			        } elseif (!$one_student && !$editmode) {
 			                $visible_student_example = block_exacomp_is_example_visible($courseid, $example, $student->id);
 			                // 			        }
-			                
+
 			                //check reviewerid for teacher
 			                if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			                    $reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLEEVAL, "teacher_reviewerid", array("studentid" => $student->id, "exampleid" => $example->id, "courseid" => $courseid));
@@ -1202,25 +1202,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                        $reviewerid = null;
 			                    }
 			                }
-			                
+
 			                $student_evaluation_cell = new html_table_cell();
 			                $student_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-			                
+
 			                $teacher_evaluation_cell = new html_table_cell();
 			                $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-			                
-			                
+
+
 			                $niveau_cell = new html_table_cell();
 			                $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-			                
+
 			                //disable cell for crosssubjectfiles
 			                if ($role == BLOCK_EXACOMP_ROLE_TEACHER && !$isEditingTeacher) {
 			                    $disableCell = true;
 			                } else {
 			                    $disableCell = ($role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student_example) ? false : true);
 			                }
-			                
-			                
+
+
 			                if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_example_diffLevel() == 1) {
 			                    $niveau_cell->text = $this->generate_niveau_select(
 			                        'niveau_examples',
@@ -1232,9 +1232,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                } else {
 			                    $niveau_cell->text = '';
 			                }
-			                
+
 			                $niveau_cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
-			                
+
 			                $example_params = array(
                                     'name' => 'dataexamples-'.$example->id.'-'.$student->id,
                                     'type' => 'text',
@@ -1248,14 +1248,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                        'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
 			                        'reviewername' => $reviewername,
 			                );
-			                
+
 			                if (!$visible_student_example || $role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
 			                    $example_params['disabled'] = 'disabled';
 			                }
-			                
+
 			                // student show evaluation
 			                if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE)) {
-			                    
+
 			                    switch ($example_scheme) {
                                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE: // None.
                                         $teacher_evaluation_cell->text = '';
@@ -1290,7 +1290,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                                 ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                                 }
 			                }
-			                
+
 			                if (block_exacomp_get_assessment_example_SelfEval() == 1) {
 			                    // Only emojis?
 			                    $student_evaluation_cell->text = $this->generate_select(
@@ -1305,7 +1305,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                    ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 			                }
 			                $student_evaluation_cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
-			                
+
 			                // Different order of options for students and teachers:
 			                // Student
 			                //student & niveau & showevaluation
@@ -1328,20 +1328,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                    $teacher_evaluation_cell->text .= $this->resubmission_icon($example->id, $student->id, $courseid);
 			                    $exampleRow->cells[] = $teacher_evaluation_cell;
 			                }
-			                
+
 			            }
 			            if ($profoundness) {
 			                $emptyCell = new html_table_cell();
 			                $emptyCell->colspan = 7 - count($exampleRow->cells);
 			                $exampleRow->cells[] = $emptyCell;
 			            }
-			            
+
 			            $rows[] = $exampleRow;
 			        }
 			    }//end crosssubjectfiles and total evaluation
-			    
+
 			}
-			
+
 
 			$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 			$evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? 'teacher' : 'student';
@@ -1663,7 +1663,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 
 				$rows[] = $subjectRow;
-			}   	
+			}
 
 			/* TOPICS */
 			$topicsscheme = block_exacomp_get_assessment_topic_scheme();
@@ -1688,7 +1688,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 // 			echo "<br>";
 // 			echo "<br>";
 // 			echo "<br>";
-			
+
 			$row_cnt = count($rows); // save row count to calc print_width
 			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher); //renders the topics
 
@@ -1706,9 +1706,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$first = false;
 		}
-		
-		
-		
+
+
+
 
 		$table->data = $rows;
 
@@ -1741,8 +1741,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		return $table_html;
-	}	
-	
+	}
+
 	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $crosssubjid = 0, $isEditingTeacher = true) {
 		global $DB, $USER;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
@@ -1755,7 +1755,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$child_level = $level;
 		}
 
-		
+
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach ($topics as $topic) {
@@ -1906,7 +1906,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								block_exacomp_format_eval_value($student->topics->teacher_additional_grading[$topic->id]) : "",
 							'exa-compid' => $topic->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_TOPIC,
 							'reviewerid' => ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
-						    'reviewername' => $reviewername, 
+						    'reviewername' => $reviewername,
 						);
 
 						if (!$visible_student || $data->role == BLOCK_EXACOMP_ROLE_STUDENT  || !$isEditingTeacher) {
@@ -2009,7 +2009,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 // 				    echo "<br>";
 // 				    echo "<br>";
 // 				    echo "<br>";
-				    
+
 					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, false, true, $crosssubjid, $parent_visible, $isEditingTeacher);
 					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, true, true, $crosssubjid, $parent_visible, $isEditingTeacher);
 				}
@@ -2049,7 +2049,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
         $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
-        
+
 		foreach ($descriptors as $descriptor) {
 			$descriptor_parent_visible = $parent_visible;
 
@@ -2172,7 +2172,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$nivText[] = $cat->title;
 				}
 				$nivCell->text = join(' ', $nivText);
-				
+
 				//--------------
 				if ($editmode) {
 				    $nivCell->text .= html_writer::link(
@@ -2182,9 +2182,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				//------------
 				$descriptorRow->cells[] = $nivCell;
-				
-				
-				
+
+
+
 
 				foreach ($students as $student) {
 				    //echo "GEHT IM EDITMODE NICHT HIER REIN";
@@ -2287,14 +2287,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$teacher_evaluation_cell = new html_table_cell();
                         $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-                        
+
 //                         if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
 //                             if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
 //                                 $teacher_evaluation_cell->attributes['bgcolor'] = "red";
 //                             }
 //                         }
-                        
-                        
+
+
 
  						$niveau_cell = new html_table_cell();
  						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
@@ -2305,7 +2305,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						} else {
 						    $disableCell = ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student) ? false : true);
 						}
-						
+
 
                         if ((block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_comp_diffLevel() == 1 && $level == 1)
                             || (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_childcomp_diffLevel() == 1) && $level == 2) {
@@ -2342,8 +2342,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if (!$visible_student || $data->role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
 							$params['disabled'] = 'disabled';
 						}
-						
-						
+
+
 
 						//student show evaluation
                         if ((   block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) && $level == 1)
@@ -2384,7 +2384,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
                                 if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
                                     //Hackable????
-                                    $gradingisoldwarning = html_writer::tag('a', '!!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));                                    
+                                    $gradingisoldwarning = html_writer::tag('a', '!!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
                                     $teacher_evaluation_cell->text .= $gradingisoldwarning;
                                 }
                             }
@@ -2666,7 +2666,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						} elseif (!$one_student && !$editmode) {
 							$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
 						}
-						
+
 						//check reviewerid for teacher
 						if ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) {
 							$reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLEEVAL, "teacher_reviewerid", array("studentid" => $student->id, "exampleid" => $example->id, "courseid" => $data->courseid));
@@ -2680,11 +2680,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$teacher_evaluation_cell = new html_table_cell();
                         $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-                        
+
 
 						$niveau_cell = new html_table_cell();
 						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-						
+
 						//Disable niv cell for Examples
 						if($data->role == BLOCK_EXACOMP_ROLE_TEACHER && !$isEditingTeacher){
 						    $disableCell = true;
@@ -2728,7 +2728,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         ) {
                             $example_params['disabled'] = 'disabled';
 						}
-					
+
 						//student show evaluation
                         if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE)) {
                             switch ($example_scheme) {
@@ -2861,16 +2861,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function example_based_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $isEditingTeacher = true) {
         global $DB, $USER;
-        
+
         $table = new html_table();
         $rows = array();
         $studentsColspan = $showevaluation ? 2 : 1;
         if (block_exacomp_use_eval_niveau() && ($showevaluation || $role == BLOCK_EXACOMP_ROLE_TEACHER)) {
             $studentsColspan++;
         }
-        
+
         $table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
-        
+
         // in the future maybe use lscache or some other method?
         if ($crosssubjid) {
             $table->attributes['exa-rg2-storageid'] = 'cross_subject-'.$crosssubjid;
@@ -2882,61 +2882,61 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $table->attributes['exa-rg2-storageid'] .= '-topic-'.$topic->id;
             }
         }
-        
+
         if (block_exacomp_exaportexists()) {
             $eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
         } else {
             $eportfolioitems = array();
         }
-        
-        
-        
-        
+
+
+
+
         /* SUBJECTS */
         $first = true;
         $course_subs = block_exacomp_get_subjects_by_course($courseid);
         $usesubjectgrading = block_exacomp_is_subjectgrading_enabled();
-        
+
         foreach ($subjects as $subject) {
             if (!$subject->topics) {
                 continue;
             }
-            
+
             if ($first) {
                 //for every subject
                 $subjectRow = new html_table_row();
                 $subjectRow->attributes['class'] = 'highlight';
-                
+
                 //subject-title
                 $title = new html_table_cell();
                 $title->colspan = 2;
-                
+
                 if ($crosssubjid) {
                     $title->text = html_writer::tag("b", block_exacomp_get_string('comps_and_material'));
                 } else {
                     $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", $subject->title);
                 }
-                
+
                 $title->print_width = 5 + 25;
                 $subjectRow->cells[] = $title;
             }
-            
+
             $nivCell = new html_table_cell();
             $nivCell->text = block_exacomp_get_string('competence_grid_niveau');
             $nivCell->print_width = 5;
-            
+
             if ($first) {
                 $subjectRow->cells[] = $nivCell;
             }
-            
+
             $studentsCount = 0;
-            
+
             $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
-            
+
             foreach ($students as $student) {
                 $studentCell = new html_table_cell();
                 $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
-                
+
                 $studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-'.$columnGroup;
                 $studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
                 $studentCell->colspan = $studentsColspan;
@@ -2944,37 +2944,37 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if (!$this->is_print_mode() && block_exacomp_is_exastud_installed() && ($info = \block_exastud\api::get_student_review_link_info_for_teacher($student->id))) {
                     $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exacomp_trans('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
                 }
-                
+
                 if ($this->is_print_mode()) {
                     // zeilenumbruch im namen beim drucken: nur erstes leerzeichen durch <br> ersetzen
                     $studentCell->text = preg_replace('!\s!', '<br />', $studentCell->text, 1);
                 }
-                
+
                 if ($first) {
                     $subjectRow->cells[] = $studentCell;
                 }
             }
-            
+
             if ($first) {
                 $rows[] = $subjectRow;
             }
-            
+
             if ($showevaluation) {
                 $studentsCount = 0;
-                
+
                 $evaluationRow = new html_table_row();
                 $emptyCell = new html_table_cell();
                 $emptyCell->colspan = 3;
                 $evaluationRow->cells[] = $emptyCell;
-                
+
                 foreach ($students as $student) {
                     $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
-                    
+
                     $firstCol = new html_table_cell();
                     $firstCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-'.$columnGroup;
                     $secCol = new html_table_cell();
                     $secCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-'.$columnGroup;
-                    
+
                     if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
                         $firstCol->text = block_exacomp_get_string('studentshortcut');
                         $secCol->text = block_exacomp_get_string('teachershortcut');
@@ -2988,7 +2988,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                         $secCol->text = block_exacomp_get_string('studentshortcut');
                     }
-                    
+
                     $evaluationRow->cells[] = $firstCol;
                     $evaluationRow->cells[] = $secCol;
                 }
@@ -3002,21 +3002,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
                     $evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
                     $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
-                    
+
                     $examples_crosssubj = block_exacomp_get_examples_for_crosssubject($crosssubjid);
-                    
+
                     $visible_css = block_exacomp_get_visible_css(true, $role);
-                    
+
                     $this_rg2_class = 'rg2-level-0'.$visible_css;
                     $sub_rg2_class = 'rg2-level-1';
- 
+
                     $studentsCount = 0;
                     $checkboxname = 'datacrosssubs'; //?
                     //$student = array_values($students)[0];
-                    
 
-                    
-                    
+
+
+
                     foreach ($students as $student) {
                         if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
                             $reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, "reviewerid", array("userid" => $student->id, "compid" => $crosssubjid, "courseid" => $courseid, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB));
@@ -3025,17 +3025,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                         }
                         $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
-                        
+
                         $student_evaluation_cell = new html_table_cell();
                         $student_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-                        
+
                         $teacher_evaluation_cell = new html_table_cell();
                         $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-                        
+
                         $niveau_cell = new html_table_cell();
                         $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
                         $niveau_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
-                        
+
                         if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_theme_diffLevel() == 1) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                 'niveau_crosssub',
@@ -3047,7 +3047,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         } else {
                             $niveau_cell->text = '';
                         }
-                        
+
                         //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
                         //the warning contains the name of the reviewer
                         if (isset($reviewerid) && $reviewerid > 0) {
@@ -3068,11 +3068,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             block_exacomp_format_eval_value($student->crosssubs->teacher_additional_grading[$crosssubjid]) : "",
                             'exa-compid' => $crosssubjid, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_CROSSSUB,
                             'reviewername' => $reviewername);
-                            
+
                             if ($role == BLOCK_EXACOMP_ROLE_STUDENT  || !$isEditingTeacher) {
                                 $params['disabled'] = 'disabled';
                             }
-                            
+
                             //student show evaluation
                             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB)) {
                                 if ($scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE) { // None.
@@ -3105,7 +3105,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                                 }
                             }
-                            
+
                             if (block_exacomp_get_assessment_theme_SelfEval() == 1) {
                                 // Only emojis?
                                 $student_evaluation_cell->text = $this->generate_select(
@@ -3120,7 +3120,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                             }
                             $student_evaluation_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
-                            
+
                             // Different order of options for students and teachers:
                             // Student
                             if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
@@ -3140,16 +3140,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                                 $totalRow->cells[] = $teacher_evaluation_cell;
                             }
-                            
+
                     }
-                    
-                    
-                    
+
+
+
                     /* CROSSSUBJECTS */
                     //crosssubjectfiles and total eval
                     $checkboxname = "dataexamples";
                     $example_scheme = block_exacomp_get_assessment_example_scheme();
-                    
+
                     //Get associated files
                     //get files from competencies that are added to this cross:
                     $examples_assoc_crosssubj = \block_exacomp\example::get_objects_sql("
@@ -3160,12 +3160,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         WHERE dc.crosssubjid = ?
                         ORDER BY e.title
                     ", [$crosssubjid]);
-                    
+
                     //get files from the childcompetencies of the competencies that are added
                     //get descriptor sand check if they are parents
                     //if they are parent --> get the examples of their children
                     $assoc_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid);
-                    
+
                     foreach ($assoc_descriptors as $descriptor) {
                         if($descriptor->parentid == 0){
                             $childdescriptors = block_exacomp_get_child_descriptors($descriptor, $courseid);
@@ -3174,30 +3174,30 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                         }
                     }
-                    
+
                     $examples_crosssubj = array_merge($examples_crosssubj, $examples_assoc_crosssubj);
-                    
+
                     foreach ($examples_crosssubj as $example) {
                         $example_used = block_exacomp_example_used($courseid, $example, $studentid);
-                        
+
                         $visible_example = block_exacomp_is_example_visible($courseid, $example, $studentid);
                         $visible_solution = block_exacomp_is_example_solution_visible($courseid, $example, $studentid);
-                        
+
                         if ($role != BLOCK_EXACOMP_ROLE_TEACHER && !$visible_example) {
                             // do not display
                             continue;
                         }
-                        
+
                         $visible_example_css = block_exacomp_get_visible_css($visible_example, $role);
-                        
+
                         $studentsCount = 0;
                         $exampleRow = new html_table_row();
 //                         $exampleRow->attributes['class'] = 'exabis_comp_aufgabe block_exacomp_example '.$sub_rg2_class.$visible_example_css;
                         $exampleRow->cells[] = new html_table_cell();
-                        
-                        
+
+
                         $title = [];
-                        
+
                         if ($author = $example->get_author()) {
                             $title[] = block_exacomp_get_string('author', 'repository').": ".$author;
                         }
@@ -3210,47 +3210,47 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if (trim($example->tips)) {
                             $title[] = $example->tips;
                         }
-                        
+
                         $title = join('<br />', $title);
-                        
+
                         $titleCell = new html_table_cell();
                         $titleCell->attributes['class'] = 'rg2-indent';
                         $titleCell->style = 'padding-left: 30px;';
                         $titleCell->text = html_writer::div(html_writer::tag('span', $example->title), '', ['title' => $title]);
-                        
+
                         if (!$this->is_print_mode()) {
-                            
+
                             if ($editmode) {
                                 $titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
-                                
+
                                 if (block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
                                     $titleCell->text .= html_writer::link(
                                         // 	                            new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id, "topicid" => $descriptor->topicid, "exampleid" => $example->id)),
                                         // 	                            $this->pix_icon("i/edit", block_exacomp_get_string("edit")),
                                         // 	                            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
-                                        
+
                                         new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $courseid, "crosssubjid" => $crosssubjid, "exampleid" => $example->id)),
                                         $this->pix_icon("i/edit", block_exacomp_get_string("edit")),
                                         array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                                 }
-                                
+
                                 if (!$example_used) {
                                     $titleCell->text .= html_writer::link(new \block_exacomp\url('example_upload.php', ['action' => 'delete', 'exampleid' => $example->id, 'courseid' => $COURSE->id, 'returnurl' => g::$PAGE->url->out_as_local_url(false)]),
                                         $this->pix_icon("t/delete", block_exacomp_get_string("delete")),
                                         array("onclick" => "return confirm(".json_encode(block_exacomp_get_string('delete_confirmation', null, $example->title)).")"));
                                 }
-                                
+
                                 //print up & down icons
                                 $titleCell->text .= html_writer::link("#", $this->pix_icon("t/up", block_exacomp_get_string('up')), array("exa-type" => "example-sorting", 'exa-direction' => 'up', "exa-exampleid" => $example->id, "exa-descrid" => $descriptor->id));
                                 $titleCell->text .= html_writer::link("#", $this->pix_icon("t/down", block_exacomp_get_string('down')), array("exa-type" => "example-sorting", 'exa-direction' => 'down', "exa-exampleid" => $example->id, "exa-descrid" => $descriptor->id));
-                                
+
                                 $titleCell->text .= '</span>';
                             }
-                            
+
                             if ($isEditingTeacher && ($role == BLOCK_EXACOMP_ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($courseid, $example, 0)))) {
                                 if ($example_used) {
                                     $titleCell->text .= html_writer::span($this->local_pix_icon("visibility_lock.png", block_exacomp_get_string('competence_locked'), array('height' => '18')), 'imglocked', array('title' => block_exacomp_get_string('competence_locked')));
-                                    
+
                                 } else {
                                     $titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
                                 }
@@ -3265,15 +3265,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            
+
                             if ($example->externalurl) {
                                 $titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
-                            
+
                             if ($example->externaltask) {
                                 $titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
-                            
+
                             $solution_url = $example->get_solution_file_url();
                             // Display Icons to hide/unhide example solution visibility
                             if ($isEditingTeacher && $solution_url && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
@@ -3289,70 +3289,70 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         $titleCell->text .= $this->visibility_icon_example_solution($visible_solution, $example->id);
                                     }
                                 }
-                                
+
                             }
-                            
+
                             if (($role == BLOCK_EXACOMP_ROLE_TEACHER || $visible_solution) && $solution_url) {
                                 $titleCell->text .= $this->example_solution_icon($solution_url);
                             }
-                            
+
                             if ($this->is_print_mode()) {
                                 // no icons in print mode
                             } else {
                                 if (!$example->externalurl && !$example->externaltask && !block_exacomp_get_file_url($example, 'example_solution') && !block_exacomp_get_file_url($example, 'example_task') && $example->description) {
                                     $titleCell->text .= $this->pix_icon("i/preview", $example->description);
                                 }
-                                
+
                                 if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
                                     $titleCell->text .= $this->schedule_icon($example->id, $USER->id, $courseid);
-                                    
+
                                     $titleCell->text .= $this->submission_icon($courseid, $example->id, $USER->id);
-                                    
+
                                     // 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, false);
-                                    
+
                                 } else if ($isEditingTeacher && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                     $studentid = block_exacomp_get_studentid();
-                                    
+
                                     //auch für alle schüler auf wochenplan legen
                                     if (!$this->is_edit_mode()) {
                                         if ($visible_example) { //prevent errors
                                             $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
-                                            
+
                                             $titleCell->text .= html_writer::link("#",
                                                 html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title' => block_exacomp_get_string('pre_planning_storage'))),
                                                 array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $courseid));
                                         }
                                     }
                                     // 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
-                                    
+
                                 }else if ($role == BLOCK_EXACOMP_ROLE_TEACHER){
                                     // 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
                                 }
                             }
                             $titleCell->text .= '</span>';
-                            
+
                         }
                         $exampleRow->cells[] = $titleCell;
-                        
+
                         $nivCell = new html_table_cell();
-                        
+
                         $nivText = [];
                         // 	        foreach ($example->taxonomies as $tax) {
                         // 	            $nivText[] = $tax->title;
                         // 	        }
                         $nivCell->text = join(' ', $nivText);
                         $exampleRow->cells[] = $nivCell;
-                        
+
                         $visible_student_example = $visible_example;
                         foreach ($students as $student) {
                             $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
-                            
+
                             // 			        if (!$one_student && $descriptor_parent_visible[$student->id] == false) {
                             // 			            $visible_student_example = false;
                             // 			        } elseif (!$one_student && !$editmode) {
                             $visible_student_example = block_exacomp_is_example_visible($courseid, $example, $student->id);
                             // 			        }
-                            
+
                             //check reviewerid for teacher
                             if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                 $reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLEEVAL, "teacher_reviewerid", array("studentid" => $student->id, "exampleid" => $example->id, "courseid" => $courseid));
@@ -3360,25 +3360,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     $reviewerid = null;
                                 }
                             }
-                            
+
                             $student_evaluation_cell = new html_table_cell();
                             $student_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-                            
+
                             $teacher_evaluation_cell = new html_table_cell();
                             $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-                            
-                            
+
+
                             $niveau_cell = new html_table_cell();
                             $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
-                            
+
                             //disable cell for crosssubjectfiles
                             if($role == BLOCK_EXACOMP_ROLE_TEACHER && !$isEditingTeacher){
                                 $disableCell = true;
                             }else{
                                 $disableCell = ($role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student_example) ? false : true);
                             }
-                            
-                            
+
+
                             if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_example_diffLevel() == 1) {
                                 $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_examples',
@@ -3390,9 +3390,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             } else {
                                 $niveau_cell->text = '';
                             }
-                            
+
                             $niveau_cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
-                            
+
                             $example_params = array('name' => 'dataexamples-'.$example->id.'-'.$student->id, 'type' => 'text',
                                 'maxlength' => 3, 'class' => 'percent-rating-text',
                                 'value' => isset($student->examples->teacher_additional_grading[$example->id]) ?
@@ -3401,17 +3401,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
                                 'reviewername' => $reviewername,
                             );
-                            
+
                             if (!$visible_student_example || $role == BLOCK_EXACOMP_ROLE_STUDENT || !$isEditingTeacher) {
                                 $example_params['disabled'] = 'disabled';
                             }
-                            
+
                             //student show evaluation
                             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE)) {
-                                
+
                                 if ($example_scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE) { // None.
                                     $teacher_evaluation_cell->text = '';
-                                    
+
                                 } else if ($example_scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
                                     $teacher_evaluation_cell->text = $this->generate_checkbox(
                                     $checkboxname,
@@ -3426,7 +3426,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 } else if ($example_scheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // Input.
                                     $example_params['value'] = isset($student->examples->teacher[$example->id]) ?
                                     block_exacomp_format_eval_value($student->examples->teacher[$example->id]) : ""; // TODO: may be $student->examples->teacher_additional_grading?
-                                    $teacher_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $example_params).'</span>';                  
+                                    $teacher_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $example_params).'</span>';
                                 } else { // Lists.
                                     $teacher_evaluation_cell->text = $this->generate_select(
                                     $checkboxname,
@@ -3440,7 +3440,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                                 }
                             }
-                            
+
                             if (block_exacomp_get_assessment_example_SelfEval() == 1) {
                                 // Only emojis?
                                 $student_evaluation_cell->text = $this->generate_select(
@@ -3455,7 +3455,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                             }
                             $student_evaluation_cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
-                            
+
                             // Different order of options for students and teachers:
                             // Student
                             //student & niveau & showevaluation
@@ -3478,24 +3478,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $teacher_evaluation_cell->text .= $this->resubmission_icon($example->id, $student->id, $courseid);
                                 $exampleRow->cells[] = $teacher_evaluation_cell;
                             }
-                            
+
                         }
                         if ($profoundness) {
                             $emptyCell = new html_table_cell();
                             $emptyCell->colspan = 7 - count($exampleRow->cells);
                             $exampleRow->cells[] = $emptyCell;
                         }
-                        
+
                         $rows[] = $exampleRow;
                     }
                 }//end crosssubjectfiles and total evaluation
-               
+
             }
 
         }
 
         $table->data = $rows;
-        
+
         if ($this->is_print_mode()) {
             // set cell print width
             foreach ($rows as $row) {
@@ -3508,23 +3508,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
             }
         }
-        
+
         $table_html = html_writer::table($table);
-        
+
         if (!$this->is_print_mode()) {
             if ($rows && !$this->is_edit_mode() && $students) {
                 $buttons = html_writer::tag("input", "", array("id" => "btn_submit", "name" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection")));
                 $table_html .= html_writer::div($buttons, '', array('id' => 'exabis_save_button'));
             }
-            
+
             $table_html .= html_writer::end_tag('form');
         }
-        
+
         return $table_html;
     }
 
-	    
-	
+
+
 	public function preview_icon($alt = null) {
 		if ($alt == null) {
 			$alt = block_exacomp_get_string("preview");
@@ -3896,7 +3896,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function generate_niveau_select($name, $compid, $type, $student, $disabled = false, $reviewerid = null) {
 		global $USER, $DB;
-		
+
 		//Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
         //the warning contains the name of the reviewer
 		$reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
@@ -3907,7 +3907,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}else {
 		    $reviewername=$reviewerTeacherUsername;
 		}
-		
+
 		if (block_exacomp_use_eval_niveau()) {
 			$options = \block_exacomp\global_config::get_evalniveaus(true);
 
@@ -3921,7 +3921,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$attributes['exa-compid'] = $compid;
 			$attributes['exa-userid'] = $student->id;
-			
+
 			$attributes['reviewername'] = $reviewername;
 
 			//$attributes['exa-evaluation'] = $evaluation;
@@ -4556,7 +4556,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $header.html_writer::tag('p', block_exacomp_get_string("explaineditactivities_subjects")).html_writer::empty_tag('br');
 
 	}
-	
+
 	public function transfer_activities(){
 	    global $PAGE;
 	    $import_activities = '<p>'.block_exacomp_get_string("import_activities").'</p>';
@@ -4589,7 +4589,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $headArr = array();
         $headArr[] = $cell;
-        
+
 /*		$moduleNameLengths = array_map(function($m) {return strlen($m->name);}, $modules);
 		$maxLength = max($moduleNameLengths);*/
 
@@ -5008,7 +5008,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         /*if (!$this->is_print_mode()) {
             $content .= "<script> $('div[class=\"container\"]').each(function () {
                         $(this).find('canvas').each(function () {
-			
+
 					$(this).donut();
 				});
                     });    </script>";
@@ -5892,7 +5892,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$left_content .= html_writer::tag("input", " ", array("type" => "button", "value" => block_exacomp_get_string("share_crosssub"), 'exa-type' => 'iframe-popup', 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
 			}
 			$left_content .= html_writer::tag("input", " ", array("type" => "button", "value" => block_exacomp_get_string("save_as_draft"), 'exa-type' => 'link', 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=save_as_draft'));
-			
+
 			//Add the two style buttons
 			$page_url = html_entity_decode($PAGE->url);
 			// remove existing 'style' parameter from GET
@@ -5900,7 +5900,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$left_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/withsubcat.png'),
 			    'title' => block_exacomp_get_string('comp_based'))).' '.block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
 			        "onclick" => "document.location.href='".$page_url."&style=0';"));
-			
+
 			$left_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/bullet_list.png'),
 			    'title' => block_exacomp_get_string('examp_based'))).' '.block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
 			        "onclick" => "document.location.href='".$page_url."&style=1';"));
@@ -5954,12 +5954,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                            "onclick" => "document.location.href='".block_exacomp\url::create('/blocks/exacomp/cross_subjects_overview.php',
                                                             array('courseid' => $COURSE->id))."'"));
 
-		
+
 		$content = '';
 		$content .= $left_content;
 		$content .= html_writer::div($right_content, 'edit_buttons_float_right');
-		
-	   
+
+
 
 		return html_writer::div($content, '', array('id' => 'exabis_save_button'));
 	}
@@ -6027,40 +6027,40 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //             new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => 1, "crosssubjid" => $crosssubject->id)),
 //             html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
 //             array("target" => "_blank", 'exa-type' => 'iframe-popup'));
-            
+
 //             //$exampleuploadCell->text .= $outputid.block_exacomp_get_descriptor_numbering($descriptor);
-           
+
 // 		} else {
 // // 		    $cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->description : '');
 // // 		    $examples = block_exacomp_get_examples_for_crosssubject($crosssubject->id);
-		  
+
 // // 		    var_dump($examples);
 // // 		    var_dump("asdfasdfasdf");
 // 		}
 // 		$rows[] = [html_writer::span(block_exacomp_get_string('files'), 'exabis_comp_top_name'), $exampleuploadCell];
 
 
-		
+
 		$table->data = $rows;
 
 		$content = html_writer::table($table);
 
 		return $content;
 	}
-	
-	
-	
+
+
+
 	public function print_crosssubjects_and_examples($crosssubjects, $isTeacher, $editmode, $show_examples = true){
 	    //hardcoded rg2-level-4 rg2 and rg2-level-3 rg2 classes... fix this!
 	    $html_tree = "";
 	    $html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree ".($editmode ? 'exa-tree-reopen-checked' : 'exa-tree-open-all')));
-	    
+
 	    foreach ($crosssubjects as $crosssubject) {
 	        echo "i'm in";
 // 	        $html_tree .= html_writer::start_tag("li",array('class' => ("rg2-level-4 rg2")));
 	        $html_tree .= html_writer::start_tag("li");
             $html_tree .= $crosssubject->title;
-            
+
             $examples = block_exacomp_get_examples_for_crosssubject($crosssubject->id);
             foreach ($examples as $example) {
                 $exampleIcons = " ";
@@ -6071,19 +6071,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                         );
 //                 } elseif ($example->externaltask) {
 //                     $exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
-                        
+
 //                         "target" => "_blank",
 //                     )
 //                         );
 //                 }
-                
+
 //                 if ($example->externalurl) {
 //                     $exampleIcons .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl), array(
 //                         "target" => "_blank",
 //                     )
 //                         );
 //                 }
-                
+
 //                 $visible_solution = block_exacomp_is_example_solution_visible(g::$COURSE->id, $example, g::$USER->id);
 //                 if ($isTeacher || $visible_solution) {
 //                     if ($url = $example->get_solution_file_url()) {
@@ -6095,22 +6095,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                             );
 //                     }
 //                 }
-               
+
 //                 $html_tree .= html_writer::tag("li", $example->title.$exampleIcons);
                 $html_tree .= html_writer::tag("li", $example->title.$exampleIcons);
              }
              $html_tree .= html_writer::end_tag("li");
 	    }
 	    $html_tree .= html_writer::end_tag("ul");
-	    
+
 	    return html_writer::div($html_tree, "associated_div", array('id' => "associated_div"));
 	}
 
 	public function competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
-	    
+
 		$html_tree = "";
-		$html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree ".($editmode ? 'exa-tree-reopen-checked' : 'exa-tree-open-all')));		
-		
+		$html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree ".($editmode ? 'exa-tree-reopen-checked' : 'exa-tree-open-all')));
+
 		foreach ($tree as $skey => $subject) {
 			if ($subject->associated == 1 || ($isTeacher && $editmode == 1)) {
 				$html_tree .= html_writer::start_tag("li", array('class' => ($subject->associated == 1) ? "associated" : ""));
@@ -6121,7 +6121,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 
 				foreach ($subject->topics as $tkey => $topic) {
-				    
+
 					if ($topic->associated == 1 || ($isTeacher && $editmode == 1)) {
 						$html_tree .= html_writer::start_tag("li", array('class' => ($topic->associated == 1) ? "associated" : ""));
 						$html_tree .= block_exacomp_get_topic_numbering($topic->id).' '.$topic->title;
@@ -6234,7 +6234,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function example_pool($examples = array()) {
-	    
+
 		$studentid = block_exacomp_get_studentid();
 		if ($studentid > 0) {
 			$content = html_writer::tag('h4', block_exacomp_get_string('example_pool'));
@@ -6455,14 +6455,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content = html_writer::start_tag('ul');
 		foreach($groups as $group){
-		    
+
 		    $content .= html_writer::start_tag('li');
 		    $content .= html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'group_examp_mm', 'groupid' => $group->id));
 		    $content .= html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $COURSE->id, 'studentid' => 0)),
 		        $group->name, array('target' => '_blank', 'title' => block_exacomp_get_string('to_weekly_schedule')));
-		    $content .= html_writer::end_tag('li');		    
+		    $content .= html_writer::end_tag('li');
 		}
-		
+
 		foreach ($students as $student) {
 			$student_has_examples = false;
 			foreach ($student->pool_examples as $example) {
@@ -6714,7 +6714,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($studentsAssociativeArray && $spacer) {
 			$studentsAssociativeArray["defaultstudent"] = '--------------------';
 		}
-		
+
 		//add local groups:
         if (count($groups) > 0) {
             foreach ($groups as $group) {
@@ -6727,7 +6727,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $studentsAssociativeArray[$student->id] = fullname($student);
             }
         }
-		
+
 		return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student', $selected, true,
 			array("disabled" => $this->is_edit_mode() ? "disabled" : ""));
 	}
@@ -6789,7 +6789,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	function group_report_filters($type, $filter, $action, $extra = '', $courseid) {
 		ob_start();
 		?>
-		
+
 		<form method="post" action="<?php echo $action; ?>">
 			<?php
 			echo $extra;
@@ -6800,7 +6800,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					<div>
 						<label><input type="radio" name="filter[type]" value="students" <?php if (@$filter['type'] == 'students') echo 'checked="checked"'; ?>/>
 							<?php echo block_exacomp_get_string('students_competences'); ?></label>&nbsp;&nbsp;&nbsp;
-						<?php 
+						<?php
             			$studentsAssociativeArray = array();
             			$students=block_exacomp_get_students_by_course($courseid);
             			$studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
@@ -6812,12 +6812,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
             			foreach ($students as $student) {
             			    $studentsAssociativeArray[$student->id] = fullname($student);
             			}
-            			echo $this->select($studentsAssociativeArray,'filter[selectedStudentOrGroup]',block_exacomp_get_string('all_students'),true);	
-            			?>	
-							
+            			echo $this->select($studentsAssociativeArray,'filter[selectedStudentOrGroup]',block_exacomp_get_string('all_students'),true);
+            			?>
+
 						<br><label><input type="radio" name="filter[type]" value="student_counts" <?php if (@$filter['type'] == 'student_counts') echo 'checked="checked"'; ?>/>
-							<?php echo block_exacomp_get_string('number_of_students'); ?></label>&nbsp;&nbsp;&nbsp;				
-            			
+							<?php echo block_exacomp_get_string('number_of_students'); ?></label>&nbsp;&nbsp;&nbsp;
+
 					</div>
 				</div>
 			</div>
@@ -6859,12 +6859,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					?>
 				</div>
 			</div>
-			<?php 
+			<?php
 			echo html_writer::empty_tag('input', array('type' => 'submit','id' => 'generate', 'value' => block_exacomp_get_string('create_report'), 'name' => 'generate', 'class' => 'btn btn-default'));
             echo '&nbsp;';
             echo html_writer::empty_tag('input', array('type' => 'submit','id' => 'formatPdf', 'value' => block_exacomp_get_string('create_pdf'), 'name' => 'formatPdf', 'class' => 'btn btn-default'));
 			//echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'print report', 'name' => 'print'));
-			 //echo '<input type="submit" value='.block_exacomp_get_string('create_report').'/>' 
+			 //echo '<input type="submit" value='.block_exacomp_get_string('create_report').'/>'
             ?>
 		</form>
 		<?php
@@ -6968,7 +6968,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         echo '</div>';
 				    }
                     /*if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO])) {
-                        echo '<div class="filter-input-grade"> 
+                        echo '<div class="filter-input-grade">
                                 <span class="filter-title">'.block_exacomp_get_string('competence_grid_additionalinfo').':</span>';
                         switch ($gradingScheme) {
                             // Input fields for Grade|Points
