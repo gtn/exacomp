@@ -32,26 +32,25 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
 	// Check the relevant capabilities - these may vary depending on the filearea being accessed.
 
+
 	// Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
 	$itemid = array_shift($args); // The first item in the $args array.
 
 	// Extract the filename / filepath from the $args array.
 	$filename = array_pop($args); // The last item in the $args array.
 
-//    $position =
+    //get the position of the file (if more files exist) via param in the link
+    $position = optional_param('position', 0, PARAM_INT);
 
 	if ($filearea == 'example_task') {
-
-
-
 		$example = block_exacomp\example::get($itemid);
 		if (!$example) {
 			throw new block_exacomp_permission_exception('file not found');
 		}
 		$example->require_capability(BLOCK_EXACOMP_CAP_VIEW);
 
-//		$file = block_exacomp_get_file($example, $filearea,0);
-        $file = block_exacomp_get_file($example, $filearea);
+		$file = block_exacomp_get_file($example, $filearea,$position);
+//        $file = block_exacomp_get_file($example, $filearea);
 //        $files = block_exacomp_get_files($example, $filearea);
 //        var_dump($file);
 //        die();
@@ -107,15 +106,8 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
 	// We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
 	// From Moodle 2.3, use send_stored_file instead.
-//    echo "ayy";
 
-//    die();
 	send_stored_file($file, 0, 0, $forcedownload, $options);
-
-//	foreach($files as $file){
-//        send_stored_file($file, 0, 0, $forcedownload, $options);
-//    }
-
 	exit;
 }
 

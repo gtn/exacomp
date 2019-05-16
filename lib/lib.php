@@ -5897,9 +5897,6 @@ function block_exacomp_get_file($item, $type, $position=-1) {
 
 	$fs = get_file_storage();
 	$files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
-//
-//    var_dump(array_slice($files,0,1));
-//    die();
 
 	// return first file
     if($position  == -1){
@@ -5912,19 +5909,34 @@ function block_exacomp_get_file($item, $type, $position=-1) {
 }
 
 /**
- * @return stored_file
+ * @return number of files this example has for an item
  * @param array|object $item database item
  * @param string $type
  */
-function block_exacomp_get_files($item, $type) {
+function block_exacomp_get_number_of_files($item, $type) {
     // this function reads the associated file from the moodle file storage
 
     $fs = get_file_storage();
     $files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
 
     // return  files
-    return $files;
+    return sizeof($files);
 }
+
+///**
+// * @return stored_file
+// * @param array|object $item database item
+// * @param string $type
+// */
+//function block_exacomp_get_files($item, $type) {
+//    // this function reads the associated file from the moodle file storage
+//
+//    $fs = get_file_storage();
+//    $files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
+//
+//    // return  files
+//    return $files;
+//}
 
 /**
  * @param array|object $item database item

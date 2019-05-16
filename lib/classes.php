@@ -1090,7 +1090,7 @@ class example extends db_record {
 		}
 	}
 
-	function get_task_file_url() {
+	function get_task_file_url($position = 0) {
 		// get from filestorage
 		$file = block_exacomp_get_file($this, 'example_task');
 		if (!$file) {
@@ -1102,9 +1102,13 @@ class example extends db_record {
 			'_'.trans(['de:Aufgabe', 'en:Task']).
 			'.'.preg_replace('!^.*\.!', '', $file->get_filename());
 
-		return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
-			$file->get_itemid(), $file->get_filepath(), $filename);
+//		var_dump($position);
+        $url = \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
+            $file->get_itemid(), $file->get_filepath(), $filename);
+        $url->param('position', $position);
+		return $url;
 	}
+
 
 	function get_solution_file_url() {
 		// get from filestorage

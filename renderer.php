@@ -1098,10 +1098,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                        $titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
 			                    }
 			                }
-			                
-			                if ($url = $example->get_task_file_url()) {
-			                    $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
-			                }
+
+                            if ($url = $example->get_task_file_url()) {
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_task_file_url($i);
+                                    $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                }
+                            }
 			                
 			                
 			                if ($example->externalurl) {
@@ -2484,7 +2488,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$checkboxname = "dataexamples";
                 $example_scheme = block_exacomp_get_assessment_example_scheme();
 				foreach ($descriptor->examples as $example) {
-
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
 
 					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
@@ -2569,9 +2572,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 
 						if ($url = $example->get_task_file_url()) {
-							$titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
-						}
-
+						    $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
+                            for ($i = 0; $i < $numberOfFiles; $i++) {
+                                $url = $example->get_task_file_url($i);
+                                $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                            }
+                        }
 
 						if ($example->externalurl) {
 							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
@@ -3249,11 +3255,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     $titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
                                 }
                             }
-                            
+
+
                             if ($url = $example->get_task_file_url()) {
-                                $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_task_file_url($i);
+                                    $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                }
                             }
-                            
+
                             
                             if ($example->externalurl) {
                                 $titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
