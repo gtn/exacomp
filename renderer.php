@@ -6178,12 +6178,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				if ($example->associated == 1 || ($isTeacher && $editmode == 1)) {
 					$exampleIcons = " ";
-					if ($url = $example->get_task_file_url()) {
-						$exampleIcons = html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array(
-								"target" => "_blank",
-							)
-						);
-					} elseif ($example->externaltask) {
+
+                    if ($url = $example->get_task_file_url()) {
+                        $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
+                        for ($i = 0; $i < $numberOfFiles; $i++) {
+                            $url = $example->get_task_file_url($i);
+                            $exampleIcons->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                        }
+                    } elseif ($example->externaltask) {
 						$exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
 
 								"target" => "_blank",
@@ -6394,12 +6396,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach ($examples as $example) {
 			$exampleIcons = " ";
 
-			if ($url = $example->get_task_file_url()) {
-
-				$exampleIcons = html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array(
-					"target" => "_blank",
-				));
-			} elseif ($example->externaltask) {
+            if ($url = $example->get_task_file_url()) {
+                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
+                for ($i = 0; $i < $numberOfFiles; $i++) {
+                    $url = $example->get_task_file_url($i);
+                    $exampleIcons->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                }
+  			} elseif ($example->externaltask) {
 
 				$exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
 					"target" => "_blank",
