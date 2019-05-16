@@ -1618,16 +1618,15 @@ class data_importer extends data {
 		
 		
 		
-		
 		if( $course_template != 0) {
+		    @rmdir($CFG->tempdir . '/backup/activities');
 		    if ($ret === true) { // only if it is zip
 		        extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
 		    }
-
 		    for ($i = 1; @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i); $i++){
 		        moodle_restore('activity'. $i, $course_template, $USER->id);
 		    }
-		
+		    @rmdir($CFG->tempdir . '/backup/activities');
 
 		  if (isset($xml->activities)) {
 		      foreach($xml->activities->activity as $activity) {
