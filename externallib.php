@@ -3382,6 +3382,9 @@ class block_exacomp_external extends external_api {
 
 		$final_descriptors = array();
 		foreach ($descriptors as $descriptor) {
+            //to make sure everything has a value
+            $descriptor->reviewername = null;
+            $descriptor->reviewerid = null;
 			$descriptor->id = $descriptor->descriptorid;
             $descriptor->evalniveauid = null;
 			$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
