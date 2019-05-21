@@ -8634,7 +8634,7 @@ class block_exacomp_external extends external_api {
 							if ($descriptor->niveauid) {
 								$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
 								$descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
-								$descriptor_return->niveausort = static::custom_htmltrim($niveau->title);
+								$descriptor_return->niveausort = $niveau->numb.','.$niveau->sorting;//static::custom_htmltrim($niveau->title);
 								$descriptor_return->niveauid = $niveau->id;
 
 								$niveau = $DB->get_record('block_exacompsubjniveau_mm', array('subjectid' => $subject->id, 'niveauid' => $niveau->id));

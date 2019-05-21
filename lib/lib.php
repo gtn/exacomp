@@ -1333,7 +1333,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 
 	$sql = '
-		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
+		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
 		'.(($courseid > 0) ? ' JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') : '').'
 		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
