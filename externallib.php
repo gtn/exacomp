@@ -156,7 +156,7 @@ class block_exacomp_external extends external_api {
 			if (!array_key_exists($topic->id, $structure)) {
 				$structure[$topic->id] = new stdClass ();
 				$structure[$topic->id]->topicid = $topic->id;
-				$structure[$topic->id]->title = $topic->title;
+				$structure[$topic->id]->title = static::custom_htmltrim($topic->title);
 				$structure[$topic->id]->requireaction = false;
 				$structure[$topic->id]->examples = array();
 				$structure[$topic->id]->quizes = array();
@@ -196,7 +196,7 @@ class block_exacomp_external extends external_api {
 					if (!array_key_exists($example->id, $structure[$topic->id]->examples)) {
 						$structure[$topic->id]->examples[$example->id] = new stdClass ();
 						$structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
-						$structure[$topic->id]->examples[$example->id]->example_title = $example->title;
+						$structure[$topic->id]->examples[$example->id]->example_title = static::custom_htmltrim($example->title);
 						$structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
 						$items_examp = $DB->get_records('block_exacompitemexample', array(
 							'exampleid' => $example->id,
@@ -253,7 +253,7 @@ class block_exacomp_external extends external_api {
 						if (!array_key_exists($quiz->id, $structure[$topic->id]->quizes)) {
 							$structure[$topic->id]->quizes[$quiz->id] = new stdClass ();
 							$structure[$topic->id]->quizes[$quiz->id]->quizid = $quiz->id;
-							$structure[$topic->id]->quizes[$quiz->id]->quiz_title = $quiz->name;
+							$structure[$topic->id]->quizes[$quiz->id]->quiz_title = static::custom_htmltrim($quiz->name);
 							$structure[$topic->id]->quizes[$quiz->id]->quiz_grade = $quiz->grade;
 						}
 					}
@@ -345,7 +345,7 @@ class block_exacomp_external extends external_api {
 	        if (!array_key_exists($topic->id, $structure)) {
 	            $structure[$topic->id] = new stdClass ();
 	            $structure[$topic->id]->topicid = $topic->id;
-	            $structure[$topic->id]->title = $topic->title;
+	            $structure[$topic->id]->title = static::custom_htmltrim($topic->title);
 	            $structure[$topic->id]->requireaction = false;
 	            $structure[$topic->id]->totalCompetencies = $topic_total_competencies;
 	            $structure[$topic->id]->examples = array();
@@ -397,7 +397,7 @@ class block_exacomp_external extends external_api {
 	                    $structure[$topic->id]->examples[$example->id] = new stdClass ();
 	                    $structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
 	                    $structure[$topic->id]->examples[$example->id]->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-	                    $structure[$topic->id]->examples[$example->id]->example_title = $example->title;
+	                    $structure[$topic->id]->examples[$example->id]->example_title = static::custom_htmltrim($example->title);
 	                    $structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
 	                    $items_examp = $DB->get_records('block_exacompitemexample', array(
 	                        'exampleid' => $example->id,
@@ -454,7 +454,7 @@ class block_exacomp_external extends external_api {
 	                    if (!array_key_exists($quiz->id, $structure[$topic->id]->quizes)) {
 	                        $structure[$topic->id]->quizes[$quiz->id] = new stdClass ();
 	                        $structure[$topic->id]->quizes[$quiz->id]->quizid = $quiz->id;
-	                        $structure[$topic->id]->quizes[$quiz->id]->quiz_title = $quiz->name;
+	                        $structure[$topic->id]->quizes[$quiz->id]->quiz_title = static::custom_htmltrim($quiz->name);
 	                        $structure[$topic->id]->quizes[$quiz->id]->quiz_grade = $quiz->grade;
 	                    }
 	                }
@@ -959,7 +959,7 @@ class block_exacomp_external extends external_api {
 				if (!array_key_exists($subject->id, $subjects_res)) {
 					$elem = new stdClass ();
 					$elem->subjectid = $subject->id;
-					$elem->title = $subject->title;
+					$elem->title = static::custom_htmltrim($subject->title);
 					$elem->courseid = $course["courseid"];
 					$elem->requireaction = array_key_exists($subject->id, $require_actions);
 					$subjects_res[] = $elem;
@@ -1894,7 +1894,7 @@ class block_exacomp_external extends external_api {
 					if ($example->example_creatorid == $USER->id) {
 						$elem = new stdClass ();
 						$elem->exampleid = $example->exampleid;
-						$elem->exampletitle = $example->example_title;
+						$elem->exampletitle = static::custom_htmltrim($example->example_title);
 						$elem->exampletopicid = $topic->topicid;
 						$items_examp = $DB->get_records('block_exacompitemexample', array(
 							'exampleid' => $example->exampleid,
@@ -2070,7 +2070,7 @@ class block_exacomp_external extends external_api {
 								$taxonomy = reset($taxonomies);
 
 								$example->taxid = $taxonomy->id;
-								$example->tax = $taxonomy->title;
+								$example->tax = static::custom_htmltrim($taxonomy->title);
 							} else {
 								$example->taxid = null;
 								$example->tax = "";
@@ -2101,7 +2101,7 @@ class block_exacomp_external extends external_api {
 
 					if (!array_key_exists($topic->id, $subject_topics)) {
 						$elem = new stdClass ();
-						$elem->title = $topic->title;
+						$elem->title = static::custom_htmltrim($topic->title);
 						$elem->competencies = array(
 							"total" => $topic_total_competencies,
 							"reached" => $topic_reached_competencies,
@@ -2116,7 +2116,7 @@ class block_exacomp_external extends external_api {
 
 				if (!array_key_exists($subject->id, $subjects_res)) {
 					$elem = new stdClass ();
-					$elem->title = $subject->title;
+					$elem->title = static::custom_htmltrim($subject->title);
 					$elem->competencies = array(
 						"total" => $subject_total_competencies,
 						"reached" => $subject_reached_competencies,
@@ -2150,7 +2150,7 @@ class block_exacomp_external extends external_api {
 
 		foreach ($subjects_res as $subject_res) {
 			$cursubject = array(
-				"title" => $subject_res->title,
+				"title" => static::custom_htmltrim($subject_res->title),
 				"data" => array(
 					"competencies" => $subject_res->competencies,
 					"examples" => $subject_res->examples,
@@ -2160,7 +2160,7 @@ class block_exacomp_external extends external_api {
 
 			foreach ($subject_res->topics as $topic) {
 				$cursubject["topics"][] = array(
-					"title" => $topic->title,
+					"title" => static::custom_htmltrim($topic->title),
 					"data" => array(
 						"competencies" => $topic->competencies,
 						"examples" => $topic->examples,
@@ -2517,7 +2517,7 @@ class block_exacomp_external extends external_api {
 						foreach ($topic->descriptors as $descriptor) {
 							$elem_desc = new stdClass ();
 							$elem_desc->descriptorid = $descriptor->id;
-							$elem_desc->descriptortitle = $descriptor->title;
+							$elem_desc->descriptortitle = static::custom_htmltrim($descriptor->title);
 							$structure[] = $elem_desc;
 						}
 					}
@@ -3199,10 +3199,10 @@ class block_exacomp_external extends external_api {
 	    $taxids='';
 	    foreach (block_exacomp_get_taxonomies_by_example($example->id) as $tax) {
 	        if($taxonomies==''){ //first run, no ","
-	            $taxonomies .= $tax->title;
+	            $taxonomies .= static::custom_htmltrim($tax->title);
 	            $taxids .= $tax->id;
 	        }else{
-	            $taxonomies .= ','.$tax->title;
+	            $taxonomies .= ','.static::custom_htmltrim($tax->title);
 	            $taxids .= ','.$tax->id;
 	        }
 	    }
@@ -3215,7 +3215,7 @@ class block_exacomp_external extends external_api {
 		if (!$isTeacher && !$solution_visible) {
 			$example->solution = "";
 		}
-        $example->title = strip_tags($example->title);
+        $example->title = static::custom_htmltrim(strip_tags($example->title));
 
         $example->taskfilecount = $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
 
@@ -4153,16 +4153,16 @@ class block_exacomp_external extends external_api {
 
 		foreach ($examples as $example) {
 		    // it seems like dakora_get_examples_pool_returns has problems with the example titles which contain html tags, so:
-            $example->title = strip_tags($example->title);
+            $example->title = static::custom_htmltrim(strip_tags($example->title));
 // 		    //Taxonomies:
 		    $taxonomies='';
 		    $taxids='';
 		    foreach (block_exacomp_get_taxonomies_by_example($example->exampleid) as $tax) {
 		        if($taxonomies==''){ //first run, no ","
-		            $taxonomies .= $tax->title;
+		            $taxonomies .= static::custom_htmltrim($tax->title);
 		            $taxids .= $tax->id;
 		        }else{
-		            $taxonomies .= ','.$tax->title;
+		            $taxonomies .= ','.static::custom_htmltrim($tax->title);
 		            $taxids .= ','.$tax->id;
 		        }
 		    }
@@ -4239,7 +4239,7 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
 
 		foreach ($examples as $example) {
-            $example->title = strip_tags($example->title);
+            $example->title = static::custom_htmltrim(strip_tags($example->title));
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 
 			$example_course = $DB->get_record('course', array('id' => $example->courseid));
@@ -4460,16 +4460,16 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 
 		foreach ($examples as $example) {
-            $example->title = strip_tags($example->title);
+            $example->title = static::custom_htmltrim(strip_tags($example->title));
 // 		    //Taxonomies:
 		    $taxonomies='';
 		    $taxids='';
 		    foreach (block_exacomp_get_taxonomies_by_example($example->exampleid) as $tax) {
 		        if($taxonomies==''){ //first run, no ","
-		            $taxonomies .= $tax->title;
+		            $taxonomies .= static::custom_htmltrim($tax->title);
 		            $taxids .= $tax->id;
 		        }else{
-		            $taxonomies .= ','.$tax->title;
+		            $taxonomies .= ','.static::custom_htmltrim($tax->title);
 		            $taxids .= ','.$tax->id;
 		        }
 		    }
@@ -4605,7 +4605,7 @@ class block_exacomp_external extends external_api {
 			foreach ($cross_subject->examples as $example) {
 			    $example_return = new stdClass();
 			    $example_return->exampleid = $example->id;
-			    $example_return->exampletitle = $example->title;
+			    $example_return->exampletitle = static::custom_htmltrim($example->title);
 			    $example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
 
 			    if ($forall) {
@@ -6595,7 +6595,7 @@ class block_exacomp_external extends external_api {
 		$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, false);
 
 		foreach ($examples as $example) {
-            $example->title = strip_tags($example->title);
+            $example->title = static::custom_htmltrim(strip_tags($example->title));
 			if ($example->teacherevaluation == $grading) {
 				if (!array_key_exists($example->exampleid, $examples_return)) {
 					$examples_return[$example->exampleid] = $example;
@@ -6607,7 +6607,7 @@ class block_exacomp_external extends external_api {
 			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->descriptorid, $userid, false);
 
 			foreach ($examples as $example) {
-                $example->title = strip_tags($example->title);
+                $example->title = static::custom_htmltrim(strip_tags($example->title));
 				if ($example->teacherevaluation == $grading && $example->visible == 1) {
 					if (!array_key_exists($example->exampleid, $examples_return)) {
 						$examples_return[$example->exampleid] = $example;
@@ -7123,7 +7123,7 @@ class block_exacomp_external extends external_api {
 			$return = array();
 			foreach ($statistic as $niveautitle => $niveaustat) {
 				$niveau = new stdClass();
-				$niveau->title = $niveautitle;
+				$niveau->title = static::custom_htmltrim($niveautitle);
 				$niveau->teacherevaluation = $niveaustat->teachervalue;
 				$niveau->evalniveauid = $niveaustat->evalniveau;
 				$niveau->studentevaluation = $niveaustat->studentvalue;
@@ -8310,7 +8310,7 @@ class block_exacomp_external extends external_api {
 	    $descriptor_return = new stdClass();
 	    $descriptor_return->descriptorid = $descriptorid;
 	    $descriptor_return->parentid = $descriptor->parentid;
-	    $descriptor_return->descriptortitle = $descriptor->title;
+	    $descriptor_return->descriptortitle = static::custom_htmltrim($descriptor->title);
 	    $descriptor_return->teacherevaluation = -1;
 	    $descriptor_return->additionalinfo = null;
 	    $descriptor_return->evalniveauid = null;
@@ -8357,7 +8357,7 @@ class block_exacomp_external extends external_api {
 	    $descriptor_return->niveauid = 0;
 	    if ($descriptor->niveauid) {
 	        $niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
-	        $descriptor_return->niveautitle = $niveau->title;
+	        $descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
 	        $descriptor_return->niveauid = $niveau->id;
 	    }
 
@@ -8535,7 +8535,7 @@ class block_exacomp_external extends external_api {
 			    $example_return->tax = "A";
 				$example_return = new stdClass();
 				$example_return->exampleid = $example->id;
-				$example_return->exampletitle = $example->title;
+				$example_return->exampletitle = static::custom_htmltrim($example->title);
 				$example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
 				$example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student)) || $forall)) ? 1 : 0;
 				$example_return->used = (block_exacomp_example_used($courseid, $example, $userid)) ? 1 : 0;
@@ -8576,11 +8576,11 @@ class block_exacomp_external extends external_api {
 				if (!$only_associated || ($only_associated && $topic->associated == 1)) {
 					$topic_return = new stdClass();
 					$topic_return->topicid = $topic->id;
-					$topic_return->topictitle = $topic->title;
+					$topic_return->topictitle = static::custom_htmltrim($topic->title);
 					$topic_return->topicdescription = ($topic->description) ? $topic->description : null ;
 					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
 					$topic_return->subjectid = $subject->id;
-					$topic_return->subjecttitle = $subject->title;
+					$topic_return->subjecttitle = static::custom_htmltrim($subject->title);
 // 					if($groupid != -1){//for group //TODO, finish this to distinguish between groups, students and forall
 // 					    $topic_return->visible = (block_exacomp_is_topic_visible_for_group($courseid, $topic, $userid)) ? 1 : 0;
 // 					    $topic_return->used = (block_exacomp_is_topic_used_for_group($courseid, $topic, $userid)) ? 1 : 0;
@@ -8624,7 +8624,7 @@ class block_exacomp_external extends external_api {
 						if (!$only_associated || ($only_associated && $descriptor->associated == 1)) {
 							$descriptor_return = new stdClass();
 							$descriptor_return->descriptorid = $descriptor->id;
-							$descriptor_return->descriptortitle = $descriptor->title;
+							$descriptor_return->descriptortitle = static::custom_htmltrim($descriptor->title);
 							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 							$descriptor_return->niveaudescription = "";
 							$descriptor_return->niveautitle = "";
@@ -8633,8 +8633,8 @@ class block_exacomp_external extends external_api {
 
 							if ($descriptor->niveauid) {
 								$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
-								$descriptor_return->niveautitle = $niveau->title;
-								$descriptor_return->niveausort = $niveau->title;
+								$descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
+								$descriptor_return->niveausort = static::custom_htmltrim($niveau->title);
 								$descriptor_return->niveauid = $niveau->id;
 
 								$niveau = $DB->get_record('block_exacompsubjniveau_mm', array('subjectid' => $subject->id, 'niveauid' => $niveau->id));
@@ -8716,7 +8716,7 @@ class block_exacomp_external extends external_api {
 				if ($has_visible_examples || $has_children_with_visible_examples) {
 					$descriptor_return = new stdClass();
 					$descriptor_return->descriptorid = $descriptor->id;
-					$descriptor_return->descriptortitle = $descriptor->title;
+					$descriptor_return->descriptortitle = static::custom_htmltrim($descriptor->title);
 					$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 					$descriptor_return->niveautitle = "";
 					$descriptor_return->niveauid = 0;
@@ -8733,7 +8733,7 @@ class block_exacomp_external extends external_api {
 					$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid)) ? 1 : 0;
 					if ($descriptor->niveauid) {
 						$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
-						$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor), 0, 3).": ".$niveau->title;
+						$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor), 0, 3).": ".static::custom_htmltrim($niveau->title);
 						$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
 						$descriptor_return->niveauid = $niveau->id;
 					}
@@ -8742,7 +8742,7 @@ class block_exacomp_external extends external_api {
 			} else {
 				$descriptor_return = new stdClass();
 				$descriptor_return->descriptorid = $descriptor->id;
-				$descriptor_return->descriptortitle = $descriptor->title;
+				$descriptor_return->descriptortitle = static::custom_htmltrim($descriptor->title);
 				$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 				$descriptor_return->niveautitle = "";
 				$descriptor_return->niveauid = 0;
@@ -8760,7 +8760,7 @@ class block_exacomp_external extends external_api {
 
 				if ($descriptor->niveauid) {
 					$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
-					$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor), 0, 3).": ".$niveau->title;
+					$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor), 0, 3).": ".static::custom_htmltrim($niveau->title);
 					$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
 					$descriptor_return->niveauid = $niveau->id;
 				}
@@ -8813,20 +8813,20 @@ class block_exacomp_external extends external_api {
 
 		$examples_return = array();
 		foreach ($descriptor->examples as $example) {
-            $example->title = strip_tags($example->title);
+            $example->title = static::custom_htmltrim($example->title);
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
-			$example_return->exampletitle = $example->title;
+			$example_return->exampletitle = static::custom_htmltrim($example->title);
 			$example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
 			//taxonomies and taxids: RW
 			$taxonomies='';
 			$taxids='';
 			foreach ($example->taxonomies as $tax) {
 			    if($taxonomies==''){ //first run, no ","
-			        $taxonomies .= $tax->title;
+			        $taxonomies .= static::custom_htmltrim($tax->title);
 			        $taxids .= $tax->id;
 			    }else{
-			        $taxonomies .= ','.$tax->title;
+			        $taxonomies .= ','.static::custom_htmltrim($tax->title);
 			        $taxids .= ','.$tax->id;
 			    }
 			}
@@ -9214,4 +9214,12 @@ class block_exacomp_external extends external_api {
 		$item->timestampteacher = null;
 		$item->timestampstudent = null;
 	}
+
+	protected function custom_htmltrim($string) {
+	    $string = strip_tags($string);
+        // here is possible &nbsp;, but also are possible umlauts...
+        $string = strtr($string, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
+        $string = trim($string, chr(0xC2).chr(0xA0));
+        return $string;
+    }
 }
