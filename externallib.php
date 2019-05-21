@@ -8816,7 +8816,7 @@ class block_exacomp_external extends external_api {
             $example->title = static::custom_htmltrim($example->title);
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
-			$example_return->exampletitle = static::custom_htmltrim($example->title);
+			$example_return->exampletitle = static::custom_htmltrim(strip_tags($example->title));
 			$example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
 			//taxonomies and taxids: RW
 			$taxonomies='';
@@ -9216,7 +9216,11 @@ class block_exacomp_external extends external_api {
 	}
 
 	protected function custom_htmltrim($string) {
-	    $string = strip_tags($string);
+	    //$string = strip_tags($string);
+        $string = nl2br($string);
+        $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
+        $string = str_replace($remove, ' ', $string); // new lines to space
+        $string = preg_replace('!\s+!', ' ', $string); // multiple spaces to single
         // here is possible &nbsp;, but also are possible umlauts...
         $string = strtr($string, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
         $string = trim($string, chr(0xC2).chr(0xA0));

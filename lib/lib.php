@@ -2632,6 +2632,7 @@ function block_exacomp_get_grading_scheme($courseid) {
  */
 function block_exacomp_get_output_fields($topic) {
     $output_id = '';
+    //$output_title = $topic->title;
     $output_title = nl2br($topic->title);
     $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
     $output_title = str_replace($remove, ' ', $output_title); // new lines to space
