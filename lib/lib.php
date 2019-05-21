@@ -1867,7 +1867,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	}
 
 	// load niveaus from db
-	$niveaus = g::$DB->get_records_list(BLOCK_EXACOMP_DB_NIVEAUS, 'id', $niveau_ids, 'sorting');
+	$niveaus = g::$DB->get_records_list(BLOCK_EXACOMP_DB_NIVEAUS, 'id', $niveau_ids, 'numb, sorting');
 	$niveaus = \block_exacomp\niveau::create_objects($niveaus);
 
 	$defaultNiveau = block_exacomp\niveau::create();
@@ -2631,13 +2631,15 @@ function block_exacomp_get_grading_scheme($courseid) {
  * @param stdClass $topic
  */
 function block_exacomp_get_output_fields($topic) {
-	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $topic->title, $matches)) {
+    $output_id = '';
+    $output_title = nl2br($topic->title);
+    $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
+    $output_title = str_replace($remove, ' ', $output_title); // new lines to space
+    $output_title = preg_replace('!\s+!', ' ', $output_title); // multiple spaces to single
+	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $output_title, $matches)) {
 		//$output_id = $matches[1];
 		$output_id = '';
 		$output_title = $matches[2];
-	} else {
-		$output_id = '';
-		$output_title = $topic->title;
 	}
 
 	return array($output_id, $output_title);
