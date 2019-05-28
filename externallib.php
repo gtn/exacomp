@@ -533,7 +533,7 @@ class block_exacomp_external extends external_api {
 
 		$courseid = static::find_courseid_for_example($exampleid);
 		static::require_can_access_example($exampleid, $courseid);
-
+		
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
 			'id' => $exampleid,
 		));
@@ -591,7 +591,8 @@ class block_exacomp_external extends external_api {
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
 			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-			'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),
+			//'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),
+			'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'), // like in Dakora?
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
 		));
 	}

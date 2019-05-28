@@ -3288,11 +3288,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019040800, 'exacomp');
     }
-    
-	/*
-	 * insert new upgrade scripts before this comment section
-	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
-	 */
+
+    if ($oldversion < 2019052803) {
+        $table = new xmldb_table('block_exacompcompuser');
+        $field = new xmldb_field('gradingisold', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2019052803, 'exacomp');
+    }
+
+    /*
+     * insert new upgrade scripts before this comment section
+     * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
+     */
 
 	// always normalize database after upgrade
 	block_exacomp\data::normalize_database();
