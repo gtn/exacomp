@@ -90,7 +90,7 @@ class db_layer {
 
 		$sql = "
 			SELECT DISTINCT d.id, d.title, d.source, d.sourceid, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
-				n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
+				n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
 			FROM {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctopmm
 			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON desctopmm.descrid=d.id AND d.parentid=0
 			-- left join, because courseid=0 has no descvisibility!

@@ -1005,12 +1005,22 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
 				}
 			} elseif ($sorting == BLOCK_EXACOMP_DB_NIVEAUS) {
+                if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
+                    throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
+                }
 				if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
 				}
 				if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
 				}
+
+                if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
+                    return -1;
+                }
+                if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
+                    return 1;
+                }
 
 				if ($a->{$prefix.'sorting'} != $b->{$prefix.'sorting'}) {
 					// move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
@@ -1345,7 +1355,9 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		'.($showalldescriptors ? '' : '
 			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON d.id=ca.compid AND ca.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
 				AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
-		');
+		').'		
+		';
+    //ORDER BY t.sorting, n.numb, n.sorting, d.sorting
 
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
