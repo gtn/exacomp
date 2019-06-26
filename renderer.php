@@ -23,11 +23,26 @@ use block_exacomp\globals as g;
 
 class block_exacomp_renderer extends plugin_renderer_base {
 
+    protected $diffLevelExists = false;
+    protected $useEvalNiveau = false;
+    protected $reviewers = array();
+    protected $exaportExists = false;
+
 	const STUDENT_SELECTOR_OPTION_EDITMODE = 1;
 	const STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN = 2;
 	const STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN = 3;
 
-	public function header_v2($page_identifier = "") {
+    /**
+     * block_exacomp_renderer constructor.
+     */
+    public function __construct(moodle_page $page, $target) {
+        $this->diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
+        $this->useEvalNiveau = block_exacomp_use_eval_niveau();
+        $this->exaportExists = block_exacomp_exaportexists();
+        parent::__construct($page, $target);
+    }
+
+    public function header_v2($page_identifier = "") {
 		// g::$PAGE->show_tabtree
 		return $this->header(block_exacomp_get_context_from_courseid(g::$COURSE->id), g::$COURSE->id, $page_identifier);
 	}
@@ -663,7 +678,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$rows[] = $headerrow;
 
-		if (block_exacomp_exaportexists()) {
+		if ($this->exaportExists) {
 			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
 		} else {
 			$eportfolioitems = array();
@@ -685,7 +700,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				'profoundness' => 1,
 				'cm_mm' => block_exacomp_get_course_module_association($courseid),
 				'eportfolioitems' => $eportfolioitems,
-				'exaport_exists' => block_exacomp_exaportexists(),
+				'exaport_exists' => $this->exaportExists,
 				'course_mods' => get_fast_modinfo($courseid)->get_cms(),
 				'selected_topicid' => null,
 				'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
@@ -707,7 +722,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
 		//if (block_exacomp_use_eval_niveau() && ($showevaluation || $role == BLOCK_EXACOMP_ROLE_TEACHER)) {
-		if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_any_diffLevel_exist()) {
+		if ($this->useEvalNiveau && $this->diffLevelExists) {
 			$studentsColspan++;
 		}
 
@@ -725,7 +740,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 
-		if (block_exacomp_exaportexists()) {
+		if ($this->exaportExists) {
 			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
 		} else {
 			$eportfolioitems = array();
@@ -773,8 +788,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$studentsCount = 0;
 
-			$diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
-
 			foreach ($students as $student) {
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
@@ -820,12 +833,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 						$firstCol->text = block_exacomp_get_string('studentshortcut');
 						$secCol->text = block_exacomp_get_string('teachershortcut');
-						if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+						if ($this->useEvalNiveau && $this->diffLevelExists) {
 							$secCol->colspan = 2;
 						}
 					} else {
 						$firstCol->text = block_exacomp_get_string('teachershortcut');
-						if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+						if ($this->useEvalNiveau && $this->diffLevelExists) {
 							$firstCol->colspan = 2;
 						}
 						$secCol->text = block_exacomp_get_string('studentshortcut');
@@ -843,7 +856,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			    if ($crosssubjid) {
 			        $profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 			        $evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
-			        $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
 
 			        $examples_crosssubj = block_exacomp_get_examples_for_crosssubject($crosssubjid);
 
@@ -882,7 +894,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			        $totalRow->cells[] = $outputnameCell;
 			        $totalRow->cells[] = new html_table_cell();
 
-
 			        foreach ($students as $student) {
 			            if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			                $reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, "reviewerid", array("userid" => $student->id, "compid" => $crosssubjid, "courseid" => $courseid, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB));
@@ -902,7 +913,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			            $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
 			            $niveau_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
 
-			            if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_theme_diffLevel() == 1) {
+			            if ($this->useEvalNiveau && block_exacomp_get_assessment_theme_diffLevel() == 1) {
 			                $niveau_cell->text = $this->generate_niveau_select(
 			                    'niveau_crosssub',
 			                    $crosssubjid,
@@ -917,14 +928,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			            //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
 			            //the warning contains the name of the reviewer
 			            if (isset($reviewerid) && $reviewerid > 0) {
-			                $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
-			                $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
-			                $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
-			                if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
-			                    $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
-			                } else {
-			                    $reviewername = $reviewerTeacherUsername;
-			                }
+                            if (!array_key_exists($reviewerid, $this->reviewers)) {
+                                $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+                                $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
+                                if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
+                                    $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                                } else {
+                                    $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
+                                    $reviewername = $reviewerTeacherUsername;
+                                }
+                                $this->reviewers[$reviewerid] = $reviewername;
+                            } else {
+                                $reviewername = $this->reviewers[$reviewerid];
+                            }
 			            } else {
 			                $reviewername = '';
 			            }
@@ -994,7 +1010,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                // Different order of options for students and teachers:
 			                // Student
 			                if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
-			                    if (block_exacomp_use_eval_niveau() && $showevaluation && block_exacomp_get_assessment_any_diffLevel_exist()) {
+			                    if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
 			                        $totalRow->cells[] = $niveau_cell;
 			                    }
 			                    if ($showevaluation) {
@@ -1005,7 +1021,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                    if ($showevaluation) {
 			                        $totalRow->cells[] = $student_evaluation_cell;
 			                    }
-			                    if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_any_diffLevel_exist()) {
+			                    if ($this->useEvalNiveau && $this->diffLevelExists) {
 			                        $totalRow->cells[] = $niveau_cell;
 			                    }
 			                    $totalRow->cells[] = $teacher_evaluation_cell;
@@ -1221,7 +1237,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                }
 
 
-			                if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_example_diffLevel() == 1) {
+			                if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel() == 1) {
 			                    $niveau_cell->text = $this->generate_niveau_select(
 			                        'niveau_examples',
 			                        $example->id,
@@ -1310,7 +1326,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                // Student
 			                //student & niveau & showevaluation
 			                if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
-			                    if (block_exacomp_use_eval_niveau() && $showevaluation && $diffLevelExists) {
+			                    if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
 			                        $exampleRow->cells[] = $niveau_cell;
 			                    }
 			                    if (showevaluation) {
@@ -1321,7 +1337,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			                    if (showevaluation) {
 			                        $exampleRow->cells[] = $student_evaluation_cell;
 			                    }
-			                    if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+			                    if ($this->useEvalNiveau && $this->diffLevelExists) {
 			                        $exampleRow->cells[] = $niveau_cell;
 			                    }
 			                    $teacher_evaluation_cell->text .= $this->submission_icon($courseid, $example->id, $student->id);
@@ -1341,7 +1357,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			    }//end crosssubjectfiles and total evaluation
 
 			}
-
 
 			$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 			$evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? 'teacher' : 'student';
@@ -1385,7 +1400,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
  						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
  						$niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
- 						if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_subject_diffLevel()) {
+ 						if ($this->useEvalNiveau && block_exacomp_get_assessment_subject_diffLevel()) {
  					        $niveau_cell->text = $this->generate_niveau_select('niveau_subject',
                                                                                 $subject->id,
                                                                                 'subjects',
@@ -1399,13 +1414,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
  					    //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
  					    //the warning contains the name of the reviewer
                         if (isset($reviewerid) && $reviewerid > 0) {
-                            $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
-                            $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
-                            $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
-                            if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
-                                $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                            if (!array_key_exists($reviewerid, $this->reviewers)) {
+                                $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+                                $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
+                                if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
+                                    $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                                } else {
+                                    $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
+                                    $reviewername = $reviewerTeacherUsername;
+                                }
+                                $this->reviewers[$reviewerid] = $reviewername;
                             } else {
-                                $reviewername = $reviewerTeacherUsername;
+                                $reviewername = $this->reviewers[$reviewerid];
                             }
                         } else {
                             $reviewername = '';
@@ -1442,6 +1462,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						// Self evaluate from student.
                         $subjectscheme = block_exacomp_get_assessment_subject_scheme();
                         $evaluation_cell->text = '';
+
                         if (block_exacomp_get_assessment_subject_SelfEval() == 1) {
                             // the student can evaluate self only by emojis
                             /*if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
@@ -1482,7 +1503,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$subjectRow->cells[] = $evaluation_cell;
 						}
 
-						if (block_exacomp_use_eval_niveau() && $role == BLOCK_EXACOMP_ROLE_TEACHER && $diffLevelExists) {
+						if ($this->useEvalNiveau && $role == BLOCK_EXACOMP_ROLE_TEACHER && $this->diffLevelExists) {
 							$subjectRow->cells[] = $niveau_cell;
 						}
 
@@ -1548,7 +1569,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $niveau_cell = new html_table_cell();
                         $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
                         $niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
-                        if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_subject_diffLevel()) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_subject_diffLevel()) {
                             $niveau_cell->text = $this->generate_niveau_select('niveau_subject',
                                     $subject->id,
                                     'subjects',
@@ -1573,7 +1594,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 'disabled' => 'disabled');
 
                         //student & niveau & showevaluation
-                        if (block_exacomp_use_eval_niveau() && $showevaluation && $diffLevelExists) {
+                        if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
                             $subjectRow->cells[] = $niveau_cell;
                         }
 
@@ -1678,7 +1699,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				'profoundness' => block_exacomp_get_settings_by_course($courseid)->useprofoundness,
 				'cm_mm' => block_exacomp_get_course_module_association($courseid),
 				'eportfolioitems' => $eportfolioitems,
-				'exaport_exists' => block_exacomp_exaportexists(),
+				'exaport_exists' => $this->exaportExists,
 				'course_mods' => get_fast_modinfo($courseid)->get_cms(),
 				'selected_topicid' => null,
 				'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
@@ -1774,7 +1795,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
-            $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
 
 			if ($data->role == BLOCK_EXACOMP_ROLE_TEACHER || $visible) {
 				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
@@ -1875,7 +1895,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						    $disableCell = ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student) ? false : true);
 						}
 
-                        if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_topic_diffLevel() == 1) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_topic_diffLevel() == 1) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_topic',
                                     $topic->id,
@@ -1891,13 +1911,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					    // the warning contains the name of the reviewer
                         $reviewername = '';
                         if (isset($reviewerid) && $reviewerid) {
-                            $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
-                            $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
-                            $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
-                            if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
-                                $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                            if (!array_key_exists($reviewerid, $this->reviewers)) {
+                                $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+                                $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
+                                $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
+                                if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
+                                    $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                                } else {
+                                    $reviewername = $reviewerTeacherUsername;
+                                }
+                                $this->reviewers[$reviewerid] = $reviewername;
                             } else {
-                                $reviewername = $reviewerTeacherUsername;
+                                $reviewername = $this->reviewers[$reviewerid];
                             }
                         }
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$topic->id, 'type' => 'text',
@@ -1974,7 +1999,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						// Different order of options for students and teachers:
                         // Student
                         if ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) {
-                            if (block_exacomp_use_eval_niveau() && $data->showevaluation && $diffLevelExists) {
+                            if ($this->useEvalNiveau && $data->showevaluation && $this->diffLevelExists) {
                                 $topicRow->cells[] = $niveau_cell;
                             }
                             if ($data->showevaluation) {
@@ -1985,7 +2010,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if ($data->showevaluation) {
                                 $topicRow->cells[] = $student_evaluation_cell;
                             }
-                            if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+                            if ($this->useEvalNiveau && $this->diffLevelExists) {
                                 $topicRow->cells[] = $niveau_cell;
                             }
                             $topicRow->cells[] = $teacher_evaluation_cell;
@@ -2048,8 +2073,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $USER, $COURSE, $DB;
 
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
-        $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
 
+		$showstudents = block_exacomp_get_studentid();
 		foreach ($descriptors as $descriptor) {
 			$descriptor_parent_visible = $parent_visible;
 
@@ -2072,7 +2097,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$one_student = false;
 			$studentid = 0;
-			if (!$editmode && count($students) == 1 && block_exacomp_get_studentid() != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+			if (!$editmode && count($students) == 1 && $showstudents != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 				$studentid = array_values($students)[0]->id;
 				$one_student = true;
 			}
@@ -2307,8 +2332,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 
 
-                        if ((block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_comp_diffLevel() == 1 && $level == 1)
-                            || (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_childcomp_diffLevel() == 1) && $level == 2) {
+                        if (($this->useEvalNiveau && block_exacomp_get_assessment_comp_diffLevel() == 1 && $level == 1)
+                            || ($this->useEvalNiveau && block_exacomp_get_assessment_childcomp_diffLevel() == 1) && $level == 2) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_descriptor',
                                     $descriptor->id,
@@ -2322,14 +2347,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					    // Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
 					    // the warning contains the name of the reviewer
-					    $reviewerTeacherFirstname = $DB->get_field('user','firstname',array('id' => $reviewerid));
-					    $reviewerTeacherLastname = $DB->get_field('user','lastname',array('id' => $reviewerid));
-					    $reviewerTeacherUsername = $DB->get_field('user','username',array('id' => $reviewerid));
-					    if ($reviewerTeacherFirstname != NULL && $reviewerTeacherLastname != NULL){
-					        $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
-					    } else {
-					        $reviewername = $reviewerTeacherUsername;
-					    }
+                        if (!array_key_exists($reviewerid, $this->reviewers)) {
+                            $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+                            $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
+                            if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
+                                $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                            } else {
+                                $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
+                                $reviewername = $reviewerTeacherUsername;
+                            }
+                            $this->reviewers[$reviewerid] = $reviewername;
+                        } else {
+                            $reviewername = $this->reviewers[$reviewerid];
+                        }
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$descriptor->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
 							'value' => isset($student->competencies->teacher_additional_grading[$descriptor->id]) ?
@@ -2425,7 +2455,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         // Student
                         //student & niveau & showevaluation
                         if ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) {
-                            if (block_exacomp_use_eval_niveau() && $data->showevaluation && $diffLevelExists) {
+                            if ($this->useEvalNiveau && $data->showevaluation && $this->diffLevelExists) {
                                 $descriptorRow->cells[] = $niveau_cell;
                             }
                             if ($data->showevaluation) {
@@ -2436,7 +2466,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if ($data->showevaluation) {
                                 $descriptorRow->cells[] = $student_evaluation_cell;
                             }
-                            if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+                            if ($this->useEvalNiveau && $this->diffLevelExists) {
                                 $descriptorRow->cells[] = $niveau_cell;
                             }
                             $descriptorRow->cells[] = $teacher_evaluation_cell;
@@ -2693,7 +2723,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						    $disableCell = ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student_example) ? false : true);
 						}
 
-                        if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_example_diffLevel() == 1) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel() == 1) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_examples',
                                     $example->id,
@@ -2785,7 +2815,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         // Student
                         //student & niveau & showevaluation
                         if ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) {
-                            if (block_exacomp_use_eval_niveau() && $data->showevaluation && $diffLevelExists) {
+                            if ($this->useEvalNiveau && $data->showevaluation && $this->diffLevelExists) {
                                 $exampleRow->cells[] = $niveau_cell;
                             }
                             if ($data->showevaluation) {
@@ -2796,7 +2826,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if ($data->showevaluation) {
                                 $exampleRow->cells[] = $student_evaluation_cell;
                             }
-                            if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+                            if ($this->useEvalNiveau && $this->diffLevelExists) {
                                 $exampleRow->cells[] = $niveau_cell;
                             }
                             $teacher_evaluation_cell->text .= $this->submission_icon($data->courseid, $example->id, $student->id);
@@ -2865,7 +2895,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $table = new html_table();
         $rows = array();
         $studentsColspan = $showevaluation ? 2 : 1;
-        if (block_exacomp_use_eval_niveau() && ($showevaluation || $role == BLOCK_EXACOMP_ROLE_TEACHER)) {
+        if ($this->useEvalNiveau && ($showevaluation || $role == BLOCK_EXACOMP_ROLE_TEACHER)) {
             $studentsColspan++;
         }
 
@@ -2883,7 +2913,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
         }
 
-        if (block_exacomp_exaportexists()) {
+        if ($this->exaportExists) {
             $eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
         } else {
             $eportfolioitems = array();
@@ -2931,8 +2961,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $studentsCount = 0;
 
-            $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
-
             foreach ($students as $student) {
                 $studentCell = new html_table_cell();
                 $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
@@ -2978,12 +3006,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
                         $firstCol->text = block_exacomp_get_string('studentshortcut');
                         $secCol->text = block_exacomp_get_string('teachershortcut');
-                        if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+                        if ($this->useEvalNiveau && $this->diffLevelExists) {
                             $secCol->colspan = 2;
                         }
                     } else {
                         $firstCol->text = block_exacomp_get_string('teachershortcut');
-                        if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+                        if ($this->useEvalNiveau && $this->diffLevelExists) {
                             $firstCol->colspan = 2;
                         }
                         $secCol->text = block_exacomp_get_string('studentshortcut');
@@ -3001,7 +3029,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($crosssubjid) {
                     $profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
                     $evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
-                    $diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
 
                     $examples_crosssubj = block_exacomp_get_examples_for_crosssubject($crosssubjid);
 
@@ -3036,7 +3063,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
                         $niveau_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
 
-                        if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_theme_diffLevel() == 1) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_theme_diffLevel() == 1) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                 'niveau_crosssub',
                                 $crosssubjid,
@@ -3051,13 +3078,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         //Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
                         //the warning contains the name of the reviewer
                         if (isset($reviewerid) && $reviewerid > 0) {
-                            $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
-                            $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
-                            $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
-                            if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
-                                $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                            if (!array_key_exists($reviewerid, $this->reviewers)) {
+                                $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+                                $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
+                                if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
+                                    $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                                } else {
+                                    $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
+                                    $reviewername = $reviewerTeacherUsername;
+                                }
+                                $this->reviewers[$reviewerid] = $reviewername;
                             } else {
-                                $reviewername = $reviewerTeacherUsername;
+                                $reviewername = $this->reviewers[$reviewerid];
                             }
                         } else {
                             $reviewername = '';
@@ -3124,7 +3156,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             // Different order of options for students and teachers:
                             // Student
                             if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
-                                if (block_exacomp_use_eval_niveau() && $showevaluation && block_exacomp_get_assessment_any_diffLevel_exist()) {
+                                if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
                                     $totalRow->cells[] = $niveau_cell;
                                 }
                                 if ($showevaluation) {
@@ -3135,7 +3167,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 if ($showevaluation) {
                                     $totalRow->cells[] = $student_evaluation_cell;
                                 }
-                                if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_any_diffLevel_exist()) {
+                                if ($this->useEvalNiveau && $this->diffLevelExists) {
                                     $totalRow->cells[] = $niveau_cell;
                                 }
                                 $totalRow->cells[] = $teacher_evaluation_cell;
@@ -3379,7 +3411,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
 
-                            if (block_exacomp_use_eval_niveau() && block_exacomp_get_assessment_example_diffLevel() == 1) {
+                            if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel() == 1) {
                                 $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_examples',
                                     $example->id,
@@ -3460,7 +3492,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             // Student
                             //student & niveau & showevaluation
                             if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
-                                if (block_exacomp_use_eval_niveau() && $showevaluation && $diffLevelExists) {
+                                if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
                                     $exampleRow->cells[] = $niveau_cell;
                                 }
                                 if (showevaluation) {
@@ -3471,7 +3503,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 if (showevaluation) {
                                     $exampleRow->cells[] = $student_evaluation_cell;
                                 }
-                                if (block_exacomp_use_eval_niveau() && $diffLevelExists) {
+                                if ($this->useEvalNiveau && $this->diffLevelExists) {
                                     $exampleRow->cells[] = $niveau_cell;
                                 }
                                 $teacher_evaluation_cell->text .= $this->submission_icon($courseid, $example->id, $student->id);
@@ -3569,12 +3601,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function submission_icon($courseid, $exampleid, $studentid = 0) {
-		if ($this->is_print_mode() || !block_exacomp_exaportexists()) {
+	    static $isTeacher;
+		if ($this->is_print_mode() || !$this->exaportExists) {
 			return '';
 		}
 
-		$context = context_course::instance($courseid);
-		$isTeacher = block_exacomp_is_teacher($context);
+		if ($isTeacher === null) {
+            $context = context_course::instance($courseid);
+            $isTeacher = block_exacomp_is_teacher($context);
+        }
 
 		if (!$isTeacher) {
 			//if student, check for existing item
@@ -3841,21 +3876,26 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		//Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
 		//the warning contains the name of the reviewer
-	    $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
-	    $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
-	    $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
-	    if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
-	        $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
-	    }else {
-	        $reviewername=$reviewerTeacherUsername;
-	    }
+        if (!array_key_exists($reviewerid, $this->reviewers)) {
+            $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+            $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
+            if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
+                $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+            } else {
+                $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
+                $reviewername = $reviewerTeacherUsername;
+            }
+            $this->reviewers[$reviewerid] = $reviewername;
+        } else {
+            $reviewername = $this->reviewers[$reviewerid];
+        }
 
 
 		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
 		if (strcmp($evaluation, 'teacher') == 0) {
-			$options = \block_exacomp\global_config::get_teacher_eval_items(0, false, $scheme);
-		} else {
-			$options = \block_exacomp\global_config::get_student_eval_items(true, $type);
+            $options = \block_exacomp\global_config::get_teacher_eval_items(0, false, $scheme);
+        } else {
+            $options = \block_exacomp\global_config::get_student_eval_items(true, $type);
 		}
 		if ($this->is_print_mode()) {
 	        // schemes with possiblity '0' as value of selectbox
@@ -3899,16 +3939,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		//Name of the reviewer. Needed to display a warning if someone else want's to grade something that has already been graded
         //the warning contains the name of the reviewer
-		$reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
-		$reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
-		$reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
-		if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
-		    $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
-		}else {
-		    $reviewername=$reviewerTeacherUsername;
-		}
+        if (!array_key_exists($reviewerid, $this->reviewers)) {
+            $reviewerTeacherFirstname = $DB->get_field('user', 'firstname', array('id' => $reviewerid));
+            $reviewerTeacherLastname = $DB->get_field('user', 'lastname', array('id' => $reviewerid));
+            if ($reviewerTeacherFirstname != null && $reviewerTeacherLastname != null) {
+                $reviewername = $reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+            } else {
+                $reviewerTeacherUsername = $DB->get_field('user', 'username', array('id' => $reviewerid));
+                $reviewername = $reviewerTeacherUsername;
+            }
+            $this->reviewers[$reviewerid] = $reviewername;
+        } else {
+            $reviewername = $this->reviewers[$reviewerid];
+        }
 
-		if (block_exacomp_use_eval_niveau()) {
+		if ($this->useEvalNiveau) {
 			$options = \block_exacomp\global_config::get_evalniveaus(true);
 
 			$attributes = array();
@@ -5329,7 +5374,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach ($stat as $niveau => $data) {
 			$row = new html_table_row();
 			$cell = new html_table_cell();
-			$cell->text = (block_exacomp_use_eval_niveau()) ? @$evaluation_niveaus[$niveau] : '';
+			$cell->text = ($this->useEvalNiveau) ? @$evaluation_niveaus[$niveau] : '';
 			$cell->attributes['class'] = 'cell-th';
             $cell->attributes['align'] = 'center';
 			$row->cells[] = $cell;

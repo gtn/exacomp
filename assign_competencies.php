@@ -17,6 +17,11 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+// delete it!!!!
+set_time_limit(10);
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require __DIR__.'/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
@@ -139,7 +144,6 @@ if ($isTeacher) {	//mind nostudents setting
 		$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	}
 }
-
 
 foreach ($students as $student) {
 	block_exacomp_get_user_information_by_course($student, $courseid);

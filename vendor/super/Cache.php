@@ -441,6 +441,9 @@ class StaticCacheCallback {
 
 	static function get($cache_id, $callback, $params = []) {
 		$id = json_encode([$cache_id, $params]);
+		if (!$id) {
+		    echo "<pre>debug:<strong>Cache.php:445</strong>\r\n"; print_r($cache_id); echo '</pre>'; // !!!!!!!!!! delete it
+        }
 
 		if (array_key_exists($id, static::$cachedItems)) {
 			return static::$cachedItems[$id];

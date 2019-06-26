@@ -139,6 +139,12 @@ const BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE = 2;
 const BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS = 3;
 const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
 
+// data for multiple using
+$block_exacomp_topic_used_values = array();
+$block_exacomp_descriptor_used_values = array();
+$block_exacomp_example_used_values = array();
+
+
 /**
  * access configuration setting via functions
  */
@@ -418,103 +424,247 @@ function block_exacomp_get_assessment_points_limit($onlyGlobal = true) {
 }
 
 function block_exacomp_get_assessment_grade_limit() {
-    return get_config('exacomp', 'assessment_grade_limit');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_grade_limit');
+    return $value;
+    //return get_config('exacomp', 'assessment_grade_limit');
 }
 
 function block_exacomp_get_assessment_grade_verbose($getforlanguage = null) {
-    return block_exacomp_get_translatable_parameter('assessment_grade_verbose', $getforlanguage);
+    static $value;
+    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+        return $value[$getforlanguage];
+    }
+    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_grade_verbose', $getforlanguage);
+    return $value[$getforlanguage];
+    //return block_exacomp_get_translatable_parameter('assessment_grade_verbose', $getforlanguage);
     //return get_config('exacomp', 'assessment_grade_verbose');
 }
 
 function block_exacomp_get_assessment_diffLevel_options() {
-    return trim(get_config('exacomp', 'assessment_diffLevel_options'));
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = trim(get_config('exacomp', 'assessment_diffLevel_options'));
+    return $value;
+    //return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
 function block_exacomp_get_assessment_verbose_options($getforlanguage = null) {
-    return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
+    static $value;
+    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+        return $value[$getforlanguage];
+    }
+    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
+    return $value[$getforlanguage];
+    //return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
 }
 
 function block_exacomp_get_assessment_verbose_options_short($getforlanguage = null) {
-    return block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
+    static $value;
+    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+        return $value[$getforlanguage];
+    }
+    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
+    return $value[$getforlanguage];
+    //return block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
 }
 
 function block_exacomp_get_assessment_selfEval_verboses($level = 'example', $type = 'long', $getforlanguage = null) {
+    static $value;
     if ($level != 'example') {
         $level = 'comp';
     }
-    return block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
+    if ($value !== null && array_key_exists($getforlanguage.$level.$type, $value)) {
+        return $value[$getforlanguage.$level];
+    }
+    $value[$getforlanguage.$level.$type] = block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
+    return $value[$getforlanguage.$level.$type];
+    //return block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
 }
 
 function block_exacomp_get_assessment_example_scheme() {
-    return get_config('exacomp', 'assessment_example_scheme');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_example_scheme');
+    return $value;
+    //return get_config('exacomp', 'assessment_example_scheme');
 }
 
 function block_exacomp_get_assessment_example_diffLevel() {
-    return get_config('exacomp', 'assessment_example_diffLevel');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_example_diffLevel');
+    return $value;
+    //return get_config('exacomp', 'assessment_example_diffLevel');
 }
 
 function block_exacomp_get_assessment_example_SelfEval() {
-    return get_config('exacomp', 'assessment_example_SelfEval');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_example_SelfEval');
+    return $value;
+    //return get_config('exacomp', 'assessment_example_SelfEval');
 }
 
 function block_exacomp_get_assessment_childcomp_scheme() {
-    return get_config('exacomp', 'assessment_childcomp_scheme');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_childcomp_scheme');
+    return $value;
+    //return get_config('exacomp', 'assessment_childcomp_scheme');
 }
 
 function block_exacomp_get_assessment_childcomp_diffLevel() {
-    return get_config('exacomp', 'assessment_childcomp_diffLevel');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_childcomp_diffLevel');
+    return $value;
+    //return get_config('exacomp', 'assessment_childcomp_diffLevel');
 }
 
 function block_exacomp_get_assessment_childcomp_SelfEval() {
-    return get_config('exacomp', 'assessment_childcomp_SelfEval');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_childcomp_SelfEval');
+    return $value;
+    //return get_config('exacomp', 'assessment_childcomp_SelfEval');
 }
 
 function block_exacomp_get_assessment_comp_scheme() {
-    return get_config('exacomp', 'assessment_comp_scheme');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_comp_scheme');
+    return $value;
+    //return get_config('exacomp', 'assessment_comp_scheme');
 }
 
 function block_exacomp_get_assessment_comp_diffLevel() {
-    return get_config('exacomp', 'assessment_comp_diffLevel');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_comp_diffLevel');
+    return $value;
+    //return get_config('exacomp', 'assessment_comp_diffLevel');
 }
 
 function block_exacomp_get_assessment_comp_SelfEval() {
-    return get_config('exacomp', 'assessment_comp_SelfEval');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_comp_SelfEval');
+    return $value;
+    //return get_config('exacomp', 'assessment_comp_SelfEval');
 }
 
 function block_exacomp_get_assessment_topic_scheme() {
-    return get_config('exacomp', 'assessment_topic_scheme');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_topic_scheme');
+    return $value;
+    //return get_config('exacomp', 'assessment_topic_scheme');
 }
 
 function block_exacomp_get_assessment_topic_diffLevel() {
-    return get_config('exacomp', 'assessment_topic_diffLevel');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_topic_diffLevel');
+    return $value;
+    //return get_config('exacomp', 'assessment_topic_diffLevel');
 }
 
 function block_exacomp_get_assessment_topic_SelfEval() {
-    return get_config('exacomp', 'assessment_topic_SelfEval');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_topic_SelfEval');
+    return $value;
+    //return get_config('exacomp', 'assessment_topic_SelfEval');
 }
 
 function block_exacomp_get_assessment_subject_scheme() {
-    return get_config('exacomp', 'assessment_subject_scheme');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_subject_scheme');
+    return $value;
+    //return get_config('exacomp', 'assessment_subject_scheme');
 }
 
 function block_exacomp_get_assessment_subject_diffLevel() {
-    return get_config('exacomp', 'assessment_subject_diffLevel');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_subject_diffLevel');
+    return $value;
+    //return get_config('exacomp', 'assessment_subject_diffLevel');
 }
 
 function block_exacomp_get_assessment_subject_SelfEval() {
-    return get_config('exacomp', 'assessment_subject_SelfEval');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_subject_SelfEval');
+    return $value;
+    //return get_config('exacomp', 'assessment_subject_SelfEval');
 }
 
 function block_exacomp_get_assessment_theme_scheme() {
-    return get_config('exacomp', 'assessment_theme_scheme');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_theme_scheme');
+    return $value;
+    //return get_config('exacomp', 'assessment_theme_scheme');
 }
 
 function block_exacomp_get_assessment_theme_diffLevel() {
-    return get_config('exacomp', 'assessment_theme_diffLevel');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_theme_diffLevel');
+    return $value;
+    //return get_config('exacomp', 'assessment_theme_diffLevel');
 }
 
 function block_exacomp_get_assessment_theme_SelfEval() {
-    return get_config('exacomp', 'assessment_theme_SelfEval');
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = get_config('exacomp', 'assessment_theme_SelfEval');
+    return $value;
+    //return get_config('exacomp', 'assessment_theme_SelfEval');
 }
 
 function block_exacomp_get_assessment_max_value($type) {
@@ -670,11 +820,6 @@ function block_exacomp_get_translatable_parameter($parameter = '', $getforlangua
         return $configdata['de'];
     }
 }
-
-
-
-
-
 
 
 
@@ -914,136 +1059,141 @@ function block_exacomp_sort_items(&$items, $sortings) {
 				$prefix = '';
 			}
 
-			if ($sorting == BLOCK_EXACOMP_DB_SUBJECTS) {
-				if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'source');
-				}
-				if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-				}
-				if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-				}
+			switch ($sorting) {
+                case BLOCK_EXACOMP_DB_SUBJECTS:
+                    if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'source');
+                    }
+                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
+                    }
+                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
+                    }
 
-				// sort subjects
-				// first imported, then generated
-				if ($a->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-					return -1;
-				}
-				if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-					return 1;
-				}
+                    // sort subjects
+                    // first imported, then generated
+                    if ($a->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                        return -1;
+                    }
+                    if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                        return 1;
+                    }
 
-				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-					return -1;
-				}
-				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-					return 1;
-				}
+                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
+                        return -1;
+                    }
+                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
+                        return 1;
+                    }
 
-				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-					return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-				}
-			} elseif ($sorting == BLOCK_EXACOMP_DB_TOPICS) {
-				if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-				}
-				if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
-				}
-				if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-				}
+                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
+                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
+                    }
+                    break;
+                case BLOCK_EXACOMP_DB_TOPICS:
+                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
+                    }
+                    if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
+                    }
+                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
+                    }
 
-				if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
-					return -1;
-				}
-				if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
-					return 1;
-				}
+                    if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
+                        return -1;
+                    }
+                    if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
+                        return 1;
+                    }
 
-				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-					return -1;
-				}
-				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-					return 1;
-				}
+                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
+                        return -1;
+                    }
+                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
+                        return 1;
+                    }
 
-				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-					return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-				}
-			} elseif ($sorting == BLOCK_EXACOMP_DB_DESCRIPTORS) {
-				if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-				}
-				if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-				}
+                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
+                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
+                    }
+                    break;
+                case BLOCK_EXACOMP_DB_DESCRIPTORS:
+                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
+                    }
+                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
+                    }
 
-				if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
-					debugging('block_exacomp_sort_items() descriptors need a source', DEBUG_DEVELOPER);
-				} else {
-					if ($a->{$prefix.'source'} != $b->{$prefix.'source'}) {
-						if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-							return 1;
-						}
-						if ($b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-							return -1;
-						}
-					}
-				}
+                    if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
+                        debugging('block_exacomp_sort_items() descriptors need a source', DEBUG_DEVELOPER);
+                    } else {
+                        if ($a->{$prefix.'source'} != $b->{$prefix.'source'}) {
+                            if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                                return 1;
+                            }
+                            if ($b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                                return -1;
+                            }
+                        }
+                    }
 
-				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-					return -1;
-				}
-				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-					return 1;
-				}
+                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
+                        return -1;
+                    }
+                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
+                        return 1;
+                    }
 
-				// last by title
-				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-					return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-				}
-			} elseif ($sorting == BLOCK_EXACOMP_DB_NIVEAUS) {
-                if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
-                    throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
-                }
-				if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-				}
-				if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-				}
+                    // last by title
+                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
+                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
+                    }
+                    break;
+                case BLOCK_EXACOMP_DB_NIVEAUS:
+                    if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
+                    }
+                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
+                    }
+                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
+                    }
 
-                if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
-                    return -1;
-                }
-                if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
-                    return 1;
-                }
+                    if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
+                        return -1;
+                    }
+                    if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
+                        return 1;
+                    }
 
-				if ($a->{$prefix.'sorting'} != $b->{$prefix.'sorting'}) {
-					// move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
-					if (!$a->{$prefix.'sorting'}) {
-						return 1;
-					}
-					if (!$b->{$prefix.'sorting'}) {
-						return -1;
-					}
+                    if ($a->{$prefix.'sorting'} != $b->{$prefix.'sorting'}) {
+                        // move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
+                        if (!$a->{$prefix.'sorting'}) {
+                            return 1;
+                        }
+                        if (!$b->{$prefix.'sorting'}) {
+                            return -1;
+                        }
 
-					if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-						return -1;
-					}
-					if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-						return 1;
-					}
-				}
+                        if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
+                            return 1;
+                        }
+                    }
 
-				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-					return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-				}
-			} else {
-				throw new \block_exacomp\moodle_exception('sorting type not found: '.$sorting);
+                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
+                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
+                    }
+                    break;
+                default:
+				    throw new \block_exacomp\moodle_exception('sorting type not found: '.$sorting);
 			}
 		}
 	});
@@ -1488,69 +1638,71 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 	}
 
-	$examples = \block_exacomp\example::get_objects_sql(
-		"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
-			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
+    $examples = \block_exacomp\example::get_objects_sql(
+            "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
+            e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
             e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important,
             de.sorting
-			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
-			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
-		." WHERE "
-		." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
-		.($showallexamples ? " 1=1 " : " e.creatorid > 0")
-		." ORDER BY de.sorting"
-		, array($descriptor->id, $courseid, $courseid));
+            FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
+            ." WHERE "
+            ." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
+            .($showallexamples ? " 1=1 " : " e.creatorid > 0")
+            ." ORDER BY de.sorting"
+            , array($descriptor->id, $courseid, $courseid));
 
-	// old
-	if ($mind_visibility || $showonlyvisible) {
-		foreach ($examples as $example) {
-			$example->visible = block_exacomp_is_example_visible($courseid, $example, 0);
-			$example->solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, 0);
+    // old
+    if ($mind_visibility || $showonlyvisible) {
+        foreach ($examples as $example) {
+            $example->visible = block_exacomp_is_example_visible($courseid, $example, 0);
+            $example->solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, 0);
 
-			if ($showonlyvisible && !$example->visible) {
-				unset($examples[$example->id]);
-			}
-		}
-	}
+            if ($showonlyvisible && !$example->visible) {
+                unset($examples[$example->id]);
+            }
+        }
+    }
 
-	foreach ($examples as $example) {
-		$example->descriptor = $descriptor;
-		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
+    foreach ($examples as $example) {
+        $example->descriptor = $descriptor;
+        $example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
 
-		$taxtitle = "";
-		foreach ($example->taxonomies as $taxonomy) {
-			$taxtitle .= $taxonomy->title.", ";
-		}
+        $taxtitle = "";
+        foreach ($example->taxonomies as $taxonomy) {
+            $taxtitle .= $taxonomy->title.", ";
+        }
 
-		$taxtitle = substr($taxtitle, 0, strlen($taxtitle) - 1);
-		$example->tax = $taxtitle;
-	}
-	$filtered_examples = array();
-	if ($filteredtaxonomies && is_array($filteredtaxonomies) && !in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) {
-		$filtered_taxonomies = implode(",", $filteredtaxonomies);
+        $taxtitle = substr($taxtitle, 0, strlen($taxtitle) - 1);
+        $example->tax = $taxtitle;
+    }
+    $filtered_examples = array();
+    if ($filteredtaxonomies && is_array($filteredtaxonomies) &&
+            !in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) {
+        $filtered_taxonomies = implode(",", $filteredtaxonomies);
 
-		foreach ($examples as $example) {
-			if ($example->taxonomies) {
-				foreach ($example->taxonomies as $taxonomy) {
-					if (in_array($taxonomy->id, $filteredtaxonomies)) {
-						if (!array_key_exists($example->id, $filtered_examples)) {
-							$filtered_examples[$example->id] = $example;
-						}
-						continue;
-					}
-				}
-			}
-		}
-	} else {
-		$filtered_examples = $examples;
-	}
+        foreach ($examples as $example) {
+            if ($example->taxonomies) {
+                foreach ($example->taxonomies as $taxonomy) {
+                    if (in_array($taxonomy->id, $filteredtaxonomies)) {
+                        if (!array_key_exists($example->id, $filtered_examples)) {
+                            $filtered_examples[$example->id] = $example;
+                        }
+                        continue;
+                    }
+                }
+            }
+        }
+    } else {
+        $filtered_examples = $examples;
+    }
 
-	$descriptor->examples = array();
-	foreach ($filtered_examples as $example) {
-		$descriptor->examples[$example->id] = $example;
-	}
+    $descriptor->examples = array();
+    foreach ($filtered_examples as $example) {
+        $descriptor->examples[$example->id] = $example;
+    }
 
-	return $descriptor;
+    return $descriptor;
+    
 }
 
 /**
@@ -1975,7 +2127,8 @@ function block_exacomp_get_teachers_by_course($courseid) {
  *
  * @param sdtClass $user
  * @param int $courseid
- * @return stdClass $ser
+ * @param bool $onlycomps
+ * @return stdClass $user
  */
 function block_exacomp_get_user_information_by_course($user, $courseid, $onlycomps = false) {
 	// get student competencies
@@ -4889,17 +5042,24 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
  * @return boolean
  */
 function block_exacomp_is_topic_used($courseid, $topic, $studentid) {
-	global $DB;
+	global $DB, $block_exacomp_topic_used_values;
+
+    if (isset($block_exacomp_topic_used_values[$courseid][$studentid][$topic->id])) {
+        return $block_exacomp_topic_used_values[$courseid][$studentid][$topic->id];
+    }
+
 	if ($studentid == 0) {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>=0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $topic->id, BLOCK_EXACOMP_TYPE_TOPIC));
 		if ($records) {
+            $block_exacomp_topic_used_values[$courseid][$studentid][$topic->id] = true;
 			return true;
 		}
 	} else {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>=0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $topic->id, BLOCK_EXACOMP_TYPE_TOPIC, $studentid));
 		if ($records) {
+            $block_exacomp_topic_used_values[$courseid][$studentid][$topic->id] = true;
 			return true;
 		}
 	}
@@ -4908,10 +5068,12 @@ function block_exacomp_is_topic_used($courseid, $topic, $studentid) {
 	foreach ($descriptors as $descriptor) {
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
 		if (block_exacomp_descriptor_used($courseid, $descriptor, $studentid)) {
+            $block_exacomp_topic_used_values[$courseid][$studentid][$topic->id] = true;
 			return true;
 		}
 	}
 
+    $block_exacomp_topic_used_values[$courseid][$studentid][$topic->id] = false;
 	return false;
 }
 
@@ -4924,27 +5086,29 @@ function block_exacomp_is_topic_used($courseid, $topic, $studentid) {
  * @return boolean
  */
 function block_exacomp_descriptor_used($courseid, $descriptor, $studentid) {
-	global $DB;
+	global $DB, $block_exacomp_descriptor_used_values;
 	//if studentid == 0 used = true, if no evaluation (teacher OR student) for this descriptor for any student in this course
 	//								 if no evaluation/submission for the examples of this descriptor
 
 	//if studentid != 0 used = true, if any assignment (teacher OR student) for this descriptor for THIS student in this course
 	//								 if no evaluation/submission for the examples of this descriptor
 
-	if (!isset($descriptor->examples)) {
-		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
-	}
+    if (isset($block_exacomp_descriptor_used_values[$courseid][$studentid][$descriptor->id])) {
+        return $block_exacomp_descriptor_used_values[$courseid][$studentid][$descriptor->id];
+    }
 
 	if ($studentid == 0) {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>=0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR));
 		if ($records) {
+            $block_exacomp_descriptor_used_values[$courseid][$studentid][$descriptor->id] = true;
 			return true;
 		}
 	} else {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>=0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $studentid));
 		if ($records) {
+            $block_exacomp_descriptor_used_values[$courseid][$studentid][$descriptor->id] = true;
 			return true;
 		}
 	}
@@ -4953,19 +5117,26 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid) {
 		//check child used
 		foreach ($descriptor->children as $child) {
 			if (block_exacomp_descriptor_used($courseid, $child, $studentid)) {
+                $block_exacomp_descriptor_used_values[$courseid][$studentid][$descriptor->id] = true;
 				return true;
 			}
 		}
 	}
+
+    if (!isset($descriptor->examples)) {
+        $descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+    }
 
 	if ($descriptor->examples) {
 		foreach ($descriptor->examples as $example) {
 			if (block_exacomp_example_used($courseid, $example, $studentid)) {
+                $block_exacomp_descriptor_used_values[$courseid][$studentid][$descriptor->id] = true;
 				return true;
 			}
 		}
 	}
 
+    $block_exacomp_descriptor_used_values[$courseid][$studentid][$descriptor->id] = false;
 	return false;
 }
 
@@ -4979,26 +5150,33 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid) {
  * @return boolean
  */
 function block_exacomp_example_used($courseid, $example, $studentid) {
-	global $DB;
+	global $DB, $block_exacomp_example_used_values;
 	//if studentid == 0 used = true, if no evaluation/submission for this example
 	//if studentid != 0 used = true, if no evaluation/submission for this examples for this student
+
+    if (isset($block_exacomp_example_used_values[$courseid][$studentid][$example->id])) {
+        return $block_exacomp_example_used_values[$courseid][$studentid][$example->id];
+    }
 
 	if ($studentid <= 0) { // any self or teacher evaluation
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>= 0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 		if ($records) {
+            $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 			return true;
 		}
 
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND student_evaluation>= 0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 		if ($records) {
+            $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 			return true;
 		}
 
 		//on any weekly schedule? -> yes: used
 		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid' => $courseid, 'exampleid' => $example->id));
 		if ($onSchedule) {
+            $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 			return true;
 		}
 
@@ -5008,6 +5186,7 @@ function block_exacomp_example_used($courseid, $example, $studentid) {
 				"WHERE ie.exampleid = ? AND i.courseid = ?";
 			$records = $DB->get_records_sql($sql, array($example->id, $courseid));
 			if ($records) {
+                $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 				return true;
 			}
 		}
@@ -5015,24 +5194,28 @@ function block_exacomp_example_used($courseid, $example, $studentid) {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>=0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 		if ($records) {
+            $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 			return true;
 		}
 
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>=0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 		if ($records) {
+            $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 			return true;
 		}
 
 		//on students weekly schedule? -> yes: used
 		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'courseid' => $courseid, 'exampleid' => $example->id));
 		if ($onSchedule) {
+            $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 			return true;
 		}
 
 		//or on pre planning storage
 		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => 0, 'courseid' => $courseid, 'exampleid' => $example->id));
 		if ($onSchedule) {
+            $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 			return true;
 		}
 
@@ -5042,11 +5225,13 @@ function block_exacomp_example_used($courseid, $example, $studentid) {
 				"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
 			$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
 			if ($records) {
+                $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
 				return true;
 			}
 		}
 	}
 
+    $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = false;
 	return false;
 }
 
@@ -5088,7 +5273,7 @@ function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid
 		return null;
 	}
 
-	$item = block_exacomp_get_current_item_for_example($studentid, $exampleid);
+    $item = block_exacomp_get_current_item_for_example($studentid, $exampleid);
 
 	if (!$item) {
 		return null;
@@ -5429,27 +5614,28 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
  * @return boolean
  */
 function block_exacomp_is_topic_visible($courseid, $topic, $studentid) {
-	global $DB;
+	//global $DB;
+    return Cache::staticCallback(__FUNCTION__, function($courseid, $topic, $studentid) {
+        // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
+        if ($studentid <= 0) {
+            $studentid = 0;
+        }
 
-	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
-	if ($studentid <= 0) {
-		$studentid = 0;
-	}
+        $visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, 0);
+        if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
+            return false;
+        }
 
-	$visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
-		return false;
-	}
+        if ($studentid > 0) {
+            // also check student if set
+            $visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
+            if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
+                return false;
+            }
+        }
 
-	if ($studentid > 0) {
-		// also check student if set
-		$visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
-		if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
-			return false;
-		}
-	}
-
-	return true;
+        return true;
+    }, func_get_args());
 }
 
 /**
@@ -5489,31 +5675,45 @@ function block_exacomp_is_topic_visible_for_group($courseid, $topic, $groupid) {
  * @return boolean
  */
 function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid) {
-	global $DB;
+	//global $DB;
+    static $visibleDescriptors;
 
-	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
-	if ($studentid <= 0) {
-		$studentid = 0;
-	}
+    if ($visibleDescriptors === null) {
+        $visibleDescriptors = array();
+    }
 
-	if (($topic = \block_exacomp\topic::get($descriptor->topicid)) && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
-		return false;
-	}
+    if (isset($visibleDescriptors[$courseid][$descriptor->id][$studentid])) {
+        return $visibleDescriptors[$courseid][$descriptor->id][$studentid];
+    }
 
-	$visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
-		return false;
-	}
+    // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
+    if ($studentid <= 0) {
+        $studentid = 0;
+    }
 
-	if ($studentid > 0) {
-		// also check student if set
-		$visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $studentid);
-		if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
-			return false;
-		}
-	}
+    if (($topic = \block_exacomp\topic::get($descriptor->topicid)) &&
+            !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
+        $visibleDescriptors[$courseid][$descriptor->id][$studentid] = false;
+        return false;
+    }
 
-	return true;
+    $visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, 0);
+    if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
+        $visibleDescriptors[$courseid][$descriptor->id][$studentid] = false;
+        return false;
+    }
+
+    if ($studentid > 0) {
+        // also check student if set
+        $visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $studentid);
+        if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
+            $visibleDescriptors[$courseid][$descriptor->id][$studentid] = false;
+            return false;
+        }
+    }
+
+    $visibleDescriptors[$courseid][$descriptor->id][$studentid] = true;
+    return true;
 }
 
 /**
@@ -5524,36 +5724,49 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
  * @return boolean
  */
 function block_exacomp_is_example_visible($courseid, $example, $studentid) {
-	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
-	if ($studentid <= 0) {
-		$studentid = 0;
-	}
-	
-	$exampleid = is_scalar($example) ? $example : $example->id;
+    static $visibleExamples;
 
-	// TODO: also need check descriptor? then we also need to check crossdescriptors!
-	/*
-	if (($topic = \block_exacomp\topic::get($descriptor->topicid)) && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
-		return false;
-	}
-	*/
+    if ($visibleExamples === null) {
+        $visibleExamples = array();
+    }
 
-	$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-		return false;
-	}
+    if (isset($visibleExamples[$courseid][$example->id][$studentid])) {
+        return $visibleExamples[$courseid][$example->id][$studentid];
+    }
 
-	if ($studentid > 0) {
-		// also check student if set
- 		$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
-//  		var_dump($exampleid);
-//  		die();
- 		if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-			return false;
-		}
-	}
+    // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
+    if ($studentid <= 0) {
+        $studentid = 0;
+    }
 
-	return true;
+    $exampleid = is_scalar($example) ? $example : $example->id;
+
+    // TODO: also need check descriptor? then we also need to check crossdescriptors!
+    /*
+    if (($topic = \block_exacomp\topic::get($descriptor->topicid)) && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
+        return false;
+    }
+    */
+
+    $visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, 0);
+    if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
+        $visibleExamples[$courseid][$example->id][$studentid] = false;
+        return false;
+    }
+
+    if ($studentid > 0) {
+        // also check student if set
+        $visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
+        //  		var_dump($exampleid);
+        //  		die();
+        if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
+            $visibleExamples[$courseid][$example->id][$studentid] = false;
+            return false;
+        }
+    }
+
+    $visibleExamples[$courseid][$example->id][$studentid] = true;
+    return true;
 }
 
 /**
@@ -5564,27 +5777,40 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
  * @return boolean
  */
 function block_exacomp_is_example_solution_visible($courseid, $example, $studentid) {
-	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
-	if ($studentid <= 0) {
-		$studentid = 0;
-	}
+    static $visibleExampleSolutions;
 
-	$exampleid = is_scalar($example) ? $example : $example->id;
-	
-	$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 0);
-	if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-		return false;
-	}
+    if ($visibleExampleSolutions === null) {
+        $visibleExampleSolutions = array();
+    }
 
-	if ($studentid > 0) {
-		// also check student if set
-		$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $studentid);
-		if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-			return false;
-		}
-	}
+    if (isset($visibleExampleSolutions[$courseid][$example->id][$studentid])) {
+        return $visibleExampleSolutions[$courseid][$example->id][$studentid];
+    }
 
-	return true;
+    // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
+    if ($studentid <= 0) {
+        $studentid = 0;
+    }
+
+    $exampleid = is_scalar($example) ? $example : $example->id;
+
+    $visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 0);
+    if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
+        $visibleExampleSolutions[$courseid][$example->id][$studentid] = false;
+        return false;
+    }
+
+    if ($studentid > 0) {
+        // also check student if set
+        $visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $studentid);
+        if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
+            $visibleExampleSolutions[$courseid][$example->id][$studentid] = false;
+            return false;
+        }
+    }
+
+    $visibleExampleSolutions[$courseid][$example->id][$studentid] = true;
+    return true;
 }
 
 /**
