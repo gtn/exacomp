@@ -581,11 +581,11 @@ return [
         'to the Right region',
     ],
     'settings_disable_js_assign_competencies' => [
-            'Disable JS in students selection in "Competence grid" page',
+            'JS für Kompetenzraster-Übersicht deaktivieren.',
             'Disable JS in students selection in "Competence grid" page',
     ],
     'settings_disable_js_assign_competencies_description' => [
-            'If "Competence grid" has a long page generation time. This checkbox can solve this problem',
+            'Bei langen Ladezeiten des Kompetenzrasters können zur Performance-Steigerung JS-Funktionen deaktiviert werden.',
             'If "Competence grid" has a long page generation time. This checkbox can solve this problem',
     ],
     'settings_example_autograding' => [

@@ -169,8 +169,8 @@ $string['settings_addblock_to_newcourse_option_no'] = 'Nein';
 $string['settings_addblock_to_newcourse_option_yes'] = 'Ja';
 $string['settings_addblock_to_newcourse_option_left'] = 'to the Left region';
 $string['settings_addblock_to_newcourse_option_right'] = 'to the Right region';
-$string['settings_disable_js_assign_competencies'] = 'Disable JS in students selection in "Competence grid" page';
-$string['settings_disable_js_assign_competencies_description'] = 'If "Competence grid" has a long page generation time. This checkbox can solve this problem';
+$string['settings_disable_js_assign_competencies'] = 'JS für Kompetenzraster-Übersicht deaktivieren.';
+$string['settings_disable_js_assign_competencies_description'] = 'Bei langen Ladezeiten des Kompetenzrasters können zur Performance-Steigerung JS-Funktionen deaktiviert werden.';
 $string['settings_example_autograding'] = 'übergeordnete Materialien automatische Beurteilung';
 $string['settings_example_autograding_description'] = 'wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
 
