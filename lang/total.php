@@ -380,6 +380,14 @@ return [
         'Apps-Einstellungen',
         'Configuration for apps',
     ],
+    'settings_heading_performance' => [
+        'Performance',
+        'Performance',
+    ],
+    'settings_heading_performance_description' => [
+        'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability',
+        'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability',
+    ],
     'settings_heading_scheme' => [
         'Generisches Bewertungsschema',
         'Generic assessment scheme',
@@ -571,6 +579,14 @@ return [
     'settings_addblock_to_newcourse_option_right' => [
         'to the Right region',
         'to the Right region',
+    ],
+    'settings_disable_js_assign_competencies' => [
+            'Disable JS in students selection in "Competence grid" page',
+            'Disable JS in students selection in "Competence grid" page',
+    ],
+    'settings_disable_js_assign_competencies_description' => [
+            'If "Competence grid" has a long page generation time. This checkbox can solve this problem',
+            'If "Competence grid" has a long page generation time. This checkbox can solve this problem',
     ],
     'settings_example_autograding' => [
         'übergeordnete Materialien automatische Beurteilung',

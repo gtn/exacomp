@@ -120,6 +120,8 @@ $string['settings_heading_assessment'] = 'Assessment';
 $string['settings_heading_visualisation'] = 'Visualisation';
 $string['settings_heading_technical'] = 'Administrative';
 $string['settings_heading_apps'] = 'Configuration for apps';
+$string['settings_heading_performance'] = 'Performance';
+$string['settings_heading_performance_description'] = 'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability';
 $string['settings_heading_scheme'] = 'Generic assessment scheme';
 $string['settings_assessment_scheme_0'] = 'None';
 $string['settings_assessment_scheme_1'] = 'Grade';
@@ -167,6 +169,8 @@ $string['settings_addblock_to_newcourse_option_no'] = 'No';
 $string['settings_addblock_to_newcourse_option_yes'] = 'Yes';
 $string['settings_addblock_to_newcourse_option_left'] = 'to the Left region';
 $string['settings_addblock_to_newcourse_option_right'] = 'to the Right region';
+$string['settings_disable_js_assign_competencies'] = 'Disable JS in students selection in "Competence grid" page';
+$string['settings_disable_js_assign_competencies_description'] = 'If "Competence grid" has a long page generation time. This checkbox can solve this problem';
 $string['settings_example_autograding'] = 'automatic assessment of parent materials';
 $string['settings_example_autograding_description'] = 'when all child examples have been graded, the parent material should be assessed automatically.';
 

@@ -36,6 +36,15 @@ $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT
 
 require_login($courseid);
 
+$slicestudentlist = false;
+if (get_config('exacomp', 'disable_js_assign_competencies')) {
+    $columngroupnumber = optional_param('colgroupid', 0, PARAM_INT);
+    if ($columngroupnumber > -1) { // -1 - show all!
+        $slicestudentlist = true;
+        $slicestartposition = $columngroupnumber * BLOCK_EXACOMP_STUDENTS_PER_COLUMN;
+    }
+}
+
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher();
 if (!$isTeacher) {
@@ -44,12 +53,13 @@ if (!$isTeacher) {
 $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
 
 $studentid = block_exacomp_get_studentid() ;
-if($studentid == 0)
-	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+if ($studentid == 0) {
+    $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+}
 
 $selectedStudentid = $studentid;
 	
-if($editmode) {
+if ($editmode) {
 	$selectedStudentid = $studentid;
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 }
@@ -101,10 +111,24 @@ if (!$ret) {
 list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
-$students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
+if ($isTeacher) {
+    //if ($slicestudentlist) {
+    //    $limitfrom = $slicestartposition + 1; // sql from
+    //    $limitnum = BLOCK_EXACOMP_STUDENTS_PER_COLUMN;
+    //} else {
+        $limitfrom = '';
+        $limitnum = '';
+    //}
+    $students = $allCourseStudents = block_exacomp_get_students_by_course($courseid, $limitfrom, $limitnum);
+} else {
+    $students = $allCourseStudents = array($USER->id => $USER);
+}
+
 //Add the local groups
 $groups = ($isTeacher) ? groups_get_all_groups($courseid) : array();
-if($course_settings->nostudents) $allCourseStudents = array();
+if ($course_settings->nostudents) {
+    $allCourseStudents = array();
+}
 
 
 //echo $courseid;
@@ -126,20 +150,27 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,
 
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
-$colselector="";
+$colselector = "";
 if ($isTeacher) {	//mind nostudents setting
 	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
-		$colselector = $output->students_column_selector(count($allCourseStudents));
-		
+		$colselector = $output->students_column_selector(count($allCourseStudents), 'assign_competencies');
+        // slice students list if need
+        if ($slicestudentlist) {
+            $students = array_slice($students, $slicestartposition, BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
+        }
 	} elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
 		$students = array();
-	} else if($studentid < -1){
+	} elseif($studentid < -1){
     	//MAYBE CHANGE WORDING   studentId is actually student or localgroup id.... if it is a localgroup, the value is negative and the groupid can be caluclated as follows:
     	//((-1)*dropdownvalue)-1   the -1 is used for ALL_STUDENTS, this is why i calculate it like this    RW
-	    $groupid = (-1)*$studentid - 1;
+	    $groupid = (-1) * $studentid - 1;
 // 	    $students = groups_get_members($groupid);
-	    $students = block_exacomp_groups_get_members($courseid,$groupid);
-	    $colselector = $output->students_column_selector(count($students));
+	    $students = block_exacomp_groups_get_members($courseid, $groupid);
+        // slice students list if need
+	    $colselector = $output->students_column_selector(count($students), 'assign_competencies');
+        if ($slicestudentlist) {
+            $students = array_slice($students, $slicestartposition, BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
+        }
 	} else {
 		$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	}
@@ -188,8 +219,8 @@ echo $output->header_v2($page_identifier);
 echo $colselector;
 echo $output->competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 
-//dropdowns for subjects and topics and students -> if user is teacher and working with students
-echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $selectedStudentid, $isTeacher, $isEditingTeacher,$groups);
+// dropdowns for subjects and topics and students -> if user is teacher and working with students
+echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $selectedStudentid, $isTeacher, $isEditingTeacher, $groups);
 
 echo '<div class="clearfix"></div>';
 
@@ -224,14 +255,21 @@ echo $output->niveaus_menu($niveaus, $selectedNiveau, $selectedTopic);
 
 echo '<div class="clearfix"></div>';
 
-if ($course_settings->nostudents != 1)
-	echo $output->overview_legend($isTeacher);
-if ($course_settings->nostudents != 1 && $studentid)
-	echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
+if ($course_settings->nostudents != 1) {
+    echo $output->overview_legend($isTeacher);
+}
+if ($course_settings->nostudents != 1 && $studentid) {
+    echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
+}
 
 	
 // var_dump($competence_tree);
 // die();
+// crop student array by selected (for big result tables!)
+//if ($slicestudentlist) {
+//    $students = array_slice($students, $slicestartposition, BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
+//}
+
 echo $output->competence_overview($competence_tree,
                                     $courseid,
                                     $students,

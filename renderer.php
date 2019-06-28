@@ -261,7 +261,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$content .= html_writer::tag('li',
 				html_writer::link(
-					new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS]),
+					new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS, 'colgroupid' => optional_param('colgroupid', 0, PARAM_INT)]),
 					$subject->title.$extra, [
 					'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
 					'title' => (($author = $subject->get_author()) ? block_exacomp_get_string('author', 'repository').": ".$author : ''),
@@ -292,6 +292,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$content .= html_writer::tag('li', html_writer::link(new block_exacomp\url (g::$PAGE->url, [
 						'subjectid' => $subject->id,
 						'topicid' => $topic->id,
+                        'colgroupid' => optional_param('colgroupid', 0, PARAM_INT),
 					]), block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array(
 						'class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '',
                         'title' => $topic->description,
@@ -727,6 +728,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip competence-overview';
+		if (get_config('exacomp', 'disable_js_assign_competencies') && optional_param('colgroupid', 0, PARAM_INT) == -1) { // if pressed show all columns
+            $table->attributes['class'] .= ' show-all-colgroups ';
+        }
 
 		// in the future maybe use lscache or some other method?
 		if ($crosssubjid) {
@@ -745,8 +749,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		} else {
 			$eportfolioitems = array();
 		}
-
-
 
 
 		/* SUBJECTS */
@@ -3731,22 +3733,83 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	/**
 	 *
 	 * @param int $item_count Amount of students
+     * @param string $scriptname
 	 */
-	public function students_column_selector($item_count) {
+	public function students_column_selector($item_count, $scriptname = '') {
 		if ($item_count < BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
 			return;
 		}
 
 		$content = html_writer::tag("b", block_exacomp_get_string('columnselect'));
+		$usejs = false;
+		switch ($scriptname) {
+            case 'assign_competencies':
+                $script = '/blocks/exacomp/assign_competencies.php';
+                break;
+            default:
+                $script = ''; // do not used
+                $usejs = true; // use JS anycase
+        }
+        $currentcolgroup = optional_param('colgroupid', 0, PARAM_INT);
 		for ($i = 0; $i < ceil($item_count / BLOCK_EXACOMP_STUDENTS_PER_COLUMN); $i++) {
 			$content .= " ";
-			$content .= html_writer::link('',
-				($i * BLOCK_EXACOMP_STUDENTS_PER_COLUMN + 1).'-'.min($item_count, ($i + 1) * BLOCK_EXACOMP_STUDENTS_PER_COLUMN),
-				array('class' => 'colgroup-button', 'exa-groupid' => $i));
+			if (!$usejs && get_config('exacomp', 'disable_js_assign_competencies')) {
+			    // insert all needed params!!!
+                $urlparams = array(
+                        'courseid' => g::$COURSE->id,
+                        'colgroupid' => $i,
+                        'studentid' => block_exacomp_get_studentid(),
+                );
+                if ($showeval = optional_param('showevaluation', true, PARAM_BOOL)) {
+                    $urlparams['showevaluation'] = $showeval;
+                }
+                //if ($studentid = optional_param('studentid', 0, PARAM_INT)) {
+                //    $urlparams['studentid'] = $studentid;
+                //}
+                if ($editmode = optional_param('editmode', 0, PARAM_BOOL)) {
+                    $urlparams['editmode'] = $editmode;
+                }
+                if ($niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT)) {
+                    $urlparams['niveauid'] = $niveauid;
+                }
+                if ($subjectid = optional_param('subjectid', 0, PARAM_INT)) {
+                    $urlparams['subjectid'] = $subjectid;
+                }
+                if ($topicid = optional_param('topicid', 0, PARAM_INT)) {
+                    $urlparams['topicid'] = $topicid;
+                }
+                if ($group = optional_param('group', 0, PARAM_INT)) {
+                    $urlparams['group'] = $group;
+                }
+                $groupurl = new moodle_url($script, $urlparams);
+                $tagattrs = array('class' => ' colgroup-link ');
+                if ($currentcolgroup == $i) {
+                    $tagattrs['class'] .= ' current-colgroup ';
+                }
+                if (!isset($lasturl)) {
+                    $urlparams['colgroupid'] = -1;
+                    $lasturl = new moodle_url($script, $urlparams);
+                    $lasttagattr = array('class' => ' colgroup-link ');
+                    if ($currentcolgroup == -1) {
+                        $lasttagattr['class'] .= ' current-colgroup ';
+                    }
+                }
+            } else {
+			    // JS used
+                $groupurl = '';
+                $tagattrs = array('class' => 'colgroup-button', 'exa-groupid' => $i);
+                if (!isset($lasturl)) {
+                    $lasturl = '';
+                    $lasttagattr = array('class' => 'colgroup-button colgroup-button-all', 'exa-groupid' => -1);
+                }
+            }
+            $content .= html_writer::link($groupurl,
+                    ($i * BLOCK_EXACOMP_STUDENTS_PER_COLUMN + 1). '-' .min($item_count, ($i + 1) * BLOCK_EXACOMP_STUDENTS_PER_COLUMN),
+                    $tagattrs);
 		}
-		$content .= " ".html_writer::link('',
+		$content .= " ".html_writer::link($lasturl,
 				block_exacomp_get_string('allstudents'),
-				array('class' => 'colgroup-button colgroup-button-all', 'exa-groupid' => -1));
+                $lasttagattr);
 
 		global $COURSE;
 		if (block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {

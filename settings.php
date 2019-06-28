@@ -967,6 +967,14 @@ $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign
         block_exacomp_get_string('block_exacomp_external_trainer_assign_head'),
         block_exacomp_get_string('block_exacomp_external_trainer_assign_body'), 0));
 
+// Performance (configuration for performance issues).
+$settings->add(new admin_setting_heading('exacomp/heading_performance',
+        block_exacomp_get_string('settings_heading_performance'),
+        block_exacomp_get_string('settings_heading_performance_description')));
+$settings->add(new admin_setting_configcheckbox('exacomp/disable_js_assign_competencies',
+        block_exacomp_get_string('settings_disable_js_assign_competencies'),
+        block_exacomp_get_string('settings_disable_js_assign_competencies_description'), 0, 1, 0));
+
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
 //        block_exacomp_get_string('settings_admin_scheme'),

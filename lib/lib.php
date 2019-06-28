@@ -260,6 +260,7 @@ function block_exacomp_get_context_from_courseid($courseid) {
 /**
  *
  * @param courseid or context $context
+ * @param userid $userid
  */
 function block_exacomp_is_teacher($context = null, $userid = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
@@ -2063,11 +2064,13 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
  *
  * Returns all students enroled to a particular course
  * @param unknown_type $courseid
+ * @param unknown_type $limitfrom
+ * @param unknown_type $limitnum
  */
-function block_exacomp_get_students_by_course($courseid) {
+function block_exacomp_get_students_by_course($courseid, $limitfrom = '', $limitnum = '') {
 	$context = context_course::instance($courseid);
 
-	$students = get_users_by_capability($context, 'block/exacomp:student', '', 'lastname,firstname');
+	$students = get_users_by_capability($context, 'block/exacomp:student', '', 'lastname,firstname', $limitfrom, $limitnum);
 
 	// TODO ggf user mit exacomp:teacher hier filtern?
 	return $students;
@@ -2089,11 +2092,12 @@ function block_exacomp_get_students_by_course($courseid) {
  *
  * Returns all STUDENTS of this group... needed because teachers can also be in groups, but often you only need the students
  * @param unknown_type $courseid
+ * @param unknown_type $groupid
  */
-function block_exacomp_groups_get_members($courseid,$groupid) {
+function block_exacomp_groups_get_members($courseid, $groupid) {
     $students = groups_get_members($groupid); //with teachers
-    foreach($students as $student){
-        if(block_exacomp_is_teacher($courseid,$student->id)){
+    foreach ($students as $student){
+        if (block_exacomp_is_teacher($courseid, $student->id)){
             unset($students[$student->id]);
         }
     }
