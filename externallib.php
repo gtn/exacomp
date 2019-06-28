@@ -1510,7 +1510,7 @@ class block_exacomp_external extends external_api {
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'externalurl' => new external_value (PARAM_TEXT, ''),
 			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
-			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
+			'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
 			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
 			'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
@@ -1532,7 +1532,7 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($name, $description, $externalurl, $comps, $fileitemid = 0, $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
+	public static function create_example($name, $description, $externalurl, $comps, $fileitemids = '0', $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
@@ -1544,7 +1544,7 @@ class block_exacomp_external extends external_api {
 			'description' => $description,
 			'externalurl' => $externalurl,
 			'comps' => $comps,
-			'fileitemid' => $fileitemid,
+			'fileitemids' => $fileitemids,
 			'solutionfileitemid' => $solutionfileitemid,
 			'taxonomies' => $taxonomies,
 			'courseid' => $courseid,
@@ -1574,28 +1574,30 @@ class block_exacomp_external extends external_api {
 
 		$example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
 
-		if ($fileitemid) {
-			$context = context_user::instance($USER->id);
-			$fs = get_file_storage();
+        $fileitemids = explode(',', $fileitemids);
+		if ($fileitemids) {
+		    foreach ($fileitemids as $fileitemid){
+                $context = context_user::instance($USER->id);
+                $fs = get_file_storage();
 
-			if ($filename) {
-				// TODO: filename sollte nicht mehr notwendig sein, das ist alter code?
-				$file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename);
-			} else {
-				$file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
-			}
-			if (!$file) {
-				throw new moodle_exception('file not found');
-			}
+                if ($filename) {
+                    // TODO: filename sollte nicht mehr notwendig sein, das ist alter code?
+                    $file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename);
+                } else {
+                    $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
+                }
+                if (!$file) {
+                    throw new moodle_exception('file not found');
+                }
 
-			$fs->create_file_from_storedfile(array(
-				'contextid' => context_system::instance()->id,
-				'component' => 'block_exacomp',
-				'filearea' => 'example_task',
-				'itemid' => $example->id,
-			), $file);
-
-			$file->delete();
+                $fs->create_file_from_storedfile(array(
+                    'contextid' => context_system::instance()->id,
+                    'component' => 'block_exacomp',
+                    'filearea' => 'example_task',
+                    'itemid' => $example->id,
+                ), $file);
+                $file->delete();
+            }
 		}
 
 		if ($solutionfileitemid) {
