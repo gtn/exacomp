@@ -42,8 +42,7 @@
 	});
 	window.block_exacomp.onlyShowColumnGroup = function(group) {
 		// block_exacomp.current_colgroup_id = group;
-
-		if(group == -2) {
+		if (group == -2) {
 			$('.colgroup').not('.colgroup-5555').hide();
 		}
 		if (!group) {

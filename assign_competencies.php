@@ -156,6 +156,9 @@ if ($isTeacher) {	//mind nostudents setting
 		$colselector = $output->students_column_selector(count($allCourseStudents), 'assign_competencies');
         // slice students list if need
         if ($slicestudentlist) {
+            if (count($students) < ($columngroupnumber * BLOCK_EXACOMP_STUDENTS_PER_COLUMN)) {
+                $slicestartposition = 0;
+            }
             $students = array_slice($students, $slicestartposition, BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
         }
 	} elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
@@ -169,6 +172,9 @@ if ($isTeacher) {	//mind nostudents setting
         // slice students list if need
 	    $colselector = $output->students_column_selector(count($students), 'assign_competencies');
         if ($slicestudentlist) {
+            if (count($students) < ($columngroupnumber * BLOCK_EXACOMP_STUDENTS_PER_COLUMN)) {
+                $slicestartposition = 0;
+            }
             $students = array_slice($students, $slicestartposition, BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
         }
 	} else {
