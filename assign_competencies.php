@@ -18,9 +18,10 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 // delete it!!!!
-set_time_limit(10);
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+//set_time_limit(10);
+//ini_set('display_errors', 1);
+//error_reporting(E_ALL);
+//deleted it!!!!
 
 require __DIR__.'/inc.php';
 
@@ -58,7 +59,7 @@ if ($studentid == 0) {
 }
 
 $selectedStudentid = $studentid;
-	
+
 if ($editmode) {
 	$selectedStudentid = $studentid;
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
@@ -189,20 +190,20 @@ foreach ($students as $student) {
 if (optional_param('print', false, PARAM_BOOL)) {
 	$output->print = true;
 	$html_tables = [];
-	
+
 	if ($group == -1) {
 		// all students, do nothing
 	} else {
 		// get the students on this group
 		$students = array_slice($students, $group * BLOCK_EXACOMP_STUDENTS_PER_COLUMN, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
 	}
-	
+
 	// TODO: print column information for print
-	
+
 	// loop through all pages (eg. when all students should be printed)
 	for ($group_i = 0; $group_i < count($students); $group_i += BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
 		$students_to_print = array_slice($students, $group_i, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
-		
+
 		$html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 		// $html .= "&nbsp;<br />";
@@ -217,7 +218,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
                                                     $isEditingTeacher);
 	}
 
-	
+
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
 
@@ -232,7 +233,7 @@ echo '<div class="clearfix"></div>';
 
 if ($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
 	echo $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
-			
+
 	if ($isTeacher) {
         echo $output->overview_metadata_teacher($selectedTopic, $selectedNiveau);
     } else {
@@ -268,7 +269,7 @@ if ($course_settings->nostudents != 1 && $studentid) {
     echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
 }
 
-	
+
 // var_dump($competence_tree);
 // die();
 // crop student array by selected (for big result tables!)
