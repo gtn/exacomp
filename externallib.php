@@ -533,7 +533,7 @@ class block_exacomp_external extends external_api {
 
 		$courseid = static::find_courseid_for_example($exampleid);
 		static::require_can_access_example($exampleid, $courseid);
-		
+
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
 			'id' => $exampleid,
 		));
@@ -567,9 +567,13 @@ class block_exacomp_external extends external_api {
 			$example->task = $example->externalurl;
 		}
 
-		$solution = block_exacomp_get_file($example, 'example_solution', $courseid);
+
+		$solution = block_exacomp_get_file($example, 'example_solution');
+
+
 		if ($solution) {
 			$example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
+
 		} elseif ($example->externalsolution) {
 			$example->solution = $example->externalsolution;
 		}
@@ -3214,6 +3218,10 @@ class block_exacomp_external extends external_api {
 
 		$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
 		$example->solution_visible = $solution_visible;
+
+//		var_dump($example->solution);
+//		die();
+
 		// remove solution if not visible for student
 		if (!$isTeacher && !$solution_visible) {
 			$example->solution = "";
@@ -3598,7 +3606,7 @@ class block_exacomp_external extends external_api {
             'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
             'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 //            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-		    //'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
+		    //'additionalinfo' => new external_value dakora_get_example_overview(PARAM_FLOAT, 'additional grading for descriptor'),
 			'topicid' => new external_value (PARAM_INT, 'id of topic'),
 			'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
 			'child' => new external_value (PARAM_BOOL, 'true: child, false: parent'),
