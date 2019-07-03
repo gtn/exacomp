@@ -7525,6 +7525,7 @@ class block_exacomp_external extends external_api {
 			'version' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
 		    'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
 			'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
+            'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),
 		));
 	}
 
@@ -7534,12 +7535,17 @@ class block_exacomp_external extends external_api {
 	 * @return array
 	 */
 	public static function dakora_get_config() {
-	    global $CFG;
+	    global $CFG, $USER;
 	    static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
 
 		$info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
 		$gradingperiods = block_exacomp_is_exastud_installed() ? \block_exastud\api::get_periods() : [];
+
+		$exaportactive = true;
+		if(!block_exacomp_is_teacher($USER->id)){
+            $exaportactive = block_exacomp_is_block_used_by_student("exaport", $USER->id);
+        }
 
 		return array(
 		    'points_limit' => block_exacomp_get_assessment_points_limit(),
@@ -7578,6 +7584,7 @@ class block_exacomp_external extends external_api {
 			'version' => $info->versiondb,
 		    'moodleversion' => $CFG->version,
 			'release' => $info->release,
+            'exaportactive' => $exaportactive,
 		);
 	}
 

@@ -314,7 +314,7 @@ function block_exacomp_get_courses_of_student($userid) {
     $courses = block_exacomp_get_courseids();
     $studentCourses = array();
 
-    var_dump($courses);
+//    var_dump($courses);
     foreach ($courses as $course) {
 //        echo $course;
         if (block_exacomp_is_student($course)) {
@@ -10462,64 +10462,23 @@ function block_exacomp_is_autograding_example($exampleid) {
     return (bool) $result;
 }
 
-/**
- * Checks if this student is enrolled in any course, that has exaport active on the course frontpage
- */
-function block_exacomp_is_exaport_active_for_student($studentid){
-    echo "here";
+function block_exacomp_is_block_used_by_student($blockname,$studentid){
+    global $CFG, $DB;
+    $query = 'SELECT mdl_course.id as courseID, mdl_course.fullname, mdl_course.shortname, mdl_block_instances.blockname
+	            FROM (mdl_context mdl_context
+	                INNER JOIN mdl_block_instances mdl_block_instances  ON (mdl_context.id = mdl_block_instances.parentcontextid))
+	                INNER JOIN mdl_course mdl_course                    ON (mdl_course.id = mdl_context.instanceid)
+	            WHERE     (mdl_block_instances.blockname = ?)      AND (mdl_context.contextlevel = 50) 
+	                        AND mdl_course.id IN ('.join(',', block_exacomp_get_courses_of_student($studentid)).')'; //50 means that the instanceid stands for the courseid
 
-    $courses = block_exacomp_get_courses_of_student($studentid);
-    var_dump($courses);
-    foreach($courses as $courseid){
-        $course = get_course($courseid);
-        echo "here";
-        if(block_exacomp_is_block_present_in_course("exaport",$course)){
-            echo "isActive";
-        }
+    $condition = array($blockname);
+
+    $coursesWithBlockActive = $DB->get_records_sql($query, $condition);
+
+    if (!$coursesWithBlockActive) {
+        return false;
     }
-    echo "here";
-}
-
-/**
- * Given a block name and a course, find out of any of them are currently present in the frontpage of this course
-
- * @param string $blockname - the basic name of a block (eg "navigation")
- * @param int course
- * @return boolean - is there one of these blocks in the frontpage of this course
- */
-function block_exacomp_is_block_present_in_course($blockname, $course) {
-    global $PAGE;
-    $blockmanager = $PAGE->blocks;
-
-    $page = new \moodle_page();
-    $page->set_url('/course/view.php', array('id' => $course->id));
-    $page->set_pagelayout('course');
-    $page->set_course($course);
-
-
-    $allRegions = $blockmanager->get_regions();
-    foreach($allRegions as $region){
-        $allBlocks = $blockmanager->get_blocks_for_region($region);
-        if (empty($allBlocks)) {
-            return false;
-        }
-
-        $requiredbythemeblocks = $blockmanager->get_required_by_theme_block_types();
-        foreach($allBlocks as $block){
-            if (empty($block->instance->blockname)) {
-                continue;
-            }
-            if ($block->instance->blockname == $blockname) {
-                if ($block->instance->requiredbytheme) {
-                    if (!in_array($blockname, $requiredbythemeblocks)) {
-                        continue;
-                    }
-                }
-                return true;
-            }
-        }
-    }
-    return false;
+    return true;
 }
 
 

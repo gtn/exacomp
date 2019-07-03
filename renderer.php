@@ -734,9 +734,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $table->attributes['class'] .= ' show-all-colgroups ';
         }
 
-//		echo "ayy";
-//        block_exacomp_is_exaport_active_for_student(4);
-
         // in the future maybe use lscache or some other method?
 		if ($crosssubjid) {
 			$table->attributes['exa-rg2-storageid'] = 'cross_subject-'.$crosssubjid;
