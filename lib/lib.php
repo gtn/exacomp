@@ -309,6 +309,22 @@ function block_exacomp_get_courses_of_teacher($userid) {
     return $teachersCourses;
 }
 
+//Get all courses a student is enrolled
+function block_exacomp_get_courses_of_student($userid) {
+    $courses = block_exacomp_get_courseids();
+    $studentCourses = array();
+
+    var_dump($courses);
+    foreach ($courses as $course) {
+//        echo $course;
+        if (block_exacomp_is_student($course)) {
+
+            $studentCourses[] = $course;
+        }
+    }
+    return $studentCourses;
+}
+
 /**
  *
  * @param courseid or context $context
@@ -316,8 +332,12 @@ function block_exacomp_get_courses_of_teacher($userid) {
 function block_exacomp_is_student($context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
 
-	// a teacher can not be a student in the same course
-	return has_capability('block/exacomp:student', $context) && !has_capability('block/exacomp:teacher', $context);
+//    echo has_capability('block/exacomp:teacher', $context);
+//    echo has_capability('block/exacomp:student', $context);
+
+	// a teacher can not be a student in the same course   RW TODO, this leads to problems, check why
+//	return has_capability('block/exacomp:student', $context) && !has_capability('block/exacomp:teacher', $context);
+    return has_capability('block/exacomp:student', $context);
 }
 
 /**
@@ -10441,4 +10461,65 @@ function block_exacomp_is_autograding_example($exampleid) {
     $result = g::$DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, ['ethema_parent' => $exampleid], '*', IGNORE_MULTIPLE);
     return (bool) $result;
 }
+
+/**
+ * Checks if this student is enrolled in any course, that has exaport active on the course frontpage
+ */
+function block_exacomp_is_exaport_active_for_student($studentid){
+    echo "here";
+
+    $courses = block_exacomp_get_courses_of_student($studentid);
+    var_dump($courses);
+    foreach($courses as $courseid){
+        $course = get_course($courseid);
+        echo "here";
+        if(block_exacomp_is_block_present_in_course("exaport",$course)){
+            echo "isActive";
+        }
+    }
+    echo "here";
+}
+
+/**
+ * Given a block name and a course, find out of any of them are currently present in the frontpage of this course
+
+ * @param string $blockname - the basic name of a block (eg "navigation")
+ * @param int course
+ * @return boolean - is there one of these blocks in the frontpage of this course
+ */
+function block_exacomp_is_block_present_in_course($blockname, $course) {
+    global $PAGE;
+    $blockmanager = $PAGE->blocks;
+
+    $page = new \moodle_page();
+    $page->set_url('/course/view.php', array('id' => $course->id));
+    $page->set_pagelayout('course');
+    $page->set_course($course);
+
+
+    $allRegions = $blockmanager->get_regions();
+    foreach($allRegions as $region){
+        $allBlocks = $blockmanager->get_blocks_for_region($region);
+        if (empty($allBlocks)) {
+            return false;
+        }
+
+        $requiredbythemeblocks = $blockmanager->get_required_by_theme_block_types();
+        foreach($allBlocks as $block){
+            if (empty($block->instance->blockname)) {
+                continue;
+            }
+            if ($block->instance->blockname == $blockname) {
+                if ($block->instance->requiredbytheme) {
+                    if (!in_array($blockname, $requiredbythemeblocks)) {
+                        continue;
+                    }
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 

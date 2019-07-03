@@ -717,7 +717,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $isEditingTeacher = true) {
-		global $DB, $USER;
+		global $DB, $USER, $PAGE;
 
 		$table = new html_table();
 		$rows = array();
@@ -727,12 +727,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsColspan++;
 		}
 
+
+
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip competence-overview';
 		if (get_config('exacomp', 'disable_js_assign_competencies') && optional_param('colgroupid', 0, PARAM_INT) == -1) { // if pressed show all columns
             $table->attributes['class'] .= ' show-all-colgroups ';
         }
 
-		// in the future maybe use lscache or some other method?
+//		echo "ayy";
+//        block_exacomp_is_exaport_active_for_student(4);
+
+        // in the future maybe use lscache or some other method?
 		if ($crosssubjid) {
 			$table->attributes['exa-rg2-storageid'] = 'cross_subject-'.$crosssubjid;
 		} elseif (count($subjects) == 1) {
