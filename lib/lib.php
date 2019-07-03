@@ -265,6 +265,8 @@ function block_exacomp_get_context_from_courseid($courseid) {
 function block_exacomp_is_teacher($context = null, $userid = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
 
+//    echo "THIS";
+
 	return has_capability('block/exacomp:teacher', $context, $userid);
 }
 
@@ -10464,6 +10466,7 @@ function block_exacomp_is_autograding_example($exampleid) {
 
 function block_exacomp_is_block_used_by_student($blockname,$studentid){
     global $CFG, $DB;
+
     $query = 'SELECT mdl_course.id as courseID, mdl_course.fullname, mdl_course.shortname, mdl_block_instances.blockname
 	            FROM (mdl_context mdl_context
 	                INNER JOIN mdl_block_instances mdl_block_instances  ON (mdl_context.id = mdl_block_instances.parentcontextid))

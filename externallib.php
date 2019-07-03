@@ -7543,7 +7543,8 @@ class block_exacomp_external extends external_api {
 		$gradingperiods = block_exacomp_is_exastud_installed() ? \block_exastud\api::get_periods() : [];
 
 		$exaportactive = true;
-		if(!block_exacomp_is_teacher($USER->id)){
+
+		if(static::get_user_role_common($USER->id)->role == BLOCK_EXACOMP_WS_ROLE_STUDENT){
             $exaportactive = block_exacomp_is_block_used_by_student("exaport", $USER->id);
         }
 
@@ -7587,6 +7588,24 @@ class block_exacomp_external extends external_api {
             'exaportactive' => $exaportactive,
 		);
 	}
+
+
+    /** Returns the user role of this user
+     * @param $userid
+     * @return object
+     */
+    private static function get_user_role_common($userid){
+        $courses = static::get_courses($userid);
+        foreach ($courses as $course) {
+            $context = context_course::instance($course["courseid"]);
+            $isTeacher = block_exacomp_is_teacher($context);
+            if ($isTeacher) {
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
+            }
+        }
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
+    }
+
 
 	public static function login_parameters() {
 		return new external_function_parameters(array(
@@ -8308,13 +8327,11 @@ class block_exacomp_external extends external_api {
     }
 
 
-
     /**
 	 * helper function to use same code for 2 ws
 	 */
 	private static function get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
 	    global $DB;
-
 
 	    //copied from old get_descriptor_details so i can use it in get_descriptor_details and get_descriptors_details
 	    $descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
