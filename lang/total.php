@@ -829,7 +829,7 @@ return [
         'Importieren Sie Aktivitäten vom Vorlagekurs in Ihren Kurs',
         'Import activities of a template course into your course'
     ],
-    
+
 
 
 	// === Configuration ===
@@ -1273,7 +1273,7 @@ return [
     'dismiss_gradingisold' => [
         'Wollen Sie die Warnung ignorieren?',
         'Do you want to dismiss this warning?',
-    ],    
+    ],
 	'unload_notice' => [
 		'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.',
 		'Are you sure? Unsaved changes will be lost.',
@@ -1451,7 +1451,7 @@ return [
         'Neue Kategorie hinzufügen: ',
         'Add new category ',
     ],
-    
+
 	// === metadata ===
 	'subject_singular' => [
 		'Fach',
@@ -1586,7 +1586,7 @@ return [
         'Really to delete?'
     ],
     'add_niveau' => [
-        'Neues Niveau hinzufügen',
+        'Neuen Lernfortschritt hinzufügen',
         'Add niveau'
     ],
     'delete_niveau' => [
@@ -1659,7 +1659,7 @@ return [
         'Lernmaterialien',
         'Materials',
     ],
-    
+
 	// === Competence Profile Settings ===
 	'profile_settings_choose_courses' => [
 		'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
@@ -2019,7 +2019,7 @@ return [
     'participating_student' => [
         'Kursteilnehmer/in',
         'student',
-    ],   
+    ],
     'n1.unit' => [
         '1. Einheit:',
         '1. unit',
@@ -2272,7 +2272,7 @@ return [
         'Bewertungsdatum',
         'evaluation Date',
     ],
-    'output_current_assessments' => [ 
+    'output_current_assessments' => [
         'Ausgabe der jeweiligen Bewertungen',
         'output of current assessments',
     ],
