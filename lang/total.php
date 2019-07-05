@@ -1886,6 +1886,10 @@ return [
         'neuer Lernfortschritt',
         'New learning progress'
     ],
+    'groupcategory' => [
+        'Kategorie',
+        'Category'
+    ],
 
 
 	// === Associations ===

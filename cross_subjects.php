@@ -125,7 +125,7 @@ if ($action == 'share') {
 
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
- 
+
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
 	echo $output->header_v2('tab_cross_subjects');
 	echo $output->no_activities_warning($isTeacher);
@@ -289,6 +289,7 @@ if ($isTeacher && optional_param('save', '', PARAM_TEXT)) {
 	$data = [
 		'subjectid' => required_param('subjectid', PARAM_INT),
 		'title' => required_param('title', PARAM_TEXT),
+        'groupcategory' => required_param('groupcategory', PARAM_TEXT),
 		'description' => required_param('description', PARAM_TEXT)
 	];
 
@@ -444,9 +445,9 @@ if ($cross_subject) {
 	        echo $output->example_based_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
 	        echo html_writer::end_tag("div");
 	        echo html_writer::end_tag('form');
-	        
-	        
-	        
+
+
+
 // 	        //could be optimized together with block_exacomp_build_example_tree
 // 	        //non critical - only 1 additional query for whole loading process
 // 	        $examples = \block_exacomp\example::get_objects_sql("
@@ -458,16 +459,16 @@ if ($cross_subject) {
 //                 WHERE ct.courseid = ?
 //                 ORDER BY e.title
 //             ", [$courseid]);
-	        
+
 // 	        if (!$isTeacher) {
 // 	            $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
 // 	                return block_exacomp_is_example_visible($courseid, $example, $studentid);
 // 	            });
 // 	        }
-	        
-	        
+
+
 //             echo $output->example_based_list_tree($examples);
-	        
+
 // 	        echo $output->overview_legend($isTeacher);
 // 	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 // 	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
@@ -475,7 +476,7 @@ if ($cross_subject) {
 // 	        echo html_writer::end_tag("div");
 // 	        echo html_writer::end_tag('form');
 	    }
-		
+
 	} else {
 		echo html_writer::div(
 			block_exacomp_get_string('add_content_to_crosssub'),

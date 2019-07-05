@@ -5964,13 +5964,25 @@ function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects() {
 	array_unshift($subjects, $default_subject);
 
 	foreach ($subjects as $key => $subject) {
-		$subject->cross_subject_drafts = block_exacomp\cross_subject::get_objects(array('subjectid' => $subject->id, 'courseid' => 0), 'title');
+		$subject->cross_subject_drafts = block_exacomp\cross_subject::get_objects(array('subjectid' => $subject->id, 'courseid' => 0), 'groupcategory, title');
 		if (!$subject->cross_subject_drafts) {
 			unset($subjects[$key]);
 		}
 	}
 
 	return $subjects;
+}
+
+
+
+function block_exacomp_get_crosssubject_groupcategories($subjectid){
+    global $DB;
+    $groupcategories = $DB->get_records_sql('
+			SELECT DISTINCT groupcategory
+			FROM {'.BLOCK_EXACOMP_DB_CROSSSUBJECTS.'}
+			WHERE subjectid=? AND courseid=0', [$subjectid]);
+
+    return $groupcategories;
 }
 
 /**

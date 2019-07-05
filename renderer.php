@@ -6766,6 +6766,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->head = [$tmp];
 
 		$subjects = block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects();
+
 		foreach ($subjects as $subject) {
 			$title = new html_table_cell;
 			$title->text = '<div>'.$subject->title.'</div>';
@@ -6777,18 +6778,76 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
 			$table->data[] = $row;
 
-			foreach ($subject->cross_subject_drafts as $crosssub) {
-				$title = clone $item_title_cell;
-				$title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
-				$row = new html_table_row([
-					$title,
-					($crosssub->has_capability(BLOCK_EXACOMP_CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '').
-					($crosssub->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")), array("onclick" => "if( confirm('".block_exacomp_get_string('confirm_delete')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")) : '').
-					html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'use_draft')), $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
-				]);
-				$row->attributes['class'] = 'rg2-level-1';
-				$table->data[] = $row;;
-			}
+            $groupcategories = block_exacomp_get_crosssubject_groupcategories($subject->id);
+//            var_dump($groupcategories);
+//            die();
+
+            //look for the right category to store this crossubjectdraft into
+            //if none has been stored there yet, write the category
+            foreach($groupcategories as $groupcategory){
+                $title = new html_table_cell;
+                $title->text = '<div>'.$groupcategory->groupcategory.'</div>';
+                $title->attributes['class'] = 'rg2-indent rg2-arrow';
+                $title->colspan = 2;
+
+                $row = new html_table_row([$title]);
+                $row->attributes['class'] = 'rg2-level-1 rg2-highlight';
+                $row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
+                $table->data[] = $row;
+//                var_dump($subject->cross_subject_drafts);
+//                die();
+
+//                var_dump($subject->cross_subject_drafts);
+                if($crosssub == null){
+                    $crosssub = array_shift($subject->cross_subject_drafts);
+                }
+
+//                var_dump($groupcategory->groupcategory);
+//                var_dump($crosssub);
+//                die();
+                while($groupcategory->groupcategory == $crosssub->groupcategory){
+                    $title = clone $item_title_cell;
+                    $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
+                    $row = new html_table_row([
+                        $title,
+                        ($crosssub->has_capability(BLOCK_EXACOMP_CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '').
+                        ($crosssub->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")), array("onclick" => "if( confirm('".block_exacomp_get_string('confirm_delete')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")) : '').
+                        html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'use_draft')), $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
+                    ]);
+                    $row->attributes['class'] = 'rg2-level-2';
+                    $table->data[] = $row;
+                    $crosssub = array_shift($subject->cross_subject_drafts);
+                }
+//                var_dump($subject->cross_subject_drafts);
+//                die();
+
+//                var_dump($subject->cross_subject_drafts);
+//                die();
+
+//                $printeddraftscount = 0;
+//                foreach ($subject->cross_subject_drafts as $crosssub) {
+//                    if($groupcategory->groupcategory == $crosssub->groupcategory){
+//                        echo "einmalRein  ";
+//                        $title = clone $item_title_cell;
+//                        $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
+//                        $row = new html_table_row([
+//                            $title,
+//                            ($crosssub->has_capability(BLOCK_EXACOMP_CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '').
+//                            ($crosssub->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")), array("onclick" => "if( confirm('".block_exacomp_get_string('confirm_delete')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")) : '').
+//                            html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'use_draft')), $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
+//                        ]);
+//                        $row->attributes['class'] = 'rg2-level-2';
+//                        $table->data[] = $row;
+//                        $printeddraftscount++;
+//                    }else{
+                        //performance... they should come ordered, so if the first does not fit, it will stop looking and start the next category
+                        //also the the array gets reduced by the already printed drafts (no shift for every element because of performance)
+//                        $subject->cross_subject_drafts = array_slice($subject->cross_subject_drafts,$printeddraftscount);
+//                        break;
+//
+//                    }
+//                }
+            }
 		}
 
 		if (!$table->data) {
