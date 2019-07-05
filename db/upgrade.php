@@ -2720,7 +2720,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$record->additionalinfo = NULL;
 			$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
 		}
-	
+
 		//remove tick on setting additional_grading (this is completely different to new functionality and not working if ticked)
 		set_config('additional_grading', 0, 'exacomp');
 		/**
@@ -2730,14 +2730,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Define key niveauid (foreign) to be dropped form block_exacompcompuser.
 		$table = new xmldb_table('block_exacompcompuser');
 		$key = new xmldb_key('niveauid', XMLDB_KEY_FOREIGN, array('niveauid'), 'eval_niveau', array('id'));
-	
+
 		// Launch drop key niveauid.
 		$dbman->drop_key($table, $key);
-	
+
 		// Rename field niveauid on table block_exacompcompuser to evalniveauid.
 		$table = new xmldb_table('block_exacompcompuser');
 		$field = new xmldb_field('niveauid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'additionalinfo');
-	
+
 		// Launch rename field evalniveauid.
 		if ($dbman->field_exists($table, $field)) {
 			$dbman->rename_field($table, $field, 'evalniveauid');
@@ -2745,18 +2745,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$field = new xmldb_field('evalniveauid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, null);
 			$dbman->add_field($table, $field);
 		}
-		
+
 		// Define key evalniveauid (foreign) to be added to block_exacompcompuser.
 		$table = new xmldb_table('block_exacompcompuser');
 		$key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'eval_niveau', array('id'));
-	
+
 		// Launch add key evalniveauid.
 		$dbman->add_key($table, $key);
-	
+
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2016042100, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2016042700) {
 		// Define key evalniveauid (foreign) to be dropped form block_exacompcompuser.
         $table = new xmldb_table('block_exacompcompuser');
@@ -2764,73 +2764,73 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
         // Launch drop key evalniveauid.
         $dbman->drop_key($table, $key);
-	
+
         $table = new xmldb_table('block_exacompcompuser');
         $key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'block_exacompeval_niveau', array('id'));
-        
+
         // Launch add key evalniveauid.
         $dbman->add_key($table, $key);
-        
+
         $table = new xmldb_table('block_exacompexameval');
         $field = new xmldb_field('additionalinfo');
-        
+
         // Conditionally launch drop field evalniveauid.
         if ($dbman->field_exists($table, $field)) {
         	$dbman->drop_field($table, $field);
         }
-        
+
         $table = new xmldb_table('block_exacompexameval');
         $field = new xmldb_field('evalniveauid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'studypartner');
-        
+
         // Conditionally launch add field evalniveauid.
         if (!$dbman->field_exists($table, $field)) {
         	$dbman->add_field($table, $field);
         }
-        
+
         // Define key evalniveauid (foreign) to be added to block_exacompexameval.
         $table = new xmldb_table('block_exacompexameval');
         $key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'block_exacompeval_niveau', array('id'));
-        
+
         // Launch add key evalniveauid.
         $dbman->add_key($table, $key);
-        
+
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2016042700, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2016042701) {
-	
+
 		// Define field starttime to be dropped from block_exacompexameval.
 		$table = new xmldb_table('block_exacompexameval');
 		$field = new xmldb_field('starttime');
-	
+
 		// Conditionally launch drop field starttime.
 		if ($dbman->field_exists($table, $field)) {
 			$dbman->drop_field($table, $field);
 		}
-	
+
 		// Define field starttime to be dropped from block_exacompexameval.
 		$table = new xmldb_table('block_exacompexameval');
 		$field = new xmldb_field('endtime');
-		
+
 		// Conditionally launch drop field starttime.
 		if ($dbman->field_exists($table, $field)) {
 			$dbman->drop_field($table, $field);
 		}
-		
+
 		// Define field starttime to be dropped from block_exacompexameval.
 		$table = new xmldb_table('block_exacompexameval');
 		$field = new xmldb_field('studypartner');
-		
+
 		// Conditionally launch drop field starttime.
 		if ($dbman->field_exists($table, $field)) {
 			$dbman->drop_field($table, $field);
 		}
-		
+
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2016042701, 'exacomp');
 	}
-	
+
 	if($oldversion < 2016070800){
 		$table = new xmldb_table('block_exacomptopicvisibility');
 
@@ -2868,90 +2868,90 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				$DB->insert_record(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array('courseid' => $courseid, 'topicid' => $topic->id, 'studentid' => 0, 'visible' => 1));
 			}
 		}
-	
+
 		upgrade_block_savepoint(true, 2016070800, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2016071200) {
-	
+
 		// Define table block_exacompsolutvisibility to be created.
 		$table = new xmldb_table('block_exacompsolutvisibility');
-	
+
 		// Adding fields to table block_exacompsolutvisibility.
 		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
 		$table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 		$table->add_field('exampleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 		$table->add_field('studentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 		$table->add_field('visible', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
-	
+
 		// Adding keys to table block_exacompsolutvisibility.
 		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 		$table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
 		$table->add_key('exampleid', XMLDB_KEY_FOREIGN, array('exampleid'), 'block_exacompexamples', array('id'));
 		$table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
-	
+
 		// Conditionally launch create table for block_exacompsolutvisibility.
 		if (!$dbman->table_exists($table)) {
 			$dbman->create_table($table);
 		}
-	
+
 		// create entries for all examples in all courses
 		$example_visibilities = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY);
 		foreach($example_visibilities as $examplevisibility)
 			$DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid' => $examplevisibility->courseid, 'exampleid' => $examplevisibility->exampleid, 'studentid' => $examplevisibility->studentid, 'visible' => 1));
-		
+
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2016071200, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2016091100) {
-	
+
 		// Define field timestamp_teacher to be added to block_exacompexameval.
 		$table = new xmldb_table('block_exacompexameval');
 		$field = new xmldb_field('timestamp_teacher', XMLDB_TYPE_INTEGER, '20', null, null, null, '0', 'resubmission');
-	
+
 		// Conditionally launch add field timestamp_teacher.
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
-	
+
 		// Define field timestamp_student to be added to block_exacompexameval.
 		$table = new xmldb_table('block_exacompexameval');
 		$field = new xmldb_field('timestamp_student', XMLDB_TYPE_INTEGER, '20', null, null, null, '0', 'timestamp_teacher');
-		
+
 		// Conditionally launch add field timestamp_student.
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
-		
+
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2016091100, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2016092101) {
-	
+
 		// Define table block_exacompautotestassign to be created.
 		$table = new xmldb_table('block_exacompautotestassign');
-	
+
 		// Adding fields to table block_exacompautotestassign.
 		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
 		$table->add_field('quiz', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 		$table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 		$table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-	
+
 		// Adding keys to table block_exacompautotestassign.
 		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-	
+
 		// Conditionally launch create table for block_exacompautotestassign.
 		if (!$dbman->table_exists($table)) {
 			$dbman->create_table($table);
 		}
-	
+
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2016092101, 'exacomp');
 	}
-	
-	
+
+
 	if ($oldversion < 2017082400) {
     	// Define field resubmission to be added to block_exacompexameval.
     	$table = new xmldb_table('block_exacompexameval');
@@ -2960,8 +2960,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     	// Exacomp savepoint reached.
     	upgrade_block_savepoint(true, 2017082400, 'exacomp');
 	}
-	
-	if ($oldversion < 2018032303) {    
+
+	if ($oldversion < 2018032303) {
 	    $table = new xmldb_table('block_exacompeval_niveau');
 	    $field = new xmldb_field('option_type');
 	    $field->set_attributes(XMLDB_TYPE_CHAR, '20', null, null, null, null, null);
@@ -2971,7 +2971,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018032303, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2018040600) {
 	    $table = new xmldb_table('block_exacompexameval');
 	    $field = new xmldb_field('additionalinfo');
@@ -2980,14 +2980,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018040600, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2018071202) {
 	    $table = new xmldb_table('block_exacompdescrexamp_mm');
 	    $field = new xmldb_field('id_foreign', XMLDB_TYPE_INTEGER, 11, null, null, null, null);
 	    if (!$dbman->field_exists($table, $field)) {
 	    	$dbman->add_field($table, $field);
 	    }
-	    
+
 	    $field = new xmldb_field('table_foreign', XMLDB_TYPE_TEXT, null, null, null, null, null);
 	    if (!$dbman->field_exists($table, $field)) {
 		    $dbman->add_field($table, $field);
@@ -2995,17 +2995,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018071202, 'exacomp');
 	}
-	
+
 	if ($oldversion < 2018071205) {
 	    $table = new xmldb_table('block_exacompdescrexamp_mm');
-	    
+
 	    //delete key activityid, activitytype and descid
  	    $key = new xmldb_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'));
  	    $dbman->drop_key($table, $key);
-	    
+
 	    $field = new xmldb_field('descrid', XMLDB_TYPE_INTEGER, 11, null, null, null, null);
 	    $dbman->change_field_notnull($table, $field);
-	    
+
 	    $index = new xmldb_index('descrid',XMLDB_INDEX_NOTUNIQUE,array('descrid'));
 	    $dbman->add_key($table, $key);
 	    // Exacomp savepoint reached.
@@ -3057,14 +3057,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018072602, 'exacomp');
     }
-    
+
     if ($oldversion < 2018091100) {
         $table = new xmldb_table('block_exacompschedule');
         $field = new xmldb_field('is_pps', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
+
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018091100, 'exacomp');
     }
@@ -3081,7 +3081,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018091700, 'exacomp');
     }
-    
+
     if ($oldversion < 2018101702) {
         $table = new xmldb_table('block_exacompcompuser');
         $field = new xmldb_field('gradingisold', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
@@ -3091,7 +3091,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018101702, 'exacomp');
     }
-    
+
     if ($oldversion < 2018111400) {
         $table = new xmldb_table('block_exacompsettings');
         $field = new xmldb_field('istemplate', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
@@ -3223,7 +3223,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019020500, 'exacomp');
     }
-    
+
     if ($oldversion < 2019021901) {
         //adding a new table to save cohortcodes for diggr
         $table = new xmldb_table('block_exacompcohortcode');
@@ -3256,7 +3256,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019031802, 'exacomp');
     }
-    
+
     if ($oldversion < 2019032100) {
         $table = new xmldb_table('block_exacompschedule');
         $field = new xmldb_field('is_pps', XMLDB_TYPE_INTEGER, 1, null, null, null, '0');
@@ -3267,7 +3267,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019032100, 'exacomp');
     }
-    
+
     if ($oldversion < 2019040401) {
         //adding a new table to save cohortcodes for diggr
         $table = new xmldb_table('block_exacompcohortcode');
@@ -3297,6 +3297,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019052803, 'exacomp');
+    }
+
+    if ($oldversion < 2019070500) {
+        $table = new xmldb_table('block_exacompcrosssubjects');
+        $field = new xmldb_field('sortcategory', XMLDB_TYPE_TEXT, '1333', null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2019070500, 'exacomp');
     }
 
     /*

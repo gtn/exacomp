@@ -6116,6 +6116,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$rows[] = [html_writer::span(block_exacomp_get_string('subject_singular'), 'exabis_comp_top_name'), $cellText];
 
+
+
+
+        if ($edit) {
+            $cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->sortcategory : '', 'name' => 'sortcategory'));
+        } else {
+            $cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->sortcategory : '');
+        }
+
+        $rows[] = [html_writer::span(block_exacomp_get_string('groupcategory'), 'exabis_comp_top_name'), $cellText];
+
+
+
+
+
 		if ($edit) {
 			$cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->description : '', 'name' => 'description'));
 		} else {

@@ -411,6 +411,7 @@
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="shared" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Freigabe für ganzen Kurs mit 1"/>
         <FIELD NAME="subjectid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Zugeordnetes Subject"/>
+        <FIELD NAME="groupcategory" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Kategorie nur zum Ordnen/Sortieren/Gruppieren"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
