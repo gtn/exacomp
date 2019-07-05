@@ -64,18 +64,18 @@ class block_exacomp_local_item_form extends moodleform {
 		}
 		$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_get_string('new_niveau'), 'new');
 		$mform->addGroup($radioarray, 'radioar', '', array(' '), false);*/
-		
+
 		$mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('niveau_title', PARAM_TEXT);
 		// $mform->addRule('niveau_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
-		
+
 		$mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
 		$mform->setType('niveau_numb', PARAM_TEXT);
 
 		//$mform->addElement('selectgroups', 'niveau_id', block_exacomp_get_string('niveau'), $niveaus);
-		
-		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfortschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
-		
+
+		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen Sie diesem Lernfortschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
+
 		$radioarray=array();
 		if ($this->_customdata['descriptors']) {
 			// disable if no descriptors
@@ -87,9 +87,9 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('descriptor_title', PARAM_TEXT);
 		// $mform->addRule('descriptor_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
-		
+
 		$mform->addElement('select', 'descriptor_id', block_exacomp_get_string('descriptor'), $this->_customdata['descriptors']);
-		
+
 		$this->add_action_buttons(false);
 	}
 }
