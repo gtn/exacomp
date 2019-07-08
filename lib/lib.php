@@ -5996,7 +5996,8 @@ function block_exacomp_get_crosssubject_groupcategories($subjectid){
     $groupcategories = $DB->get_records_sql('
 			SELECT DISTINCT groupcategory
 			FROM {'.BLOCK_EXACOMP_DB_CROSSSUBJECTS.'}
-			WHERE subjectid=? AND courseid=0', [$subjectid]);
+			WHERE subjectid=? AND courseid=0
+            ORDER BY groupcategory', [$subjectid]);
 
     return $groupcategories;
 }

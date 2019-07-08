@@ -6784,6 +6784,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             //look for the right category to store this crossubjectdraft into
             //if none has been stored there yet, write the category
+            $crosssubj = null;
             foreach($groupcategories as $groupcategory){
                 $title = new html_table_cell;
                 $title->text = '<div>'.$groupcategory->groupcategory.'</div>';
@@ -6797,26 +6798,33 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                var_dump($subject->cross_subject_drafts);
 //                die();
 
-//                var_dump($subject->cross_subject_drafts);
-                if($crosssub == null){
-                    $crosssub = array_shift($subject->cross_subject_drafts);
+//                var_dump($crosssubj);
+                if($crosssubj == null){
+                    $crosssubj = array_shift($subject->cross_subject_drafts);
                 }
-
-//                var_dump($groupcategory->groupcategory);
-//                var_dump($crosssub);
+//                var_dump($crosssubj);
 //                die();
-                while($groupcategory->groupcategory == $crosssub->groupcategory){
+
+//                var_dump($crosssubj->groupcategory);
+//                var_dump($groupcategory->groupcategory);
+//                die();
+                while($groupcategory->groupcategory == $crosssubj->groupcategory){
+//                    $crosssubj->creatorid = 3;
                     $title = clone $item_title_cell;
-                    $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
+                    $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id)), $crosssubj->title);
                     $row = new html_table_row([
                         $title,
-                        ($crosssub->has_capability(BLOCK_EXACOMP_CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '').
-                        ($crosssub->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")), array("onclick" => "if( confirm('".block_exacomp_get_string('confirm_delete')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")) : '').
-                        html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'use_draft')), $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
+                        ($crosssubj->has_capability(BLOCK_EXACOMP_CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'editmode' => 1)), $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '').
+                        ($crosssubj->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")), array("onclick" => "if( confirm('".block_exacomp_get_string('confirm_delete')."')) block_exacomp.delete_crosssubj(".$crosssubj->id."); return false;")) : '').
+                        html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'action' => 'use_draft')), $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
                     ]);
                     $row->attributes['class'] = 'rg2-level-2';
+//                    var_dump($table->data);
+//                    die();
                     $table->data[] = $row;
-                    $crosssub = array_shift($subject->cross_subject_drafts);
+                    $crosssubj = array_shift($subject->cross_subject_drafts);
+//                    var_dump($crosssubj);
+//                    die();
                 }
 //                var_dump($subject->cross_subject_drafts);
 //                die();
