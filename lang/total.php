@@ -493,7 +493,7 @@ return [
         'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained',
     ],
     'settings_assessment_verbose_options_short_default' => [
-        'ne, te, ge, ve',
+        'ne, te, üe, ve',
         'ng, pg, mg, cg',
     ],
     'settings_assessment_grade_verbose' => [
