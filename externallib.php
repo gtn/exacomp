@@ -3228,8 +3228,9 @@ class block_exacomp_external extends external_api {
 		}
         $example->title = static::custom_htmltrim(strip_tags($example->title));
 
-        $example->taskfilecount = $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
-
+        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
+//        var_dump($example);
+//        die();
 
 		return $example;
 	}
@@ -5648,10 +5649,13 @@ class block_exacomp_external extends external_api {
 		        //var_dump($context->id,$fileitmeid,$filename);
                 $fileitemids = explode(',', $fileitemids);
                 $filenames = explode(',', $filenames);
+
                 if($fileitemids){
                     $i = 0; //for getting the names
                     foreach($fileitemids as $fileitemid){
                         $filename = $filenames[$i];
+                        $i++;
+//                        var_dump($filename);
                         $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
                         if ($old) {
                             $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
@@ -6336,6 +6340,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		static::require_can_access_example($exampleid, $courseid);
 
+
 		return static::_get_example_information($courseid, $userid, $exampleid);
 	}
 
@@ -6351,9 +6356,6 @@ class block_exacomp_external extends external_api {
 			'name' => new external_value (PARAM_TEXT, 'title of item'),
 			'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)'),
 			'url' => new external_value (PARAM_TEXT, 'url'),
-			'filename' => new external_value (PARAM_TEXT, 'title of item'),
-			'file' => new external_value (PARAM_URL, 'file url'),
-			'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
 			'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
 			'studentvalue' => new external_value (PARAM_INT, 'student grading'),
 			'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
@@ -6365,19 +6367,29 @@ class block_exacomp_external extends external_api {
 			'teacheritemvalue' => new external_value (PARAM_INT, 'item teacher grading'),
 			'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
 		    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading'),
-		));
+            'studentfiles' => new external_multiple_structure(new external_single_structure(array(
+                'filename' => new external_value (PARAM_TEXT, 'title of item'),
+                'file' => new external_value (PARAM_URL, 'file url'),
+                'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+                'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
+            ))),
+        ));
 	}
 
 
 	protected static function _get_example_information($courseid, $userid, $exampleid) {
 	    global $CFG, $DB;
 	    $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+//	    var_dump($example);
+//	    die();
 	    if (!$example) {
 	        throw new invalid_parameter_exception ('Example does not exist');
 	    }
 	    $itemInformation = block_exacomp_get_current_item_for_example($userid, $exampleid);
 	    $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid));
 	    $data = array();
+	    $filedata = array();
+        $studentfiles = array();
 	    if ($itemInformation) {
 	        //item exists
 	        $data['itemid'] = $itemInformation->id;
@@ -6398,8 +6410,9 @@ class block_exacomp_external extends external_api {
 	        //$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
 	        $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
 
+
 	        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
-	        if ($file = block_exaport_get_item_file($itemInformation)) {
+	        if ($files = block_exaport_get_item_file($itemInformation,false)) {
 	            /*
 	             * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
 	             * 'userid' => $userid,
@@ -6408,10 +6421,15 @@ class block_exacomp_external extends external_api {
 	             * ]);
 	             */
 	            // TODO: moodle_url contains encoding errors which lead to problems in dakora
-	            $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
-	            $data['file'] = $fileurl;
-	            $data['mimetype'] = $file->get_mimetype();
-	            $data['filename'] = $file->get_filename();
+                foreach ($files as $fileindex => $file) {
+                    $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
+                    $filedata['file'] = $fileurl;
+                    $filedata['mimetype'] = $file->get_mimetype();
+                    $filedata['filename'] = $file->get_filename();
+                    $filedata['fileindex'] = $fileindex;
+                    $studentfiles[] = $filedata;
+                }
+                $data['studentfiles'] = $studentfiles;
 	        }
 	        $data['studentcomment'] = '';
 	        $data['teachercomment'] = '';
@@ -6464,12 +6482,19 @@ class block_exacomp_external extends external_api {
 	        $data['timestampstudent'] = isset ($exampleEvaluation->timestamp_student) ? $exampleEvaluation->timestamp_student : 0;
 	        $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
 	        $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
+            $data['filecount'] = 0;
 	    }
 	    if (!$exampleEvaluation || $exampleEvaluation->resubmission) {
 	        $data['resubmission'] = true;
 	    } else {
 	        $data['resubmission'] = false;
 	    }
+
+
+
+
+
+
 	    return $data;
 	}
 

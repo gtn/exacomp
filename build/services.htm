@@ -2899,9 +2899,6 @@ Returns:<pre>{
     "name": "text null (title of item)",
     "type": "text null (type of item (note,file,link))",
     "url": "text null (url)",
-    "filename": "text null (title of item)",
-    "file": "url null (file url)",
-    "mimetype": "text null (mime type for file)",
     "teachervalue": "int null (teacher grading)",
     "studentvalue": "int null (student grading)",
     "evalniveauid": "int null (evaluation niveau id)",
@@ -2912,7 +2909,16 @@ Returns:<pre>{
     "studentcomment": "text null (student comment)",
     "teacheritemvalue": "int null (item teacher grading)",
     "resubmission": "bool null (resubmission is allowed\/not allowed)",
-    "additionalinfo": "float null (additional grading)"
+    "additionalinfo": "float null (additional grading)",
+    "studentfiles": [
+        {
+            "filename": "text null (title of item)",
+            "file": "url null (file url)",
+            "mimetype": "text null (mime type for file)",
+            "fileindex": "text null (mime type for file)"
+        },
+        "..."
+    ]
 }</pre>
 <h2>dakora_get_user_information</h2>
 <div>get information about current user

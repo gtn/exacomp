@@ -6211,13 +6211,14 @@ function block_exacomp_get_file($item, $type, $position=-1) {
  */
 function block_exacomp_get_number_of_files($item, $type) {
     // this function reads the associated file from the moodle file storage
-
     $fs = get_file_storage();
+//    var_dump(context_system::instance()->id);
+//    die;
     $files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
-
-    // return  files
     return sizeof($files);
 }
+
+
 
 ///**
 // * @return stored_file
