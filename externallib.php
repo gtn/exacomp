@@ -5556,6 +5556,7 @@ class block_exacomp_external extends external_api {
 			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
+//            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
 		));
 	}
 
