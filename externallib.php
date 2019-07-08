@@ -7482,6 +7482,9 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure (array(
 		    'points_limit' => new external_value (PARAM_INT, 'points_limit'),
 		    'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
+            'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
+            'grade_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
+            'verbal_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
 		    //'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
 		    //'verbose_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'verbose_options'),
 		    'example_scheme' => new external_value (PARAM_INT, 'example_scheme'),
@@ -7551,6 +7554,9 @@ class block_exacomp_external extends external_api {
 		return array(
 		    'points_limit' => block_exacomp_get_assessment_points_limit(),
 		    'grade_limit' => block_exacomp_get_assessment_grade_limit(),
+            'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
+            'grade_negative_threshold' => block_exacomp_get_assessment_grade_negative_threshold(),
+            'verbal_negative_threshold' => block_exacomp_get_assessment_verbal_negative_threshold(),
 		    //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
 		    //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
 		    'example_scheme' => block_exacomp_get_assessment_example_scheme(),
