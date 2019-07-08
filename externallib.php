@@ -5550,13 +5550,14 @@ class block_exacomp_external extends external_api {
 			'exampleid' => new external_value (PARAM_INT, 'exampleid'),
 			'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1),
 			'url' => new external_value (PARAM_URL, 'url'),
-			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+//			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+            'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
 			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
 		    //'value' => new external_value (PARAM_INT, 'value of the grading', VALUE_DEFAULT, -1),
 			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
-			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
-//            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
+//			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
 		));
 	}
 
@@ -5568,12 +5569,12 @@ class block_exacomp_external extends external_api {
 	 * @param int itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_submit_example($exampleid, $studentvalue = null, $url, $filename, $studentcomment, $itemid = 0, $courseid = 0, $fileitemid = 0) {
+	public static function dakora_submit_example($exampleid, $studentvalue = null, $url, $filenames, $studentcomment, $itemid = 0, $courseid = 0, $fileitemids = '') {
 		global $CFG, $DB, $USER;
-		static::validate_parameters(static::dakora_submit_example_parameters(), array('exampleid' => $exampleid, 'url' => $url, 'filename' => $filename, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemid' => $fileitemid));
+		static::validate_parameters(static::dakora_submit_example_parameters(), array('exampleid' => $exampleid, 'url' => $url, 'filenames' => $filenames, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemids' => $fileitemids));
 
 		if (!isset($type)) {
-			$type = ($filename != '') ? 'file' : 'url';
+			$type = ($filenames != '') ? 'file' : 'url';
 		};
 
 		static::require_can_access_course($courseid);
@@ -5645,14 +5646,22 @@ class block_exacomp_external extends external_api {
 // 		    var_dump($fs);
 		    try {
 		        //var_dump($context->id,$fileitmeid,$filename);
-		        $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-		        if ($old) {
-		            $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-		                'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-		                'timecreated' => time(), 'timemodified' => time());
-		            $fs->create_file_from_storedfile($file_record, $old->get_id());
-		            $old->delete();
-		        }
+                $fileitemids = explode(',', $fileitemids);
+                $filenames = explode(',', $filenames);
+                if($fileitemids){
+                    $i = 0; //for getting the names
+                    foreach($fileitemids as $fileitemid){
+                        $filename = $filenames[$i];
+                        $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
+                        if ($old) {
+                            $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
+                                'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
+                                'timecreated' => time(), 'timemodified' => time());
+                            $fs->create_file_from_storedfile($file_record, $old->get_id());
+                            $old->delete();
+                        }
+                    }
+                }
 		    } catch (Exception $e) {
 		        //some problem with the file occured
 		    }
