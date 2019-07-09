@@ -6770,11 +6770,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach ($subjects as $subject) {
 			$title = new html_table_cell;
 			$title->text = '<div>'.$subject->title.'</div>';
-			$title->attributes['class'] = 'rg2-indent rg2-arrow';
+			$title->attributes['class'] = 'rg2-indent rg2-arrow ';
 			$title->colspan = 2;
 
 			$row = new html_table_row([$title]);
-			$row->attributes['class'] = 'rg2-level-0 rg2-highlight';
+			$row->attributes['class'] = 'rg2-level-0 rg2-highlight open';
 			$row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
 			$table->data[] = $row;
 
@@ -6792,7 +6792,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $title->colspan = 2;
 
                 $row = new html_table_row([$title]);
-                $row->attributes['class'] = 'rg2-level-1 rg2-highlight';
+                $row->attributes['class'] = 'rg2-level-1 rg2-highlight open';
                 $row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
                 $table->data[] = $row;
 //                var_dump($subject->cross_subject_drafts);
