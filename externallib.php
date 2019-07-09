@@ -6409,6 +6409,8 @@ class block_exacomp_external extends external_api {
 	        $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
 	        //$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
 	        $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
+            $data['studentfiles'] = $studentfiles;
+
 
 
 	        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
@@ -6483,6 +6485,7 @@ class block_exacomp_external extends external_api {
 	        $data['teacheritemvalue'] = isset ($itemInformation->teachervalue) ? $itemInformation->teachervalue : -1;
 	        $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
             $data['filecount'] = 0;
+            $data['studentfiles'] = $studentfiles;
 	    }
 	    if (!$exampleEvaluation || $exampleEvaluation->resubmission) {
 	        $data['resubmission'] = true;
