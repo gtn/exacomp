@@ -6554,6 +6554,59 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_get_lang_information_parameters() {
+        return new external_function_parameters (array(
+            'lang' => new external_value (PARAM_TEXT, 'language'),
+        ));
+    }
+
+
+
+    /**
+     * Returns lang information from exacomp
+     *
+     * @ws-type-read
+     * @return
+     */
+    public static function dakora_get_lang_information($lang) {
+        global $DB;
+
+            static::validate_parameters(static::dakora_get_lang_information_parameters(), array(
+                'lang' => $lang,
+            ));
+
+        $output = $DB->get_records_sql('SELECT strings.stringid, strings.master
+                    FROM mdl_tool_customlang strings
+                    JOIN mdl_tool_customlang_components components ON components.id = strings.componentid
+                    WHERE components.name = "block_exacomp"
+                        AND strings.lang = ?
+			            AND strings.stringid LIKE "dakora_%"
+			  ', array($lang));
+        return $output;
+
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakora_get_lang_information_returns() {
+        return new external_multiple_structure (new external_single_structure(array(
+                'stringid' => new external_value(PARAM_TEXT, 'key for the lang string', VALUE_REQUIRED),
+                'master' => new external_value(PARAM_TEXT, 'lang string in the chosen language', VALUE_REQUIRED)
+                )
+        ));
+    }
+
+
+
 	/**
 	 * Returns description of method parameters
 	 *

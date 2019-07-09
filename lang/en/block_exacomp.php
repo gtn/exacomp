@@ -699,3 +699,8 @@ $string['add_competence_insert_learning_progress'] = 'To insert a new competence
 $string['delete_level_from_another_source'] = 'Content from another source. These can only be deleted by the admin.';
 $string['delete_level_has_children_from_another_source'] = 'Has children from another source!';
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
+
+//Dakora strings
+$string['dakora_string1'] = 'english string1';
+$string['dakora_string2'] = 'english string2';
+$string['dakora_string3'] = 'english string3';

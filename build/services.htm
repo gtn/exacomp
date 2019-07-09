@@ -2943,6 +2943,25 @@ Returns:<pre>{
     "profileimageurl": "url null (User image profile URL - big version)",
     "exarole": "int null (1=trainer, 2=student)"
 }</pre>
+<h2>dakora_get_lang_information</h2>
+<div>Returns lang information from exacomp</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>lang</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>language</td>
+</table>
+Returns:<pre>[
+    {
+        "stringid": "text null (key for the lang string)",
+        "master": "text null (lang string in the chosen language)"
+    },
+    "..."
+]</pre>
 <h2>dakora_create_blocking_event</h2>
 <div>create a blocking event
 Create a new blocking event</div>

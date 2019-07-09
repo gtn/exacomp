@@ -2482,6 +2482,20 @@ return [
     'module_used_availabilitycondition_competences' => [
         'Grant related exabis competencies when condition is met',
         'Grant related exabis competencies when condition is met',
+    ],
+
+    //Dakora strings
+    'dakora_string1' => [
+        'deutscher string1',
+        'english string1'
+    ],
+    'dakora_string2' => [
+        'deutscher string2',
+        'english string2'
+    ],
+    'dakora_string3' => [
+        'deutscher string3',
+        'english string3'
     ]
 
 ];
