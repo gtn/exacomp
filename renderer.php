@@ -6116,11 +6116,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$rows[] = [html_writer::span(block_exacomp_get_string('subject_singular'), 'exabis_comp_top_name'), $cellText];
 
-
-
-
         if ($edit) {
-            $cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->groupcategory : '', 'name' => 'groupcategory'));
+            $cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->groupcategory : '', 'name' => 'groupcategory', 'list' => "dlist"));
+
+//            var_dump('2');
+//            die;
+
+            //Create datlist for the existing categories
+            $groupcategories = block_exacomp_get_crosssubject_groupcategories();
+            $datalist  = html_writer::start_tag('datalist', array('id' => 'dlist', 'display' => 'none'));
+            foreach($groupcategories as $groupcategory){
+                $datalist .= html_writer::empty_tag('option',  array('value'=>$groupcategory->groupcategory));
+            }
+            $datalist .= html_writer::end_tag('datalist');
+            $cellText .= $datalist;
         } else {
             $cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->groupcategory : '');
         }
@@ -6131,11 +6140,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 
+
+
+
+
 		if ($edit) {
 			$cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->description : '', 'name' => 'description'));
 		} else {
 			$cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->description : '');
 		}
+
 
 		$rows[] = [html_writer::span(block_exacomp_get_string('description'), 'exabis_comp_top_name'), $cellText];
 

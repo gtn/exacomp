@@ -6003,13 +6003,24 @@ function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects() {
 
 
 
-function block_exacomp_get_crosssubject_groupcategories($subjectid){
+function block_exacomp_get_crosssubject_groupcategories($subjectid=-1){
     global $DB;
-    $groupcategories = $DB->get_records_sql('
+
+    //get kategories of all subjects
+    if($subjectid == -1){
+        $groupcategories = $DB->get_records_sql('
+			SELECT DISTINCT groupcategory
+			FROM {'.BLOCK_EXACOMP_DB_CROSSSUBJECTS.'}
+			WHERE courseid=0
+            ORDER BY groupcategory');
+    }else{
+        $groupcategories = $DB->get_records_sql('
 			SELECT DISTINCT groupcategory
 			FROM {'.BLOCK_EXACOMP_DB_CROSSSUBJECTS.'}
 			WHERE subjectid=? AND courseid=0
             ORDER BY groupcategory', [$subjectid]);
+    }
+
 
     return $groupcategories;
 }
