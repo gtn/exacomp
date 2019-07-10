@@ -1531,6 +1531,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	}
 
 
+
 	$sql = '
 		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
@@ -1548,12 +1549,15 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		';
     //ORDER BY t.sorting, n.numb, n.sorting, d.sorting
 
+
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
+
+    //here a lot of time is lost rw
 	foreach ($descriptors as $descriptor) {
 		if ($include_childs) {
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
+            $descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 			$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 		}
 		/*
@@ -1572,6 +1576,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		}
 		*/
 	}
+
 
 	return block_exacomp_sort_items($descriptors, ['niveau_' => BLOCK_EXACOMP_DB_NIVEAUS, BLOCK_EXACOMP_DB_DESCRIPTORS]);
 }
@@ -1717,7 +1722,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
     $filtered_examples = array();
     if ($filteredtaxonomies && is_array($filteredtaxonomies) &&
             !in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) {
-        $filtered_taxonomies = implode(",", $filteredtaxonomies);
+//        $filtered_taxonomies = implode(",", $filteredtaxonomies); //unused
 
         foreach ($examples as $example) {
             if ($example->taxonomies) {
@@ -1888,6 +1893,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	}
 
+
+
 	$selectedTopic = null;
 	if ($topicid && $calledfromoverview) {
 		$selectedTopic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid));
@@ -1924,6 +1931,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	} else {
 		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors, 0, $showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
 	}
+
+
 
 	foreach ($allDescriptors as $descriptor) {
 
@@ -1972,6 +1981,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	foreach ($subjects as $subject) {
 		block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
 	}
+
 
 	return block_exacomp\subject::create_objects($subjects);
 }
@@ -5544,6 +5554,8 @@ function block_exacomp_add_days($date, $days) {
 function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false) {
 	//get all subjects, topics, descriptors and examples
 	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
+
+
 
 	// unset all descriptors, topics and subjects that do not contain the example descriptors
 	foreach ($tree as $skey => $subject) {

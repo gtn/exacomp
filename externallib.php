@@ -2881,6 +2881,7 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 		}
 
+
 		return static::dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, false);
 	}
 
@@ -8607,7 +8608,7 @@ class block_exacomp_external extends external_api {
 			static::require_can_access_course_user($courseid, $userid);
 		}
 
-		$coursesettings = block_exacomp_get_settings_by_course($courseid);
+//		$coursesettings = block_exacomp_get_settings_by_course($courseid); //never used
 
 		$showexamples = true;
 
@@ -8660,7 +8661,7 @@ class block_exacomp_external extends external_api {
 
 			foreach ($parent_descriptor->examples as $example) {
 // 			    var_dump($example);
-			    $example_return->tax = "A";
+//			    $example_return->tax = "A"; //cannot be exacuted
 				$example_return = new stdClass();
 				$example_return->exampleid = $example->id;
 				$example_return->exampletitle = static::custom_htmltrim($example->title);
@@ -8692,11 +8693,15 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course($courseid);
 
+
+
 		//TODO if added for 1 student -> mind visibility for this student
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
 		//TODO, finish this to distinguish between groups, students and forall
 		if($groupid != -1) $userid = 0;
+
+
 
 		$topics_return = array();
 		foreach ($tree as $subject) {
@@ -8737,6 +8742,7 @@ class block_exacomp_external extends external_api {
 		}
 
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+
 
 		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 
@@ -8782,6 +8788,7 @@ class block_exacomp_external extends external_api {
 				}
 			}
 		}
+
 
 		usort($descriptors_return, "static::cmp_niveausort");
 
