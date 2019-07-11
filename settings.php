@@ -966,6 +966,9 @@ $settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_asse
 $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign',
         block_exacomp_get_string('block_exacomp_external_trainer_assign_head'),
         block_exacomp_get_string('block_exacomp_external_trainer_assign_body'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/new_app_login',
+        block_exacomp_get_string('settings_new_app_login'),
+        block_exacomp_get_string('settings_new_app_login_description'), 0));
 
 // Performance (configuration for performance issues).
 $settings->add(new admin_setting_heading('exacomp/heading_performance',
