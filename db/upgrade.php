@@ -3301,7 +3301,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
     if ($oldversion < 2019070500) {
         $table = new xmldb_table('block_exacompcrosssubjects');
-        $field = new xmldb_field('sortcategory', XMLDB_TYPE_TEXT, '1333', null, null, null);
+        $field = new xmldb_field('groupcategory', XMLDB_TYPE_TEXT, '1333', null, null, null);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
