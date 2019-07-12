@@ -1578,9 +1578,10 @@ class block_exacomp_external extends external_api {
 
 		$example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
 
-        $fileitemids = explode(',', $fileitemids);
-		if ($fileitemids) {
-		    foreach ($fileitemids as $fileitemid){
+
+        if ($fileitemids != '') {
+            $fileitemids = explode(',', $fileitemids);
+            foreach ($fileitemids as $fileitemid){
                 $context = context_user::instance($USER->id);
                 $fs = get_file_storage();
 
@@ -1602,9 +1603,10 @@ class block_exacomp_external extends external_api {
                 ), $file);
                 $file->delete();
             }
-		}
+        }
 
-		if ($solutionfileitemid) {
+
+		if ($solutionfileitemid != 0) {
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 
