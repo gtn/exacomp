@@ -56,6 +56,16 @@ function block_exacomp_get_login_data() {
 	return $data;
 }
 
+function block_exacomp_logout() {
+	$authsequence = get_enabled_auth_plugins(); // auths, in sequence
+	foreach($authsequence as $authname) {
+	    $authplugin = get_auth_plugin($authname);
+	    $authplugin->logoutpage_hook();
+	}
+
+	require_logout();
+}
+
 // Allow CORS requests.
 header('Access-Control-Allow-Origin: *');
 
@@ -70,7 +80,7 @@ if ($action == 'info') {
 	$info = array(
 		'version' => $info->versiondb,
 		'release' => $info->release,
-		'login_method' => 'moodle_frame',
+		'login_method' => get_config('exacomp', 'new_app_login') ? 'moodle_frame' : '',
 	);
 
 	header('Content-Type: application/json');
@@ -79,7 +89,8 @@ if ($action == 'info') {
 }
 
 if ($action == 'logout') {
-	require_logout();
+	block_exacomp_logout();
+
 	redirect(str_replace('action=logout', '', $_SERVER['REQUEST_URI']));
 }
 
@@ -121,6 +132,8 @@ if (preg_match('!'.preg_quote($CFG->wwwroot, '!').'/login!', @$_SERVER['HTTP_REF
 	echo '<div style="width: 100%; text-align: center; padding-top: 100px;">Login erfolgreich</div>';
 
 	echo $OUTPUT->footer();
+
+	block_exacomp_logout();
 
 	exit;
 } else {

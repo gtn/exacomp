@@ -380,6 +380,14 @@ return [
         'Apps-Einstellungen',
         'Configuration for apps',
     ],
+	'settings_new_app_login' => [
+		'Neuen App-Login verwenden',
+		'Use new App-Login',
+	],
+	'settings_new_app_login_description' => [
+		'Der neue App-Login erlaubt Benutzern sich mit allen aktivierten Moodle Login-Plugins einzulogen. Diese Einstellung ist nicht mit dem Gamification Plugin kompatibel.',
+		'The new App-Login allows users to login with all activated Moodle Login plugins. This setting is not compatible with the gamification plugin.',
+	],
     'settings_heading_performance' => [
         'Performance',
         'Performance',
