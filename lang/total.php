@@ -1589,6 +1589,10 @@ return [
         'Neuer Kompetenzbereich',
         'New topic'
     ],
+    'create_new_area' => [
+        'Neuer Bereich',
+        'New area'
+    ],
     'really_delete' => [
         'Wirklich löschen?',
         'Really to delete?'
@@ -1897,6 +1901,10 @@ return [
     'groupcategory' => [
         'Kategorie',
         'Category'
+    ],
+    'new_column' => [
+        'neue Spalte',
+        'new column'
     ],
 
 

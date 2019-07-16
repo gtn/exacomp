@@ -301,7 +301,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 				// only if editing and if subject was added by teacher
-				$content .= html_writer::tag('li', html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_get_string('create_new_topic'), array(
+				$content .= html_writer::tag('li', html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_get_string('create_new_area'), array(
 					'exa-type' => 'iframe-popup',
 				)));
 			}
@@ -358,7 +358,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($this->is_edit_mode()) {
 			// add niveau button
 			// nur erlauben, wenn auch ein einzelner topic ausgewählt wurde
-			$addNiveauContent = "<span class=\"niveau-button-add\"><img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /></span>&nbsp;".'<span class="title">'.block_exacomp_trans(['de:Neuer Lernfortschritt', 'en:new level']).'</span>';
+			$addNiveauContent = "<span class=\"niveau-button-add\"><img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /></span>&nbsp;".'<span class="title">'.block_exacomp_trans(['de:Neue Spalte', 'en:new column']).'</span>';
 
 			if ($selectedTopic) {
 				$content .= html_writer::tag('li',

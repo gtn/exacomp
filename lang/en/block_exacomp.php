@@ -454,6 +454,7 @@ $string['statistic_type_example'] = 'Change to example statistics';
 $string['reports'] = 'Type of report';
 $string['newer_grading_tooltip'] = 'Grading may not be up to date. </br> A childdescriptor has been graded.';
 $string['create_new_topic'] = 'New topic';
+$string['create_new_area'] = 'New area';
 $string['really_delete'] = 'Really to delete?';
 $string['add_niveau'] = 'Add niveau';
 $string['delete_niveau'] = 'Delete niveau';
@@ -539,6 +540,7 @@ $string['de:Vorlage verwenden'] = 'Use Draft';
 $string['crosssubject_files'] = 'crosssubject files';
 $string['new_niveau'] = 'New learning progress';
 $string['groupcategory'] = 'Category';
+$string['new_column'] = 'new column';
 
 
 // === Associations ===

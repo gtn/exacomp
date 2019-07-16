@@ -460,6 +460,7 @@ $string['statistic_type_example'] = 'Wechsel zur Statistik der Aufgaben';
 $string['reports'] = 'Berichte';
 $string['newer_grading_tooltip'] = 'Überprüfen Sie die Beurteilung, da weitere Teilkompetenzen geändert wurden.';
 $string['create_new_topic'] = 'Neuer Kompetenzbereich';
+$string['create_new_area'] = 'Neuer Bereich';
 $string['really_delete'] = 'Wirklich löschen?';
 $string['add_niveau'] = 'Neuen Lernfortschritt hinzufügen';
 $string['delete_niveau'] = 'Löschen hinzufügen';
@@ -545,6 +546,7 @@ $string['de:Vorlage verwenden'] = '';
 $string['crosssubject_files'] = 'Materialien';
 $string['new_niveau'] = 'neuer Lernfortschritt';
 $string['groupcategory'] = 'Kategorie';
+$string['new_column'] = 'neue Spalte';
 
 
 // === Associations ===
