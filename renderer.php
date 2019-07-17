@@ -7028,6 +7028,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				</div>
 			</div>
 			<?php
+            //Until here: display settings, type of report
+
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'report_subject');
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'report_competencefield');
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT, 'descriptor');
@@ -7146,6 +7148,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$input_filter = (array)@$filter[$input_type];
+//		var_dump($filter);
+//        die;
 
 		?>
 		<div class="filter-group">
@@ -7162,6 +7166,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
             </h3>
 			<div class="filter-group-body">
 				<?php
+//                var_dump($inputs);
+//                die;
+                    if(!empty($inputs[active])){
+                        echo '<div class="filter-input-active">
+                                <span class="filter-title">'."show this".' :</span>';
+                        echo '<label>
+                                                    <input type="checkbox" name="filter['.$input_type.'][teacherevaluation][]" value="'.s($key).'" '.$checked.'/>  '.$value.'
+                                              </label>';
+                        echo '</div>';
+                    }
+
                     if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
 					    echo '<div class="filter-input-difficulty-level">
                             <span class="filter-title">'.block_exacomp_get_string('competence_grid_niveau').':</span>';

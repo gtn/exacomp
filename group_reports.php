@@ -54,12 +54,15 @@ block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
 
 $output = block_exacomp_get_renderer();
 
+
 if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
     $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
     $filter = $wsDataHandler->getParam('report_filter');
 }else{
+    //geht hier rein
     $filter = block_exacomp_group_reports_get_filter($reportType);
+
 }
    
     // before all output
@@ -80,8 +83,9 @@ if (optional_param('print', false, PARAM_BOOL)) {
         }
     }
     $PAGE->set_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => $reportType));
+
     $output = block_exacomp_get_renderer();
-    
+
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
     $PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
@@ -153,7 +157,9 @@ if (optional_param('print', false, PARAM_BOOL)) {
         $settings_subtree = array();
         $settings_subtree[] = new tabobject('tab_teacher_report_general', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType'=>'general')), block_exacomp_get_string("tab_teacher_report_general"), null, true);
         $settings_subtree[] = new tabobject('tab_teacher_report_annex', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'annex')), block_exacomp_get_string("tab_teacher_report_annex"), null, true);
+
         echo $OUTPUT->tabtree($settings_subtree, $page_identifier);
+
     ?>
     	<div class="block">
             <?php
@@ -163,7 +169,9 @@ if (optional_param('print', false, PARAM_BOOL)) {
                     echo $output->group_report_annex_filters('exacomp', $filter, '', $extra, $courseid);
                     break;
                 default:
+
                     echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid);
+
             }
             ?>
     	</div>
@@ -176,11 +184,13 @@ if (optional_param('print', false, PARAM_BOOL)) {
                 block_exacomp_group_reports_annex_result($filter);
                 break;
             default:
+                var_dump($filter);
+                die;
                 block_exacomp_group_reports_result($filter, $isPdf);
         }
     }
-    
-    
+
+
     echo $output->footer();
 
 

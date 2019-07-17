@@ -9183,6 +9183,7 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
     if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
         @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
     }
+
     if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
         @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
     }
@@ -9203,6 +9204,7 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
     $filter = block_exacomp_array_filter_recursive($filter, function($value) {
         return ($value !== null && $value !== false && $value !== '');
     });
+
     return $filter;
  }
 
