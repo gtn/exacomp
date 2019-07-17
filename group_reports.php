@@ -184,8 +184,8 @@ if (optional_param('print', false, PARAM_BOOL)) {
                 block_exacomp_group_reports_annex_result($filter);
                 break;
             default:
-                var_dump($filter);
-                die;
+//                var_dump($filter);
+//                die;
                 block_exacomp_group_reports_result($filter, $isPdf);
         }
     }
