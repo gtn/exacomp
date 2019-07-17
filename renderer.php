@@ -7161,7 +7161,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     echo 'checked="checked"';
 					            }
                             ?>
-                           class="filter-group-checkbox"/> <?= block_exacomp_get_string($titleid) ?>
+                           class="filter-group-checkbox filter-group-checkbox-arrow rg2-arrow"/> <?= block_exacomp_get_string($titleid) ?>
+                    <label></label>
                 </label>
             </h3>
 			<div class="filter-group-body">
