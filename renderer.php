@@ -7170,10 +7170,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                die;
                     if(!empty($inputs[active])){
                         echo '<div class="filter-input-active">
-                                <span class="filter-title">'."show this".' :</span>';
+                                <span class="filter-title">'."active(show them)".' :</span>';
                         echo '<label>
-                                                    <input type="checkbox" name="filter['.$input_type.'][teacherevaluation][]" value="'.s($key).'" '.$checked.'/>  '.$value.'
-                                              </label>';
+                                  <input type="checkbox" name="filter['.$input_type.'][active]"';
+                                        if (@$input_filter['active']) {
+                                            echo 'checked="checked"';
+                                        }
+                        echo  '</label>';
                         echo '</div>';
                     }
 

@@ -9149,7 +9149,10 @@ function block_exacomp_format_eval_value($value) {
 }
 
 function block_exacomp_group_reports_get_filter($reportType = 'general') {
+//    var_dump(@$_REQUEST); die;
     $filter = (array)@$_REQUEST['filter'];
+
+
 
     switch ($reportType) {
         case 'annex':
@@ -9179,26 +9182,26 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
                 $filter['type'] = 'students';
             }
     }
-    // active means, we also have to loop over those items
-    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
-        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
-    }
-
-    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
-        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
-    }
-    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
-        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
-    }
-    //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
-    //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
-    //}
-    if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
-        @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
-    }
-    if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
-        @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
-    }
+    // active means, we also have to loop over those items.... visible does not mean active, rework, 17.07.2019 RW
+//    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+//    }
+//
+//    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+//    }
+//    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+//    }
+//    //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+//    //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
+//    //}
+//    if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+//    }
+//    if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+//    }
 
     // removes all NULL, FALSE and Empty Strings but leaves 0 (zero) values
     $filter = block_exacomp_array_filter_recursive($filter, function($value) {
@@ -9254,6 +9257,7 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
 }
 
 function block_exacomp_group_reports_result($filter, $isPdf = false) {
+
 	$content = block_exacomp_group_reports_return_result($filter, $isPdf);
 	if ($isPdf) {
         \block_exacomp\printer::group_report($content);
@@ -9266,6 +9270,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 	$courseid = g::$COURSE->id;
 	$students = block_exacomp_get_students_by_course($courseid);
 	$html = '';
+
 
 	if ($filter['type'] == 'students') {
 		$has_output = false;
@@ -9280,6 +9285,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
  		}
  		$i = 0;
 		foreach ($students as $student) {
+
 		    $i++;
 			$studentid = $student->id;
 

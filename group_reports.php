@@ -62,13 +62,13 @@ if (optional_param('print', false, PARAM_BOOL)) {
 }else{
     //geht hier rein
     $filter = block_exacomp_group_reports_get_filter($reportType);
-
 }
    
     // before all output
 
     if ($action == 'search') {
         $output->print = true;
+
         switch ($reportType) {
             case 'general':
                 if ($isPdf) {
