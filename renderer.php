@@ -5691,9 +5691,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     break;
                                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                                     $value = @$teacherEval->value === null ? -1 : @$teacherEval->value;
-                                    $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, true, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+                                    $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
                                     if (isset($teacher_eval_items[$value])) {
-                                        $addtext = $teacher_eval_items[$value];
+                                        $addtext =  $teacher_eval_items[$value];
                                     }
                                     break;
                                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
@@ -5705,7 +5705,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     }
                                     break;
                             }
-                            $cell->text .= $addtext;
+                            $cell->text .= " ".$addtext;
 							$cell->attributes['exa-timestamp'] = $teacherEval->timestamp;
                             $cell->attributes['class'] = 'col-eval';
                             $cell->attributes['align'] = 'center';
