@@ -4218,6 +4218,7 @@ class block_exacomp_external extends external_api {
 			'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
 		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
 		)));
 	}
 
@@ -4287,6 +4288,7 @@ class block_exacomp_external extends external_api {
 			'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
 			'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
 			'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
+            'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
 		)));
 	}
 
@@ -4530,6 +4532,7 @@ class block_exacomp_external extends external_api {
 			'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
 		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
 		)));
 	}
 
