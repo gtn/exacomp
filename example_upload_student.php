@@ -78,14 +78,14 @@ $form = new block_exacomp_example_upload_student_form($_SERVER['REQUEST_URI'], a
 		"solution"=>($solution = block_exacomp_get_file_url($example, 'example_solution')) ? $solution : null) );
 
 if($formdata = $form->get_data()) {
-	
+
 	$newExample = new stdClass();
 	$newExample->title = $formdata->title;
 	$newExample->description = $formdata->description;
 	$newExample->creatorid = $USER->id;
 	$newExample->externalurl = $formdata->externalurl;
 	$newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
-	
+
 	if($formdata->exampleid == 0)
 		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
 	else {
@@ -103,7 +103,7 @@ if($formdata = $form->get_data()) {
 				$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
 		}
 	}
-	
+
 	// save file
    require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 
@@ -111,7 +111,7 @@ if($formdata = $form->get_data()) {
 		$type = 'file';
 	else
 		$type = 'url';
-	
+
    //store item in the right portfolio category
 	$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
 	if(!$course_category) {
@@ -123,9 +123,9 @@ if($formdata = $form->get_data()) {
 	if(!$subject_category) {
 		//$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
 	}
-	
+
 	$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->title,'url'=>$formdata->externalurl,'intro'=>$formdata->description,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id));
-	
+
 	{
 		// autogenerate a published view for the new item
 		$dbView = new stdClass();
@@ -138,15 +138,15 @@ if($formdata = $form->get_data()) {
 			$hash = substr(md5(microtime()), 3, 8);
 		} while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
 		$dbView->hash = $hash;
-		
+
 		$dbView->id = $DB->insert_record('block_exaportview', $dbView);
 		//share the view with teachers
 		$teachers = block_exaport_share_view_to_teachers($dbView->id, $courseid);
-		
+
 		//add item to view
 		$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
 	}
-	
+
 	if ($filename = $form->get_new_filename('file')) {
 		$context = context_user::instance($USER->id);
 		try {
@@ -155,11 +155,11 @@ if($formdata = $form->get_data()) {
 			//some problem with the file occured
 		}
 	}
-	
+
 	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
-	
+
 	// add to weekly schedule
-	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);	
+	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid,null,null,-1,-1,'S');
 	block_exacomp_settstamp();
 	echo $output->popup_close_and_reload();
 	exit;

@@ -3302,7 +3302,11 @@ class block_exacomp_external extends external_api {
 // 		}
 		if(block_exacomp_is_student($courseid)){
 		    $userid = $USER->id;
-		}
+		    $source = 'S';
+		}else{
+		    $source = 'T';
+        }
+
 
 		static::require_can_access_course_user($courseid, $creatorid);
 		static::require_can_access_course_user($courseid, $userid);
@@ -3311,11 +3315,12 @@ class block_exacomp_external extends external_api {
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 
 		if ($forall) {
+            $source = 'C';
  			$students = block_exacomp_get_students_by_course($courseid);
             //Add to all the students
 			foreach ($students as $student) {
 			    if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
-			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
+			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source);
 				}
 			}
 		} else {
@@ -3323,12 +3328,12 @@ class block_exacomp_external extends external_api {
 		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		        foreach ($students as $student) {
 		            if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
-		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
+		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source);
 		            }
 		        }
 		    }else{ // add for single student
 		        if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
-		            block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid);
+		            block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source);
 		        }
 		    }
 		}
@@ -5428,14 +5433,14 @@ class block_exacomp_external extends external_api {
 		$groups = json_decode($groups);
 
 		foreach ($examples as $example) {
-		    foreach ($groups as $group){
-		        $students = block_exacomp_groups_get_members($courseid,$groupid);
+		    foreach ($groups as $groupid){
+                $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
 		        foreach ($groupmembers as $member){
 		            block_exacomp_add_example_to_schedule($member->id,$example,$creatorid,$courseid);
 		        }
 		    }
 			foreach ($students as $student) {
-				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid);
+				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid,null,null,-1,-1,'C');
 			}
 		}
 
