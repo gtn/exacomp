@@ -5380,7 +5380,7 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
  * @param int $ethema_issubcategory
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null) {
 	global $USER, $DB;
 
 // 	var_dump("start");
