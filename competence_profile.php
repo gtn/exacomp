@@ -44,6 +44,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
     if (!$isTeacher) {
         $studentid = $USER->id;
+
         $html_tables[] = $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
     } else {
         $html_content = '';
@@ -100,9 +101,9 @@ if (!$isTeacher) {
 	$studentid = $USER->id;
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
 } else {
-	
+
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
-	
+
 	echo '<div style="padding-bottom: 15px;">';
 	if ($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 		echo html_writer::tag("p", block_exacomp_get_string("select_student"));
@@ -110,16 +111,16 @@ if (!$isTeacher) {
 		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
 		echo $output->footer();
-		die;
+
 	} else {
 		//check permission for viewing students profile
 		if (!array_key_exists($studentid, $coursestudents))
 			print_error("nopermissions","","","Show student profile");
-		
+
 		//print student selector
 		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
-		
+
 		//print date range picker
 		echo block_exacomp_get_string("choosedaterange");
 		if ($periods = block_exacomp_get_exastud_periods_current_and_past_periods()) {
@@ -165,13 +166,40 @@ $user_courses = array();
 
 foreach($possible_courses as $course){
 	if(isset($profile_settings->exacomp[$course->id])){
-		$user_courses[$course->id] = $course; 
+		$user_courses[$course->id] = $course;
 	}
 }
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1) {
     echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
 }
+
+//Add crosssubjects
+$crosssubjects = array();
+foreach($user_courses as $course){
+    $crosssubjects[] = block_exacomp_get_cross_subjects_by_course($course->id);
+}
+
+foreach($crosssubjects as $crosssubjectsOfCourse) {
+    foreach($crosssubjectsOfCourse as $crosssubj){
+        //if selected
+
+
+        if(block_exacomp_student_crosssubj($crosssubj->id,$studentid)){
+//            var_dump($crosssubj);
+//            var_dump($studentid);
+//            die;
+            //maybe find solution with better perfocrmance, without laoding course again
+            $courseOfCrosssubj = $DB->get_record('course', array('id' => $crosssubj->courseid));
+//            var_dump($courseOfCrosssubj);
+//            die;
+
+            echo $output->competence_profile_crosssubject($crosssubj,$student,true,block_exacomp_get_grading_scheme($crosssubj->id),$crosssubj);
+        }
+    }
+}
+//var_dump($profile_settings);
+//die;
 
 foreach($user_courses as $course) {
 	//if selected

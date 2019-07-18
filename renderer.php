@@ -5031,9 +5031,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $this->notification($message);
 	}
 
+    function competence_profile_crosssubject($course, $student, $showall = true, $max_scheme = 3, $crosssubj = null) {
+
+    }
+
 	function competence_profile_course($course, $student, $showall = true, $max_scheme = 3) {
-		$competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+
+	    $competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+
+
+
+
 		$content = '';
+
+//        echo "HEEEEEEEEEEEEEEEERE";
+//        die;
 
 		foreach ($competence_tree as $subject) {
 			$content .= html_writer::tag("h4", $subject->title, array("class" => "competence_profile_coursetitle"));
