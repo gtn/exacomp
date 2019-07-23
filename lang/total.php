@@ -2500,6 +2500,13 @@ return [
         'Grant related exabis competencies when condition is met',
     ],
 
+    'use_isglobal' => [
+        'Überfachliches Raster',
+        'Global Grid',
+    ],
+
+
+
     //Dakora strings
     'dakora_string1' => [
         'deutscher string1',

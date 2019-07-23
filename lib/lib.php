@@ -1497,6 +1497,10 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	}
 	$settings->work_with_students = !$settings->nostudents;
 
+    if (empty($settings->isglobal)) {
+        $settings->isglobal = 0;
+    }
+
 	if (!isset($settings->uses_activities)) {
 		$settings->uses_activities = 0;
 	}

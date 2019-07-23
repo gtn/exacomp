@@ -289,6 +289,7 @@
         <FIELD NAME="filteredtaxonomies" TYPE="char" LENGTH="1333" NOTNULL="true" DEFAULT="[100000000]" SEQUENCE="false" COMMENT="json encoded tax filter"/>
         <FIELD NAME="nostudents" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="istemplate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

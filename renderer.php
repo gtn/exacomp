@@ -4266,12 +4266,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents == 1, '&nbsp;'.block_exacomp_get_string('usenostudents'))
 			.html_writer::empty_tag('br');
 
+        $input_isglobal = html_writer::checkbox('isglobal', 1, $settings->isglobal == 1, '&nbsp;'.block_exacomp_get_string('use_isglobal'))
+            .html_writer::empty_tag('br');
+
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-default'));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-			$input_grading.$input_activities.$input_descriptors./*$input_examples.*/$hiddenaction.$input_nostudents.$input_submit,
+			$input_grading.$input_activities.$input_descriptors./*$input_examples.*/$hiddenaction.$input_nostudents.$input_isglobal.$input_submit,
 			array('action' => 'edit_course.php?courseid='.$courseid, 'method' => 'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div", $header.$div, array("id" => "exabis_competences_block"));
