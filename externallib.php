@@ -6593,8 +6593,8 @@ class block_exacomp_external extends external_api {
             ));
 
         $output = $DB->get_records_sql('SELECT strings.stringid, strings.master
-                    FROM mdl_tool_customlang strings
-                    JOIN mdl_tool_customlang_components components ON components.id = strings.componentid
+                    FROM {tool_customlang} strings
+                    JOIN {tool_customlang_components} components ON components.id = strings.componentid
                     WHERE components.name = "block_exacomp"
                         AND strings.lang = ?
 			            AND strings.stringid LIKE "dakora_%"
