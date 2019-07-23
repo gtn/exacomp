@@ -10542,12 +10542,12 @@ function block_exacomp_is_autograding_example($exampleid) {
 function block_exacomp_is_block_used_by_student($blockname,$studentid){
     global $DB;
 
-    $query = 'SELECT mdl_course.id as courseID, mdl_course.fullname, mdl_course.shortname, mdl_block_instances.blockname
-	            FROM (mdl_context mdl_context
-	                INNER JOIN mdl_block_instances mdl_block_instances  ON (mdl_context.id = mdl_block_instances.parentcontextid))
-	                INNER JOIN mdl_course mdl_course                    ON (mdl_course.id = mdl_context.instanceid)
-	            WHERE     (mdl_block_instances.blockname = ?)      AND (mdl_context.contextlevel = 50) 
-	                        AND mdl_course.id IN ('.join(',', block_exacomp_get_courses_of_student($studentid)).')'; //50 means that the instanceid stands for the courseid
+    $query = 'SELECT course.id as courseID, course.fullname, course.shortname, block_instances.blockname
+	            FROM ({context} context
+	                INNER JOIN {block_instances} block_instances  ON (context.id = block_instances.parentcontextid))
+	                INNER JOIN {course} course                    ON (course.id = context.instanceid)
+	            WHERE     (block_instances.blockname = ?)      AND (context.contextlevel = 50) 
+	                        AND course.id IN ('.join(',', block_exacomp_get_courses_of_student($studentid)).')'; //50 means that the instanceid stands for the courseid
 
     $condition = array($blockname);
 
@@ -10562,9 +10562,9 @@ function block_exacomp_is_block_used_by_student($blockname,$studentid){
 function block_exacomp_update_globalgradings_text($descriptorid,$studentid){
     global $DB;
 
-    $query = 'SELECT mdl_user.username, compuser.*
-                FROM `mdl_block_exacompcompuser` compuser
-                INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id) 
+    $query = 'SELECT user.username, compuser.*
+                FROM {block_exacompcompuser} compuser
+                INNER JOIN {user} user ON (compuser.reviewerid = user.id) 
                 WHERE compuser.compid = ? AND compuser.userid = ?';
 
     /*
