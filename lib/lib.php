@@ -1930,6 +1930,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		$allDescriptors = array();
 	} else {
 		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors, 0, $showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
+//		var_dump($allDescriptors);
+//		die;
 	}
 
 
@@ -1981,7 +1983,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	foreach ($subjects as $subject) {
 		block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
 	}
-
 
 	return block_exacomp\subject::create_objects($subjects);
 }

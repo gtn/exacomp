@@ -64,6 +64,7 @@
         <FIELD NAME="infolink" TYPE="char" LENGTH="400" NOTNULL="false" SEQUENCE="false" COMMENT="link to external description for comp grid"/>
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="is the subject a global subject"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -264,6 +265,7 @@
         <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="additional info value"/>
         <FIELD NAME="evalniveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="link to evaluation niveau (eval_niveau)"/>
         <FIELD NAME="gradingisold" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="shows if the grading is old / if there exists a newer grading in one of the childcompetences"/>
+        <FIELD NAME="globalgradings" TYPE="int" LENGTH="400" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriprto/competence"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
