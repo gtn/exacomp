@@ -2687,6 +2687,7 @@ function block_exacomp_is_configured($courseid = 0) {
 function block_exacomp_save_coursesettings($courseid, $settings) {
 	global $DB;
 
+
 	$old_course_settings = block_exacomp_get_settings_by_course($courseid);
 	$DB->delete_records(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
 
@@ -7258,6 +7259,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$record->reviewerid = $USER->id;
     		$record->additionalinfo = $additionalinfo;
     		$record->value = $value;
+//          $record->globalgradings = $record->globalgradings."A__";
 
     		if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $record);
@@ -7279,6 +7281,8 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$insert->value = $value;
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}
+
+        block_exacomp_update_globalgradings_text($descriptorid,$studentid);
     	//set the gradingisold flag of the parentdescriptor(if there is one) to "1"
     	block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
 	}
@@ -8773,6 +8777,7 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 	unset($data['userid']);
 	unset($data['comptype']);
 	unset($data['compid']);
+
 
 	if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
 		if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
@@ -10535,7 +10540,7 @@ function block_exacomp_is_autograding_example($exampleid) {
 }
 
 function block_exacomp_is_block_used_by_student($blockname,$studentid){
-    global $CFG, $DB;
+    global $DB;
 
     $query = 'SELECT mdl_course.id as courseID, mdl_course.fullname, mdl_course.shortname, mdl_block_instances.blockname
 	            FROM (mdl_context mdl_context
@@ -10553,5 +10558,37 @@ function block_exacomp_is_block_used_by_student($blockname,$studentid){
     }
     return true;
 }
+
+function block_exacomp_update_globalgradings_text($descriptorid,$studentid){
+    global $DB;
+
+    $query = 'SELECT mdl_user.username, compuser.*
+                FROM `mdl_block_exacompcompuser` compuser
+                INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id) 
+                WHERE compuser.compid = ? AND compuser.userid = ?';
+
+    /*
+SELECT mdl_user.username, compuser.value
+FROM `mdl_block_exacompcompuser` compuser
+INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id)
+WHERE compuser.compid = 1 AND compuser.userid = 4
+     */
+
+    $records = $DB->get_records_sql($query, array($descriptorid,$studentid));
+    $globalgradings_text = "";
+    foreach($records as $record){
+        $globalgradings_text .= $record->username.": ".$record->value." ";
+    }
+
+    foreach($records as $record){
+        $record->globalgradings = $globalgradings_text;
+        $DB->update_record("block_exacompcompuser", $record);
+    }
+
+    return $globalgradings_text;
+}
+
+
+
 
 
