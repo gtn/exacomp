@@ -1503,6 +1503,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }*/
                         }
 
+
 						if ($showevaluation) {
 							$subjectRow->cells[] = $evaluation_cell;
 						}
@@ -1562,6 +1563,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 
 						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
+
+                        //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
+                        //TODO check if teacher has the flag
+                        if($subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->subjects->globalgradings[$subject->id] != ""){
+//                            echo "ay";
+//                            var_dump($student->subjects->globalgradings[$subject->id]);
+//                            die;
+                            //Add the other globalgradings as tooltipp
+                            $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id, 'title' => $student->subjects->globalgradings[$subject->id]));
+                            $self_evaluation_cell->text .= $globalgradings;
+                        }
 
 						$subjectRow->cells[] = $self_evaluation_cell;
 					} else {
@@ -1769,7 +1781,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $crosssubjid = 0, $isEditingTeacher = true) {
-		global $DB, $USER;
+		global $DB, $USER, $COURSE;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 0 || $topicparam == BLOCK_EXACOMP_SHOW_ALL_TOPICS) {
 			// display topic row
@@ -1978,6 +1990,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $data->profoundness : null,
                                             ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                             }
+                            //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
+                            //TODO check if teacher has the flag
+                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->topics->globalgradings[$topic->id] != ""){
+                                //Add the other globalgradings as tooltipp
+                                $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $topic->id, 'studentid' => $student->id, 'title' => $student->topics->globalgradings[$topic->id]));
+                                $teacher_evaluation_cell->text .= $globalgradings;
+                            }
                         }
 
                         if (block_exacomp_get_assessment_topic_SelfEval() == 1) {
@@ -1994,6 +2013,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                         }
 						$student_evaluation_cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
+
+
 
 						// ICONS
 						if (isset($icontext)) {
