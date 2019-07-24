@@ -710,6 +710,7 @@ $string['delete_level_from_another_source'] = 'Importierter Kompetenzraster hat 
 $string['delete_level_has_children_from_another_source'] = 'Importierter Kompetenzraster wurde in dieser Installation weiterbearbeitet. Diese Ergänzungen werden ausgewiesen und müssen gelöscht werden, bevor der gesamte Kompetenzraster löschbar wird.';
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
 $string['use_isglobal'] = 'Überfachliches Raster';
+$string['globalgradings'] = 'Überfachliche Bewertungen';
 
 
 

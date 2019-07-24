@@ -704,6 +704,7 @@ $string['delete_level_from_another_source'] = 'Content from another source. Thes
 $string['delete_level_has_children_from_another_source'] = 'Has children from another source!';
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
 $string['use_isglobal'] = 'Global Grid';
+$string['globalgradings'] = 'global gradings';
 
 
 

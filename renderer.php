@@ -2076,6 +2076,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true) {
 		global $USER, $COURSE, $DB;
 
+
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
 
 		$showstudents = block_exacomp_get_studentid();
@@ -2379,7 +2380,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 
-						//student show evaluation
+
+                        //student show evaluation
                         if ((   block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) && $level == 1)
                                 || (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) && $level == 2)) {
                             switch ($data->scheme) {
@@ -2418,9 +2420,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
                                 if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
                                     //Hackable????
-                                    $gradingisoldwarning = html_writer::tag('a', '!!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
+                                    $gradingisoldwarning = html_writer::tag('a', '     !!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
                                     $teacher_evaluation_cell->text .= $gradingisoldwarning;
                                 }
+                            }
+
+                            //check if subject and course have the "isglobal" flag set
+                            //TODO check if teacher has the flag
+                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id)){
+                                //Add the other globalgradings as tooltipp
+                                $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => $student->competencies->globalgradings[$descriptor->id]));
+                                $teacher_evaluation_cell->text .= $globalgradings;
                             }
                         }
 

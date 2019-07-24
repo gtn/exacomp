@@ -2228,7 +2228,7 @@ function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
 	$user->crosssubs->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, timestamp');
 	$user->crosssubs->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, additionalinfo');
 	$user->crosssubs->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, evalniveauid');
-
+//    $user->competencies->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, globalgradings');
 	return $user;
 }
 
@@ -2248,6 +2248,7 @@ function block_exacomp_get_user_competences_by_course($user, $courseid) {
 	$user->competencies->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, timestamp');
 	$user->competencies->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, additionalinfo');
 	$user->competencies->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, evalniveauid');
+    $user->competencies->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, globalgradings');
 
 	return $user;
 }
@@ -2269,6 +2270,7 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	$user->topics->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, timestamp');
 	$user->topics->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, additionalinfo');
 	$user->topics->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, evalniveauid');
+    $user->topics->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, globalgradings');
 
 	return $user;
 }
@@ -2291,6 +2293,7 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
 	$user->subjects->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, additionalinfo');
 	$user->subjects->student_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, additionalinfo');
 	$user->subjects->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, evalniveauid');
+    $user->subjects->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, globalgradings');
 
 	return $user;
 }

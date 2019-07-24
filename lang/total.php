@@ -2499,10 +2499,13 @@ return [
         'Grant related exabis competencies when condition is met',
         'Grant related exabis competencies when condition is met',
     ],
-
     'use_isglobal' => [
         'Überfachliches Raster',
         'Global Grid',
+    ],
+    'globalgradings' => [
+        'Überfachliche Bewertungen',
+        'global gradings',
     ],
 
 
