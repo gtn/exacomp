@@ -1341,8 +1341,11 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		'reviewerid' => $USER->id,
 	]);
 
+
+
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid);
+        block_exacomp_update_globalgradings_text($compid,$userid,$comptype);
 	} else {
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 	}
@@ -7282,7 +7285,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}
 
-        block_exacomp_update_globalgradings_text($descriptorid,$studentid);
+        block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype);
     	//set the gradingisold flag of the parentdescriptor(if there is one) to "1"
     	block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
 	}
@@ -10559,22 +10562,23 @@ function block_exacomp_is_block_used_by_student($blockname,$studentid){
     return true;
 }
 
-function block_exacomp_update_globalgradings_text($descriptorid,$studentid){
+function block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype){
     global $DB;
 
-    $query = 'SELECT user.username, compuser.*
+    $query = 'SELECT compuser.*, userr.username
                 FROM {block_exacompcompuser} compuser
-                INNER JOIN {user} user ON (compuser.reviewerid = user.id) 
-                WHERE compuser.compid = ? AND compuser.userid = ?';
+                INNER JOIN `mdl_user` userr ON (compuser.reviewerid = userr.id)
+                WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
 
     /*
 SELECT mdl_user.username, compuser.value
 FROM `mdl_block_exacompcompuser` compuser
 INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id)
-WHERE compuser.compid = 1 AND compuser.userid = 4
+WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
      */
 
-    $records = $DB->get_records_sql($query, array($descriptorid,$studentid));
+    $records = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
+
     $globalgradings_text = "";
     foreach($records as $record){
         $globalgradings_text .= $record->username.": ".$record->value." ";
@@ -10585,7 +10589,7 @@ WHERE compuser.compid = 1 AND compuser.userid = 4
         $DB->update_record("block_exacompcompuser", $record);
     }
 
-    return $globalgradings_text;
+    return 1;
 }
 
 
