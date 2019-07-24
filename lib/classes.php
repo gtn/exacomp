@@ -1525,6 +1525,7 @@ class comp_eval extends db_record {
 	public $evalniveauid;
 	public $additionalinfo;
 	public $timestamp;
+    public $globalgradings;
 
 	function get_value_title() {
 		if ($this->role == BLOCK_EXACOMP_ROLE_STUDENT) {

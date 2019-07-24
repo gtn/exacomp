@@ -2425,9 +2425,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            //check if subject and course have the "isglobal" flag set
+                            //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
                             //TODO check if teacher has the flag
-                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id)){
+                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->competencies->globalgradings[$descriptor->id] != ""){
                                 //Add the other globalgradings as tooltipp
                                 $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => $student->competencies->globalgradings[$descriptor->id]));
                                 $teacher_evaluation_cell->text .= $globalgradings;
