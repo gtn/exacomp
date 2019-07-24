@@ -2425,6 +2425,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
+//                            var_dump($data->profoundness);
+//                            die;
+
                             //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
                             //TODO check if teacher has the flag
                             if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->competencies->globalgradings[$descriptor->id] != ""){

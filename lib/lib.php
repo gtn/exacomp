@@ -10582,9 +10582,11 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
     $records = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
 
+    $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
+
     $globalgradings_text = "";
     foreach($records as $record){
-        $globalgradings_text .= $record->username.": ".$record->value." ";
+        $globalgradings_text .= $record->username.": ".$scheme_values[$record->value]." ";
     }
 
     foreach($records as $record){
@@ -10592,7 +10594,7 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
         $DB->update_record("block_exacompcompuser", $record);
     }
 
-    return 1;
+    return $globalgradings_text;
 }
 
 

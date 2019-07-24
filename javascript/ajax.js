@@ -679,7 +679,7 @@
 	});
 
 	// global var hack
-	i_want_my_reload = true;
+	i_want_my_reload = false;
 
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
 		if ($(this).is('.allow-submit')) return;
