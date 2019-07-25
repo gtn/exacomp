@@ -2274,6 +2274,7 @@ function block_exacomp_get_user_competences_by_course($user, $courseid) {
 	$user->competencies->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, timestamp');
 	$user->competencies->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, additionalinfo');
 	$user->competencies->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, evalniveauid');
+    $user->competencies->gradingisold = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, gradingisold');
     $user->competencies->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, globalgradings');
 
 	return $user;
@@ -2296,6 +2297,7 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	$user->topics->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, timestamp');
 	$user->topics->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, additionalinfo');
 	$user->topics->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, evalniveauid');
+    $user->topics->gradingisold = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, gradingisold');
     $user->topics->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, globalgradings');
 
 	return $user;
@@ -7313,6 +7315,9 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}
 
+        //set the gradingisold flag of the parentdescriptor(if there is one) to "1"
+        block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
+
 
         if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
             if ($subjectid == -1) {
@@ -7324,8 +7329,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
                 block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype);
             }
         }
-    	//set the gradingisold flag of the parentdescriptor(if there is one) to "1"
-    	block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
+
 	}
 }
 
@@ -10274,7 +10278,12 @@ function block_exacomp_get_date_of_birth($userid) {
 //     die();
 
 //      $DB->execute($sql,[$compid]);
+    var_dump($courseid);
+    var_dump($compid);
+    var_dump($studentid);
+    var_dump($role);
 
+//    die;
      //Find the id of the parent of the competence that has been changed
      $record = $DB->get_record_sql('
 			SELECT parentid FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} WHERE id=?
