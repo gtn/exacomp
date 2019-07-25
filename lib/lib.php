@@ -922,6 +922,25 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 }
 
 /**
+
+ */
+function block_exacomp_get_subject_by_subjectid($subjectid) {
+    global $DB;
+
+    return $DB->get_record(BLOCK_EXACOMP_DB_SUBJECTS, array('id' => $subjectid));
+}
+
+/**
+
+ */
+function block_exacomp_get_subject_by_descriptorid($descriptorid) {
+    global $DB;
+    $topicid = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptorid), "topicid");
+    $subjectid = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid->topicid), "subjid");
+    return $DB->get_record(block_exacompsubjects, array('id' => $subjectid->subjid));
+}
+
+/**
  * Gets all available subjects
  */
 function block_exacomp_get_all_subjects() {
@@ -1320,7 +1339,7 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
  * @param int $value
  * @param int $evalniveauid
  */
-function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null) {
+function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null, $subjectid = -1) {
 	global $DB, $USER;
 
 	if ($evalniveauid !== null && $evalniveauid < 1) {
@@ -1345,7 +1364,14 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid);
-        block_exacomp_update_globalgradings_text($compid,$userid,$comptype);
+        if($subjectid == -1){
+            $subject = block_exacomp_get_subject_by_descriptorid($compid);
+        }else{
+            $subject = block_exacomp_get_subject_by_subjectid($subjectid);
+        }
+		if($subject->isglobal){
+            block_exacomp_update_globalgradings_text($compid,$userid,$comptype);
+        }
 	} else {
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 	}
@@ -1447,7 +1473,7 @@ function block_exacomp_save_competences($data, $courseid, $role, $comptype, $top
 		block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, $studentid, $subjectid);
 	}
 	foreach ($values as $value) {
-		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
+		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value'], null, $subjectid);
 	}
 }
 
@@ -4449,7 +4475,6 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
                 //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
                 block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), $comptype = 0);
             }
-
             //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
             block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
             mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
@@ -7204,7 +7229,7 @@ function block_exacomp_get_cm_from_cmid($cmid) {
  * @param unknown $additionalinfo
  * @param unknown $comptype
  */
-function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, $subjectid = -1) {
 	global $DB, $USER;
 
 	if (is_string($additionalinfo)) {
@@ -7288,7 +7313,17 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}
 
-        block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype);
+
+        if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+            if ($subjectid == -1) {
+                $subject = block_exacomp_get_subject_by_descriptorid($compid);
+            } else {
+                $subject = block_exacomp_get_subject_by_subjectid($subjectid);
+            }
+            if ($subject->isglobal) {
+                block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype);
+            }
+        }
     	//set the gradingisold flag of the parentdescriptor(if there is one) to "1"
     	block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
 	}

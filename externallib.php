@@ -2565,6 +2565,7 @@ class block_exacomp_external extends external_api {
 			'value' => new external_value(PARAM_INT, 'evaluation value, only set for TK (0 to 3)'),
 			'additionalinfo' => new external_value(PARAM_FLOAT, 'decimal between 1 and 6'),
 			'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau (-1, 1, 2, 3)'),
+            'subjectid' => new external_value(PARAM_INT, 'subjectid',VALUE_DEFAULT, -1),
 		));
 	}
 
@@ -2580,7 +2581,7 @@ class block_exacomp_external extends external_api {
 	 *            int value
 	 * @return success
 	 */
-	public static function dakora_set_competence($courseid, $userid, $compid, $comptype, $role, $value, $additionalinfo, $evalniveauid) {
+	public static function dakora_set_competence($courseid, $userid, $compid, $comptype, $role, $value, $additionalinfo, $evalniveauid, $subjectid) {
 		global $USER, $DB;
 		static::validate_parameters(static::dakora_set_competence_parameters(), array(
 			'courseid' => $courseid,
@@ -2591,6 +2592,7 @@ class block_exacomp_external extends external_api {
 			'value' => $value,
 			'additionalinfo' => $additionalinfo,
 			'evalniveauid' => $evalniveauid,
+            'subjectid' => $subjectid
 		));
 
 		if ($userid == 0 && $role == BLOCK_EXACOMP_ROLE_STUDENT) {
@@ -2622,12 +2624,12 @@ class block_exacomp_external extends external_api {
 		if ($mapping && $role == BLOCK_EXACOMP_ROLE_TEACHER) { // grade ==> mapping needed, save mapped value and save additionalinfo
 		    //check if teacher, because the student sends the selfevaluationvalue in $value, not in $additinalinfo
 		    $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
-		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
+		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid, $subjectid) < 0) {
 		        throw new invalid_parameter_exception ('Not allowed');
 		    }
 		    block_exacomp_save_additional_grading_for_comp($courseid, $compid, $userid, $additionalinfo, $comptype);
 		} else {    // not grade ==> no mapping needed, just save the adittionalinfo into value
-		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) < 0) {
+		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid, $subjectid) < 0) {
 		        throw new invalid_parameter_exception ('Not allowed');
 		    }
 		}
