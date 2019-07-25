@@ -2439,15 +2439,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                             }
                             if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
-                                if(block_exacomp_is_descriptor_grading_old($descriptor->id,$student->id)){
+                                if($student->competencies->gradingisold[$descriptor->id]){
                                     //Hackable????
                                     $gradingisoldwarning = html_writer::tag('a', '     !!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
                                     $teacher_evaluation_cell->text .= $gradingisoldwarning;
                                 }
                             }
-
-//                            var_dump($student->competencies->gradingisold[$descriptor->id]);
-//                            die;
 
                             //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
                             //TODO check if teacher has the flag

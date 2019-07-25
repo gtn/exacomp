@@ -10322,7 +10322,7 @@ function block_exacomp_get_date_of_birth($userid) {
  }
 
  /**
-  *
+  * should not be used if there is a faster way to check (in Competence grid the data already exists
   * @param unknown $descriptorid
   * @param unknown $studentid
   * @return unknown
@@ -10630,7 +10630,7 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
     $globalgradings_text = "";
     foreach($records as $record){
-        $globalgradings_text .= $record->username.": ".$scheme_values[$record->value]." ";
+        $globalgradings_text .= $record->username.": ".$scheme_values[$record->value]."  ";
     }
 
     foreach($records as $record){
