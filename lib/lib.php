@@ -7316,7 +7316,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 
         if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
             if ($subjectid == -1) {
-                $subject = block_exacomp_get_subject_by_descriptorid($compid);
+                $subject = block_exacomp_get_subject_by_descriptorid($descriptorid);
             } else {
                 $subject = block_exacomp_get_subject_by_subjectid($subjectid);
             }
