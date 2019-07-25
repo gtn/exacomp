@@ -10278,10 +10278,10 @@ function block_exacomp_get_date_of_birth($userid) {
 //     die();
 
 //      $DB->execute($sql,[$compid]);
-    var_dump($courseid);
-    var_dump($compid);
-    var_dump($studentid);
-    var_dump($role);
+//    var_dump($courseid);
+//    var_dump($compid);
+//    var_dump($studentid);
+//    var_dump($role);
 
 //    die;
      //Find the id of the parent of the competence that has been changed
