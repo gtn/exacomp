@@ -1565,11 +1565,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
                         //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
-                        //TODO check if teacher has the flag
-                        if($subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->subjects->globalgradings[$subject->id] != ""){
-//                            echo "ay";
-//                            var_dump($student->subjects->globalgradings[$subject->id]);
-//                            die;
+                        //check if teacher is dakorateacher
+                        if($subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->subjects->globalgradings[$subject->id] != "" && block_exacomp_is_dakora_teacher($USER->id)){
                             //Add the other globalgradings as tooltipp
                             $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id, 'title' => $student->subjects->globalgradings[$subject->id]));
                             $self_evaluation_cell->text .= $globalgradings;
@@ -1991,8 +1988,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                             }
                             //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
-                            //TODO check if teacher has the flag
-                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->topics->globalgradings[$topic->id] != ""){
+                            //check if teacher is dakorateacher
+                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->topics->globalgradings[$topic->id] != "" && block_exacomp_is_dakora_teacher($USER->id)){
                                 //Add the other globalgradings as tooltipp
                                 $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $topic->id, 'studentid' => $student->id, 'title' => $student->topics->globalgradings[$topic->id]));
                                 $teacher_evaluation_cell->text .= $globalgradings;
@@ -2447,8 +2444,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
                             //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
-                            //TODO check if teacher has the flag
-                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->competencies->globalgradings[$descriptor->id] != ""){
+                            //check if teacher is dakorateacher
+                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->competencies->globalgradings[$descriptor->id] != "" && block_exacomp_is_dakora_teacher($USER->id)){
                                 //Add the other globalgradings as tooltipp
                                 $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => $student->competencies->globalgradings[$descriptor->id]));
                                 $teacher_evaluation_cell->text .= $globalgradings;
@@ -4297,8 +4294,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents == 1, '&nbsp;'.block_exacomp_get_string('usenostudents'))
 			.html_writer::empty_tag('br');
 
-        $input_isglobal = html_writer::checkbox('isglobal', 1, $settings->isglobal == 1, '&nbsp;'.block_exacomp_get_string('use_isglobal'))
-            .html_writer::empty_tag('br');
+		if(block_exacomp_is_dakora_teacher()){
+            $input_isglobal = html_writer::checkbox('isglobal', 1, $settings->isglobal == 1, '&nbsp;'.block_exacomp_get_string('use_isglobal'))
+                .html_writer::empty_tag('br');
+        }
+
 
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-default'));
 

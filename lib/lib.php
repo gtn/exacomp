@@ -27,6 +27,7 @@ require_once __DIR__.'/classes.php';
 require_once __DIR__.'/../block_exacomp.php';
 require_once($CFG->libdir.'/badgeslib.php');
 require_once($CFG->dirroot.'/badges/lib/awardlib.php');
+require_once($CFG->dirroot.'/cohort/lib.php');
 
 
 /**
@@ -10643,10 +10644,7 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
 
 function block_exacomp_get_dakora_teacher_cohort() {
-    global $CFG;
-    require_once $CFG->dirroot.'/cohort/lib.php';
-
-    // get or create cohort if not exists
+    // get cohort or create cohort if not exists
     $cohort = g::$DB->get_record('cohort', ['contextid' => \context_system::instance()->id, 'idnumber' => 'block_exacomp_dakora_teachers']);
 
     $name = block_exacomp_get_string('dakora_teachers');
@@ -10674,6 +10672,11 @@ function block_exacomp_get_dakora_teacher_cohort() {
     }
 
     return $cohort;
+}
+
+function block_exacomp_is_dakora_teacher($userid = null) {
+    $cohort = block_exacomp_get_dakora_teacher_cohort();
+    return cohort_is_member($cohort->id, $userid ? $userid : g::$USER->id);
 }
 
 

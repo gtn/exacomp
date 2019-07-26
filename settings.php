@@ -934,20 +934,6 @@ $settings->add(new block_exacomp_link_to('exacomp/dakora_teacher',
     ['target' => '_blank'],
     true));
 
-//$tabs[] = new tabobject('head_teachers', 'javascript:void window.open(\''.\block_exastud\url::create('/cohort/assign.php', ['id' => block_exastud_get_head_teacher_cohort()->id])->out(false).'\');', block_exastud_get_string('head_teachers'), '', true);
-
-
-
-
-
-
-
-
-
-
-
-
-
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/testlimit', block_exacomp_get_string('settings_testlimit'),
 	    block_exacomp_get_string('settings_testlimit_description'), 50, PARAM_INT));
 

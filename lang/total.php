@@ -2508,8 +2508,8 @@ return [
         'Grant related exabis competencies when condition is met',
     ],
     'use_isglobal' => [
-        'Überfachliches Raster',
-        'Global Grid',
+        'Überfachlicher Kurs',
+        'global course',
     ],
     'globalgradings' => [
         'Überfachliche Bewertungen',
