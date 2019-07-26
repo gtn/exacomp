@@ -8312,7 +8312,10 @@ class block_exacomp_external extends external_api {
 	            $descriptor_return->evalniveauid = $grading->evalniveauid;
 	            $descriptor_return->timestampteacher = $grading->timestamp;
 	            $descriptor_return->reviewerid = $grading->reviewerid;
-                $descriptor_return->globalgradings = $grading->globalgradings;
+	            if(block_exacomp_is_dakora_teacher()){
+                    $descriptor_return->globalgradings = $grading->globalgradings;
+                }
+
 
 	            //Reviewername finden
 	            $reviewerid = $grading->reviewerid;

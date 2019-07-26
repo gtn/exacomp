@@ -6748,6 +6748,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function cross_subjects_overview_teacher($course_crosssubs) {
+	    global $CFG;
 		$content = '';
 		$work_with_students = block_exacomp_get_settings_by_course(g::$COURSE->id)->work_with_students;
 
@@ -6787,7 +6788,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= '<td width="33%" style="vertical-align: top;">';
 
 		$table = new html_table();
-		$tmp = new html_table_cell($this->pix_icon('i/manual_item', '').' '.block_exacomp_get_string('available_crosssubjects'));
+
+        $icon = '<img src="'.$CFG->wwwroot.'/blocks/exacomp/pix/book_x_11x11.png'.'" class="icon" alt="" />';
+		$tmp = new html_table_cell($icon.' '.block_exacomp_get_string('available_crosssubjects'));
 		$tmp->colspan = 2;
 		$table->head = [$tmp];
 
