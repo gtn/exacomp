@@ -1102,7 +1102,6 @@ class example extends db_record {
 			'_'.trans(['de:Aufgabe', 'en:Task']).
 			'.'.preg_replace('!^.*\.!', '', $file->get_filename());
 
-//		var_dump($position);
         $url = \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
             $file->get_itemid(), $file->get_filepath(), $filename);
         $url->param('position', $position);
@@ -1249,7 +1248,7 @@ class global_config {
 	 * Returns all values used for examples and child-descriptors
      * @param bool $include_empty
      * @param integer $level
-     * @param bool $short 
+     * @param bool $short
      * @return array
 	 */
 	static function get_student_eval_items($include_empty = false, $level = BLOCK_EXACOMP_TYPE_SUBJECT, $short = false) {
@@ -1269,9 +1268,6 @@ class global_config {
                 */
 
                 $useEval = get_config('exacomp', 'assessment_SelfEval_useVerbose');
-                 //var_dump($useEval);
-                 //var_dump($level);
-//                 throw new \coding_exception("haaalt stopp!!!!!!!!!!!!!!!!!!");
                 $target = 'subject'; // For default.
                 if ($useEval) {
                     // different for different levels
@@ -1375,25 +1371,25 @@ class global_config {
 
 		return $ret;
 	}
-	
+
 	/**
 	 * Returns all diffLevel_options, specified by the admin
 	 */
 	static function get_diffLevel_options($include_empty = false) {
 	    static $values;
-	    
+
 	    if ($values === null) {
 	        $values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU,  array('option_type' => 'diffLevel_options'), '', 'id,title');
 	    }
-	    
+
 	    $ret = $values;
 	    if ($include_empty) {
 	        $ret = [0 => ''] + $ret;
 	    }
-	    
+
 	    return $ret;
 	}
-	
+
 	/**
 	 * Returns all evaluation verbose_options, specified by the admin
 	 * deprecated ???  or at least not used as planned
@@ -1404,12 +1400,12 @@ class global_config {
 	    if ($values === null) {
 	        $values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, array('option_type' => 'verbose_options'), '', 'id,title');
 	    }
-	    
+
 	    $ret = $values;
 	    if ($include_empty) {
 	        $ret = [0 => ''] + $ret;
 	    }
-	    
+
 	    return $ret;
 	}
 
@@ -1443,7 +1439,7 @@ class global_config {
 
 // 		return $value;
 // 	}
-	
+
 	/**
 	 * Maps float gradings to int gradings
 	 *
@@ -1453,9 +1449,9 @@ class global_config {
 	    if (!$additionalinfo) {
 	        return -1;
 	    }
-	    
+
 	    $value = round($additionalinfo);
-	    
+
 	    return $value;
 	}
 

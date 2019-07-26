@@ -2102,7 +2102,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'));
 		// Launch drop key primary.
 		$dbman->drop_key($table, $key);
-		//var_dump($dbman->index_exists($table, $key));
 		$dbman->drop_field($table, $field);
 
 		$table = new xmldb_table('block_exacompexamples');

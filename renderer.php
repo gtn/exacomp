@@ -6858,19 +6858,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $row->attributes['class'] = 'rg2-level-1 rg2-highlight open';
                 $row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
                 $table->data[] = $row;
-//                var_dump($subject->cross_subject_drafts);
-//                die();
 
-//                var_dump($crosssubj);
                 if($crosssubj == null){
                     $crosssubj = array_shift($subject->cross_subject_drafts);
                 }
-//                var_dump($crosssubj);
-//                die();
 
-//                var_dump($crosssubj->groupcategory);
-//                var_dump($groupcategory->groupcategory);
-//                die();
                 while($groupcategory->groupcategory == $crosssubj->groupcategory){
 //                    $crosssubj->creatorid = 3;
                     $title = clone $item_title_cell;
@@ -6886,14 +6878,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                    die();
                     $table->data[] = $row;
                     $crosssubj = array_shift($subject->cross_subject_drafts);
-//                    var_dump($crosssubj);
-//                    die();
                 }
-//                var_dump($subject->cross_subject_drafts);
-//                die();
 
-//                var_dump($subject->cross_subject_drafts);
-//                die();
 
 //                $printeddraftscount = 0;
 //                foreach ($subject->cross_subject_drafts as $crosssub) {

@@ -46,10 +46,7 @@ $form = new block_exacomp_update_categories_form($_SERVER['REQUEST_URI'],
 $item = $descrid ? \block_exacomp\descriptor::get($descrid) : null;
 
 if ($formdata = $form->get_data()) {
-//     echo "<pre>";
-//     var_dump($formdata->catid);
-//     echo "</pre>";
-    
+
     //insert catids in BLOCK_EXACOMP_DB_DESCCAT
 //     $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, ['descrid' => $descrid]);
 //     if (!empty($formdata->catid)) {
@@ -59,8 +56,8 @@ if ($formdata = $form->get_data()) {
 //                 'catid' => $catid
 //             ]);
 //     }
-    $item->store_categories($formdata->catid); 
-    
+    $item->store_categories($formdata->catid);
+
     // or create a new category from example form
     $newCat = trim(optional_param('newcategory', '', PARAM_RAW));
     if ($newCat != '') {
@@ -77,7 +74,7 @@ if ($formdata = $form->get_data()) {
             'catid' => $newCategory->id
         ]);
     }
-    
+
     echo $output->popup_close_and_reload();
     exit;
 }else if($form->is_cancelled()){

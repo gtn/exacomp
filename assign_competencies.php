@@ -222,9 +222,6 @@ if (optional_param('print', false, PARAM_BOOL)) {
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
 
-//var_dump($selectedSubject);
-
-
 echo $output->header_v2($page_identifier);
 echo $colselector;
 echo $output->competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
@@ -273,16 +270,8 @@ if ($course_settings->nostudents != 1 && $studentid) {
 }
 
 
-// var_dump($competence_tree);
-// die();
-// crop student array by selected (for big result tables!)
-//if ($slicestudentlist) {
-//    $students = array_slice($students, $slicestartposition, BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
-//}
 
 //Hier werden die Bewertungen und so geprinted
-//var_dump($competence_tree);
-//die;
 echo $output->competence_overview($competence_tree,
                                     $courseid,
                                     $students,

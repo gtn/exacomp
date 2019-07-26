@@ -186,20 +186,12 @@ foreach($crosssubjects as $crosssubjectsOfCourse) {
 
 
         if(block_exacomp_student_crosssubj($crosssubj->id,$studentid)){
-//            var_dump($crosssubj);
-//            var_dump($studentid);
-//            die;
             //maybe find solution with better perfocrmance, without laoding course again
             $courseOfCrosssubj = $DB->get_record('course', array('id' => $crosssubj->courseid));
-//            var_dump($courseOfCrosssubj);
-//            die;
-
             echo $output->competence_profile_crosssubject($crosssubj,$student,true,block_exacomp_get_grading_scheme($crosssubj->id),$crosssubj);
         }
     }
 }
-//var_dump($profile_settings);
-//die;
 
 foreach($user_courses as $course) {
 	//if selected
