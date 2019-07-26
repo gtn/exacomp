@@ -2515,6 +2515,14 @@ return [
         'Überfachliche Bewertungen',
         'global gradings',
     ],
+    'assign_dakora_teacher' => [
+        'Dakora Lehrer zuweisen',
+        'assign dakora teacher',
+    ],
+    'assign_dakora_teacher_link' => [
+        'Hier klicken um Dakora Lehrer zuzuweisen',
+        'Click here to assign dakora teachers',
+    ],
 
 
 

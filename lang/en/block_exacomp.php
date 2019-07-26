@@ -707,6 +707,8 @@ $string['delete_level_has_children_from_another_source'] = 'Has children from an
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
 $string['use_isglobal'] = 'global course';
 $string['globalgradings'] = 'global gradings';
+$string['assign_dakora_teacher'] = 'assign dakora teacher';
+$string['assign_dakora_teacher_link'] = 'Click here to assign dakora teachers';
 
 
 

@@ -10631,7 +10631,7 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
     $globalgradings_text = "";
     foreach($records as $record){
-        $globalgradings_text .= $record->username.": ".$scheme_values[$record->value]."  ";
+        $globalgradings_text .= $record->firstname." ".$record->lastname.": ".$scheme_values[$record->value].".  ";
     }
 
     foreach($records as $record){

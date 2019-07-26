@@ -713,6 +713,8 @@ $string['delete_level_has_children_from_another_source'] = 'Importierter Kompete
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
 $string['use_isglobal'] = 'Überfachlicher Kurs';
 $string['globalgradings'] = 'Überfachliche Bewertungen';
+$string['assign_dakora_teacher'] = 'Dakora Lehrer zuweisen';
+$string['assign_dakora_teacher_link'] = 'Hier klicken um Dakora Lehrer zuzuweisen';
 
 
 

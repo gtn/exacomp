@@ -925,11 +925,11 @@ $settings->add(new admin_setting_configcheckbox('exacomp/autotest', block_exacom
 	    block_exacomp_get_string('settings_autotest_description'), 0, 1, 0));
 
 $settings->add(new block_exacomp_link_to('exacomp/dakora_teacher',
-    "DakoraTeacher erstellen",
+    block_exacomp_get_string('assign_dakora_teacher'),
     '',
     '',
     \block_exacomp\url::create('/cohort/assign.php'),
-    "klick da",
+    block_exacomp_get_string('assign_dakora_teacher_link'),
     ['id' => block_exacomp_get_dakora_teacher_cohort()->id],
     ['target' => '_blank'],
     true));
