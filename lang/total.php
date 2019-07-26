@@ -384,6 +384,10 @@ return [
 		'SSO-App-Login verwenden',
 		'Use SSO-App-Login',
 	],
+    'settings_dakora_teacher_link' => [
+        'Klicken Sie, um die Dakoralehrer festzulegen',
+        'Click to assign the dakorateachers',
+    ],
 	'settings_new_app_login_description' => [
 		'Der neue App-Login erlaubt Benutzern sich mit allen aktivierten Moodle Login-Plugins einzuloggen. Diese Einstellung ist nicht mit dem Gamification Plugin kompatibel.',
 		'The new App-Login allows users to login with all activated Moodle Login plugins. This setting is not compatible with the gamification plugin.',

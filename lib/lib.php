@@ -10642,6 +10642,38 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 }
 
 
+function block_exacomp_get_dakora_teacher_cohort() {
+    // get or create cohort if not exists
+    $cohort = g::$DB->get_record('cohort', ['contextid' => \context_system::instance()->id, 'idnumber' => 'block_exacomp_dakora_teachers']);
+
+    $name = block_exastud_get_string('head_teachers');
+    $description = block_exastud_trans('de:Können Klassen anlegen, Lehrkräfte und Schüler/innen zubuchen und den Lernentwicklungsbericht abrufen');
+
+    if (!$cohort) {
+        $cohort = (object)[
+            'contextid' => \context_system::instance()->id,
+            'idnumber' => 'block_exastud_head_teachers',
+            'name' => $name,
+            'description' => $description,
+            'visible' => 1,
+            'component' => '', // should be block_exastud, but then the admin can't change the group members anymore
+        ];
+        $cohort->id = cohort_add_cohort($cohort);
+    } else {
+        // keep name or description up to date
+        if ($name != $cohort->name || $description != $cohort->description) {
+            g::$DB->update_record('cohort', [
+                'id' => $cohort->id,
+                'name' => $name,
+                'description' => $description,
+            ]);
+        }
+    }
+
+    return $cohort;
+}
+
+
 
 
 
