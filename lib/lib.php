@@ -10613,7 +10613,7 @@ function block_exacomp_is_block_used_by_student($blockname,$studentid){
 function block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype){
     global $DB;
 
-    $query = 'SELECT compuser.*, userr.username
+    $query = 'SELECT compuser.*, userr.firstname, userr.lastname
                 FROM {block_exacompcompuser} compuser
                 INNER JOIN `mdl_user` userr ON (compuser.reviewerid = userr.id)
                 WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
