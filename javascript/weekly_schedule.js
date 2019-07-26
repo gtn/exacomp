@@ -431,8 +431,7 @@
 				hover_check(false);
 			
 				if (isEventOverDiv($eventDiv, jsEvent)) {
-					// $('#calendar').fullCalendar('removeEvents', event._id);
-					$('#calendar').fullCalendar('renderEvent', event._id);
+					$('#calendar').fullCalendar('removeEvents', event._id);
 
 					// fullcalendar bug
 					delete event.source;
@@ -502,8 +501,7 @@
 				console.log(event);
 				if (moment(event.start).isBefore(moment(), "day")){
 					if(event.deleted == 0){
-						// $('#calendar').fullCalendar('removeEvents', event._id);
-						$('#calendar').fullCalendar('renderEvent', event._id);
+						$('#calendar').fullCalendar('removeEvents', event._id);
 						// fullcalendar bug
 						delete event.source;
 						// debugger
