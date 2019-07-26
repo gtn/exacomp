@@ -240,9 +240,9 @@ function block_exacomp_init_js_weekly_schedule() {
 
 	$PAGE->requires->css('/blocks/exacomp/javascript/fullcalendar/fullcalendar.css');
 	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
-	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
-	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/lang-all.js', true);
-	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/jquery.ui.touch.js');
+    $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
+    $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/locale-all.js', true);
+    $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/jquery.ui.touch.js');
 }
 
 function block_exacomp_get_context_from_courseid($courseid) {

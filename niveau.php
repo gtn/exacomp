@@ -76,7 +76,7 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen Sie diesem Lernfortschritt eine Kompetenz zu', 'en:Please assign a competence to the new niveau']).':');
 
-		$radioarray=array();
+		$radioarray = array();
 		if ($this->_customdata['descriptors']) {
 			// disable if no descriptors
 			$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp_trans(['de:vorhandene Kompetenz', 'en:Existing competence']), 'existing');

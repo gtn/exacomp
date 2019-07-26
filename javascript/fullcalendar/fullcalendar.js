@@ -1762,6 +1762,7 @@ exports.formatRange = date_formatting_1.formatRange;
 exports.queryMostGranularFormatUnit = date_formatting_1.queryMostGranularFormatUnit;
 var locale_1 = __webpack_require__(31);
 exports.datepickerLocale = locale_1.datepickerLocale;
+exports.datepickerLang = locale_1.datepickerLang;
 exports.locale = locale_1.locale;
 var moment_ext_1 = __webpack_require__(10);
 exports.moment = moment_ext_1.default;
@@ -2606,6 +2607,9 @@ function populateInstanceComputableOptions(options) {
 exports.populateInstanceComputableOptions = populateInstanceComputableOptions;
 // Initialize jQuery UI datepicker translations while using some of the translations
 // Will set this as the default locales for datepicker.
+function datepickerLang(localeCode, dpLocaleCode, dpOptions) {
+    datepickerLocale(localeCode, dpLocaleCode, dpOptions);
+}
 function datepickerLocale(localeCode, dpLocaleCode, dpOptions) {
     // get the FullCalendar internal option hash for this locale. create if necessary
     var fcOptions = exports.localeOptionHash[localeCode] || (exports.localeOptionHash[localeCode] = {});
@@ -2633,6 +2637,7 @@ function datepickerLocale(localeCode, dpLocaleCode, dpOptions) {
     }
 }
 exports.datepickerLocale = datepickerLocale;
+exports.datepickerLang = datepickerLang;
 // Sets FullCalendar-specific translations. Will set the locales as the global default.
 function locale(localeCode, newFcOptions) {
     var fcOptions;

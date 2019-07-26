@@ -2451,7 +2451,7 @@ return [
         'Insufficient',
     ],
     'import_category_selectgrids_needed' => [
-        'Select subjects for importing:',
+        'Auswahl der Gegenstände für den Import:',
         'Select subjects for importing:',
     ],
     'import_category_mapping_needed' => [
@@ -2459,11 +2459,11 @@ return [
         'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:',
     ],
     'import_category_mapping_column_xml' => [
-            'XML title',
+            'Niveau',
             'XML title'
     ],
     'import_category_mapping_column_exacomp' => [
-            'Exacomp difflevel title',
+            'wird geändert in',
             'Exacomp difflevel title'
     ],
     'import_category_mapping_column_level' => [
@@ -2479,7 +2479,7 @@ return [
             'Material'
     ],
     'import_mapping_as_is' => [
-            'Use as is',
+            'weiterhin so verwenden',
             'Use as is',
     ],
     'import_mapping_delete' => [
