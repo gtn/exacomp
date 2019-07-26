@@ -122,6 +122,7 @@ $string['settings_heading_technical'] = 'Administratives';
 $string['settings_heading_apps'] = 'Apps-Einstellungen';
 $string['settings_new_app_login'] = 'SSO-App-Login verwenden';
 $string['settings_dakora_teacher_link'] = 'Klicken Sie, um die Dakoralehrer festzulegen';
+$string['dakora_teachers'] = 'Dakoralehrer';
 $string['settings_new_app_login_description'] = 'Der neue App-Login erlaubt Benutzern sich mit allen aktivierten Moodle Login-Plugins einzuloggen. Diese Einstellung ist nicht mit dem Gamification Plugin kompatibel.';
 $string['settings_heading_performance'] = 'Performance';
 $string['settings_heading_performance_description'] = 'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability';

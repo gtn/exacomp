@@ -10643,20 +10643,23 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
 
 function block_exacomp_get_dakora_teacher_cohort() {
+    global $CFG;
+    require_once $CFG->dirroot.'/cohort/lib.php';
+
     // get or create cohort if not exists
     $cohort = g::$DB->get_record('cohort', ['contextid' => \context_system::instance()->id, 'idnumber' => 'block_exacomp_dakora_teachers']);
 
-    $name = block_exastud_get_string('head_teachers');
-    $description = block_exastud_trans('de:Können Klassen anlegen, Lehrkräfte und Schüler/innen zubuchen und den Lernentwicklungsbericht abrufen');
+    $name = block_exacomp_get_string('dakora_teachers');
+    $description = "Teachers that can see all globalgradings";
 
     if (!$cohort) {
         $cohort = (object)[
             'contextid' => \context_system::instance()->id,
-            'idnumber' => 'block_exastud_head_teachers',
+            'idnumber' => 'block_exacomp_dakora_teachers',
             'name' => $name,
             'description' => $description,
             'visible' => 1,
-            'component' => '', // should be block_exastud, but then the admin can't change the group members anymore
+            'component' => '', // should be block_exacomp, but then the admin can't change the group members anymore
         ];
         $cohort->id = cohort_add_cohort($cohort);
     } else {

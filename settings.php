@@ -924,21 +924,17 @@ $settings->add(new admin_setting_heading('exacomp/heading_general', block_exacom
 $settings->add(new admin_setting_configcheckbox('exacomp/autotest', block_exacomp_get_string('settings_autotest'),
 	    block_exacomp_get_string('settings_autotest_description'), 0, 1, 0));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/dakora_teacher',
-    'DakoraTeacher erstellen',
-    get_string('settings_dakora_teacher_link', 'block_exacomp',
-        $CFG->wwwroot.'/blocks/exaport/admin.php?action=remove_shareall'), 0));
-
-
 $settings->add(new block_exacomp_link_to('exacomp/dakora_teacher',
     "DakoraTeacher erstellen",
     '',
     '',
-    '/cohort/assign.php',
+    \block_exacomp\url::create('/cohort/assign.php'),
     "klick da",
-    ['id' => '6'],
+    ['id' => block_exacomp_get_dakora_teacher_cohort()->id],
     ['target' => '_blank'],
     true));
+
+//$tabs[] = new tabobject('head_teachers', 'javascript:void window.open(\''.\block_exastud\url::create('/cohort/assign.php', ['id' => block_exastud_get_head_teacher_cohort()->id])->out(false).'\');', block_exastud_get_string('head_teachers'), '', true);
 
 
 
