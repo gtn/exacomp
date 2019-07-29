@@ -5698,7 +5698,7 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
  */
 function block_exacomp_is_topic_visible($courseid, $topic, $studentid) {
 	//global $DB;
-    return Cache::staticCallback(__FUNCTION__, function($courseid, $topic, $studentid) {
+    //return Cache::staticCallback(__FUNCTION__, function($courseid, $topic, $studentid) {
         // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
         if ($studentid <= 0) {
             $studentid = 0;
@@ -5718,7 +5718,7 @@ function block_exacomp_is_topic_visible($courseid, $topic, $studentid) {
         }
 
         return true;
-    }, func_get_args());
+    //}, [$courseid, $topic->id, $studentid]);
 }
 
 /**
@@ -8225,9 +8225,11 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
  * global use of evaluation_niveau is minded here
  *
  * @param int $courseid
- * @param int $topic
- * @param int $userid - not working for userid = 0 : no user_information available
- * @return descriptor_evaluation_list this is a list of niveautitles of all evaluated descriptors with according evaluation value and evaluation niveau
+ * @param int $topicid
+ * @param int $studentid
+ * @param int $start_timestamp
+ * @param int $end_timestamp
+ * @return array descriptor_evaluation_list this is a list of niveautitles of all evaluated descriptors with according evaluation value and evaluation niveau
  */
 function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $studentid, $start_timestamp = 0, $end_timestamp = 0) {
 	global $DB;
@@ -8237,7 +8239,8 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 		$end_timestamp = time();
 	}
 
-	$use_evalniveau = block_exacomp_use_eval_niveau();
+	//$use_evalniveau = block_exacomp_use_eval_niveau();
+	$use_evalniveau = block_exacomp_get_assessment_comp_diffLevel();
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 	$user = $DB->get_record("user", array("id" => $studentid));
 
@@ -8246,7 +8249,10 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 
 	$descriptorgradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 
-	$user = block_exacomp_get_user_information_by_course($user, $courseid);
+	//$user = block_exacomp_get_user_information_by_course($user, $courseid);
+    $scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
+    $avgsum = array();
+    $averagedescriptorgradings = array();
 
 	foreach ($topic->descriptors as $descriptor) {
 		$niveau = \block_exacomp\niveau::get($descriptor->niveauid);
@@ -8256,21 +8262,47 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 
 		$teacher_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
 		$student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-
+				
 		$teacher_eval_within_timeframe = $teacher_evaluation && $teacher_evaluation->timestamp >= $start_timestamp && $teacher_evaluation->timestamp <= $end_timestamp;
 		$student_eval_within_timeframe = $student_evaluation && $student_evaluation->timestamp >= $start_timestamp && $student_evaluation->timestamp <= $end_timestamp;
 
 		$descriptorgradings[$niveau->title] = new stdClass();
+        $averagedescriptorgradings[$niveau->title] = new stdClass();
 		// copy of block_exacomp_get_grid_for_competence_profile_topic_data()
-		$descriptorgradings[$niveau->title]->teachervalue =
+        if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+            $descriptorgradings[$niveau->title]->teachervalue = (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_evaluation->additionalinfo) : '');
+            $avgsum[$niveau->title][] = (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? $teacher_evaluation->additionalinfo : 0);
+        } else {
+            $descriptorgradings[$niveau->title]->teachervalue = (($teacher_evaluation && $teacher_evaluation->value) ? $scheme_items[$teacher_evaluation->value] : -1);
+            $avgsum[$niveau->title][] = (($teacher_evaluation && $teacher_evaluation->value) ? $teacher_evaluation->value : 0);
+        }
+        $descriptorgradings[$niveau->title]->teachervaluetitle = $descriptorgradings[$niveau->title]->teachervalue;
+        //echo "<pre>debug:<strong>lib.php:8273</strong>\r\n"; print_r($niveau->title . '=='. $descriptorgradings[$niveau->title]->teachervalue); echo '</pre>'; // !!!!!!!!!! delete it
+		/*$descriptorgradings[$niveau->title]->teachervalue =
 			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR))
 				? (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_evaluation->additionalinfo) : '')
-				: (($teacher_evaluation && $teacher_evaluation->value) ? $scheme_items[$teacher_evaluation->value] : -1);
+				: (($teacher_evaluation && $teacher_evaluation->value) ? $scheme_items[$teacher_evaluation->value] : -1);*/
 		$descriptorgradings[$niveau->title]->evalniveau = ($use_evalniveau && $teacher_eval_within_timeframe ? $teacher_evaluation->evalniveauid : -1) ?: -1;
 		$descriptorgradings[$niveau->title]->studentvalue = ($student_eval_within_timeframe ? $student_evaluation->value : -1) ?: -1;
+        $averagedescriptorgradings[$niveau->title]->evalniveau = ($use_evalniveau && $teacher_eval_within_timeframe ? $teacher_evaluation->evalniveauid : -1) ?: -1;
+        $averagedescriptorgradings[$niveau->title]->studentvalue = ($student_eval_within_timeframe ? $student_evaluation->value : -1) ?: -1;
 	}
-
-	return array("descriptor_evaluation" => $descriptorgradings);
+	// get average for every niveau
+	foreach ($avgsum as $ntitle => $vals) {
+	    $average = round(array_sum($vals) / count($vals));
+	    if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+            $averagedescriptorgradings[$ntitle]->teachervalue = \block_exacomp\global_config::get_additionalinfo_value_mapping($average);
+            $averagedescriptorgradings[$ntitle]->teachervaluetitle = $averagedescriptorgradings[$ntitle]->teachervalue;
+        } else {
+            $averagedescriptorgradings[$ntitle]->teachervalue = $average;
+            $averagedescriptorgradings[$ntitle]->teachervaluetitle = $scheme_items[round($average)];
+        }
+    }
+    //echo "<pre>debug:<strong>lib.php:8272</strong>\r\n"; print_r($descriptorgradings); echo '</pre>'; ; // !!!!!!!!!! delete it
+	return array(
+	        'descriptor_evaluation' => $descriptorgradings,
+            'average_descriptor_evaluations' => $averagedescriptorgradings // we need to get average value for niveau (topic has many descriptors)
+        );
 }
 
 /**

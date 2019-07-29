@@ -573,11 +573,11 @@ return [
         'Short titles: up to 4 entries, delimiter ; maximum 3 characters per entry',
     ],*/
     'settings_addblock_to_newcourse' => [
-        'Add block to new courses',
+        'Block zu neuen Kursen automatisch hinzufügen',
         'Add block to new courses',
     ],
     'settings_addblock_to_newcourse_description' => [
-        'The block "Exabis competence Grid" will be added to every new course automatically. Position of inserted block depends on selected Moodle theme',
+        'Der Block "Exabis Kompetenzraster" wird automatisch jedem neuen Kurs hinzugefügt. Die Position des Block hängt vom Moodle-Theme ab.',
         'The block "Exabis competence Grid" will be added to every new course automatically. Position of inserted block depends on selected Moodle theme',
     ],
     'settings_addblock_to_newcourse_option_no' => [
@@ -1569,6 +1569,10 @@ return [
 		'SE',
 		'SA',
 	],
+	'teacherevaluation_short' => [
+		'TE',
+		'TA',
+	],
 	'teacherevaluation' => [
 		'Einschätzung des Beurteilenden',
 		'trainer assessment',
@@ -2538,6 +2542,12 @@ return [
     'dakora_string3' => [
         'deutscher string3',
         'english string3'
+    ],
+
+    'active_show' => [
+        'aktiv (anzeigen)',
+        'active (show them)',
     ]
+
 
 ];

@@ -582,7 +582,7 @@ class data_exporter extends data {
 	 * @throws moodle_exception
 	 */
 	private static function assign_source($xmlItem, $dbItem) {
-		if ($dbItem->source && $dbItem->sourceid) {
+		if (@$dbItem->source && @$dbItem->sourceid) {
 			if ($dbItem->source == BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 				// source und sourceid vorhanden -> von wo anders erhalten
 				throw new moodle_exception('database error, has default source #69fvk3');
@@ -1691,10 +1691,18 @@ class data_importer extends data {
             $sujectsIds = '*';
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
-            $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
-            $selectedGrids = array_keys($selectedGrids);
-            array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
-            $sujectsIds = implode(" or ", $selectedGrids);
+            if ($selectedGrids && is_array($selectedGrids)) {
+                $selectedGrids = array_filter($selectedGrids, function($v) {
+                    return ($v == 1);
+                });
+                $selectedGrids = array_keys($selectedGrids);
+                array_walk($selectedGrids, function(&$i) {
+                    $i = '@id="'.$i.'"';
+                });
+                $sujectsIds = implode(" or ", $selectedGrids);
+            } else {
+                $sujectsIds = '';
+            }
         }
         if ($sujectsIds != '') {
             if ($sujectsIds == '*') {
@@ -1725,10 +1733,18 @@ class data_importer extends data {
             $sujectsIds = '*';
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
-            $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
-            $selectedGrids = array_keys($selectedGrids);
-            array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
-            $sujectsIds = implode(" or ", $selectedGrids);
+            if ($selectedGrids && is_array($selectedGrids)) {
+                $selectedGrids = array_filter($selectedGrids, function($v) {
+                    return ($v == 1);
+                });
+                $selectedGrids = array_keys($selectedGrids);
+                array_walk($selectedGrids, function(&$i) {
+                    $i = '@id="'.$i.'"';
+                });
+                $sujectsIds = implode(" or ", $selectedGrids);
+            } else {
+                $sujectsIds = '';
+            }
         }
         if ($sujectsIds != '') {
             if ($sujectsIds == '*') {

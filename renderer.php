@@ -6369,7 +6369,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
                         for ($i = 0; $i < $numberOfFiles; $i++) {
                             $url = $example->get_task_file_url($i);
-                            $exampleIcons->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                            $exampleIcons .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                         }
                     } elseif ($example->externaltask) {
 						$exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
@@ -6860,11 +6860,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
                 $table->data[] = $row;
 
-                if($crosssubj == null){
+                if ($crosssubj == null){
                     $crosssubj = array_shift($subject->cross_subject_drafts);
                 }
-
-                while($groupcategory->groupcategory == $crosssubj->groupcategory){
+                while($groupcategory->groupcategory == $crosssubj->groupcategory && $crosssubj->groupcategory != null){
 //                    $crosssubj->creatorid = 3;
                     $title = clone $item_title_cell;
                     $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id)), $crosssubj->title);
@@ -7207,7 +7206,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                die;
                     if(!empty($inputs[active])){
                         echo '<div class="filter-input-active">
-                                <span class="filter-title">'."active(show them)".' :</span>';
+                                <span class="filter-title">'.block_exacomp_get_string('active_show').' :</span>';
                         echo '<label>
                                   <input type="checkbox" name="filter['.$input_type.'][active]"';
                                         if (@$input_filter['active']) {
