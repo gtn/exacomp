@@ -73,7 +73,7 @@ if (!$coursestudents) {
 $studentid = $student->id;
 $students = array($student);
 
-foreach($students as $student) {
+foreach ($students as $student) {
 	$student = block_exacomp_get_user_information_by_course($student, $courseid);
 }
 

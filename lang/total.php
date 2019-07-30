@@ -136,6 +136,14 @@ return [
             'Anlage zum Lernentwicklungsbericht',
             'Annex to the learning development report',
     ],
+    'tab_teacher_report_profoundness' => [
+            'Grund- und Erweiterungskompetenzen verwenden ',
+            'Basic and extended competencies',
+    ],
+    'tab_teacher_report_profoundness_title' => [
+            'Grund- und Erweiterungskompetenzen verwenden',
+            'Basic and extended competencies',
+    ],
     'create_html' => [
             'Zeugnis im HTML-Format generieren (Voransicht)',
             'generate HTML preview',

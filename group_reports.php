@@ -41,7 +41,13 @@ if ($wstoken) {
 }
  require_login($course);
 
+$useprofoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
+
 $reportType = optional_param('reportType', 'general', PARAM_ALPHANUM);
+if ($reportType == 'profoundness' && !$useprofoundness) {
+    print_error('This function is disabled!');
+}
+
 $page_identifier = 'tab_teacher_report_'.$reportType;
 
 $action = optional_param('action', '', PARAM_TEXT);
@@ -59,7 +65,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
     $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
     $filter = $wsDataHandler->getParam('report_filter');
-}else{
+} else {
     //geht hier rein
     $filter = block_exacomp_group_reports_get_filter($reportType);
 }
@@ -78,6 +84,11 @@ if (optional_param('print', false, PARAM_BOOL)) {
             case 'annex':
                 if ($isDocx || $isPdf) {
                     block_exacomp_group_reports_annex_result($filter);
+                }
+                break;
+            case 'profoundness':
+                if (/*$isDocx || */$isPdf) {
+                    block_exacomp_group_reports_profoundness_result($filter);
                 }
                 break;
         }
@@ -157,6 +168,10 @@ if (optional_param('print', false, PARAM_BOOL)) {
         $settings_subtree = array();
         $settings_subtree[] = new tabobject('tab_teacher_report_general', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType'=>'general')), block_exacomp_get_string("tab_teacher_report_general"), null, true);
         $settings_subtree[] = new tabobject('tab_teacher_report_annex', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'annex')), block_exacomp_get_string("tab_teacher_report_annex"), null, true);
+        if ($useprofoundness) {
+            $settings_subtree[] = new tabobject('tab_teacher_report_profoundness', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'profoundness')),
+                    block_exacomp_get_string("tab_teacher_report_profoundness"), null, true);
+        }
 
         echo $OUTPUT->tabtree($settings_subtree, $page_identifier);
 
@@ -168,10 +183,11 @@ if (optional_param('print', false, PARAM_BOOL)) {
                 case 'annex':
                     echo $output->group_report_annex_filters('exacomp', $filter, '', $extra, $courseid);
                     break;
+                case 'profoundness':
+                    echo $output->group_report_profoundness_filters('exacomp', $filter, '', $extra, $courseid);
+                    break;
                 default:
-
                     echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid);
-
             }
             ?>
     	</div>

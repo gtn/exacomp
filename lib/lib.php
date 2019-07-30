@@ -9681,12 +9681,12 @@ function block_exacomp_group_reports_annex_result($filter) {
         ob_start();
     }
 
-    if($filter['selectedStudentOrGroup'] != 0){
-        if($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
+    if ($filter['selectedStudentOrGroup'] != 0){
+        if ($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
             $groupid = (-1)*$filter['selectedStudentOrGroup'] - 1;
             $students = block_exacomp_groups_get_members($courseid,$groupid);
-        }else {
-            $students=array($students[$filter['selectedStudentOrGroup']]);
+        } else {
+            $students = array($students[$filter['selectedStudentOrGroup']]);
         }
     }
     $i = 0;
@@ -9896,6 +9896,76 @@ function block_exacomp_group_reports_annex_result($filter) {
         \block_exacomp\printer::block_exacomp_generate_report_annex_docx($courseid, $dataRow);
         exit;
     }
+
+}
+
+function block_exacomp_group_reports_profoundness_result($filter) {
+    $courseid = g::$COURSE->id;
+    $students = block_exacomp_get_students_by_course($courseid);
+    foreach ($students as $student) {
+        $student = block_exacomp_get_user_information_by_course($student, $courseid);
+    }
+
+    //print_r($filter);
+    $has_output = false;
+    $isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+    $isPdf = (bool)optional_param('formatPdf', false, PARAM_RAW);
+    $dataRow = array();
+
+    if ($isPdf) {
+        ob_start();
+    }
+
+    if ($filter['selectedStudentOrGroup'] != 0){
+        if ($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
+            $groupid = (-1)*$filter['selectedStudentOrGroup'] - 1;
+            $students = block_exacomp_groups_get_members($courseid, $groupid);
+        } else {
+            $students = array($students[$filter['selectedStudentOrGroup']]);
+        }
+    }
+    $i = 0;
+
+    $subjects = block_exacomp_get_competence_tree($courseid, null, null, false, null, false);
+    $output = block_exacomp_get_renderer();
+    $reportcontent = '';
+
+    foreach ($students as $student) {
+
+        $studentstemp = array($student);
+
+        if ($i != 0) {
+            $reportcontent .= '<br pagebreak="true"/>';
+        }
+
+        $reportcontent .= '<h1 class="toCenter">'.block_exacomp_get_string('tab_teacher_report_profoundness_title').'</h1>';
+        $reportcontent .= '<h2 class="toCenter">'.fullname($student).'</h2>';
+        $reportcontent .= '<h3 class="toCenter">'.g::$COURSE->fullname.'</h3>';
+
+        //ob_start();
+
+        $reportcontent .= $output->profoundness($subjects, $courseid, $studentstemp, BLOCK_EXACOMP_ROLE_TEACHER, true);
+        //ob_end_flush();
+
+        //$reportcontent .= "</tbody>";
+        //$reportcontent .= '</table>';
+        $i++;
+
+    }
+
+    if ($isPdf) {
+        //ob_end_flush();
+        //$html_content = ob_get_clean();
+        //\block_exacomp\printer::block_exacomp_generate_report_profoundness_pdf($html_content);
+        //echo $reportcontent;
+        \block_exacomp\printer::block_exacomp_generate_report_profoundness_pdf($reportcontent);
+        exit;
+    }
+
+/*    if ($isDocx) {
+        \block_exacomp\printer::block_exacomp_generate_report_annex_docx($courseid, $dataRow);
+        exit;
+    }*/
 
 }
 

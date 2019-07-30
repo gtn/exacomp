@@ -911,6 +911,59 @@ class printer {
         exit;
     }
 
+    static function block_exacomp_generate_report_profoundness_pdf($html_content) {
+        //echo '<textarea>';print_r($html_content);echo '</textarea>'; exit;
+        ob_start();
+
+        $pdf = new printer_TCPDF('P');
+
+        $pdf->setStyle('
+			* {
+				font-size: 9pt;
+			}
+			h1 {                
+                font-size: 18pt;
+            }
+			h2 {                
+                font-size: 14pt;                
+            }
+			h3 {                
+                font-size: 14pt;                
+            }
+            .toCenter {
+                text-align:center;
+            }
+			div {
+				padding: 0;
+				margin: 0;
+			}
+			table td {
+				border: 0.2pt solid #555;
+				margin: 40px;
+			}
+			table {
+				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+			}
+			tr.highlight {
+				background-color: #e6e6e6;
+			}
+			td.marker {
+			    /*font-weight: bold; */
+			    font-size: 1.3em;
+			}
+				');
+
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(20);
+
+        $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
+//echo $html_content;
+        $pdf->writeHTML($html_content);
+        $pdf->Output();
+        exit;
+    }
+
+
 }
 
 class Slice
