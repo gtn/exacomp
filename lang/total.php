@@ -137,7 +137,7 @@ return [
             'Annex to the learning development report',
     ],
     'tab_teacher_report_profoundness' => [
-            'Grund- und Erweiterungskompetenzen verwenden ',
+            'Grund- und Erweiterungskompetenzen ',
             'Basic and extended competencies',
     ],
     'tab_teacher_report_profoundness_title' => [
