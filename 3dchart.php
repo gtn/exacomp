@@ -74,7 +74,7 @@ $graph_options->zMax = 10;
 */
 
 $evaluation = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start, $end)['average_descriptor_evaluations'];
-echo "<pre>debug:<strong>3dchart.php:77</strong>\r\n"; print_r($evaluation); echo '</pre>'; // !!!!!!!!!! delete it
+//echo "<pre>debug:<strong>3dchart.php:77</strong>\r\n"; print_r($evaluation); echo '</pre>'; // !!!!!!!!!! delete it
 $graph_options->xLabels = array_map(function($label) {
 	// remove LFS at the beginning
 	return preg_replace('!^'.preg_quote(block_exacomp_get_string('niveau_short'), '!').'!', '', $label);

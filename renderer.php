@@ -2354,7 +2354,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						    $disableCell = ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student) ? false : true);
 						}
 
-
                         if (($this->useEvalNiveau && block_exacomp_get_assessment_comp_diffLevel() == 1 && $level == 1)
                             || ($this->useEvalNiveau && block_exacomp_get_assessment_childcomp_diffLevel() == 1) && $level == 2) {
                             $niveau_cell->text = $this->generate_niveau_select(
@@ -2397,9 +2396,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 
 
-
-
-                        //student show evaluation
+                        // student show evaluation
                         if ((   block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) && $level == 1)
                                 || (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) && $level == 2)) {
                             switch ($data->scheme) {
@@ -2435,7 +2432,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $data->profoundness : null,
                                             ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                             }
-                            if($descriptor->parentid == 0){ //if descriptor is parentdescriptor
+                            if ($descriptor->parentid == 0){ //if descriptor is parentdescriptor
                                 if(array_key_exists($descriptor->id, $student->competencies->gradingisold) && $student->competencies->gradingisold[$descriptor->id]){
                                     //Hackable????
                                     $gradingisoldwarning = html_writer::tag('a', '     !!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
@@ -2445,7 +2442,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                             //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
                             //check if teacher is dakorateacher
-                            if($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->competencies->globalgradings[$descriptor->id] != "" && block_exacomp_is_dakora_teacher($USER->id)){
+                            if ($data->subject->isglobal && block_exacomp_get_settings_by_course($COURSE->id) && $student->competencies->globalgradings[$descriptor->id] != "" && block_exacomp_is_dakora_teacher($USER->id)){
                                 //Add the other globalgradings as tooltipp
                                 $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => $student->competencies->globalgradings[$descriptor->id]));
                                 $teacher_evaluation_cell->text .= $globalgradings;
@@ -4910,7 +4907,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $COURSE;
 		$table = new html_table();
 		$table->attributes['id'] = 'comps';
-		$table->attributes['class'] = 'exabis_comp_comp';
+		$table->attributes['class'] = 'rg2 exabis_comp_comp';
 
 		$rows = array();
 
@@ -4936,7 +4933,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
 		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
-		$div .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), '', array('id' => 'exabis_save_button'));
+		$div .= html_writer::div(html_writer::empty_tag('input', array('class' => 'btn btn-default', 'type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), '', array('id' => 'exabis_save_button'));
 
 		return html_writer::div(block_exacomp_get_string('description_edit_badge_comps'))
 			.html_writer::empty_tag('br')
@@ -4962,7 +4959,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->cells[] = $badgeCell;
 
 			$rows[] = $topicRow;
-
 			if (!empty($topic->descriptors)) {
 				$this->descriptors_badges($rows, $level + 1, $topic->descriptors, $badge);
 			}
@@ -4980,7 +4976,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$titleCell = new html_table_cell();
 			$titleCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			$titleCell->text = html_writer::div($outputname);
-
 			$descriptorRow->cells[] = $titleCell;
 
 			$badgeCell = new html_table_cell();
@@ -6152,7 +6147,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$subject_title = block_exacomp_get_string('nocrosssubsub');
 		if ($crosssubject && $crosssubject->subjectid) {
 			$subject = $DB->get_record(BLOCK_EXACOMP_DB_SUBJECTS, array('id' => $crosssubject->subjectid));
-			$subject_title = $subject->title;
+			$subject_title = @$subject->title;
 		}
 
 		if ($edit) {
@@ -7204,7 +7199,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				<?php
 //                var_dump($inputs);
 //                die;
-                    if(!empty($inputs[active])){
+                    if(!empty($inputs['active'])){
                         echo '<div class="filter-input-active">
                                 <span class="filter-title">'.block_exacomp_get_string('active_show').' :</span>';
                         echo '<label>

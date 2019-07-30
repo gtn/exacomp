@@ -1480,7 +1480,7 @@ class global_config {
 
 	static function get_allowed_inputs($detailedcomptype) {
 		$inputs = [
-		    active => true,
+		    'active' => true,
 			BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION => false,
 			BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION => false,
 			BLOCK_EXACOMP_EVAL_INPUT_ADDITIONALINFO => false,
