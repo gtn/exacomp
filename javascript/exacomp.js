@@ -596,10 +596,17 @@
 
 		// init
 		$(document).on('rg2.init', 'table.rg2', function () {
-			var $table = $(this);
+            var $table = $(this);
 
-			// add class to rows
+            // add class to rows
 			$table.find('> tr, > tbody > tr').addClass('rg2');
+
+            if ($table.hasClass('rg2-opened-first')) {
+                $table.find('tr.rg2').each(function() {
+                    $(this).addClass('open');
+                });
+                update_table($table);
+            }
 
 			$table.on('rg2.update', function () {
 				update_table($table);

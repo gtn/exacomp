@@ -635,7 +635,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function profoundness($subjects, $courseid, $students, $role, $forReport = false) {
 		$table = new html_table();
 		$rows = array();
-		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
+		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip rg2-opened-first';
 		//$table->attributes['border'] = '1';
 		//$table->width = '100%';
 
@@ -2157,10 +2157,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$descriptorRow = new html_table_row();
 
- 				$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe '.$this_rg2_class;
+				if ($forReport) {
+				    $this_rg2_class .= ' open ';
+                }
+
+ 				$descriptorRow->attributes['class'] = ' exabis_comp_aufgabe '.$this_rg2_class;
  				$descriptorRow->attributes['exa-rg2-id'] = 'descriptor-'.$descriptor->id;
 				if ($parent) {
-					$descriptorRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+					$descriptorRow->attributes['class'] = ' exabis_comp_teilcomp '.$this_rg2_class.' highlight';
 				}
 
 
@@ -2179,7 +2183,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$titleCell = new html_table_cell();
 
-				$titleCell->attributes['class'] = 'rg2-indent';
+				$titleCell->attributes['class'] = ' rg2-indent';
 				if (($descriptor->examples || $descriptor->children || ($parent && $editmode)) && ($data->rg2_level >= 0)) {
 					$titleCell->attributes['class'] .= ' rg2-arrow';
 				}
@@ -7271,11 +7275,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     </div>
             </div>
             <?php
-                //echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html'), 'class' => 'btn btn-default'));
-                //echo '&nbsp;';
+                echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html_report'), 'class' => 'btn btn-default'));
+                echo '&nbsp;';
                 //echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_docx'), 'class' => 'btn btn-default', 'name' => 'formatDocx'));
                 //echo '&nbsp;';
-                echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_pdf'), 'class' => 'btn btn-default', 'name' => 'formatPdf'));
+                echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html_report'), 'class' => 'btn btn-default', 'name' => 'formatPdf'));
             ?>
         </form>
         <?php

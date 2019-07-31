@@ -58,6 +58,9 @@ $string['tab_teacher_report_profoundness_title'] = 'Basic and extended competenc
 $string['create_html'] = 'generate HTML preview';
 $string['create_docx'] = 'generate docx';
 $string['create_pdf'] = 'generate pdf';
+$string['create_html_report'] = 'generate HTML preview';
+$string['create_docx_report'] = 'generate docx';
+$string['create_pdf_report'] = 'generate pdf';
 $string['tab_teacher_report_annex_template'] = 'template docx';
 $string['tab_teacher_report_annex_delete_template'] = 'delete';
 

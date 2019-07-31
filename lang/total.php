@@ -156,6 +156,18 @@ return [
             'Zeugnis im pdf-Format generieren',
             'generate pdf',
     ],
+    'create_html_report' => [
+            'Bericht im HTML-Format generieren',
+            'generate HTML preview',
+    ],
+    'create_docx_report' => [
+            'Bericht im docx-Format generieren',
+            'generate docx',
+    ],
+    'create_pdf_report' => [
+            'Bericht im pdf-Format generieren',
+            'generate pdf',
+    ],
     'tab_teacher_report_annex_template' => [
             'template docx',
             'template docx',

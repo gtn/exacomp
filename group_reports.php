@@ -199,6 +199,9 @@ if (optional_param('print', false, PARAM_BOOL)) {
             case 'annex':
                 block_exacomp_group_reports_annex_result($filter);
                 break;
+            case 'profoundness':
+                block_exacomp_group_reports_profoundness_result($filter);
+                break;
             default:
                 block_exacomp_group_reports_result($filter, $isPdf);
         }

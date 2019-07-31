@@ -58,6 +58,9 @@ $string['tab_teacher_report_profoundness_title'] = 'Grund- und Erweiterungskompe
 $string['create_html'] = 'Zeugnis im HTML-Format generieren (Voransicht)';
 $string['create_docx'] = 'Zeugnis im docx-Format generieren';
 $string['create_pdf'] = 'Zeugnis im pdf-Format generieren';
+$string['create_html_report'] = 'Bericht im HTML-Format generieren';
+$string['create_docx_report'] = 'Bericht im docx-Format generieren';
+$string['create_pdf_report'] = 'Bericht im pdf-Format generieren';
 $string['tab_teacher_report_annex_template'] = 'template docx';
 $string['tab_teacher_report_annex_delete_template'] = 'löschen';
 
