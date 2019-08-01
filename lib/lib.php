@@ -10698,12 +10698,17 @@ function block_exacomp_is_autograding_example($exampleid) {
 function block_exacomp_is_block_used_by_student($blockname,$studentid){
     global $DB;
 
+    $courseids = block_exacomp_get_courses_of_student($studentid);
+    if (!$courseids) {
+    	return false;
+	}
+
     $query = 'SELECT course.id as courseID, course.fullname, course.shortname, block_instances.blockname
 	            FROM ({context} context
 	                INNER JOIN {block_instances} block_instances  ON (context.id = block_instances.parentcontextid))
 	                INNER JOIN {course} course                    ON (course.id = context.instanceid)
 	            WHERE     (block_instances.blockname = ?)      AND (context.contextlevel = 50) 
-	                        AND course.id IN ('.join(',', block_exacomp_get_courses_of_student($studentid)).')'; //50 means that the instanceid stands for the courseid
+	                        AND course.id IN ('.join(',', $courseids).')'; //50 means that the instanceid stands for the courseid
 
     $condition = array($blockname);
 
