@@ -125,7 +125,7 @@ return [
 	],
 
     'tab_teacher_report_general' => [
-            'General report',
+            'Berichte',
             'General report',
     ],
     'tab_teacher_report_annex' => [
@@ -2474,7 +2474,11 @@ return [
         'Ungenügend',
         'Insufficient',
     ],
-    'import_category_selectgrids_needed' => [
+    'import_select_file' => [
+        'Datei aussuchen:',
+        'Select file:',
+    ],
+    'import_selectgrids_needed' => [
         'Auswahl der Gegenstände für den Import:',
         'Select subjects for importing:',
     ],
