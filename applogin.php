@@ -80,7 +80,7 @@ if ($action == 'info') {
 	$info = array(
 		'version' => $info->versiondb,
 		'release' => $info->release,
-		'login_method' => get_config('exacomp', 'new_app_login') ? 'moodle_frame' : '',
+		'login_method' => get_config('exacomp', 'new_app_login') ? 'popup' : '',
 	);
 
 	header('Content-Type: application/json');
@@ -91,6 +91,7 @@ if ($action == 'info') {
 if ($action == 'logout') {
 	block_exacomp_logout();
 
+	$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin.php?'.$_SERVER['QUERY_STRING'].'&withlogout=1';
 	redirect(str_replace('action=logout', '', $_SERVER['REQUEST_URI']));
 }
 
@@ -104,18 +105,16 @@ require_login(0);
 $PAGE->set_url('/blocks/exacomp/applogin.php');
 $PAGE->set_pagelayout('embedded');
 
-try {
-	// no guest user allowed
-	core_user::require_active_user($USER);
-} catch (\Exception $e) {
+if (isguestuser()) {
 	// is guest user
-	redirect($_SERVER['REQUEST_URI'].'&action=logout');
+	$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin.php?'.$_SERVER['QUERY_STRING'].'&withlogout=1';
+	redirect($CFG->wwwroot.'/login/index.php');
 	exit;
 }
 
 $loginData = block_exacomp_get_login_data();
 
-if (preg_match('!'.preg_quote($CFG->wwwroot, '!').'/login!', @$_SERVER['HTTP_REFERER'])) {
+if (optional_param('withlogout', '', PARAM_BOOL)) {
 	// came from login form
 
 	echo $OUTPUT->header();
@@ -124,7 +123,11 @@ if (preg_match('!'.preg_quote($CFG->wwwroot, '!').'/login!', @$_SERVER['HTTP_REF
 	<script>
 		if (top !== window) {
 			// for older browsers only string is allowed
-			top.postMessage(<?php echo json_encode(json_encode($loginData)) ?>);
+			top.postMessage(<?php echo json_encode(json_encode($loginData)) ?>, '*');
+		} else if (window.opener) {
+			// for older browsers only string is allowed
+			window.opener.postMessage(<?php echo json_encode(json_encode($loginData)) ?>, '*');
+			window.close();
 		}
 	</script>
 	<?php
@@ -146,7 +149,11 @@ if (preg_match('!'.preg_quote($CFG->wwwroot, '!').'/login!', @$_SERVER['HTTP_REF
 		function app_login_now() {
 			if (top !== window) {
 				// for older browsers only string is allowed
-				top.postMessage(<?php echo json_encode(json_encode($loginData)) ?>);
+				top.postMessage(<?php echo json_encode(json_encode($loginData)) ?>, '*');
+			} else if (window.opener) {
+				// for older browsers only string is allowed
+				window.opener.postMessage(<?php echo json_encode(json_encode($loginData)) ?>, '*');
+				window.close();
 			}
 		}
 
