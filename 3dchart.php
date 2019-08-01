@@ -85,10 +85,12 @@ $xlabels_long = array_keys(['' => ''] + $evaluation);
 if (block_exacomp_get_assessment_comp_diffLevel()) {
     $evalniveau_titles = \block_exacomp\global_config::get_evalniveaus(true);
 } else {
-    $evalniveau_titles = array(block_exacomp_get_string('teacherevaluation_short'));
+    $evalniveau_titles = array('' => '', '0' => block_exacomp_get_string('teacherevaluation_short'));
 }
-$graph_options->yLabels = array_values($evalniveau_titles);
+$graph_options->yLabels = array_values($evalniveau_titles) + ['2'];
 $y_id_to_index = array_combine(array_keys($evalniveau_titles), array_keys($graph_options->yLabels));
+//echo "<pre>debug:<strong>3dchart.php:92</strong>\r\n"; print_r($evalniveau_titles); echo '</pre>';  // !!!!!!!!!! delete it
+//echo "<pre>debug:<strong>3dchart.php:92</strong>\r\n"; print_r($y_id_to_index); echo '</pre>'; exit; // !!!!!!!!!! delete it
 $ylabels_long = $graph_options->yLabels;
 
 // add student's evaluation
@@ -122,6 +124,7 @@ $graph_options->yColors = [
 
 $x = 1;
 foreach ($evaluation as $e) {
+
 	if ($e->studentvalue > 0) {
 		$data_value = (object)[
 			'x' => $x,
@@ -131,15 +134,30 @@ foreach ($evaluation as $e) {
 		];
 		$graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
 	}
-	if ($e->teachervalue >= 0 && isset($y_id_to_index[$e->evalniveau])) {
-		$data_value = (object)[
-			'x' => $x,
-			'y' => $y_id_to_index[$e->evalniveau],
-			'z' => $e->teachervalue,
-			'label' => @$xlabels_long[$x].' / '.@$ylabels_long[$y_id_to_index[$e->evalniveau]].': <b>'.$e->teachervaluetitle.'</b>',
-		];
-		$graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
-	}
+	if ($e->teachervalues) {
+	    foreach ($e->teachervalues as $evkey => $tvalue) {
+            if ($tvalue >= 0 && isset($y_id_to_index[$evkey])) {
+                $data_value = (object) [
+                        'x' => $x,
+                        'y' => $y_id_to_index[$evkey],
+                        'z' => $tvalue,
+                        'label' => @$xlabels_long[$x].' / '.@$ylabels_long[$y_id_to_index[$evkey]].': <b>'.
+                                $e->teachervaluetitles[$evkey].'</b>',
+                ];
+                $graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
+            }
+            /*if ($e->teachervalue >= 0 && isset($y_id_to_index[$e->evalniveau])) {
+                $data_value = (object) [
+                        'x' => $x,
+                        'y' => $y_id_to_index[$e->evalniveau],
+                        'z' => $e->teachervalue,
+                        'label' => @$xlabels_long[$x].' / '.@$ylabels_long[$y_id_to_index[$e->evalniveau]].': <b>'.
+                                $e->teachervaluetitle.'</b>',
+                ];
+                $graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
+            }*/
+        }
+    }
 /*
 			var title = evalniveau_titles_by_index[point.y] ? evalniveau_titles_by_index[point.y].title : '' || '';
 			var value
