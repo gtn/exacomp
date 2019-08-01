@@ -7704,7 +7704,7 @@ class block_exacomp_external extends external_api {
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
 			'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
 		    //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
-		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, 0),
+		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
 		));
 	}
 
