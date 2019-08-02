@@ -834,6 +834,94 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+
+
+
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggr_get_user_role_parameters() {
+        return new external_function_parameters (array());
+    }
+
+    /**
+     * Get role for user: 1=trainer 2=student
+     * @ws-type-read
+     * @diggr (2019-08-02: only used in diggr)
+     * return 1 for trainer
+     * 2 for student
+     * 0 if false
+     *
+     * @return array
+     */
+    public static function diggr_get_user_role() {
+        global $DB, $USER;
+
+        static::validate_parameters(static::diggr_get_user_role_parameters(), array());
+
+//        var_dump("diggr get user role called");
+//        die;
+
+
+        $trainer = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array(
+            'trainerid' => $USER->id,
+        ));
+        if ($trainer) {
+            return (object)[
+                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
+            ];
+        }
+
+        $student = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array(
+            'studentid' => $USER->id,
+        ));
+
+        if ($student) {
+            return (object)[
+                "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
+            ];
+        }
+
+        // neither student or trainer
+        return (object)[
+            "role" => 0,
+        ];
+    }
+
+    /**
+     * Returns description of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggr_get_user_role_returns() {
+        return new external_function_parameters (array(
+            'role' => new external_value (PARAM_INT, '1=trainer, 2=student'),
+        ));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Returns description of method parameters
 	 *
