@@ -5150,13 +5150,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	    $competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
 
-
-
-
 		$content = '';
-
-//        echo "HEEEEEEEEEEEEEEEERE";
-//        die;
 
 		foreach ($competence_tree as $subject) {
 			$content .= html_writer::tag("h4", $subject->title, array("class" => "competence_profile_coursetitle"));
