@@ -936,7 +936,7 @@ function block_exacomp_get_subject_by_descriptorid($descriptorid) {
     global $DB;
     $topicid = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptorid), "topicid");
     $subjectid = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid->topicid), "subjid");
-    return $DB->get_record(block_exacompsubjects, array('id' => $subjectid->subjid));
+    return $DB->get_record('block_exacompsubjects', array('id' => $subjectid->subjid));
 }
 
 /**
