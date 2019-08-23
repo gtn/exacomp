@@ -5105,6 +5105,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param unknown $student
 	 */
 	function competence_profile_metadata($student) {
+        if (!$student || !$student instanceof stdClass) {
+            return '';
+        }
 	    if ($this->is_print_mode()) {
             $userPicWidth = 50;
             $namediv = html_writer::div(html_writer::tag('h2', $student->firstname.' '.$student->lastname), 'pdf-username', ['align' => 'top']);
