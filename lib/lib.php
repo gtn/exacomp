@@ -6246,9 +6246,9 @@ function block_exacomp_get_file($item, $type, $position=-1) {
 
 
     // return first file
-    if($position  == -1){
+    if ($position  == -1){
         return reset($files);
-    }else{
+    } else {
         return array_shift(array_slice($files,$position,1));
     }
 

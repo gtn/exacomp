@@ -2065,6 +2065,7 @@ class data_importer extends data {
 
         // eTheMa parent - update later
         if (isset($item->ethema_parent)
+                && is_array($item->ethema_parent)
                 && array_key_exists('@attributes', $item->ethema_parent)
                 && array_key_exists('id', $item->ethema_parent['@attributes'])
                 && $item->ethema_parent['@attributes']['id'] > 0) {

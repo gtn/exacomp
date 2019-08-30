@@ -1150,6 +1150,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
                             $solution_url = $example->get_solution_file_url();
+                            if (!$solution_url && @$example->externalsolution) {
+                                $solution_url = $example->externalsolution;
+                            }
                             // Display Icons to hide/unhide example solution visibility
                             if ($isEditingTeacher && $solution_url && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                 // If solution exists and teacher is in edit mode, display icon
@@ -2714,8 +2717,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')),
                                         array("target" => "_blank"));
                             }
-
+                            
                             $solution_url = $example->get_solution_file_url();
+                            if (!$solution_url && @$example->externalsolution) {
+                                $solution_url = $example->externalsolution;
+                            }
                             // Display Icons to hide/unhide example solution visibility
                             if ($isEditingTeacher && $solution_url && $data->role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                 // If solution exists and teacher is in edit mode, display icon
@@ -3427,8 +3433,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if ($example->externaltask) {
                                 $titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
-
+                            
                             $solution_url = $example->get_solution_file_url();
+                            if (!$solution_url && @$example->externalsolution) {
+                                $solution_url = $example->externalsolution;
+                            }
                             // Display Icons to hide/unhide example solution visibility
                             if ($isEditingTeacher && $solution_url && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                 // If solution exists and teacher is in edit mode, display icon
