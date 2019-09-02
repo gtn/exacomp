@@ -4,6 +4,7 @@ require __DIR__.'/inc.php';
 require_once($CFG->libdir . '/externallib.php');
 require_once __DIR__.'/externallib.php';
 
+
 function block_exacomp_load_service($serviceshortname) {
 	global $DB;
 
@@ -24,6 +25,8 @@ function block_exacomp_load_service($serviceshortname) {
 
 function block_exacomp_get_login_data() {
 	$exa_tokens = [];
+
+
 
 	$services = optional_param('services', '', PARAM_TEXT);
 	$services = array_keys(
@@ -96,10 +99,8 @@ if ($action == 'logout') {
 }
 
 
-
 $PAGE->set_context(context_system::instance());
 require_login(0);
-
 
 
 $PAGE->set_url('/blocks/exacomp/applogin.php');
@@ -113,6 +114,39 @@ if (isguestuser()) {
 }
 
 $loginData = block_exacomp_get_login_data();
+
+//Here after the user is logged in
+//Check if this user is a teacher from eeducation. If they are: add to course with id=700
+$email = $loginData["data"]["user"]["email"];
+if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
+    //They are from eeducation ==> enrol them
+    $course = get_course(700);
+    $context = context_course::instance($course->id);
+    $userid = $loginData["data"]["user"]["id"];
+    $user = $DB->get_record('user', array('id' => $userid, 'deleted' => 0), '*', MUST_EXIST);
+    if (!is_enrolled($context, $user)) {
+        $enrol = enrol_get_plugin("manual"); //enrolmethod = manual
+        if ($enrol === null) {
+            return false;
+        }
+        $instances = enrol_get_instances($course->id, true);
+        $manualinstance = null;
+        foreach ($instances as $instance) {
+            if ($instance->name == "manual") {
+                $manualinstance = $instance;
+                break;
+            }
+        }
+        if ($manualinstance !== null) {
+            $instanceid = $enrol->add_default_instance($course);
+            if ($instanceid === null) {
+                $instanceid = $enrol->add_instance($course);
+            }
+            $instance = $DB->get_record('enrol', array('id' => $instanceid));
+        }
+        $enrol->enrol_user($instance, $userid, 3); //The roleid of "editingteacher" is 4 in mdl_role table
+    }
+}
 
 if (optional_param('withlogout', '', PARAM_BOOL)) {
 	// came from login form
