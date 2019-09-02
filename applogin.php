@@ -144,7 +144,9 @@ if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
             }
             $instance = $DB->get_record('enrol', array('id' => $instanceid));
         }
-        $enrol->enrol_user($instance, $userid, 3); //The roleid of "editingteacher" is 4 in mdl_role table
+        if($instance != null){
+            $enrol->enrol_user($instance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
+        }
     }
 }
 
