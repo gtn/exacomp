@@ -120,32 +120,35 @@ $loginData = block_exacomp_get_login_data();
 $email = $loginData["data"]["user"]["email"];
 if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
     //They are from eeducation ==> enrol them
-    $course = get_course(700);
-    $context = context_course::instance($course->id);
-    $userid = $loginData["data"]["user"]["id"];
-    $user = $DB->get_record('user', array('id' => $userid, 'deleted' => 0), '*', MUST_EXIST);
-    if (!is_enrolled($context, $user)) {
-        $enrol = enrol_get_plugin("manual"); //enrolmethod = manual
-        if ($enrol === null) {
-            return false;
-        }
-        $instances = enrol_get_instances($course->id, true);
-        $manualinstance = null;
-        foreach ($instances as $instance) {
-            if ($instance->name == "manual") {
-                $manualinstance = $instance;
-                break;
+//    $course = get_course(700);
+    $course = $DB->get_record('course', array('id' => $courseid), '*');
+    if($course != null){ //only proceed with enrolment, if course exists
+        $context = context_course::instance($course->id);
+        $userid = $loginData["data"]["user"]["id"];
+        $user = $DB->get_record('user', array('id' => $userid, 'deleted' => 0), '*', MUST_EXIST);
+        if (!is_enrolled($context, $user)) {
+            $enrol = enrol_get_plugin("manual"); //enrolment = manual
+            if ($enrol === null) {
+                return false;
             }
-        }
-        if ($manualinstance !== null) {
-            $instanceid = $enrol->add_default_instance($course);
-            if ($instanceid === null) {
-                $instanceid = $enrol->add_instance($course);
+            $instances = enrol_get_instances($course->id, true);
+            $manualinstance = null;
+            foreach ($instances as $instance) {
+                if ($instance->name == "manual") {
+                    $manualinstance = $instance;
+                    break;
+                }
             }
-            $instance = $DB->get_record('enrol', array('id' => $instanceid));
-        }
-        if($instance != null){
-            $enrol->enrol_user($instance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
+            if ($manualinstance !== null) {
+                $instanceid = $enrol->add_default_instance($course);
+                if ($instanceid === null) {
+                    $instanceid = $enrol->add_instance($course);
+                }
+                $instance = $DB->get_record('enrol', array('id' => $instanceid));
+            }
+            if($instance != null){
+                $enrol->enrol_user($instance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
+            }
         }
     }
 }
