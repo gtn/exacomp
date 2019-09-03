@@ -7267,34 +7267,40 @@ class block_exacomp_external extends external_api {
 	        'name' => $name,
 	        'skz' => $skz,
 	    ));
-	    do {
-	        $nps = "";
-	        for ($i = 0; $i < 6; $i ++) {
-	            $nps .= chr((mt_rand(1, 36) <= 26) ? mt_rand(97, 122) : mt_rand(48, 57));
-	        }
-	    } while($DB->get_field('block_exacompcohortcode', 'id', array('cohortcode' => $nps)));
 
-	    $cohortcode_return = array();
+        $isTeacher = block_exacomp_is_teacher(700,$USER->id);
+        if ($isTeacher) {
+            do {
+                $nps = "";
+                for ($i = 0; $i < 6; $i ++) {
+                    $nps .= chr((mt_rand(1, 36) <= 26) ? mt_rand(97, 122) : mt_rand(48, 57));
+                }
+            } while($DB->get_field('block_exacompcohortcode', 'id', array('cohortcode' => $nps)));
 
-	    $DB->insert_record('cohort', array(
-	        "contextid" => 1,
-	        "name" => $skz.''.$name,
-	        "descriptionformat" => 1,
-	        "timecreated" => time(),
-	        "timemodified" => time()
-	    ));
-	    $cohortid = $DB->get_field('cohort', 'MAX(id)', array(
-	        'name' => $skz.''.$name
-	    ));
-	    $DB->insert_record('block_exacompcohortcode', array(
-	        "cohortid" => $cohortid,
-	        "cohortcode" => $nps,
-	        "skz" => $skz,
-	        "trainerid" => $USER->id
-	    ));
+            $cohortcode_return = array();
 
-	    $cohortcode_return['cohortcode'] = $nps;
-	    return $cohortcode_return;
+            $DB->insert_record('cohort', array(
+                "contextid" => 1,
+                "name" => $skz.''.$name,
+                "descriptionformat" => 1,
+                "timecreated" => time(),
+                "timemodified" => time()
+            ));
+            $cohortid = $DB->get_field('cohort', 'MAX(id)', array(
+                'name' => $skz.''.$name
+            ));
+            $DB->insert_record('block_exacompcohortcode', array(
+                "cohortid" => $cohortid,
+                "cohortcode" => $nps,
+                "skz" => $skz,
+                "trainerid" => $USER->id
+            ));
+
+            $cohortcode_return['cohortcode'] = $nps;
+            return $cohortcode_return;
+        }
+	    return false;
+
 	}
 
 	/**
