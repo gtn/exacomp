@@ -121,7 +121,7 @@ $email = $loginData["data"]["user"]["email"];
 if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
     //They are from eeducation ==> enrol them
 //    $course = get_course(700);
-    $course = $DB->get_record('course', array('id' => $courseid), '*');
+    $course = $DB->get_record('course', array('id' => 700), '*');
     if($course != null){ //only proceed with enrolment, if course exists
         $context = context_course::instance($course->id);
         $userid = $loginData["data"]["user"]["id"];
