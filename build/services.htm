@@ -576,6 +576,99 @@ Params: <table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)"
 }</pre>
+<h2>block_exacomp_edit_example</h2>
+<div>Create an example
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the example that is to be updated</td>
+<tr>
+<td>name</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of example</td>
+<tr>
+<td>externalurl</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(2) "-1"
+</td>
+<td>list of competencies, seperated by comma</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemids separated by comma</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>fileitemid</td>
+<tr>
+<td>taxonomies</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>list of taxonomies</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td></td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>crosssubjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the crosssubject if it is a crosssubjectfile</td>
+</table>
+Returns:<pre>{
+    "exampleid": "int null (id of created example)"
+}</pre>
 <h2>block_exacomp_grade_item</h2>
 <div>Grade an item
 grade an item</div>
