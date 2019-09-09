@@ -148,8 +148,8 @@ if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
 //            }
 //            var_dump($instance);
 //            die;
-            if($instance != null){
-                $enrol->enrol_user($instance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
+            if($manualinstance != null){
+                $enrol->enrol_user($manualinstance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
             }
         }
     }
