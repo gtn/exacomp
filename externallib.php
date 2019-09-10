@@ -1833,6 +1833,7 @@ class block_exacomp_external extends external_api {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
 
+
         static::validate_parameters(static::edit_example_parameters(), array(
             'exampleid' => $exampleid,
             'name' => $name,
@@ -1847,8 +1848,11 @@ class block_exacomp_external extends external_api {
             'crosssubjectid' => $crosssubjectid,
         ));
 
+        $example = block_exacomp\example::get($exampleid);
+        block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
+
         // insert into examples and example_desc
-        $example = new stdClass ();
+        $id = $exampleid;
         $example->title = $name;
         $example->description = $description;
         $example->externalurl = $externalurl;
@@ -1867,10 +1871,16 @@ class block_exacomp_external extends external_api {
                 : BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
         }
 
-        $example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
+        $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
 
 
         if ($fileitemids != '') {
+            //Delete old files
+            $context = context_user::instance($USER->id);
+            $fs = get_file_storage();
+            $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
+
+            //Add new files
             $fileitemids = explode(',', $fileitemids);
             foreach ($fileitemids as $fileitemid){
                 $context = context_user::instance($USER->id);
@@ -1896,10 +1906,12 @@ class block_exacomp_external extends external_api {
             }
         }
 
-
         if ($solutionfileitemid != 0) {
             $context = context_user::instance($USER->id);
             $fs = get_file_storage();
+
+            //Delete old files
+            $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $example->id);
 
             $file = reset($fs->get_area_files($context->id, 'user', 'draft', $solutionfileitemid, null, false));
             if (!$file) {
@@ -1969,6 +1981,8 @@ class block_exacomp_external extends external_api {
                 'taxid' => $taxid,
             ]);
         }
+
+
 
         return array(
             "exampleid" => $id,

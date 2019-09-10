@@ -1099,6 +1099,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if ($editmode) {
                                 $titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
 
+
+
                                 if (block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
                                     $titleCell->text .= html_writer::link(
                                     // 	                            new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id, "topicid" => $descriptor->topicid, "exampleid" => $example->id)),
@@ -2717,7 +2719,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')),
                                         array("target" => "_blank"));
                             }
-                            
+
                             $solution_url = $example->get_solution_file_url();
                             if (!$solution_url && @$example->externalsolution) {
                                 $solution_url = $example->externalsolution;
@@ -3433,7 +3435,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if ($example->externaltask) {
                                 $titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
-                            
+
                             $solution_url = $example->get_solution_file_url();
                             if (!$solution_url && @$example->externalsolution) {
                                 $solution_url = $example->externalsolution;
