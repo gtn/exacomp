@@ -573,6 +573,7 @@ class block_exacomp_external extends external_api {
 
 		if ($solution) {
 			$example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
+            $example->solutionfilename = $solution->get_filename();
 
 		} elseif ($example->externalsolution) {
 			$example->solution = $example->externalsolution;
@@ -3611,6 +3612,7 @@ class block_exacomp_external extends external_api {
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
 			'taskfilename' => new external_value (PARAM_TEXT, 'task filename'),
+            'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
 			'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
