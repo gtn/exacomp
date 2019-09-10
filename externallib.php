@@ -538,13 +538,27 @@ class block_exacomp_external extends external_api {
 			'id' => $exampleid,
 		));
 		$example->hassubmissions = !!$DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid));
-		if ($file = block_exacomp_get_file($example, 'example_task')) {
-			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
-			$example->taskfilename = $file->get_filename();
-		} else {
-			$example->taskfileurl = null;
-			$example->taskfilename = null;
-		}
+
+        //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
+        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
+        $example->taskfilenames = "";
+        for($i=0;$i<$example->taskfilecount;$i++){
+            if ($file = block_exacomp_get_file($example, 'example_task', $i)) {
+                $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
+                $example->taskfilenames .= $file->get_filename().',';
+            } else {
+                $example->taskfileurl = null;
+                $example->taskfilename = null;
+            }
+        }
+
+//		if ($file = block_exacomp_get_file($example, 'example_task')) {
+//			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
+//            $example->taskfilename = $file->get_filename();
+//		} else {
+//			$example->taskfileurl = null;
+//			$example->taskfilename = null;
+//		}
 
 		// fall back to old fields
 		// TODO: check if this can be deleted?!?
@@ -592,7 +606,7 @@ class block_exacomp_external extends external_api {
 			'title' => new external_value (PARAM_TEXT, 'title of example'),
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-			'taskfilename' => new external_value (PARAM_TEXT, 'task filename'),
+			'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
 			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
@@ -3640,7 +3654,7 @@ class block_exacomp_external extends external_api {
 		}
         $example->title = static::custom_htmltrim(strip_tags($example->title));
 
-        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
+//        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
 //        var_dump($example);
 //        die();
 
@@ -3652,7 +3666,7 @@ class block_exacomp_external extends external_api {
 			'title' => new external_value (PARAM_TEXT, 'title of example'),
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-			'taskfilename' => new external_value (PARAM_TEXT, 'task filename'),
+			'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
             'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
 			'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
