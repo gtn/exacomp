@@ -1780,7 +1780,12 @@ class block_exacomp_external extends external_api {
 		    }
 		}
 
-
+        //clear the taxonomies
+		if($exampleid != -1){
+            $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, [
+                'exampleid' => $id,
+            ]);
+        }
 		$taxonomies = trim($taxonomies) ? explode(',', trim($taxonomies)) : [];
 		foreach ($taxonomies as $taxid) {
 			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
