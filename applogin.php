@@ -134,20 +134,22 @@ if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
             $instances = enrol_get_instances($course->id, true);
             $manualinstance = null;
             foreach ($instances as $instance) {
-                if ($instance->name == "manual") {
+                if ($instance->enrol == "manual") {
                     $manualinstance = $instance;
                     break;
                 }
             }
-            if ($manualinstance !== null) {
-                $instanceid = $enrol->add_default_instance($course);
-                if ($instanceid === null) {
-                    $instanceid = $enrol->add_instance($course);
-                }
-                $instance = $DB->get_record('enrol', array('id' => $instanceid));
-            }
-            if($instance != null){
-                $enrol->enrol_user($instance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
+//            if ($manualinstance !== null) {
+//                $instanceid = $enrol->add_default_instance($course);
+//                if ($instanceid === null) {
+//                    $instanceid = $enrol->add_instance($course);
+//                }
+//                $instance = $DB->get_record('enrol', array('id' => $instanceid));
+//            }
+//            var_dump($instance);
+//            die;
+            if($manualinstance != null){
+                $enrol->enrol_user($manualinstance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
             }
         }
     }
