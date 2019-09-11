@@ -6520,8 +6520,20 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 
 	$courses = block_exacomp_get_courseids();
 	$examples = array();
-	foreach ($courses as $course) {
-	    if(block_exacomp_is_teacher($course)){ //only show from courses where the teacher is a teacher
+	
+    if($studentid == 0){ //as teacher
+        foreach ($courses as $course) {
+            if(block_exacomp_is_teacher($course)){ //only show from courses where the teacher is a teacher
+                $course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);
+                foreach ($course_examples as $example) {
+                    if (!array_key_exists($example->scheduleid, $examples)) {
+                        $examples[$example->scheduleid] = $example;
+                    }
+                }
+            }
+        }
+    }else{ //as student
+        foreach ($courses as $course) {
             $course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);
             foreach ($course_examples as $example) {
                 if (!array_key_exists($example->scheduleid, $examples)) {
@@ -6529,7 +6541,8 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
                 }
             }
         }
-	}
+    }
+
 
 	return $examples;
 }
