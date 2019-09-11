@@ -6341,7 +6341,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 			)
 			ORDER BY s.id";
 
-	$entires = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
+    $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
 	//Check if this teacher added this example
 //  	foreach($entires as $entry){
 //        if ($entry->studentid != $USER->id) {
@@ -6354,14 +6354,14 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 
     //if teacher, only show their own examples that they added to the planning storage themselves
     if($studentid == 0){
-  	    foreach($entires as $entrykey => $entry){
+  	    foreach($entries as $entrykey => $entry){
             if ($entry->schedulecourseid != $courseid) {
-                unset($entires[$entrykey]);
+                unset($entries[$entrykey]);
             }
         }
     }
 
-	return $entires;
+	return $entries;
 }
 
 /**
@@ -6470,7 +6470,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau
+				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
@@ -6483,7 +6483,23 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
 
-	return $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
+	$entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
+
+
+    //if teacher, only show their own examples that they added to the planning storage themselves
+    if($studentid == 0){
+        foreach($entries as $entrykey => $entry){
+//            var_dump($entry->schedulecourseid);
+//            var_dump($courseid);
+//            die;
+            if ($entry->schedulecourseid != $courseid) {
+                unset($entries[$entrykey]);
+
+            }
+        }
+    }
+
+	return $entries;
 }
 
 /**
@@ -6494,6 +6510,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
  * @return unknown[]
  */
 function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end) {
+    global $USER;
 	if ($studentid < 0) {
 		$studentid = 0;
 	}
@@ -6501,12 +6518,14 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 	$courses = block_exacomp_get_courseids();
 	$examples = array();
 	foreach ($courses as $course) {
-		$course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);
-		foreach ($course_examples as $example) {
-			if (!array_key_exists($example->scheduleid, $examples)) {
-				$examples[$example->scheduleid] = $example;
-			}
-		}
+	    if(block_exacomp_is_teacher($course)){ //only show from courses where the teacher is a teacher
+            $course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);
+            foreach ($course_examples as $example) {
+                if (!array_key_exists($example->scheduleid, $examples)) {
+                    $examples[$example->scheduleid] = $example;
+                }
+            }
+        }
 	}
 
 	return $examples;
