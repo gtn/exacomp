@@ -874,7 +874,6 @@ function block_exacomp_get_timetable_entries() {
  */
 function block_exacomp_require_teacher($context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
-
 	return require_capability('block/exacomp:teacher', $context);
 }
 
@@ -6318,7 +6317,7 @@ function block_exacomp_get_url_for_file($file, $context = null) {
  * @param unknown $courseid
  */
 function block_exacomp_get_examples_for_pool($studentid, $courseid) {
-	global $DB;
+	global $DB, $USER;
 
 	if (date('w', time()) == 1) {
 		$beginning_of_week = strtotime('Today', time());
@@ -6329,7 +6328,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description
+				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
@@ -6342,7 +6341,27 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 			)
 			ORDER BY s.id";
 
-	return $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
+	$entires = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
+	//Check if this teacher added this example
+//  	foreach($entires as $entry){
+//        if ($entry->studentid != $USER->id) {
+//            $truee = block_exacomp_require_teacher($entry->courseid);
+//            var_dump($entry);
+//            die;
+//        }
+//    }
+//    die;
+
+    //if teacher, only show their own examples that they added to the planning storage themselves
+    if($studentid == 0){
+  	    foreach($entires as $entrykey => $entry){
+            if ($entry->schedulecourseid != $courseid) {
+                unset($entires[$entrykey]);
+            }
+        }
+    }
+
+	return $entires;
 }
 
 /**
@@ -6384,7 +6403,11 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 	$entry->end = $end;
 	$entry->deleted = $deleted;
 
+
 	if ($entry->studentid != $USER->id) {
+//        var_dump($entry);
+//        die;
+        //Permission denied error if wrong teacher tries to change this example
 		block_exacomp_require_teacher($entry->courseid);
 	}
 
@@ -6393,6 +6416,8 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 		$DB->execute('UPDATE {'.BLOCK_EXACOMP_DB_SCHEDULE.'} SET "end"=? WHERE id=?', [$entry->end, $entry->id]);
 		unset($entry->end);
 	}
+
+
 
 	$DB->update_record(BLOCK_EXACOMP_DB_SCHEDULE, $entry);
 }

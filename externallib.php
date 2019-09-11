@@ -4591,9 +4591,11 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 		}
 
+
 		static::require_can_access_course_user($courseid, $userid);
 
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
+
 
 		foreach ($examples as $example) {
 		    // it seems like dakora_get_examples_pool_returns has problems with the example titles which contain html tags, so:
