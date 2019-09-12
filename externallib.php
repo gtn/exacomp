@@ -542,13 +542,14 @@ class block_exacomp_external extends external_api {
         //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
         $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
         $example->taskfilenames = "";
+        $example->taskfileurl = "";
         for($i=0;$i<$example->taskfilecount;$i++){
             if ($file = block_exacomp_get_file($example, 'example_task', $i)) {
                 $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
                 $example->taskfilenames .= $file->get_filename().',';
             } else {
-                $example->taskfileurl = null;
-                $example->taskfilename = null;
+                $example->taskfileurl = "";
+                $example->taskfilenames = "";
             }
         }
 
