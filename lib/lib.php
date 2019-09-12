@@ -6325,7 +6325,26 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 		$beginning_of_week = strtotime('last Monday', time());
 	}
 
-	$sql = "select s.*,
+	//if teacher: only show the examples that this teacher added to the plannning storage (creatorid)
+	if($studentid == 0){
+        $sql = "select s.*,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
+				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid
+			FROM {block_exacompschedule} s
+			JOIN {block_exacompexamples} e ON e.id = s.exampleid
+			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
+			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
+			WHERE s.studentid = ? AND s.deleted = 0 AND (
+				-- noch nicht auf einen tag geleg
+				(s.start IS null OR s.start=0)
+				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
+				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
+			) AND s.creatorid = ?
+			ORDER BY s.id";
+        $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week, $USER->id));
+    }else{
+        $sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid
@@ -6340,18 +6359,8 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
 			)
 			ORDER BY s.id";
-
-    $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
-	//Check if this teacher added this example
-    //if teacher, only show their own examples that they added to the planning storage themselves
-    if($studentid == 0){
-  	    foreach($entries as $entrykey => $entry){
-            if ($entry->schedulecourseid != $courseid) {
-                unset($entries[$entrykey]);
-            }
-        }
+        $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
     }
-
 	return $entries;
 }
 
@@ -6361,9 +6370,25 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
  * @param unknown $courseid
  */
 function block_exacomp_get_examples_for_trash($studentid, $courseid) {
-	global $DB;
+	global $DB, $USER;
 
-	$sql = "select s.*,
+    //if teacher: only show the examples that this teacher added to the plannning storage (creatorid)
+    if($studentid == 0){
+        $sql = "select s.*,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid, s.courseid as schedulecourseid
+			FROM {block_exacompschedule} s
+			JOIN {block_exacompexamples} e ON e.id = s.exampleid
+			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
+			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
+			WHERE s.studentid = ? AND s.deleted = 1 AND (
+				-- noch nicht auf einen tag geleg
+				(s.start IS null OR s.start=0)
+			) AND s.creatorid = ?
+			ORDER BY s.id";
+        $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $USER->id));
+    }else{
+        $sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid, s.courseid as schedulecourseid
 			FROM {block_exacompschedule} s
@@ -6375,17 +6400,7 @@ function block_exacomp_get_examples_for_trash($studentid, $courseid) {
 				(s.start IS null OR s.start=0)
 			)
 			ORDER BY s.id";
-
-
-    $entries = $DB->get_records_sql($sql, array($courseid, $studentid));
-    //Check if this teacher added this example
-    //if teacher, only show their own examples that they added to the planning storage themselves
-    if($studentid == 0){
-        foreach($entries as $entrykey => $entry){
-            if ($entry->schedulecourseid != $courseid) {
-                unset($entries[$entrykey]);
-            }
-        }
+        $entries = $DB->get_records_sql($sql, array($courseid, $studentid));
     }
 
     return $entries;
@@ -6468,9 +6483,28 @@ function block_exacomp_remove_example_from_schedule($scheduleid) {
  * @param unknown $end
  */
 function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start, $end) {
-	global $DB;
+	global $DB, $USER;
 
-	$sql = "select s.*,
+    //if teacher: only show the examples that this teacher added to the plannning storage (creatorid)
+    if($studentid == 0){
+        $sql = "select s.*,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
+				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid
+			FROM {block_exacompschedule} s
+			JOIN {block_exacompexamples} e ON e.id = s.exampleid
+			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
+			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid 
+			LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid
+			WHERE s.studentid = ? AND s.courseid = ? AND (
+				-- innerhalb end und start
+				(s.start > ? AND s.end < ?)
+			) AND s.creatorid = ?
+			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
+			ORDER BY e.title";
+        $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end, $USER->id));
+    }else{
+        $sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid
@@ -6485,21 +6519,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 			)
 			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
-
-	$entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
-
-
-    //if teacher, only show their own examples that they added to the planning storage themselves
-    if($studentid == 0){
-        foreach($entries as $entrykey => $entry){
-//            var_dump($entry->schedulecourseid);
-//            var_dump($courseid);
-//            die;
-            if ($entry->schedulecourseid != $courseid) {
-                unset($entries[$entrykey]);
-
-            }
-        }
+        $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
     }
 
 	return $entries;
@@ -6520,7 +6540,7 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 
 	$courses = block_exacomp_get_courseids();
 	$examples = array();
-	
+
     if($studentid == 0){ //as teacher
         foreach ($courses as $course) {
             if(block_exacomp_is_teacher($course)){ //only show from courses where the teacher is a teacher
