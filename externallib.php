@@ -4623,6 +4623,7 @@ class block_exacomp_external extends external_api {
 	        $example->courseshortname = $example_course->shortname;
 	        $example->coursefullname = $example_course->fullname;
 		}
+
 		return $examples;
 	}
 
@@ -4646,6 +4647,7 @@ class block_exacomp_external extends external_api {
 		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
+            'timeframe' => new external_value (PARAM_TEXT, 'timeframe, suggested time'),
 		)));
 	}
 

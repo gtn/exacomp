@@ -95,6 +95,7 @@ $string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodl
 $string['teacher_third_configuration_step_link'] = '(Optional: Wenn Sie nicht mit Moodle-Aktivitäten arbeiten möchten, dann entfernen Sie das Häkchen "Ich möchte mit Moodle-Aktivitäten arbeiten" im Tab "Einstellungen".)';
 $string['completed_config'] = 'Die Exabis Kompetenzraster Konfiguration wurde abgeschlossen.';
 $string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, betätigen Sie diesen Link wenn Sie das jetzt machen möchten.';
+$string['enrol_users'] = 'Schreiben sie Teilnehmer/innen ein, um Exacomp verwenden zu können.';
 $string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum nächsten Schritt zu gelangen.';
 
 

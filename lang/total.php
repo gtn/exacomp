@@ -289,6 +289,12 @@ return [
 		'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, betätigen Sie diesen Link wenn Sie das jetzt machen möchten.',
 		'There are no participants in your course yet. If you want to enrol some please use this link.',
 	],
+    'enrol_users' => [
+        'Schreiben sie Teilnehmer/innen ein, um Exacomp verwenden zu können.',
+        'Enrol users to be able to use exacomp.',
+    ],
+
+
 	'next_step_first_teacher_step' => [
 		'Klicken Sie hier um zum nächsten Schritt zu gelangen.',
 		'Click here to continue configuration.',

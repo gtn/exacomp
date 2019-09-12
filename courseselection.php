@@ -43,7 +43,7 @@ $img = new moodle_url('/blocks/exacomp/pix/two.png');
 if ($action == 'save') {
 	$topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
 	block_exacomp_set_coursetopics($courseid, $topics);
-	
+
 	if(empty($topics)) {
 		$headertext = block_exacomp_get_string('tick_some');
 	} else {
@@ -51,16 +51,18 @@ if ($action == 'save') {
 		if($course_settings->uses_activities){
 			if (block_exacomp_is_activated($courseid))
 			$headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
-				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
+				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
 				. html_writer::link(new moodle_url('edit_activities.php', array('courseid'=>$courseid)), block_exacomp_get_string('next_step'));
 		}else{
 			 $headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
 				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('completed_config');
-	
+
 	   		 $students = block_exacomp_get_students_by_course($courseid);
 	   		 if(empty($students))
-				$headertext .= html_writer::empty_tag('br')
-					.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), block_exacomp_get_string('optional_step'));
+//				$headertext .= html_writer::empty_tag('br')
+//					.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), block_exacomp_get_string('optional_step'));
+                $headertext .= html_writer::empty_tag('br')
+                    .html_writer::span(block_exacomp_get_string('enrol_users'));
 		}
 	}
 }else{

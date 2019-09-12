@@ -95,6 +95,7 @@ $string['teacher_third_configuration_step'] = 'The next step is to associate Moo
 $string['teacher_third_configuration_step_link'] = '(Optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")';
 $string['completed_config'] = 'The configuration of Exabis Competence Grid is completed.';
 $string['optional_step'] = 'There are no participants in your course yet. If you want to enrol some please use this link.';
+$string['enrol_users'] = 'Enrol users to be able to use exacomp.';
 $string['next_step_first_teacher_step'] = 'Click here to continue configuration.';
 
 

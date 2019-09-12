@@ -6328,7 +6328,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 	//if teacher: only show the examples that this teacher added to the plannning storage (creatorid)
 	if($studentid == 0){
         $sql = "select s.*,
-				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid
 			FROM {block_exacompschedule} s
@@ -6345,7 +6345,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week, $USER->id));
     }else{
         $sql = "select s.*,
-				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid
 			FROM {block_exacompschedule} s
