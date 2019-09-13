@@ -1619,7 +1619,7 @@ class block_exacomp_external extends external_api {
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'externalurl' => new external_value (PARAM_TEXT, ''),
 			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
-			'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
+			'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
 			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
 			'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
@@ -2930,9 +2930,10 @@ class block_exacomp_external extends external_api {
 			'topicid' => $topicid,
 		));
 
-		if (!$userid) {
+		if (!$userid || $userid == 0) {
 			$userid = $USER->id;
 		}
+
 		static::require_can_access_user($userid);
 
 		$structure = array();
@@ -2941,7 +2942,6 @@ class block_exacomp_external extends external_api {
 
 		foreach ($courses as $course) {
 			$tree = block_exacomp_get_competence_tree($course["courseid"]);
-
 			foreach ($tree as $subject) {
 				foreach ($subject->topics as $topic) {
 					if ($topicid == 0 || ($topicid != 0 && $topic->id == $topicid)) {
