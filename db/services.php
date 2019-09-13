@@ -131,6 +131,7 @@ Get all available competencies',
     'methodname' => 'submit_example',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => 'Submit example
+submit example for elove and diggr
 Add item',
     'type' => 'read',
   ),

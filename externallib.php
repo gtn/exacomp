@@ -1432,7 +1432,7 @@ class block_exacomp_external extends external_api {
 
 	/**
 	 * Returns description of method parameters
-	 *
+	 * submit example for elove and diggr
 	 * @return external_function_parameters
 	 */
 	public static function submit_example_parameters() {
@@ -1452,6 +1452,7 @@ class block_exacomp_external extends external_api {
 
 	/**
 	 * Submit example
+     * submit example for elove and diggr
 	 * Add item
 	 * @ws-type-read
 	 * @param $exampleid
@@ -1597,7 +1598,7 @@ class block_exacomp_external extends external_api {
 
 	/**
 	 * Returns desription of method return values
-	 *
+	 *submit example for elove and diggr
 	 * @return external_single_structure
 	 */
 	public static function submit_example_returns() {
@@ -1617,6 +1618,7 @@ class block_exacomp_external extends external_api {
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
 			'name' => new external_value (PARAM_TEXT, 'title of example'),
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
+            'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_OPTIONAL),
 			'externalurl' => new external_value (PARAM_TEXT, ''),
 			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
 			'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
@@ -1640,7 +1642,7 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($exampleid, $name, $description, $externalurl, $comps, $fileitemids = '0', $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
+	public static function create_example($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids = '0', $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
@@ -1651,6 +1653,7 @@ class block_exacomp_external extends external_api {
             'exampleid' => $exampleid,
 			'name' => $name,
 			'description' => $description,
+            'timeframe' => $timeframe,
 			'externalurl' => $externalurl,
 			'comps' => $comps,
 			'fileitemids' => $fileitemids,
@@ -1671,6 +1674,7 @@ class block_exacomp_external extends external_api {
         }
 		$example->title = $name;
 		$example->description = $description;
+        $example->timeframe = $timeframe;
 		$example->externalurl = $externalurl;
 		$example->creatorid = $USER->id;
 		$example->timestamp = time();
