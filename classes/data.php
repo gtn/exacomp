@@ -1619,15 +1619,18 @@ class data_importer extends data {
 		
 		
 		if( $course_template != 0) {
-		    if ($ret === true) { // only if it is zip
-		        extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
-		    }
-		    for ($i = 1; @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i); $i++){
-		        moodle_restore('activity'. $i, $course_template, $USER->id);
-		    }
-		    @rmdir($CFG->tempdir . '/backup/activities');
+		    if (isset($xml->activities)) {
+		      if ($ret === true) { // only if it is zip
+		          extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
+		      }
+		      for ($i = 1;$i <= count($xml->activities->activity); $i++){
+		          @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
+		          moodle_restore('activity'. $i, $course_template, $USER->id);
+		       }
+		      @rmdir($CFG->tempdir . '/backup/activities');
+		      unlink($CFG->tempdir . '/backup/data.xml');
 
-		  if (isset($xml->activities)) {
+		  
 		      foreach($xml->activities->activity as $activity) {
                   if (isset($activity->descriptors)) {
                       foreach ($activity->descriptors->descriptorid as $descriptorid) {
