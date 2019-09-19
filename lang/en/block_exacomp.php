@@ -311,6 +311,7 @@ $string['topic'] = 'Topic';
 $string['taxonomies'] = 'taxonomies';
 $string['show_all_course_examples'] = 'Show examples from all courses';
 $string['name_example'] = 'Name';
+$string['timeframe_example'] = 'Timeframe';
 $string['example_add_taxonomy'] = 'Add new taxonomy';
 $string['comp_based'] = 'sort by competencies';
 $string['examp_based'] = 'sort by examples';

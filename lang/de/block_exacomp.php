@@ -311,6 +311,7 @@ $string['topic'] = 'Kompetenzbereich';
 $string['taxonomies'] = 'Niveaustufen';
 $string['show_all_course_examples'] = 'Lernmaterialien aus allen Kursen anzeigen';
 $string['name_example'] = 'Name';
+$string['timeframe_example'] = 'Zeitvorschlag';
 $string['example_add_taxonomy'] = 'Neue Niveaustufe erstellen';
 $string['comp_based'] = 'Nach Kompetenzen sortieren';
 $string['examp_based'] = 'Nach Lernmaterialien sortieren';

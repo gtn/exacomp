@@ -1072,6 +1072,10 @@ return [
 		'Name',
 		'Name',
 	],
+    'timeframe_example' => [
+        'Zeitvorschlag',
+        'Timeframe',
+    ],
 	'example_add_taxonomy' => [
 		'Neue Niveaustufe erstellen',
 		'Add new taxonomy',
