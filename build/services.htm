@@ -523,15 +523,17 @@ Params: <table>
 <td>timeframe</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>description of example</td>
 <tr>
 <td>externalurl</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(4) "wwww"
+</td>
 <td></td>
 <tr>
 <td>comps</td>
@@ -551,10 +553,10 @@ Params: <table>
 <td>fileitemids separated by comma</td>
 <tr>
 <td>solutionfileitemid</td>
-<td>int</td>
+<td>text</td>
 <td>null</td>
 <td>optional</td>
-<td>default: int(0)
+<td>default: string(0) ""
 </td>
 <td>fileitemid</td>
 <tr>
@@ -572,7 +574,7 @@ Params: <table>
 <td>optional</td>
 <td>default: int(0)
 </td>
-<td></td>
+<td>courseid</td>
 <tr>
 <td>filename</td>
 <td>text</td>
@@ -586,7 +588,7 @@ Params: <table>
 <td>int</td>
 <td>null</td>
 <td>optional</td>
-<td>default: int(-1)
+<td>default: int(-2)
 </td>
 <td>id of the crosssubject if it is a crosssubjectfile</td>
 </table>

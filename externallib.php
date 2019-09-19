@@ -1618,15 +1618,15 @@ class block_exacomp_external extends external_api {
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
 			'name' => new external_value (PARAM_TEXT, 'title of example'),
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
-            'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_OPTIONAL),
-			'externalurl' => new external_value (PARAM_TEXT, ''),
+            'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
+			'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
 			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
 			'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
-			'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
+			'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
-			'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
+			'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
-		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
+		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -2),
 		));
 	}
 
@@ -1635,19 +1635,17 @@ class block_exacomp_external extends external_api {
 	 * create example
 	 * @ws-type-write
 	 *
-	 * @param $name
-	 * @param $description
-	 * @param $externalurl
-	 * @param $comps
-	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids = '0', $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
+	public static function create_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
 			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
+
+        var_dump($courseid);
+        die;
 
 		static::validate_parameters(static::create_example_parameters(), array(
             'exampleid' => $exampleid,
@@ -1664,7 +1662,10 @@ class block_exacomp_external extends external_api {
 		    'crosssubjectid' => $crosssubjectid,
 		));
 
-		//Update material that already exists
+
+
+
+        //Update material that already exists
 		if($exampleid != -1){
             $example = block_exacomp\example::get($exampleid);
             block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
@@ -1731,7 +1732,7 @@ class block_exacomp_external extends external_api {
             }
         }
 
-		if ($solutionfileitemid != 0) {
+		if ($solutionfileitemid != '') {
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 
@@ -7623,7 +7624,7 @@ class block_exacomp_external extends external_api {
             $cohortcode_return = array();
 
             $DB->insert_record('cohort', array(
-                "contextid" => 1,
+                "contextid" => get_config('auth_dgb','courseid'),
                 "name" => $skz.''.$name,
                 "descriptionformat" => 1,
                 "timecreated" => time(),
