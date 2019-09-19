@@ -1644,9 +1644,6 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
 
-        var_dump($courseid);
-        die;
-
 		static::validate_parameters(static::create_example_parameters(), array(
             'exampleid' => $exampleid,
 			'name' => $name,
