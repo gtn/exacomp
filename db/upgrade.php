@@ -3387,6 +3387,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019081501, 'exacomp');
     }
 
+    if ($oldversion < 2019092000) {
+        $table = new xmldb_table('block_exacompsettings');
+        $field = new xmldb_field('showglobalsjubjects', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2019092000, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
