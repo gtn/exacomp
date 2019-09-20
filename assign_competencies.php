@@ -105,7 +105,8 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 	exit;
 }
 
-$ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
+$ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true, $course_settings->hideglobalsubjects);
+
 if (!$ret) {
 	print_error('not configured');
 }
@@ -186,6 +187,7 @@ if ($isTeacher) {	//mind nostudents setting
 foreach ($students as $student) {
 	block_exacomp_get_user_information_by_course($student, $courseid);
 }
+
 
 if (optional_param('print', false, PARAM_BOOL)) {
 	$output->print = true;
@@ -288,4 +290,5 @@ echo html_writer::end_tag("div");
 echo html_writer::end_tag("div");
 
 /* END CONTENT REGION */
+
 echo $output->footer();

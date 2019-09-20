@@ -222,6 +222,7 @@ class block_exacomp_simple_service {
 	static function dakora_print_competence_grid() {
 	    $course = static::require_courseid();
 
+
 	    $courseid = required_param('courseid', PARAM_INT);
 	    $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 	    $group = optional_param('group', 0, PARAM_INT);
@@ -235,6 +236,8 @@ class block_exacomp_simple_service {
 	    }
 
 	    $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
+
+        $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 	    // CHECK TEACHER
 	    $isTeacher = block_exacomp_is_teacher($courseid);
@@ -255,7 +258,7 @@ class block_exacomp_simple_service {
             $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
         }
 
-	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false , $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
+	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false , $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true, $course_settings->hideglobalsubjects);
 	    if (!$ret) {
 	        print_error('not configured');
 	    }

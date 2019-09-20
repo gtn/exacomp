@@ -894,7 +894,7 @@ function block_exacomp_require_admin($context = null) {
  * @param bool $showalldescriptors default false, show only comps with activities
  * @return array $subjects
  */
-function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false) {
+function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false, $hideglobalsubjects = -1) {
 	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	}
@@ -915,6 +915,18 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			';
 
 	$subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
+
+    //remove the subjects that are hidden because they are globalsubjects and the settings are set to hide them
+    if($hideglobalsubjects = -1){
+        $hideglobalsubjects = block_exacomp_get_settings_by_course($courseid)->hideglobalsubjects;
+    }
+    if($hideglobalsubjects == 1){
+        foreach ($subjects as $key => $subject) {
+            if($subject->isglobal){
+                unset($subjects[$key]);
+            }
+        }
+    }
 
 	return block_exacomp_sort_items($subjects, BLOCK_EXACOMP_DB_SUBJECTS);
 }
@@ -2026,9 +2038,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @param number $studentid set if he is a student
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false) {
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects) {
 	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false);
-	$courseSubjects = block_exacomp_get_subjects_by_course($courseid);
+	$courseSubjects = block_exacomp_get_subjects_by_course($courseid,false,$hideglobalsubjects);
 
 	$topic = new \stdClass();
 	$topic->id = $topicid;
@@ -2055,6 +2067,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 			}
 		}
 	}
+
 	if (!$selectedSubject && $topicid) {
 		if (isset($courseTopics[$topicid]) && block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
 			$selectedTopic = $courseTopics[$topicid];
@@ -2077,6 +2090,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
         }
 	}
 
+
 	// load all descriptors first (needed for teacher)
 	if ($editmode) {
 		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $selectedTopic ? $selectedTopic->id : null, true, false, false);
@@ -2094,6 +2108,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 			}
 		}
 	}
+
 
 	if (!$isTeacher) {
 		// for students check student visibility
@@ -2131,8 +2146,11 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	foreach ($courseSubjects as $subject) {
 		$subject->topics = [];
 	}
+
 	foreach ($courseTopics as $topic) {
-		$courseSubjects[$topic->subjid]->topics[$topic->id] = $topic;
+	    if($courseSubjects[$topic->subjid]){ //check if this subject is not removed already
+            $courseSubjects[$topic->subjid]->topics[$topic->id] = $topic;
+        }
 	}
 
 	return array($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau);

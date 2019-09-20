@@ -59,6 +59,7 @@ if ($action == 'save_coursesettings') {
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
 	$settings->nostudents = optional_param('nostudents', 0, PARAM_INT);
     $settings->isglobal = optional_param('isglobal', 0, PARAM_INT);
+    $settings->hideglobalsubjects = optional_param('hideglobalsubjects', 0, PARAM_INT);
     $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies);
 
 	block_exacomp_save_coursesettings($courseid, $settings);

@@ -248,64 +248,69 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::start_div('subjects_menu');
 		$content .= html_writer::start_tag('ul');
 
+
 		foreach ($subjects as $subject) {
-			$extra = '';
-			if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-				$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid='.$COURSE->id.'&id='.$subject->id]);
+            $extra = '';
+            if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                $extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid='.$COURSE->id.'&id='.$subject->id]);
                 $deleteUrl = html_entity_decode(new block_exacomp\url('subject.php', ['courseid' => $COURSE->id, 'id' => $subject->id, 'action' => 'delete', 'forward' => g::$PAGE->url]));
-				$extra .= ' '.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
+                $extra .= ' '.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                         null, [
-                        'title' => block_exacomp_get_string("delete"),
-                        'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
-                ]);
-			}
-			$content .= html_writer::tag('li',
-				html_writer::link(
-					new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS, 'colgroupid' => optional_param('colgroupid', 0, PARAM_INT)]),
-					$subject->title.$extra, [
-					'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
-					'title' => (($author = $subject->get_author()) ? block_exacomp_get_string('author', 'repository').": ".$author : ''),
-				])
-			);
+                            'title' => block_exacomp_get_string("delete"),
+                            'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
+                        ]);
+            }
 
-			$studentid = 0;
-			if (!$editmode && count($students) == 1) {
-				$studentid = array_values($students)[0]->id;
-			}
 
-			foreach ($subject->topics as $topic) {
-				if (block_exacomp_is_teacher() || block_exacomp_is_topic_visible($COURSE->id, $topic, g::$USER->id)) {
-					$extra = '';
-					if ($this->is_edit_mode() && $topic->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-						$extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, [
-								'exa-type' => "iframe-popup",
-								'exa-url' => 'topic.php?courseid='.$COURSE->id.'&id='.$topic->id,
-							]);
+
+            $content .= html_writer::tag('li',
+                html_writer::link(
+                    new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS, 'colgroupid' => optional_param('colgroupid', 0, PARAM_INT)]),
+                    $subject->title.$extra, [
+                    'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
+                    'title' => (($author = $subject->get_author()) ? block_exacomp_get_string('author', 'repository').": ".$author : ''),
+                ])
+            );
+
+
+
+            $studentid = 0;
+            if (!$editmode && count($students) == 1) {
+                $studentid = array_values($students)[0]->id;
+            }
+
+            foreach ($subject->topics as $topic) {
+                if (block_exacomp_is_teacher() || block_exacomp_is_topic_visible($COURSE->id, $topic, g::$USER->id)) {
+                    $extra = '';
+                    if ($this->is_edit_mode() && $topic->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                        $extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, [
+                                'exa-type' => "iframe-popup",
+                                'exa-url' => 'topic.php?courseid='.$COURSE->id.'&id='.$topic->id,
+                            ]);
                         $deleteUrl = html_entity_decode(new block_exacomp\url('topic.php', ['courseid' => $COURSE->id, 'id' => $topic->id, 'action' => 'delete', 'forward' => g::$PAGE->url.'&editmode=1']));
                         $extra .= ' '.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
-                                        null, [
-                                                'title' => block_exacomp_get_string("delete"),
-                                                'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
-                                        ]);
-					}
+                                null, [
+                                    'title' => block_exacomp_get_string("delete"),
+                                    'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
+                                ]);
+                    }
 
-					$content .= html_writer::tag('li', html_writer::link(new block_exacomp\url (g::$PAGE->url, [
-						'subjectid' => $subject->id,
-						'topicid' => $topic->id,
+                    $content .= html_writer::tag('li', html_writer::link(new block_exacomp\url (g::$PAGE->url, [
+                        'subjectid' => $subject->id,
+                        'topicid' => $topic->id,
                         'colgroupid' => optional_param('colgroupid', 0, PARAM_INT),
-					]), block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array(
-						'class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '',
+                    ]), block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array(
+                        'class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '',
                         'title' => $topic->description,
-					)));
-				}
-			}
-			if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-				// only if editing and if subject was added by teacher
-				$content .= html_writer::tag('li', html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_get_string('create_new_area'), array(
-					'exa-type' => 'iframe-popup',
-				)));
-			}
-
+                    )));
+                }
+            }
+            if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                // only if editing and if subject was added by teacher
+                $content .= html_writer::tag('li', html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_get_string('create_new_area'), array(
+                    'exa-type' => 'iframe-popup',
+                )));
+            }
 		}
 
 		$content .= html_writer::end_tag('ul');
