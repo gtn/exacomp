@@ -111,8 +111,8 @@ const BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV = 4; // evaluated -> only fr
 const BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV = 5; //evaluated -> only from teacher -> exacomp evaluation > nE
 const BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME = 9; //handled like example entry on calendar, but represent locked time
 
-const BLOCK_EXACOMP_STUDENTS_PER_COLUMN = 1;
-const BLOCK_EXACOMP_MODULES_PER_COLUMN = 1;
+const BLOCK_EXACOMP_STUDENTS_PER_COLUMN = 3;
+const BLOCK_EXACOMP_MODULES_PER_COLUMN = 25;
 const BLOCK_EXACOMP_SHOW_ALL_TOPICS = -1;
 const BLOCK_EXACOMP_SHOW_ALL_NIVEAUS = 99999999;
 
@@ -218,6 +218,7 @@ function block_exacomp_init_js_css() {
 		'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation',
 	    'topic_3dchart_empty', 'columnselect', 'n1.unit', 'n2.unit', 'n3.unit', 'n4.unit', 'n5.unit', 'n6.unit', 'n7.unit',
 	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation', 'dismiss_gradingisold',
+        'donotleave_page_message',
 	    ],
         'block_exacomp'
         //['5' => sprintf("%.1f", block_exacomp_get_assessment_grade_limit())] // Important to keep array keys!!  5 => value_too_large. Disabled now. Using JS direct value
@@ -3794,9 +3795,11 @@ function block_exacomp_save_competences_activities($data, $courseid, $comptype) 
 	if ($data != null) {
 		foreach ($data as $cmoduleKey => $comps) {
 			if (!empty($cmoduleKey)) {
-				foreach ($comps as $compidKey => $empty) {
+				foreach ($comps as $compidKey => $val) {
 					//set activity
-					block_exacomp_set_compactivity($cmoduleKey, $compidKey, $comptype);
+                    if ($val) {
+                        block_exacomp_set_compactivity($cmoduleKey, $compidKey, $comptype);
+                    }
 				}
 			}
 		}
@@ -3813,7 +3816,7 @@ function block_exacomp_save_competences_activities($data, $courseid, $comptype) 
 function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activitytitle = null) {
 	global $DB, $COURSE;
 
-	if($activitytitle == null){
+	if ($activitytitle == null){
 	   $cmmod = $DB->get_record('course_modules', array("id" => $activityid));
 	   $modulename = $DB->get_record('modules', array("id" => $cmmod->module));
 	   $instance = get_coursemodule_from_id($modulename->name, $activityid);
@@ -3827,13 +3830,26 @@ function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activi
  *
  * Delete competence, activity associations
  */
-function block_exacomp_delete_competences_activities() {
+function block_exacomp_delete_competences_activities($modulekey = null, $comptype = null) {
 	global $COURSE, $DB;
 
-	$cmodules = $DB->get_records('course_modules', array('course' => $COURSE->id));
+	$where = array(
+            'course' => $COURSE->id
+    );
+	if ($modulekey) {
+	    $where['id'] = $modulekey;
+	}
+	$cmodules = $DB->get_records('course_modules', $where);
 
+    $del_where = array(
+        'eportfolioitem' => 0
+    );
+    if ($comptype !== null) {
+        $del_where['comptype'] = $comptype;
+    }
 	foreach ($cmodules as $cm) {
-		$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $cm->id, 'eportfolioitem' => 0));
+	    $del_where['activityid'] = $cm->id;
+	    $DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, $del_where);
 	}
 }
 

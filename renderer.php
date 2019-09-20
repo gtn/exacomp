@@ -4842,11 +4842,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function activity_content($subjects, $modules) {
 		global $PAGE;
 
+        $nojs = (bool)get_config('exacomp', 'disable_js_edit_activities');
+
 		$colspan = (count($modules) + 2);
 
 		$table = new html_table;
 		$table->attributes['class'] = 'rg2 exabis_comp_comp';
-		$table->attributes['style'] = 'display: none'; // hide table first, show with javascript
+		if (!$nojs) {
+            $table->attributes['style'] = 'display: none'; // hide table first, show with javascript
+        }
 		$table->attributes['id'] = 'comps';
 
 		$rows = array();
@@ -4863,7 +4867,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 /*		$moduleNameLengths = array_map(function($m) {return strlen($m->name);}, $modules);
 		$maxLength = max($moduleNameLengths);*/
-
 
 		foreach ($modules as $module) {
 			$cell = new html_table_cell();
@@ -4903,16 +4906,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             'class' => 'btn btn-default',
                                             'value' => block_exacomp_get_string('save_selection'))),
                                     '', array('id' => 'exabis_save_button'));
+        $div .= html_writer::tag('input', '', array("type" => "hidden", 'name' => 'action', 'value' => 'save'));
 
-		$js = '
-			<script>
+        if (!$nojs) {
+            $js = '<script>
 				block_exacomp.column_selector("table.exabis_comp_comp", {
 					title_colspan: 2
 				});
-			</script>
-		';
-
-		return $js.html_writer::tag('form', $div, array('id' => 'edit-activities', 'action' => $PAGE->url.'&action=save', 'method' => 'post'));
+			</script>';
+        } else {
+            $js = '';
+        }
+        $pageurl = $PAGE->url;
+		return $js.html_writer::tag('form',
+                        $div,
+                        array('id' => 'edit-activities',
+                                //'action' => $PAGE->url.'&action=save', // adds '&amp' if the $PAGE->url has more than 1 param
+                                'action' => $pageurl,
+                                'method' => 'post',
+                                'class' => 'checksaving_on_leavepage'));
 
 	}
 
@@ -4936,7 +4948,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$moduleCell = new html_table_cell();
 				$moduleCell->attributes['module-type='] = $module->modname;
 				if (block_exacomp_is_topicgrading_enabled()) {
-					$moduleCell->text = html_writer::checkbox('topicdata['.$module->id.']['.$topic->id.']', "", (in_array($topic->id, $module->topics)) ? true : false, '', array('class' => 'topiccheckbox'));
+                    $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topicdata['.$module->id.']['.$topic->id.']', 'value' => 0]);
+					$moduleCell->text .= html_writer::checkbox('topicdata['.$module->id.']['.$topic->id.']', "1", (in_array($topic->id, $module->topics)) ? true : false, '', array('class' => 'topiccheckbox'));
 				}
 				$topicRow->cells[] = $moduleCell;
 			}
@@ -4969,7 +4982,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			foreach ($modules as $module) {
 				$moduleCell = new html_table_cell();
-				$moduleCell->text = html_writer::checkbox('data['.$module->id.']['.$descriptor->id.']', '', (in_array($descriptor->id, $module->descriptors)) ? true : false);
+                $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'data['.$module->id.']['.$descriptor->id.']', 'value' => 0]);
+				$moduleCell->text .= html_writer::checkbox('data['.$module->id.']['.$descriptor->id.']', '1', (in_array($descriptor->id, $module->descriptors)) ? true : false);
 				$descriptorRow->cells[] = $moduleCell;
 			}
 

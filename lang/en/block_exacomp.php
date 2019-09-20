@@ -730,3 +730,4 @@ $string['dakora_string1'] = 'english string1';
 $string['dakora_string2'] = 'english string2';
 $string['dakora_string3'] = 'english string3';
 $string['active_show'] = 'active (show them)';
+$string['donotleave_page_message'] = 'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?';

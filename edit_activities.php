@@ -43,6 +43,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 require_login($course);
 
 $slicemodulelist = false;
+$columngroupnumber = null;
 if (get_config('exacomp', 'disable_js_edit_activities')) {
     $columngroupnumber = optional_param('colgroupid', 0, PARAM_INT);
     if ($columngroupnumber > -1) { // -1 - show all!
@@ -58,8 +59,13 @@ block_exacomp_require_teacher($context);
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_teacher_settings_assignactivities';
 
+$page_params =  array('courseid' => $courseid);
+if ($columngroupnumber !== null) {
+    $page_params['colgroupid'] = $columngroupnumber;
+}
+
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/edit_activities.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/edit_activities.php', $page_params);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
@@ -70,7 +76,23 @@ $headertext = "";
 $img = new moodle_url('/blocks/exacomp/pix/three.png');
 	 
 if ($action == "save") {
-	block_exacomp_delete_competences_activities();
+    // delete old relations only from this page (some can be hidden)
+    if (isset($_POST['data'])) {
+        foreach ($_POST['data'] as $cmoduleKey => $comps) {
+            if (!empty($cmoduleKey)) {
+                block_exacomp_delete_competences_activities($cmoduleKey, 0);
+            }
+        }
+    }
+    if (isset($_POST['topicdata'])) {
+        foreach ($_POST['topicdata'] as $cmoduleKey => $comps) {
+            if (!empty($cmoduleKey)) {
+                block_exacomp_delete_competences_activities($cmoduleKey, 1);
+            }
+        }
+    }
+    // delete all realtion for course
+	//block_exacomp_delete_competences_activities();
 	// DESCRIPTOR DATA
 	block_exacomp_save_competences_activities(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, 0);
 	// TOPIC DATA
@@ -141,20 +163,19 @@ $subjects = block_exacomp_get_competence_tree($courseid, null, null, true, null,
 
 $modules = $allModules = block_exacomp_get_allowed_course_modules_for_course($COURSE->id);
 
-if ($slicemodulelist) {
-    if (count($modules) < ($columngroupnumber * BLOCK_EXACOMP_MODULES_PER_COLUMN)) {
-        $slicestartposition = 0;
-    }
-    $modules = array_slice($modules, $slicestartposition, BLOCK_EXACOMP_MODULES_PER_COLUMN);
-}
-
 $visible_modules = [];
 $modules_to_filter = [];
 
 $colselector = $output->students_column_selector(count($allModules), 'edit_activities');
-echo $colselector;
 
 if ($modules) {
+    if ($slicemodulelist) {
+        if (count($modules) < ($columngroupnumber * BLOCK_EXACOMP_MODULES_PER_COLUMN)) {
+            $slicestartposition = 0;
+        }
+        $modules = array_slice($modules, $slicestartposition, BLOCK_EXACOMP_MODULES_PER_COLUMN);
+    }
+
 	foreach ($modules as $module) {
 		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
 			
@@ -193,6 +214,7 @@ if ($modules) {
 	} else {
 		echo $output->activity_legend($headertext);
 		echo $output->transfer_activities();
+        echo $colselector;
 		echo $output->activity_content($subjects, $visible_modules);
 	}
 } else {

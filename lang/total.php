@@ -2597,7 +2597,10 @@ return [
     'active_show' => [
         'aktiv (anzeigen)',
         'active (show them)',
-    ]
-
+    ],
+    'donotleave_page_message' => [
+        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',
+        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
+    ],
 
 ];
