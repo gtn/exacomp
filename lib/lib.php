@@ -1352,6 +1352,9 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
 function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null, $subjectid = -1) {
 	global $DB, $USER;
 
+//    var_dump("DEBUG2");
+//    die;
+
 	if ($evalniveauid !== null && $evalniveauid < 1) {
 		$evalniveauid = null;
 	}
@@ -1382,6 +1385,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		if($subject->isglobal){
             block_exacomp_update_globalgradings_text($compid,$userid,$comptype);
         }
+//        block_exacomp_update_gradinghistory_text($compid,$userid,$courseid,$comptype);
 	} else {
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 	}
@@ -7317,6 +7321,9 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, $subjectid = -1) {
 	global $DB, $USER;
 
+//    var_dump("DEBUG1");
+//    die;
+
 	if (is_string($additionalinfo)) {
 		// force additional info to be stored with a dot as decimal mark
 		$additionalinfo = (float)str_replace(",", ".", $additionalinfo);
@@ -7375,7 +7382,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$record->reviewerid = $USER->id;
     		$record->additionalinfo = $additionalinfo;
     		$record->value = $value;
-//          $record->globalgradings = $record->globalgradings."A__";
+            $record->gradinghistory .= $USER->firstname." ".$USER->lastname.": ".$value.". | ";
 
     		if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $record);
@@ -7392,17 +7399,19 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$insert->role = $role;
     		$insert->reviewerid = $USER->id;
     		$insert->timestamp = time();
+            $insert->gradinghistory = $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$insert->timestamp).": ".$value.". | ";
 
     		$insert->additionalinfo = $additionalinfo;
     		$insert->value = $value;
     		$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
     	}
 
-        //set the gradingisold flag of the parentdescriptor(if there is one) to "1"
-        block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
+
 
 
         if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+            //set the gradingisold flag of the parentdescriptor(if there is one) to "1"
+            block_exacomp_set_descriptor_gradingisold($courseid, $descriptorid, $studentid, $role);
             if ($subjectid == -1) {
                 $subject = block_exacomp_get_subject_by_descriptorid($descriptorid);
             } else {
@@ -7411,6 +7420,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             if ($subject->isglobal) {
                 block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype);
             }
+//            block_exacomp_update_gradinghistory_text($descriptorid,$studentid,$courseid,$comptype);
         }
 
 	}
@@ -8973,12 +8983,15 @@ function block_exacomp_get_comp_eval_merged($courseid, $studentid, $item) {
 }
 
 function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $compid, $data) {
+    global $USER;
 	$data = (array)$data;
 	unset($data['courseid']);
 	unset($data['role']);
 	unset($data['userid']);
 	unset($data['comptype']);
 	unset($data['compid']);
+
+
 
 
 	if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
@@ -9057,9 +9070,10 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 				'userid' => $studentid,
 				'comptype' => $comptype,
 				'compid' => $compid,
-				'role' => $role,
+				'role' => $role
 			]);
 
+            $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
 			if ($record) {
 				$changed = false;
 				if (array_key_exists('additionalinfo', $data) && $data['additionalinfo'] != $record->additionalinfo) {
@@ -9085,9 +9099,11 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 
 				if ($changed) {
 					$data['timestamp'] = time();
+                    $data['gradinghistory'] = $record->gradinghistory.$USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']].". | ";
 				}
 			} else {
 				$data['timestamp'] = time();
+                $data['gradinghistory'] = $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']].". | ";
 			}
 		}
 
@@ -10839,7 +10855,39 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
     $globalgradings_text = "";
     foreach($records as $record){
-        $globalgradings_text .= $record->firstname." ".$record->lastname.": ".$scheme_values[$record->value].".  ";
+        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("Y-m-d",$record->timestamp).": ".$scheme_values[$record->value].". | ";
+    }
+
+    foreach($records as $record){
+        $record->globalgradings = $globalgradings_text;
+        $DB->update_record("block_exacompcompuser", $record);
+    }
+
+    return $globalgradings_text;
+}
+
+function block_exacomp_update_gradinghistory_text($descriptorid,$studentid,$courseid,$comptype){
+    global $DB;
+
+    $query = 'SELECT compuser.*, userr.firstname, userr.lastname
+                FROM {block_exacompcompuser} compuser
+                INNER JOIN `mdl_user` userr ON (compuser.reviewerid = userr.id)
+                WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
+
+    /*
+SELECT compuser.value, mdl_user.username
+FROM `mdl_block_exacompcompuser` compuser
+INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id)
+WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
+     */
+
+    $records = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
+
+    $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
+
+    $globalgradings_text = "";
+    foreach($records as $record){
+        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("Y-m-d",$record->timestamp).": ".$scheme_values[$record->value].". | ";
     }
 
     foreach($records as $record){

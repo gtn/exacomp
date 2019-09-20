@@ -976,7 +976,7 @@ return [
 	],
     'usehideglobalsubjects' => [
         'Überfachliche Kompetenzraster verbergen',
-        'Hide globals subjects',
+        'Hide global subjects',
     ],
 	'profoundness_0' => [
 		'Nicht erreicht',

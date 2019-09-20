@@ -265,7 +265,8 @@
         <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="additional info value"/>
         <FIELD NAME="evalniveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="link to evaluation niveau (eval_niveau)"/>
         <FIELD NAME="gradingisold" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="shows if the grading is old / if there exists a newer grading in one of the childcompetences"/>
-        <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence"/>
+        <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence, even in different courses"/>
+        <FIELD NAME="gradinghistory" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the history of gradings in this course on this descriptor"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
