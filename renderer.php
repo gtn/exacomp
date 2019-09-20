@@ -4401,7 +4401,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 .html_writer::empty_tag('br');
         }
 
-        $input_showglobalsubjects = html_writer::checkbox('showglobalsubjects', 1, $settings->showglobalsubjects == 1, '&nbsp;'.block_exacomp_get_string('useshowglobalsubjects'))
+        $input_hideglobalsubjects = html_writer::checkbox('hideglobalsubjects', 1, $settings->hideglobalsubjects == 1, '&nbsp;'.block_exacomp_get_string('usehideglobalsubjects'))
             .html_writer::empty_tag('br');
 
 
@@ -4410,7 +4410,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-			$input_grading.$input_activities.$input_descriptors./*$input_examples.*/$hiddenaction.$input_nostudents.$input_isglobal.$input_showglobalsubjects.$input_submit,
+			$input_grading.$input_activities.$input_descriptors./*$input_examples.*/$hiddenaction.$input_nostudents.$input_isglobal.$input_hideglobalsubjects.$input_submit,
 			array('action' => 'edit_course.php?courseid='.$courseid, 'method' => 'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div", $header.$div, array("id" => "exabis_competences_block"));

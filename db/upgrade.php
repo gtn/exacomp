@@ -3387,14 +3387,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019081501, 'exacomp');
     }
 
-    if ($oldversion < 2019092000) {
+    if ($oldversion < 2019092001) {
         $table = new xmldb_table('block_exacompsettings');
-        $field = new xmldb_field('showglobalsjubjects', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $field = new xmldb_field('hideglobalsubjects', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2019092000, 'exacomp');
+        upgrade_block_savepoint(true, 2019092001, 'exacomp');
     }
 
     /*

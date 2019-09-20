@@ -282,6 +282,7 @@ $string['usetopicgrading'] = 'Beurteilung von Kompetenzbereichen ermöglichen';
 $string['usesubjectgrading'] = 'Beurteilung von Fächern ermöglichen';
 $string['usenumbering'] = 'Automatische Nummerierung im Kompetenzraster verwenden';
 $string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';
+$string['useshowglobalsubjects'] = 'Ohne Kursteilnehmer/innen arbeiten';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';
 $string['profoundness_2'] = 'Erreicht';

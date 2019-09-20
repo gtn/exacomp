@@ -974,6 +974,10 @@ return [
 		'Ohne Kursteilnehmer/innen arbeiten',
 		'Use without students',
 	],
+    'usehideglobalsubjects' => [
+        'Überfachliche Kompetenzraster verbergen',
+        'Hide globals subjects',
+    ],
 	'profoundness_0' => [
 		'Nicht erreicht',
 		'not reached',

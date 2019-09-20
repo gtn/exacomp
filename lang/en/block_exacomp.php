@@ -282,6 +282,7 @@ $string['usetopicgrading'] = 'Enable topic gradings';
 $string['usesubjectgrading'] = 'Enable subject gradings';
 $string['usenumbering'] = 'Enable automatic numbering in the competence grid';
 $string['usenostudents'] = 'Use without students';
+$string['useshowglobalsubjects'] = 'Use without students';
 $string['profoundness_0'] = 'not reached';
 $string['profoundness_1'] = 'Partially gained';
 $string['profoundness_2'] = 'Fully gained';
