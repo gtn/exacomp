@@ -1063,6 +1063,9 @@ $settings->add(new admin_setting_heading('exacomp/heading_performance',
 $settings->add(new admin_setting_configcheckbox('exacomp/disable_js_assign_competencies',
         block_exacomp_get_string('settings_disable_js_assign_competencies'),
         block_exacomp_get_string('settings_disable_js_assign_competencies_description'), 0, 1, 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/disable_js_edit_activities',
+        block_exacomp_get_string('settings_disable_js_editactivities'),
+        block_exacomp_get_string('settings_disable_js_editactivities_description'), 0, 1, 0));
 
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',

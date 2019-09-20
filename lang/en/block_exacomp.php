@@ -181,6 +181,8 @@ $string['settings_addblock_to_newcourse_option_left'] = 'to the Left region';
 $string['settings_addblock_to_newcourse_option_right'] = 'to the Right region';
 $string['settings_disable_js_assign_competencies'] = 'Disable JS in students selection in "Competence grid" page';
 $string['settings_disable_js_assign_competencies_description'] = 'If "Competence grid" has a long page generation time. This checkbox can solve this problem';
+$string['settings_disable_js_editactivities'] = 'Disable JS in students selection in "Assign Moodle activities" page';
+$string['settings_disable_js_editactivities_description'] = 'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem';
 $string['settings_example_autograding'] = 'automatic assessment of parent materials';
 $string['settings_example_autograding_description'] = 'when all child examples have been graded, the parent material should be assessed automatically.';
 
@@ -414,6 +416,7 @@ $string['showevaluation_student'] = 'To show trainer-assessment click <a href="{
 $string['hideevaluation_student'] = 'To hide trainer-assessment click <a href="{$a}">here</a>';
 $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
+$string['all_activities'] = 'All activities';
 $string['nostudents'] = 'No students';
 $string['statistic'] = 'Overview';
 $string['niveau'] = 'Difficulty Level';

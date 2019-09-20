@@ -111,7 +111,8 @@ const BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV = 4; // evaluated -> only fr
 const BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV = 5; //evaluated -> only from teacher -> exacomp evaluation > nE
 const BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME = 9; //handled like example entry on calendar, but represent locked time
 
-const BLOCK_EXACOMP_STUDENTS_PER_COLUMN = 3;
+const BLOCK_EXACOMP_STUDENTS_PER_COLUMN = 1;
+const BLOCK_EXACOMP_MODULES_PER_COLUMN = 1;
 const BLOCK_EXACOMP_SHOW_ALL_TOPICS = -1;
 const BLOCK_EXACOMP_SHOW_ALL_NIVEAUS = 99999999;
 

@@ -42,6 +42,15 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 
 require_login($course);
 
+$slicemodulelist = false;
+if (get_config('exacomp', 'disable_js_edit_activities')) {
+    $columngroupnumber = optional_param('colgroupid', 0, PARAM_INT);
+    if ($columngroupnumber > -1) { // -1 - show all!
+        $slicemodulelist = true;
+        $slicestartposition = $columngroupnumber * BLOCK_EXACOMP_MODULES_PER_COLUMN;
+    }
+}
+
 $context = context_course::instance($courseid);
 
 block_exacomp_require_teacher($context);
@@ -108,7 +117,6 @@ if ($action == "import") {
         block_exacomp_set_compactivity($activityid, $record->compid, $record->comptype, $record->activitytitle);
     }
 
-   
 }
 
 // build tab navigation & print header
@@ -129,13 +137,22 @@ if ($action == "filter") {
     }
 }
 
-
-
 $subjects = block_exacomp_get_competence_tree($courseid, null, null, true, null, false, array(), false, true);
 
-$modules = block_exacomp_get_allowed_course_modules_for_course($COURSE->id);
+$modules = $allModules = block_exacomp_get_allowed_course_modules_for_course($COURSE->id);
+
+if ($slicemodulelist) {
+    if (count($modules) < ($columngroupnumber * BLOCK_EXACOMP_MODULES_PER_COLUMN)) {
+        $slicestartposition = 0;
+    }
+    $modules = array_slice($modules, $slicestartposition, BLOCK_EXACOMP_MODULES_PER_COLUMN);
+}
+
 $visible_modules = [];
 $modules_to_filter = [];
+
+$colselector = $output->students_column_selector(count($allModules), 'edit_activities');
+echo $colselector;
 
 if ($modules) {
 	foreach ($modules as $module) {

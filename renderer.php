@@ -3872,28 +3872,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
      * @param string $scriptname
 	 */
 	public function students_column_selector($item_count, $scriptname = '') {
-		if ($item_count < BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
-			return;
-		}
-
+        global $COURSE;
 		$content = html_writer::tag("b", block_exacomp_get_string('columnselect'));
 		$usejs = false;
+        $config_enabled = false;
+        $lasttagattr = array();
+        // differrent settings of column browser for different using
 		switch ($scriptname) {
             case 'assign_competencies':
+                if ($item_count < BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
+                    return;
+                }
+                $items_per_column = BLOCK_EXACOMP_STUDENTS_PER_COLUMN;
+                $config_enabled = get_config('exacomp', 'disable_js_assign_competencies'); // is this enabled in plugin settings?
                 $script = '/blocks/exacomp/assign_competencies.php';
-                break;
-            default:
-                $script = ''; // do not used
-                $usejs = true; // use JS anycase
-        }
-        $currentcolgroup = optional_param('colgroupid', 0, PARAM_INT);
-		for ($i = 0; $i < ceil($item_count / BLOCK_EXACOMP_STUDENTS_PER_COLUMN); $i++) {
-			$content .= " ";
-			if (!$usejs && get_config('exacomp', 'disable_js_assign_competencies')) {
-			    // insert all needed params!!!
+                $all_link_title = block_exacomp_get_string('allstudents');
+                // insert all needed params!!!
                 $urlparams = array(
                         'courseid' => g::$COURSE->id,
-                        'colgroupid' => $i,
                         'studentid' => block_exacomp_get_studentid(),
                 );
                 if ($showeval = optional_param('showevaluation', true, PARAM_BOOL)) {
@@ -3917,6 +3913,30 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($group = optional_param('group', 0, PARAM_INT)) {
                     $urlparams['group'] = $group;
                 }
+                break;
+            case 'edit_activities':
+                if ($item_count < BLOCK_EXACOMP_MODULES_PER_COLUMN) {
+                    return;
+                }
+                $items_per_column = BLOCK_EXACOMP_MODULES_PER_COLUMN;
+                $config_enabled = get_config('exacomp', 'disable_js_edit_activities'); // is this enabled in plugin settings?
+                $script = '/blocks/exacomp/edit_activities.php';
+                $all_link_title = block_exacomp_get_string('all_activities');
+                // insert all needed params!!!
+                $urlparams = array(
+                        'courseid' => g::$COURSE->id,
+                );
+                break;
+            default:
+                $script = ''; // do not used
+                $items_per_column = 3; // default, but not used!
+                $usejs = true; // use JS anycase
+        }
+        $currentcolgroup = optional_param('colgroupid', 0, PARAM_INT);
+		for ($i = 0; $i < ceil($item_count / $items_per_column); $i++) {
+			$content .= " ";
+			if (!$usejs && $config_enabled) {
+			    $urlparams['colgroupid'] = $i;
                 $groupurl = new moodle_url($script, $urlparams);
                 $tagattrs = array('class' => ' colgroup-link ');
                 if ($currentcolgroup == $i) {
@@ -3940,15 +3960,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
             }
             $content .= html_writer::link($groupurl,
-                    ($i * BLOCK_EXACOMP_STUDENTS_PER_COLUMN + 1). '-' .min($item_count, ($i + 1) * BLOCK_EXACOMP_STUDENTS_PER_COLUMN),
+                    ($i * $items_per_column + 1). '-' .min($item_count, ($i + 1) * $items_per_column),
                     $tagattrs);
 		}
-		$content .= " ".html_writer::link($lasturl,
-				block_exacomp_get_string('allstudents'),
-                $lasttagattr);
+		$content .= " ".html_writer::link($lasturl, $all_link_title, $lasttagattr);
 
-		global $COURSE;
-		if (block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {
+		if ($scriptname == 'assign_competencies' && block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {
 			$content .= " ".html_writer::link('',
 					block_exacomp_get_string('nostudents'),
 					array('class' => 'colgroup-button colgroup-button-no', 'exa-groupid' => -2));

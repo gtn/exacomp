@@ -178,6 +178,6 @@
 #block_exacomp .colgroup-link {
 	margin-left: 5px;
 }
-#block_exacomp .colgroup-link.current-colgroup {
+#block_exacomp .spaltenbrowser .colgroup-link.current-colgroup {
 	font-weight: bold;
 }
