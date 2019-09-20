@@ -3872,28 +3872,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
      * @param string $scriptname
 	 */
 	public function students_column_selector($item_count, $scriptname = '') {
-		if ($item_count < BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
-			return;
-		}
-
+        global $COURSE;
 		$content = html_writer::tag("b", block_exacomp_get_string('columnselect'));
 		$usejs = false;
+        $config_enabled = false;
+        $lasttagattr = array();
+        // differrent settings of column browser for different using
 		switch ($scriptname) {
             case 'assign_competencies':
+                if ($item_count < BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
+                    return;
+                }
+                $items_per_column = BLOCK_EXACOMP_STUDENTS_PER_COLUMN;
+                $config_enabled = get_config('exacomp', 'disable_js_assign_competencies'); // is this enabled in plugin settings?
                 $script = '/blocks/exacomp/assign_competencies.php';
-                break;
-            default:
-                $script = ''; // do not used
-                $usejs = true; // use JS anycase
-        }
-        $currentcolgroup = optional_param('colgroupid', 0, PARAM_INT);
-		for ($i = 0; $i < ceil($item_count / BLOCK_EXACOMP_STUDENTS_PER_COLUMN); $i++) {
-			$content .= " ";
-			if (!$usejs && get_config('exacomp', 'disable_js_assign_competencies')) {
-			    // insert all needed params!!!
+                $all_link_title = block_exacomp_get_string('allstudents');
+                // insert all needed params!!!
                 $urlparams = array(
                         'courseid' => g::$COURSE->id,
-                        'colgroupid' => $i,
                         'studentid' => block_exacomp_get_studentid(),
                 );
                 if ($showeval = optional_param('showevaluation', true, PARAM_BOOL)) {
@@ -3917,6 +3913,30 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($group = optional_param('group', 0, PARAM_INT)) {
                     $urlparams['group'] = $group;
                 }
+                break;
+            case 'edit_activities':
+                if ($item_count < BLOCK_EXACOMP_MODULES_PER_COLUMN) {
+                    return;
+                }
+                $items_per_column = BLOCK_EXACOMP_MODULES_PER_COLUMN;
+                $config_enabled = get_config('exacomp', 'disable_js_edit_activities'); // is this enabled in plugin settings?
+                $script = '/blocks/exacomp/edit_activities.php';
+                $all_link_title = block_exacomp_get_string('all_activities');
+                // insert all needed params!!!
+                $urlparams = array(
+                        'courseid' => g::$COURSE->id,
+                );
+                break;
+            default:
+                $script = ''; // do not used
+                $items_per_column = 3; // default, but not used!
+                $usejs = true; // use JS anycase
+        }
+        $currentcolgroup = optional_param('colgroupid', 0, PARAM_INT);
+		for ($i = 0; $i < ceil($item_count / $items_per_column); $i++) {
+			$content .= " ";
+			if (!$usejs && $config_enabled) {
+			    $urlparams['colgroupid'] = $i;
                 $groupurl = new moodle_url($script, $urlparams);
                 $tagattrs = array('class' => ' colgroup-link ');
                 if ($currentcolgroup == $i) {
@@ -3940,15 +3960,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
             }
             $content .= html_writer::link($groupurl,
-                    ($i * BLOCK_EXACOMP_STUDENTS_PER_COLUMN + 1). '-' .min($item_count, ($i + 1) * BLOCK_EXACOMP_STUDENTS_PER_COLUMN),
+                    ($i * $items_per_column + 1). '-' .min($item_count, ($i + 1) * $items_per_column),
                     $tagattrs);
 		}
-		$content .= " ".html_writer::link($lasturl,
-				block_exacomp_get_string('allstudents'),
-                $lasttagattr);
+		$content .= " ".html_writer::link($lasturl, $all_link_title, $lasttagattr);
 
-		global $COURSE;
-		if (block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {
+		if ($scriptname == 'assign_competencies' && block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {
 			$content .= " ".html_writer::link('',
 					block_exacomp_get_string('nostudents'),
 					array('class' => 'colgroup-button colgroup-button-no', 'exa-groupid' => -2));
@@ -4825,11 +4842,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function activity_content($subjects, $modules) {
 		global $PAGE;
 
+        $nojs = (bool)get_config('exacomp', 'disable_js_edit_activities');
+
 		$colspan = (count($modules) + 2);
 
 		$table = new html_table;
 		$table->attributes['class'] = 'rg2 exabis_comp_comp';
-		$table->attributes['style'] = 'display: none'; // hide table first, show with javascript
+		if (!$nojs) {
+            $table->attributes['style'] = 'display: none'; // hide table first, show with javascript
+        }
 		$table->attributes['id'] = 'comps';
 
 		$rows = array();
@@ -4846,7 +4867,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 /*		$moduleNameLengths = array_map(function($m) {return strlen($m->name);}, $modules);
 		$maxLength = max($moduleNameLengths);*/
-
 
 		foreach ($modules as $module) {
 			$cell = new html_table_cell();
@@ -4886,16 +4906,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             'class' => 'btn btn-default',
                                             'value' => block_exacomp_get_string('save_selection'))),
                                     '', array('id' => 'exabis_save_button'));
+        $div .= html_writer::tag('input', '', array("type" => "hidden", 'name' => 'action', 'value' => 'save'));
 
-		$js = '
-			<script>
+        if (!$nojs) {
+            $js = '<script>
 				block_exacomp.column_selector("table.exabis_comp_comp", {
 					title_colspan: 2
 				});
-			</script>
-		';
-
-		return $js.html_writer::tag('form', $div, array('id' => 'edit-activities', 'action' => $PAGE->url.'&action=save', 'method' => 'post'));
+			</script>';
+        } else {
+            $js = '';
+        }
+        $pageurl = $PAGE->url;
+		return $js.html_writer::tag('form',
+                        $div,
+                        array('id' => 'edit-activities',
+                                //'action' => $PAGE->url.'&action=save', // adds '&amp' if the $PAGE->url has more than 1 param
+                                'action' => $pageurl,
+                                'method' => 'post',
+                                'class' => 'checksaving_on_leavepage'));
 
 	}
 
@@ -4919,7 +4948,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$moduleCell = new html_table_cell();
 				$moduleCell->attributes['module-type='] = $module->modname;
 				if (block_exacomp_is_topicgrading_enabled()) {
-					$moduleCell->text = html_writer::checkbox('topicdata['.$module->id.']['.$topic->id.']', "", (in_array($topic->id, $module->topics)) ? true : false, '', array('class' => 'topiccheckbox'));
+                    $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topicdata['.$module->id.']['.$topic->id.']', 'value' => 0]);
+					$moduleCell->text .= html_writer::checkbox('topicdata['.$module->id.']['.$topic->id.']', "1", (in_array($topic->id, $module->topics)) ? true : false, '', array('class' => 'topiccheckbox'));
 				}
 				$topicRow->cells[] = $moduleCell;
 			}
@@ -4952,7 +4982,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			foreach ($modules as $module) {
 				$moduleCell = new html_table_cell();
-				$moduleCell->text = html_writer::checkbox('data['.$module->id.']['.$descriptor->id.']', '', (in_array($descriptor->id, $module->descriptors)) ? true : false);
+                $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'data['.$module->id.']['.$descriptor->id.']', 'value' => 0]);
+				$moduleCell->text .= html_writer::checkbox('data['.$module->id.']['.$descriptor->id.']', '1', (in_array($descriptor->id, $module->descriptors)) ? true : false);
 				$descriptorRow->cells[] = $moduleCell;
 			}
 

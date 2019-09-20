@@ -16,6 +16,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+var formunsaved = false;
 !function () {
 
 	window.jQueryExacomp = jQuery;
@@ -938,5 +939,22 @@
             $(this).find('.expanded_icon').show();
         }
     })
+
+    // message about unsaved changes in the forms
+	// make a new class for needed forms: "checksaving_on_leavepage"
+    $(document).on('change', "form.checksaving_on_leavepage :input", function () {
+    	formunsaved = true;
+	});
+    $(document).on('click', 'form.checksaving_on_leavepage input[type="submit"]', function () {
+        formunsaved = false; // do not shown the message if save button is pressed
+	});
+	window.onbeforeunload = function unloadPage() {
+		if (formunsaved && $('form.checksaving_on_leavepage').length) {
+            console.log('leave page');
+            console.log(M.str.block_exacomp.donotleave_page_message);
+			// show message, but this message often is reloading via default browser message
+			return M.str.block_exacomp.donotleave_page_message + '  ';
+		}
+	};
 
 }();

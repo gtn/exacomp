@@ -630,6 +630,14 @@ return [
             'Bei langen Ladezeiten des Kompetenzrasters können zur Performance-Steigerung JS-Funktionen deaktiviert werden.',
             'If "Competence grid" has a long page generation time. This checkbox can solve this problem',
     ],
+    'settings_disable_js_editactivities' => [
+            'Disable JS in students selection in "Assign Moodle activities" page',
+            'Disable JS in students selection in "Assign Moodle activities" page',
+    ],
+    'settings_disable_js_editactivities_description' => [
+            'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem',
+            'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem',
+    ],
     'settings_example_autograding' => [
         'übergeordnete Materialien automatische Beurteilung',
         'automatic assessment of parent materials',
@@ -1456,6 +1464,10 @@ return [
 	'allstudents' => [
 		'Alle  Kursteilnehmer/innen',
 		'All students',
+	],
+	'all_activities' => [
+		'Alle Aktivität/en',
+		'All activities',
 	],
 	'nostudents' => [
 		'Keine  Kursteilnehmer/innen',
@@ -2585,7 +2597,10 @@ return [
     'active_show' => [
         'aktiv (anzeigen)',
         'active (show them)',
-    ]
-
+    ],
+    'donotleave_page_message' => [
+        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',
+        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
+    ],
 
 ];
