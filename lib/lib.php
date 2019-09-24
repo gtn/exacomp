@@ -430,6 +430,16 @@ function block_exacomp_get_assessment_diffLevel_options() {
     return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
+function block_exacomp_get_assessment_diffLevel_verb($value) {
+    $difflevels = preg_split("/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+    // start from 1
+    $difflevels = array_combine(range(1, count($difflevels)), array_values($difflevels));
+    if (array_key_exists($value, $difflevels)) {
+        return $difflevels[$value];
+    }
+    return null;
+}
+
 function block_exacomp_get_assessment_verbose_options($getforlanguage = null) {
     return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
 }
@@ -10199,4 +10209,28 @@ function block_exacomp_is_autograding_example($exampleid) {
     $result = g::$DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, ['ethema_parent' => $exampleid], '*', IGNORE_MULTIPLE);
     return (bool) $result;
 }
+
+// TODO: similar to block_exacomp_get_comp_eval() ?
+// deprecated?
+function block_exacomp_get_user_assesment($userid, $competenceid, $competencetype, $courseid) {
+    $conditions = [
+            'userid' => $userid,
+            'compid' => $competenceid,
+            'comptype' => $competencetype,
+            'courseid' => $courseid
+    ];
+    $result = g::$DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, $conditions, '*', IGNORE_MULTIPLE);
+    if ($result) {
+        $resultObj = (object)array(
+                'grade' => @$result->additionalinfo,
+                'niveau' => @$result->evalniveauid
+        );
+        if (!block_exacomp_get_assessment_diffLevel($competencetype)) {
+            $resultObj->niveau = null;
+        }
+        return $resultObj;
+    }
+    return null;
+}
+
 
