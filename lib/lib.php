@@ -3689,15 +3689,15 @@ function block_exacomp_get_active_tests_by_course($courseid) {
  */
 function block_exacomp_get_related_activities($courseid, $conditions = array()) {
 	global $DB;
-	
+
 /*	$cms = get_course_mods($courseid);
-	
+
 	if (count($conditions) > 0) {
 	    foreach ($cms as $cm) {
 
         }
     }
-	
+
 	return $cms;*/
 
 	$sql = "SELECT DISTINCT cm.*, m.name as modname
@@ -3712,14 +3712,14 @@ function block_exacomp_get_related_activities($courseid, $conditions = array()) 
 	    $sql .= ' AND availability IS NOT NULL ';
     }
 	$acts = $DB->get_records_sql($sql, $cond);
-    
+
 	foreach ($acts as $activ) {
         $activ->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                 array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
         $activ->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                 array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
     }
-	
+
 	return $acts;
 }
 
@@ -5559,7 +5559,7 @@ function block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid) {
     // Get all examples to add:
     //    -> studentid 0: on teachers schedule
     $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
-    
+
     // Get all students for the given group
     $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
 
@@ -10889,36 +10889,22 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
     return $globalgradings_text;
 }
 
-function block_exacomp_update_gradinghistory_text($descriptorid,$studentid,$courseid,$comptype){
+
+
+
+//Get the globalgradings of this competence/topic/subject
+function block_exacomp_get_globalgradings_single($descriptorid,$studentid,$comptype){
     global $DB;
 
-    $query = 'SELECT compuser.*, userr.firstname, userr.lastname
+    $query = 'SELECT compuser.globalgradings
                 FROM {block_exacompcompuser} compuser
                 INNER JOIN `mdl_user` userr ON (compuser.reviewerid = userr.id)
                 WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
 
-    /*
-SELECT compuser.value, mdl_user.username
-FROM `mdl_block_exacompcompuser` compuser
-INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id)
-WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
-     */
-
-    $records = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
-
-    $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
-
-    $globalgradings_text = "";
-    foreach($records as $record){
-        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("Y-m-d",$record->timestamp).": ".$scheme_values[$record->value]."<br>";
-    }
-
-    foreach($records as $record){
-        $record->globalgradings = $globalgradings_text;
-        $DB->update_record("block_exacompcompuser", $record);
-    }
-
-    return $globalgradings_text;
+    $globalgradings_texts = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
+    //This often returns the same string multiple times... maybe there is a better way for performance but probably it is the best to query all and use the first
+    // solution in complexity O(1):
+    return array_pop($globalgradings_texts)->globalgradings;
 }
 
 

@@ -1594,30 +1594,32 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         //check if teacher is dakorateacher
 
 
-//                        if(@$subject->isglobal
-//                            && block_exacomp_get_settings_by_course($courseid)
-//                            && block_exacomp_is_dakora_teacher($USER->id)){
-//                            if(array_key_exists($subject->id, @$student->subjects->globalgradings)
-//                                && @$student->subjects->globalgradings[$subject->id] != ""){
-//                                //Add the other globalgradings as tooltipp
-//                                $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  @$student->subjects->globalgradings[$subject->id]).' ', array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id));
-//                                $self_evaluation_cell->text .= $globalgradings;
-//                            }else{
-//                                //if the
-//                            }
-//                        }
-
-                        var_dump(block_exacomp_get_settings_by_course($courseid)->isglobal);
-                        die;
-                        if(@$subject->isglobal
-                                && block_exacomp_get_settings_by_course($courseid)->isglobal
-                                && array_key_exists($subject->id, @$student->subjects->globalgradings)
-                                && @$student->subjects->globalgradings[$subject->id] != ""
-                                && block_exacomp_is_dakora_teacher($USER->id)){
-                            //Add the other globalgradings as tooltipp
-                            $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  @$student->subjects->globalgradings[$subject->id]).' ', array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id));
-                            $self_evaluation_cell->text .= $globalgradings;
+                        if(@$subject->isglobal && block_exacomp_get_settings_by_course($courseid)->isglobal && block_exacomp_is_dakora_teacher($USER->id)){
+                            if(array_key_exists($subject->id, @$student->subjects->globalgradings) && @$student->subjects->globalgradings[$subject->id] != ""){
+                                //Add the other globalgradings as tooltipp
+                                $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  @$student->subjects->globalgradings[$subject->id]).' ', array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id));
+                                $self_evaluation_cell->text .= $globalgradings;
+                            }else{
+                                //if the course is global, the subject is global and the teacher is a dakorateacher AND the teacher has not graded anything yet, then the other global gradings have to be found
+                                $globalgradings_text = block_exacomp_get_globalgradings_single($subject->id,$student->id,BLOCK_EXACOMP_TYPE_SUBJECT);
+                                if($globalgradings_text){
+                                    $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  $globalgradings_text).' ', array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id));
+                                    $self_evaluation_cell->text .= $globalgradings;
+                                }
+                            }
                         }
+
+//                        var_dump(block_exacomp_get_settings_by_course($courseid)->isglobal);
+//                        die;
+//                        if(@$subject->isglobal
+//                                && block_exacomp_get_settings_by_course($courseid)->isglobal
+//                                && array_key_exists($subject->id, @$student->subjects->globalgradings)
+//                                && @$student->subjects->globalgradings[$subject->id] != ""
+//                                && block_exacomp_is_dakora_teacher($USER->id)){
+//                            //Add the other globalgradings as tooltipp
+//                            $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  @$student->subjects->globalgradings[$subject->id]).' ', array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id));
+//                            $self_evaluation_cell->text .= $globalgradings;
+//                        }
 
 
                         if(@$student->subjects->gradinghistory[$subject->id]){
