@@ -2600,7 +2600,307 @@ return [
     ],
     'donotleave_page_message' => [
         'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',
-        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?'
+        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',
+    ],
+
+    'privacy:metadata:block_exacompcompuser' => [
+        'Storage for student evaluations',
+        'Storage for student evaluations',
+    ],
+    'privacy:metadata:block_exacompcompuser:userid' => [
+        'Student who was evaluated',
+        'Student who was evaluated',
+    ],
+    'privacy:metadata:block_exacompcompuser:compid' => [
+        'Competence which was evaluated',
+        'Competence which was evaluated',
+    ],
+    'privacy:metadata:block_exacompcompuser:reviewerid' => [
+        'Reviewer who evaluated',
+        'Reviewer who evaluated',
+    ],
+    'privacy:metadata:block_exacompcompuser:role' => [
+        'Role of reviewer who evaluated',
+        'Role of reviewer who evaluated',
+    ],
+    'privacy:metadata:block_exacompcompuser:courseid' => [
+        'Course',
+        'Course',
+    ],
+    'privacy:metadata:block_exacompcompuser:value' => [
+        'Result of evaluation',
+        'Result of evaluation',
+    ],
+    'privacy:metadata:block_exacompcompuser:comptype' => [
+        'Type of evaluated competence',
+        'Type of evaluated competence',
+    ],
+    'privacy:metadata:block_exacompcompuser:timestamp' => [
+        'Date of evaluation',
+        'Date of evaluation',
+    ],
+    'privacy:metadata:block_exacompcompuser:additionalinfo' => [
+        'Result of evaluation',
+        'Result of evaluation',
+    ],
+    'privacy:metadata:block_exacompcompuser:evalniveauid' => [
+        'Difficulty level of evaluation',
+        'Difficulty level of evaluation',
+    ],
+    'privacy:metadata:block_exacompcompuser:gradingisold' => [
+        'is it old?',
+        'is it old?',
+    ],
+
+    'privacy:metadata:block_exacompcmassign' => [
+            'Storage for auto grading mechanism: does not need to be exported',
+            'Storage for auto grading mechanism: does not need to be exported',
+    ],
+    'privacy:metadata:block_exacompcmassign:coursemoduleid' => [
+            'Course module id',
+            'Course module id',
+    ],
+    'privacy:metadata:block_exacompcmassign:userid' => [
+            'Student ids',
+            'Student ids',
+    ],
+    'privacy:metadata:block_exacompcmassign:timemodified' => [
+            'timestamp',
+            'timestamp',
+    ],
+    'privacy:metadata:block_exacompcmassign:relateddata' => [
+            'Data, related to the student',
+            'Data, related to the student',
+    ],
+
+    'privacy:metadata:block_exacompexameval' => [
+            'Storage for student evaluations (examples)',
+            'Storage for student evaluations (examples)',
+    ],
+    'privacy:metadata:block_exacompexameval:exampleid' => [
+            'Example',
+            'Example',
+    ],
+    'privacy:metadata:block_exacompexameval:courseid' => [
+            'Course',
+            'Course',
+    ],
+    'privacy:metadata:block_exacompexameval:studentid' => [
+            'Student who was evaluated',
+            'Student who was evaluated',
+    ],
+    'privacy:metadata:block_exacompexameval:teacher_evaluation' => [
+            'Evaluation value from teacher',
+            'Evaluation value from teacher',
+    ],
+    'privacy:metadata:block_exacompexameval:additionalinfo' => [
+            'Evaluation value from teacher (used for some types of assessment)',
+            'Evaluation value from teacher (used for some types of assessment)',
+    ],
+    'privacy:metadata:block_exacompexameval:teacher_reviewerid' => [
+            'Teacher who evaluated',
+            'Teacher who evaluated',
+    ],
+    'privacy:metadata:block_exacompexameval:timestamp_teacher' => [
+            'Time of teacher evaluation',
+            'Time of teacher evaluation',
+    ],
+    'privacy:metadata:block_exacompexameval:student_evaluation' => [
+            'Self evaluation',
+            'Self evaluation',
+    ],
+    'privacy:metadata:block_exacompexameval:timestamp_student' => [
+            'Time of self evaluation',
+            'Time of self evaluation',
+    ],
+    'privacy:metadata:block_exacompexameval:evalniveauid' => [
+            'Niveau',
+            'Niveau',
+    ],
+
+    'privacy:metadata:block_exacompcrossstud_mm' => [
+            'Share crossubjects to the students',
+            'Share crossubjects to the students',
+    ],
+    'privacy:metadata:block_exacompcrossstud_mm:crosssubjid' => [
+            'Crossubject id',
+            'Crossubject id',
+    ],
+    'privacy:metadata:block_exacompcrossstud_mm:studentid' => [
+            'Student',
+            'Student',
+    ],
+
+    'privacy:metadata:block_exacompdescrvisibility' => [
+            'Visibility descriptors for users',
+            'Visibility descriptors for users',
+    ],
+    'privacy:metadata:block_exacompdescrvisibility:courseid' => [
+            'Course id',
+            'Course id',
+    ],
+    'privacy:metadata:block_exacompdescrvisibility:descrid' => [
+            'Competence id',
+            'Competence id',
+    ],
+    'privacy:metadata:block_exacompdescrvisibility:studentid' => [
+            'Student',
+            'Student',
+    ],
+    'privacy:metadata:block_exacompdescrvisibility:visible' => [
+            'Visible marker',
+            'Visible marker',
+    ],
+
+    'privacy:metadata:block_exacompexampvisibility' => [
+            'Visibility examples for users',
+            'Visibility examples for users',
+    ],
+    'privacy:metadata:block_exacompexampvisibility:courseid' => [
+            'Course id',
+            'Course id',
+    ],
+    'privacy:metadata:block_exacompexampvisibility:exampleid' => [
+            'Material id',
+            'Material id',
+    ],
+    'privacy:metadata:block_exacompexampvisibility:studentid' => [
+            'Student',
+            'Student',
+    ],
+    'privacy:metadata:block_exacompexampvisibility:visible' => [
+            'Visible marker',
+            'Visible marker',
+    ],
+
+    'privacy:metadata:block_exacompexternaltrainer' => [
+            'External trainers for students',
+            'External trainers for students',
+    ],
+    'privacy:metadata:block_exacompexternaltrainer:trainerid' => [
+            'Trainer',
+            'Trainer',
+    ],
+    'privacy:metadata:block_exacompexternaltrainer:studentid' => [
+            'Student',
+            'Student',
+    ],
+
+    'privacy:metadata:block_exacompprofilesettings' => [
+            'which course to include in the competence profile',
+            'which course to include in the competence profile',
+    ],
+    'privacy:metadata:block_exacompprofilesettings:itemid' => [
+            'Course id',
+            'Course id',
+    ],
+    'privacy:metadata:block_exacompprofilesettings:userid' => [
+            'Student',
+            'Student',
+    ],
+
+    'privacy:metadata:block_exacompschedule' => [
+            'examples, added to student\'s schedule list',
+            'examples, added to student\'s schedule list',
+    ],
+    'privacy:metadata:block_exacompschedule:studentid' => [
+            'Student',
+            'Student',
+    ],
+    'privacy:metadata:block_exacompschedule:exampleid' => [
+            'Scheduled example',
+            'Scheduled example',
+    ],
+    'privacy:metadata:block_exacompschedule:creatorid' => [
+            'Creator of scheduled record',
+            'Creator of scheduled record',
+    ],
+    'privacy:metadata:block_exacompschedule:timecreated' => [
+            'Time of creating record',
+            'Time of creating record',
+    ],
+    'privacy:metadata:block_exacompschedule:timemodified' => [
+            'Time of editing record',
+            'Time of editing record',
+    ],
+    'privacy:metadata:block_exacompschedule:courseid' => [
+            'Course',
+            'Course',
+    ],
+    'privacy:metadata:block_exacompschedule:sorting' => [
+            'Sorting of records',
+            'Sorting of records',
+    ],
+    'privacy:metadata:block_exacompschedule:start' => [
+            'Start time',
+            'Start time',
+    ],
+    'privacy:metadata:block_exacompschedule:end' => [
+            'End time',
+            'End time',
+    ],
+    'privacy:metadata:block_exacompschedule:deleted' => [
+            'Marker of deleted record',
+            'Marker of deleted record',
+    ],
+
+    'privacy:metadata:block_exacompsolutvisibility' => [
+            'which examplesolutions are visible',
+            'which examplesolutions are visible',
+    ],
+    'privacy:metadata:block_exacompsolutvisibility:courseid' => [
+            'Course id',
+            'Course id',
+    ],
+    'privacy:metadata:block_exacompsolutvisibility:exampleid' => [
+            'Example id',
+            'Example id',
+    ],
+    'privacy:metadata:block_exacompsolutvisibility:studentid' => [
+            'Student',
+            'Student',
+    ],
+    'privacy:metadata:block_exacompsolutvisibility:visible' => [
+            'visible marker',
+            'visible marker',
+    ],
+
+    'privacy:metadata:block_exacomptopicvisibility' => [
+            'which topics are visible',
+            'which topics are visible',
+    ],
+    'privacy:metadata:block_exacomptopicvisibility:courseid' => [
+            'Course id',
+            'Course id',
+    ],
+    'privacy:metadata:block_exacomptopicvisibility:topicid' => [
+            'Topic id',
+            'Topic id',
+    ],
+    'privacy:metadata:block_exacomptopicvisibility:studentid' => [
+            'Student',
+            'Student',
+    ],
+    'privacy:metadata:block_exacomptopicvisibility:visible' => [
+            'visible marker',
+            'visible marker',
+    ],
+
+    'privacy:metadata:block_exacompwsdata' => [
+            'temporary data for webservices',
+            'temporary data for webservices',
+    ],
+    'privacy:metadata:block_exacompwsdata:token' => [
+            'token value',
+            'token value',
+    ],
+    'privacy:metadata:block_exacompwsdata:userid' => [
+            'User',
+            'User',
+    ],
+    'privacy:metadata:block_exacompwsdata:data' => [
+            'data content',
+            'data content',
     ],
 
 ];

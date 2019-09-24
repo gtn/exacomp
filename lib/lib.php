@@ -3689,15 +3689,15 @@ function block_exacomp_get_active_tests_by_course($courseid) {
  */
 function block_exacomp_get_related_activities($courseid, $conditions = array()) {
 	global $DB;
-
+	
 /*	$cms = get_course_mods($courseid);
-
+	
 	if (count($conditions) > 0) {
 	    foreach ($cms as $cm) {
 
         }
     }
-
+	
 	return $cms;*/
 
 	$sql = "SELECT DISTINCT cm.*, m.name as modname
@@ -3712,14 +3712,14 @@ function block_exacomp_get_related_activities($courseid, $conditions = array()) 
 	    $sql .= ' AND availability IS NOT NULL ';
     }
 	$acts = $DB->get_records_sql($sql, $cond);
-
+    
 	foreach ($acts as $activ) {
         $activ->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                 array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
         $activ->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                 array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
     }
-
+	
 	return $acts;
 }
 
@@ -5559,7 +5559,7 @@ function block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid) {
     // Get all examples to add:
     //    -> studentid 0: on teachers schedule
     $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
-
+    
     // Get all students for the given group
     $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
 
@@ -10960,5 +10960,29 @@ function block_exacomp_is_dakora_teacher($userid = null) {
 
 
 
+
+
+// TODO: similar to block_exacomp_get_comp_eval() ?
+// deprecated?
+function block_exacomp_get_user_assesment($userid, $competenceid, $competencetype, $courseid) {
+    $conditions = [
+            'userid' => $userid,
+            'compid' => $competenceid,
+            'comptype' => $competencetype,
+            'courseid' => $courseid
+    ];
+    $result = g::$DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, $conditions, '*', IGNORE_MULTIPLE);
+    if ($result) {
+        $resultObj = (object)array(
+                'grade' => @$result->additionalinfo,
+                'niveau' => @$result->evalniveauid
+        );
+        if (!block_exacomp_get_assessment_diffLevel($competencetype)) {
+            $resultObj->niveau = null;
+        }
+        return $resultObj;
+    }
+    return null;
+}
 
 

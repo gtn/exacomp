@@ -7132,7 +7132,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		//add local groups:
-        if (count($groups) > 0) {
+        if (is_array($groups) && count($groups) > 0) {
             foreach ($groups as $group) {
                 $studentsAssociativeArray[-($group->id + 1)] = $group->name;
             }
