@@ -1587,6 +1587,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
+//                        var_dump($student->subjects);
+//                        die;
+
                         //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
                         //check if teacher is dakorateacher
                         if(@$subject->isglobal

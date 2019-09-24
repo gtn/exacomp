@@ -272,7 +272,8 @@ if ($course_settings->nostudents != 1 && $studentid) {
 }
 
 
-
+//var_dump($students);
+//die;
 //Hier werden die Bewertungen und so geprinted
 echo $output->competence_overview($competence_tree,
                                     $courseid,
