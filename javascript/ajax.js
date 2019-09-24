@@ -160,7 +160,7 @@
 	$(document).on('focus', 'input[name^=add-grading\-]', function() {
 		prev_val = $(this).val();
 	});
-	
+
 	$(document).on('keyup', 'input[name^=add-grading\-]', function(event) {
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if(event.keyCode != 9){
@@ -792,7 +792,7 @@
 
 		return false;
 	});
-	
+
 	// Add Descriptor to crosssubjects
 	$(document).on('click', '#crosssubjects', function(event) {
 		event.preventDefault();
@@ -1222,15 +1222,15 @@
 
 		return false;
 	});
-	
+
 	$(document).on('click', '#gradingisold_warning', function(event) {
     event.preventDefault();
-    
+
     if (confirm(M.util.get_string('dismiss_gradingisold', 'block_exacomp'))) {
       var descrid = $(this).attr('descrid');
       var courseid = block_exacomp.get_param('courseid');
       var studentid = $(this).attr('studentid');
-      
+
       block_exacomp.call_ajax({
         descrid : descrid,
         courseid : courseid,

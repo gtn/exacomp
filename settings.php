@@ -150,9 +150,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
     }
 	class block_exacomp_admin_setting_diffLevelOptions extends block_exacomp_admin_setting_extraconfigtext {
 		public function write_setting($data) {
-			
+
 			$ret = parent::write_setting($data);
-		   
+
 			if ($ret != '') {
 				return $ret;
 			}
@@ -167,7 +167,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			if ($ret !== true) {
 				return $ret;
 			}
-			
+
 			if (empty($data)) {
 				// No id -> id must always be set.
 				return false;
@@ -180,12 +180,87 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			}
 		}
 	}
-	
+
+    class block_exacomp_link_to extends admin_setting {
+
+        private $link = '';
+        private $linkparams = array();
+        private $title = array();
+        private $tagattributes = array();
+        private $keptLabel = false;
+
+        public function __construct($name, $visiblename, $description, $defaultsetting, $link = '', $title = '', $linkparams = array(), $tagattributes = array(), $keptLabel = false) {
+            $this->nosave = true;
+            $this->link = $link;
+            $this->linkparams = $linkparams;
+            $this->tagattributes = $tagattributes;
+            $this->title = $title;
+            $this->keptLabel = $keptLabel;
+            parent::__construct($name, $visiblename, $description, $defaultsetting);
+        }
+
+        public function get_setting() {
+            return true;
+        }
+
+        public function write_setting($data) {
+            return '';
+        }
+
+        public function output_html($data, $query = '') {
+            if ($this->link) {
+                $link = html_writer::link(new moodle_url($this->link, $this->linkparams),
+                    $this->title, $this->tagattributes);
+            } else {
+                return '';
+            }
+            //$output = parent::output_html($data, $query);
+            $template = format_admin_setting($this, $this->visiblename, $link,
+                $this->description, true, '', '', $query);
+            // Hide some html for better view of this settings.
+            $doc = new DOMDocument();
+            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $selector = new DOMXPath($doc);
+            // Clean div with classes.
+            $elementsToDelete = array();
+            // label div
+            $labeldivs = array('form-label');
+            if (!$this->keptLabel) {
+                foreach ($labeldivs as $deletediv) {
+                    foreach ($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e) {
+                        $e->textContent = '';
+                    }
+                }
+            } else {
+                // show label, but delete short variable name
+                $elementsToDelete[] = '//span[contains(attribute::class, "form-shortname")]';
+            }
+            // another divs
+            $infodivs = array('form-defaultinfo');
+            foreach ($infodivs as $deletediv) {
+                foreach ($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e) {
+                    $e->textContent = '';
+                }
+            }
+            // delete additional elements if it is added in previous code
+            if (count($elementsToDelete) > 0) {
+                foreach ($elementsToDelete as $toDel) {
+                    foreach ($selector->query($toDel) as $e) {
+                        $e->textContent = '';
+                    }
+                }
+            }
+            $template = $doc->saveHTML($doc->documentElement);
+            return $template;
+        }
+
+    }
+
 /*	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
 
         public function write_setting($data) {
 			$ret = parent::write_setting($data);
-		   
+
 			if ($ret != '') {
 				return $ret;
 			}
@@ -218,12 +293,12 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             return $output;
         }
 	}*/
-	
+
 	class block_exacomp_admin_setting_preconfiguration extends admin_setting_configselect {
 
         public function write_setting($data) {
 			$ret = parent::write_setting($data);
-		   
+
 			if ($ret != '') {
 				return $ret;
 			}
@@ -405,11 +480,11 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
         }
 
 	}
-	
+
 	class block_exacomp_grading_schema extends admin_setting_configselect {
 		public function write_setting($data) {
 			$ret = parent::write_setting($data);
-		   
+
 			if ($ret != '') {
 				return $ret;
 			}
@@ -419,12 +494,12 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			return '';
 		}
 	}
-	
-	
+
+
 	class admin_setting_configcheckbox_grading extends admin_setting_configcheckbox {
 		public function write_setting($data) {
 			$ret = parent::write_setting($data);
-			 
+
 			if($data != '0'){
 				// Ensure that value is 0-4 which is needed for new grading scheme.
 				foreach(block_exacomp_get_courseids() as $course){
@@ -434,7 +509,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 						$course_settings->filteredtaxonomies = json_encode($course_settings->filteredtaxonomies);
 						block_exacomp_save_coursesettings($course, $course_settings);
 					}
-					
+
 					// Map subject, topic, crosssubject, descriptor grading to grade.
 					block_exacomp_map_value_to_grading($course);
 				}
@@ -838,7 +913,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
         }
 
     }
-	
+
 }
 
 // Generate id if not set.
@@ -848,6 +923,17 @@ block_exacomp\data::generate_my_source();
 $settings->add(new admin_setting_heading('exacomp/heading_general', block_exacomp_get_string('settings_heading_general'), ''));
 $settings->add(new admin_setting_configcheckbox('exacomp/autotest', block_exacomp_get_string('settings_autotest'),
 	    block_exacomp_get_string('settings_autotest_description'), 0, 1, 0));
+
+$settings->add(new block_exacomp_link_to('exacomp/dakora_teacher',
+    block_exacomp_get_string('assign_dakora_teacher'),
+    '',
+    '',
+    \block_exacomp\url::create('/cohort/assign.php'),
+    block_exacomp_get_string('assign_dakora_teacher_link'),
+    ['id' => block_exacomp_get_dakora_teacher_cohort()->id],
+    ['target' => '_blank'],
+    true));
+
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/testlimit', block_exacomp_get_string('settings_testlimit'),
 	    block_exacomp_get_string('settings_testlimit_description'), 50, PARAM_INT));
 
@@ -860,7 +946,7 @@ $settings->add(new block_exacomp_admin_setting_preconfiguration('exacomp/assessm
         block_exacomp_get_string('settings_admin_scheme_description'),
         block_exacomp_get_string('settings_admin_scheme_none'),
         null ));
-        
+
 $settings->add(new block_exacomp_assessment_configtable('exacomp/assessment_mapping', '', '', ''));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_points_limit',
         block_exacomp_get_string('settings_assessment_points_limit'),
@@ -966,6 +1052,20 @@ $settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_asse
 $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign',
         block_exacomp_get_string('block_exacomp_external_trainer_assign_head'),
         block_exacomp_get_string('block_exacomp_external_trainer_assign_body'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/new_app_login',
+        block_exacomp_get_string('settings_new_app_login'),
+        block_exacomp_get_string('settings_new_app_login_description'), 0));
+
+// Performance (configuration for performance issues).
+$settings->add(new admin_setting_heading('exacomp/heading_performance',
+        block_exacomp_get_string('settings_heading_performance'),
+        block_exacomp_get_string('settings_heading_performance_description')));
+$settings->add(new admin_setting_configcheckbox('exacomp/disable_js_assign_competencies',
+        block_exacomp_get_string('settings_disable_js_assign_competencies'),
+        block_exacomp_get_string('settings_disable_js_assign_competencies_description'), 0, 1, 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/disable_js_edit_activities',
+        block_exacomp_get_string('settings_disable_js_editactivities'),
+        block_exacomp_get_string('settings_disable_js_editactivities_description'), 0, 1, 0));
 
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',

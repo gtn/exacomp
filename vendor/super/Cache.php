@@ -441,7 +441,6 @@ class StaticCacheCallback {
 
 	static function get($cache_id, $callback, $params = []) {
 		$id = json_encode([$cache_id, $params]);
-
 		if (array_key_exists($id, static::$cachedItems)) {
 			return static::$cachedItems[$id];
 		} else {

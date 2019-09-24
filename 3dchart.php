@@ -73,8 +73,8 @@ $graph_options->zMin = 0;
 $graph_options->zMax = 10;
 */
 
-$evaluation = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start, $end)['descriptor_evaluation'];
-
+$evaluation = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start, $end)['average_descriptor_evaluations'];
+//echo "<pre>debug:<strong>3dchart.php:77</strong>\r\n"; print_r($evaluation); echo '</pre>'; // !!!!!!!!!! delete it
 $graph_options->xLabels = array_map(function($label) {
 	// remove LFS at the beginning
 	return preg_replace('!^'.preg_quote(block_exacomp_get_string('niveau_short'), '!').'!', '', $label);
@@ -82,15 +82,24 @@ $graph_options->xLabels = array_map(function($label) {
 $graph_options->xLabel = block_exacomp_get_string('niveau_short');
 $xlabels_long = array_keys(['' => ''] + $evaluation);
 
-$evalniveau_titles = \block_exacomp\global_config::get_evalniveaus(true);
-$graph_options->yLabels = array_values($evalniveau_titles);
+if (block_exacomp_get_assessment_comp_diffLevel()) {
+    $evalniveau_titles = \block_exacomp\global_config::get_evalniveaus(true);
+} else {
+    $evalniveau_titles = array('' => '', '0' => block_exacomp_get_string('teacherevaluation_short'));
+}
+$graph_options->yLabels = array_values($evalniveau_titles) + ['2'];
 $y_id_to_index = array_combine(array_keys($evalniveau_titles), array_keys($graph_options->yLabels));
+//echo "<pre>debug:<strong>3dchart.php:92</strong>\r\n"; print_r($evalniveau_titles); echo '</pre>';  // !!!!!!!!!! delete it
+//echo "<pre>debug:<strong>3dchart.php:92</strong>\r\n"; print_r($y_id_to_index); echo '</pre>'; exit; // !!!!!!!!!! delete it
 $ylabels_long = $graph_options->yLabels;
 
+// add student's evaluation
 end($graph_options->yLabels);
 $student_value_index = key($graph_options->yLabels) + 1;
 $graph_options->yLabels[$student_value_index] = block_exacomp_get_string('selfevaluation_short');
 $ylabels_long[$student_value_index] = block_exacomp_get_string('selfevaluation');
+
+//echo "<pre>debug:<strong>3dchart.php:77</strong>\r\n"; print_r($evaluation); echo '</pre>'; exit; // !!!!!!!!!! delete it
 
 // php <5.6.0 has no filter key function
 function block_exacomp_array_filter_keys($arr, $cb) {
@@ -115,6 +124,7 @@ $graph_options->yColors = [
 
 $x = 1;
 foreach ($evaluation as $e) {
+
 	if ($e->studentvalue > 0) {
 		$data_value = (object)[
 			'x' => $x,
@@ -124,15 +134,30 @@ foreach ($evaluation as $e) {
 		];
 		$graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
 	}
-	if ($e->teachervalue >= 0 && isset($y_id_to_index[$e->evalniveau])) {
-		$data_value = (object)[
-			'x' => $x,
-			'y' => $y_id_to_index[$e->evalniveau],
-			'z' => $e->teachervalue,
-			'label' => @$xlabels_long[$x].' / '.@$ylabels_long[$y_id_to_index[$e->evalniveau]].': <b>'.@$value_titles_long[$e->teachervalue].'</b>',
-		];
-		$graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
-	}
+	if ($e->teachervalues) {
+	    foreach ($e->teachervalues as $evkey => $tvalue) {
+            if ($tvalue >= 0 && isset($y_id_to_index[$evkey])) {
+                $data_value = (object) [
+                        'x' => $x,
+                        'y' => $y_id_to_index[$evkey],
+                        'z' => $tvalue,
+                        'label' => @$xlabels_long[$x].' / '.@$ylabels_long[$y_id_to_index[$evkey]].': <b>'.
+                                $e->teachervaluetitles[$evkey].'</b>',
+                ];
+                $graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
+            }
+            /*if ($e->teachervalue >= 0 && isset($y_id_to_index[$e->evalniveau])) {
+                $data_value = (object) [
+                        'x' => $x,
+                        'y' => $y_id_to_index[$e->evalniveau],
+                        'z' => $e->teachervalue,
+                        'label' => @$xlabels_long[$x].' / '.@$ylabels_long[$y_id_to_index[$e->evalniveau]].': <b>'.
+                                $e->teachervaluetitle.'</b>',
+                ];
+                $graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
+            }*/
+        }
+    }
 /*
 			var title = evalniveau_titles_by_index[point.y] ? evalniveau_titles_by_index[point.y].title : '' || '';
 			var value

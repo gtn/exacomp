@@ -155,11 +155,11 @@ Returns:<pre>{
     "title": "text null (title of example)",
     "description": "text null (description of example)",
     "taskfileurl": "text null (task fileurl)",
-    "taskfilename": "text null (task filename)",
+    "taskfilenames": "text null (task filename)",
     "externalurl": "text null (externalurl of example)",
     "task": "text null (@deprecated)",
     "solution": "text null (solution(url\/description) of example)",
-    "timeframe": "int null (timeframe in minutes)",
+    "timeframe": "text null (timeframe as string)",
     "hassubmissions": "bool null (true if example has already submissions)"
 }</pre>
 <h2>block_exacomp_get_descriptors_for_example</h2>
@@ -233,6 +233,14 @@ Returns:<pre>[
     "..."
 ]</pre>
 <h2>block_exacomp_get_user_role</h2>
+<div>Get role for user: 1=trainer 2=student</div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "role": "int null (1=trainer, 2=student)"
+}</pre>
+<h2>block_exacomp_diggr_get_user_role</h2>
 <div>Get role for user: 1=trainer 2=student</div>
 <div>type: read</div>
 Params: <table>
@@ -405,6 +413,7 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_submit_example</h2>
 <div>Submit example
+submit example for elove and diggr
 Add item</div>
 <div>type: read</div>
 Params: <table>
@@ -489,6 +498,14 @@ create example</div>
 <div>type: write</div>
 Params: <table>
 <tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the example that is to be updated</td>
+<tr>
 <td>name</td>
 <td>text</td>
 <td>null</td>
@@ -503,11 +520,20 @@ Params: <table>
 <td></td>
 <td>description of example</td>
 <tr>
+<td>timeframe</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>description of example</td>
+<tr>
 <td>externalurl</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(4) "wwww"
+</td>
 <td></td>
 <tr>
 <td>comps</td>
@@ -518,18 +544,19 @@ Params: <table>
 </td>
 <td>list of competencies, seperated by comma</td>
 <tr>
-<td>fileitemid</td>
-<td>int</td>
-<td>null</td>
-<td>required</td>
-<td></td>
-<td>fileitemid</td>
-<tr>
-<td>solutionfileitemid</td>
-<td>int</td>
+<td>fileitemids</td>
+<td>text</td>
 <td>null</td>
 <td>optional</td>
-<td>default: int(0)
+<td>default: string(0) ""
+</td>
+<td>fileitemids separated by comma</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
 </td>
 <td>fileitemid</td>
 <tr>
@@ -547,7 +574,7 @@ Params: <table>
 <td>optional</td>
 <td>default: int(0)
 </td>
-<td></td>
+<td>courseid</td>
 <tr>
 <td>filename</td>
 <td>text</td>
@@ -858,6 +885,14 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>evaluation niveau (-1, 1, 2, 3)</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>subjectid</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -1365,7 +1400,8 @@ Returns:<pre>{
     "title": "text null (title of example)",
     "description": "text null (description of example)",
     "taskfileurl": "text null (task fileurl)",
-    "taskfilename": "text null (task filename)",
+    "taskfilenames": "text null (task filename)",
+    "solutionfilename": "text null (task filename)",
     "externalurl": "text null (externalurl of example)",
     "externaltask": "text null (url of associated module)",
     "task": "text null (@deprecated)",
@@ -1698,7 +1734,9 @@ Returns:<pre>[
         "courseshortname": "text null (shortname of example course)",
         "coursefullname": "text null (full name of example course)",
         "exampletaxonomies": "text null (taxonomies seperated by comma)",
-        "exampletaxids": "text null (taxids seperated by comma)"
+        "exampletaxids": "text null (taxids seperated by comma)",
+        "source": "text null (tag where the material comes from)",
+        "timeframe": "text null (timeframe, suggested time)"
     },
     "..."
 ]</pre>
@@ -1733,7 +1771,8 @@ Returns:<pre>[
         "state": "int null (state of example)",
         "scheduleid": "int null (id in schedule context)",
         "courseshortname": "text null (shortname of example course)",
-        "coursefullname": "text null (full name of example course)"
+        "coursefullname": "text null (full name of example course)",
+        "source": "text null (tag where the material comes from)"
     },
     "..."
 ]</pre>
@@ -1848,7 +1887,8 @@ Returns:<pre>[
         "courseshortname": "text null (shortname of example course)",
         "coursefullname": "text null (full name of example course)",
         "exampletaxonomies": "text null (taxonomies seperated by comma)",
-        "exampletaxids": "text null (taxids seperated by comma)"
+        "exampletaxids": "text null (taxids seperated by comma)",
+        "source": "text null (tag where the material comes from)"
     },
     "..."
 ]</pre>
@@ -2388,12 +2428,12 @@ Params: <table>
 <td></td>
 <td>url</td>
 <tr>
-<td>filename</td>
+<td>filenames</td>
 <td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>filename, used to look up file and create a new one in the exaport file area</td>
+<td>filenames, separated by comma, used to look up files and create a new ones in the exaport file area</td>
 <tr>
 <td>studentcomment</td>
 <td>text</td>
@@ -2416,12 +2456,12 @@ Params: <table>
 <td></td>
 <td>courseid</td>
 <tr>
-<td>fileitemid</td>
-<td>int</td>
+<td>fileitemids</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>fileitemid</td>
+<td>fileitemids separated by comma</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
@@ -2766,6 +2806,7 @@ Returns:<pre>{
             "timestampstudent": "int null (timestamp of student evaluation)",
             "numbering": "text null (numbering)",
             "hasmaterial": "bool null (true or false if descriptor has material)",
+            "globalgradings": "text null (Globalgradings as text)",
             "examples": [
                 {
                     "exampleid": "int null (id of example)",
@@ -2864,7 +2905,8 @@ Returns:<pre>{
         ]
     },
     "visible": "int null (visibility of example in current context)",
-    "used": "int null (used in current context)"
+    "used": "int null (used in current context)",
+    "globalgradings": "text null (Globalgradings as text)"
 }</pre>
 <h2>dakora_get_example_information</h2>
 <div>get information and submission for example
@@ -2899,9 +2941,6 @@ Returns:<pre>{
     "name": "text null (title of item)",
     "type": "text null (type of item (note,file,link))",
     "url": "text null (url)",
-    "filename": "text null (title of item)",
-    "file": "url null (file url)",
-    "mimetype": "text null (mime type for file)",
     "teachervalue": "int null (teacher grading)",
     "studentvalue": "int null (student grading)",
     "evalniveauid": "int null (evaluation niveau id)",
@@ -2912,7 +2951,16 @@ Returns:<pre>{
     "studentcomment": "text null (student comment)",
     "teacheritemvalue": "int null (item teacher grading)",
     "resubmission": "bool null (resubmission is allowed\/not allowed)",
-    "additionalinfo": "float null (additional grading)"
+    "additionalinfo": "float null (additional grading)",
+    "studentfiles": [
+        {
+            "filename": "text null (title of item)",
+            "file": "url null (file url)",
+            "mimetype": "text null (mime type for file)",
+            "fileindex": "text null (mime type for file)"
+        },
+        "..."
+    ]
 }</pre>
 <h2>dakora_get_user_information</h2>
 <div>get information about current user
@@ -2937,6 +2985,25 @@ Returns:<pre>{
     "profileimageurl": "url null (User image profile URL - big version)",
     "exarole": "int null (1=trainer, 2=student)"
 }</pre>
+<h2>dakora_get_lang_information</h2>
+<div>Returns lang information from exacomp</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>lang</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>language</td>
+</table>
+Returns:<pre>[
+    {
+        "stringid": "text null (key for the lang string)",
+        "master": "text null (lang string in the chosen language)"
+    },
+    "..."
+]</pre>
 <h2>dakora_create_blocking_event</h2>
 <div>create a blocking event
 Create a new blocking event</div>
@@ -3361,6 +3428,9 @@ Params: <table>
 Returns:<pre>{
     "points_limit": "int null (points_limit)",
     "grade_limit": "int null (grade_limit)",
+    "points_negative_threshold": "int null (points_negative_threshold. Values below this value are negative)",
+    "grade_negative_threshold": "int null (grade_negative_threshold. Values below this value are negative)",
+    "verbal_negative_threshold": "int null (grade_negative_threshold. Values below this value are negative)",
     "example_scheme": "int null (example_scheme)",
     "example_diffLevel": "bool null (example_diffLevel)",
     "example_SelfEval": "bool null (example_SelfEval)",
@@ -3448,7 +3518,8 @@ Returns:<pre>{
     ],
     "version": "float null (exacomp version number in YYYYMMDDXX format)",
     "moodleversion": "float null (moodle version number in YYYYMMDDXX format)",
-    "release": "text null (plugin release x.x.x format)"
+    "release": "text null (plugin release x.x.x format)",
+    "exaportactive": "bool null (flag if exaportfolio should be active)"
 }</pre>
 <h2>block_exacomp_login</h2>
 <div>webservice called through token.php</div>
@@ -3508,6 +3579,9 @@ Returns:<pre>{
     "config": {
         "points_limit": "int null (points_limit)",
         "grade_limit": "int null (grade_limit)",
+        "points_negative_threshold": "int null (points_negative_threshold. Values below this value are negative)",
+        "grade_negative_threshold": "int null (grade_negative_threshold. Values below this value are negative)",
+        "verbal_negative_threshold": "int null (grade_negative_threshold. Values below this value are negative)",
         "example_scheme": "int null (example_scheme)",
         "example_diffLevel": "bool null (example_diffLevel)",
         "example_SelfEval": "bool null (example_SelfEval)",
@@ -3595,7 +3669,8 @@ Returns:<pre>{
         ],
         "version": "float null (exacomp version number in YYYYMMDDXX format)",
         "moodleversion": "float null (moodle version number in YYYYMMDDXX format)",
-        "release": "text null (plugin release x.x.x format)"
+        "release": "text null (plugin release x.x.x format)",
+        "exaportactive": "bool null (flag if exaportfolio should be active)"
     },
     "tokens": [
         {
@@ -3735,7 +3810,7 @@ Params: <table>
 <td>int</td>
 <td>null</td>
 <td>optional</td>
-<td>default: int(0)
+<td>default: int(-1)
 </td>
 <td>id of group</td>
 </table>

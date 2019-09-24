@@ -78,7 +78,7 @@
 	
 	function exacomp_calendar_add_event(event) {
 		console.log('exacomp_calendar_add_event', event.id, event.title, event.start, event.end, event.scheduleid);
-		debugger
+		// debugger
 		block_exacomp.call_ajax({
 			scheduleid : event.scheduleid,
 			start: event.start.format('X'),
@@ -149,9 +149,9 @@
 	}
 
 	function exacomp_calendar_loading_done(type) {
-		console.log('loading done');
+		// console.log('loading done');
 	}
-	console.log('loading');
+	// console.log('loading');
 	
 	// loaded from server]
 	var exacomp_calcendar_config = {
@@ -224,7 +224,7 @@
 		
 		$eventDiv.empty();
 		$eventDiv.append(title);
-		debugger
+		// debugger
 		block_exacomp_get_configuration(function(configuration) {
 			$.extend(exacomp_calcendar_config, configuration);
 			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
@@ -310,13 +310,15 @@
 	}
 	
 	function create_calendar() {
+        var initialLocaleCode = 'en';
 		$('#calendar').fullCalendar({
 			header: {
 				left: 'today prev,next',
 				center: 'title',
 				right: 'month,agendaWeek,agendaDay'
 			},
-			lang: $('html').attr('lang'),
+			// lang: $('html').attr('lang'),
+			locale: $('html').attr('lang'),
 			defaultView: 'agendaWeek',
 			defaultDate: (moment().day() == 6 || moment().day() == 0) ? moment().add(2, "days") : moment(),
 			minTime: "00:00:00",
@@ -344,7 +346,7 @@
 			},
 	
 			events: function(start, end, timezone, callback){
-				console.log('events');
+				// console.log('events');
 				exacomp_calendar_load_events(start, end, timezone, function(events){
 					// convert to calendar timeslots
 					events = $.map(events, function(o){
@@ -374,7 +376,7 @@
 						exacomp_calendar_loading_done();
 					}
 					
-				console.log('events' ,events);
+				// console.log('events' ,events);
 					callback(events);
 				})
 			},
@@ -430,7 +432,7 @@
 			
 				if (isEventOverDiv($eventDiv, jsEvent)) {
 					$('#calendar').fullCalendar('removeEvents', event._id);
-	
+
 					// fullcalendar bug
 					delete event.source;
 					
@@ -469,7 +471,7 @@
                     } else if (slot.name) {
                         slotName = '<b>' + M.util.get_string("n" + slot.name, 'block_exacomp') + '</b><br />' + slot.time
 					}
-					console.log(slotName);
+					// console.log(slotName);
 					this.innerHTML = '<span>' + slotName + '<span style="font-size: 85%"></span></span>';
 					i++;
 					if (slot.name) {
@@ -502,14 +504,14 @@
 						$('#calendar').fullCalendar('removeEvents', event._id);
 						// fullcalendar bug
 						delete event.source;
-						debugger
+						// debugger
 						add_pool_item(event);
 						exacomp_calendar_remove_event(event, 0);
 					}else if(event.deleted == 1){
 						$('#calendar').fullCalendar('removeEvents', event._id);
 						// fullcalendar bug
 						delete event.source;
-	
+
 						add_trash_item(event);
 						exacomp_calendar_remove_event(event, 1);
 					}

@@ -76,10 +76,7 @@ foreach ($Iterator as $file) {
 				if (isset($translations[$token->string])) {
 					$translations[$token->string]->token_found = true;
 				}
-				// var_dump($token);
 			}
-			// var_dump($token); exit;
-			// echo token_name($token[0]) , PHP_EOL;
 		} else {
 			// var_dump($token);
 		}

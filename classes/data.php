@@ -582,7 +582,7 @@ class data_exporter extends data {
 	 * @throws moodle_exception
 	 */
 	private static function assign_source($xmlItem, $dbItem) {
-		if ($dbItem->source && $dbItem->sourceid) {
+		if (@$dbItem->source && @$dbItem->sourceid) {
 			if ($dbItem->source == BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 				// source und sourceid vorhanden -> von wo anders erhalten
 				throw new moodle_exception('database error, has default source #69fvk3');
@@ -1619,15 +1619,18 @@ class data_importer extends data {
 		
 		
 		if( $course_template != 0) {
-		    if ($ret === true) { // only if it is zip
-		        extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
-		    }
-		    for ($i = 1; @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i); $i++){
-		        moodle_restore('activity'. $i, $course_template, $USER->id);
-		    }
-		    @rmdir($CFG->tempdir . '/backup/activities');
+		    if (isset($xml->activities)) {
+		      if ($ret === true) { // only if it is zip
+		          extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
+		      }
+		      for ($i = 1;$i <= count($xml->activities->activity); $i++){
+		          @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
+		          moodle_restore('activity'. $i, $course_template, $USER->id);
+		       }
+		      @rmdir($CFG->tempdir . '/backup/activities');
+		      unlink($CFG->tempdir . '/backup/data.xml');
 
-		  if (isset($xml->activities)) {
+		  
 		      foreach($xml->activities->activity as $activity) {
                   if (isset($activity->descriptors)) {
                       foreach ($activity->descriptors->descriptorid as $descriptorid) {
@@ -1691,10 +1694,18 @@ class data_importer extends data {
             $sujectsIds = '*';
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
-            $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
-            $selectedGrids = array_keys($selectedGrids);
-            array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
-            $sujectsIds = implode(" or ", $selectedGrids);
+            if ($selectedGrids && is_array($selectedGrids)) {
+                $selectedGrids = array_filter($selectedGrids, function($v) {
+                    return ($v == 1);
+                });
+                $selectedGrids = array_keys($selectedGrids);
+                array_walk($selectedGrids, function(&$i) {
+                    $i = '@id="'.$i.'"';
+                });
+                $sujectsIds = implode(" or ", $selectedGrids);
+            } else {
+                $sujectsIds = '';
+            }
         }
         if ($sujectsIds != '') {
             if ($sujectsIds == '*') {
@@ -1725,10 +1736,18 @@ class data_importer extends data {
             $sujectsIds = '*';
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
-            $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
-            $selectedGrids = array_keys($selectedGrids);
-            array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
-            $sujectsIds = implode(" or ", $selectedGrids);
+            if ($selectedGrids && is_array($selectedGrids)) {
+                $selectedGrids = array_filter($selectedGrids, function($v) {
+                    return ($v == 1);
+                });
+                $selectedGrids = array_keys($selectedGrids);
+                array_walk($selectedGrids, function(&$i) {
+                    $i = '@id="'.$i.'"';
+                });
+                $sujectsIds = implode(" or ", $selectedGrids);
+            } else {
+                $sujectsIds = '';
+            }
         }
         if ($sujectsIds != '') {
             if ($sujectsIds == '*') {
@@ -2049,6 +2068,7 @@ class data_importer extends data {
 
         // eTheMa parent - update later
         if (isset($item->ethema_parent)
+                && is_array($item->ethema_parent)
                 && array_key_exists('@attributes', $item->ethema_parent)
                 && array_key_exists('id', $item->ethema_parent['@attributes'])
                 && $item->ethema_parent['@attributes']['id'] > 0) {

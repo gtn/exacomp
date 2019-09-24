@@ -134,10 +134,10 @@ class api {
 
 		//$courses = block_exacomp_get_teacher_courses($teacherid);
 		$courses = block_exacomp_get_courses_of_teacher($teacherid);
-		foreach ($courses as $course) {
-			$subjects = db_layer_course::create($course->id)->get_subjects();
+		foreach ($courses as $courseid) {
+			$subjects = db_layer_course::create($courseid)->get_subjects();
 			foreach ($subjects as $subject) {
-				$evaluation = block_exacomp_get_comp_eval_merged($course->id, $studentid, $subject);
+				$evaluation = block_exacomp_get_comp_eval_merged($courseid, $studentid, $subject);
 				if ($evaluation->additionalinfo) {
 					$resultSubjects[] = (object)[
 						'title' => $subject->title,

@@ -125,7 +125,7 @@ return [
 	],
 
     'tab_teacher_report_general' => [
-            'General report',
+            'Berichte',
             'General report',
     ],
     'tab_teacher_report_annex' => [
@@ -135,6 +135,14 @@ return [
     'tab_teacher_report_annex_title' => [
             'Anlage zum Lernentwicklungsbericht',
             'Annex to the learning development report',
+    ],
+    'tab_teacher_report_profoundness' => [
+            'Grund- und Erweiterungskompetenzen ',
+            'Basic and extended competencies',
+    ],
+    'tab_teacher_report_profoundness_title' => [
+            'Grund- und Erweiterungskompetenzen verwenden',
+            'Basic and extended competencies',
     ],
     'create_html' => [
             'Zeugnis im HTML-Format generieren (Voransicht)',
@@ -146,6 +154,18 @@ return [
     ],
     'create_pdf' => [
             'Zeugnis im pdf-Format generieren',
+            'generate pdf',
+    ],
+    'create_html_report' => [
+            'Bericht im HTML-Format generieren',
+            'generate HTML preview',
+    ],
+    'create_docx_report' => [
+            'Bericht im docx-Format generieren',
+            'generate docx',
+    ],
+    'create_pdf_report' => [
+            'Bericht im pdf-Format generieren',
             'generate pdf',
     ],
     'tab_teacher_report_annex_template' => [
@@ -269,6 +289,12 @@ return [
 		'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, betätigen Sie diesen Link wenn Sie das jetzt machen möchten.',
 		'There are no participants in your course yet. If you want to enrol some please use this link.',
 	],
+    'enrol_users' => [
+        'Schreiben sie Teilnehmer/innen ein, um Exacomp verwenden zu können.',
+        'Enrol users to be able to use exacomp.',
+    ],
+
+
 	'next_step_first_teacher_step' => [
 		'Klicken Sie hier um zum nächsten Schritt zu gelangen.',
 		'Click here to continue configuration.',
@@ -380,6 +406,30 @@ return [
         'Apps-Einstellungen',
         'Configuration for apps',
     ],
+	'settings_new_app_login' => [
+		'SSO-App-Login verwenden',
+		'Use SSO-App-Login',
+	],
+    'settings_dakora_teacher_link' => [
+        'Klicken Sie, um die Dakoralehrer festzulegen',
+        'Click to assign the dakorateachers',
+    ],
+    'dakora_teachers' => [
+        'Dakoralehrer',
+        'Dakorateachers',
+    ],
+	'settings_new_app_login_description' => [
+		'Der neue App-Login erlaubt Benutzern sich mit allen aktivierten Moodle Login-Plugins einzuloggen. Diese Einstellung ist nicht mit dem Gamification Plugin kompatibel.',
+		'The new App-Login allows users to login with all activated Moodle Login plugins. This setting is not compatible with the gamification plugin.',
+	],
+    'settings_heading_performance' => [
+        'Performance',
+        'Performance',
+    ],
+    'settings_heading_performance_description' => [
+        'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability',
+        'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability',
+    ],
     'settings_heading_scheme' => [
         'Generisches Bewertungsschema',
         'Generic assessment scheme',
@@ -485,7 +535,7 @@ return [
         'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained',
     ],
     'settings_assessment_verbose_options_short_default' => [
-        'ne, te, ge, ve',
+        'ne, te, üe, ve',
         'ng, pg, mg, cg',
     ],
     'settings_assessment_grade_verbose' => [
@@ -549,11 +599,11 @@ return [
         'Short titles: up to 4 entries, delimiter ; maximum 3 characters per entry',
     ],*/
     'settings_addblock_to_newcourse' => [
-        'Add block to new courses',
+        'Block zu neuen Kursen automatisch hinzufügen',
         'Add block to new courses',
     ],
     'settings_addblock_to_newcourse_description' => [
-        'The block "Exabis competence Grid" will be added to every new course automatically. Position of inserted block depends on selected Moodle theme',
+        'Der Block "Exabis Kompetenzraster" wird automatisch jedem neuen Kurs hinzugefügt. Die Position des Block hängt vom Moodle-Theme ab.',
         'The block "Exabis competence Grid" will be added to every new course automatically. Position of inserted block depends on selected Moodle theme',
     ],
     'settings_addblock_to_newcourse_option_no' => [
@@ -571,6 +621,22 @@ return [
     'settings_addblock_to_newcourse_option_right' => [
         'to the Right region',
         'to the Right region',
+    ],
+    'settings_disable_js_assign_competencies' => [
+            'JS für Kompetenzraster-Übersicht deaktivieren.',
+            'Disable JS in students selection in "Competence grid" page',
+    ],
+    'settings_disable_js_assign_competencies_description' => [
+            'Bei langen Ladezeiten des Kompetenzrasters können zur Performance-Steigerung JS-Funktionen deaktiviert werden.',
+            'If "Competence grid" has a long page generation time. This checkbox can solve this problem',
+    ],
+    'settings_disable_js_editactivities' => [
+            'Disable JS in students selection in "Assign Moodle activities" page',
+            'Disable JS in students selection in "Assign Moodle activities" page',
+    ],
+    'settings_disable_js_editactivities_description' => [
+            'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem',
+            'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem',
     ],
     'settings_example_autograding' => [
         'übergeordnete Materialien automatische Beurteilung',
@@ -813,7 +879,7 @@ return [
         'Importieren Sie Aktivitäten vom Vorlagekurs in Ihren Kurs',
         'Import activities of a template course into your course'
     ],
-    
+
 
 
 	// === Configuration ===
@@ -916,6 +982,10 @@ return [
 		'Ohne Kursteilnehmer/innen arbeiten',
 		'Use without students',
 	],
+    'usehideglobalsubjects' => [
+        'Überfachliche Kompetenzraster verbergen',
+        'Hide global subjects',
+    ],
 	'profoundness_0' => [
 		'Nicht erreicht',
 		'not reached',
@@ -1014,6 +1084,10 @@ return [
 		'Name',
 		'Name',
 	],
+    'timeframe_example' => [
+        'Zeitvorschlag',
+        'Timeframe',
+    ],
 	'example_add_taxonomy' => [
 		'Neue Niveaustufe erstellen',
 		'Add new taxonomy',
@@ -1257,7 +1331,7 @@ return [
     'dismiss_gradingisold' => [
         'Wollen Sie die Warnung ignorieren?',
         'Do you want to dismiss this warning?',
-    ],    
+    ],
 	'unload_notice' => [
 		'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.',
 		'Are you sure? Unsaved changes will be lost.',
@@ -1391,6 +1465,10 @@ return [
 		'Alle  Kursteilnehmer/innen',
 		'All students',
 	],
+	'all_activities' => [
+		'Alle Aktivität/en',
+		'All activities',
+	],
 	'nostudents' => [
 		'Keine  Kursteilnehmer/innen',
 		'No students',
@@ -1435,7 +1513,7 @@ return [
         'Neue Kategorie hinzufügen: ',
         'Add new category ',
     ],
-    
+
 	// === metadata ===
 	'subject_singular' => [
 		'Fach',
@@ -1537,6 +1615,10 @@ return [
 		'SE',
 		'SA',
 	],
+	'teacherevaluation_short' => [
+		'TE',
+		'TA',
+	],
 	'teacherevaluation' => [
 		'Einschätzung des Beurteilenden',
 		'trainer assessment',
@@ -1565,12 +1647,16 @@ return [
         'Neuer Kompetenzbereich',
         'New topic'
     ],
+    'create_new_area' => [
+        'Neuer Bereich',
+        'New area'
+    ],
     'really_delete' => [
         'Wirklich löschen?',
         'Really to delete?'
     ],
     'add_niveau' => [
-        'Neues Niveau hinzufügen',
+        'Neuen Lernfortschritt hinzufügen',
         'Add niveau'
     ],
     'delete_niveau' => [
@@ -1643,7 +1729,7 @@ return [
         'Lernmaterialien',
         'Materials',
     ],
-    
+
 	// === Competence Profile Settings ===
 	'profile_settings_choose_courses' => [
 		'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
@@ -1870,6 +1956,14 @@ return [
         'neuer Lernfortschritt',
         'New learning progress'
     ],
+    'groupcategory' => [
+        'Kategorie',
+        'Category'
+    ],
+    'new_column' => [
+        'neue Spalte',
+        'new column'
+    ],
 
 
 	// === Associations ===
@@ -1929,35 +2023,35 @@ return [
 		'For adding examples to the schedule, please use the overview',
 	],
 	'pre_planning_storage' => [
-		'Vorplanungsspeicher',
-		'Pre-planning storage',
+		'Planungsspeicher',
+		'Planning storage',
 	],
 	'pre_planning_storage_added' => [
-		'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.',
-		'Example added to the pre-planning storage.',
+		'Lernmaterial wurde zum Planungsspeicher hinzugefügt.',
+		'Example added to the planning storage.',
 	],
 	'pre_planning_storage_already_contains' => [
-		'Lernmateriel bereits im Vorplanungsspeicher enthalten.',
-		'Example is already in pre-planning storage.',
+		'Lernmateriel bereits im Planungsspeicher enthalten.',
+		'Example is already in planning storage.',
 	],
 	'save_pre_planning_selection' => [
 		'Ausgewählte Lernmaterialien auf den Wochenplan der ausgewählten Schüler/innen legen',
 		'Add selected examples to weekly schedule of selected students',
 	],
 	'empty_pre_planning_storage' => [
-		'Vorplanungsspeicher leeren',
-		'Empty pre-planning storage',
+		'Planungsspeicher leeren',
+		'Empty planning storage',
 	],
 	'noschedules_pre_planning_storage' => [
-		'Der Vorplanungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.',
-		'Pre-planning storage has been emptied, use the competence grid to put new examples in the pre-planning storage.',
+		'Der Planungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Planungsspeicher.',
+		'Pplanning storage has been emptied, use the competence grid to put new examples in the planning storage.',
 	],
 	'empty_trash' => [
 		'Papierkorb leeren',
 		'Empty trash bin',
 	],
 	'empty_pre_planning_confirm' => [
-		'Auch Beispiele, die ein anderer Lehrer zum Vorplanungsspeicher hinzugefügt hat, werden entfernt. Sind Sie sicher?',
+		'Auch Beispiele, die ein anderer Lehrer zum Planungsspeicher hinzugefügt hat, werden entfernt. Sind Sie sicher?',
 		'Examples added from all teachers are deleted, are you sure you want to do this?',
 	],
 	'to_weekly_schedule' => [
@@ -1973,16 +2067,16 @@ return [
 		'title',
 	],
 	'blocking_event_create' => [
-		'Zum Vorplanungsspeicher hinzufügen',
-		'Add to pre-planning storage',
+		'Zum Planungsspeicher hinzufügen',
+		'Add to planning storage',
 	],
 	'weekly_schedule_disabled' => [
 		'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.',
 		'Hidden example can not be added to weekly schedule',
 	],
 	'pre_planning_storage_disabled' => [
-		'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.',
-		'Hidden example can not be added to pre-planning storage.',
+		'Lernmaterial ist versteckt und kann nicht in den Planungsspeicher gelegt werden.',
+		'Hidden example can not be added to planning storage.',
 	],
 	'add_example_for_all_students_to_schedule' => [
 		'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
@@ -2003,7 +2097,7 @@ return [
     'participating_student' => [
         'Kursteilnehmer/in',
         'student',
-    ],   
+    ],
     'n1.unit' => [
         '1. Einheit:',
         '1. unit',
@@ -2256,7 +2350,7 @@ return [
         'Bewertungsdatum',
         'evaluation Date',
     ],
-    'output_current_assessments' => [ 
+    'output_current_assessments' => [
         'Ausgabe der jeweiligen Bewertungen',
         'output of current assessments',
     ],
@@ -2406,8 +2500,12 @@ return [
         'Ungenügend',
         'Insufficient',
     ],
-    'import_category_selectgrids_needed' => [
-        'Select subjects for importing:',
+    'import_select_file' => [
+        'Datei aussuchen:',
+        'Select file:',
+    ],
+    'import_selectgrids_needed' => [
+        'Auswahl der Gegenstände für den Import:',
         'Select subjects for importing:',
     ],
     'import_category_mapping_needed' => [
@@ -2415,11 +2513,11 @@ return [
         'Grading scheme from XML is different with exacomp scheme. Please configure right correlations and try to import again:',
     ],
     'import_category_mapping_column_xml' => [
-            'XML title',
+            'Niveau',
             'XML title'
     ],
     'import_category_mapping_column_exacomp' => [
-            'Exacomp difflevel title',
+            'wird geändert in',
             'Exacomp difflevel title'
     ],
     'import_category_mapping_column_level' => [
@@ -2435,7 +2533,7 @@ return [
             'Material'
     ],
     'import_mapping_as_is' => [
-            'Use as is',
+            'weiterhin so verwenden',
             'Use as is',
     ],
     'import_mapping_delete' => [
@@ -2462,6 +2560,47 @@ return [
     'module_used_availabilitycondition_competences' => [
         'Grant related exabis competencies when condition is met',
         'Grant related exabis competencies when condition is met',
+    ],
+    'use_isglobal' => [
+        'Überfachlicher Kurs',
+        'global course',
+    ],
+    'globalgradings' => [
+        'Überfachliche Bewertungen',
+        'global gradings',
+    ],
+    'assign_dakora_teacher' => [
+        'Dakora Lehrer zuweisen',
+        'assign dakora teacher',
+    ],
+    'assign_dakora_teacher_link' => [
+        'Hier klicken um Dakora Lehrer zuzuweisen',
+        'Click here to assign dakora teachers',
+    ],
+
+
+
+    //Dakora strings
+    'dakora_string1' => [
+        'deutscher string1',
+        'english string1'
+    ],
+    'dakora_string2' => [
+        'deutscher string2',
+        'english string2'
+    ],
+    'dakora_string3' => [
+        'deutscher string3',
+        'english string3'
+    ],
+
+    'active_show' => [
+        'aktiv (anzeigen)',
+        'active (show them)',
+    ],
+    'donotleave_page_message' => [
+        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',
+        'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?',
     ],
 
     'privacy:metadata:block_exacompcompuser' => [

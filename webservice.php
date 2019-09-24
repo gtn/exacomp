@@ -89,20 +89,20 @@ class block_exacomp_simple_service {
 			print_error("student not found");
 		}
 
-		
+
 		\block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
 
 		// die;
 	}
-	
+
 	static function dakora_print_crosssubject() {
 	    global $OUTPUT, $USER, $DB;
 	    $course = static::require_courseid();
-	    
+
 	    $output = block_exacomp_get_renderer();
 	    $output->print = true;
-	   
-	    
+
+
 	    $courseid = required_param('courseid', PARAM_INT);
 	    $crosssubjid = required_param('crosssubjectid', PARAM_INT);
 	    $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
@@ -110,21 +110,21 @@ class block_exacomp_simple_service {
 	    $studentid = block_exacomp_get_studentid();
 	    //$page_identifier = 'tab_competence_profile_profile';
 	    $isTeacher = block_exacomp_is_teacher($courseid);
-	    
+
 	    $scheme = block_exacomp_get_assessment_theme_scheme();
-	    
+
 	    $activities = block_exacomp_get_activities_by_course($courseid);
 	    $course_settings = block_exacomp_get_settings_by_course($courseid);
-	    
+
 	    //$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid); //so the $USER has more data   not usefull, rw
-	    
+
 	    if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
 	        echo $output->header_v2('tab_cross_subjects');
 	        echo $output->no_activities_warning($isTeacher);
 	        echo $output->footer();
 	        exit;
 	    }
-	        
+
 	    $cross_subject = $crosssubjid ? \block_exacomp\cross_subject::get($crosssubjid, MUST_EXIST) : null;
 
 	    if ($cross_subject) {
@@ -154,7 +154,7 @@ class block_exacomp_simple_service {
 	            $course_settings->filteredtaxonomies,
 	            ($studentid > 0 && !$isTeacher) ? $studentid : 0,
 	            ($isTeacher) ? false : true);
-	        
+
 	        if ($subjects) {
 	            //$html_pdf = $output->overview_legend($isTeacher);
 	            $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
@@ -172,18 +172,18 @@ class block_exacomp_simple_service {
 	        block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
 	    }
 	}
-	
+
 	static function dakora_print_competence_profile() {
 	    global $OUTPUT, $USER, $DB;
 	    $course = static::require_courseid();
-	    
+
 	    $courseid = required_param('courseid', PARAM_INT);
 	    $context = context_course::instance($courseid);
 	    $studentid = block_exacomp_get_studentid();
 	    $page_identifier = 'tab_competence_profile_profile';
 	    $isTeacher = block_exacomp_is_teacher($courseid);
 	    $output = block_exacomp_get_renderer();
-	    
+
 	    if (!$isTeacher) {
 	        $studentid = $USER->id;
 	        $html_tables[] = $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
@@ -213,19 +213,20 @@ class block_exacomp_simple_service {
 	                    $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
 	            }
 	            $html_tables[] = $html_content;
-	            
+
 	    }
 
 	    block_exacomp\printer::competenceprofile_overview($studentid, $html_header, $html_tables);
 	}
-	
+
 	static function dakora_print_competence_grid() {
 	    $course = static::require_courseid();
-	    
+
+
 	    $courseid = required_param('courseid', PARAM_INT);
 	    $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 	    $group = optional_param('group', 0, PARAM_INT);
-	    
+
 	    $editmode = optional_param('editmode', 0, PARAM_BOOL);
 	    $subjectid = optional_param('subjectid', 0, PARAM_INT);
 
@@ -236,40 +237,39 @@ class block_exacomp_simple_service {
 
 	    $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
 
-// 	    var_dump($courseid,$showevaluation,$group,$editmode,$subjectid,$topicid,$niveauid);
-// 	    die();
-	    
+        $course_settings = block_exacomp_get_settings_by_course($courseid);
+
 	    // CHECK TEACHER
 	    $isTeacher = block_exacomp_is_teacher($courseid);
 
 	    if(!$isTeacher) $editmode = 0;
 	    $isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
-	    
+
 	    $studentid = block_exacomp_get_studentid();
 
 	    if($studentid == 0){
 	        $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 	    }
-	        
+
         $selectedStudentid = $studentid;
-        
+
         if($editmode) {
             $selectedStudentid = $studentid;
             $studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
-        }  
-	    
-	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false , $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
+        }
+
+	    $ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, false , $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true, $course_settings->hideglobalsubjects);
 	    if (!$ret) {
 	        print_error('not configured');
 	    }
 	    list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
- 
+
 	    $output = block_exacomp_get_renderer();
-	    
+
 	    // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 	    $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 	    if($course_settings->nostudents) $allCourseStudents = array();
-	    
+
 	    $course_settings = block_exacomp_get_settings_by_course($courseid);
 	    //$isTeacher = true; //???
 	    $competence_tree = block_exacomp_get_competence_tree($courseid,
@@ -282,11 +282,11 @@ class block_exacomp_simple_service {
                                                 	       true,
                                                 	       false,
                                                 	       false,
-                                                	       false, 
-                                                	       ($isTeacher) ? false : true, 
-                                                	       false);   
+                                                	       false,
+                                                	       ($isTeacher) ? false : true,
+                                                	       false);
 	    $scheme = block_exacomp_get_grading_scheme($courseid);
-	    
+
 	    $colselector="";
 	    if ($isTeacher) {	//mind nostudents setting
 	        if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
@@ -297,29 +297,29 @@ class block_exacomp_simple_service {
 	            $students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	        }
 	    }
-	   
-	    
-	    
+
+
+
 	    foreach ($students as $student) {
 	        block_exacomp_get_user_information_by_course($student, $courseid);
 	    }
-	    
+
 	    $output->print = true;
 	    $html_tables = [];
-	    
+
 	    if ($group == 0) {
 	        // all students, do nothing
 	    } else {
 	        // get the students on this group
 	        $students = array_slice($students, $group * BLOCK_EXACOMP_STUDENTS_PER_COLUMN, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
 	    }
-	    
+
 	    // TODO: print column information for print
-	    
+
 	    // loop through all pages (eg. when all students should be printed)
 	    for ($group_i = 0; $group_i < count($students); $group_i += BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
 	        $students_to_print = array_slice($students, $group_i, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
-	        
+
 	        $html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 	        $html_tables[] = $output->competence_overview($competence_tree,
@@ -337,7 +337,7 @@ class block_exacomp_simple_service {
 	    \block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 
 	}
-	
+
 
 	/**
 	 * used own webservice, because moodle does not support indexed arrays (eg. [ 188 => object])
@@ -402,14 +402,14 @@ class block_exacomp_simple_service {
 //  		print_r($filtersFromSession);
 // // 		var_dump($filtersFromSession);
 // 		die();
-		
+
 		if ($isPdf) {
 		    block_exacomp_group_reports_result($filter, $isPdf);
 		} else {
 		    block_exacomp_group_reports_result($filter);
 		}
 
-	}	
+	}
 
 	private static function require_courseid() {
 		$courseid = required_param('courseid', PARAM_INT);

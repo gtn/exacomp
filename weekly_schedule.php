@@ -59,7 +59,7 @@ if($isTeacher){
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	if($studentid <= 0) {
 		$student = null;
-		if($studentid < -1){
+		if($studentid <= -1){
 		    //MAYBE CHANGE WORDING   studentId is actually student or localgroup id.... if it is a localgroup, the value is negative
 		    // use this negative value for the studentselector. the id in the selector is not the groupid because then it would overlap with the studentid
 		    // so groupId = -groupidForSelector - 1
@@ -91,7 +91,7 @@ echo $output->header($context, $courseid, $page_identifier);
 /* CONTENT REGION */
 if($isTeacher){
 	echo block_exacomp_get_string("choosestudent");
-	echo $output->studentselector($coursestudents, ($student) ? $student->id : $groupidForSelector, 2,$groups);
+	echo $output->studentselector($coursestudents, ($student) ? $student->id : @$groupidForSelector, 2, $groups);
 } else {
 // 	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $student->id, "id" => "menuexacomp_competence_grid_select_student"));
 }

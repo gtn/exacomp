@@ -30,6 +30,10 @@
 
 	$(function() {
 		var group = block_exacomp.get_param('group');
+		var group2 = block_exacomp.get_param('colgroupid');
+		if (group2 !== null) {
+			group = -1; // if the JS is disabled for performance issues
+		}
 		block_exacomp.onlyShowColumnGroup(group);
 	});
 	$(document).on('click', '.colgroup-button', function(){
@@ -38,8 +42,7 @@
 	});
 	window.block_exacomp.onlyShowColumnGroup = function(group) {
 		// block_exacomp.current_colgroup_id = group;
-		
-		if(group == -2) {
+		if (group == -2) {
 			$('.colgroup').not('.colgroup-5555').hide();
 		}
 		if (!group) {

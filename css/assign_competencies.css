@@ -174,3 +174,10 @@
 	width: auto;
 	font-size: 1.1em;
 }
+
+#block_exacomp .colgroup-link {
+	margin-left: 5px;
+}
+#block_exacomp .spaltenbrowser .colgroup-link.current-colgroup {
+	font-weight: bold;
+}

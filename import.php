@@ -341,17 +341,26 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                                 echo $OUTPUT->box($html);
                             } else if (is_array($importSuccess) && $importSuccess['result'] != 'goRealImporting'){
                                 // no errors for now, but the user needs to configure importing
-                                $html = '';
+                                $htmltext = '';
+                                $step = 1;
                                 switch ($importSuccess['result']) {
                                     case 'compareCategories':
-                                        if ($html == '') {
-                                            $html = block_exacomp_get_string("import_category_mapping_needed");
+                                        if ($htmltext == '') {
+                                            $step++;
+                                            $img = 'compprof_rating_teacher_grey_'.$step.'_3.png'; // 3.img
+                                            $htmltext = block_exacomp_get_string("import_category_mapping_needed");
                                         }
                                     case 'selectGrids':
-                                        if ($html == '') {
-                                            $html = block_exacomp_get_string("import_category_selectgrids_needed");
+                                        if ($htmltext == '') {
+                                            $step++;
+                                            $img = 'compprof_rating_teacher_grey_'.$step.'_3.png'; // 2.img
+                                            $htmltext = block_exacomp_get_string("import_selectgrids_needed");
                                         }
                                 }
+                                $html = html_writer::empty_tag ( 'img', array (
+                                                'src' => new moodle_url ( '/blocks/exacomp/pix/' . $img ),
+                                                'alt' => ''
+                                        ) ) . '&nbsp;'.$htmltext;
                                 echo $OUTPUT->box($html, 'alert alert-warning');
                                 $mform->setConfirmationData($importSuccess);
                                 $mform->display();
@@ -371,7 +380,11 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         if ($max_execution_time && $max_execution_time < 60*5) {
                             echo '<h3>'.block_exacomp_get_string("import_max_execution_time", null, $max_execution_time).'</h3>';
                         }
-
+                        $html = html_writer::empty_tag('img', array (
+                                        'src' => new moodle_url ( '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_3.png' ),
+                                        'alt' => ''
+                                ) ) . '&nbsp;'.block_exacomp_get_string("import_select_file");
+                        echo $OUTPUT->box($html, 'alert alert-warning');
                         $mform->display();
                     }
                 }
@@ -521,7 +534,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                                         $html = block_exacomp_get_string("import_category_mapping_needed");
                                         break;
                                     case 'selectGrids':
-                                        $html = block_exacomp_get_string("import_category_selectgrids_needed");
+                                        $html = block_exacomp_get_string("import_selectgrids_needed");
                                         break;
                                 }
                                 echo $OUTPUT->box($html, 'alert alert-warning');

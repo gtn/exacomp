@@ -59,7 +59,7 @@ if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
 				$DB->insert_record('block_exacompdescbadge_mm', array("badgeid" => $badgeid, "descid" => intval($value)));
 			}
 		}
-	}else{
+	} else {
 		$tree = block_exacomp_get_competence_tree($courseid);
 		$badge->descriptors = block_exacomp_get_badge_descriptors($badge->id);
 		echo $output->edit_badges($tree, $badge);
@@ -69,7 +69,7 @@ if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
  }
  
 
-$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid); 
+$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
 
 if (!$badges) {
 	echo $OUTPUT->box(text_to_html(block_exacomp_get_string("no_badges_yet")));
