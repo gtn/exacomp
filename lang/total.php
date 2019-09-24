@@ -2023,35 +2023,35 @@ return [
 		'For adding examples to the schedule, please use the overview',
 	],
 	'pre_planning_storage' => [
-		'Vorplanungsspeicher',
-		'Pre-planning storage',
+		'Planungsspeicher',
+		'Planning storage',
 	],
 	'pre_planning_storage_added' => [
-		'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.',
-		'Example added to the pre-planning storage.',
+		'Lernmaterial wurde zum Planungsspeicher hinzugefügt.',
+		'Example added to the planning storage.',
 	],
 	'pre_planning_storage_already_contains' => [
-		'Lernmateriel bereits im Vorplanungsspeicher enthalten.',
-		'Example is already in pre-planning storage.',
+		'Lernmateriel bereits im Planungsspeicher enthalten.',
+		'Example is already in planning storage.',
 	],
 	'save_pre_planning_selection' => [
 		'Ausgewählte Lernmaterialien auf den Wochenplan der ausgewählten Schüler/innen legen',
 		'Add selected examples to weekly schedule of selected students',
 	],
 	'empty_pre_planning_storage' => [
-		'Vorplanungsspeicher leeren',
-		'Empty pre-planning storage',
+		'Planungsspeicher leeren',
+		'Empty planning storage',
 	],
 	'noschedules_pre_planning_storage' => [
-		'Der Vorplanungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.',
-		'Pre-planning storage has been emptied, use the competence grid to put new examples in the pre-planning storage.',
+		'Der Planungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Planungsspeicher.',
+		'Pplanning storage has been emptied, use the competence grid to put new examples in the planning storage.',
 	],
 	'empty_trash' => [
 		'Papierkorb leeren',
 		'Empty trash bin',
 	],
 	'empty_pre_planning_confirm' => [
-		'Auch Beispiele, die ein anderer Lehrer zum Vorplanungsspeicher hinzugefügt hat, werden entfernt. Sind Sie sicher?',
+		'Auch Beispiele, die ein anderer Lehrer zum Planungsspeicher hinzugefügt hat, werden entfernt. Sind Sie sicher?',
 		'Examples added from all teachers are deleted, are you sure you want to do this?',
 	],
 	'to_weekly_schedule' => [
@@ -2067,16 +2067,16 @@ return [
 		'title',
 	],
 	'blocking_event_create' => [
-		'Zum Vorplanungsspeicher hinzufügen',
-		'Add to pre-planning storage',
+		'Zum Planungsspeicher hinzufügen',
+		'Add to planning storage',
 	],
 	'weekly_schedule_disabled' => [
 		'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.',
 		'Hidden example can not be added to weekly schedule',
 	],
 	'pre_planning_storage_disabled' => [
-		'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.',
-		'Hidden example can not be added to pre-planning storage.',
+		'Lernmaterial ist versteckt und kann nicht in den Planungsspeicher gelegt werden.',
+		'Hidden example can not be added to planning storage.',
 	],
 	'add_example_for_all_students_to_schedule' => [
 		'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
