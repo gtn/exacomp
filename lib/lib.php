@@ -10895,12 +10895,9 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 //Get the globalgradings of this competence/topic/subject
 function block_exacomp_get_globalgradings_single($descriptorid,$studentid,$comptype){
     global $DB;
-
     $query = 'SELECT compuser.globalgradings
                 FROM {block_exacompcompuser} compuser
-                INNER JOIN `mdl_user` userr ON (compuser.reviewerid = userr.id)
                 WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
-
     $globalgradings_texts = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
     //This often returns the same string multiple times... maybe there is a better way for performance but probably it is the best to query all and use the first
     // solution in complexity O(1):
