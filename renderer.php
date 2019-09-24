@@ -1595,9 +1595,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 && @$student->subjects->globalgradings[$subject->id] != ""
                                 && block_exacomp_is_dakora_teacher($USER->id)){
                             //Add the other globalgradings as tooltipp
-                            $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id, 'title' => @$student->subjects->globalgradings[$subject->id]));
+                            $globalgradings = html_writer::tag('b', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id, 'title' => @$student->subjects->globalgradings[$subject->id]));
                             $self_evaluation_cell->text .= $globalgradings;
                         }
+
+
+                        if(@$student->subjects->gradinghistory[$subject->id]){
+//                            $gradinghistory = html_writer::tag('p', block_exacomp_get_string('gradinghistory'), array('id' => 'gradinghistory', 'descrid' => $subject->id, 'studentid' => $student->id, 'title' => @$student->subjects->gradinghistory[$subject->id]));
+                            $gradinghistory = html_writer::tag('p', $this->pix_icon("i/duration",  @$student->subjects->gradinghistory[$subject->id]), array('id' => 'gradinghistory', 'descrid' => $subject->id, 'studentid' => $student->id));
+                            $self_evaluation_cell->text .= $gradinghistory;
+                        }
+
 
 						$subjectRow->cells[] = $self_evaluation_cell;
 					} else {
@@ -2026,8 +2034,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     && @$student->topics->globalgradings[$topic->id] != ""
                                     && block_exacomp_is_dakora_teacher($USER->id)){
                                 //Add the other globalgradings as tooltipp
-                                $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $topic->id, 'studentid' => $student->id, 'title' => @$student->topics->globalgradings[$topic->id]));
+                                $globalgradings = html_writer::tag('b', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $topic->id, 'studentid' => $student->id, 'title' => @$student->topics->globalgradings[$topic->id]));
                                 $teacher_evaluation_cell->text .= $globalgradings;
+                            }
+
+                            if(@$student->topics->gradinghistory[$topic->id]){
+                                $gradinghistory = html_writer::tag('p', $this->pix_icon("i/duration", @$student->topics->gradinghistory[$topic->id]), array('id' => 'gradinghistory', 'descrid' => $topic->id, 'studentid' => $student->id));
+                                $teacher_evaluation_cell->text .= $gradinghistory;
                             }
                         }
 
@@ -2485,8 +2498,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     && @$student->competencies->globalgradings[$descriptor->id] != ""
                                     && block_exacomp_is_dakora_teacher($USER->id)){
                                 //Add the other globalgradings as tooltipp
-                                $globalgradings = html_writer::tag('p', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => @$student->competencies->globalgradings[$descriptor->id]));
+                                $globalgradings = html_writer::tag('b', block_exacomp_get_string('globalgradings'), array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => @$student->competencies->globalgradings[$descriptor->id]));
                                 $teacher_evaluation_cell->text .= $globalgradings;
+                            }
+
+//                            var_dump( @$student->competencies);
+//                            die;
+                            if(@$student->competencies->gradinghistory[$descriptor->id]){
+                                $gradinghistory = html_writer::tag('p', $this->pix_icon("i/duration", @$student->competencies->gradinghistory[$descriptor->id]), array('id' => 'gradinghistory', 'descrid' => $topic->id, 'studentid' => $student->id));
+                                $teacher_evaluation_cell->text .= $gradinghistory;
                             }
                         }
 
