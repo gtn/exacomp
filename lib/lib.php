@@ -1734,7 +1734,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
     $examples = \block_exacomp\example::get_objects_sql(
             "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
             e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
-            e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important,
+            e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
             de.sorting
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
@@ -10968,4 +10968,43 @@ function block_exacomp_get_user_assesment($userid, $competenceid, $competencetyp
     return null;
 }
 
+// do not needed? the icons are saved in database for performance
+// used "block_exacomp_get_example_icon_simple" instead
+function block_exacomp_get_example_icon_for_externals(&$renderer, $courseid, $externalUrl = '') {
+    global $PAGE;
+    $resulticontag = '';
+    if ($externalUrl
+            // && // check on current hostname????
+            && preg_match('![\?\&]id=(?<id>[0-9]+)!', $externalUrl, $matches)) { // url has 'id=' parameter
+        $moduleid = $matches['id'];
+        if ($module = get_coursemodule_from_id(null, $moduleid)) {
+            $mod_info = get_fast_modinfo($courseid);
+            if (array_key_exists($moduleid, $mod_info->cms)) {
+                $cm = $mod_info->cms[$moduleid];
+                $iconurl = $cm->get_icon_url();
+                $resulticontag = html_writer::empty_tag('img', array('src' => $iconurl,
+                        'class' => 'smallicon', 'alt' => ' ', 'width' => 16 )); // class 'activityicon' ?
+            }
+        }
+    } else {
+        // default icon
+        $resulticontag = $renderer->local_pix_icon("globesearch.png", block_exacomp_get_string('preview'));
+    }
+    return $resulticontag;
+}
+
+function block_exacomp_get_example_icon_simple(&$renderer, $example, $forField = 'externaltask', $default = 'globesearch.png') {
+    if ($example->example_icon) {
+        $icons = unserialize($example->example_icon);
+        if (array_key_exists($forField, $icons)) {
+            $icontag = html_writer::empty_tag('img', array('src' => $icons[$forField],
+                    'class' => 'smallicon', 'alt' => ' ', 'width' => 16));
+            return $icontag;
+        } else {
+            return $renderer->local_pix_icon($default, block_exacomp_get_string('preview'));
+        }
+    } else {
+        return $renderer->local_pix_icon($default, block_exacomp_get_string('preview'));
+    }
+}
 

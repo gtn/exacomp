@@ -128,6 +128,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     }
 
     if ($formdata = $form->get_data()) {
+        $example_icons = array(); // it is possible to have different icons for different fields
     	$newExample = new stdClass();
     	$newExample->title = $formdata->title;
     	$newExample->description = $formdata->description;
@@ -143,16 +144,27 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	if (!empty($formdata->assignment)) {
     		if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
     			$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
+                // get icon path for activity and save it to database
+                $mod_info = get_fast_modinfo($courseid);
+                if (array_key_exists($module->id, $mod_info->cms)) {
+                    $cm = $mod_info->cms[$module->id];
+                    $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
+                }
     		}
     	}
+    	if (count($example_icons)) {
+            $newExample->example_icon = serialize($example_icons);
+        } else {
+            $newExample->example_icon = '';
+        }
 
     	if ($formdata->exampleid == 0) {
+    	    // insert new example
     		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
     		$newExample->sorting = $newExample->id;
     		$DB->update_record('block_exacompexamples', $newExample);
-    	}
-    	else {
-    		//update example
+    	} else {
+    		// update example
     		$newExample->id = $formdata->exampleid;
     		$DB->update_record('block_exacompexamples', $newExample);
     		$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $newExample->id));
@@ -266,7 +278,6 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	if ($example->externaltask && preg_match('![^a-z]id=(?<id>[0-9]+)!', $example->externaltask, $matches)) {
     		$example->assignment = $matches['id'];
     	}
-
     	$form->set_data($example);
     }
 //}

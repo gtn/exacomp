@@ -1153,7 +1153,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
                             if ($example->externaltask) {
-                                $titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                $titleCell->text .= html_writer::link($example->externaltask,
+                                        block_exacomp_get_example_icon_simple($this, $example, 'externaltask'),
+                                        array("target" => "_blank"));
                             }
 
                             $solution_url = $example->get_solution_file_url();
@@ -2770,8 +2772,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
                             if ($example->externaltask) {
+                                //$icontag = block_exacomp_get_example_icon_for_externals($this, $COURSE->id, $example->externaltask);
                                 $titleCell->text .= html_writer::link($example->externaltask,
-                                        $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')),
+                                        block_exacomp_get_example_icon_simple($this, $example, 'externaltask'),
                                         array("target" => "_blank"));
                             }
 
@@ -3488,7 +3491,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
                             if ($example->externaltask) {
-                                $titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                $titleCell->text .= html_writer::link($example->externaltask,
+                                        block_exacomp_get_example_icon_simple($this, $example, 'externaltask'),
+                                        array("target" => "_blank"));
                             }
 
                             $solution_url = $example->get_solution_file_url();
@@ -6557,10 +6562,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $exampleIcons .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                         }
                     } elseif ($example->externaltask) {
-						$exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
-
-								"target" => "_blank",
-							)
+						$exampleIcons = html_writer::link($example->externaltask,
+                                block_exacomp_get_example_icon_simple($this, $example, 'externaltask', 'filesearch.png'),
+                                array("target" => "_blank")
 						);
 					}
 
@@ -6775,9 +6779,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
   			} elseif ($example->externaltask) {
 
-				$exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
-					"target" => "_blank",
-				));
+				$exampleIcons = html_writer::link($example->externaltask,
+                        block_exacomp_get_example_icon_simple($this, $example, 'externaltask', 'filesearch.png'),
+                        array("target" => "_blank"));
 			}
 
 			if ($example->externalurl) {
