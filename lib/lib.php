@@ -469,19 +469,16 @@ function block_exacomp_get_assessment_grade_verbose($getforlanguage = null) {
 }
 
 function block_exacomp_get_assessment_points_negative_threshold(){
-    //TODO    fields do not exist yet
-    return 50;
+    return get_config('exacomp', 'assessment_points_negativ');
 }
 
 
 function block_exacomp_get_assessment_grade_negative_threshold(){
-    //TODO    fields do not exist yet
-    return 5;
+    return get_config('exacomp', 'assessment_grade_negativ');
 }
 
 function block_exacomp_get_assessment_verbal_negative_threshold(){
-    //TODO    fields do not exist yet
-    return 1;
+    return get_config('exacomp', 'assessment_grade_verbose_negative');
 }
 
 function block_exacomp_get_assessment_diffLevel_options() {

@@ -101,9 +101,13 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         $e->setAttribute('readOnly', 'readonly');
                     }
                 }
+                // add onfocus listener: for 'assessment_grade_verbose_negative'
+                foreach($selector->query('//input[@id=\'id_s_exacomp_assessment_verbose_options\'][1]') as $e ) {
+                    $e->setAttribute('onChange', $e->getAttribute('onChange').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
+                }
                 $output = $doc->saveHTML($doc->documentElement);
             }
-            // add mesage about default (DE) value if the user uses not DE interface language
+            // add message about default (DE) value if the user uses not DE interface language
             if ($this->lang != 'de') { // only for NON DE
                 switch ($this->name) {
                     case 'assessment_grade_verbose':
@@ -148,6 +152,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             return $output;
         }
     }
+
 	class block_exacomp_admin_setting_diffLevelOptions extends block_exacomp_admin_setting_extraconfigtext {
 		public function write_setting($data) {
 
@@ -161,6 +166,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			return '';
 		}
 	}
+
 	class block_exacomp_admin_setting_source extends block_exacomp_admin_setting_extraconfigtext {
 		public function validate($data) {
 			$ret = parent::validate($data);
@@ -180,6 +186,47 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			}
 		}
 	}
+
+    class block_exacomp_admin_setting_verbose_negative extends admin_setting_configselect {
+
+        public function output_html($data, $query='') {
+            $output = parent::output_html($data, $query);
+            //$doc = new DOMDocument();
+            //$doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            //$selector = new DOMXPath($doc);
+            // add onfocus listener: for 'assessment_grade_verbose_negative'
+            //foreach($selector->query('//select') as $e ) {
+            //    $e->setAttribute('onFocus', $e->getAttribute('onFocus').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
+            //}
+            //$output = $doc->saveHTML($doc->documentElement);
+            $output .= '<script>
+                function reloadVerboseNegativeSelectbox() {
+                    var new_list = document.getElementById(\'id_s_exacomp_assessment_verbose_options\').value;
+                    var new_options = new_list.split(\',\');
+                    var selectbox = document.getElementById(\'id_s_exacomp_assessment_grade_verbose_negative\');
+                    var selected_value = selectbox.value;      
+                    var j;
+                    for(j = selectbox.options.length - 1 ; j >= 0 ; j--) {
+                        selectbox.remove(j);
+                    }
+                    new_options.forEach(function(elem, i) {
+                        var doc = selectbox.ownerDocument;
+                        var option = doc.createElement("option");
+                        option.text = elem.trim();
+                        option.value = i;                      
+                        doc = null;
+                        if (selectbox.add.length === 2){
+                            selectbox.add(option, null); // standards compliant
+                        } else{
+                            selectbox.add(option); // IE only
+                        }
+                    });
+                    selectbox.value = selected_value;
+                };
+            </script>';
+            return $output;
+        }
+    }
 
     class block_exacomp_link_to extends admin_setting {
 
@@ -952,10 +999,18 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_points_limit'),
         block_exacomp_get_string('settings_assessment_points_limit_description'),
         20, PARAM_INT));
+$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_points_negativ',
+        block_exacomp_get_string('settings_assessment_points_negativ'),
+        block_exacomp_get_string('settings_assessment_points_negativ_description'),
+        50, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_limit',
         block_exacomp_get_string('settings_assessment_grade_limit'),
         block_exacomp_get_string('settings_assessment_grade_limit_description'),
         20, PARAM_INT));
+$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_negativ',
+        block_exacomp_get_string('settings_assessment_grade_negativ'),
+        block_exacomp_get_string('settings_assessment_grade_negativ_description'),
+        5, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_verbose',
         block_exacomp_get_string('settings_assessment_grade_verbose'),
         block_exacomp_get_string('settings_assessment_grade_verbose_description'),
@@ -975,6 +1030,11 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_verbose_options_description'),
         block_exacomp_get_string('settings_assessment_verbose_options_default'),
         PARAM_TEXT));
+$options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options())); // default options (next can be changed by JS)
+// keys are from 0: 0,1,2...
+$settings->add(new block_exacomp_admin_setting_verbose_negative('exacomp/assessment_grade_verbose_negative',
+        block_exacomp_get_string('settings_assessment_grade_verbose_negative'),
+        block_exacomp_get_string('settings_assessment_grade_verbose_negative_description'), block_exacomp_get_assessment_verbal_negative_threshold(), $options));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_verbose_options_short',
         block_exacomp_get_string('settings_assessment_verbose_options_short'),
         block_exacomp_get_string('settings_assessment_verbose_options_short_description'),

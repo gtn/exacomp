@@ -494,6 +494,14 @@ return [
         'Bewertungsschema Punkte, die höchst mögliche Punkteanzahl die eingegeben werden kann.',
         'assessment scheme points, limit for input',
     ],
+    'settings_assessment_points_negativ' => [
+        'Fail value for Points',
+        'Fail value for Points',
+    ],
+    'settings_assessment_points_negativ_description' => [
+        'assessment scheme point value, when the student fails the grading',
+        'assessment scheme point value, when the student fails the grading',
+    ],
     'settings_assessment_grade_limit' => [
         'Höchste Note',
         'Highest value for grade',
@@ -501,6 +509,14 @@ return [
     'settings_assessment_grade_limit_description' => [
         'Bewertungsschema Note, die höchst mögliche Note die eingegeben werden kann.',
         'assessment scheme grade, limit for input',
+    ],
+    'settings_assessment_grade_negativ' => [
+        'Fail value for grade',
+        'Fail value for grade',
+    ],
+    'settings_assessment_grade_negativ_description' => [
+        'assessment scheme grade value, when the student fails the grading',
+        'assessment scheme grade value, when the student fails the grading',
     ],
     'settings_assessment_diffLevel_options' => [
         'Niveau Werte',
@@ -549,6 +565,14 @@ return [
     'settings_assessment_grade_verbose_default' => [
             'Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
             'Very good, Good, Satisfactory, Sufficient, Deficient, Insufficient',
+    ],
+    'settings_assessment_grade_verbose_negative' => [
+            'Fail verbalized grade',
+            'Fail verbalized grade (EN)',
+    ],
+    'settings_assessment_grade_verbose_negative_description' => [
+            'assessment scheme grade verbose value, when the student fails the grading',
+            'assessment scheme grade verbose value, when the student fails the grading',
     ],
     'use_grade_verbose_competenceprofile' => [
         'Noten Verbalisierung Kompetenzprofil',
