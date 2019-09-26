@@ -4756,6 +4756,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_set_example_time_slot($scheduleid, $start, $end, $deleted) {
+	    global $DB;
 		static::validate_parameters(static::dakora_set_example_time_slot_parameters(), array(
 			'scheduleid' => $scheduleid,
 			'start' => $start,
@@ -4765,7 +4766,19 @@ class block_exacomp_external extends external_api {
 
 		// TODO: check example
 
-		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
+		$entry = block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
+
+//		var_dump(date('i',$end-$start));
+
+        //Get the example in order to get the suggested timeframe
+//        static::require_can_access_example($entry->exampleid, $entry-courseid)   not needed since it is sure I can access it already
+        $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
+            'id' => $entry->exampleid,
+        ));
+
+        $time = str_replace('h','',$example->timeframe);
+        $time = strtotime($time);
+		$remainingtime = date('i',$time - ($end-$start));
 
 		return array(
 			"success" => true,

@@ -6463,10 +6463,7 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 	$entry->end = $end;
 	$entry->deleted = $deleted;
 
-
 	if ($entry->studentid != $USER->id) {
-//        var_dump($entry);
-//        die;
         //Permission denied error if wrong teacher tries to change this example
 		block_exacomp_require_teacher($entry->courseid);
 	}
@@ -6480,6 +6477,7 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 
 
 	$DB->update_record(BLOCK_EXACOMP_DB_SCHEDULE, $entry);
+	return $entry;
 }
 
 /**
