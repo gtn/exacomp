@@ -7405,7 +7405,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$record->reviewerid = $USER->id;
     		$record->additionalinfo = $additionalinfo;
     		$record->value = $value;
-            $record->gradinghistory .= $USER->firstname." ".$USER->lastname.": ".$value."<br>";
+            $record->gradinghistory .= $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$record->timestamp).": ".$value."<br>";
 
     		if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $record);
@@ -9122,11 +9122,15 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 
 				if ($changed) {
 					$data['timestamp'] = time();
-                    $data['gradinghistory'] = $record->gradinghistory.$USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
+					if(!block_exacomp_additional_grading($comptype)) { //only add to history if not using additionalgrading or it will be a duplicate entry
+                        $data['gradinghistory'] = $record->gradinghistory.$USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
+                    }
 				}
 			} else {
-				$data['timestamp'] = time();
-                $data['gradinghistory'] = $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
+                if(!block_exacomp_additional_grading($comptype)) {
+                    $data['timestamp'] = time();
+                    $data['gradinghistory'] = $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
+                }
 			}
 		}
 
