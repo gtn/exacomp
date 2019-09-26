@@ -203,7 +203,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 function reloadVerboseNegativeSelectbox() {
                     var new_list = document.getElementById(\'id_s_exacomp_assessment_verbose_options\').value;
                     var new_options = new_list.split(\',\');
-                    var selectbox = document.getElementById(\'id_s_exacomp_assessment_grade_verbose_negative\');
+                    var selectbox = document.getElementById(\'id_s_exacomp_assessment_verbose_negative\');
                     var selected_value = selectbox.value;      
                     var j;
                     for(j = selectbox.options.length - 1 ; j >= 0 ; j--) {
@@ -1002,7 +1002,7 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_points_negativ',
         block_exacomp_get_string('settings_assessment_points_negativ'),
         block_exacomp_get_string('settings_assessment_points_negativ_description'),
-        50, PARAM_INT));
+        8, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_limit',
         block_exacomp_get_string('settings_assessment_grade_limit'),
         block_exacomp_get_string('settings_assessment_grade_limit_description'),
@@ -1010,7 +1010,7 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_negativ',
         block_exacomp_get_string('settings_assessment_grade_negativ'),
         block_exacomp_get_string('settings_assessment_grade_negativ_description'),
-        5, PARAM_INT));
+        6, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_verbose',
         block_exacomp_get_string('settings_assessment_grade_verbose'),
         block_exacomp_get_string('settings_assessment_grade_verbose_description'),
@@ -1032,9 +1032,9 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         PARAM_TEXT));
 $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options())); // default options (next can be changed by JS)
 // keys are from 0: 0,1,2...
-$settings->add(new block_exacomp_admin_setting_verbose_negative('exacomp/assessment_grade_verbose_negative',
+$settings->add(new block_exacomp_admin_setting_verbose_negative('exacomp/assessment_verbose_negative',
         block_exacomp_get_string('settings_assessment_grade_verbose_negative'),
-        block_exacomp_get_string('settings_assessment_grade_verbose_negative_description'), block_exacomp_get_assessment_verbal_negative_threshold(), $options));
+        block_exacomp_get_string('settings_assessment_grade_verbose_negative_description'), block_exacomp_get_assessment_verbose_negative_threshold(), $options));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_verbose_options_short',
         block_exacomp_get_string('settings_assessment_verbose_options_short'),
         block_exacomp_get_string('settings_assessment_verbose_options_short_description'),
