@@ -477,8 +477,8 @@ function block_exacomp_get_assessment_grade_negative_threshold(){
     return get_config('exacomp', 'assessment_grade_negativ');
 }
 
-function block_exacomp_get_assessment_verbal_negative_threshold(){
-    return get_config('exacomp', 'assessment_grade_verbose_negative');
+function block_exacomp_get_assessment_verbose_negative_threshold(){
+    return get_config('exacomp', 'assessment_verbose_negative');
 }
 
 function block_exacomp_get_assessment_diffLevel_options() {

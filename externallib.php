@@ -7948,7 +7948,7 @@ class block_exacomp_external extends external_api {
 		    'grade_limit' => block_exacomp_get_assessment_grade_limit(),
             'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
             'grade_negative_threshold' => block_exacomp_get_assessment_grade_negative_threshold(),
-            'verbal_negative_threshold' => block_exacomp_get_assessment_verbal_negative_threshold(),
+            'verbal_negative_threshold' => block_exacomp_get_assessment_verbose_negative_threshold(),
 		    //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
 		    //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
 		    'example_scheme' => block_exacomp_get_assessment_example_scheme(),
