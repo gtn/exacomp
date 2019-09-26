@@ -1670,6 +1670,10 @@ class block_exacomp_external extends external_api {
             //new material
             $example = new stdClass ();
         }
+
+
+
+
 		$example->title = $name;
 		$example->description = $description;
         $example->timeframe = $timeframe;
@@ -1810,6 +1814,8 @@ class block_exacomp_external extends external_api {
 				'taxid' => $taxid,
 			]);
 		}
+
+
 
 		return array(
 			"exampleid" => $id,
@@ -6522,6 +6528,7 @@ class block_exacomp_external extends external_api {
 					'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 				    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 				    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                    'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
 				))),
 				'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 				'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6564,6 +6571,7 @@ class block_exacomp_external extends external_api {
 				'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 			    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 			    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
 			))),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -9268,6 +9276,7 @@ class block_exacomp_external extends external_api {
 			}
 			$example_return->exampletaxonomies = $taxonomies;
 			$example_return->exampletaxids = $taxids;
+            $example_return->examplecreatorid = $example->creatorid;
 
 			if ($forall) {
 				$example_return->teacherevaluation = -1;
