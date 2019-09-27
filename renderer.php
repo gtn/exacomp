@@ -1624,7 +1624,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                        }
 
 
-                        if(@$student->subjects->gradinghistory[$subject->id]){
+                        if(@$student->subjects->gradinghistory[$subject->id] && substr_count(@$student->subjects->gradinghistory[$subject->id],'<br>') > 1){
 //                            $gradinghistory = html_writer::tag('p', block_exacomp_get_string('gradinghistory'), array('id' => 'gradinghistory', 'descrid' => $subject->id, 'studentid' => $student->id, 'title' => @$student->subjects->gradinghistory[$subject->id]));
                             $gradinghistory = html_writer::tag('b', ' '.$this->pix_icon("i/duration",  @$student->subjects->gradinghistory[$subject->id]).' ', array('id' => 'gradinghistory', 'descrid' => $subject->id, 'studentid' => $student->id));
                             $self_evaluation_cell->text .= $gradinghistory;
@@ -2067,7 +2067,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            if(@$student->topics->gradinghistory[$topic->id]){
+                            if(@$student->topics->gradinghistory[$topic->id] && substr_count(@$student->topics->gradinghistory[$topic->id],'<br>') > 1){
                                 $gradinghistory = html_writer::tag('b', ' '.$this->pix_icon("i/duration", @$student->topics->gradinghistory[$topic->id]).' ', array('id' => 'gradinghistory', 'descrid' => $topic->id, 'studentid' => $student->id));
                                 $teacher_evaluation_cell->text .= $gradinghistory;
                             }
@@ -2536,7 +2536,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            if(@$student->competencies->gradinghistory[$descriptor->id]){
+                            if(@$student->competencies->gradinghistory[$descriptor->id] && substr_count(@$student->competencies->gradinghistory[$descriptor->id],'<br>') > 1){
                                 $gradinghistory = html_writer::tag('b', ' '.$this->pix_icon("i/duration", @$student->competencies->gradinghistory[$descriptor->id]).' ', array('id' => 'gradinghistory', 'descrid' => $descriptor->id, 'studentid' => $student->id));
                                 $teacher_evaluation_cell->text .= $gradinghistory;
                             }
