@@ -4774,14 +4774,26 @@ class block_exacomp_external extends external_api {
         ));
 
         //1h30 or 01h30 or 1:30 or 01:30 is allowed format
-        $time = explode('h',$example->timeframe);
+        if(strpos($example->timeframe,'h')){
+            $time = explode('h',$example->timeframe);
+        }else if(strpos($example->timeframe,':')){
+            $time = explode(':',$example->timeframe);
+        }else{
+            return array(
+                "timeremaining" => '0',
+                "success" => true,
+            );
+        }
 
         $timeSeconds = $time[0]*60*60+$time[1]*60;
-        $remainingtime = $timeSeconds - ($end-$start);
-
+        //Get the other scheduled instances of this example
+        $schedule = g::$DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $entry->exampleid]);
+        $remainingtime = $timeSeconds;
+        foreach($schedule as $scheduledmaterials){
+            $remainingtime -= ($scheduledmaterials->end - $scheduledmaterials->start);
+        }
         $remaininghours = floor($remainingtime/3600);
         $remainingminutes = ($remainingtime%3600)/60;
-
         $remainingtime = $remaininghours.'h'.$remainingminutes;
 
 		return array(
