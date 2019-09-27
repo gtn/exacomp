@@ -6732,12 +6732,14 @@ class block_exacomp_external extends external_api {
 	             */
 	            // TODO: moodle_url contains encoding errors which lead to problems in dakora
                 foreach ($files as $fileindex => $file) {
-                    $fileurl = $CFG->wwwroot."/blocks/exaport/portfoliofile.php?"."userid=".$userid."&itemid=".$itemInformation->id."&wstoken=".static::wstoken();
-                    $filedata['file'] = $fileurl;
-                    $filedata['mimetype'] = $file->get_mimetype();
-                    $filedata['filename'] = $file->get_filename();
-                    $filedata['fileindex'] = $fileindex;
-                    $studentfiles[] = $filedata;
+                    if($file != null) {
+                        $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $itemInformation->id . "&wstoken=" . static::wstoken();
+                        $filedata['file'] = $fileurl;
+                        $filedata['mimetype'] = $file->get_mimetype();
+                        $filedata['filename'] = $file->get_filename();
+                        $filedata['fileindex'] = $fileindex;
+                        $studentfiles[] = $filedata;
+                    }
                 }
                 $data['studentfiles'] = $studentfiles;
 	        }
