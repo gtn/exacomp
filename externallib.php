@@ -4765,10 +4765,7 @@ class block_exacomp_external extends external_api {
 		));
 
 		// TODO: check example
-
 		$entry = block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
-
-//		var_dump(date('i',$end-$start));
 
         //Get the example in order to get the suggested timeframe
 //        static::require_can_access_example($entry->exampleid, $entry-courseid)   not needed since it is sure I can access it already
@@ -4776,12 +4773,20 @@ class block_exacomp_external extends external_api {
             'id' => $entry->exampleid,
         ));
 
-        $time = str_replace('h','',$example->timeframe);
-        $time = strtotime($time);
-		$remainingtime = date('i',$time - ($end-$start));
+        //1h30 or 01h30 or 1:30 or 01:30 is allowed format
+        $time = explode('h',$example->timeframe);
+
+        $timeSeconds = $time[0]*60*60+$time[1]*60;
+        $remainingtime = $timeSeconds - ($end-$start);
+
+        $remaininghours = floor($remainingtime/3600);
+        $remainingminutes = ($remainingtime%3600)/60;
+
+        $remainingtime = $remaininghours.'h'.$remainingminutes;
 
 		return array(
-			"success" => true,
+			"timeremaining" => $remainingtime,
+            "success" => true,
 		);
 
 	}
@@ -4793,8 +4798,9 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_set_example_time_slot_returns() {
 		return new external_single_structure (array(
-			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
-		));
+			'timeremaining' => new external_value (PARAM_TEXT, 'time planned minus timeframe = timeremaining'),
+            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        ));
 	}
 
 
