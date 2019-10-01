@@ -9400,8 +9400,10 @@ function block_exacomp_format_eval_value($value) {
 }
 
 function block_exacomp_group_reports_get_filter($reportType = 'general') {
-//    var_dump(@$_REQUEST); die;
+
     $filter = (array)@$_REQUEST['filter'];
+
+//    var_dump(@$filter); die;
 
 
 
@@ -9433,6 +9435,28 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
                 $filter['type'] = 'students';
             }
     }
+
+    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible'] = true;
+    }
+
+    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] = true;
+    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
+    }
+    //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+    //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
+    //}
+    if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] = true;
+    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] = true;
+    }
+
+
     // active means, we also have to loop over those items.... visible does not mean active, rework, 17.07.2019 RW
 //    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
 //        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
@@ -9553,21 +9577,25 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 
 				$item->visible = @$item_filter['visible'];
 
+//				var_dump(@$item_filter);
+//				die;
 				if (!@$item_filter['active']) {
-					return false;
+//					return false;
+                    $item->visible = false;
 				}
 
                 $filter_result = block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval);
+
                 if (!$filter_result) {
 				    return false;
                 }
 
-				/*if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
-					$item->visible = false;
-				}
-				if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
-					$item->visible = false;
-				}*/
+//				if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+//					$item->visible = false;
+//				}
+//				if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
+//					$item->visible = false;
+//				}
 
 				$walk_subs($level + 1);
 
