@@ -9276,10 +9276,10 @@ function block_exacomp_require_item_capability($cap, $item) {
 			throw new block_exacomp_permission_exception('User is no teacher');
 		}
 
-		$topics = block_exacomp_get_topics_by_course(g::$COURSE->id);
-		if (!isset($topics[$item->id])) {
-			throw new block_exacomp_permission_exception('No course topic');
-		}
+// 		$topics = block_exacomp_get_topics_by_course(g::$COURSE->id);
+// 		if (!isset($topics[$item->id])) {
+// 			throw new block_exacomp_permission_exception('No course topic');
+// 		}
 
 
 		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
