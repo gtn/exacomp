@@ -559,12 +559,12 @@ return [
             'verbalized grades (EN)',
     ],
     'settings_assessment_grade_verbose_description' => [
-            'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
-            'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
+            'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
+            'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
     ],
     'settings_assessment_grade_verbose_default' => [
-            'Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Ungenügend',
-            'Very good, Good, Satisfactory, Sufficient, Deficient, Insufficient',
+            'sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
+            'very good, good, satisfactory, sufficient, deficient, insufficient',
     ],
     'settings_assessment_grade_verbose_negative' => [
             'Nagative Beaurteilung Verbalisierung',
@@ -2501,28 +2501,28 @@ return [
         'Yes',
     ],
     'grade_Verygood' => [
-        'Sehr gut',
-        'Very good',
+        'sehr gut',
+        'very good',
     ],
     'grade_good' => [
-        'Gut',
-        'Good,',
+        'gut',
+        'good,',
     ],
     'grade_Satisfactory' => [
-        'Befriedigend',
-        'Satisfactory',
+        'befriedigend',
+        'satisfactory',
     ],
     'grade_Sufficient' => [
-        'Ausreichend',
-        'Sufficient',
+        'ausreichend',
+        'sufficient',
     ],
     'grade_Deficient' => [
-        'Mangelhaft',
-        'Deficient',
+        'mangelhaft',
+        'deficient',
     ],
     'grade_Insufficient' => [
-        'Ungenügend',
-        'Insufficient',
+        'ungenügend',
+        'insufficient',
     ],
     'import_select_file' => [
         'Datei aussuchen:',
