@@ -535,11 +535,11 @@ return [
         'verbose Options (EN)',
     ],
     'settings_assessment_verbose_options_description' => [
-        'Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
+        'Liste der möglichen Werte der Verbalisierung, z.B: nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht',
         'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained',
     ],
     'settings_assessment_verbose_options_default' => [
-        'nicht erreicht, teilweise erreicht, großteils erreicht, vollständig erreicht',
+        'nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht',
         'not gained, partly gained, mostly gained, completely gained',
     ],
     'settings_assessment_verbose_options_short' => [
