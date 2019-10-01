@@ -1256,29 +1256,3 @@ input[type=checkbox].be-sure {
 	border-color: red !important;
 	outline: 1px solid red;
 }
-
-.filter-group-checkbox-arrow[type="checkbox"] {
-	display:none;
-}
-
-.filter-group-checkbox-arrow[type="checkbox"]+ label::before{
-	width: 22px;
-	height: 18px;
-	background: url(../pix/pfeil_show.png) 0 8px no-repeat;
-	display: block;
-	/*background-image: url(../pix/pfeil_show.png);*/
-	content: "";
-	float: left;
-	margin-right: 5px;
-}
-
-.filter-group-checkbox-arrow[type="checkbox"]:checked+ label::before{
-	width: 22px;
-	height: 18px;
-	background: url(../pix/pfeil_hide.png) 0 8px no-repeat;
-	display: block;
-	/*background-image: url(../pix/pfeil_hide.png);*/
-	content: "";
-	float: left;
-	margin-right: 5px;
-}
