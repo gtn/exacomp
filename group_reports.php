@@ -196,7 +196,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
     if ($action == 'search' && !$isTemplateDeleting) {
         echo html_writer::tag('h2', block_exacomp_get_string('result'));
 
-/*
+    /*
 //        const BLOCK_EXACOMP_TYPE_DESCRIPTOR = 0;
 //        const BLOCK_EXACOMP_TYPE_TOPIC = 1;
 //        const BLOCK_EXACOMP_TYPE_CROSSSUB = 2;
@@ -207,20 +207,52 @@ if (optional_param('print', false, PARAM_BOOL)) {
         $filterlogictext = "Filterlogic: ";
         $filterlogictext .= "Subjects(";
 
-//        var_dump($filter[BLOCK_EXACOMP_TYPE_SUBJECT]);
         $scheme_values = block_exacomp_get_assessment_diffLevel_options();
         $scheme_values = preg_split( "/,/", $scheme_values);
-
+        $first = true;
         if($filter[BLOCK_EXACOMP_TYPE_SUBJECT]["evalniveauid"]){
+            $filterlogictext .= "Niveau: ";
             foreach($filter[BLOCK_EXACOMP_TYPE_SUBJECT]["evalniveauid"] as $value){
                 if($value == 0){
-                    var_dump("ohne Angabe");
+                    $filterlogictext .= "ohne Angabe";
+                    $first = false;
                 }else{
-                    var_dump($scheme_values[$value-1]);
+                    if(!$first){
+                        $filterlogictext .= " ODER ";
+                    }
+                    $filterlogictext .= $scheme_values[$value-1]." ";
+                    $first = false;
                 }
             }
+            //hier noch die Selbsteinschätzung usw
+            $filterlogictext .= ")";
+
+            $filterlogictext .= " UND ";
+
+            $filterlogictext .= "Topics(";
+            $first = true;
+            $filterlogictext .= "Niveau: ";
+            foreach($filter[BLOCK_EXACOMP_TYPE_TOPIC]["evalniveauid"] as $value){
+                if($value == 0){
+                    $filterlogictext .= "ohne Angabe";
+                    $first = false;
+                }else{
+                    if(!$first){
+                        $filterlogictext .= " ODER ";
+                    }
+                    $filterlogictext .= $scheme_values[$value-1]." ";
+                    $first = false;
+                }
+            }
+            $filterlogictext .= ")";
+
+
+
+            //alle Bildungsstandards die G ODER M haben
+            // alle Kompetenzbereiche die E habe  UND G oder M darüberliegend
+            //usw
+
         }
-        die;
 
         echo html_writer::tag('p', $filterlogictext);
 //        var_dump($filter[BLOCK_EXACOMP_TYPE_SUBJECT]);
@@ -228,9 +260,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 //        var_dump($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]);
 //        var_dump($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]);
 //        var_dump($filter[BLOCK_EXACOMP_TYPE_EXAMPLE]);
-        die;
-*/
-
+     */
 
         switch ($reportType) {
             case 'annex':
