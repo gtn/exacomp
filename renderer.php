@@ -4922,16 +4922,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell2 = new html_table_cell();
 		$cell2->colspan = 2;
 		$row2->cells[] = $cell2;
-		
-		
-		
+
+
+
 		$headArr = array();
 		$headArr[] = $cell;
-		
+
 		/*		$moduleNameLengths = array_map(function($m) {return strlen($m->name);}, $modules);
 		 $maxLength = max($moduleNameLengths);*/
-		
-		
+
+
 		foreach ($modules as $module) {
 		    $cell = new html_table_cell();
 		    $cell2 = new html_table_cell();
@@ -4945,7 +4945,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		        $cell->text = $moduleLink;
 		    }
 		    $cell->attributes['module-type'] = $module->modname;
-		    
+
 		    $cell2->text ='<button value='.$module->id.'>A</button>';
 		    $row->cells[] = $cell;
 		    $row2->cells[] = $cell2;
@@ -4953,8 +4953,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		$rows[] = $row2;
 		$table->head = $headArr;
-      
-		
+
+
 		foreach ($subjects as $subject) {
 			$row = new html_table_row();
 			$row->attributes['class'] = 'ec_heading';
@@ -7444,17 +7444,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				<?php
 //                var_dump($inputs);
 //                die;
-                    if(!empty($inputs['active'])){
-                        echo '<div class="filter-input-active">
-                                <span class="filter-title">'.block_exacomp_get_string('active_show').' :</span>';
-                        echo '<label>
-                                  <input type="checkbox" name="filter['.$input_type.'][active]"';
-                                        if (@$input_filter['active']) {
-                                            echo 'checked="checked"';
-                                        }
-                        echo  '</label>';
-                        echo '</div>';
-                    }
+//                    if(!empty($inputs['active'])){
+//                        echo '<div class="filter-input-active">
+//                                <span class="filter-title">'.block_exacomp_get_string('active_show').' :</span>';
+//                        echo '<label>
+//                                  <input type="checkbox" name="filter['.$input_type.'][active]"';
+//                                        if (@$input_filter['active']) {
+//                                            echo 'checked="checked"';
+//                                        }
+//                        echo  '</label>';
+//                        echo '</div>';
+//                    }
 
                     if (!empty($inputs[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
 					    echo '<div class="filter-input-difficulty-level">

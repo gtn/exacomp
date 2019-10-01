@@ -9434,25 +9434,25 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
             }
     }
     // active means, we also have to loop over those items.... visible does not mean active, rework, 17.07.2019 RW
-//    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
-//        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
-//    }
-//
-//    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
-//        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
-//    }
-//    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
-//        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
-//    }
-//    //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
-//    //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
-//    //}
-//    if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
-//        @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
-//    }
-//    if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
-//        @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
-//    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
+        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+    }
+
+    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+    }
+    //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+    //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
+    //}
+    if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+    }
+    if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+        @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+    }
 
     // removes all NULL, FALSE and Empty Strings but leaves 0 (zero) values
     $filter = block_exacomp_array_filter_recursive($filter, function($value) {
@@ -9650,7 +9650,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
                         break;
                 }
                 echo '</td>';
-				echo '<td class="exarep_exa_evaluation" width="10%" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>';
+				echo '<td class="exarep_exa_evaluation" width="10%" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>'; // remove? RW
 				echo '<td class="exarep_difficultyLevel" width="10%" style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
                 echo '</tr>';
 				$walk_subs($level + 1);
@@ -9699,7 +9699,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
                 }
 				$html .= '<th width="10%" class="heading studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
 				$html .= '<th width="10%" class="heading teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
-				$html .= '<th width="10%" class="heading exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
+				$html .= '<th width="10%" class="heading exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>'; //remove? RW
 				$html .= '<th width="10%" class="heading difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
                 $html .= '</tr>';
                 $html .= '</thead>';
