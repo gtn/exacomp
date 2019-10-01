@@ -596,10 +596,6 @@ class data_exporter extends data {
 	    header('Content-Length: ' . filesize($zipfile));
 	    header('Content-Disposition: attachment; filename="'.$filename.'"');
 	    readfile($zipfile);
-	    $lig= 1000000000;
-	    while($lig> 0){
-	        $lig--;
-	    }
 	    unlink($zipfile);
 	    
 	    exit;
