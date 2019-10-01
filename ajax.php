@@ -18,6 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
+require_once __DIR__.'/backup/test_backup.php';
 
 $courseid = required_param ( 'courseid', PARAM_INT );
 $action = required_param('action', PARAM_TEXT);
@@ -66,6 +67,12 @@ switch($action){
 		block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
 			
 		break;
+	case('export-activity'):
+
+	    $activityid = required_param('activityid', PARAM_INT);
+	    \block_exacomp\data::prepare();
+	    block_exacomp\data_exporter::do_activity_export($activityid);
+	    break;
 	case('save_as_draft'):
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		block_exacomp_save_drafts_to_course(array($crosssubjid), 0);

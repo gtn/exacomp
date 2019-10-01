@@ -4917,31 +4917,44 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$row->cells[] = $cell;
 
-        $headArr = array();
-        $headArr[] = $cell;
-
-/*		$moduleNameLengths = array_map(function($m) {return strlen($m->name);}, $modules);
-		$maxLength = max($moduleNameLengths);*/
-
+		//for exporting activities
+		$row2 = new html_table_row();
+		$cell2 = new html_table_cell();
+		$cell2->colspan = 2;
+		$row2->cells[] = $cell2;
+		
+		
+		
+		$headArr = array();
+		$headArr[] = $cell;
+		
+		/*		$moduleNameLengths = array_map(function($m) {return strlen($m->name);}, $modules);
+		 $maxLength = max($moduleNameLengths);*/
+		
+		
 		foreach ($modules as $module) {
-			$cell = new html_table_cell();
-            $moduleName = mb_strimwidth($module->name, 0, 33, "..."); // crop if > 30
-            $moduleLink = html_writer::link(block_exacomp_get_activityurl($module), $moduleName, ['title' => $module->name]);
-			if (count($modules) > 5) {
-                $cell->attributes['class'] .= ' verticalCell ';
-                $cell->text = '<div class="verticalText"><div class="verticalTextInner">'.$moduleLink.'</div></div>';
-            } else {
-                $cell->attributes['class'] .= ' ec_tableheadwidth ';
-                $cell->text = $moduleLink;
-            }
-			$cell->attributes['module-type'] = $module->modname;
-			$row->cells[] = $cell;
-            $headArr[] = $cell;
+		    $cell = new html_table_cell();
+		    $cell2 = new html_table_cell();
+		    $moduleName = mb_strimwidth($module->name, 0, 33, "..."); // crop if > 30
+		    $moduleLink = html_writer::link(block_exacomp_get_activityurl($module), $moduleName, ['title' => $module->name]);
+		    if (count($modules) > 5) {
+		        $cell->attributes['class'] .= ' verticalCell ';
+		        $cell->text = '<div class="verticalText"><div class="verticalTextInner">'.$moduleLink.'</div></div>';
+		    } else {
+		        $cell->attributes['class'] .= ' ec_tableheadwidth ';
+		        $cell->text = $moduleLink;
+		    }
+		    $cell->attributes['module-type'] = $module->modname;
+		    
+		    $cell2->text ='<button value='.$module->id.'>A</button>';
+		    $row->cells[] = $cell;
+		    $row2->cells[] = $cell2;
+		    $headArr[] = $cell;
 		}
-
-        $table->head = $headArr;
-//		$rows[] = $row;
-
+		$rows[] = $row2;
+		$table->head = $headArr;
+      
+		
 		foreach ($subjects as $subject) {
 			$row = new html_table_row();
 			$row->attributes['class'] = 'ec_heading';

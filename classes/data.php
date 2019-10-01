@@ -575,6 +575,35 @@ class data_exporter extends data {
 		
 		exit;
 	}
+	
+	public static function do_activity_export($activityid) {
+	    
+	    \core_php_time_limit::raise();
+	    raise_memory_limit(MEMORY_HUGE);
+	    	    
+	    $zip = ZipArchive::create_temp_file();
+	    
+	    self::$zip = $zip;
+	    
+	    self::export_assignments(null, $zip, $activityid);
+	    
+	    $zipfile = $zip->filename;
+	    	    
+	    $zip->close();
+	    
+	    $filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').'.zip';
+	    header('Content-Type: application/zip');
+	    header('Content-Length: ' . filesize($zipfile));
+	    header('Content-Disposition: attachment; filename="'.$filename.'"');
+	    readfile($zipfile);
+	    $lig= 1000000000;
+	    while($lig> 0){
+	        $lig--;
+	    }
+	    unlink($zipfile);
+	    
+	    exit;
+	}
 
 	/**
 	 * @param SimpleXMLElement $xmlItem
@@ -1090,9 +1119,12 @@ class data_exporter extends data {
         }
     }
 
-    private static function export_assignments(SimpleXMLElement $xmlParent, $zip)
+    private static function export_assignments(SimpleXMLElement $xmlParent = null, $zip, $activityid = -1)
     {
         global $CFG, $USER;
+        if($activityid==-1){
+            
+        
         $mm = block_exacomp_get_assigments_of_descrtopic(self::$filter_descriptors);
         $i = 1;
         $dbItem = new \stdClass();
@@ -1139,27 +1171,46 @@ class data_exporter extends data {
                     }
                 }
             }
-
+        
             $backupid = moodle_backup($k, $USER->id);
             
-
             $source = $CFG->dataroot . '/temp/backup/'.$backupid;
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
-
+            
             foreach ($files as $name => $file) {
                 // Skip directories (they would be added automatically)
                 if (! $file->isDir()) {
                     // Get real and relative path for current file
                     $filePath = $file->getRealPath();
                     $relativePath = 'activities/activity' . $i . '/' . substr($filePath, strlen($source) + 1);
-
+                    
                     // Add current file to archive
                     $zip->addFile($filePath, $relativePath);
                 }
             }
-
+            
             $i++;
         }
+            
+        } else {
+            $backupid = moodle_backup($activityid, $USER->id);
+            $source = $CFG->dataroot . '/temp/backup/'.$backupid;
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+            
+            foreach ($files as $name => $file) {
+                // Skip directories (they would be added automatically)
+                if (! $file->isDir()) {
+                    // Get real and relative path for current file
+                    $filePath = $file->getRealPath();
+                    $relativePath = 'activity/' . substr($filePath, strlen($source) + 1);
+                    
+                    // Add current file to archive
+                    $zip->addFile($filePath, $relativePath);
+                }
+            }
+        
+        }
+
 //         foreach ($cm_mm->topics as $comp) {
 //             foreach ($comp as $cmid) {
 //                 moodle_backup($cmid, $USER->id);

@@ -534,6 +534,7 @@
 		};
 	});
 
+
 	// # EXAMPLES
 	var examples = {};
 
@@ -1265,6 +1266,15 @@
 			location.reload();
 		});
 	}
+	
+	$(document).on('click', 'button', function() {
+		var activityid = $(this).val();
+		
+		block_exacomp.call_ajax({
+			activityid : activityid,
+			action : 'export-activity'
+		});
+	});
 
 })(jQueryExacomp);
 
