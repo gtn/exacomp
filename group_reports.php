@@ -195,6 +195,43 @@ if (optional_param('print', false, PARAM_BOOL)) {
 
     if ($action == 'search' && !$isTemplateDeleting) {
         echo html_writer::tag('h2', block_exacomp_get_string('result'));
+
+/*
+//        const BLOCK_EXACOMP_TYPE_DESCRIPTOR = 0;
+//        const BLOCK_EXACOMP_TYPE_TOPIC = 1;
+//        const BLOCK_EXACOMP_TYPE_CROSSSUB = 2;
+//        const BLOCK_EXACOMP_TYPE_SUBJECT = 3;
+//        const BLOCK_EXACOMP_TYPE_EXAMPLE = 4;
+//        const BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT = 1001;
+//        const BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD = 1002;
+        $filterlogictext = "Filterlogic: ";
+        $filterlogictext .= "Subjects(";
+
+//        var_dump($filter[BLOCK_EXACOMP_TYPE_SUBJECT]);
+        $scheme_values = block_exacomp_get_assessment_diffLevel_options();
+        $scheme_values = preg_split( "/,/", $scheme_values);
+
+        if($filter[BLOCK_EXACOMP_TYPE_SUBJECT]["evalniveauid"]){
+            foreach($filter[BLOCK_EXACOMP_TYPE_SUBJECT]["evalniveauid"] as $value){
+                if($value == 0){
+                    var_dump("ohne Angabe");
+                }else{
+                    var_dump($scheme_values[$value-1]);
+                }
+            }
+        }
+        die;
+
+        echo html_writer::tag('p', $filterlogictext);
+//        var_dump($filter[BLOCK_EXACOMP_TYPE_SUBJECT]);
+//        var_dump($filter[BLOCK_EXACOMP_TYPE_TOPIC]);
+//        var_dump($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]);
+//        var_dump($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]);
+//        var_dump($filter[BLOCK_EXACOMP_TYPE_EXAMPLE]);
+        die;
+*/
+
+
         switch ($reportType) {
             case 'annex':
                 block_exacomp_group_reports_annex_result($filter);
