@@ -4786,15 +4786,22 @@ class block_exacomp_external extends external_api {
         }
 
         $timeSeconds = $time[0]*60*60+$time[1]*60;
+        $remainingtime = $timeSeconds;
         //Get the other scheduled instances of this example
         $schedule = g::$DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $entry->exampleid]);
-        $remainingtime = $timeSeconds;
         foreach($schedule as $scheduledmaterials){
             $remainingtime -= ($scheduledmaterials->end - $scheduledmaterials->start);
         }
-        $remaininghours = floor($remainingtime/3600);
-        $remainingminutes = ($remainingtime%3600)/60;
-        $remainingtime = $remaininghours.'h'.$remainingminutes;
+        if($remainingtime > 0){
+            $remaininghours = floor($remainingtime/3600);
+            $remainingminutes = ($remainingtime%3600)/60;
+            $remainingtime = $remaininghours.'h'.$remainingminutes.'min';
+        }else if($remainingtime < 0){
+            $remaininghours = ceil($remainingtime/3600);
+            $remainingminutes = -1*(($remainingtime%3600)/60); //time -1 to make it positive ==>    remaining time =    -4h30min e.g.
+            $remainingtime = $remaininghours.'h'.$remainingminutes.'min';
+        }
+
 
 		return array(
 			"timeremaining" => $remainingtime,
