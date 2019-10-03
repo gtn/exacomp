@@ -7669,7 +7669,7 @@ class block_exacomp_external extends external_api {
             $cohortcode_return = array();
 
             $DB->insert_record('cohort', array(
-                "contextid" => get_config('auth_dgb','courseid'),
+                "contextid" => get_config('auth_dgb','contextid'),
                 "name" => $skz.''.$name,
                 "descriptionformat" => 1,
                 "timecreated" => time(),
