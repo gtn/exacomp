@@ -1351,9 +1351,6 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
 function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null, $subjectid = -1) {
 	global $DB, $USER;
 
-//    var_dump("DEBUG2");
-//    die;
-
 	if ($evalniveauid !== null && $evalniveauid < 1) {
 		$evalniveauid = null;
 	}
@@ -2342,10 +2339,6 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
 	$user->subjects->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, evalniveauid');
     $user->subjects->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, globalgradings');
     $user->subjects->gradinghistory = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, gradinghistory');
-//    var_dump($courseid);
-//    var_dump($user->id);
-//    var_dump($user);
-//    die;
 	return $user;
 }
 
@@ -5653,11 +5646,6 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 	return $tree;
 }
 
-// function block_exacomp_build_crossubject_example_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false) {
-//     $tree = block_exacomp_get_cross_subjects_by_course($courseid);
-//     var_dump($tree);
-//     return $tree;
-// }
 
 /**
  * helper function for block_exacomp_build_example_association_tree
@@ -7339,9 +7327,6 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, $subjectid = -1) {
 	global $DB, $USER;
 
-//    var_dump("DEBUG1");
-//    die;
-
 	if (is_string($additionalinfo)) {
 		// force additional info to be stored with a dot as decimal mark
 		$additionalinfo = (float)str_replace(",", ".", $additionalinfo);
@@ -7860,12 +7845,10 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$current_idx = 1;
 		foreach ($rowcontent->niveaus as $niveau => $element) { //DESCRIPTORS
 			$content_row->columns[$current_idx] = new stdClass();
-			//var_dump(block_exacomp_get_descriptor_numbering($element));
-			//var_dump($rowcontent);
+
 			//$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $element->descriptorid);
 			//$content_row->columns[$current_idx]->evaluation = ($grading->value !== null) ? $grading->value : -1;
-			//var_dump($element);
-			//var_dump($element->eval);
+
 			$content_row->columns[$current_idx]->evaluation = (empty($element->eval) && $element->eval != '0') ? -1 : $element->eval;
 			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
 			$content_row->columns[$current_idx]->show = $element->show;
@@ -7873,8 +7856,6 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 			$content_row->columns[$current_idx]->timestamp = $element->timestamp;
 
-			//throw new block_exacomp_permission_exception('User is no teacher');
-			//var_dump($element);
 			$content_row->columns[$current_idx]->gradingisold = $element->gradingisold;
 
 			if (in_array($niveau, $spanning_niveaus)) {
@@ -7916,7 +7897,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
 		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
 		$content_row->columns[1]->span = 0;
-// 		var_dump($table_content->subject_eval);
+
 // 		$content_row->columns[1] = new stdClass();
 // 		$content_row->columns[1]->evaluation = 1;
 // 		$content_row->columns[1]->evaluation_text = "NEINEINEIN";
@@ -8219,9 +8200,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_example_scheme());
 
-// 	var_dump(block_exacomp_get_assessment_comp_scheme());
-// 	var_dump($schemeItems_descriptors);
-// 	die();
+
 
 // 	switch (block_exacomp_get_assessment_comp_scheme()) {
 // 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
@@ -9400,10 +9379,7 @@ function block_exacomp_format_eval_value($value) {
 }
 
 function block_exacomp_group_reports_get_filter($reportType = 'general') {
-//    var_dump(@$_REQUEST); die;
     $filter = (array)@$_REQUEST['filter'];
-
-
 
     switch ($reportType) {
         case 'annex':
@@ -9433,24 +9409,63 @@ function block_exacomp_group_reports_get_filter($reportType = 'general') {
                 $filter['type'] = 'students';
             }
     }
+
+//    if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+//    }
+//
+//    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
+//    }
+//    if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
+//    }
+//    //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+//    //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
+//    //}
+//    if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] ) {
+//        @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
+//    }
+//    if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible']) {
+//        @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
+//    }
+
     // active means, we also have to loop over those items.... visible does not mean active, rework, 17.07.2019 RW
     if (@$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible']) {
         @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+    }else{
+        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE] = array();
     }
 
     if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active']) {
+        if(!@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible']){
+            //if it has only been set active because a lower level is active, then clear the settings (the settings are not visible so they should not have an effect)
+            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD] = array();
+        }
         @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
     }
     if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
+        if(!@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible']){
+            //if it has only been set active because a lower level is active, then clear the settings (the settings are not visible so they should not have an effect)
+            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT] = array();
+        }
         @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
     }
     //if (@$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active']) {
     //    @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR]['active'] = true;
     //}
     if (@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active']) {
+        if(!@$filter[BLOCK_EXACOMP_TYPE_TOPIC]['visible']){
+            //if it has only been set active because a lower level is active, then clear the settings (the settings are not visible so they should not have an effect)
+            @$filter[BLOCK_EXACOMP_TYPE_TOPIC] = array();
+        }
         @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
     }
     if (@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible'] || @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active']) {
+        if(!@$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['visible']){
+            //if it has only been set active because a lower level is active, then clear the settings (the settings are not visible so they should not have an effect)
+            @$filter[BLOCK_EXACOMP_TYPE_SUBJECT] = array();
+        }
         @$filter[BLOCK_EXACOMP_TYPE_SUBJECT]['active'] = true;
     }
 
@@ -9521,6 +9536,11 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 	$courseid = g::$COURSE->id;
 	$students = block_exacomp_get_students_by_course($courseid);
 	$html = '';
+
+//    var_dump($filter);
+//    $filter[1001][active] = false;
+//    $filter[3][active] = false;
+//    var_dump($filter);
 
 
 	if ($filter['type'] == 'students') {

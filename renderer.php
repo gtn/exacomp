@@ -1386,7 +1386,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }//end crosssubjectfiles and total evaluation
 
             }
-//            die;
+
             $profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 			$evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? 'teacher' : 'student';
 			if (!$crosssubjid) {
@@ -1589,8 +1589,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
-//                        var_dump($student->subjects);
-//                        die;
 
                         //check if subject and course have the "isglobal" flag set and if the globalgradings text is not empty
                         //check if teacher is dakorateacher
@@ -1611,8 +1609,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                         }
 
-//                        var_dump(block_exacomp_get_settings_by_course($courseid)->isglobal);
-//                        die;
 //                        if(@$subject->isglobal
 //                                && block_exacomp_get_settings_by_course($courseid)->isglobal
 //                                && array_key_exists($subject->id, @$student->subjects->globalgradings)
@@ -1776,7 +1772,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				'selected_topicid' => null,
 				'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
-// 			var_dump($students);
 // 			echo "<br>";
 // 			echo "<br>";
 // 			echo "<br>";
@@ -2128,7 +2123,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->scheme = block_exacomp_get_assessment_comp_scheme();
 
 				if (!empty($topic->descriptors)) {
-// 				    var_dump($students);
+
 // 				    echo "<br>";
 // 				    echo "<br>";
 // 				    echo "<br>";
@@ -2298,8 +2293,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $nivCell->attributes['width'] = '5%';
 
 				$nivText = [];
-// 				var_dump($descriptor->categories);
-// 				die();
+
 				foreach ($descriptor->categories as $cat) {
 					$nivText[] = $cat->title;
 				}
@@ -6369,8 +6363,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($edit) {
             $cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->groupcategory : '', 'name' => 'groupcategory', 'list' => "dlist"));
 
-//            var_dump('2');
-//            die;
 
             //Create datlist for the existing categories
             $groupcategories = block_exacomp_get_crosssubject_groupcategories();
@@ -6423,8 +6415,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 // // 		    $cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->description : '');
 // // 		    $examples = block_exacomp_get_examples_for_crosssubject($crosssubject->id);
 
-// // 		    var_dump($examples);
-// // 		    var_dump("asdfasdfasdf");
 // 		}
 // 		$rows[] = [html_writer::span(block_exacomp_get_string('files'), 'exabis_comp_top_name'), $exampleuploadCell];
 
@@ -6640,7 +6630,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function side_wrap_weekly_schedule() {
 		$pool = $this->example_pool();
-// 		var_dump($pool);
+
 		$calendar = html_writer::div('', '', array('id' => 'calendar'));
 		$trash = $this->example_trash();
 		$clear = html_writer::div('', '', array('style' => 'clear:both'));
@@ -6819,7 +6809,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$content .= $example->title.' '.$example->id.' '.$exampleIcons;
 
-			//var_dump($example);
 			$example_parent_names = block_exacomp_build_example_parent_names(g::$COURSE->id, $example->id);
 
 			$content .= '</td><td>'.join('<br/>', array_map(function($names) {
@@ -7045,8 +7034,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$table->data[] = $row;
 
             $groupcategories = block_exacomp_get_crosssubject_groupcategories($subject->id);
-//            var_dump($groupcategories);
-//            die();
 
             //look for the right category to store this crossubjectdraft into
             //if none has been stored there yet, write the category
@@ -7076,8 +7063,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'action' => 'use_draft')), $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
                     ]);
                     $row->attributes['class'] = 'rg2-level-2';
-//                    var_dump($table->data);
-//                    die();
                     $table->data[] = $row;
                     $crosssubj = array_shift($subject->cross_subject_drafts);
                 }
@@ -7424,8 +7409,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$input_filter = (array)@$filter[$input_type];
-//		var_dump($filter);
-//        die;
 
 		?>
 		<div class="filter-group">
@@ -7442,8 +7425,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
             </h3>
 			<div class="filter-group-body">
 				<?php
-//                var_dump($inputs);
-//                die;
 //                    if(!empty($inputs['active'])){
 //                        echo '<div class="filter-input-active">
 //                                <span class="filter-title">'.block_exacomp_get_string('active_show').' :</span>';

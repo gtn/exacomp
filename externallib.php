@@ -4802,12 +4802,10 @@ class block_exacomp_external extends external_api {
             $remainingtime = $remaininghours.'h'.$remainingminutes.'min';
         }
 
-
 		return array(
 			"timeremaining" => $remainingtime,
             "success" => true,
 		);
-
 	}
 
 	/**
