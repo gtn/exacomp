@@ -9537,7 +9537,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 	$students = block_exacomp_get_students_by_course($courseid);
 	$html = '';
 
-//    var_dump($filter);
+
 //    $filter[1001][active] = false;
 //    $filter[3][active] = false;
 //    var_dump($filter);
@@ -9556,11 +9556,13 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
  		}
  		$i = 0;
 		foreach ($students as $student) {
-
 		    $i++;
 			$studentid = $student->id;
 
+
+
 			$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+
 			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
 				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 				$item_type = $item::TYPE;
@@ -9568,6 +9570,8 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 				if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 					$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 				}
+
+
 
 				$item_filter = (array)@$filter[$item_type];
 
@@ -9577,10 +9581,12 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 					return false;
 				}
 
+
                 $filter_result = block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval);
                 if (!$filter_result) {
 				    return false;
                 }
+
 
 				/*if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
 					$item->visible = false;
@@ -9591,23 +9597,24 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 
 				$walk_subs($level + 1);
 
-				$filter_active = $item_filter;
-				unset($filter_active['active']);
-				unset($filter_active['visible']);
-				$filter_active = array_filter($filter_active, function($value) { return !empty($value); });
-				$filter_active = !!$filter_active;
-
-				if (!$filter_active) {
-					if ($item instanceof \block_exacomp\subject && !$item->topics) {
-						return false;
-					}
-					if ($item instanceof \block_exacomp\topic && !$item->descriptors) {
-						return false;
-					}
-					if ($item instanceof \block_exacomp\descriptor && !$item->children && !$item->examples) {
-						return false;
-					}
-				}
+                //RW dont do all this so e.g. the subjects dont get removed just because they dont have any topics under them
+//				$filter_active = $item_filter;
+//				unset($filter_active['active']);
+//				unset($filter_active['visible']);
+//				$filter_active = array_filter($filter_active, function($value) { return !empty($value); });
+//				$filter_active = !!$filter_active;
+//
+//				if (!$filter_active) {
+//					if ($item instanceof \block_exacomp\subject && !$item->topics) {
+//						return false;
+//					}
+//					if ($item instanceof \block_exacomp\topic && !$item->descriptors) {
+//						return false;
+//					}
+//					if ($item instanceof \block_exacomp\descriptor && !$item->children && !$item->examples) {
+//						return false;
+//					}
+//				}
 			});
 
 			ob_start();
