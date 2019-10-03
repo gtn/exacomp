@@ -816,4 +816,4 @@ $string['report all educational standards'] = 'All educational standards which p
 $string['report all topics'] = 'All competence fields of educational standards that have not been filtered AND pass following filters: ';
 $string['report all descriptor parents'] = 'All competences of competence fields that have not been filtered AND pass following filters: ';
 $string['report all descriptor descriptor children'] = 'All child competences of competences that have not been filtered AND pass following filters: ';
-$string['report all descriptor examples'] = 'All examples of educational standards, competence fields and competences that have not been filtered AND pass following filters: ';
+$string['report all descriptor examples'] = 'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ';

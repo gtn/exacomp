@@ -2439,11 +2439,11 @@ return [
         'to',
     ],
     'report_type' => [
-        'Report Typ',
+        'Berichtsart',
         'type of report',
     ],
     'report_subject' => [
-        'Bildungsstandard',
+        'Bildungsstandard/Raster',
         'educational standard',
     ],
     'report_learniningmaterial' => [
@@ -2943,11 +2943,11 @@ return [
         'to',
     ],
     'report all educational standards' => [
-        'Alle  Bildungsstandards welche folgenden Filterkriterien entsprechen: ',
+        'Alle  Bildungsstandard/Raster welche folgenden Filterkriterien entsprechen: ',
         'All educational standards which pass following filters: ',
     ],
     'report all topics' => [
-        'Alle  Kompetenzbereiche von Bildungsstandards die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
+        'Alle  Kompetenzbereiche von Bildungsstandard/Rastern die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
         'All competence fields of educational standards that have not been filtered AND pass following filters: ',
     ],
     'report all descriptor parents' => [
