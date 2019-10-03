@@ -207,27 +207,27 @@ if (optional_param('print', false, PARAM_BOOL)) {
         $filterlogictext = "Filterlogic: <br>";
 
         if($filter[BLOCK_EXACOMP_TYPE_SUBJECT]["visible"]){
-            $filterlogictext .= "All Subjects which pass following filters: ";
+            $filterlogictext .= block_exacomp_get_string('report all educational standards');
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_SUBJECT,$filter,$filterlogictext);
         }
 
         if($filter[BLOCK_EXACOMP_TYPE_TOPIC]["visible"]){
-            $filterlogictext .= "<br>All topics of subjects that have not been filtered AND pass following filters: ";
+            $filterlogictext .= "<br>".block_exacomp_get_string('report all topics');
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_TOPIC,$filter,$filterlogictext);
         }
 
         if($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]["visible"]){
-            $filterlogictext .= "<br>All parent descriptors of topics that have not been filtered AND pass following filters: ";
+            $filterlogictext .= "<br>".block_exacomp_get_string('report all descriptor parents');
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT,$filter,$filterlogictext);
         }
 
         if($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]["visible"]){
-            $filterlogictext .= "<br>All child descriptors of parent descriptors that have not been filtered AND pass following filters: ";
+            $filterlogictext .= "<br>".block_exacomp_get_string('report all descriptor children');
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD,$filter,$filterlogictext);
         }
 
         if($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_EXAMPLE]["visible"]){
-            $filterlogictext .= "<br>All examples of subjects, topics and descriptors that have not been filtered AND pass following filters: ";
+            $filterlogictext .= "<br>".block_exacomp_get_string('report all examples');
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_EXAMPLE,$filter,$filterlogictext);
         }
 
@@ -253,14 +253,14 @@ function create_filterlogic_text($input_type,$filter,$filterlogictext) {
     $niveauValues = block_exacomp\global_config::get_evalniveaus();
     $first = true;
     if($filter[$input_type]["evalniveauid"]) {
-        $filterlogictext .= "Niveau: ";
+        $filterlogictext .= block_exacomp_get_string('difficulty_group_report').": ";
         foreach ($filter[$input_type]["evalniveauid"] as $niveauid) {
             if ($niveauid == 0) {
-                $filterlogictext .= "not specified";
+                $filterlogictext .= block_exacomp_get_string('no_specification');
                 $first = false;
             } else {
                 if (!$first) {
-                    $filterlogictext .= " OR ";
+                    $filterlogictext .= " ".block_exacomp_get_string('OR')." ";
                 }
                 $filterlogictext .= $niveauValues[$niveauid] . " ";
                 $first = false;
@@ -275,24 +275,24 @@ function create_filterlogic_text($input_type,$filter,$filterlogictext) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
             if($filter[$input_type]["teacherevaluation_from"] != null) {
-                $filterlogictext .= " AND teacherevaluation from ";
+                $filterlogictext .= " ".block_exacomp_get_string('AND teacherevaluation from')." ";
                 $filterlogictext .= $filter[$input_type]["teacherevaluation_from"];
-                $filterlogictext .= "  to ";
+                $filterlogictext .= " ".block_exacomp_get_string('to')." ";
                 $filterlogictext .= $filter[$input_type]["teacherevaluation_to"];
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
             if($filter[$input_type]["teacherevaluation"]) {
-                $filterlogictext .= " AND ";
-                $filterlogictext .= "teacherevaluation: ";
+                $filterlogictext .= " ".block_exacomp_get_string('AND')." ";
+                $filterlogictext .= block_exacomp_get_string('teacherevaluation').": ";
                 $first = true;
                 foreach($filter[$input_type]["teacherevaluation"] as $teachereval){
                     if($teachereval == -1){
-                        $filterlogictext .= "not specified";
+                        $filterlogictext .= block_exacomp_get_string('no_specification');
                         $first = false;
                     }else{
                         if(!$first){
-                            $filterlogictext .= " OR ";
+                            $filterlogictext .= " ".block_exacomp_get_string('OR')." ";
                         }
                         $filterlogictext .= $teacher_eval_items[$teachereval]." ";
                         $first = false;
@@ -307,17 +307,17 @@ function create_filterlogic_text($input_type,$filter,$filterlogictext) {
     }
 
     if($filter[$input_type]["studentevaluation"]) {
-        $filterlogictext .= " AND ";
-        $filterlogictext .= "studentevaluation: ";
+        $filterlogictext .= " ".block_exacomp_get_string('AND')." ";
+        $filterlogictext .= block_exacomp_get_string('selfevaluation').": ";
         $scheme_values = \block_exacomp\global_config::get_student_eval_items(true, $input_type);
         $first = true;
         foreach($filter[$input_type]["studentevaluation"] as $studenteval){
             if($studenteval == 0){
-                $filterlogictext .= "not specified";
+                $filterlogictext .= block_exacomp_get_string('no_specification');
                 $first = false;
             }else{
                 if(!$first){
-                    $filterlogictext .= " OR ";
+                    $filterlogictext .= " ".block_exacomp_get_string('OR')." ";
                 }
                 $filterlogictext .= $scheme_values[$studenteval]." ";
                 $first = false;

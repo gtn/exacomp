@@ -2423,8 +2423,8 @@ return [
         'number of students',
     ],
     'no_specification' => [
-        'ohne Angabe',
-        'not specified',
+        'noch keine Beurteilung',
+        'no assessments',
     ],
     'period' => [
         'Zeitintervall',
@@ -2926,5 +2926,40 @@ return [
             'data content',
             'data content',
     ],
-
+    'OR' => [
+        'ODER',
+        'OR',
+    ],
+    'AND' => [
+        'UND',
+        'AND',
+    ],
+    'AND teacherevaluation from' => [
+        'UND Lehrerbeurteilung von',
+        'teacherevaluation from',
+    ],
+    'to' => [
+        'bis',
+        'to',
+    ],
+    'report all educational standards' => [
+        'Alle  Bildungsstandards welche folgenden Filterkriterien entsprechen: ',
+        'All educational standards which pass following filters: ',
+    ],
+    'report all topics' => [
+        'Alle  Kompetenzbereiche von Bildungsstandards die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
+        'All competence fields of educational standards that have not been filtered AND pass following filters: ',
+    ],
+    'report all descriptor parents' => [
+        'Alle  Kompetenzen von Kompetenzbereichen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen',
+        'All competences of competence fields that have not been filtered AND pass following filters: ',
+    ],
+    'report all descriptor descriptor children' => [
+        'Alle  Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen',
+        'All child competences of competences that have not been filtered AND pass following filters: ',
+    ],
+    'report all descriptor examples' => [
+        'Alle  Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen',
+        'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ',
+    ]
 ];
