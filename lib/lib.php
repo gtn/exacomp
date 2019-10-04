@@ -5767,9 +5767,9 @@ function block_exacomp_is_topic_visible_for_group($courseid, $topic, $groupid) {
             return false;
         }
 
-        if ($studentid > 0) {
+        if ($student->id > 0) {
             // also check student if set
-            $visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
+            $visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $student->id);
             if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
                 return false;
             }
