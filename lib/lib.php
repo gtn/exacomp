@@ -9737,12 +9737,12 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 
 // 		echo '<table>';
 // 		echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
-//		$html .= '<table>';
-//		$html .= '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
-        echo '<table>';
-        echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
+		$html .= '<table>';
+		$html .= '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
+//        echo '<table>';
+//        echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
 
-
+        ob_start();
 		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students, $html) {
 			$item_type = $item::TYPE;
             $item_scheme = block_exacomp_additional_grading($item_type);
@@ -9786,9 +9786,13 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 
 			$walk_subs($level + 1);
 		});
+        $output = ob_get_clean();
+        if($output){
+            $html .= $output;
+        }
 
-        echo '</table>';
-//        $html .= '</table>';
+//        echo '</table>';
+        $html .= '</table>';
 
     }
 
