@@ -2038,7 +2038,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @param number $studentid set if he is a student
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects) {
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects = false) {
 	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false);
 	$courseSubjects = block_exacomp_get_subjects_by_course($courseid,false,$hideglobalsubjects);
 
