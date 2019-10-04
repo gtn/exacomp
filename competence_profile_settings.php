@@ -17,54 +17,53 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require __DIR__.'/inc.php';
+// require __DIR__.'/inc.php';
 
-global $DB, $OUTPUT, $PAGE;
+// global $DB, $OUTPUT, $PAGE;
 
-$courseid = required_param('courseid', PARAM_INT);
+// $courseid = required_param('courseid', PARAM_INT);
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
-}
+// if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+// 	print_error('invalidcourse', 'block_simplehtml', $courseid);
+// }
 
-require_login($course);
+// require_login($course);
 
-$context = context_course::instance($courseid);
+// $context = context_course::instance($courseid);
 
-/* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
-$page_identifier = 'tab_competence_profile_settings';
+// /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
+// $page_identifier = 'tab_competence_profile_settings';
 
-/* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/competence_profile_settings.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier));
+// /* PAGE URL - MUST BE CHANGED */
+// $PAGE->set_url('/blocks/exacomp/competence_profile_settings.php', array('courseid' => $courseid));
+// $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+// $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
-// build breadcrumbs navigation
-block_exacomp_build_breadcrum_navigation($courseid);
+// // build breadcrumbs navigation
+// block_exacomp_build_breadcrum_navigation($courseid);
 
-//SAVE DATA
-if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
-	block_exacomp_set_profile_settings($USER->id, \block_exacomp\param::optional_array('profile_settings_course', PARAM_INT));
+// //SAVE DATA
+// if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
+// // 	block_exacomp_set_profile_settings($USER->id, \block_exacomp\param::optional_array('profile_settings_course', PARAM_INT));
 	
-}
-$output = block_exacomp_get_renderer();
-// build tab navigation & print header
-echo $output->header($context, $courseid, 'tab_competence_profile');
+// }
+// $output = block_exacomp_get_renderer();
+// // build tab navigation & print header
+// echo $output->header($context, $courseid, 'tab_competence_profile');
 
-/* CONTENT REGION */
-$studentid = optional_param('studentid', $USER->id, PARAM_INT);
-$isTeacher = block_exacomp_is_teacher($context);
-if(!$isTeacher) $studentid = $USER->id;
-$student = $DB->get_record('user',array('id' => $studentid));
+// /* CONTENT REGION */
+// $studentid = optional_param('studentid', $USER->id, PARAM_INT);
+// $isTeacher = block_exacomp_is_teacher($context);
+// if(!$isTeacher) $studentid = $USER->id;
+// $student = $DB->get_record('user',array('id' => $studentid));
 
-if(!$isTeacher)
-	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
+// if(!$isTeacher)
+// 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
 
-$user_courses = block_exacomp_get_exacomp_courses($student);
+// $user_courses = block_exacomp_get_exacomp_courses($student);
 
-$profile_settings = block_exacomp_get_profile_settings();
 
-echo $output->profile_settings($user_courses, $profile_settings);
 
-/* END CONTENT REGION */
-echo $output->footer();
+
+// /* END CONTENT REGION */
+// echo $output->footer(); 
