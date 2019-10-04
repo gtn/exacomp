@@ -56,19 +56,15 @@ if (optional_param('print', false, PARAM_BOOL)) {
         $html_content .= $output->competence_profile_metadata($student);
         //$html_header .= $output->competence_profile_metadata($student); // TODO: ??
         $usebadges = get_config('exacomp', 'usebadges');
-        $profile_settings = block_exacomp_get_profile_settings($studentid);
+//         $profile_settings = block_exacomp_get_profile_settings($studentid);
         $items = array();
         $user_courses = array();
         foreach($possible_courses as $course){
-            if(isset($profile_settings->exacomp[$course->id])){
                 $user_courses[$course->id] = $course;
-            }
         }
-        if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
+        if(!empty($user_courses))
             $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
         foreach($user_courses as $course) {
-            // if selected
-            if (isset($profile_settings->exacomp[$course->id]))
                 $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
         }
         $html_tables[] = $html_content;
@@ -157,7 +153,7 @@ echo $output->competence_profile_metadata($student);
 
 $usebadges = get_config('exacomp', 'usebadges');
 
-$profile_settings = block_exacomp_get_profile_settings($studentid);
+// $profile_settings = block_exacomp_get_profile_settings($studentid);
 
 
 $items = array();
@@ -165,14 +161,12 @@ $items = array();
 $user_courses = array();
 
 foreach($possible_courses as $course){
-	if(isset($profile_settings->exacomp[$course->id])){
 		$user_courses[$course->id] = $course;
-	}
 }
 
-if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1) {
+
     echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
-}
+
 
 //Add crosssubjects
 $crosssubjects = array();
@@ -195,7 +189,6 @@ foreach($crosssubjects as $crosssubjectsOfCourse) {
 
 foreach($user_courses as $course) {
 	//if selected
-	if(isset($profile_settings->exacomp[$course->id]))
 		echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id));
 }
 

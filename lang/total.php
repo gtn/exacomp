@@ -2961,5 +2961,29 @@ return [
     'report all descriptor examples' => [
         'Alle  Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen',
         'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ',
-    ]
+    ],
+    'subject_headline' => [
+        'Rastereinstellungen',
+        'Subject settings'
+    ],
+    'topic_headline' => [
+        'Kompetenzbereichseinstellung',
+        'Topic settings'
+    ],
+    'topic_description' => [
+        'Erstellen Sie ihren ersten Bereich:',
+        'Create your first topic:'
+    ],
+    'niveau_headline' => [
+        'Niveaueinstellungen',
+        'Niveau settings'
+    ],
+    'niveau_description' => [
+        'Erstellen Sie ihr erstes Niveau:',
+        'Create your first Niveau:'
+    ],
+    'descriptor_name' => [
+        'Kompetenzname',
+        'Descriptor name'
+    ],
 ];

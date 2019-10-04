@@ -71,10 +71,13 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_local_item_form extends moodleform {
 
 	function definition() {
-		global $COURSE;
+	    global $COURSE, $USER, $DB, $PAGE;
+		
 
 		$mform = & $this->_form;
-
+		
+        //Subject
+		$mform->addElement('html', '<h2> '.block_exacomp_get_string("subject_headline").' </h2>');
 		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
@@ -85,6 +88,31 @@ class block_exacomp_local_item_form extends moodleform {
 		$schooltypes = array_map(function($st) { return $st->title; }, $schooltypes);
 
 		$mform->addElement('select', 'stid', block_exacomp_get_string('tab_teacher_settings_selection_st'), $schooltypes);
+		$mform->addElement('html', '<br/>');
+		
+		//Topic
+		$mform->addElement('html', '<h2> '.block_exacomp_get_string("topic_headline").' </h2>');
+		$mform->addElement('html', '<p> '.block_exacomp_get_string("topic_description").'</p>');
+		$mform->addElement('text', 'topicTitle', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
+		$mform->setType('topicTitle', PARAM_TEXT);
+		$mform->addRule('topicTitle', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+		
+		$mform->addElement('text', 'numb', block_exacomp_trans('de:Nummer'), 'maxlength="4" size="4"');
+		$mform->setType('numb', PARAM_INT);
+		$mform->addRule('numb', block_exacomp_get_string('err_numeric', 'form'), 'required', null, 'client');
+		$mform->addElement('html', '<br/>');
+		
+		//Niveau
+		$mform->addElement('html', '<h2> '.block_exacomp_get_string("niveau_headline").' </h2>');
+		$mform->addElement('html', '<p> '.block_exacomp_get_string("niveau_description").' </p>');
+		$mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
+		$mform->setType('niveau_title', PARAM_TEXT);
+		
+		$mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
+		$mform->setType('niveau_numb', PARAM_TEXT);
+		
+		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('descriptor_name'), 'maxlength="255" size="60"');
+		$mform->setType('descriptor_title', PARAM_TEXT);
 		
 		$this->add_action_buttons(false);
 	}
@@ -100,29 +128,51 @@ if($formdata = $form->get_data()) {
 	$new->stid = $formdata->stid;
 	$new->titleshort = substr($formdata->title, 0, 1);
 	
+	$newTopic = new stdClass();
+	$newTopic->title = $formdata->topicTitle;
+	$newTopic->numb = $formdata->numb;
+	
 	if (!$item) {
+	    //Subject
 		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 	
 		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_SUBJECTS, $new);
-		
-		// add one dummy topic
-		$topicid = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, array(
-			'title' => block_exacomp_trans(['de:Neues Raster', 'en:New competence grid']),
-			'subjid' => $new->id,
-			'numb' => 1,
-			'source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM,
-			'sourceid' => 0
-		));
-	
-		// add dummy topic to course
-		$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
-			'courseid' => $courseid,
-			'topicid' => $topicid
-		));
-		$subjectid = $new->id;
 
-		block_exacomp_set_topic_visibility($topicid, $courseid, 1, 0);
+		
+		//Topic
+		
+		$newTopic->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
+		$newTopic->sourceid = 0;
+		$newTopic->subjid = $new->id;
+		    
+		$topicid = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $newTopic);
+		    
+		    // add topic to course
+		    $DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
+		        'courseid' => $courseid,
+		        'topicid' => $topicid
+		    ));
+		    
+		    block_exacomp_set_topic_visibility($topicid, $courseid, 1, 0);
+		    $subjectid = $newTopic->subjid;
+		    
+		 //Niveau
+		        $niveau = new stdClass;
+		        $niveau->sorting = $DB->get_field(BLOCK_EXACOMP_DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
+		        $niveau->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+		        $niveau->title = $formdata->niveau_title;
+		        $niveau->numb = $formdata->niveau_numb;
+		        $niveau->id = $DB->insert_record(BLOCK_EXACOMP_DB_NIVEAUS, $niveau);
+		    
+
+		            \block_exacomp\descriptor::insertInCourse($courseid, array(
+		                'title' => $formdata->descriptor_title,
+		                'topicid' => $topicid,
+		                'niveauid' => $niveau->id
+		            ));
+		    
+
 
 	} else {
 		$item->update($new);
