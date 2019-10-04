@@ -495,7 +495,7 @@ return [
         'assessment scheme points, limit for input',
     ],
     'settings_assessment_points_negativ' => [
-        'Nagative Beaurteilung Punkte',
+        'Nagative Beurteilung Punkte',
         'Fail value for Points',
     ],
     'settings_assessment_points_negativ_description' => [
@@ -511,7 +511,7 @@ return [
         'assessment scheme grade, limit for input',
     ],
     'settings_assessment_grade_negativ' => [
-        'Nagative Beaurteilung Noten',
+        'Nagative Beurteilung Noten',
         'Fail value for grade',
     ],
     'settings_assessment_grade_negativ_description' => [
@@ -567,7 +567,7 @@ return [
             'very good, good, satisfactory, sufficient, deficient, insufficient',
     ],
     'settings_assessment_grade_verbose_negative' => [
-            'Nagative Beaurteilung Verbalisierung',
+            'Nagative Beurteilung Verbalisierung',
             'Fail verbalized grade (EN)',
     ],
     'settings_assessment_grade_verbose_negative_description' => [

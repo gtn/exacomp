@@ -3417,6 +3417,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019092501, 'exacomp');
     }
+    if ($oldversion < 2019100400) {
+        $sql = 'UPDATE {block_exacompedulevels} SET source=1';
+        $sql = 'UPDATE {config_plugins} SET value=REPLACE(value,"Sehr gut, Gut, Befriedigend, Ausreichend, Mangelhaft, Unge","sehr gut, gut, befriedigend, ausreichend, mangelhaft, unge") WHERE plugin="exacomp" and name="assessment_grade_verbose"';
+				$DB->Execute($sql);
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2019100400, 'exacomp');
+    }
 
     /*
      * insert new upgrade scripts before this comment section
