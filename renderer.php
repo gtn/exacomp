@@ -6121,28 +6121,28 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function profile_settings($courses, $settings) {
-		global $COURSE;
-		$exacomp_div_content = html_writer::tag('h2', block_exacomp_get_string('blocktitle'));
-
-		$content_courses = html_writer::tag('p', block_exacomp_get_string('profile_settings_choose_courses'));
-		foreach ($courses as $course) {
-			$content_courses .= html_writer::checkbox('profile_settings_course[]', $course->id, (isset($settings->exacomp[$course->id])), $course->fullname);
-			$content_courses .= html_writer::empty_tag('br');
-		}
-		$exacomp_div_content .= html_writer::div($content_courses);
-
-		$exacomp_div = html_writer::div($exacomp_div_content);
-
-		$content = $exacomp_div;
-
-		$div = html_writer::div(html_writer::tag('form',
-			$content
-			.html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), 'exabis_save_button'),
-			array('action' => 'competence_profile_settings.php?courseid='.$COURSE->id.'&action=save', 'method' => 'post')), 'block_excomp_center');
-
-		return html_writer::tag("div", $div, array("id" => "exabis_competences_block"));
-	}
+//	public function profile_settings($courses, $settings) {
+//		global $COURSE;
+//		$exacomp_div_content = html_writer::tag('h2', block_exacomp_get_string('blocktitle'));
+//
+//		$content_courses = html_writer::tag('p', block_exacomp_get_string('profile_settings_choose_courses'));
+//		foreach ($courses as $course) {
+//			$content_courses .= html_writer::checkbox('profile_settings_course[]', $course->id, (isset($settings->exacomp[$course->id])), $course->fullname);
+//			$content_courses .= html_writer::empty_tag('br');
+//		}
+//		$exacomp_div_content .= html_writer::div($content_courses);
+//
+//		$exacomp_div = html_writer::div($exacomp_div_content);
+//
+//		$content = $exacomp_div;
+//
+//		$div = html_writer::div(html_writer::tag('form',
+//			$content
+//			.html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), 'exabis_save_button'),
+//			array('action' => 'competence_profile_settings.php?courseid='.$COURSE->id.'&action=save', 'method' => 'post')), 'block_excomp_center');
+//
+//		return html_writer::tag("div", $div, array("id" => "exabis_competences_block"));
+//	}
 
 	public function wrapperdivstart() {
 		return html_writer::start_tag('div', array('id' => 'block_exacomp'));

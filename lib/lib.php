@@ -2480,7 +2480,7 @@ function block_exacomp_build_navigation_tabs_profile($context, $courseid) {
 	$profile_subtree = array();
 
 	$profile_subtree[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_profile_profile'), null, true);
-	$profile_subtree[] = new tabobject('tab_competence_profile_settings', new moodle_url('/blocks/exacomp/competence_profile_settings.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_profile_settings'), null, true);
+//	$profile_subtree[] = new tabobject('tab_competence_profile_settings', new moodle_url('/blocks/exacomp/competence_profile_settings.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_profile_settings'), null, true);
 
 	return $profile_subtree;
 }
