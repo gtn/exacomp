@@ -735,7 +735,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $isEditingTeacher = true) {
-		global $DB, $USER, $PAGE;
+		global $DB, $USER, $PAGE, $COURSE;
 
 		$table = new html_table();
 		$rows = array();

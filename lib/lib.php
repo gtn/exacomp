@@ -9537,12 +9537,6 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 	$students = block_exacomp_get_students_by_course($courseid);
 	$html = '';
 
-
-//    $filter[1001][active] = false;
-//    $filter[3][active] = false;
-//    var_dump($filter);
-
-
 	if ($filter['type'] == 'students') {
 		$has_output = false;
 
@@ -9559,8 +9553,6 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 		    $i++;
 			$studentid = $student->id;
 
-
-
 			$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
 			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
@@ -9571,8 +9563,6 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 					$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 				}
 
-
-
 				$item_filter = (array)@$filter[$item_type];
 
 				$item->visible = @$item_filter['visible'];
@@ -9580,7 +9570,6 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 				if (!@$item_filter['active']) {
 					return false;
 				}
-
 
                 $filter_result = block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval);
                 if (!$filter_result) {
@@ -9748,22 +9737,25 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 
 // 		echo '<table>';
 // 		echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th>';
-		$html .= '<table>';
-		$html .= '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
+//		$html .= '<table>';
+//		$html .= '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
+        echo '<table>';
+        echo '<tr><th></th><th></th><th colspan="3">'.block_exacomp_get_string('number_of_found_students').' ('.count($students).')</th></tr>';
+
 
 		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students, $html) {
-
 			$item_type = $item::TYPE;
             $item_scheme = block_exacomp_additional_grading($item_type);
 			if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 				$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 			}
 
-			$item_filter = (array)@$filter[$item_type];
+            $item_filter = (array)@$filter[$item_type];
 
 			$visible = @$item_filter['visible'];
 
 			if ($visible) {
+
 				$count = 0;
 				foreach ($students as $student) {
 					$studentid = $student->id;
@@ -9778,25 +9770,28 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 					$count++;
 				}
 
-                // 				echo '<tr>';
-                // 				echo '<td style="white-space: nowrap">'.$item->get_numbering();
-                // 				echo '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title;
-                // 				echo '<td style="padding: 0 10px;">'.$count;
 
-                $html .= '<tr>';
-                $html .= '<td style="white-space: nowrap">'.$item->get_numbering().'</td>';
-                $html .= '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title.'</td>';
-                $html .= '<td style="padding: 0 10px;">'.$count.'</td>';
-                $html .= '</tr>';
+                echo '<tr>';
+                echo '<td style="white-space: nowrap">'.$item->get_numbering().'</td>';
+                echo '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title.'</td>';
+                echo '<td style="padding: 0 10px;">'.$count.'</td>';
+                echo '</tr>';
+
+//                $html .= '<tr>';
+//                $html .= '<td style="white-space: nowrap">'.$item->get_numbering().'</td>';
+//                $html .= '<td style="padding-left: '.(5 + $level * 15).'px">'.$item->title.'</td>';
+//                $html .= '<td style="padding: 0 10px;">'.$count.'</td>';
+//                $html .= '</tr>';
 			}
 
 			$walk_subs($level + 1);
 		});
 
-        // 		echo '</table>';
-        $html .= '</table>';
+        echo '</table>';
+//        $html .= '</table>';
 
     }
+
     return $html;
 }
 
