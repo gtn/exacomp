@@ -2410,6 +2410,22 @@ return [
         'Anzeigeoptionen',
         'display settings',
     ],
+    'settings_explanation_tooltipp' => [
+        'Die Ergebnisse im Gruppenbericht werden durch die einzelnen Filter von
+        oben nach unten reduziert, aber nicht von unten nach oben.
+        Wenn z.B. als einziges Filterkriterium "Niveau G" bei den Kompetenzen
+        ausgewählt ist, so werden
+        - alle Bildungsstandards
+        - alle Kompetenzbereiche
+        - Kompetenzen gefiltert nach Beurteilung mit "Niveau G" und
+        - Teilkompetenzen, die Kompetenzen Niveau G zugeordnet sind, angezeigt.',
+        'The results of the group report are reduced by the filters from top down but not from the bottom up.
+         E.g. if a single filter "difficulty level G" at the competences is active then this will be the output:
+        - all educational standards
+        - all competence fields
+        - competences filtered by the difficulty level G and
+        - child competences of the competences that have difficulty level G.',
+    ],
     'create_report' => [
         'Bericht erstellen',
         'generate report',

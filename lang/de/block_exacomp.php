@@ -685,6 +685,14 @@ $string['no_entries_found'] = 'Keine Einträge gefunden';
 $string['assessment_date'] = 'Bewertungsdatum';
 $string['number_of_found_students'] = 'Anzahl gefundener Schüler';
 $string['display_settings'] = 'Anzeigeoptionen';
+$string['settings_explanation_tooltipp'] = 'Die Ergebnisse im Gruppenbericht werden durch die einzelnen Filter von
+        oben nach unten reduziert, aber nicht von unten nach oben.
+        Wenn z.B. als einziges Filterkriterium "Niveau G" bei den Kompetenzen
+        ausgewählt ist, so werden
+        - alle Bildungsstandards
+        - alle Kompetenzbereiche
+        - Kompetenzen gefiltert nach Beurteilung mit "Niveau G" und
+        - Teilkompetenzen, die Kompetenzen Niveau G zugeordnet sind, angezeigt.';
 $string['create_report'] = 'Bericht erstellen';
 $string['students_competences'] = 'Schüler Kompetenzen';
 $string['number_of_students'] = 'Schüler Anzahl';

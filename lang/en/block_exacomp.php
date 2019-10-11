@@ -679,6 +679,12 @@ $string['no_entries_found'] = 'no entries found';
 $string['assessment_date'] = 'assessment date';
 $string['number_of_found_students'] = 'number of found students';
 $string['display_settings'] = 'display settings';
+$string['settings_explanation_tooltipp'] = 'The results of the group report are reduced by the filters from top down but not from the bottom up.
+         E.g. if a single filter "difficulty level G" at the competences is active then this will be the output:
+        - all educational standards
+        - all competence fields
+        - competences filtered by the difficulty level G and
+        - child competences of the competences that have difficulty level G.';
 $string['create_report'] = 'generate report';
 $string['students_competences'] = 'students\' competences';
 $string['number_of_students'] = 'number of students';

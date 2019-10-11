@@ -180,7 +180,8 @@ if (optional_param('print', false, PARAM_BOOL)) {
     ?>
     	<div class="block">
             <?php
-            echo '<h2>'.block_exacomp_get_string('display_settings').'</h2>';
+            echo '<h2>'.block_exacomp_get_string('display_settings').'     '.$OUTPUT->pix_icon("e/question", block_exacomp_get_string('settings_explanation_tooltipp')).'</h2>';
+
             switch ($reportType) {
                 case 'annex':
                     echo $output->group_report_annex_filters('exacomp', $filter, '', $extra, $courseid);
