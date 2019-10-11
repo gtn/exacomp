@@ -1348,7 +1348,7 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
  * @param int $value
  * @param int $evalniveauid
  */
-function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null, $subjectid = -1) {
+function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null, $subjectid = -1, $savegradinghistory = true) {
 	global $DB, $USER;
 
 	if ($evalniveauid !== null && $evalniveauid < 1) {
@@ -1367,7 +1367,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		'value' => $value,
 		'evalniveauid' => $evalniveauid,
 		'reviewerid' => $USER->id,
-	]);
+	], $savegradinghistory);
 
 
 
@@ -8979,7 +8979,7 @@ function block_exacomp_get_comp_eval_merged($courseid, $studentid, $item) {
 	return \block_exacomp\comp_eval_merged::get($courseid, $studentid, $item);
 }
 
-function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $compid, $data) {
+function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $compid, $data, $savegradinghistory = true) {
     global $USER;
 	$data = (array)$data;
 	unset($data['courseid']);
@@ -9096,12 +9096,13 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 
 				if ($changed) {
 					$data['timestamp'] = time();
-					if(!block_exacomp_additional_grading($comptype)) { //only add to history if not using additionalgrading or it will be a duplicate entry
+//					if(!block_exacomp_additional_grading($comptype)) { //only add to history if not using additionalgrading or it will be a duplicate entry
+                    if($savegradinghistory) { //only add to history if not using additionalgrading or it will be a duplicate entry
                         $data['gradinghistory'] = $record->gradinghistory.$USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
                     }
 				}
 			} else {
-                if(!block_exacomp_additional_grading($comptype)) {
+                if($savegradinghistory) {
                     $data['timestamp'] = time();
                     $data['gradinghistory'] = $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
                 }
