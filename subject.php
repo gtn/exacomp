@@ -77,7 +77,7 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform = & $this->_form;
 		
         //Subject
-		$mform->addElement('html', '<h2> '.block_exacomp_get_string("subject_headline").' </h2>');
+		$mform->addElement('html', '<h2> '.block_exacomp_get_string("tab_competence_overview").' </h2>');
 		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
@@ -91,7 +91,7 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->addElement('html', '<br/>');
 		
 		//Topic
-		$mform->addElement('html', '<h2> '.block_exacomp_get_string("topic_headline").' </h2>');
+		$mform->addElement('html', '<h2> '.block_exacomp_get_string("topic").' </h2>');
 		$mform->addElement('html', '<p> '.block_exacomp_get_string("topic_description").'</p>');
 		$mform->addElement('text', 'topicTitle', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('topicTitle', PARAM_TEXT);
@@ -99,20 +99,23 @@ class block_exacomp_local_item_form extends moodleform {
 		
 		$mform->addElement('text', 'numb', block_exacomp_trans('de:Nummer'), 'maxlength="4" size="4"');
 		$mform->setType('numb', PARAM_INT);
-		$mform->addRule('numb', block_exacomp_get_string('err_numeric', 'form'), 'required', null, 'client');
 		$mform->addElement('html', '<br/>');
 		
 		//Niveau
-		$mform->addElement('html', '<h2> '.block_exacomp_get_string("niveau_headline").' </h2>');
+		$mform->addElement('html', '<h2> '.block_exacomp_get_string("niveau").' </h2>');
 		$mform->addElement('html', '<p> '.block_exacomp_get_string("niveau_description").' </p>');
 		$mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('niveau_title', PARAM_TEXT);
+		$mform->addRule('niveau_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+		
 		
 		$mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
 		$mform->setType('niveau_numb', PARAM_TEXT);
 		
-		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('descriptor_name'), 'maxlength="255" size="60"');
+		$mform->addElement('html', '<h2> '.block_exacomp_get_string("descriptors").' </h2>');
+		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('descriptor_title', PARAM_TEXT);
+		$mform->addRule('descriptor_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 		
 		$this->add_action_buttons(false);
 	}

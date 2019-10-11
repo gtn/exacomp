@@ -100,7 +100,7 @@ return [
 		'Configuration',
 	],
 	'tab_teacher_settings_selection_st' => [
-		'Bildungsstandard-Auswahl',
+		'Schulart / Bezüge zum Bildungsplan',
 		'Schooltype selection',
 	],
 	'tab_teacher_settings_selection' => [
@@ -2962,28 +2962,14 @@ return [
         'Alle  Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen',
         'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ',
     ],
-    'subject_headline' => [
-        'Rastereinstellungen',
-        'Subject settings'
-    ],
-    'topic_headline' => [
-        'Kompetenzbereichseinstellung',
-        'Topic settings'
-    ],
     'topic_description' => [
-        'Erstellen Sie ihren ersten Bereich:',
+        'Erstellen Sie ihren ersten Kompetenzbereich, das ist die erste Zeile in
+ihrem Raster',
         'Create your first topic:'
     ],
-    'niveau_headline' => [
-        'Niveaueinstellungen',
-        'Niveau settings'
-    ],
     'niveau_description' => [
-        'Erstellen Sie ihr erstes Niveau:',
+        'Erstellen Sie ihren ersten Lernfortschritt, das sind die Spalten in
+ihrem Raster',
         'Create your first Niveau:'
-    ],
-    'descriptor_name' => [
-        'Kompetenzname',
-        'Descriptor name'
     ],
 ];

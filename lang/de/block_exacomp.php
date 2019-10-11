@@ -44,7 +44,7 @@ $string['tab_admin_taxonomies'] = 'Taxonomien';
 // === Teacher Tabs ===
 $string['tab_teacher_settings'] = 'Kurs-Einstellungen';
 $string['tab_teacher_settings_configuration'] = 'Einstellungen';
-$string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
+$string['tab_teacher_settings_selection_st'] = 'Schulart / Bezüge zum Bildungsplan';
 $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
@@ -823,9 +823,7 @@ $string['report all topics'] = 'Alle  Kompetenzbereiche von Bildungsstandard/Ras
 $string['report all descriptor parents'] = 'Alle  Kompetenzen von Kompetenzbereichen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
 $string['report all descriptor descriptor children'] = 'Alle  Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
 $string['report all descriptor examples'] = 'Alle  Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
-$string['subject_headline'] = 'Rastereinstellungen';
-$string['topic_headline'] = 'Kompetenzbereichseinstellung';
-$string['topic_description'] = 'Erstellen Sie ihren ersten Bereich:';
-$string['niveau_headline'] = 'Niveaueinstellungen';
-$string['niveau_description'] = 'Erstellen Sie ihr erstes Niveau:';
-$string['descriptor_name'] = 'Kompetenzname';
+$string['topic_description'] = 'Erstellen Sie ihren ersten Kompetenzbereich, das ist die erste Zeile in
+ihrem Raster';
+$string['niveau_description'] = 'Erstellen Sie ihren ersten Lernfortschritt, das sind die Spalten in
+ihrem Raster';
