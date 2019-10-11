@@ -459,8 +459,11 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                         var inputname = \'s_exacomp_assessment_mapping[\'+target+\'][\'+prop+\']\';
                                         break;
                                     case \'assessment_points_limit\':
+                                    case \'assessment_points_negativ\':
                                     case \'assessment_grade_limit\':
+                                    case \'assessment_grade_negativ\':
                                     case \'assessment_diffLevel_options\':
+                                    case \'assessment_verbose_negative\':
                                         var inputname = \'s_exacomp_\'+property;
                                         break;
                                     default:

@@ -20,10 +20,13 @@
 		<assessment_theme_diffLevel>1</assessment_theme_diffLevel>
 		<assessment_theme_SelfEval>1</assessment_theme_SelfEval>
 		<assessment_points_limit>10</assessment_points_limit>
+		<assessment_points_negativ>4</assessment_points_negativ>
 		<assessment_grade_limit>6</assessment_grade_limit>
+		<assessment_grade_negativ>2</assessment_grade_negativ>
 		<assessment_grade_verbose>sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend</assessment_grade_verbose>
 		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
 		<assessment_verbose_options>nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht</assessment_verbose_options>
+		<assessment_verbose_negative>0</assessment_verbose_negative>
 	</configOption>
 	<configOption id="2">
 		<name>berufliche Schulen</name>
@@ -46,9 +49,12 @@
 		<assessment_theme_diffLevel>0</assessment_theme_diffLevel>
 		<assessment_theme_SelfEval>1</assessment_theme_SelfEval>
 		<assessment_points_limit>10</assessment_points_limit>
+		<assessment_points_negativ>4</assessment_points_negativ>
 		<assessment_grade_limit>6</assessment_grade_limit>
+		<assessment_grade_negativ>2</assessment_grade_negativ>
 		<assessment_grade_verbose>sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend</assessment_grade_verbose>
 		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
 		<assessment_verbose_options>nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht</assessment_verbose_options>
+		<assessment_verbose_negative>0</assessment_verbose_negative>
 	</configOption>
 </settingsPreconfiguration>

@@ -495,11 +495,11 @@ return [
         'assessment scheme points, limit for input',
     ],
     'settings_assessment_points_negativ' => [
-        'Nagative Beurteilung Punkte',
+        'Negative Beaurteilung Punkte',
         'Fail value for Points',
     ],
     'settings_assessment_points_negativ_description' => [
-        'assessment scheme point value, when the student fails the grading',
+        'Untergrenze (negative Beurteilung) des Punkte-Werts im Beurteilungs-Schema',
         'assessment scheme point value, when the student fails the grading',
     ],
     'settings_assessment_grade_limit' => [
@@ -511,11 +511,11 @@ return [
         'assessment scheme grade, limit for input',
     ],
     'settings_assessment_grade_negativ' => [
-        'Nagative Beurteilung Noten',
+        'Negative Beaurteilung Noten',
         'Fail value for grade',
     ],
     'settings_assessment_grade_negativ_description' => [
-        'assessment scheme grade value, when the student fails the grading',
+        'Untergrenze (negative Beurteilung) des Noten-Werts im Beurteilungs-Schema',
         'assessment scheme grade value, when the student fails the grading',
     ],
     'settings_assessment_diffLevel_options' => [
@@ -567,11 +567,11 @@ return [
             'very good, good, satisfactory, sufficient, deficient, insufficient',
     ],
     'settings_assessment_grade_verbose_negative' => [
-            'Nagative Beurteilung Verbalisierung',
+            'Negative Beaurteilung Verbalisierung',
             'Fail verbalized grade (EN)',
     ],
     'settings_assessment_grade_verbose_negative_description' => [
-            'assessment scheme grade verbose value, when the student fails the grading',
+            'Untergrenze (negative Beurteilung) der verbalisierten Beurteilung im Beurteilungs-Schema',
             'assessment scheme grade verbose value, when the student fails the grading',
     ],
     'use_grade_verbose_competenceprofile' => [
