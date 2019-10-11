@@ -6549,7 +6549,8 @@ class block_exacomp_external extends external_api {
 				'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
 				'numbering' => new external_value (PARAM_TEXT, 'numbering'),
 				'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
-                'globalgradings' => new external_value (PARAM_TEXT, 'Globalgradings as text',VALUE_OPTIONAL),
+                'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text',VALUE_OPTIONAL),
+                'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text',VALUE_OPTIONAL),
 				'examples' => new external_multiple_structure (new external_single_structure (array(
 					'exampleid' => new external_value (PARAM_INT, 'id of example'),
 					'exampletitle' => new external_value (PARAM_RAW, 'title of example'),
@@ -6625,7 +6626,8 @@ class block_exacomp_external extends external_api {
 			)),
 			'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
-            'globalgradings' => new external_value (PARAM_TEXT, 'Globalgradings as text',VALUE_OPTIONAL),
+            'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text',VALUE_OPTIONAL),
+            'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text',VALUE_OPTIONAL),
 		));
 	}
 
@@ -8793,6 +8795,12 @@ class block_exacomp_external extends external_api {
 	            $descriptor_return->evalniveauid = $grading->evalniveauid;
 	            $descriptor_return->timestampteacher = $grading->timestamp;
 	            $descriptor_return->reviewerid = $grading->reviewerid;
+                $descriptor_return->gradinghistory = $grading->gradinghistory;
+
+//                var_dump($grading->gradinghistory);
+//                var_dump($grading->globalgradings);
+//                die;
+
 	            if(block_exacomp_is_dakora_teacher()){
                     $descriptor_return->globalgradings = $grading->globalgradings;
                 }
