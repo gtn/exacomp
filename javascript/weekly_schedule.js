@@ -248,6 +248,11 @@
 			el.append('<div class="event-submission">'+data.submission_url+'</div>');
 
 		el.addClass('state'+data.state);
+
+        if (data.schedule_marker != null && data.schedule_marker != '') {
+            el.addClass('marker_'+data.schedule_marker);
+        }
+
 		data.deleted = 0;
 					
 		el.data('event', data);
@@ -347,12 +352,12 @@
 	
 			events: function(start, end, timezone, callback){
 				// console.log('events');
-				exacomp_calendar_load_events(start, end, timezone, function(events){
+				exacomp_calendar_load_events(start, end, timezone, function(events) {
 					// convert to calendar timeslots
 					events = $.map(events, function(o){
 						var event = exacomp_calcendar.event_time_to_slot(o);
 						event.original = event;
-						
+
 						// graded events can't be moved anymore
 						if (event.state > 3 && event.state < 9) {
 							event.editable = false;
@@ -384,13 +389,19 @@
 			eventRender: function(event, element) {
 
 				var courseid = block_exacomp.get_param('pool_course');
-				if(!courseid)
-					var courseid = block_exacomp.get_param('courseid');
+				if (!courseid) {
+                    var courseid = block_exacomp.get_param('courseid');
+                }
 				
-				if(event.courseid != courseid)
-					element.addClass('different-course');
+				if (event.courseid != courseid) {
+                    element.addClass('different-course');
+                }
 					
 				element.addClass('state'+event.state);
+
+                if (event.schedule_marker != null && event.schedule_marker != '') {
+                    element.addClass('marker_'+event.schedule_marker);
+                }
 				
 				// delete time (actually slot time)
 				element.find(".fc-time").remove();

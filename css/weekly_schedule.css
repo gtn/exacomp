@@ -345,3 +345,24 @@
 	background-color: #593d1e;
 	border: 1px solid #593d1e !important;
 }
+
+#block_exacomp .marker_structured {
+	background-color: blue;
+	border: 1px solid blue !important;
+}
+#block_exacomp .marker_free  {
+	background-color: green;
+	border: 1px solid green !important;
+}
+#block_exacomp .marker_orientation {
+	background-color: orange;
+	border: 1px solid orange !important;
+}
+#block_exacomp .marker_feedback {
+	background-color: red;
+	border: 1px solid red !important;
+}
+#block_exacomp .marker_reflexion {
+	background-color: yellow;
+	border: 1px solid yellow !important;
+}

@@ -1468,12 +1468,6 @@ class data_importer extends data {
             if (!$schedulerTaskData) {
                 throw new import_exception('we have no this task!');
             }
-            //$allsources = self::get_all_used_sources();
-            //$sour
-            //print_r($ff);
-            //$source_local_id = array_search($schedulerTaskData->source, self::$sources);
-            //print_r($source_local_id); exit;
-            //self::$import_source_local_id = $source_local_id; // TODO: check!
         }
 
         // work with GetPost, because additional form settings are not initialized yet
@@ -1702,11 +1696,6 @@ class data_importer extends data {
 	   }
 		
 
-
-
-
-
-		
 		// self::kompetenzraster_clean_unused_data_from_source();
 		// TODO: was ist mit desccross?
 		

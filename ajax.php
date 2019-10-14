@@ -352,7 +352,6 @@ switch($action){
 		$configuration['pool'] = $json_examples_pool; //for pool
 		$configuration['trash'] = $json_examples_trash; //for trash
 		$configuration['slots'] = $json_time_slots; //for calendar
-		
 		echo json_encode($configuration);
 		
 		exit;

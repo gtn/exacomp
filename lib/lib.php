@@ -6360,7 +6360,8 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
         $sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid
+				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
+				e.schedule_marker
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
@@ -6373,11 +6374,12 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 			) AND s.creatorid = ?
 			ORDER BY s.id";
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week, $USER->id));
-    }else{
+    } else {
         $sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid
+				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
+				e.schedule_marker
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
@@ -6518,7 +6520,8 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
         $sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid
+				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid,
+				e.schedule_marker			  
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
@@ -6535,7 +6538,8 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
         $sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid
+				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid,
+				e.schedule_marker
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
@@ -6629,6 +6633,9 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 		}
 		if (isset($example->state)) {
 			$example_array['state'] = $example->state;
+		}
+		if (isset($example->schedule_marker)) {
+			$example_array['schedule_marker'] = $example->schedule_marker;
 		}
 
 		$example_array['studentid'] = $example->studentid;
