@@ -4940,7 +4940,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		    }
 		    $cell->attributes['module-type'] = $module->modname;
 
-		    $cell2->text ='<button value='.$module->id.'>A</button>';
+		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>A</button>';
 		    $row->cells[] = $cell;
 		    $row2->cells[] = $cell2;
 		    $headArr[] = $cell;
