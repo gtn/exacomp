@@ -1326,7 +1326,6 @@ class data_importer extends data {
 		if (!$url) {
 			throw new import_exception('filenotfound');
 		}
-
 		if (file_exists($url)) {
 			// it's a file
 		    return self::do_import_file($url, $course_template, $par_source, $simulate, $schedulerId);
@@ -1348,12 +1347,13 @@ class data_importer extends data {
 	
 	/**
 	 *
-	 * @param String $data xml content
-	 * @param courseid of template-course for importing activities
-	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects
+	 * @param String $file xml content
+	 * @param $course_template of template-course for importing activities
+	 * @param int $par_source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects
 	 *         data from topic leven downwards (topics, descriptors, examples)
      * @param bool $simulate need for simulate importing. We can get settings of importing without real importing
      * @param int $schedulerId if it is for scheduler task - id of task; -1 if it is main scheduler task: \block_exacomp\task\import
+     * @return bool
 	 */
 	public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
 	    global $USER, $CFG, $DB;
