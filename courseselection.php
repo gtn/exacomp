@@ -19,8 +19,12 @@
 
 require __DIR__.'/inc.php';
 
+global $SESSION;
+
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHAEXT);
+
+$changeFilter = optional_param('filter_submit', "", PARAM_RAW);
 
 require_login($courseid);
 block_exacomp_require_teacher();
@@ -40,6 +44,32 @@ $headertext = "";
 
 $img = new moodle_url('/blocks/exacomp/pix/two.png');
 
+//unset($SESSION->courseselection_filter); // quick reset for testing
+if ($changeFilter) {
+    $types = optional_param('filter_schooltype', '', PARAM_RAW);
+    $types = explode(',', $types);
+    $filter = array(
+            'schooltype' => $types,
+            'only_selected' => optional_param('only_selected', 0, PARAM_INT));
+    $SESSION->courseselection_filter = $filter;
+} else {
+    // default filters
+    if (file_exists($CFG->dirroot.'blocks/eduvidual/block_eduvidual.php')) {
+        require_once($CFG->dirroot.'blocks/eduvidual/block_eduvidual.php');
+        $org = block_eduvidual::get_org_by_courseid($courseid);
+        $schulkennzahl = $org->orgid; // Die orgid ist die schulkennzahl
+        $userSchoolType = intval(substr($schulkennzahl, -1));
+        //$userSchoolType = 2; // for testing
+        $eduvidalDefaults = block_exacomp_eduvidual_defaultSchooltypes();
+        if (array_key_exists($userSchoolType, $eduvidalDefaults)) {
+            if ($eduvidalDefaults[$userSchoolType]['realId']) {
+                $filter = array('schooltype' => [$eduvidalDefaults[$userSchoolType]['realId']]);
+                $SESSION->courseselection_filter = $filter;
+            }
+        }
+    };
+}
+
 if ($action == 'save') {
 	$topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
 	block_exacomp_set_coursetopics($courseid, $topics);
@@ -48,13 +78,13 @@ if ($action == 'save') {
 		$headertext = block_exacomp_get_string('tick_some');
 	} else {
 		$course_settings = block_exacomp_get_settings_by_course($courseid);
-		if($course_settings->uses_activities){
+		if ($course_settings->uses_activities){
 			if (block_exacomp_is_activated($courseid))
 			$headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
 				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
 				. html_writer::link(new moodle_url('edit_activities.php', array('courseid'=>$courseid)), block_exacomp_get_string('next_step'));
-		}else{
-			 $headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
+		} else {
+			 $headertext = block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
 				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('completed_config');
 
 	   		 $students = block_exacomp_get_students_by_course($courseid);
@@ -65,7 +95,7 @@ if ($action == 'save') {
                     .html_writer::span(block_exacomp_get_string('enrol_users'));
 		}
 	}
-}else{
+} else {
 	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('teacher_second_configuration_step');
 }
 
@@ -81,6 +111,35 @@ $limit_courseid = block_exacomp_is_skillsmanagement() ? $courseid : 0;
 $schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid);
 
 $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
+
+// filtering by "only selected grids'
+if (isset($SESSION->courseselection_filter)
+        && array_key_exists('only_selected', $SESSION->courseselection_filter)
+        && $SESSION->courseselection_filter['only_selected'] == 1) {
+    $newSchooltypes = array();
+    foreach ($schooltypes as $stid => $schooltype) {
+        $addSchooltype = false;
+        $newSubjects = array();
+        foreach ($schooltype->subjects as $sid => $subject) {
+            $addSubject = false;
+            foreach ($subject->topics as $topic) {
+                if (!empty($active_topics[$topic->id])) {
+                    $addSubject = true;
+                    break;
+                }
+            }
+            if ($addSubject) {
+                $addSchooltype = true;
+                $newSubjects[$sid] = $subject;
+            }
+        }
+        if ($addSchooltype) {
+            $schooltype->subjects = $newSubjects;
+            $newSchooltypes[$stid] = $schooltype;
+        }
+    }
+    $schooltypes = $newSchooltypes;
+}
 
 echo $output->courseselection($schooltypes, $active_topics, $headertext);
 

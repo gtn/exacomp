@@ -2988,4 +2988,24 @@ ihrem Raster',
 ihrem Raster',
         'Create your first Niveau:'
     ],
+    'selectcourse_filter' => [
+        'Filter',
+        'Filter',
+    ],
+    'selectcourse_filter_schooltype' => [
+        'Schulart',
+        'Schooltype',
+    ],
+    'selectcourse_filter_onlyselected' => [
+        'Show only selected grids',
+        'Show only selected grids',
+    ],
+    'selectcourse_filter_submit' => [
+        'Filter',
+        'Filter',
+    ],
+    'selectcourse_filter_emptyresult' => [
+        'Nothing to show',
+        'Nothing to show',
+    ],
 ];

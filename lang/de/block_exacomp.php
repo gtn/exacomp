@@ -835,3 +835,8 @@ $string['topic_description'] = 'Erstellen Sie ihren ersten Kompetenzbereich, das
 ihrem Raster';
 $string['niveau_description'] = 'Erstellen Sie ihren ersten Lernfortschritt, das sind die Spalten in
 ihrem Raster';
+$string['selectcourse_filter'] = 'Filter';
+$string['selectcourse_filter_schooltype'] = 'Schulart';
+$string['selectcourse_filter_onlyselected'] = 'Show only selected grids';
+$string['selectcourse_filter_submit'] = 'Filter';
+$string['selectcourse_filter_emptyresult'] = 'Nothing to show';
