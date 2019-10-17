@@ -47,10 +47,12 @@ $img = new moodle_url('/blocks/exacomp/pix/two.png');
 //unset($SESSION->courseselection_filter); // quick reset for testing
 if ($changeFilter) {
     $types = optional_param('filter_schooltype', '', PARAM_RAW);
-    $types = explode(',', $types);
-    $filter = array(
-            'schooltype' => $types,
-            'only_selected' => optional_param('only_selected', 0, PARAM_INT));
+    $filter = array();
+    if ($types) {
+        $types = explode(',', $types);
+        $filter['schooltype'] = $types;
+    }
+    $filter['only_selected'] = optional_param('only_selected', 0, PARAM_INT);
     $SESSION->courseselection_filter = $filter;
 } else {
     // default filters

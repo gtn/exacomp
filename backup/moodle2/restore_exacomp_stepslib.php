@@ -107,7 +107,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			}
 		}
 
-		block_exacomp_set_coursetopics($this->get_courseid(), $topicids);
+		block_exacomp_set_coursetopics($this->get_courseid(), $topicids, true);
 
 		// hack
 		$GLOBALS['block_exacomp_imported_activities'] = array();

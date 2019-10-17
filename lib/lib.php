@@ -3479,15 +3479,36 @@ function block_exacomp_normalize_course_visibilities($courseid) {
 /**
  *
  * Assign topics to course
- * @param unknown_type $courseid
- * @param unknown_type $values
+ * @param int $courseid
+ * @param array $topicids
+ * @param bool $fromWS
+ * @return null
  */
-function block_exacomp_set_coursetopics($courseid, $topicids) {
+function block_exacomp_set_coursetopics($courseid, $topicids, $fromWS = false) {
 	global $DB;
+    $topicsToDelete = null;
+	if ($fromWS) { // will be deleted all related topics and will saved only current selected
+        $DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid));
+    } else {
+	    // will be deleted only '-X' topics, but saved 'X'
+        $topicsToAdd = $topicsToDelete = array();
+        foreach ($topicids as $topicid) {
+            $topicsToDelete[] = abs($topicid);
+            if ($topicid > 0) {
+                $topicsToAdd[] = $topicid;
+            }
+        }
+        $topicids = $topicsToAdd; // what will be added
+        if (count($topicsToDelete) > 0) { // what will be deleted (all from form)
+            $DB->execute('DELETE 
+                            FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} 
+                            WHERE courseid = ? 
+                                AND topicid IN ('.implode(',', $topicsToDelete).') ',
+                    [$courseid]);
+        }
+    }
 
-	$DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid));
-
-	block_exacomp_update_topic_visibilities($courseid, $topicids);
+	block_exacomp_update_topic_visibilities($courseid, $topicids, $topicsToDelete);
 
 	foreach ($topicids as $topicid) {
 		$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
@@ -3624,10 +3645,11 @@ function block_exacomp_update_example_visibilities($courseid, $examples) {
 /**
  * given list is visible in course - make sure for each visible topic one entry in visibility table exists
  * (studentid = 0 and courseid = courseid)
- * @param unknown $courseid
- * @param unknown $topicids
+ * @param int $courseid
+ * @param array $topicids
+ * @param mixed $deleteOnly
  */
-function block_exacomp_update_topic_visibilities($courseid, $topicids) {
+function block_exacomp_update_topic_visibilities($courseid, $topicids, $deleteOnly = null) {
 	global $DB;
 
 	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=0', array($courseid));
@@ -3642,8 +3664,15 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids) {
 	}
 
 	foreach ($visibilities as $visible) {
-		//delete ununsed descriptors for course and for special students
-		if (!in_array($visible, $topicids)) {
+		// delete ununsed descriptors for course and for special students
+        if ($deleteOnly !== null) {
+            // used for nonWS
+            if (!in_array($visible, $topicids) && in_array($visible, $deleteOnly)) {
+                // check if used in cross-subjects --> then it must still be visible
+                // and check it if it requested to delete
+                $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $visible));
+            }
+        } elseif (!in_array($visible, $topicids)) {
 			//check if used in cross-subjects --> then it must still be visible
 			$DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $visible));
 		}

@@ -4964,7 +4964,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->cells[] = $outputnameCell;
 
 			$cell = new html_table_cell();
-			$cell->text = html_writer::checkbox('topics['.$topic->id.']', $topic->id, !empty($topics_activ[$topic->id]), '');
+            $cell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topics['.$topic->id.']', 'value' => (0 - $topic->id)]);
+            $cell->text .= html_writer::checkbox('topics['.$topic->id.']', $topic->id, !empty($topics_activ[$topic->id]), '');
 			$topicRow->cells[] = $cell;
 
 			$rows[] = $topicRow;

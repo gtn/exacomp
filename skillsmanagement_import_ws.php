@@ -51,4 +51,4 @@ foreach($subjects as $subject) {
 	foreach($topics as $topic)
 		$coursetopics[] = $topic->id;
 }
-block_exacomp_set_coursetopics($courseid,$coursetopics);
+block_exacomp_set_coursetopics($courseid, $coursetopics, true);
