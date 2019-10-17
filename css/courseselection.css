@@ -1,0 +1,8 @@
+
+.exacomp-courseselect-filter {
+    border: none;
+}
+
+.exacomp-courseselect-filter .cell.no-border {
+    border: none !important;
+}

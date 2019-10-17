@@ -980,12 +980,13 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
  * @param int $courseid
  */
 function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0) {
-	$sql = 'SELECT s.* FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
-	JOIN {'.BLOCK_EXACOMP_DB_MDLTYPES.'} type ON s.stid = type.stid
-	WHERE type.courseid=?';
+	$sql = 'SELECT s.* 
+                FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
+	                JOIN {'.BLOCK_EXACOMP_DB_MDLTYPES.'} type ON s.stid = type.stid
+                WHERE type.courseid = ?';
 
 	if ($schooltypeid > 0) {
-		$sql .= ' AND type.stid = ?';
+		$sql .= ' AND type.stid = ? ';
 	}
 
 	return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
@@ -4313,10 +4314,26 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  * @param unknown_type $courseid
  */
 function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid) {
+    global $SESSION;
 	$schooltypes = block_exacomp_get_schooltypes_by_course($limit_courseid);
 
+	// filtering
+    if (isset($SESSION->courseselection_filter)) {
+        $filter = $SESSION->courseselection_filter;
+    } else {
+        $filter = array();
+    }
+    if (count($filter) && array_key_exists('schooltype', $filter) && count($filter['schooltype']) > 0) {
+        $schooltypes = array_filter($schooltypes, function($st) use ($filter) {
+            if (in_array($st->id, $filter['schooltype'])) {
+                return true;
+            }
+            return false;
+        });
+    }
+
 	foreach ($schooltypes as $schooltype) {
-		$schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
+        $schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
 	}
 
 	return $schooltypes;
@@ -11041,3 +11058,26 @@ function block_exacomp_get_example_icon_simple(&$renderer, $example, $forField =
     }
 }
 
+function block_exacomp_eduvidual_defaultSchooltypes() {
+    global $DB;
+    $eduvidalDefaults = array( // items are: $userSchoolType => array('title', 'sourceid')
+            1 => ['title' => 'Volksschule', 'sourceid' => 7],
+            2 => ['title' => 'Mittelschule', 'sourceid' => 10],
+            3 => ['title' => 'Sonderschule', 'sourceid' => 7],
+            4 => ['title' => 'Poly', 'sourceid' => 11],
+            5 => ['title' => 'Berufsschule', 'sourceid' => 791],
+            6 => ['title' => 'AHS', 'sourceid' => 5],
+            7 => ['title' => 'HTL', 'sourceid' => 3],
+            8 => ['title' => 'HAK', 'sourceid' => 1],
+            9 => ['title' => 'HUM', 'sourceid' => 2],
+    );
+    foreach ($eduvidalDefaults as $dtkey => $dst) {
+        $dstReal = $DB->get_record('block_exacompschooltypes', ['sourceid' => $dst['sourceid']], '*', IGNORE_MULTIPLE);
+        if ($dstReal) {
+            $eduvidalDefaults[$dtkey]['realId'] = $dstReal->id;
+        } else {
+            $eduvidalDefaults[$dtkey]['realId'] = null;
+        }
+    }
+    return $eduvidalDefaults;
+}

@@ -4532,64 +4532,166 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $PAGE, $COURSE;
 
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
+        $filterform = $this->courseselectionfilter($COURSE->id);
 
-		$table = new html_table();
-		$table->attributes['class'] = 'exabis_comp_comp rg2';
+        if (count($schooltypes)) {
 
-		$rows = array();
-		foreach ($schooltypes as $schooltype) {
+            $table = new html_table();
+            $table->attributes['class'] = 'exabis_comp_comp rg2';
 
-			$row = new html_table_row();
-			$row->attributes['class'] = 'exabis_comp_teilcomp highlight';
+            $rows = array();
+            foreach ($schooltypes as $schooltype) {
 
-			$cell = new html_table_cell();
-			$cell->text = html_writer::div(html_writer::tag('b', $schooltype->title).' ('.$this->source_info($schooltype->source).')');
-			$cell->attributes['class'] = 'rg2-arrow';
+                $row = new html_table_row();
+                $row->attributes['class'] = 'exabis_comp_teilcomp highlight';
 
-			$cell->colspan = 3;
-			$row->cells[] = $cell;
+                $cell = new html_table_cell();
+                $cell->text =
+                        html_writer::div(html_writer::tag('b', $schooltype->title).' ('.$this->source_info($schooltype->source).
+                                ')');
+                $cell->attributes['class'] = 'rg2-arrow';
 
-			$rows[] = $row;
+                $cell->colspan = 3;
+                $row->cells[] = $cell;
 
-			foreach ($schooltype->subjects as $subject) {
-				$this_rg2_class = 'rg2-level-0';
+                $rows[] = $row;
 
-				$row = new html_table_row();
-				$row->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+                foreach ($schooltype->subjects as $subject) {
+                    $this_rg2_class = 'rg2-level-0';
 
-				$cell = new html_table_cell();
-				$cell->text = html_writer::div(html_writer::span($subject->title, 'rg2-arrow-highlight').
-					// wenn different source than parent
-					($subject->source != $schooltype->source ? ' ('.$this->source_info($subject->source).')' : ''));
-				$cell->attributes['class'] = 'rg2-arrow rg2-arrow-styled';
+                    $row = new html_table_row();
+                    $row->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
 
-				$cell->colspan = 2;
-				$row->cells[] = $cell;
+                    $cell = new html_table_cell();
+                    $cell->text = html_writer::div(html_writer::span($subject->title, 'rg2-arrow-highlight').
+                            // wenn different source than parent
+                            ($subject->source != $schooltype->source ? ' ('.$this->source_info($subject->source).')' : ''));
+                    $cell->attributes['class'] = 'rg2-arrow rg2-arrow-styled';
 
-				$selectAllCell = new html_table_cell();
-				$selectAllCell->text = html_writer::tag("a", block_exacomp_get_string('selectallornone', 'form'), array("class" => "selectallornone"));
-				$row->cells[] = $selectAllCell;
+                    $cell->colspan = 2;
+                    $row->cells[] = $cell;
 
-				$rows[] = $row;
-				$this->topics_courseselection($rows, 1, $subject->topics, $topics_activ);
+                    $selectAllCell = new html_table_cell();
+                    $selectAllCell->text = html_writer::tag("a", block_exacomp_get_string('selectallornone', 'form'),
+                            array("class" => "selectallornone"));
+                    $row->cells[] = $selectAllCell;
 
-			}
-		}
+                    $rows[] = $row;
+                    $this->topics_courseselection($rows, 1, $subject->topics, $topics_activ);
 
-		$table->data = $rows;
+                }
+            }
 
+            $table->data = $rows;
 
-		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
-		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit',
-                                                                                'class' => 'btn btn-default',
-                                                                                'value' => block_exacomp_get_string('save_selection'))),
-                                                                '', array('id' => 'exabis_save_button'));
-		$table_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
+            $table_html = html_writer::tag("div",
+                    html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")),
+                    array("id" => "exabis_competences_block"));
+            $table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit',
+                    'class' => 'btn btn-default',
+                    'value' => block_exacomp_get_string('save_selection'))),
+                    '', array('id' => 'exabis_save_button'));
+            $table_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
 
-		$examples_on_schedule = block_exacomp_any_examples_on_schedule($COURSE->id);
+            $examples_on_schedule = block_exacomp_any_examples_on_schedule($COURSE->id);
 
-		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url, "id" => "course-selection", "examplesonschedule" => $examples_on_schedule));
+            return $header.$filterform.html_writer::tag("form", $table_html,
+                    array("method" => "post",
+                            "action" => $PAGE->url,
+                            "id" => "course-selection",
+                            "examplesonschedule" => $examples_on_schedule,
+                            'class' => 'checksaving_on_leavepage'));
+        } else {
+            return $filterform.block_exacomp_get_string('selectcourse_filter_emptyresult');
+        }
+
 	}
+
+	public function courseselectionfilter($courseid) {
+	    global $PAGE, $SESSION;
+	    if (isset($SESSION->courseselection_filter)) {
+            $currentFilter = $SESSION->courseselection_filter;
+        } else {
+            $currentFilter = array();
+        }
+        $filtercontent = html_writer::tag('h3', block_exacomp_get_string('selectcourse_filter'));
+        $filtertable = new html_table();
+        $filtertable->attributes['class'] .= ' exacomp-courseselect-filter ';
+        $courseid = block_exacomp_is_skillsmanagement() ? $courseid : 0;
+        // schooltype
+        $row = new html_table_row();
+        $schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
+        $options = $this->schooltype_options_for_courseselecting($courseid, $schooltypes);
+        $currentSchoolType = array_key_exists('schooltype', $currentFilter) ? $currentFilter['schooltype'] : 0;
+        $cell = new html_table_cell();
+        $cell->attributes['class'] = ' no-border ';
+        $cell->text = html_writer::label(block_exacomp_get_string('selectcourse_filter_schooltype'), 'menufilter_schooltype');
+        $row->cells[] = $cell;
+        $cell = new html_table_cell();
+        $cell->attributes['class'] = ' no-border ';
+        $cell->text = html_writer::select($options, 'filter_schooltype', $currentSchoolType);
+        $row->cells[] =  $cell;
+        $filtertable->data[] = $row;
+        // only selected
+        $row = new html_table_row();
+        $currentOnlySelected = array_key_exists('only_selected', $currentFilter) && $currentFilter['only_selected'] ? true : false;
+        $cell = new html_table_cell();
+        $cell->attributes['class'] = ' no-border ';
+        $cell->text = html_writer::label(block_exacomp_get_string('selectcourse_filter_onlyselected'), 'only_selected');
+        $row->cells[] = $cell;
+        $cell = new html_table_cell();
+        $cell->attributes['class'] = ' no-border ';
+        $cell->text = html_writer::checkbox('only_selected', '1', $currentOnlySelected, '', ['id' => 'only_selected']);
+        $row->cells[] = $cell;
+        $filtertable->data[] = $row;
+        // submit filter
+        $row = new html_table_row();
+        $currentOnlySelected = false;
+        $cell = new html_table_cell();
+        $cell->attributes['class'] = ' no-border ';
+        $cell->text = '';
+        $row->cells[] = $cell;
+        $cell = new html_table_cell();
+        $cell->attributes['class'] = ' no-border ';
+        $cell->text = html_writer::tag('button',
+                block_exacomp_get_string('selectcourse_filter_submit'),
+                ['type' => 'submit', 'name' => 'filter_submit', 'value' => 'filter_submit', 'class' => 'btn btn-default']);
+        $row->cells[] = $cell;
+        $filtertable->data[] = $row;
+        $filtercontent .= html_writer::tag('form',
+                html_writer::table($filtertable),
+                array("method" => "post",
+                        "action" => $PAGE->url,
+                        "id" => "course-selection-filter"));
+        return $filtercontent;
+    }
+
+    public function schooltype_options_for_courseselecting($courseid, $schooltypes) {
+	    global $CFG;
+        $isEduvidual = false;
+        // only for eduvidual!
+        if (file_exists($CFG->dirroot.'blocks/eduvidual/block_eduvidual.php')) {
+            $isEduvidual = true;
+            $eduvidalDefaults = block_exacomp_eduvidual_defaultSchooltypes();
+            $eduvidalTitles = array();
+            foreach ($eduvidalDefaults as $edt) {
+                if ($edt['realId']) {
+                    $eduvidalTitles[$edt['realId']] = $edt['title'];
+                }
+            }
+        }
+        $options = array('' => '');
+        foreach ($schooltypes as $st) {
+            $title = $st->title;
+            if ($isEduvidual) {
+                if (array_key_exists($st->id, $eduvidalTitles)) {
+                    $title = $eduvidalTitles[$st->id];
+                }
+            }
+            $options[$st->id] = $title;
+        }
+        return $options;
+    }
 
 
 	public function descriptor_selection_export() {
