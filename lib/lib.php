@@ -1725,6 +1725,8 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 	}
 
+
+
     $examples = \block_exacomp\example::get_objects_sql(
             "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid,
             e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
@@ -1737,6 +1739,8 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
             .($showallexamples ? " 1=1 " : " e.creatorid > 0")
             ." ORDER BY de.sorting"
             , array($descriptor->id, $courseid, $courseid));
+
+//	var_dump($descriptor->id);
 
     // old
     if ($mind_visibility || $showonlyvisible) {

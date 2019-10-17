@@ -1780,7 +1780,7 @@ class block_exacomp_external extends external_api {
 // 		        $insert->visible = 1;
 // 		        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
 // 		    }
-		}else{
+		}else if ($comps != -1){
 		    $descriptors = explode(',', $comps);
 		    foreach ($descriptors as $descriptor) {
 		        $insert = new stdClass ();
@@ -1799,7 +1799,21 @@ class block_exacomp_external extends external_api {
 		            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
 		        }
 		    }
-		}
+		}else{
+		    //Free material, not linked to a "real" competence
+            $insert = new stdClass ();
+            $insert->exampid = $id;
+            $insert->table_foreign = 'free_material';
+            $insert->descrid = $comps;
+            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+
+            $insert = new stdClass();
+            $insert->courseid = $courseid;
+            $insert->exampleid = $id;
+            $insert->studentid = 0;
+            $insert->visible = 1;
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+        }
 
         //clear the taxonomies
 		if($exampleid != -1){
@@ -9532,6 +9546,8 @@ class block_exacomp_external extends external_api {
 			throw new block_exacomp_permission_exception("Example '$exampleid' not found");
 		}
 
+
+
 		if ($example->blocking_event) {
 			$schedule = g::$DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $exampleid]);
 			if (!$schedule) {
@@ -9587,9 +9603,28 @@ class block_exacomp_external extends external_api {
 				}
 			}
 
+			//try to find it in free materials
+			if(!$found){
+                $sql = 'SELECT * '
+                    .'FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} '
+                    .'WHERE id = -1';
+
+                $descriptors = \block_exacomp\descriptor::get_objects_sql($sql);
+
+                $descriptor = array_pop($descriptors); //there will only be this single descriptor in the return array
+                $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
+                $examples = $descriptor->examples;
+
+                if(isset($examples[$exampleid])){
+                    $found = true;
+                }
+            }
+
 			if (!$found) {
 				throw new block_exacomp_permission_exception("Example '$exampleid' not found #3");
 			}
+
+
 
 			// can be viewed by user, or by whole course
 			if (block_exacomp_is_teacher($courseid) ||
