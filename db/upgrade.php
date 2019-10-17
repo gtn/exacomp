@@ -3437,6 +3437,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019101400, 'exacomp');
     }
 
+    if ($oldversion < 2019101701) {
+        $sql = 'INSERT INTO {block_exacompdescriptors} (`id`, `title`) VALUES (-1,"free_materials")';
+        $DB->Execute($sql);
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2019101701, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
