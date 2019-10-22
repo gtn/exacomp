@@ -6686,6 +6686,16 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 		}
 		if (isset($example->schedule_marker)) {
 			$example_array['schedule_marker'] = $example->schedule_marker;
+			$shorts = array(
+			        'structured' => 'SA',
+			        'free' => 'FA',
+			        'orientation' => 'O',
+			        'feedback' => 'F',
+			        'reflexion' => 'R',
+            );
+            if (array_key_exists($example->schedule_marker, $shorts)) {
+                    $example_array['schedule_marker_short'] = $shorts[$example->schedule_marker];
+            }
 		}
 
 		$example_array['studentid'] = $example->studentid;

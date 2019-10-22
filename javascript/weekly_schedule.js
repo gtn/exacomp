@@ -235,22 +235,28 @@
 	function add_pool_item(data) {
 		var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text(data.title);
 		
-		if(data.state < 9)
-			el.append('	<div class="event-assoc">'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
+		if (data.state < 9) {
+            el.append('	<div class="event-assoc">' + data.assoc_url + /*((event.solution)?event.solution:'')+*/'</div>');
+        }
 		
-		if(data.externalurl != null)
-			el.append('<div class="event-task">'+data.externalurl+'</div>');
-		else if(data.task != null)
-			el.append('<div class="event-task">'+data.task+'</div>');		
-		else if(data.externaltask != null)
-			el.append('<div class="event-task">'+data.externaltask+'</div>');
-		if(data.submission_url != null)
-			el.append('<div class="event-submission">'+data.submission_url+'</div>');
+		if (data.externalurl != null) {
+            el.append('<div class="event-task">' + data.externalurl + '</div>');
+        } else if (data.task != null) {
+            el.append('<div class="event-task">' + data.task + '</div>');
+        } else if (data.externaltask != null) {
+            el.append('<div class="event-task">' + data.externaltask + '</div>');
+        }
+		if (data.submission_url != null) {
+            el.append('<div class="event-submission">' + data.submission_url + '</div>');
+        }
+        if (data.schedule_marker != null && data.schedule_marker != '') {
+            el.append('<div class="event-schedulermarker marker_'+data.schedule_marker+'">' + data.schedule_marker_short + '</div>');
+        }
 
 		el.addClass('state'+data.state);
 
         if (data.schedule_marker != null && data.schedule_marker != '') {
-            el.addClass('marker_'+data.schedule_marker);
+            markerHandle(el, data.schedule_marker, data.schedule_marker_short);
         }
 
 		data.deleted = 0;
@@ -264,6 +270,45 @@
 		});
 		el.addTouch();
 	}
+	
+	function markerHandle(el, marker, badge_text) {
+        el.addClass('marker_' + marker);
+        // add a badge
+		if (typeof badge_text !== 'undefined') {
+			// var containerBlock = $(el).find('.fc-content').first().closest('.marker_' + marker)[0];
+            // $('<div class="marker-badge">' + badge_text + '</div>').prependTo(containerBlock);
+
+			// TODO: why inserting "before" is not working? It needs for shown badge if  overflow:hidden
+			// var cloneA = clone(containerBlock);
+			// var parent = containerBlock.parentNode;
+			// parent.innerHTML = 'ddfgdfg';
+
+			// var containerBlock = $(el).find('.marker_' + marker);//.closest('.marker_' + marker)[0];
+            // containerBlock.before($('<div class="marker-badge">' + badge_text + '</div>'));
+			// console.log(containerBlock);
+			// containerBlock = $(containerBlock).closest('div');
+            // $(containerBlock).remove();
+
+            // var parentDiv = containerBlock.parentNode;
+			// console.log(parentDiv);
+
+            // containerBlock.before($('<div class="marker-badge">' + badge_text + '</div>'));
+            // $('<div class="marker-badge">' + badge_text + '</div>').insertBefore(containerBlock);
+            // $('<div class="marker-badge">' + badge_text + '</div>').prependTo(containerBlock);
+			// var newBadge = document.createElement('<div class="marker-badge">' + badge_text + '</div>');
+
+			// var newBadge = document.createElement('span');
+            // newBadge.innerHTML = '*';
+            // newBadge.className = 'asterisk';
+			// console.log(newBadge);
+            // parentDiv.innerHTML = 'asdasd';
+            // parentDiv.insertBefore(newBadge, containerBlock);
+
+			// if (typeof containerBlock !== 'undefined') {
+            //     containerBlock.insertAdjacentHTML('beforebegin', '<span class="asterisk">*</span>');
+            // }
+		}
+    }
 	
 	function add_trash_item(data){
 		var el = $( "<div class='fc-event'>" ).appendTo( $trash ).text( 
@@ -400,7 +445,7 @@
 				element.addClass('state'+event.state);
 
                 if (event.schedule_marker != null && event.schedule_marker != '') {
-                    element.addClass('marker_'+event.schedule_marker);
+                    markerHandle(element, event.schedule_marker, event.schedule_marker_short);
                 }
 				
 				// delete time (actually slot time)
@@ -428,6 +473,7 @@
 					((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
 					((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
 					((event.courseid == courseid)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
+                    ((event.schedule_marker != null && event.schedule_marker != '') ? '	<div class="event-schedulermarker marker_'+event.schedule_marker+'">' + event.schedule_marker_short + '</div>' : '' )+
 					'</div>');
 				
 				$(element).addTouch();

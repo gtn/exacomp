@@ -284,7 +284,6 @@
 	margin-top: 5px;
 	position: absolute;
 	right: 8px;
-	text-align: right;
 	top: 3px;
 }
 
@@ -294,7 +293,6 @@
 	margin-right: 23px;
 	position: absolute;
 	right: 30px;
-	text-align: right;
 	top: 3px;
 }
 
@@ -303,7 +301,6 @@
 	margin-top: 5px;
 	position: absolute;
 	right: 30px;
-	text-align: right;
 	top: 3px;
 }
 
@@ -312,7 +309,22 @@
 	margin-top: 5px;
 	position: absolute;
 	right: 75px;
+	top: 3px;
+}
+
+#block_exacomp .event-submission {
 	text-align: right;
+	margin-top: 5px;
+	position: absolute;
+	right: 75px;
+	top: 3px;
+}
+
+#block_exacomp .event-schedulermarker {
+	text-align: right;
+	margin-top: 5px;
+	position: absolute;
+	right: 50px;
 	top: 3px;
 }
 
@@ -346,23 +358,39 @@
 	border: 1px solid #593d1e !important;
 }
 
-#block_exacomp .marker_structured {
+
+#block_exacomp .event-schedulermarker {
+	/*text-align: right;*/
+	/*margin-top: 5px;*/
+	/*right: -8px;*/
+	/*text-align: right;*/
+	/*top: -3px;*/
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #fff;
+	line-height: 18px;
+	text-align: center;
+	background: #000;
+	border: 2px solid #ffffff;
+}
+
+#block_exacomp .event-schedulermarker.marker_structured {
 	background-color: blue;
-	border: 1px solid blue !important;
 }
-#block_exacomp .marker_free  {
+#block_exacomp .event-schedulermarker.marker_free  {
 	background-color: green;
-	border: 1px solid green !important;
 }
-#block_exacomp .marker_orientation {
+#block_exacomp .event-schedulermarker.marker_orientation {
 	background-color: orange;
-	border: 1px solid orange !important;
 }
-#block_exacomp .marker_feedback {
+#block_exacomp .event-schedulermarker.marker_feedback {
 	background-color: red;
-	border: 1px solid red !important;
 }
-#block_exacomp .marker_reflexion {
+#block_exacomp .event-schedulermarker.marker_reflexion {
 	background-color: yellow;
-	border: 1px solid yellow !important;
 }
+
