@@ -837,6 +837,6 @@ $string['niveau_description'] = 'Erstellen Sie ihren ersten Lernfortschritt, das
 ihrem Raster';
 $string['selectcourse_filter'] = 'Filter';
 $string['selectcourse_filter_schooltype'] = 'Schulart';
-$string['selectcourse_filter_onlyselected'] = 'Show only selected grids';
+$string['selectcourse_filter_onlyselected'] = 'Nur ausgewählte Raster anzeigen';
 $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Nothing to show';

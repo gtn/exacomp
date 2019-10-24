@@ -2997,7 +2997,7 @@ ihrem Raster',
         'Schooltype',
     ],
     'selectcourse_filter_onlyselected' => [
-        'Show only selected grids',
+        'Nur ausgewählte Raster anzeigen',
         'Show only selected grids',
     ],
     'selectcourse_filter_submit' => [
