@@ -129,7 +129,7 @@ return [
             'General report',
     ],
     'tab_teacher_report_annex' => [
-            'Zeugnisse ',
+            'Berichte ',
             'Annex',
     ],
     'tab_teacher_report_annex_title' => [
@@ -145,15 +145,15 @@ return [
             'Basic and extended competencies',
     ],
     'create_html' => [
-            'Zeugnis im HTML-Format generieren (Voransicht)',
+            'Bericht im HTML-Format generieren (Voransicht)',
             'generate HTML preview',
     ],
     'create_docx' => [
-            'Zeugnis im docx-Format generieren',
+            'Bericht im docx-Format generieren',
             'generate docx',
     ],
     'create_pdf' => [
-            'Zeugnis im pdf-Format generieren',
+            'Bericht im pdf-Format generieren',
             'generate pdf',
     ],
     'create_html_report' => [
