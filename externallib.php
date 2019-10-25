@@ -5020,6 +5020,7 @@ class block_exacomp_external extends external_api {
 		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
+            'schedule_marker' => new external_value(PARAM_TEXT, 'tag for the marker on the material in the weekly schedule', VALUE_OPTIONAL),
 		)));
 	}
 
