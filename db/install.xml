@@ -147,7 +147,7 @@
         <FIELD NAME="ethema_parent" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa zugeordnete Hauptaufgabe"/>
         <FIELD NAME="ethema_important" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Pflichtaufgabe"/>
         <FIELD NAME="example_icon" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="schedule_marker" TYPE="char" LENGTH="25" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="is_teacherexample" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Lehrermaterial"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

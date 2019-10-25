@@ -551,7 +551,7 @@ $string['show_course_crosssubs'] = 'Show used interdisciplinary subjects';
 $string['existing_crosssub'] = 'existing cross subjects in this course';
 $string['create_new_crosssub'] = 'Create new interdisciplinary subject';
 $string['share_crosssub_for_further_use'] = 'Share the interdisciplinary subject with students.';
-$string['available_crosssubjects'] = 'Available Interdisciplinary Subjects';
+$string['available_crosssubjects'] = 'Unpublished Interdisciplinary Subjects';
 $string['crosssubject_drafts'] = 'Interdisciplinary Subject Drafts';
 $string['de:Freigegebene Kursthemen'] = 'Published Interdisciplinary Subjects';
 $string['de:Freigabe bearbeiten'] = 'Change Sharing';
@@ -732,8 +732,8 @@ $string['delete_level_has_children_from_another_source'] = 'Has children from an
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
 $string['use_isglobal'] = 'global course';
 $string['globalgradings'] = 'global gradings';
-$string['assign_dakora_teacher'] = 'assign dakora teacher';
-$string['assign_dakora_teacher_link'] = 'Click here to assign dakora teachers';
+$string['assign_dakora_teacher'] = 'assign teacher for interdisciplinary subjects';
+$string['assign_dakora_teacher_link'] = 'Click here to assign teacher for interdisciplinary subjects';
 
 
 

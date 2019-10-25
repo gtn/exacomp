@@ -557,7 +557,7 @@ $string['show_course_crosssubs'] = 'Kurs-Themen ansehen';
 $string['existing_crosssub'] = 'Vorhandene Themen in diesem Kurs';
 $string['create_new_crosssub'] = 'Neues Thema erstellen';
 $string['share_crosssub_for_further_use'] = 'Geben Sie das Thema an Kursteilnehmer/innen frei, um volle Funktionalität zu erhalten.';
-$string['available_crosssubjects'] = 'Vorhandene Kursthemen';
+$string['available_crosssubjects'] = 'Nicht freigegebene Kursthemen';
 $string['crosssubject_drafts'] = 'Themenvorlagen';
 $string['de:Freigegebene Kursthemen'] = 'Freigegebene Kursthemen';
 $string['de:Freigabe bearbeiten'] = 'Freigabe bearbeiten';
@@ -740,8 +740,8 @@ $string['delete_level_has_children_from_another_source'] = 'Importierter Kompete
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
 $string['use_isglobal'] = 'Überfachlicher Kurs';
 $string['globalgradings'] = 'Überfachliche Bewertungen';
-$string['assign_dakora_teacher'] = 'Dakora Lehrer zuweisen';
-$string['assign_dakora_teacher_link'] = 'Hier klicken um Dakora Lehrer zuzuweisen';
+$string['assign_dakora_teacher'] = 'Lehrkraft für überfachliche Kompetenzen zuweisen';
+$string['assign_dakora_teacher_link'] = 'Hier klicken um Lehrkraft für überfachliche Kompetenzen zuzuweisen';
 
 
 
