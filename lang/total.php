@@ -1949,8 +1949,8 @@ return [
 		'Share the interdisciplinary subject with students.',
 	],
 	'available_crosssubjects' => [
-		'Vorhandene Kursthemen',
-		'Available Interdisciplinary Subjects',
+		'Nicht freigegebene Kursthemen',
+		'Unpublished Interdisciplinary Subjects',
 	],
 	'crosssubject_drafts' => [
 		'Themenvorlagen',
