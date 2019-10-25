@@ -2610,12 +2610,12 @@ return [
         'global gradings',
     ],
     'assign_dakora_teacher' => [
-        'Dakora Lehrer zuweisen',
-        'assign dakora teacher',
+        'Lehrkraft für überfachliche Kompetenzen zuweisen',
+        'assign teacher for interdisciplinary subjects',
     ],
     'assign_dakora_teacher_link' => [
-        'Hier klicken um Dakora Lehrer zuzuweisen',
-        'Click here to assign dakora teachers',
+        'Hier klicken um Lehrkraft für überfachliche Kompetenzen zuzuweisen',
+        'Click here to assign teacher for interdisciplinary subjects',
     ],
 
 
