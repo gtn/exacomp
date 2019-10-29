@@ -11124,3 +11124,41 @@ function block_exacomp_eduvidual_defaultSchooltypes() {
     }
     return $eduvidalDefaults;
 }
+
+/** true if new version is good and we can work with this item, false if we must ignore this item
+ * @param $newVersion
+ * @param $oldVersion
+ * @param $rule rules: 1 - new >= old; 2 - new > old, 3 - new <= old, 4 - new < old ---> most used => 1
+ * @return bool
+ */
+function block_exacomp_versions_compare($newVersion, $oldVersion, $rule = 1) {
+    $stringVersionConvertToNumeric = function($stringValue) {
+        // delete all dots, except first
+        //$stringValue = str_replace('.', '', $stringValue);
+        $parts = explode('.', $stringValue);
+        array_walk($parts, function(&$p) {
+            $p = abs((int) filter_var($p, FILTER_SANITIZE_NUMBER_INT));
+        });
+        // first number and mix of other
+        $resultparts = array(array_shift($parts), implode('', $parts));
+        $stringValue = implode('.', $resultparts);
+        return $stringValue;
+    };
+    $newVersion = $stringVersionConvertToNumeric($newVersion);
+    $oldVersion = $stringVersionConvertToNumeric($oldVersion);
+    switch ($rule) {
+        case 1:
+            if ($newVersion >= $oldVersion) return true;
+            break;
+        case 2:
+            if ($newVersion > $oldVersion) return true;
+            break;
+        case 3:
+            if ($newVersion < $oldVersion) return true;
+            break;
+        case 4:
+            if ($newVersion <= $oldVersion) return true;
+            break;
+    }
+    return false;
+}

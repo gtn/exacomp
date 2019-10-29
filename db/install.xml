@@ -65,6 +65,7 @@
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="is the subject a global subject"/>
+        <FIELD NAME="version" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="grid version"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -1723,11 +1723,87 @@ class data_importer extends data {
 		return true;
 	}
 
+    /**
+     * @param $xpath
+     * @param $selectedGrids real list of selected grids
+     * @param $subjectsIds can be '*' if this source configured to import ALL grids
+     * @param $source_local_id
+     * @throws \dml_exception
+     */
+	private static function DOM_filter_subjects_by_version(&$xpath, $selectedGrids, $subjectsIds, $source_local_id) {
+	    global $DB;
+	    $result = array();
+	    static $subjectVersions = null;
+	    if ($subjectVersions === null) {
+            $subjectVersions = array();
+        }
+        if (!array_key_exists($source_local_id, $subjectVersions)) {
+            $list = $DB->get_records('block_exacompsubjects', ['source' => $source_local_id]);
+            if ($list) {
+                $subjectVersions[$source_local_id] = array();
+                foreach ($list as $subj) {
+                    $subjectVersions[$source_local_id][$subj->sourceid] = $subj->version; // important - not id, but sourceid!
+                }
+            }
+        }
+        if (array_key_exists($source_local_id, $subjectVersions)) {
+            $existingSubjects = $subjectVersions[$source_local_id];
+        } else {
+            $existingSubjects = array();
+        }
+        if (!count($existingSubjects)) {
+            return $selectedGrids; // no any subjects in DB yet. All can be imported
+        }
+        if ($subjectsIds == '*') {
+            $subjectsQuery = '//subjects/subject';
+        } else {
+            $sIds = self::DOM_convert_valuearray_to_xpath_query($selectedGrids, 'id');
+            $subjectsQuery = "//subjects/subject[".$sIds."]";
+        }
+        $subjects = $xpath->query($subjectsQuery);
+        if ($subjects->length) {
+            foreach ($subjects as $subject) {
+                $version = $subject->getElementsByTagName('version');
+                if ($version) {
+                    $version = $version->item(0)->nodeValue;
+                } else {
+                    $version = '';
+                }
+                $sId = $subject->getAttribute('id');
+                // compare xml version with database version
+                if (array_key_exists($sId, $existingSubjects)) {
+                    // exists in DB. Check version with DB
+                    if ($existingSubjects[$sId] == '') {
+                        // DB record - without version. Import!
+                        $result[] = $sId;
+                    } elseif ($version != '') {
+                        // real compare versions is only here!
+                        if (block_exacomp_versions_compare($version, $existingSubjects[$sId])) {
+                            $result[] = $sId;
+                        }
+                    }
+                } else {
+                    // does not exist in DB - import anycase;
+                    $result[] = $sId;
+                }
+            }
+        }
+        return $result;
+    }
+
+    private static function DOM_convert_valuearray_to_xpath_query($values, $attrName = 'id') {
+        array_walk($values, function(&$i) use ($attrName) {
+            $i = '@'.$attrName.'="'.$i.'"';
+        });
+        return implode(" or ", $values);
+    }
+
 	private static function get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId = 0) {
 	    $result = array();
 	    if (self::get_selectedallgrids_for_source($source_local_id, $schedulerId)) {
 	        // all subjects
-            $sujectsIds = '*';
+            $subjectsIds = '*';
+            $selectedGrids = array();
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
             if ($selectedGrids && is_array($selectedGrids)) {
@@ -1735,28 +1811,33 @@ class data_importer extends data {
                     return ($v == 1);
                 });
                 $selectedGrids = array_keys($selectedGrids);
-                array_walk($selectedGrids, function(&$i) {
-                    $i = '@id="'.$i.'"';
-                });
-                $sujectsIds = implode(" or ", $selectedGrids);
+                $subjectsIds = implode(',', $selectedGrids);
             } else {
-                $sujectsIds = '';
+                return arrray(); // no any selected grid
+                //$subjectsIds = '';
             }
         }
-        if ($sujectsIds != '') {
-            if ($sujectsIds == '*') {
-                // get from any subject
-                $query = "//subjects/subject/topics/topic/descriptors/descriptorid";
-            } else {
-                $query = "//subjects/subject[".$sujectsIds."]/topics/topic/descriptors/descriptorid";
-            }
+        if ($subjectsIds != '') {
             $tempXML = new \DOMDocument();
             $tempXML->loadXML($xml->asXML());
             $xpath = new \DOMXpath($tempXML);
-            $descriptors = $xpath->query($query);
-            if ($descriptors->length) {
-                foreach ($descriptors as $descriptor) {
-                    $result[] = $descriptor->getAttribute('id');
+            $selectedGrids = self::DOM_filter_subjects_by_version($xpath, $selectedGrids, $subjectsIds, $source_local_id);
+            $query = '';
+            // now is only filtered subjects list? right?
+            /*if ($subjectsIds == '*') {
+                // get from any subject
+                $query = "//subjects/subject/topics/topic/descriptors/descriptorid";
+            } else*/
+            if (count($selectedGrids) > 0) {
+                $subjectsIds = self::DOM_convert_valuearray_to_xpath_query($selectedGrids, 'id');
+                $query = "//subjects/subject[".$subjectsIds."]/topics/topic/descriptors/descriptorid";
+            }
+            if ($query != '') {
+                $descriptors = $xpath->query($query);
+                if ($descriptors->length) {
+                    foreach ($descriptors as $descriptor) {
+                        $result[] = $descriptor->getAttribute('id');
+                    }
                 }
             }
         }
@@ -1769,7 +1850,8 @@ class data_importer extends data {
         $result = array();
         if (self::get_selectedallgrids_for_source($source_local_id, $schedulerId)) {
             // all subjects
-            $sujectsIds = '*';
+            $subjectsIds = '*';
+            $selectedGrids = array();
         } else {
             $selectedGrids = self::get_selectedgrids_for_source($source_local_id, $schedulerId);
             if ($selectedGrids && is_array($selectedGrids)) {
@@ -1777,28 +1859,32 @@ class data_importer extends data {
                     return ($v == 1);
                 });
                 $selectedGrids = array_keys($selectedGrids);
-                array_walk($selectedGrids, function(&$i) {
-                    $i = '@id="'.$i.'"';
-                });
-                $sujectsIds = implode(" or ", $selectedGrids);
+                $subjectsIds = implode(',', $selectedGrids);
             } else {
-                $sujectsIds = '';
+                return array();
             }
         }
-        if ($sujectsIds != '') {
-            if ($sujectsIds == '*') {
-                // get from any subject
-                $query = "//subjects/subject/topics/topic";
-            } else {
-                $query = "//subjects/subject[".$sujectsIds."]/topics/topic";
-            }
+        if ($subjectsIds != '') {
             $tempXML = new \DOMDocument();
             $tempXML->loadXML($xml->asXML());
             $xpath = new \DOMXpath($tempXML);
-            $topics = $xpath->query($query);
-            if ($topics->length) {
-                foreach ($topics as $topic) {
-                    $result[] = $topic->getAttribute('id');
+            $selectedGrids = self::DOM_filter_subjects_by_version($xpath, $selectedGrids, $subjectsIds, $source_local_id);
+            $query = '';
+            // now is only filtered subjects list? right?
+            /*if ($subjectsIds == '*') {
+                // get from any subject
+                $query = "//subjects/subject/topics/topic";
+            } else*/
+            if (count($selectedGrids) > 0) {
+                $subjectsIds = self::DOM_convert_valuearray_to_xpath_query($selectedGrids, 'id');
+                $query = "//subjects/subject[".$subjectsIds."]/topics/topic";
+            }
+            if ($query != '') {
+                $topics = $xpath->query($query);
+                if ($topics->length) {
+                    foreach ($topics as $topic) {
+                        $result[] = $topic->getAttribute('id');
+                    }
                 }
             }
         }
@@ -1808,8 +1894,7 @@ class data_importer extends data {
     // used for importing only needed skills, niveus... (from selected grids)
     private static function get_property_for_descriptors_from_xml($xml, $propertyName = 'skillid', $descriptors = array()) {
         $result = array();
-        array_walk($descriptors, function(&$i) {$i = '@id="'.$i.'"';});
-        $descriptors = implode(" or ", $descriptors);
+        $descriptors = self::DOM_convert_valuearray_to_xpath_query($descriptors, 'id');
         if ($descriptors != '') {
             $query = "//descriptors/descriptor[".$descriptors."]/".$propertyName;
             $tempXML = new \DOMDocument();
@@ -1827,8 +1912,7 @@ class data_importer extends data {
 
     private static function get_examples_for_descriptors_from_xml($xml, $descriptors = array()) {
         $result = array();
-        array_walk($descriptors, function(&$i) {$i = '@id="'.$i.'"';});
-        $descriptors = implode(" or ", $descriptors);
+        $descriptors = self::DOM_convert_valuearray_to_xpath_query($descriptors, 'id');
         if ($descriptors != '') {
             $query = "//examples/example/descriptors/descriptorid[".$descriptors."]";
             $tempXML = new \DOMDocument();
@@ -2407,8 +2491,7 @@ class data_importer extends data {
             if (is_array($selectedGrids)) {
                 $selectedGrids = array_filter($selectedGrids, function($v) {return ($v == 1);});
                 $selectedGrids = array_keys($selectedGrids);
-                array_walk($selectedGrids, function(&$i) {$i = '@id="'.$i.'"';});
-                $sujectsIds = implode(" or ", $selectedGrids);
+                $sujectsIds = self::DOM_convert_valuearray_to_xpath_query($selectedGrids, 'id');
             } else {
                 $sujectsIds = '';
             }
