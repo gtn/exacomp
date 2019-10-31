@@ -51,13 +51,13 @@ $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neuen Kompetenzraster anlegen';
 $string['tab_teacher_settings_taxonomies'] = 'Taxonomien';
 $string['tab_teacher_report_general'] = 'Berichte';
-$string['tab_teacher_report_annex'] = 'Zeugnisse ';
+$string['tab_teacher_report_annex'] = 'Berichte ';
 $string['tab_teacher_report_annex_title'] = 'Anlage zum Lernentwicklungsbericht';
 $string['tab_teacher_report_profoundness'] = 'Grund- und Erweiterungskompetenzen ';
 $string['tab_teacher_report_profoundness_title'] = 'Grund- und Erweiterungskompetenzen verwenden';
-$string['create_html'] = 'Zeugnis im HTML-Format generieren (Voransicht)';
-$string['create_docx'] = 'Zeugnis im docx-Format generieren';
-$string['create_pdf'] = 'Zeugnis im pdf-Format generieren';
+$string['create_html'] = 'Bericht im HTML-Format generieren (Voransicht)';
+$string['create_docx'] = 'Bericht im docx-Format generieren';
+$string['create_pdf'] = 'Bericht im pdf-Format generieren';
 $string['create_html_report'] = 'Bericht im HTML-Format generieren';
 $string['create_docx_report'] = 'Bericht im docx-Format generieren';
 $string['create_pdf_report'] = 'Bericht im pdf-Format generieren';
@@ -618,7 +618,7 @@ $string['n10.unit'] = '10. Einheit:';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht';
-$string['notification_submission_body'] = 'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a> </br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
+$string['notification_submission_body'] = 'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href={$a->viewurl}{$a->example}</a> </br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
 $string['notification_submission_context'] = 'Abgabe';
 $string['notification_grading_subject'] = '{$a->site}: Neue Beurteilungen im Kurs {$a->course}';
 $string['notification_grading_body'] = 'Lieber/Liebe {$a->receiver}, </br></br> Du hast im Kurs {$a->course} neue Beurteilungen von {$a->teacher} erhalten.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';

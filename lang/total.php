@@ -2169,8 +2169,8 @@ return [
 		'{$a->site}: {$a->student} submitted a solution for {$a->example}',
 	],
 	'notification_submission_body' => [
-		'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a> </br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.',
-		'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a> </br></br> This message has been generated form moodle site {$a->site}.',
+		'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href={$a->viewurl}{$a->example}</a> </br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.',
+		'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href={$a->viewurl}>{$a->example}</a> </br></br> This message has been generated form moodle site {$a->site}.',
 	],
 	'notification_submission_context' => [
 		'Abgabe',

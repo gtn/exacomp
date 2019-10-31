@@ -612,7 +612,7 @@ $string['n10.unit'] = '10. unit';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} submitted a solution for {$a->example}';
-$string['notification_submission_body'] = 'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a> </br></br> This message has been generated form moodle site {$a->site}.';
+$string['notification_submission_body'] = 'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href={$a->viewurl}>{$a->example}</a> </br></br> This message has been generated form moodle site {$a->site}.';
 $string['notification_submission_context'] = 'Submission';
 $string['notification_grading_subject'] = '{$a->site}: New grading in course {$a->course}';
 $string['notification_grading_body'] = 'Dear {$a->receiver}, </br></br>You have got new gradings in {$a->course} from {$a->teacher}.</br></br> This message has been generated form moodle site {$a->site}.';
