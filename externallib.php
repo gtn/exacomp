@@ -1659,9 +1659,6 @@ class block_exacomp_external extends external_api {
 		    'crosssubjectid' => $crosssubjectid,
 		));
 
-
-
-
         //Update material that already exists
 		if($exampleid != -1){
             $example = block_exacomp\example::get($exampleid);
@@ -1670,9 +1667,6 @@ class block_exacomp_external extends external_api {
             //new material
             $example = new stdClass ();
         }
-
-
-
 
 		$example->title = $name;
 		$example->description = $description;
@@ -1693,11 +1687,38 @@ class block_exacomp_external extends external_api {
 				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
 		}
 
+
+        //add blockingevent tag, since it is a free_element that should be handled as a blocking event in many instances. Maybe add filed "free element" or check in a different way in the require_can_access_example
+        //the require_can_access_example checks if a student has access, and they have access to their blocking and free elements ==> set blocking_event flag
+        if($comps == -1 && $crosssubjectid == -1) {
+            $example->blocking_event = 1;
+        }
+
 		if($exampleid != -1){
             $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
             $id = $exampleid;
         }else{
             $example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
+        }
+
+        //in order for the free material to be accessible: code is mainly the same as block_exacomp_create_blocking_event
+        if($comps == -1 && $crosssubjectid == -1){
+                $schedule = new stdClass();
+            $schedule->studentid = $USER->id;
+            $schedule->exampleid = $example->id;
+            $schedule->creatorid = $USER->id;
+            $schedule->courseid = $courseid;
+            $scheduleid = $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, $schedule);
+
+            $record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => 0, 'visible' => 1));
+            if (!$record) {
+                $visibility = new stdClass();
+                $visibility->courseid = $courseid;
+                $visibility->exampleid = $exampleid;
+                $visibility->studentid = 0;
+                $visibility->visible = 1;
+                $visibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
+            }
         }
 
         if ($fileitemids != '') {
@@ -3743,7 +3764,7 @@ class block_exacomp_external extends external_api {
 			$creatorid = $USER->id;
 		}
 
-		//Deprecated
+		//Deprecated.. the with userid=0 it gets added to the planning storage of the teacher
 // 		if ($userid == 0 && !$forall) {
 // 			$userid = $USER->id;
 // 		}
@@ -3755,11 +3776,15 @@ class block_exacomp_external extends external_api {
         }
 
 
+
 		static::require_can_access_course_user($courseid, $creatorid);
 		static::require_can_access_course_user($courseid, $userid);
 		static::require_can_access_example($exampleid, $courseid);
 
+
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+
+
 
 		if ($forall) {
             $source = 'C';
@@ -9552,6 +9577,7 @@ class block_exacomp_external extends external_api {
 		if ($example->blocking_event) {
 			$schedule = g::$DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $exampleid]);
 			if (!$schedule) {
+                var_dump("ayayay");
 				throw new block_exacomp_permission_exception("Example '$exampleid' not found #2");
 			}
 
