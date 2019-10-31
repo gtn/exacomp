@@ -1691,7 +1691,7 @@ class block_exacomp_external extends external_api {
         //add blockingevent tag, since it is a free_element that should be handled as a blocking event in many instances. Maybe add filed "free element" or check in a different way in the require_can_access_example
         //the require_can_access_example checks if a student has access, and they have access to their blocking and free elements ==> set blocking_event flag
         if($comps == -1 && $crosssubjectid == -1) {
-            $example->blocking_event = 1;
+            $example->blocking_event = 2;
         }
 
 		if($exampleid != -1){
@@ -9596,6 +9596,7 @@ class block_exacomp_external extends external_api {
 			}
 
 			throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
+//        } else if($example->blocking_event == 2){   maybe check differently for free examples
 		} else {
 			$examples = block_exacomp_get_examples_by_course($courseid);
 			$examples_crosssubj = block_exacomp_get_crosssubject_examples_by_course($courseid);

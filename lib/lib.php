@@ -6834,7 +6834,7 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	//state 9 = locked time
 
 	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
-	if ($example->blocking_event) {
+	if ($example->blocking_event == 1) {
 		return BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME;
 	}
 
@@ -9300,7 +9300,9 @@ function block_exacomp_require_item_capability($cap, $item) {
 		if (!isset($examples[$item->id])) {
 		    $examples = block_exacomp_get_crosssubject_examples_by_course(g::$COURSE->id);
 		    if(!isset($examples[$item->id])){
-		        throw new block_exacomp_permission_exception('Not a course example');
+		        if(!$item->blocking_event == 2){ //check if it is a free material
+                    throw new block_exacomp_permission_exception('Not a course example');
+                }
 		    }
 		}
 
