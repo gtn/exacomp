@@ -116,6 +116,7 @@ switch ($style) {
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dt.descrid = de.descrid
             JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
             WHERE ct.courseid = ?
+            ".(!$isTeacher ? " AND e.is_teacherexample = 0 " : "")."
             ORDER BY e.title
         ", [$courseid]);
 

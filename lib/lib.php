@@ -1762,6 +1762,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
             ." WHERE "
             ." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
             .($showallexamples ? " 1=1 " : " e.creatorid > 0")
+            .(!block_exacomp_is_teacher() ? ' AND e.is_teacherexample = 0 ' : '')
             ." ORDER BY de.sorting"
             , array($descriptor->id, $courseid, $courseid));
 //    }
