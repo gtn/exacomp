@@ -511,6 +511,16 @@ function block_exacomp_get_assessment_verbose_options_short($getforlanguage = nu
     //return block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
 }
 
+function block_exacomp_get_assessment_diffLevel_verb($value) {
+    $difflevels = preg_split("/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+    // start from 1
+    $difflevels = array_combine(range(1, count($difflevels)), array_values($difflevels));
+    if (array_key_exists($value, $difflevels)) {
+        return $difflevels[$value];
+    }
+    return null;
+}
+
 function block_exacomp_get_assessment_selfEval_verboses($level = 'example', $type = 'long', $getforlanguage = null) {
     static $value;
     if ($level != 'example') {
