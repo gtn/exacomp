@@ -427,7 +427,7 @@ return [
         'Performance',
     ],
     'settings_heading_performance_description' => [
-        'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability',
+        'Sollte sich die Kompetenzraster-Ansicht nur langsam aufbauen, können diese Einstellungen zur Lade-Optimierung verwendet werden.',
         'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability',
     ],
     'settings_heading_scheme' => [
@@ -655,11 +655,11 @@ return [
             'If "Competence grid" has a long page generation time. This checkbox can solve this problem',
     ],
     'settings_disable_js_editactivities' => [
-            'Disable JS in students selection in "Assign Moodle activities" page',
+            'JS für die Zuteilung von Moodle-Aktivitäten für Teilnehmer/innen deaktivieren',
             'Disable JS in students selection in "Assign Moodle activities" page',
     ],
     'settings_disable_js_editactivities_description' => [
-            'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem',
+            'Aktivieren, falls sich die Seite "Moodle-Aktivitäten zuteilen"  zu langsam aufbaut.',
             'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem',
     ],
     'settings_example_autograding' => [
@@ -667,8 +667,8 @@ return [
         'automatic assessment of parent materials',
     ],
     'settings_example_autograding_description' => [
-        'wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.',
-        'when all child examples have been graded, the parent material should be assessed automatically.',
+        'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.',
+        'When all child examples have been graded, the parent material should be assessed automatically.',
     ],
 
 
@@ -1798,15 +1798,15 @@ return [
 
 	// === External trainer & eLove ===
 	'block_exacomp_external_trainer_assign_head' => [
-		'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermögliche.',
+		'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermöglichen',
 		'Allow assigning of external trainers for students.',
 	],
 	'block_exacomp_external_trainer_assign_body' => [
-		'Erforderlich für die Benutzung der elove App.',
+		'Erforderlich für die Benutzung der elove App',
 		'This is required for using the elove app.',
 	],
 	'block_exacomp_elove_student_self_assessment_head' => [
-		'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben.',
+		'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben',
 		'Allow self-assessment for students in the elove app',
 	],
 	'block_exacomp_elove_student_self_assessment_body' => [

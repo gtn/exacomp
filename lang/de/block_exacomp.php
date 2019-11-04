@@ -131,7 +131,7 @@ $string['settings_dakora_teacher_link'] = 'Klicken Sie, um die Dakoralehrer fest
 $string['dakora_teachers'] = 'Dakoralehrer';
 $string['settings_new_app_login_description'] = 'Der neue App-Login erlaubt Benutzern sich mit allen aktivierten Moodle Login-Plugins einzuloggen. Diese Einstellung ist nicht mit dem Gamification Plugin kompatibel.';
 $string['settings_heading_performance'] = 'Performance';
-$string['settings_heading_performance_description'] = 'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability';
+$string['settings_heading_performance_description'] = 'Sollte sich die Kompetenzraster-Ansicht nur langsam aufbauen, können diese Einstellungen zur Lade-Optimierung verwendet werden.';
 $string['settings_heading_scheme'] = 'Generisches Bewertungsschema';
 $string['settings_assessment_scheme_0'] = 'Keines';
 $string['settings_assessment_scheme_1'] = 'Noten';
@@ -187,10 +187,10 @@ $string['settings_addblock_to_newcourse_option_left'] = 'to the Left region';
 $string['settings_addblock_to_newcourse_option_right'] = 'to the Right region';
 $string['settings_disable_js_assign_competencies'] = 'JS für Kompetenzraster-Übersicht deaktivieren.';
 $string['settings_disable_js_assign_competencies_description'] = 'Bei langen Ladezeiten des Kompetenzrasters können zur Performance-Steigerung JS-Funktionen deaktiviert werden.';
-$string['settings_disable_js_editactivities'] = 'Disable JS in students selection in "Assign Moodle activities" page';
-$string['settings_disable_js_editactivities_description'] = 'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem';
+$string['settings_disable_js_editactivities'] = 'JS für die Zuteilung von Moodle-Aktivitäten für Teilnehmer/innen deaktivieren';
+$string['settings_disable_js_editactivities_description'] = 'Aktivieren, falls sich die Seite "Moodle-Aktivitäten zuteilen"  zu langsam aufbaut.';
 $string['settings_example_autograding'] = 'übergeordnete Materialien automatische Beurteilung';
-$string['settings_example_autograding_description'] = 'wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
+$string['settings_example_autograding_description'] = 'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
 
 
 
@@ -517,9 +517,9 @@ $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
 
 // === External trainer & eLove ===
-$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermögliche.';
-$string['block_exacomp_external_trainer_assign_body'] = 'Erforderlich für die Benutzung der elove App.';
-$string['block_exacomp_elove_student_self_assessment_head'] = 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben.';
+$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermöglichen';
+$string['block_exacomp_external_trainer_assign_body'] = 'Erforderlich für die Benutzung der elove App';
+$string['block_exacomp_elove_student_self_assessment_head'] = 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Externe TrainerIn zuordnen';
 $string['block_exacomp_external_trainer'] = 'AusbilderIn: ';

@@ -190,7 +190,7 @@ $string['settings_disable_js_assign_competencies_description'] = 'If "Competence
 $string['settings_disable_js_editactivities'] = 'Disable JS in students selection in "Assign Moodle activities" page';
 $string['settings_disable_js_editactivities_description'] = 'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem';
 $string['settings_example_autograding'] = 'automatic assessment of parent materials';
-$string['settings_example_autograding_description'] = 'when all child examples have been graded, the parent material should be assessed automatically.';
+$string['settings_example_autograding_description'] = 'When all child examples have been graded, the parent material should be assessed automatically.';
 
 
 
