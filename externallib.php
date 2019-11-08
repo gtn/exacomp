@@ -6433,6 +6433,8 @@ class block_exacomp_external extends external_api {
 	        'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 	        'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
 	        'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text',VALUE_OPTIONAL),
+            'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text',VALUE_OPTIONAL),
 	        'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
 	        'children' => new external_multiple_structure (new external_single_structure (array(
 	            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),

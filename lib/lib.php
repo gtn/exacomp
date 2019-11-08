@@ -9388,8 +9388,6 @@ function block_exacomp_require_item_capability($cap, $item) {
 			}
 
 			if ($item->creatorid != g::$USER->id) {
-			    var_dump("here222222");
-			    die;
 				throw new block_exacomp_permission_exception('No permission');
 			}
 		} else {
@@ -9409,13 +9407,9 @@ function block_exacomp_require_item_capability($cap, $item) {
 
 		// it's a student
 		if ($item->is_draft() || $item->courseid != g::$COURSE->id) {
-            var_dump("here222222");
-            die;
 			throw new block_exacomp_permission_exception('No permission');
 		}
 		if (!$item->shared && !block_exacomp_student_crosssubj($item->id, g::$USER->id)) {
-            var_dump("here222222");
-            die;
 		    throw new block_exacomp_permission_exception('No permission');
 		}
 	} elseif ($item instanceof \block_exacomp\niveau && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
