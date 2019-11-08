@@ -2379,11 +2379,11 @@ return [
         'output of current assessments',
     ],
     'student_assessment' => [
-        'Schülerbewertung',
+        'Selbsteinschätzung',
         'students\' assessment',
     ],
     'teacher_assessment' => [
-        'Lehrerbewertung',
+        'Rückmeldung Lehrkraft',
         'teachers\' assessment',
     ],
     'exa_evaluation' => [
