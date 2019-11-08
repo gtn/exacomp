@@ -6449,6 +6449,8 @@ class block_exacomp_external extends external_api {
 	            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
 	            'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
 	            'numbering' => new external_value (PARAM_TEXT, 'numbering'),
+                'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text',VALUE_OPTIONAL),
+                'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text',VALUE_OPTIONAL),
 	            'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
 	            'examples' => new external_multiple_structure (new external_single_structure (array(
 	                'exampleid' => new external_value (PARAM_INT, 'id of example'),
