@@ -46,6 +46,8 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 	if ($filearea == 'example_task') {
 		$example = block_exacomp\example::get($itemid);
 		if (!$example) {
+            var_dump("heree11111111111)");
+            die;
 			throw new block_exacomp_permission_exception('file not found');
 		}
 		$example->require_capability(BLOCK_EXACOMP_CAP_VIEW);
@@ -67,6 +69,8 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
 		$example = block_exacomp\example::get($itemid);
 		if (!$example) {
+		    var_dump("heree)");
+		    die;
 			throw new block_exacomp_permission_exception('file not found');
 		}
 		$example->require_capability(BLOCK_EXACOMP_CAP_VIEW);

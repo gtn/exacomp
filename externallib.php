@@ -534,6 +534,8 @@ class block_exacomp_external extends external_api {
 		$courseid = static::find_courseid_for_example($exampleid);
 		static::require_can_access_example($exampleid, $courseid);
 
+
+
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
 			'id' => $exampleid,
 		));
@@ -3668,6 +3670,8 @@ class block_exacomp_external extends external_api {
 		if (!$isTeacher) {
 			$userid = g::$USER->id;
 		}
+
+
 
 		$example = static::get_example_by_id($exampleid);
 
@@ -9525,6 +9529,8 @@ class block_exacomp_external extends external_api {
 		// and try to find it
 		$courses_ws = static::get_courses(g::$USER->id);
 
+
+
 		$courses = array();
 		foreach ($courses_ws as $course) {
 			$courses[$course['courseid']] = new stdClass();
@@ -9547,6 +9553,8 @@ class block_exacomp_external extends external_api {
 				}
 			}
 		}
+
+
 
 		foreach ($courses as $course) {
 			try {
@@ -9573,11 +9581,9 @@ class block_exacomp_external extends external_api {
 		}
 
 
-
-		if ($example->blocking_event) {
+		if ($example->blocking_event == 1) {
 			$schedule = g::$DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $exampleid]);
 			if (!$schedule) {
-                var_dump("ayayay");
 				throw new block_exacomp_permission_exception("Example '$exampleid' not found #2");
 			}
 
@@ -9601,6 +9607,7 @@ class block_exacomp_external extends external_api {
 			$examples = block_exacomp_get_examples_by_course($courseid);
 			$examples_crosssubj = block_exacomp_get_crosssubject_examples_by_course($courseid);
 			$found = false;
+
 
 			if (isset($examples[$exampleid]) || isset($examples_crosssubj[$exampleid])) {
 				// ok: is course example
@@ -9632,7 +9639,7 @@ class block_exacomp_external extends external_api {
 			}
 
 			//try to find it in free materials
-			if(!$found){
+			if(!$found && $example->blocking_event == 2){
                 $sql = 'SELECT * '
                     .'FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} '
                     .'WHERE id = -1';
