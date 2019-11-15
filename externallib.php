@@ -4831,10 +4831,12 @@ class block_exacomp_external extends external_api {
 
         $timeSeconds = $time[0]*60*60+$time[1]*60;
         $remainingtime = $timeSeconds;
+        $timeplanned = 0;
         //Get the other scheduled instances of this example
         $schedule = g::$DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $entry->exampleid]);
         foreach($schedule as $scheduledmaterials){
             $remainingtime -= ($scheduledmaterials->end - $scheduledmaterials->start);
+            $timeplanned += ($scheduledmaterials->end - $scheduledmaterials->start);
         }
         if($remainingtime > 0){
             $remaininghours = floor($remainingtime/3600);
@@ -4846,8 +4848,14 @@ class block_exacomp_external extends external_api {
             $remainingtime = $remaininghours.'h'.$remainingminutes.'min';
         }
 
+        $plannedhours = floor($timeplanned/3600);
+        $plannminutes = ($timeplanned%3600)/60;
+        $timeplanned = $plannedhours.'h'.$plannminutes.'min';
+
 		return array(
 			"timeremaining" => $remainingtime,
+            "timeplanned" => $timeplanned,
+            "timesuggested" => $example->timeframe,
             "success" => true,
 		);
 	}
@@ -4860,6 +4868,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_set_example_time_slot_returns() {
 		return new external_single_structure (array(
 			'timeremaining' => new external_value (PARAM_TEXT, 'time planned minus timeframe = timeremaining'),
+            'timeplanned' => new external_value (PARAM_TEXT, 'time planned '),
+            'timesuggested' => new external_value (PARAM_TEXT, 'timeframe'),
             'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
 	}
