@@ -1,5 +1,7 @@
 <?php
 
+
+
 require __DIR__.'/inc.php';
 require_once($CFG->libdir . '/externallib.php');
 require_once __DIR__.'/externallib.php';
@@ -26,7 +28,8 @@ function block_exacomp_load_service($serviceshortname) {
 function block_exacomp_get_login_data() {
 	$exa_tokens = [];
 
-
+//    var_dump("aasdf");
+//    die;
 
 	$services = optional_param('services', '', PARAM_TEXT);
 	$services = array_keys(
@@ -40,6 +43,7 @@ function block_exacomp_get_login_data() {
 			'token' => $token,
 		];
 	}
+
 
 	// get login data
 	$data = block_exacomp_external::login();
@@ -59,6 +63,7 @@ function block_exacomp_get_login_data() {
 	return $data;
 }
 
+
 function block_exacomp_logout() {
 	$authsequence = get_enabled_auth_plugins(); // auths, in sequence
 	foreach($authsequence as $authname) {
@@ -68,6 +73,7 @@ function block_exacomp_logout() {
 
 	require_logout();
 }
+
 
 // Allow CORS requests.
 header('Access-Control-Allow-Origin: *');
@@ -91,6 +97,8 @@ if ($action == 'info') {
 	exit;
 }
 
+
+
 if ($action == 'logout') {
 	block_exacomp_logout();
 
@@ -100,11 +108,17 @@ if ($action == 'logout') {
 
 
 $PAGE->set_context(context_system::instance());
-require_login(0);
+//var_dump($PAGE->url);
+require_login(0,false,null,true,false);
+
+//require_login(0);
+
 
 
 $PAGE->set_url('/blocks/exacomp/applogin.php');
 $PAGE->set_pagelayout('embedded');
+
+
 
 if (isguestuser()) {
 	// is guest user
@@ -113,7 +127,12 @@ if (isguestuser()) {
 	exit;
 }
 
+
 $loginData = block_exacomp_get_login_data();
+
+//var_dump("HERE");
+//die;
+
 
 //Here after the user is logged in
 //Check if this user is a teacher from eeducation. If they are: add to course with id=700
@@ -155,9 +174,11 @@ if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
     }
 }
 
-if (optional_param('withlogout', '', PARAM_BOOL)) {
-	// came from login form
 
+if (optional_param('withlogout', '', PARAM_BOOL)) {
+//    var_dump("from login form");
+//    die;
+	// came from login form
 	echo $OUTPUT->header();
 
 	?>
@@ -181,8 +202,9 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 
 	exit;
 } else {
-	// was already logged in, show info and continue button
-
+//    var_dump("already logged in");
+//    die;
+	// was already logged in, show info and continue button... always comes here?
 	echo $OUTPUT->header();
 
 	?>
@@ -205,7 +227,7 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 	<?php
 
 	echo '<div style="padding-top: 60px; text-align: center;">';
-	echo block_exacomp_trans(['de:Du bist eingeloggt als:', 'en:You are loggedin as:']).' ';
+	echo block_exacomp_trans(['de:Du bist eingeloggt als:', 'en:You are logged in as:']).' ';
 	echo fullname($USER);
 	echo '<br/>';
 	echo '<br/>';
@@ -216,6 +238,5 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 	echo '</div>';
 
 	echo $OUTPUT->footer();
-
 	exit;
 }
