@@ -97,6 +97,7 @@ const BLOCK_EXACOMP_COURSE_POINT_LIMIT = 100;
 const BLOCK_EXACOMP_DATA_SOURCE_CUSTOM = 3;
 const BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER = 3;
 const BLOCK_EXACOMP_EXAMPLE_SOURCE_USER = 4;
+const BLOCK_EXACOMP_EXAMPLE_SOURCE_USER_FREE_ELEMENT = 5;
 
 const BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT = 1;
 const BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC = 2;
@@ -1729,7 +1730,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
  * @param string $showonlyvisible - return only visible
  * @return unknown
  */
-function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false) {
+function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false, $freeelementdescriptor = false) {
 	global $COURSE;
 
 	if ($courseid == null) {
@@ -1737,8 +1738,20 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 	}
 
 
-
-    $examples = \block_exacomp\example::get_objects_sql(
+//    if($freeelementdescriptor){ //here the SOURCE does not matter. Normally the examples that are specific for a user would not be shown
+//        $examples = \block_exacomp\example::get_objects_sql(
+//            "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid,
+//            e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
+//            e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
+//            de.sorting
+//            FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+//            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
+//            ." WHERE "
+//            .($showallexamples ? " 1=1 " : " e.creatorid > 0")
+//            ." ORDER BY de.sorting"
+//            , array($descriptor->id, $courseid, $courseid));
+//    }else{
+        $examples = \block_exacomp\example::get_objects_sql(
             "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid,
             e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
             e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
@@ -1750,8 +1763,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
             .($showallexamples ? " 1=1 " : " e.creatorid > 0")
             ." ORDER BY de.sorting"
             , array($descriptor->id, $courseid, $courseid));
-
-//	var_dump($descriptor->id);
+//    }
 
     // old
     if ($mind_visibility || $showonlyvisible) {

@@ -1694,6 +1694,7 @@ class block_exacomp_external extends external_api {
         //the require_can_access_example checks if a student has access, and they have access to their blocking and free elements ==> set blocking_event flag
         if($comps == -1 && $crosssubjectid == -1) {
             $example->blocking_event = 2;
+            $example->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_USER_FREE_ELEMENT;
         }
 
 		if($exampleid != -1){
@@ -9648,11 +9649,19 @@ class block_exacomp_external extends external_api {
                     .'FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} '
                     .'WHERE id = -1';
 
+
                 $descriptors = \block_exacomp\descriptor::get_objects_sql($sql);
 
                 $descriptor = array_pop($descriptors); //there will only be this single descriptor in the return array
+
+
                 $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
+                $examples = block_exacomp_get_examples_for_pool($userid, $courseid);
+
                 $examples = $descriptor->examples;
+
+//                var_dump($descriptor);
+//                die;
 
                 if(isset($examples[$exampleid])){
                     $found = true;
