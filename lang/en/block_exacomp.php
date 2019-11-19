@@ -29,6 +29,7 @@ $string['exacomp:student'] = 'overview of student actions in a course';
 $string['exacomp:use'] = 'use Exabis Competence Grid';
 $string['exacomp:deleteexamples'] = 'delete examples';
 $string['exacomp:assignstudents'] = 'Assign external trainers';
+$string['exacomp:editingteacher'] = 'Editing teacher';
 
 //Cache definition
 $string['cachedef_visibility_cache'] = 'Cache to improve performance while checking visibilities';

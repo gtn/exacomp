@@ -18,11 +18,10 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 namespace block_exacomp\privacy;
-use block_exacomp\cross_subject;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\transform;
-use core_user\search\user;
-use gradereport_singleview\local\screen\grade;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class provider implements
         \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\core_userlist_provider,
         \core_privacy\local\request\plugin\provider {
 
     public static function get_metadata(collection $collection) : collection {
@@ -167,6 +167,36 @@ class provider implements
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        global $DB;
+        $context = $userlist->get_context();
+        if (get_class($context) != 'context_course') {
+            return;
+        }
+        $courseid = $context->instanceid;
+        if ($courseid) {
+            $params = ['courseid' => $courseid];
+
+            $sql = "SELECT userid as userid FROM {block_exacompcompuser} WHERE courseid = :courseid "; // for students
+            $userlist->add_from_sql('userid', $sql, $params);
+            $sql = "SELECT reviewerid as userid FROM {block_exacompcompuser} WHERE courseid = :courseid "; // for reviewers
+            $userlist->add_from_sql('userid', $sql, $params);
+            $sql = "SELECT studentid as userid FROM {block_exacompdescrvisibility} WHERE courseid = :courseid ";
+            $userlist->add_from_sql('userid', $sql, $params);
+            $sql = "SELECT studentid as userid FROM {block_exacompexameval} WHERE courseid = :courseid "; // for students
+            $userlist->add_from_sql('userid', $sql, $params);
+            $sql = "SELECT teacher_reviewerid as userid FROM {block_exacompexameval} WHERE courseid = :courseid "; // for reviewers
+            $userlist->add_from_sql('userid', $sql, $params);
+            $sql = "SELECT studentid as userid FROM {block_exacompexampvisibility} WHERE courseid = :courseid ";
+            $userlist->add_from_sql('userid', $sql, $params);
+        }
     }
 
     public static function export_user_data(\core_privacy\local\request\approved_contextlist $contextlist) {
@@ -752,10 +782,10 @@ class provider implements
         $courseid = $context->instanceid;
         if ($courseid) {
             $DB->delete_records('block_exacompcompuser', ['courseid' => $courseid]); // for students
-            $DB->delete_records('block_exacompcompuser', ['courseid' => $courseid]); // for teachers
+            //$DB->delete_records('block_exacompcompuser', ['courseid' => $courseid]); // for teachers
             $DB->delete_records('block_exacompdescrvisibility', ['courseid' => $courseid]);
             $DB->delete_records('block_exacompexameval', ['courseid' => $courseid]); // for students
-            $DB->delete_records('block_exacompexameval', ['courseid' => $courseid]); // for teachers
+            //$DB->delete_records('block_exacompexameval', ['courseid' => $courseid]); // for teachers
             $DB->delete_records('block_exacompexampvisibility', ['courseid' => $courseid]);
         }
         return;
@@ -801,6 +831,59 @@ class provider implements
             $DB->delete_records('block_exacomptopicvisibility', ['studentid' => $userid]);
             $DB->delete_records('block_exacompwsdata', ['userid' => $userid]);
         }
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+        $context = $userlist->get_context();
+        if (get_class($context) != 'context_course') {
+            return;
+        }
+        $courseid = $context->instanceid;
+
+        list($inSql, $inParams) = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
+        $params = $inParams;
+
+        $select = " userid {$inSql}";
+        $DB->delete_records_select('block_exacompautotestassign', $select, $params);
+        $DB->delete_records_select('block_exacompwsdata', $select, $params);
+        $DB->delete_records_select('block_exacompprofilesettings', $select, $params);
+
+        $select = " studentid {$inSql}";
+        $DB->delete_records_select('block_exacompcrossstud_mm', $select, $params);
+        $DB->delete_records_select('block_exacompexternaltrainer', $select, $params);
+        $DB->delete_records_select('block_exacompschedule', $select, $params);
+        $DB->delete_records_select('block_exacompsolutvisibility', $select, $params);
+        $DB->delete_records_select('block_exacomptopicvisibility', $select, $params);
+
+        $select = " creatorid {$inSql}";
+        $DB->delete_records_select('block_exacompschedule', $select, $params);
+        $DB->delete_records_select('block_exacompcrosssubjects', $select, $params);
+
+        $select = " trainerid {$inSql}";
+        $DB->delete_records_select('block_exacompexternaltrainer', $select, $params);
+
+        $params += ['courseid' => $courseid];
+
+        $select = " studentid {$inSql} AND courseid = :courseid ";
+        $DB->delete_records_select('block_exacompdescrvisibility', $select, $params);
+        $DB->delete_records_select('block_exacompexameval', $select, $params);
+        $DB->delete_records_select('block_exacompexampvisibility', $select, $params);
+
+        $select = " userid {$inSql} AND courseid = :courseid ";
+        $DB->delete_records_select('block_exacompcompuser', $select, $params);
+
+        $select = " reviewerid {$inSql} AND courseid = :courseid ";
+        $DB->delete_records_select('block_exacompcompuser', $select, $params);
+
+        $select = " teacher_reviewerid {$inSql} AND courseid = :courseid ";
+        $DB->delete_records_select('block_exacompexameval', $select, $params);
+
     }
 
     /**

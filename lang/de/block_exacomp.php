@@ -29,6 +29,7 @@ $string['exacomp:student'] = 'Übersicht der Teilnehmerfunktionen in einem Kurs'
 $string['exacomp:use'] = 'Nutzung';
 $string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
 $string['exacomp:assignstudents'] = 'Externe Trailer zuordnen';
+$string['exacomp:editingteacher'] = 'Editing teacher';
 
 //Cache definition
 $string['cachedef_visibility_cache'] = 'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen';

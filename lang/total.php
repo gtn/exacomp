@@ -60,6 +60,10 @@ return [
 		'Externe Trailer zuordnen',
 		'Assign external trainers',
 	],
+	'exacomp:editingteacher' => [
+		'Editing teacher',
+		'Editing teacher',
+	],
 
 	//Cache definition
 	'cachedef_visibility_cache' => [
