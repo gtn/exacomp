@@ -100,7 +100,8 @@ class data {
 		$maxId = self::$sources ? max(array_keys(self::$sources)) : 0;
 		$source_local_id = max($maxId + 1, self::MIN_SOURCE_ID);
 		// add new source
-		g::$DB->execute("INSERT INTO {".BLOCK_EXACOMP_DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
+        g::$DB->insert_record_raw(BLOCK_EXACOMP_DB_DATASOURCES, ['id' => intval($source_local_id), 'source' => $source_global_id], true, false, true);
+		//g::$DB->execute("INSERT INTO {".BLOCK_EXACOMP_DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
 
 		self::$sources[$source_local_id] = $source_global_id;
 		

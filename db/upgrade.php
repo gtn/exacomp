@@ -3438,8 +3438,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     }
 
     if ($oldversion < 2019101701) {
-        $sql = 'INSERT INTO {block_exacompdescriptors} (`id`, `title`) VALUES (-1,"free_materials")';
-        $DB->Execute($sql);
+        //$sql = 'INSERT INTO {block_exacompdescriptors} (`id`, `title`) VALUES (-1,"free_materials")';
+        //$DB->Execute($sql);
+        $DB->insert_record_raw('block_exacompdescriptors', ['id' => -1, 'title' => 'free_materials'], true, false, true);
 
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019101701, 'exacomp');
