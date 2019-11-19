@@ -10507,7 +10507,12 @@ function block_exacomp_read_preconfigurations_xml() {
     $xmlcontent = file_get_contents($namexml);
     $xmlarray = (array) simplexml_load_string($xmlcontent);
     if ($xmlarray && is_array($xmlarray) && $xmlarray['configOption']) {
-        foreach ($xmlarray['configOption'] as $config) {
+        if (!is_array($xmlarray['configOption'])) {
+            $configs = array($xmlarray['configOption']);
+        } else {
+            $configs = $xmlarray['configOption'];
+        }
+        foreach ($configs as $config) {
             $data = (array)$config;
             if ($data['@attributes']['id'] > 0) {
                 $key = $data['@attributes']['id'];
