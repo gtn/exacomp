@@ -1764,7 +1764,7 @@ class data_importer extends data {
         if ($subjects->length) {
             foreach ($subjects as $subject) {
                 $version = $subject->getElementsByTagName('version');
-                if ($version) {
+                if ($version && @$version->item(0)->nodeValue) {
                     $version = $version->item(0)->nodeValue;
                 } else {
                     $version = '';

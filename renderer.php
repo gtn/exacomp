@@ -4472,7 +4472,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 .html_writer::empty_tag('br');
         }
 
-        $input_hideglobalsubjects = html_writer::checkbox('hideglobalsubjects', 1, $settings->hideglobalsubjects == 1, '&nbsp;'.block_exacomp_get_string('usehideglobalsubjects'))
+        $input_hideglobalsubjects = html_writer::checkbox('hideglobalsubjects', 1, @$settings->hideglobalsubjects == 1, '&nbsp;'.block_exacomp_get_string('usehideglobalsubjects'))
             .html_writer::empty_tag('br');
 
 
