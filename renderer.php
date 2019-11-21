@@ -784,7 +784,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if ($first) {
 				//for every subject
 				$subjectRow = new html_table_row();
-				$subjectRow->attributes['class'] = 'highlight';
+				$subjectRow->attributes['class'] = 'exahighlight';
 
 				//subject-title
 				$title = new html_table_cell();
@@ -887,7 +887,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $sub_rg2_class = 'rg2-level-1';
 
                     $crosssubjectrow = new html_table_row();
-                    $crosssubjectrow->attributes['class'] = $this_rg2_class.' highlight';
+                    $crosssubjectrow->attributes['class'] = $this_rg2_class.' exahighlight';
                     // $crosssubjectrow->attributes['exa-rg2-id'] = 'topic-'.$topic->id;
 
                     $studentsCount = 0;
@@ -895,8 +895,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     //$student = array_values($students)[0];
 
                     $totalRow = new html_table_row();
-                    $totalRow->attributes['class'] = 'highlight';
-                    $totalRow->attributes['class'] = $this_rg2_class.' highlight';
+                    $totalRow->attributes['class'] = 'exahighlight';
+                    $totalRow->attributes['class'] = $this_rg2_class.' exahighlight';
 
                     $firstCol = new html_table_cell();
                     if($this->is_edit_mode()){
@@ -1391,7 +1391,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$evaluation = ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? 'teacher' : 'student';
 			if (!$crosssubjid) {
 				$subjectRow = new html_table_row();
-				$subjectRow->attributes['class'] = 'highlight';
+				$subjectRow->attributes['class'] = 'exahighlight';
 
 				//subject-title
 				$title = new html_table_cell();
@@ -1869,7 +1869,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$this_rg2_class = ($data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '').' '.$visible_css;
 
 				$topicRow = new html_table_row();
- 				$topicRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+ 				$topicRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' exahighlight';
  				$topicRow->attributes['exa-rg2-id'] = 'topic-'.$topic->id;
 
 				$outputidCell = new html_table_cell();
@@ -2143,7 +2143,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 
 					$own_additionRow = new html_table_row();
-					$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe highlight rg2 rg2-level-'.$child_data->rg2_level;
+					$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe exahighlight rg2 rg2-level-'.$child_data->rg2_level;
 
 					$own_additionRow->cells[] = new html_table_cell();
 
@@ -2219,7 +2219,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
  				$descriptorRow->attributes['class'] = ' exabis_comp_aufgabe '.$this_rg2_class;
  				$descriptorRow->attributes['exa-rg2-id'] = 'descriptor-'.$descriptor->id;
 				if ($parent) {
-					$descriptorRow->attributes['class'] = ' exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+					$descriptorRow->attributes['class'] = ' exabis_comp_teilcomp '.$this_rg2_class.' exahighlight';
 				}
 
 
@@ -3117,7 +3117,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             if ($first) {
                 //for every subject
                 $subjectRow = new html_table_row();
-                $subjectRow->attributes['class'] = 'highlight';
+                $subjectRow->attributes['class'] = 'exahighlight';
 
                 //subject-title
                 $title = new html_table_cell();
@@ -4259,7 +4259,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if ($levelstruct->level->source > 1 && $temp == false) {
 				// print table header for first source
 				$row = new html_table_row();
-				$row->attributes['class'] = 'highlight';
+				$row->attributes['class'] = 'exahighlight';
 
 				$cell = new html_table_cell();
 				//$cell->attributes['class'] = 'category catlevel1';
@@ -4272,7 +4272,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			$row = new html_table_row();
-			$row->attributes['class'] = 'highlight';
+			$row->attributes['class'] = 'exahighlight';
 
 			$cell = new html_table_cell();
 			$cell->colspan = 2;
@@ -4543,7 +4543,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             foreach ($schooltypes as $schooltype) {
 
                 $row = new html_table_row();
-                $row->attributes['class'] = 'exabis_comp_teilcomp highlight';
+                $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight';
 
                 $cell = new html_table_cell();
                 $cell->text =
@@ -4560,7 +4560,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $this_rg2_class = 'rg2-level-0';
 
                     $row = new html_table_row();
-                    $row->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+                    $row->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' exahighlight';
 
                     $cell = new html_table_cell();
                     $cell->text = html_writer::div(html_writer::span($subject->title, 'rg2-arrow-highlight').
@@ -4709,7 +4709,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach ($subjects as $subject) {
 			$row = new html_table_row();
-			$row->attributes['class'] = 'exabis_comp_teilcomp highlight rg2-level-0';
+			$row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
 
 			$cell = new html_table_cell();
 			$cell->text = html_writer::div('<input type="checkbox" name="subjects['.$subject->id.']" value="'.$subject->id.'" />'.html_writer::tag('b', $subject->title));
@@ -4781,7 +4781,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach ($subjects as $subject) {
 			$row = new html_table_row();
-			$row->attributes['class'] = 'exabis_comp_teilcomp highlight rg2-level-0';
+			$row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
 
 			$cell = new html_table_cell();
             if ($subject->has_another_source) {
@@ -4952,7 +4952,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this_rg2_class = 'rg2-level-'.$level;
 
 			$topicRow = new html_table_row();
-			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' exahighlight';
 			$topicRow->attributes['class'] = 'exabis_comp_aufgabe '.$this_rg2_class;
 			$outputidCell = new html_table_cell();
 			$outputidCell->text = $topic->get_numbering();
@@ -5100,7 +5100,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this_rg2_class = 'rg2-level-'.$level;
 
 			$topicRow = new html_table_row();
-			$topicRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' exahighlight';
 
 			$topicRow->cells[] = block_exacomp_get_topic_numbering($topic);
 
@@ -5256,7 +5256,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this_rg2_class = 'rg2-level-'.$level;
 
 			$topicRow = new html_table_row();
-			$topicRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' exahighlight';
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
