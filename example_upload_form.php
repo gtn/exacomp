@@ -28,7 +28,7 @@ class block_exacomp_example_upload_form extends moodleform {
 
 		$mform = & $this->_form;
 
-		$descrid = $this->_customdata['descrid'];
+		$descrid = @$this->_customdata['descrid'] ? $this->_customdata['descrid'] : null;
         if (array_key_exists('crosssubjid', $this->_customdata)) {
             $crosssubjid = $this->_customdata['crosssubjid'];
         } else {
@@ -72,10 +72,10 @@ class block_exacomp_example_upload_form extends moodleform {
         $mform->addElement('text', 'timeframe', block_exacomp_get_string("timeframe_example"), 'maxlength="255" size="60"');
         $mform->setType('timeframe', PARAM_TEXT);
 
-		if ($this->_customdata['taxonomies']) {
-			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),$this->_customdata['taxonomies']);
+		if (@$this->_customdata['taxonomies']) {
+			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),@$this->_customdata['taxonomies']);
 			$tselect->setMultiple(true);
-			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => $this->_customdata['exampleid']),"","taxid")));
+			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => @$this->_customdata['exampleid']),"","taxid")));
 		}
 
 		$mform->addElement('header', 'link', block_exacomp_get_string('link'));
@@ -88,10 +88,10 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->addElement('filemanager', 'files', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 2));
 		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
 
-		if( $this->_customdata['uses_activities'] ) {
+		if( @$this->_customdata['uses_activities'] ) {
 
 			$mform->addElement('header', 'assignments', block_exacomp_get_string('assignments'));
-			$mform->addElement('select', 'assignment', block_exacomp_get_string('assignments'), $this->_customdata['activities']);
+			$mform->addElement('select', 'assignment', block_exacomp_get_string('assignments'), @$this->_customdata['activities']);
 		}
 		/* if(block_exacomp_is_altversion()) {
 			$mform->addElement('checkbox', 'lisfilename', block_exacomp_get_string('lisfilename'));
@@ -100,11 +100,11 @@ class block_exacomp_example_upload_form extends moodleform {
 
 		$mform->addElement('hidden','topicid');
 		$mform->setType('topicid', PARAM_INT);
-		$mform->setDefault('topicid',$this->_customdata['topicid']);
+		$mform->setDefault('topicid', @$this->_customdata['topicid']);
 
 		$mform->addElement('hidden','exampleid');
 		$mform->setType('exampleid', PARAM_INT);
-		$mform->setDefault('exampleid',$this->_customdata['exampleid']);
+		$mform->setDefault('exampleid', @$this->_customdata['exampleid']);
 
 		$this->add_action_buttons(true);
 	}
