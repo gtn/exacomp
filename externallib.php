@@ -4825,6 +4825,8 @@ class block_exacomp_external extends external_api {
         }else{
             return array(
                 "timeremaining" => '0',
+                'timeplanned' => '0',
+                'timesuggested' => '0',
                 "success" => true,
             );
         }
