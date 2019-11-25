@@ -209,19 +209,19 @@ class api {
 			                }
                             $teacher_additional_grading_topics_real[$record->compid] = $record->additionalinfo;
 			            }
-			            continue;
+			            break;
 			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
 			            if ($record->value !== null && !isset($teacher_additional_grading_topics[$record->compid])) {
 			                $teacher_additional_grading_topics[$record->compid] = $options[$record->value];
                             $teacher_additional_grading_topics_real[$record->compid] = $options[$record->value];
 			            }
-			            continue;
+                        break;
 			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
 			            if ($record->value !== null && !isset($teacher_additional_grading_topics[$record->compid])) {
 			                $teacher_additional_grading_topics[$record->compid] = $record->value;
                             $teacher_additional_grading_topics_real[$record->compid] = $record->value;
 			            }
-			            continue;
+                        break;
 			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
 			            if (!isset($teacher_additional_grading_topics[$record->compid])) {
 			                if ($record->value == 0 || $record->value == null){
@@ -233,9 +233,7 @@ class api {
                                 $teacher_additional_grading_topics_real[$record->compid] = 1;
 			                }
 			            }
-			            continue;
-			        
-			            
+                        break;
 			    }
 			} else {
 			    if ($record->evalniveauid !== null && !isset($niveaus_competencies[$record->compid])) {
@@ -263,19 +261,19 @@ class api {
 			                    }
                                 $teacher_additional_grading_competencies_real[$record->compid] = $record->additionalinfo;
 			            }
-			            continue;
+                        break;
 			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
 			            if ($record->value !== null && !isset($teacher_additional_grading_competencies[$record->compid])) {
 			                $teacher_additional_grading_competencies[$record->compid] = $options[$record->value];
                             $teacher_additional_grading_competencies_real[$record->compid] = $options[$record->value];
 			            }
-			            continue;
+                        break;
 			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
 			            if ($record->value !== null && !isset($teacher_additional_grading_competencies[$record->compid])) {
 			                $teacher_additional_grading_competencies[$record->compid] = $record->value;
                             $teacher_additional_grading_competencies_real[$record->compid] = $record->value;
 			            }
-			            continue;
+                        break;
 			        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
 			            if (!isset($teacher_additional_grading_competencies[$record->compid])) {
 			                if($record->value == 0 || $record->value == null){
@@ -287,9 +285,7 @@ class api {
                                 $teacher_additional_grading_competencies_real[$record->compid] = 1;
 			                }
 			            }
-			            continue;
-			        
-			            
+                        break;
 			    }
 			}
 		}
