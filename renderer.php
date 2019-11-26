@@ -5532,6 +5532,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->attributes['class'] = (($rowcontent->visible) ? '' : 'notvisible');
 			$row->cells[] = $cell;
 
+			// if the topic has span = 1 - we need to join cells to the one
+            $cellSpannedContent = '';
+            $isSpanTopic = $rowcontent->span;
+
 			// competences
 			foreach ($rowcontent->niveaus as $niveau => $element) {
 
@@ -5611,11 +5615,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $cell->attributes['align'] = 'center';
 
 				if (in_array($niveau, $spanning_niveaus)) {
-					$cell->colspan = $spanning_colspan;
+					$cell->colspan = $spanning_colspan; // deprecated. Needed for support old data
 				}
 
-				$row->cells[] = $cell;
+                if ($isSpanTopic) {
+                    $cellSpannedContent .= $cell->text;
+                } else {
+                    $row->cells[] = $cell;
+                }
 			}
+
+			if ($cellSpannedContent) {
+			    $colspannedCell = new html_table_cell();
+			    $colspannedCell->colspan = $spanning_colspan;
+			    $colspannedCell->text = $cellSpannedContent;
+			    $row->cells[] = $colspannedCell;
+            }
 
 			if (block_exacomp_is_topicgrading_enabled()) {
 

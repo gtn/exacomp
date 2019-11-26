@@ -528,7 +528,7 @@ function block_exacomp_get_assessment_selfEval_verboses($level = 'example', $typ
         $level = 'comp';
     }
     if ($value !== null && array_key_exists($getforlanguage.$level.$type, $value)) {
-        return $value[$getforlanguage.$level];
+        return $value[$getforlanguage.$level.$type];
     }
     $value[$getforlanguage.$level.$type] = block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
     return $value[$getforlanguage.$level.$type];
@@ -1097,7 +1097,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	}
 
 	$sql = '
-		SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+		SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
 		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ' : '').'
 		JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
@@ -7721,7 +7721,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
 function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid) {
 
 	global $DB;
-	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, -1, 0, false, block_exacomp_is_teacher(), $studentid);
+	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, BLOCK_EXACOMP_SHOW_ALL_TOPICS, 0, false, block_exacomp_is_teacher(), $studentid);
 
 	$user = $DB->get_record('user', array('id' => $studentid));
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
@@ -7793,7 +7793,6 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		? $user->subjects->timestamp_teacher[$subject->id] : '';
 
 	$table_content->subject_title = $subject->title;
-
 	foreach ($table_header as $key => $niveau) {
 		if (isset($niveau->span) && $niveau->span == 1) {
 			unset($table_header[$key]);
@@ -7831,7 +7830,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic) {
 	$data = (object)[];
 	$data->niveaus = array();
-	$data->span = 0;
+	$data->span = @$topic->span ? $topic->span : 0;
 
 	$use_evalniveau = block_exacomp_use_eval_niveau();
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
@@ -7869,7 +7868,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		$data->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp)) ? $evaluation->timestamp : 0);
 
 		$data->niveaus[$niveau->title]->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$studentid);
-		if ($niveau->span == 1) {
+		if ($niveau->span == 1) { // deprecated, but needed for support old installations 
 			$data->span = 1;
 		}
 	}
