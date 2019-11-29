@@ -7868,7 +7868,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		$data->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp)) ? $evaluation->timestamp : 0);
 
 		$data->niveaus[$niveau->title]->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$studentid);
-		if ($niveau->span == 1) { // deprecated, but needed for support old installations 
+		if ($niveau->span == 1) { // deprecated, but needed for support old installations
 			$data->span = 1;
 		}
 	}
@@ -8280,15 +8280,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	// create grading statistic
 	//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid)); //deprecated/not generic? RW or just wrong?
-	if($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){ //if points: divide into 5 parts
-	    $limit = block_exacomp_get_assessment_points_limit();
-	    $schemeItems_descriptors = array();
-	    for($i=0; $i<5; $i++){
-	        $schemeItems_descriptors[$i]=($limit/5)*($i+1); //maximum number of points for this interval
-	    }
-	}else{
-	    $schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,$compAssessment);
-	}
+    $schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,$compAssessment);
 
 	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_example_scheme());
 
