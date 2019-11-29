@@ -6479,6 +6479,8 @@ class block_exacomp_external extends external_api {
 	                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 	                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 	                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
+                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
 	            ))),
 	            'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	            'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6521,6 +6523,8 @@ class block_exacomp_external extends external_api {
 	            'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 	            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 	            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
+                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
 	        ))),
 	        'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	        'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6627,6 +6631,8 @@ class block_exacomp_external extends external_api {
 				    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 				    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
                     'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
+                    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
+                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
 				))),
 				'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 				'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6670,6 +6676,8 @@ class block_exacomp_external extends external_api {
 			    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 			    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
                 'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
+                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
+                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
 			))),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6774,8 +6782,6 @@ class block_exacomp_external extends external_api {
 	protected static function _get_example_information($courseid, $userid, $exampleid) {
 	    global $CFG, $DB;
 	    $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
-//	    var_dump($example);
-//	    die();
 	    if (!$example) {
 	        throw new invalid_parameter_exception ('Example does not exist');
 	    }
@@ -9395,7 +9401,14 @@ class block_exacomp_external extends external_api {
 				$example_return->evalniveauid = $evaluation->evalniveauid;
 				$example_return->timestampteacher = $evaluation->timestampteacher;
 				$example_return->timestampstudent = $evaluation->timestampstudent;
+                $example_return->additionalinfo = isset($evaluation->additionalinfo) ? $evaluation->additionalinfo : -1;
+                if (!$evaluation || $evaluation->resubmission) {
+                    $example_return->resubmission = true;
+                } else {
+                    $example_return->resubmission = false;
+                }
 			}
+
 
 			$example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student)) || $forall)) ? 1 : 0;
 			$example_return->used = (block_exacomp_example_used($courseid, $example, $userid)) ? 1 : 0;
