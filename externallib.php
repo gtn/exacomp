@@ -7271,16 +7271,13 @@ class block_exacomp_external extends external_api {
 
 		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp,true);
 
-// 		var_dump($statistics);
 
 		$statistics_return = array();
-
 		foreach ($statistics as $key => $statistic) {
 			$return = array();
 			foreach ($statistic as $niveauid => $niveaustat) {
 				$niveau = new stdClass();
-				$niveau->id = $niveauid;
-
+				$niveau->id = (int)$niveauid; // quick bugfix: when "points" is set in the plugin settings, the last niveaus is "".. this would lead to an error since int is expected
 				$evaluations = array();
 				foreach ($niveaustat as $evalvalue => $sum) {
 					$eval = new stdClass();
