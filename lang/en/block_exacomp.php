@@ -514,6 +514,8 @@ $string['profoundness_entirely'] = 'Entirely achieved';
 // === External trainer & eLove ===
 $string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning of external trainers for students.';
 $string['block_exacomp_external_trainer_assign_body'] = 'This is required for using the elove app.';
+$string['block_exacomp_dakora_language_file_head'] = 'Custom language file for Dakora';
+$string['block_exacomp_dakora_language_file_body'] = 'Use <a href="https://exabis.at/sprachgenerator" target="_blank">language generator</a> for creating custom language file';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Allow self-assessment for students in the elove app';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';

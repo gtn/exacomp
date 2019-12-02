@@ -11186,3 +11186,18 @@ function block_exacomp_versions_compare($newVersion, $oldVersion, $rule = 1) {
     }
     return false;
 }
+
+function block_exacomp_get_config_dakora_language_file($returnContent = false) {
+    if (get_config('exacomp', 'dakora_language_file')) {
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(1, 'exacomp', 'exacomp_dakora_language_file', 0, '', false);
+        $file = reset($files);
+        if ($file) {
+            if ($returnContent) {
+                return $file->get_content();
+            }
+            return $file;
+        }
+    };
+    return null;
+}
