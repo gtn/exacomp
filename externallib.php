@@ -7287,7 +7287,7 @@ class block_exacomp_external extends external_api {
 				$evaluations = array();
 				foreach ($niveaustat as $evalvalue => $sum) {
 					$eval = new stdClass();
-					$eval->value = $evalvalue;
+					$eval->value = (int)$evalvalue;
 					$eval->sum = $sum;
 					$evaluations[] = $eval;
 				}
