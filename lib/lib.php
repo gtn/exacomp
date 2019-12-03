@@ -8341,7 +8341,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
                 }else{
                     @$descriptorgradings[-1][$eval->additionalinfo]++;
                 }
-            } else { // POINTS or YESNO
+            } else { // POINTS or YESNO  or Verbose
                 if (isset($descriptorgradings[$niveaukey][$eval->value])) {
                     $descriptorgradings[$niveaukey][$eval->value]++;
                 }else{
