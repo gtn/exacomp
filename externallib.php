@@ -6480,7 +6480,7 @@ class block_exacomp_external extends external_api {
 	                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 	                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
                     'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
-                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
+                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
 	            ))),
 	            'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	            'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6524,7 +6524,7 @@ class block_exacomp_external extends external_api {
 	            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 	            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
                 'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
-                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
+                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
 	        ))),
 	        'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	        'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6632,7 +6632,7 @@ class block_exacomp_external extends external_api {
 				    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
                     'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                     'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
-                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
+                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
 				))),
 				'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 				'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6677,7 +6677,7 @@ class block_exacomp_external extends external_api {
 			    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
                 'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                 'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
-                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
+                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
 			))),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -8972,6 +8972,8 @@ class block_exacomp_external extends external_api {
 	        $example->id = $example->exampleid;
 	        $solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
 	        $example->solution_visible = $solution_visible;
+
+
 	    }
 	    $examplegradings = new stdClass();
 	    $examplegradings->teacher = array();
@@ -9091,6 +9093,7 @@ class block_exacomp_external extends external_api {
 				if (!array_key_exists($example->id, $examples_return)) {
 					$examples_return[$example->id] = $example_return;
 				}
+
 			}
 		}
 
