@@ -1109,6 +1109,12 @@ $settings->add(new admin_setting_configselect('exacomp/addblock_to_new_course',
 $settings->add(new admin_setting_heading('exacomp/heading_apps',
         block_exacomp_get_string('settings_heading_apps'),
         ''));
+$settings->add(new admin_setting_configstoredfile('exacomp/dakora_language_file',
+        block_exacomp_get_string('block_exacomp_dakora_language_file_head'),
+        block_exacomp_get_string('block_exacomp_dakora_language_file_body'),
+        'exacomp_dakora_language_file',
+        0,
+        array('maxfiles' => 1, 'accepted_types' => array('.json'))));
 $settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_assessment',
         block_exacomp_get_string('block_exacomp_elove_student_self_assessment_head'),
         block_exacomp_get_string('block_exacomp_elove_student_self_assessment_body'), 0));

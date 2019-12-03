@@ -1809,6 +1809,14 @@ return [
 		'Erforderlich für die Benutzung der elove App',
 		'This is required for using the elove app.',
 	],
+	'block_exacomp_dakora_language_file_head' => [
+		'Custom language file for Dakora',
+		'Custom language file for Dakora',
+	],
+	'block_exacomp_dakora_language_file_body' => [
+		'Use <a href="https://exabis.at/sprachgenerator" target="_blank">language generator</a> for creating custom language file',
+		'Use <a href="https://exabis.at/sprachgenerator" target="_blank">language generator</a> for creating custom language file',
+	],
 	'block_exacomp_elove_student_self_assessment_head' => [
 		'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben',
 		'Allow self-assessment for students in the elove app',

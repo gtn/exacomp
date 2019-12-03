@@ -8088,6 +8088,7 @@ class block_exacomp_external extends external_api {
 		    'moodleversion' => $CFG->version,
 			'release' => $info->release,
             'exaportactive' => $exaportactive,
+            'customlanguagefile' => block_exacomp_get_config_dakora_language_file(true), // Returns JSON content.
 		);
 	}
 
