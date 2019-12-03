@@ -198,13 +198,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 
     if ($action == 'search' && !$isTemplateDeleting) {
         echo html_writer::tag('h2', block_exacomp_get_string('result'));
-//        const BLOCK_EXACOMP_TYPE_DESCRIPTOR = 0;
-//        const BLOCK_EXACOMP_TYPE_TOPIC = 1;
-//        const BLOCK_EXACOMP_TYPE_CROSSSUB = 2;
-//        const BLOCK_EXACOMP_TYPE_SUBJECT = 3;
-//        const BLOCK_EXACOMP_TYPE_EXAMPLE = 4;
-//        const BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT = 1001;
-//        const BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD = 1002;
+
         $filterlogictext = "Filterlogic: <br>";
 
         if($filter[BLOCK_EXACOMP_TYPE_SUBJECT]["visible"]){

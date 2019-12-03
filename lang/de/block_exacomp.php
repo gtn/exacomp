@@ -832,7 +832,7 @@ $string['AND teacherevaluation from'] = 'UND Lehrerbeurteilung von';
 $string['report all educational standards'] = 'Alle  Bildungsstandard/Raster welche folgenden Filterkriterien entsprechen: ';
 $string['report all topics'] = 'Alle  Kompetenzbereiche von Bildungsstandard/Rastern die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ';
 $string['report all descriptor parents'] = 'Alle  Kompetenzen von Kompetenzbereichen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
-$string['report all descriptor descriptor children'] = 'Alle  Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
+$string['report all descriptor children'] = 'Alle  Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
 $string['report all descriptor examples'] = 'Alle  Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
 $string['topic_description'] = 'Erstellen Sie ihren ersten Kompetenzbereich, das ist die erste Zeile in
 ihrem Raster';

@@ -2982,7 +2982,7 @@ return [
         'Alle  Kompetenzen von Kompetenzbereichen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen',
         'All competences of competence fields that have not been filtered AND pass following filters: ',
     ],
-    'report all descriptor descriptor children' => [
+    'report all descriptor children' => [
         'Alle  Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen',
         'All child competences of competences that have not been filtered AND pass following filters: ',
     ],

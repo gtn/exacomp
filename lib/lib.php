@@ -9645,10 +9645,13 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
 			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
 				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 				$item_type = $item::TYPE;
-				$item_scheme = block_exacomp_additional_grading($item_type);
+
 				if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 					$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 				}
+                $item_scheme = block_exacomp_additional_grading($item_type); //this has to be done AFTER specifying the item type of course, otherwise always the scheme of the parent descriptor will be taken
+
+
 
 				$item_filter = (array)@$filter[$item_type];
 
