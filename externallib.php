@@ -7287,9 +7287,12 @@ class block_exacomp_external extends external_api {
 				$evaluations = array();
 				foreach ($niveaustat as $evalvalue => $sum) {
 					$eval = new stdClass();
-					$eval->value = (int)$evalvalue;
-					$eval->sum = $sum;
-					$evaluations[] = $eval;
+					if(!($evalvalue === "")){ //when the grading has existed but is reset to none, there is "" saved... DONT include these
+                        $eval->value = $evalvalue;
+                        $eval->sum = $sum;
+                        $evaluations[] = $eval;
+                    }
+
 				}
 				$niveau->evaluations = $evaluations;
 
