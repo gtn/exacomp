@@ -8341,26 +8341,11 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
                 }else{
                     @$descriptorgradings[-1][$eval->additionalinfo]++;
                 }
-            } else {
-                if($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){ //calculate the fitting interval for points
-//                    $incremented = false; //checks if an intervall has been incremented already ==> stop incrementing or the higher intervals would also be incremented
-//                    for($i=0; $i<5 && $incremented==false; $i++){
-//                        if ($eval->value <= $schemeItems_descriptors[$i]) {
-//                            $descriptorgradings[$niveaukey][$i]++;
-//                            $incremented = true;
-//                        }
-//                    }
-                    if (isset($descriptorgradings[$niveaukey][$eval->value])) {
-                        $descriptorgradings[$niveaukey][$eval->value]++;
-                    }else {
-                        @$descriptorgradings[-1][$eval->value]++;
-                    }
-                }else{ //Verbose or YESNO
-                    if (isset($descriptorgradings[$niveaukey][$eval->value])) {
-                        $descriptorgradings[$niveaukey][$eval->value]++;
-                    }else{
-                        @$descriptorgradings[-1][$eval->value]++;
-                    }
+            } else { // POINTS or YESNO
+                if (isset($descriptorgradings[$niveaukey][$eval->value])) {
+                    $descriptorgradings[$niveaukey][$eval->value]++;
+                }else{
+                    @$descriptorgradings[-1][$eval->value]++;
                 }
 			}
 		}
