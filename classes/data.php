@@ -1577,7 +1577,7 @@ class data_importer extends data {
         $niveausFromSelected = self::get_property_for_descriptors_from_xml($xml, 'niveauid', $descriptorsFromSelectedGrids);
 		if(isset($xml->niveaus)) {
 			foreach($xml->niveaus->niveau as $niveau) {
-                if (in_array($niveau->attributes()->id, $niveausFromSelected)) {
+                if (in_array((int)$niveau->attributes()->id, $niveausFromSelected)) {
                     self::insert_niveau($niveau);
                 }
 			}
@@ -1595,7 +1595,7 @@ class data_importer extends data {
 		if (isset($xml->categories)) {
             //$categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
 			foreach($xml->categories->category as $category) {
-                if (in_array($category->attributes()->id, $categoryFromSelected)) {
+                if (in_array((int)$category->attributes()->id, $categoryFromSelected)) {
                     self::insert_category($category, 0, $categoryMapping);
                 }
 			}
@@ -1603,7 +1603,7 @@ class data_importer extends data {
 		
 		if (isset($xml->descriptors)) {
 			foreach($xml->descriptors->descriptor as $descriptor) {
-			    if (in_array($descriptor->attributes()->id, $descriptorsFromSelectedGrids)) {
+			    if (in_array((int)$descriptor->attributes()->id, $descriptorsFromSelectedGrids)) {
                     self::insert_descriptor($descriptor, 0, 0, $categoryMapping);
                 }
 			}
@@ -1612,7 +1612,7 @@ class data_importer extends data {
         $examplesFromSelected = self::get_examples_for_descriptors_from_xml($xml, $descriptorsFromSelectedGrids);
 		if (isset($xml->examples)) {
 			foreach($xml->examples->example as $example) {
-			    if (in_array($example->attributes()->id, $examplesFromSelected)) {
+			    if (in_array((int)$example->attributes()->id, $examplesFromSelected)) {
                     self::insert_example($example);
                 }
 			}
@@ -1656,7 +1656,7 @@ class data_importer extends data {
 			}
 		}
 		
-		
+
 		
 		
 		
@@ -1676,7 +1676,7 @@ class data_importer extends data {
 		      foreach($xml->activities->activity as $activity) {
                   if (isset($activity->descriptors)) {
                       foreach ($activity->descriptors->descriptorid as $descriptorid) {
-                          if (in_array($descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {
+                          if (in_array((int)$descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {
                               self::insert_activity($activity, $course_template);
                               continue;
                           }
@@ -1684,7 +1684,7 @@ class data_importer extends data {
                   }
 		           if (isset($activity->topics)) {
                        foreach ($activity->topics->topicid as $topicid) {
-                           if (in_array($topicid->attributes()->id, $topicsFromSelectedGrids)) {
+                           if (in_array((int)$topicid->attributes()->id, $topicsFromSelectedGrids)) {
                                self::insert_activity($activity, $course_template);
                                continue;
                            }
@@ -1800,7 +1800,9 @@ class data_importer extends data {
     }
 
 	private static function get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId = 0) {
+	    global $DB;
 	    $result = array();
+        $subjectsIds = '';
 	    if (self::get_selectedallgrids_for_source($source_local_id, $schedulerId)) {
 	        // all subjects
             $subjectsIds = '*';
@@ -1832,6 +1834,13 @@ class data_importer extends data {
             if (count($selectedGrids) > 0) {
                 $subjectsIds = self::DOM_convert_valuearray_to_xpath_query($selectedGrids, 'id');
                 $query = "//subjects/subject[".$subjectsIds."]/topics/topic/descriptors/descriptorid";
+            } else if ($subjectsIds == '*') { // if empty selectedGrids and '*' - check again
+                $existingSubjectsForSource = $DB->get_records('block_exacompsubjects', ['source' => $source_local_id]);
+                // if no any subject yet (for this source) -> it is new importing
+                // if exists at least one - filtered list was cleared
+                if (!$existingSubjectsForSource) {
+                    $query = "//subjects/subject/topics/topic/descriptors/descriptorid";
+                }
             }
             if ($query != '') {
                 $descriptors = $xpath->query($query);
