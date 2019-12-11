@@ -194,7 +194,7 @@ foreach($crosssubjects as $crosssubjectsOfCourse) {
 
 foreach($user_courses as $course) {
 	//if selected
-		echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id));
+    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
 }
 
 /* END CONTENT REGION */
