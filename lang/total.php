@@ -3020,4 +3020,8 @@ ihrem Raster',
         'Nothing to show',
         'Nothing to show',
     ],
+    'descriptor_description' => [
+        'Competenzbeschreibung',
+        'Competency description'
+    ],
 ];

@@ -843,3 +843,4 @@ $string['selectcourse_filter_schooltype'] = 'Schulart';
 $string['selectcourse_filter_onlyselected'] = 'Nur ausgewählte Raster anzeigen';
 $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Nothing to show';
+$string['descriptor_description'] = 'Competenzbeschreibung';

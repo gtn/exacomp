@@ -87,8 +87,8 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$schooltypes = array_map(function($st) { return $st->title; }, $schooltypes);
 
-		$mform->addElement('select', 'stid', block_exacomp_get_string('tab_teacher_settings_selection_st'), $schooltypes);
-		$mform->addElement('html', '<br/>');
+		//$mform->addElement('select', 'stid', block_exacomp_get_string('tab_teacher_settings_selection_st'), $schooltypes);
+		//$mform->addElement('html', '<br/>');
 		
 		//Topic
 		$mform->addElement('html', '<h2> '.block_exacomp_get_string("topic").' </h2>');
@@ -113,7 +113,7 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->setType('niveau_numb', PARAM_TEXT);
 		
 		$mform->addElement('html', '<h2> '.block_exacomp_get_string("descriptors").' </h2>');
-		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('descriptor_description'), 'maxlength="255" size="60"');
 		$mform->setType('descriptor_title', PARAM_TEXT);
 		$mform->addRule('descriptor_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 		
@@ -128,7 +128,7 @@ if($formdata = $form->get_data()) {
 	
 	$new = new stdClass();
 	$new->title = $formdata->title;
-	$new->stid = $formdata->stid;
+	$new->stid = -18;
 	$new->titleshort = substr($formdata->title, 0, 1);
 	
 	$newTopic = new stdClass();
@@ -139,6 +139,23 @@ if($formdata = $form->get_data()) {
 	    //Subject
 		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
+		
+		if(!$DB->record_exists(BLOCK_EXACOMP_DB_EDULEVELS, array('source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM))){
+		    $newEL = new stdClass();
+		    $newEL->title = "Mein Edulevel";
+		    $newEL->sourceid = 0;
+		    $newEL->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
+		    
+		    $id = $DB->insert_record(BLOCK_EXACOMP_DB_EDULEVELS, $newEL);
+
+		    $newST = new stdClass();
+		    $newST->elid = $id;
+		    $newST->title = "Mein Schultyp";
+		    $newST->sourceid = 0;
+		    $newST->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
+		    
+		    $DB->insert_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, $newST);
+		}
 	
 		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_SUBJECTS, $new);
 

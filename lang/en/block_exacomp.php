@@ -833,3 +833,4 @@ $string['selectcourse_filter_schooltype'] = 'Schooltype';
 $string['selectcourse_filter_onlyselected'] = 'Show only selected grids';
 $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Nothing to show';
+$string['descriptor_description'] = 'Competency description';
