@@ -142,6 +142,8 @@ const BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE = 2;
 const BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS = 3;
 const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
 
+const BLOCK_EXACOMP_IS_GLOBAL = 'isglobal';
+
 // data for multiple using
 $block_exacomp_topic_used_values = array();
 $block_exacomp_descriptor_used_values = array();
@@ -921,17 +923,17 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON ((d.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_TOPIC.'))
 				AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
 			').'
-		ORDER BY s.title
+		ORDER BY s.isglobal, s.title
 			';
 
 	$subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
 
     //remove the subjects that are hidden because they are globalsubjects and the settings are set to hide them
-    if($hideglobalsubjects = -1){
+    if ($hideglobalsubjects = -1){
         $coursesettings = block_exacomp_get_settings_by_course($courseid);
         $hideglobalsubjects = @$coursesettings->hideglobalsubjects;
     }
-    if($hideglobalsubjects == 1){
+    if ($hideglobalsubjects == 1){
         foreach ($subjects as $key => $subject) {
             if($subject->isglobal){
                 unset($subjects[$key]);
@@ -939,7 +941,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
         }
     }
 
-	return block_exacomp_sort_items($subjects, BLOCK_EXACOMP_DB_SUBJECTS);
+	return block_exacomp_sort_items($subjects, [BLOCK_EXACOMP_IS_GLOBAL, BLOCK_EXACOMP_DB_SUBJECTS]);
 }
 
 /**
@@ -1140,6 +1142,12 @@ function block_exacomp_sort_items(&$items, $sortings) {
 			}
 
 			switch ($sorting) {
+                case BLOCK_EXACOMP_IS_GLOBAL:
+                    if (!property_exists($a, $prefix.'isglobal') || !property_exists($b, $prefix.'isglobal')) {
+                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'isglobal');
+                    }
+                    return $a->{$prefix.'isglobal'} < $b->{$prefix.'isglobal'} ? -1 : 1;
+                    break;
                 case BLOCK_EXACOMP_DB_SUBJECTS:
                     if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
                         throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'source');
@@ -1972,7 +1980,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		$selectedTopic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid));
 	}
 
-
 	// 1. GET SUBJECTS
 	if ($courseid == 0) {
 		$allSubjects = block_exacomp_get_all_subjects();
@@ -2069,7 +2076,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  */
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects = false) {
 	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false);
-	$courseSubjects = block_exacomp_get_subjects_by_course($courseid,false,$hideglobalsubjects);
+	$courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects);
 
 	$topic = new \stdClass();
 	$topic->id = $topicid;
