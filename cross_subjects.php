@@ -412,7 +412,7 @@ if ($isTeacher) {
 	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 		//$showevaluation = false;   why?
 	    $showevaluation = true;
-		echo $output->students_column_selector(count($students));
+		echo $output->students_column_selector(count($students), 'cross_subjects');
 	} elseif ($studentid == 0)
 		$students = array();
 	elseif (!empty($students[$studentid])) {

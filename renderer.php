@@ -3976,6 +3976,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'courseid' => g::$COURSE->id,
                 );
                 break;
+            case 'cross_subjects':
+                // NO break!
+                $all_link_title = block_exacomp_get_string('allstudents');
             default:
                 $script = ''; // do not used
                 $items_per_column = 3; // default, but not used!

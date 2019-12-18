@@ -1017,7 +1017,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	global $DB;
 
 	if ($courseid == 0) {
-		$sql = 'SELECT s.id, s.title, s.author
+		$sql = 'SELECT s.id, s.title, s.author, s.isglobal
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 		GROUP BY s.id, s.title, s.stid
@@ -1026,7 +1026,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 
 		return $DB->get_records_sql($sql);
 	} else if ($subjectid != null) {
-		$sql = 'SELECT s.id, s.title, s.author
+		$sql = 'SELECT s.id, s.title, s.author, s.isglobal
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 		WHERE s.id = ?
@@ -1037,7 +1037,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	}
 
 	$subjects = $DB->get_records_sql('
-			SELECT DISTINCT s.id, s.title, s.stid, s.sorting
+			SELECT DISTINCT s.id, s.title, s.stid, s.sorting, s.isglobal
 			FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 			JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 			JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
