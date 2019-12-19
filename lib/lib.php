@@ -929,10 +929,9 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 	$subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
 
     //remove the subjects that are hidden because they are globalsubjects and the settings are set to hide them
-    if ($hideglobalsubjects = -1){
-        $coursesettings = block_exacomp_get_settings_by_course($courseid);
-        $hideglobalsubjects = @$coursesettings->hideglobalsubjects;
-    }
+
+    $coursesettings = block_exacomp_get_settings_by_course($courseid);
+    $hideglobalsubjects = @$coursesettings->hideglobalsubjects;
     if ($hideglobalsubjects == 1){
         foreach ($subjects as $key => $subject) {
             if($subject->isglobal){
