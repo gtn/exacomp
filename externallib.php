@@ -8039,7 +8039,9 @@ class block_exacomp_external extends external_api {
 			'version' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
 		    'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
 			'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
-            'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),
+            'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
+						'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
+				'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
 		));
 	}
 
