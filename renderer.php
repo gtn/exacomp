@@ -5751,9 +5751,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
     //TODO: make generic
 	function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true, $assessmentScheme ) {
 		$content = '';
-		
+
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
-		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, true,$assessmentScheme);
+		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, false,$assessmentScheme);
         $value_titles = array_filter($value_titles, 'strlen'); // remove empty, but except '0'
         $count_values = count($value_titles);
 		$value_titles_long = \block_exacomp\global_config::get_teacher_eval_items($courseid, false);
