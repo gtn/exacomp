@@ -484,6 +484,7 @@ function block_exacomp_get_assessment_verbose_negative_threshold(){
     return get_config('exacomp', 'assessment_verbose_negative');
 }
 
+
 function block_exacomp_get_assessment_diffLevel_options() {
     static $value;
     if ($value !== null) {
@@ -8311,11 +8312,16 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	// 	 $schemeItems_descriptors = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR); //get the generic schemeItems RW
 
 
+    //RW this is deprecated, instead use "block_exacomp_get_assessment_comp_diffLevel".. but this is different for competencies, examples, topics, etc
 	$evaluationniveau_items = block_exacomp_use_eval_niveau()
 		? \block_exacomp\global_config::get_evalniveaus() : [
-        '0' => ''
+        '-1' => ''
     ];
 
+	//if diff levels are not active, but some gradings already have them ---> handle those gradings like there is no niveau
+	if(block_exacomp_get_assessment_comp_diffLevel() == 0){
+        $evaluationniveau_items = ['-1' => ''];
+	}
 
     foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
 		$descriptorgradings[$niveaukey] = [];
