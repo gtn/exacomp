@@ -2257,7 +2257,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $outputname = str_repeat('&nbsp;', 9).$outputname;
                     }
                 }
-				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname), '', ['title' => $title]);
+				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname.($title ? $this->pix_icon("i/info", $title) : '')), '');
 
 				// EDIT MODE BUTTONS
 				if ($editmode) {
@@ -2286,6 +2286,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				/*if ($editmode) {
 					$titleCell->text .= ' '.$this->source_info($descriptor->source);
 				}*/
+
                 $titleCell->attributes['width'] = '30%';
 				$descriptorRow->cells[] = $titleCell;
 
