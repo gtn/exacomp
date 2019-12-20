@@ -1115,6 +1115,10 @@ $settings->add(new admin_setting_configstoredfile('exacomp/dakora_language_file'
         'exacomp_dakora_language_file',
         0,
         array('maxfiles' => 1, 'accepted_types' => array('.json'))));
+$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/dakora_timeout',
+        block_exacomp_get_string('settings_dakora_timeout'),
+        block_exacomp_get_string('settings_dakora_timeout_description'),
+        900, PARAM_INT));
 $settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_assessment',
         block_exacomp_get_string('block_exacomp_elove_student_self_assessment_head'),
         block_exacomp_get_string('block_exacomp_elove_student_self_assessment_body'), 0));

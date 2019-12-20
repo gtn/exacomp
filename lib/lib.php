@@ -11202,3 +11202,7 @@ function block_exacomp_get_config_dakora_language_file($returnContent = false) {
     };
     return null;
 }
+
+function block_exacomp_get_config_dakora_timeout() {
+    return get_config('exacomp', 'dakora_timeout');
+}

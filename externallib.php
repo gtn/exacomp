@@ -8104,6 +8104,7 @@ class block_exacomp_external extends external_api {
 			'release' => $info->release,
             'exaportactive' => $exaportactive,
             'customlanguagefile' => block_exacomp_get_config_dakora_language_file(true), // Returns JSON content.
+            'timeout' => block_exacomp_get_config_dakora_timeout(),
 		);
 	}
 

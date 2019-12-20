@@ -1817,6 +1817,14 @@ return [
 		'Verwenden Sie den <a href="https://exabis.at/sprachgenerator" target="_blank">Sprachengenerator</a> um eigene Sprachdateien zu erstellen',
 		'Use <a href="https://exabis.at/sprachgenerator" target="_blank">language generator</a> for creating custom language file',
 	],
+    'settings_dakora_timeout' => [
+            'Dakora Timeout (Sekunden)',
+            'Dakora Timeout (Seconds)',
+    ],
+    'settings_dakora_timeout_description' => [
+            '',
+            '',
+    ],
 	'block_exacomp_elove_student_self_assessment_head' => [
 		'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben',
 		'Allow self-assessment for students in the elove app',

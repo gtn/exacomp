@@ -522,6 +522,8 @@ $string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen 
 $string['block_exacomp_external_trainer_assign_body'] = 'Erforderlich für die Benutzung der elove App';
 $string['block_exacomp_dakora_language_file_head'] = 'Alternative Sprachdatei für DAKORA';
 $string['block_exacomp_dakora_language_file_body'] = 'Verwenden Sie den <a href="https://exabis.at/sprachgenerator" target="_blank">Sprachengenerator</a> um eigene Sprachdateien zu erstellen';
+$string['settings_dakora_timeout'] = 'Dakora Timeout (Sekunden)';
+$string['settings_dakora_timeout_description'] = '';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Externe TrainerIn zuordnen';
