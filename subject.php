@@ -128,7 +128,6 @@ if($formdata = $form->get_data()) {
 	
 	$new = new stdClass();
 	$new->title = $formdata->title;
-	$new->stid = -18;
 	$new->titleshort = substr($formdata->title, 0, 1);
 	
 	$newTopic = new stdClass();
@@ -147,6 +146,7 @@ if($formdata = $form->get_data()) {
 		    $newEL->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		    
 		    $id = $DB->insert_record(BLOCK_EXACOMP_DB_EDULEVELS, $newEL);
+		    $new->stid = $id;
 
 		    $newST = new stdClass();
 		    $newST->elid = $id;
