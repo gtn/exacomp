@@ -63,8 +63,8 @@ foreach($subjects as $subject){
 
 		$crosssubjects_exist = true;
 		$content .= html_writer::start_tag('li');
-		$content .= html_writer::checkbox('crosssubject',$crosssubject->id,isset($assigned_crosssubjects[$crosssubject->id]),
-			$crosssubject->title." (".$course->fullname.') ');
+		$content .= html_writer::checkbox('crosssubject', $crosssubject->id, isset($assigned_crosssubjects[$crosssubject->id]),
+			$crosssubject->title." (".@$course->fullname.') ');
 		$content .= html_writer::end_tag('li');
 	}
 	$content .= html_writer::end_tag('ul');
@@ -85,6 +85,11 @@ echo $content;
 
 echo "</div>";
 
-echo html_writer::div(html_writer::tag("input", '', array("type"=>"button","value"=>block_exacomp_get_string('add_descriptors_to_crosssub'),"id"=>"crosssubjects")), '', array('id'=>'exabis_save_button'));
+echo html_writer::div(html_writer::tag("input", '', array("type" => "button",
+                                                        "value" => block_exacomp_get_string('add_descriptors_to_crosssub'),
+                                                        "id" => "crosssubjects",
+                                                        'class' => 'btn btn-default'
+                                                        )
+                    ), '', array('id'=>'exabis_save_button'));
 
 echo $output->footer();

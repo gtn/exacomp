@@ -271,7 +271,7 @@ if ($action == 'descriptor_selector') {
 
 	echo '<form method="post">';
 	echo $print_tree($subjects);
-	echo '<input type="submit" name="save" value="'.block_exacomp_get_string('add_descriptors_to_crosssub').'" />';
+	echo '<input type="submit" name="save" value="'.block_exacomp_get_string('add_descriptors_to_crosssub').'" class="btn btn-default"/>';
 	echo '</form>';
 
 	echo $output->footer();
@@ -429,16 +429,15 @@ if ($editmode) {
 
 if ($cross_subject) {
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_subject, $isTeacher /*!($course_settings->show_all_examples == 0 && !$isTeacher)*/, $course_settings->filteredtaxonomies, ($studentid>0 && !$isTeacher)?$studentid:0, ($isTeacher)?false:true);
-
 	if ($subjects) {
-	    if($style == 0){
+	    if ($style == 0) {
 	        echo $output->overview_legend($isTeacher);
 	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 	        echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
 	        echo html_writer::end_tag("div");
 	        echo html_writer::end_tag('form');
-	    }else if($style == 1){
+	    } else if ($style == 1){
 	        echo $output->overview_legend($isTeacher);
 	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));

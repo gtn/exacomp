@@ -6359,8 +6359,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$left_content .= html_writer::tag("input", "", array("type" => "submit", "class" => 'allow-submit', "value" => block_exacomp_get_string("add_crosssub")));
 		}
 		if ($cross_subject && $this->is_edit_mode()) {
-			$left_content .= html_writer::tag("input", "", array("type" => "submit", "class" => 'allow-submit', "value" => block_exacomp_get_string("save_crosssub")));
-			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => block_exacomp_get_string('add_descriptors_to_crosssub'), 'exa-type' => "iframe-popup", 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$cross_subject->id));
+			$left_content .= html_writer::tag("input", "", array("type" => "submit",
+                    "class" => 'allow-submit btn btn-default',
+                    "value" => block_exacomp_get_string("save_crosssub")));
+			$left_content .= html_writer::tag("input", "", array("type" => "button",
+                    "value" => block_exacomp_get_string('add_descriptors_to_crosssub'),
+                    'class' => 'btn btn-default',
+                    'exa-type' => "iframe-popup",
+                    'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$cross_subject->id));
 
 		}
 		if ($cross_subject && !$this->is_edit_mode() && $cross_subject->has_capability(BLOCK_EXACOMP_CAP_MODIFY) && !$cross_subject->is_draft()) {

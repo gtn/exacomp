@@ -8498,7 +8498,6 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
             $avgsumstudent[$niveau->title][] = ($student_evaluation->value ? $student_evaluation->value : -1);
         }
         $descriptorgradings[$niveau->title]->teachervaluetitle = $descriptorgradings[$niveau->title]->teachervalue;
-        //echo "<pre>debug:<strong>lib.php:8273</strong>\r\n"; print_r($niveau->title . '=='. $descriptorgradings[$niveau->title]->teachervalue); echo '</pre>'; // !!!!!!!!!! delete it
 		/*$descriptorgradings[$niveau->title]->teachervalue =
 			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR))
 				? (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_evaluation->additionalinfo) : '')
@@ -8531,7 +8530,6 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
             $averagedescriptorgradings[$ntitle]->studentvalue = -1;
         }
     }
-    //echo "<pre>debug:<strong>lib.php:8272</strong>\r\n"; print_r($averagedescriptorgradings); echo '</pre>'; ; // !!!!!!!!!! delete it
 	return array(
 	        'descriptor_evaluation' => $descriptorgradings,
             'average_descriptor_evaluations' => $averagedescriptorgradings // we need to get average value for niveau (topic has many descriptors)

@@ -8847,7 +8847,6 @@ class block_exacomp_external extends external_api {
 	 */
 	private static function get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
 	    global $DB;
-
 	    //copied from old get_descriptor_details so i can use it in get_descriptor_details and get_descriptors_details
 	    $descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 	    $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
@@ -8917,7 +8916,6 @@ class block_exacomp_external extends external_api {
 	        $descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
 	        $descriptor_return->niveauid = $niveau->id;
 	    }
-
 
 	    $childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
 
@@ -9061,7 +9059,6 @@ class block_exacomp_external extends external_api {
 		} else {
 			$non_visibilities_student = [];
 		}
-
 		$children_return = array();
 		foreach ($children as $child) {
 			if ($child->examples || $show_all) {
@@ -9234,7 +9231,6 @@ class block_exacomp_external extends external_api {
 		global $DB;
 
 		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
-
 
 		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		$non_topic_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
