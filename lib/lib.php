@@ -9760,7 +9760,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
                         break;
                 }
                 echo '</td>';
-				echo '<td class="exarep_exa_evaluation" width="10%" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>'; // remove? RW
+//				echo '<td class="exarep_exa_evaluation" width="10%" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>'; // remove? RW
 				echo '<td class="exarep_difficultyLevel" width="10%" style="padding: 0 10px;">'.$eval->get_evalniveau_title().'</td>';
                 echo '</tr>';
 				$walk_subs($level + 1);
@@ -9809,7 +9809,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
                 }
 				$html .= '<th width="10%" class="heading studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
 				$html .= '<th width="10%" class="heading teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
-				$html .= '<th width="10%" class="heading exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>'; //remove? RW
+//				$html .= '<th width="10%" class="heading exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>'; //remove? RW
 				$html .= '<th width="10%" class="heading difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
                 $html .= '</tr>';
                 $html .= '</thead>';
