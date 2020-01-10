@@ -1400,6 +1400,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
         }else{
             $subject = block_exacomp_get_subject_by_subjectid($subjectid);
         }
+
 		if($subject->isglobal){
             block_exacomp_update_globalgradings_text($compid,$userid,$comptype);
         }
@@ -2352,7 +2353,8 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	$user->topics->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, additionalinfo');
 	$user->topics->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, evalniveauid');
     $user->topics->gradingisold = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, gradingisold');
-    $user->topics->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, globalgradings');
+    //$user->topics->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, globalgradings');
+    $user->topics->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_GLOBALGRADINGS, array("userid" => $user->id, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, globalgradings');
     $user->topics->gradinghistory = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, gradinghistory');
 
     return $user;
@@ -2376,7 +2378,8 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
 	$user->subjects->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, additionalinfo');
 	$user->subjects->student_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, additionalinfo');
 	$user->subjects->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, evalniveauid');
-    $user->subjects->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, globalgradings');
+    //$user->subjects->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, globalgradings');
+    $user->subjects->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_GLOBALGRADINGS, array("userid" => $user->id, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, globalgradings');
     $user->subjects->gradinghistory = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, gradinghistory');
 	return $user;
 }
@@ -10978,6 +10981,39 @@ function block_exacomp_is_block_used_by_student($blockname,$studentid){
     return true;
 }
 
+/* Deprecated      here we saved all the data redundantly in the exacompcompuser table*/
+//function block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype){
+//    global $DB;
+//
+//    $query = 'SELECT compuser.*, userr.firstname, userr.lastname
+//                FROM {block_exacompcompuser} compuser
+//                INNER JOIN `mdl_user` userr ON (compuser.reviewerid = userr.id)
+//                WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
+//
+//    /*
+//SELECT compuser.value, mdl_user.username
+//FROM `mdl_block_exacompcompuser` compuser
+//INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id)
+//WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
+//     */
+//
+//    $records = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
+//
+//    $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
+//
+//    $globalgradings_text = "";
+//    foreach($records as $record){
+//        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("Y-m-d",$record->timestamp).": ".$scheme_values[$record->value]."<br>";
+//    }
+//
+//    foreach($records as $record){
+//        $record->globalgradings = $globalgradings_text;
+//        $DB->update_record("block_exacompcompuser", $record);
+//    }
+//
+//    return $globalgradings_text;
+//}
+
 function block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype){
     global $DB;
 
@@ -10993,6 +11029,7 @@ INNER JOIN `mdl_user` mdl_user ON (compuser.reviewerid = mdl_user.id)
 WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
      */
 
+
     $records = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
 
     $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
@@ -11002,10 +11039,14 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
         $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("Y-m-d",$record->timestamp).": ".$scheme_values[$record->value]."<br>";
     }
 
-    foreach($records as $record){
-        $record->globalgradings = $globalgradings_text;
-        $DB->update_record("block_exacompcompuser", $record);
-    }
+    $globalgradingrecord = [
+        'userid' => $studentid,
+        'compid' => $descriptorid,
+        'comptype' => $comptype,
+        'globalgradings' => $globalgradings_text,
+    ];
+
+    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_GLOBALGRADINGS, $globalgradingrecord, ['userid' => $studentid, 'compid' => $descriptorid, 'comptype' => $comptype]);
 
     return $globalgradings_text;
 }
@@ -11013,17 +11054,18 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
 
 
+//deprecated, not needed anymore because we created a separate table now
 //Get the globalgradings of this competence/topic/subject
-function block_exacomp_get_globalgradings_single($descriptorid,$studentid,$comptype){
-    global $DB;
-    $query = 'SELECT compuser.globalgradings
-                FROM {block_exacompcompuser} compuser
-                WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
-    $globalgradings_texts = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
-    //This often returns the same string multiple times... maybe there is a better way for performance but probably it is the best to query all and use the first
-    // solution in complexity O(1):
-    return array_pop($globalgradings_texts)->globalgradings;
-}
+//function block_exacomp_get_globalgradings_single($descriptorid,$studentid,$comptype){
+//    global $DB;
+//    $query = 'SELECT compuser.globalgradings
+//                FROM {block_exacompcompuser} compuser
+//                WHERE  compuser.compid = ? AND compuser.userid = ? AND compuser.comptype = ?';
+//    $globalgradings_texts = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
+//    //This often returns the same string multiple times... maybe there is a better way for performance but probably it is the best to query all and use the first
+//    // solution in complexity O(1):
+//    return array_pop($globalgradings_texts)->globalgradings;
+//}
 
 
 function block_exacomp_get_dakora_teacher_cohort() {

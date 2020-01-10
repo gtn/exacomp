@@ -1602,11 +1602,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $self_evaluation_cell->text .= $globalgradings;
                             }else{
                                 //if the course is global, the subject is global and the teacher is a dakorateacher AND the teacher has not graded anything yet, then the other global gradings have to be found
-                                $globalgradings_text = block_exacomp_get_globalgradings_single($subject->id,$student->id,BLOCK_EXACOMP_TYPE_SUBJECT);
-                                if($globalgradings_text){
-                                    $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  $globalgradings_text).' ', array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id));
-                                    $self_evaluation_cell->text .= $globalgradings;
-                                }
+//                                $globalgradings_text = block_exacomp_get_globalgradings_single($subject->id,$student->id,BLOCK_EXACOMP_TYPE_SUBJECT);
+//                                if($globalgradings_text){
+//                                    $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  $globalgradings_text).' ', array('id' => 'globalgradings', 'descrid' => $subject->id, 'studentid' => $student->id));
+//                                    $self_evaluation_cell->text .= $globalgradings;
+//                                }
                             }
                         }
 
@@ -2054,11 +2054,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     $teacher_evaluation_cell->text .= $globalgradings;
                                 }else{
                                     //if the course is global, the subject is global and the teacher is a dakorateacher AND the teacher has not graded anything yet, then the other global gradings have to be found
-                                    $globalgradings_text = block_exacomp_get_globalgradings_single($topic->id,$student->id,BLOCK_EXACOMP_TYPE_TOPIC);
-                                    if($globalgradings_text){
-                                        $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  $globalgradings_text).' ', array('id' => 'globalgradings', 'descrid' => $topic->id, 'studentid' => $student->id));
-                                        $teacher_evaluation_cell->text .= $globalgradings;
-                                    }
+//                                    $globalgradings_text = block_exacomp_get_globalgradings_single($topic->id,$student->id,BLOCK_EXACOMP_TYPE_TOPIC);
+//                                    if($globalgradings_text){
+//                                        $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  $globalgradings_text).' ', array('id' => 'globalgradings', 'descrid' => $topic->id, 'studentid' => $student->id));
+//                                        $teacher_evaluation_cell->text .= $globalgradings;
+//                                    }
                                 }
                             }
 
@@ -2523,11 +2523,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     $teacher_evaluation_cell->text .= $globalgradings;
                                 }else{
                                     //if the course is global, the subject is global and the teacher is a dakorateacher AND the teacher has not graded anything yet, then the other global gradings have to be found
-                                    $globalgradings_text = block_exacomp_get_globalgradings_single($descriptor->id,$student->id,BLOCK_EXACOMP_TYPE_DESCRIPTOR);
-                                    if($globalgradings_text){
-                                        $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  $globalgradings_text).' ', array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id));
-                                        $teacher_evaluation_cell->text .= $globalgradings;
-                                    }
+//                                    $globalgradings_text = block_exacomp_get_globalgradings_single($descriptor->id,$student->id,BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+//                                    if($globalgradings_text){
+//                                        $globalgradings = html_writer::tag('b', ' '.$this->pix_icon("i/groupevent",  $globalgradings_text).' ', array('id' => 'globalgradings', 'descrid' => $descriptor->id, 'studentid' => $student->id));
+//                                        $teacher_evaluation_cell->text .= $globalgradings;
+//                                    }
                                 }
                             }
 
