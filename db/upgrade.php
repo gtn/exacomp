@@ -3426,17 +3426,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019100400, 'exacomp');
     }
 
-    if ($oldversion < 2019101400) {
-        // Define field filteredtaxonomies to be added to block_exacompsettings.
-        $table = new xmldb_table('block_exacompexamples');
-        $field = new xmldb_field('schedule_marker', XMLDB_TYPE_CHAR, '25', null, null, null, '');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2019101400, 'exacomp');
-    }
-
     if ($oldversion < 2019101701) {
         //$sql = 'INSERT INTO {block_exacompdescriptors} (`id`, `title`) VALUES (-1,"free_materials")';
         //$DB->Execute($sql);
@@ -3474,6 +3463,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019112500, 'exacomp');
+    }
+     if ($oldversion < 2020011001) {
+        // Define field filteredtaxonomies to be added to block_exacompsettings.
+        $table = new xmldb_table('block_exacompexamples');
+        $field = new xmldb_field('schedule_marker', XMLDB_TYPE_CHAR, '25', null, null, null, '');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020011001, 'exacomp');
     }
 
     /*
