@@ -192,9 +192,6 @@ foreach ($students as $student) {
 	block_exacomp_get_user_information_by_course($student, $courseid);
 }
 
-var_dump($students);
-die;
-
 if (optional_param('print', false, PARAM_BOOL)) {
 	$output->print = true;
 	$html_tables = [];
