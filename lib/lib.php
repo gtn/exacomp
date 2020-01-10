@@ -11067,6 +11067,16 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 //    return array_pop($globalgradings_texts)->globalgradings;
 //}
 
+//needed in the webservices for descriptors
+function block_exacomp_get_globalgradings_single($descriptorid,$studentid,$comptype){
+    global $DB;
+    $query = 'SELECT globalgradings
+                FROM {block_exacompglobalgradings} 
+                WHERE  compid = ? AND userid = ? AND comptype = ?';
+    $globalgradings_text = $DB->get_record_sql($query, array($descriptorid,$studentid,$comptype));
+    return $globalgradings_text->globalgradings;
+}
+
 
 function block_exacomp_get_dakora_teacher_cohort() {
     // get cohort or create cohort if not exists

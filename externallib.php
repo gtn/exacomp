@@ -8870,6 +8870,8 @@ class block_exacomp_external extends external_api {
 	    $descriptor_return->reviewername = null;
 
 
+
+
 	    if (!$forall) {
 	        if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
 	            $descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
@@ -8880,12 +8882,6 @@ class block_exacomp_external extends external_api {
                 $descriptor_return->gradinghistory = $grading->gradinghistory;
 
 //                var_dump($grading->gradinghistory);
-//                var_dump($grading->globalgradings);
-//                die;
-
-	            if(block_exacomp_is_dakora_teacher()){
-                    $descriptor_return->globalgradings = $grading->globalgradings;
-                }
 
 
 	            //Reviewername finden
@@ -8900,6 +8896,11 @@ class block_exacomp_external extends external_api {
 	            }
 	            $descriptor_return->reviewername = $reviewername;
 	        }
+
+            if(block_exacomp_is_dakora_teacher()){
+                $descriptor_return->globalgradings = block_exacomp_get_globalgradings_single($descriptorid,$userid,BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+            }
+
 	    }
 
 	    $descriptor_return->studentevaluation = -1;
