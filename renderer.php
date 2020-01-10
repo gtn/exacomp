@@ -747,6 +747,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 
+
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip competence-overview';
 		if (get_config('exacomp', 'disable_js_assign_competencies') && optional_param('colgroupid', 0, PARAM_INT) == -1) { // if pressed show all columns
             $table->attributes['class'] .= ' show-all-colgroups ';
@@ -1842,7 +1843,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$display_topic_header_row = false;
 			$child_level = $level;
 		}
-
 
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
 

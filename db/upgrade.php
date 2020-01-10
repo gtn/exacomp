@@ -3475,6 +3475,32 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020011001, 'exacomp');
     }
 
+    if ($oldversion < 2020011002) {
+        //adding a new table to save globalgradings
+        $table = new xmldb_table('block_exacompglobalgradings');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('compid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('comptype', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+        $table->add_field('globalgradings', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        //add key userid
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $dbman->add_key($table, $key);
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020011002, 'exacomp');
+    }
+
+
+
+
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

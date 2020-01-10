@@ -126,6 +126,9 @@ if ($isTeacher) {
     $students = $allCourseStudents = array($USER->id => $USER);
 }
 
+
+
+
 //Add the local groups
 $groups = ($isTeacher) ? groups_get_all_groups($courseid) : array();
 if ($course_settings->nostudents) {
@@ -184,10 +187,13 @@ if ($isTeacher) {	//mind nostudents setting
 	}
 }
 
+
 foreach ($students as $student) {
 	block_exacomp_get_user_information_by_course($student, $courseid);
 }
 
+var_dump($students);
+die;
 
 if (optional_param('print', false, PARAM_BOOL)) {
 	$output->print = true;

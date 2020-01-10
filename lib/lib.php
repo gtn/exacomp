@@ -71,6 +71,7 @@ const BLOCK_EXACOMP_DB_TOPICVISIBILITY = 'block_exacomptopicvisibility';
 const BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY = 'block_exacompsolutvisibility';
 const BLOCK_EXACOMP_DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
 const BLOCK_EXACOMP_DB_IMPORTTASKS = 'block_exacompimporttasks';
+const BLOCK_EXACOMP_DB_GLOBALGRADINGS = 'block_exacompglobalgradings';
 
 /**
  * PLUGIN ROLES
@@ -1616,7 +1617,6 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
-
     //here a lot of time is lost rw
 	foreach ($descriptors as $descriptor) {
 		if ($include_childs) {
@@ -2314,7 +2314,7 @@ function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
  * @param int $courseid
  * @return stdClass user
  */
-function block_exacomp_get_user_competences_by_course($user, $courseid) {
+function block_exacomp_get_user_competences_by_course($user, $courseid, $return_globalgradings = false) {
 	global $DB;
 
 	$user->competencies = new stdClass();
@@ -2325,7 +2325,10 @@ function block_exacomp_get_user_competences_by_course($user, $courseid) {
 	$user->competencies->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, additionalinfo');
 	$user->competencies->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, evalniveauid');
     $user->competencies->gradingisold = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, gradingisold');
-    $user->competencies->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, globalgradings');
+
+    $user->competencies->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_GLOBALGRADINGS, array("userid" => $user->id, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, globalgradings');
+    //$user->competencies->globalgradings = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, globalgradings');
+
     $user->competencies->gradinghistory = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, gradinghistory');
 
 	return $user;

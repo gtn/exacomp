@@ -663,5 +663,18 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="block_exacompglobalgradings" COMMENT="In dieser Tabelle wird gespeichert, welcher Globalgradignstext zu einem Subject/Topic/Competence gespeichert ist">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
+        <FIELD NAME="compid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Deskriptors oder Topics"/>
+        <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
+        <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence, even in different courses"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
+      </KEYS>
+    </TABLE>
   </TABLES>
 </XMLDB>
