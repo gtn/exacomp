@@ -68,7 +68,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
                 $user_courses[$course->id] = $course;
         }
         if(!empty($user_courses))
-            $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
+            $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
         foreach($user_courses as $course) {
                 $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
         }
@@ -170,7 +170,7 @@ foreach($possible_courses as $course){
 }
 
 
-    echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
+echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
 
 
 //Add crosssubjects

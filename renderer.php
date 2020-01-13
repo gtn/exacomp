@@ -5384,6 +5384,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	function competence_profile_course($course, $student, $showall = true, $max_scheme = 3) {
 
 	    $competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+	    // sorting by Subject's isglobal (if isglobal=1 - go to last)
+        // 1 method: chages sorting of other subjects
+        /*usort($competence_tree, function($s1, $s2) {
+            return ($s1->isglobal > $s2->isglobal);
+        });*/
+        // 2 method: clean and insert to end of array
+        $isglobalArr = array();
+        $newArr = array();
+        foreach ($competence_tree as $key => $subject) {
+            if ($subject->isglobal) {
+                $isglobalArr[$key] = $subject;
+            } else {
+                $newArr[$key] = $subject;
+            }
+        }
+        if (count($newArr)) {
+            $competence_tree = $newArr + $isglobalArr;
+        }
 
 		$content = '';
 
@@ -5475,7 +5493,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				});
                     });    </script>";
         }*/
-		return html_writer::div($content, "competence_profile_coursedata");
+        $courseName = html_writer::tag('h3', $course->fullname, array('class' => 'competence_profile_coursename'));
+		return $courseName.html_writer::div($content, "competence_profile_coursedata");
 	}
 
 	private function competence_profile_grid($courseid, $subject, $studentid, $max_scheme) {
@@ -5788,7 +5807,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell = new html_table_cell();
 				$cell->text = $value;
 				$cell->attributes['class'] = 'cell-th';
-				$cell->attributes['title'] = $value_titles_long[$key];
+				$cell->attributes['title'] = array_key_exists($key, $value_titles_long) ? $value_titles_long[$key] : $value;
                 $cell->attributes['align'] = 'center';
 				$row->cells[] = $cell;
 			}
