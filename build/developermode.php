@@ -131,7 +131,7 @@ call_user_func(function() {
 	$content .= '$functions = '.var_export($functions, true).";\n\n";
 	$content .= '$services = '.var_export($services, true).";\n\n";
 	file_put_contents($servicesFile, $content);
-	touch($servicesFile, $time);
+	@touch($servicesFile, $time);
 
 	// save doku
 	$doku = '<style>
@@ -145,5 +145,5 @@ call_user_func(function() {
 	</style>'.$doku;
 
 	file_put_contents(__DIR__.'/services.htm', $doku);
-	touch(__DIR__.'/services.htm', $time);
+	@touch(__DIR__.'/services.htm', $time);
 });

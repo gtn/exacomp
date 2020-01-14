@@ -558,7 +558,7 @@ namespace block_exacomp\common {
 				*/
 
 				file_put_contents($langDir.'/'.$lang.'/'._plugin_name().'.php', $output);
-				touch($langDir.'/'.$lang.'/'._plugin_name().'.php', $time);
+				@touch($langDir.'/'.$lang.'/'._plugin_name().'.php', $time);
 			}
 		}
 
