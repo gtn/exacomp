@@ -7880,7 +7880,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 		$data->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp)) ? $evaluation->timestamp : 0);
 
-		$data->niveaus[$niveau->title]->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$studentid);
+		$data->niveaus[$niveau->title]->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id, $studentid);
 		if ($niveau->span == 1) { // deprecated, but needed for support old installations
 			$data->span = 1;
 		}
@@ -10702,7 +10702,7 @@ function block_exacomp_get_date_of_birth($userid) {
           WHERE compid = ? AND userid = ?';
      $condition = array($descriptorid, $studentid);
 
-     $result = $DB->get_record_sql($query, $condition);
+     $result = $DB->get_record_sql($query, $condition, IGNORE_MULTIPLE);
      if ($result) {
          return $result->gradingisold;
      } else {
