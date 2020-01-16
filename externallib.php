@@ -8897,6 +8897,7 @@ class block_exacomp_external extends external_api {
 	            $descriptor_return->reviewername = $reviewername;
 	        }
 
+	        /*this is probably very ineffective because it has to be done for every descriptor*/
             if(block_exacomp_is_dakora_teacher() && block_exacomp_get_settings_by_course($courseid)->isglobal){
                 $descriptor_return->globalgradings = block_exacomp_get_globalgradings_single($descriptorid,$userid,BLOCK_EXACOMP_TYPE_DESCRIPTOR);
             }

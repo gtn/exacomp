@@ -7362,8 +7362,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function group_report_filters($type, $filter, $action, $extra = '', $courseid) {
+	function group_report_filters($type, $filter, $action, $extra = '', $courseid, $isTeacher) {
 		ob_start();
+        global $USER;
 		?>
 
 		<form method="post" action="<?php echo $action; ?>">
@@ -7378,16 +7379,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							<?php echo block_exacomp_get_string('students_competences'); ?></label>&nbsp;&nbsp;&nbsp;
 						<?php
             			$studentsAssociativeArray = array();
-            			$students=block_exacomp_get_students_by_course($courseid);
-            			$studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
-            			//add local groups:
-            			$groups = groups_get_all_groups($courseid);
-            			foreach ($groups as $group){
-            			    $studentsAssociativeArray[-($group->id+1)] = $group->name;
-            			}
-            			foreach ($students as $student) {
-            			    $studentsAssociativeArray[$student->id] = fullname($student);
-            			}
+                        $students=block_exacomp_get_students_by_course($courseid);
+            			if($isTeacher){
+                            $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
+                            //add local groups:
+                            $groups = groups_get_all_groups($courseid);
+                            foreach ($groups as $group){
+                                $studentsAssociativeArray[-($group->id+1)] = $group->name;
+                            }
+                            foreach ($students as $student) {
+                                $studentsAssociativeArray[$student->id] = fullname($student);
+                            }
+                        }else{
+                            $studentsAssociativeArray[$USER->id] = fullname($students[$USER->id]);
+                        }
+
             			echo $this->select($studentsAssociativeArray,'filter[selectedStudentOrGroup]',$filter["selectedStudentOrGroup"],true);
             			?>
 
@@ -7398,7 +7404,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				</div>
 			</div>
 			<?php
-            //Until here: display settings, type of report
+            //Until here: display settings, type of report, students
 
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'report_subject');
 			$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'report_competencefield');

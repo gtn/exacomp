@@ -2600,12 +2600,16 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
 				//$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 				//}
 			}
+
+			if(!$courseSettings->nostudents){
+                $rows[] = new tabobject('tab_group_reports', new moodle_url('/blocks/exacomp/group_reports.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_group_reports'), null, true);
+            }
 		}
+
 
 		if ($isTeacher) {
 			//Einstellungen
 			$rows[] = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_teacher_settings'), null, true);
-			$rows[] = new tabobject('tab_group_reports', new moodle_url('/blocks/exacomp/group_reports.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_group_reports'), null, true);
 		}
 	}
 

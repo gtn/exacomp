@@ -41,7 +41,11 @@ if ($wstoken) {
     $webservicelib = new \webservice();
     $authenticationinfo = $webservicelib->authenticate_user($wstoken);
 }
- require_login($course);
+
+require_login($course);
+
+// CHECK TEACHER
+$isTeacher = block_exacomp_is_teacher();
 
 $useprofoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 
@@ -190,7 +194,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
                     echo $output->group_report_profoundness_filters('exacomp', $filter, '', $extra, $courseid);
                     break;
                 default:
-                    echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid);
+                    echo $output->group_report_filters('exacomp', $filter, '', $extra, $courseid, $isTeacher);
             }
             ?>
     	</div>
