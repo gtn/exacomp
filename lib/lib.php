@@ -9617,9 +9617,9 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
 	}
 }
 
-function block_exacomp_group_reports_result($filter, $isPdf = false) {
+function block_exacomp_group_reports_result($filter, $isPdf = false, $isTeacher) {
 
-	$content = block_exacomp_group_reports_return_result($filter, $isPdf);
+	$content = block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher);
 	if ($isPdf) {
         \block_exacomp\printer::group_report($content);
     } else {
@@ -9627,16 +9627,26 @@ function block_exacomp_group_reports_result($filter, $isPdf = false) {
     }
 }
 
-function block_exacomp_group_reports_return_result($filter, $isPdf = false) {
+function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isTeacher) {
+    global $USER;
 	$courseid = g::$COURSE->id;
-	$students = block_exacomp_get_students_by_course($courseid);
+
+    $coursestudents = block_exacomp_get_students_by_course($courseid);
+    $students = array();
+
+	if($isTeacher){
+        $students = $coursestudents;
+    }else{
+        $students[$USER->id] = $coursestudents[$USER->id];
+    }
+
 	$html = '';
 
 	if ($filter['type'] == 'students') {
 		$has_output = false;
 
 		if($filter['selectedStudentOrGroup'] != 0){
-		    if($filter['selectedStudentOrGroup']<-1){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
+		    if($filter['selectedStudentOrGroup']<-1 && $isTeacher){ //then it is a group, calculate encoded groupid by (-1)*selectedStudentOrGroup - 1
 		        $groupid = (-1)*$filter['selectedStudentOrGroup'] - 1;
 		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		    }else {

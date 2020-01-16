@@ -84,7 +84,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
         switch ($reportType) {
             case 'general':
                 if ($isPdf) {
-                    block_exacomp_group_reports_result($filter, $isPdf);
+                    block_exacomp_group_reports_result($filter, $isPdf, $isTeacher);
                 }
                 break;
             case 'annex':
@@ -241,7 +241,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
                 block_exacomp_group_reports_profoundness_result($filter);
                 break;
             default:
-                block_exacomp_group_reports_result($filter, $isPdf);
+                block_exacomp_group_reports_result($filter, $isPdf, $isTeacher);
         }
     }
 

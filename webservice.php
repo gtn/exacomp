@@ -378,7 +378,10 @@ class block_exacomp_simple_service {
 		';
 
 		$courseid = required_param('courseid', PARAM_INT);
-		echo $output->group_report_filters('webservice', $filter, $action, $extra, $courseid);
+
+        $isTeacher = block_exacomp_is_teacher($courseid);
+
+		echo $output->group_report_filters('webservice', $filter, $action, $extra, $courseid, $isTeacher);
 	}
 
 	static function group_reports_result() {
@@ -403,10 +406,13 @@ class block_exacomp_simple_service {
 // // 		var_dump($filtersFromSession);
 // 		die();
 
+        $courseid = required_param('courseid', PARAM_INT);
+        $isTeacher = block_exacomp_is_teacher($courseid);
+
 		if ($isPdf) {
-		    block_exacomp_group_reports_result($filter, $isPdf);
+		    block_exacomp_group_reports_result($filter, $isPdf, $isTeacher);
 		} else {
-		    block_exacomp_group_reports_result($filter);
+		    block_exacomp_group_reports_result($filter,false, $isTeacher);
 		}
 
 	}

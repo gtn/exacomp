@@ -7371,7 +7371,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			<?php
 			echo $extra;
 			?>
-			<div class="filter-group visible">
+			<div class="filter-group <?php echo $isTeacher ? "visible" : "" ?>">
 				<h3 class="filter-group-title"><label><?= block_exacomp_get_string('report_type')?></label></h3>
 				<div class="filter-group-body">
 					<div>
@@ -7465,7 +7465,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             <?php
                 echo $extra;
             ?>
-            <div class="filter-group visible form-group row">
+            <div class="filter-group  <?php echo $isTeacher ? "visible" : "" ?> form-group row">
                 <h3 class="filter-group-title"><label><?= block_exacomp_get_string('choose_student');?></label></h3>
                     <div class="filter-group-body">
                         <div>
