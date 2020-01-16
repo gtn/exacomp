@@ -7457,7 +7457,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 
-    function group_report_annex_filters($type, $filter, $action, $extra = '', $courseid) {
+    function group_report_annex_filters($type, $filter, $action, $extra = '', $courseid, $isTeacher) {
+	    global $USER;
         ob_start();
         ?>
         <form method="post" action="<?php echo $action; ?>">
@@ -7471,13 +7472,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             <?php
                             $studentsAssociativeArray = array();
                             $students = block_exacomp_get_students_by_course($courseid);
-                            $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
-                            $groups = groups_get_all_groups($courseid);
-                            foreach ($groups as $group){
-                                $studentsAssociativeArray[-($group->id+1)] = $group->name;
-                            }
-                            foreach ($students as $student) {
-                                $studentsAssociativeArray[$student->id] = fullname($student);
+                            if($isTeacher){
+                                $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
+                                $groups = groups_get_all_groups($courseid);
+                                foreach ($groups as $group){
+                                    $studentsAssociativeArray[-($group->id+1)] = $group->name;
+                                }
+                                foreach ($students as $student) {
+                                    $studentsAssociativeArray[$student->id] = fullname($student);
+                                }
+                            }else{
+                                $studentsAssociativeArray[$USER->id] = fullname($students[$USER->id]);
                             }
                             echo $this->select($studentsAssociativeArray, 'filter[selectedStudentOrGroup]', @$filter['selectedStudentOrGroup'], true, array('class' => 'form-control'));
                             ?>

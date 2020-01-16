@@ -188,7 +188,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 
             switch ($reportType) {
                 case 'annex':
-                    echo $output->group_report_annex_filters('exacomp', $filter, '', $extra, $courseid);
+                    echo $output->group_report_annex_filters('exacomp', $filter, '', $extra, $courseid, $isTeacher);
                     break;
                 case 'profoundness':
                     echo $output->group_report_profoundness_filters('exacomp', $filter, '', $extra, $courseid);
