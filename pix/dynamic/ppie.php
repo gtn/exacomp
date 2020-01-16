@@ -254,8 +254,10 @@ if ($drawOuterGraph) {
             $xCenter,
             $yCenter,
             array(
-                    'Radius' => $radius + $outerMargin + $outerGraphWidth,
-                    'InnerRadius' => $radius + $outerMargin, // pPie.class.php has a bug with this. need to de changed if pChart is updating
+                    'OuterRadius' => $radius + $outerMargin + $outerGraphWidth,
+                    // original pPie.class.php has a bug with 'InnerRadius'. need to de changed if pChart is updating.
+                    // Fork for php7 does not have this bug, but has 'OuterRadius' instead of 'Radius' option
+                    'InnerRadius' => $radius + $outerMargin,
                     "WriteValues" => false,
                     'Precision' => 100,
                     //"ValueR" => 255,
@@ -286,9 +288,7 @@ if (count($centerText) > 0) {
 
     foreach ($centerText as $key => $text) {
         $centerText[$key] = str_replace('.', ',', $text);
-        $txtSize =
-                imagettfbbox((array_key_exists($key, $fontSizes) && $fontSizes[$key] ? $fontSizes[$key] : $fontSize), 0, $fontName,
-                        $text);
+        $txtSize = imagettfbbox((array_key_exists($key, $fontSizes) && $fontSizes[$key] ? $fontSizes[$key] : $fontSize), 0, $fontName, $text);
         $middleX[$key] = $xCenter - ($txtSize[2] / 2) - $xBuffer;
         if (strpos($text, ',') !== false) {
             $yTextBuffer = 3;
