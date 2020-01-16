@@ -3906,7 +3906,7 @@ class block_exacomp_external extends external_api {
                 if (!$forall) {
                     if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id )) {
                         $descriptor->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
-//                        $descriptor->additionalinfo = $grading->additionalinfo;
+                        $descriptor->additionalinfo = $grading->additionalinfo;
                         $descriptor->evalniveauid = $grading->evalniveauid;
                         $descriptor->timestampteacher = $grading->timestamp;
                         $descriptor->reviewerid = $grading->reviewerid;
@@ -4092,7 +4092,7 @@ class block_exacomp_external extends external_api {
             'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
             'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 //            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-		    //'additionalinfo' => new external_value dakora_get_example_overview(PARAM_FLOAT, 'additional grading for descriptor'),
+		    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
 			'topicid' => new external_value (PARAM_INT, 'id of topic'),
 			'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
 			'child' => new external_value (PARAM_BOOL, 'true: child, false: parent'),
