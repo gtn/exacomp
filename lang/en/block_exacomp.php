@@ -837,3 +837,7 @@ $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Nothing to show';
 $string['descriptor_description'] = 'Competency description';
 $string['export_password_message'] = 'Please remember the password "<strong>{$a}</strong>" before proceeding';
+$string['settings_heading_security'] = 'Security';
+$string['settings_heading_security_description'] = '';
+$string['settings_export_password'] = 'Passwort protection (AES-256 encryption) for competence grid export';
+$string['settings_export_password_description'] = '';

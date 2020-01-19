@@ -3038,4 +3038,20 @@ ihrem Raster',
 		',
 		'Please remember the password "<strong>{$a}</strong>" before proceeding',
 	],
+	'settings_heading_security' => [
+		'Sicherheit',
+		'Security'
+	],
+	'settings_heading_security_description' => [
+		'',
+		''
+	],
+	'settings_export_password' => [
+        'Sicherung von Kompetenzrastern mit Passwort schützen (AES-256 Verschlüsselung)',
+        'Passwort protection (AES-256 encryption) for competence grid export'
+	],
+	'settings_export_password_description' => [
+		'',
+		''
+	],
 ];

@@ -849,3 +849,7 @@ $string['descriptor_description'] = 'Competenzbeschreibung';
 $string['export_password_message'] = 'Bitte notieren Sie sich das Passwort "<strong>{$a}</strong>", bevor Sie fortfahren.<br/><br/>
 		Hinweis: Passwortgeschützte zip-Dateien können unter Windows zwar geöffnet werden, aber die Dateien innerhalb der Zip-Datei können nur mit einem externen Programm (z.B. 7-Zip) extrahiert werden.
 		';
+$string['settings_heading_security'] = 'Sicherheit';
+$string['settings_heading_security_description'] = '';
+$string['settings_export_password'] = 'Sicherung von Kompetenzrastern mit Passwort schützen (AES-256 Verschlüsselung)';
+$string['settings_export_password_description'] = '';

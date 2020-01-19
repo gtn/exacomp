@@ -40,6 +40,11 @@ $output = block_exacomp_get_renderer();
 function block_exacomp_require_secret() {
 	global $PAGE, $courseid;
 
+	if (!get_config('exacomp', 'export_password')) {
+		// no secret needed
+		return '';
+	}
+
 	$secret = optional_param('secret', 0, PARAM_TEXT);
 
 	if ($secret) {

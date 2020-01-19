@@ -1140,6 +1140,13 @@ $settings->add(new admin_setting_configcheckbox('exacomp/disable_js_edit_activit
         block_exacomp_get_string('settings_disable_js_editactivities'),
         block_exacomp_get_string('settings_disable_js_editactivities_description'), 0, 1, 0));
 
+$settings->add(new admin_setting_heading('exacomp/heading_security',
+        block_exacomp_get_string('settings_heading_security'),
+        block_exacomp_get_string('settings_heading_security_description')));
+$settings->add(new admin_setting_configcheckbox('exacomp/export_password',
+        block_exacomp_get_string('settings_export_password'),
+        block_exacomp_get_string('settings_export_password_description'), 0, 1, 0));
+
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
 //        block_exacomp_get_string('settings_admin_scheme'),
