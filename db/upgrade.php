@@ -2964,7 +2964,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    $table = new xmldb_table('block_exacompeval_niveau');
 	    $field = new xmldb_field('option_type');
 	    $field->set_attributes(XMLDB_TYPE_CHAR, '20', null, null, null, null, null);
-	    $dbman->add_field($table, $field);
+	    if (!$dbman->field_exists($table, $field)) {
+		    $dbman->add_field($table, $field);
+		}
 	    $sql = 'UPDATE {block_exacompeval_niveau} SET option_type=\'niveau\'';
 			$DB->Execute($sql);
 	    // Exacomp savepoint reached.
@@ -2975,7 +2977,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    $table = new xmldb_table('block_exacompexameval');
 	    $field = new xmldb_field('additionalinfo');
 	    $field->set_attributes(XMLDB_TYPE_TEXT, null, null, null, null, null);
-	    $dbman->add_field($table, $field);
+	    if (!$dbman->field_exists($table, $field)) {
+		    $dbman->add_field($table, $field);
+		}
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2018040600, 'exacomp');
 	}
@@ -3072,11 +3076,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $table = new xmldb_table('block_exacompdatasources');
         $field = new xmldb_field('all_grids');
         $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, null, null, 1, 'selected_grids');
-        $dbman->add_field($table, $field);
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+		}
         $table = new xmldb_table('block_exacompimporttasks');
         $field = new xmldb_field('all_grids');
         $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, null, null, 1, 'selected_grids');
-        $dbman->add_field($table, $field);
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+		}
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2018091700, 'exacomp');
     }
