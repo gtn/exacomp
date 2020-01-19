@@ -51,7 +51,7 @@ function block_exacomp_require_secret() {
 		return $secret;
 	}
 
-	$secret = block_exacomp_randomPassword();
+	$secret = block_exacomp_random_password();
 
 	$output = block_exacomp_get_renderer();
 

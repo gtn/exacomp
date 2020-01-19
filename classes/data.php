@@ -512,7 +512,7 @@ class data_exporter extends data {
 	static $filter_descriptors;
 	
 	public static function do_export($secret, $filter_descriptors = null) {
-		global $SITE;
+		global $SITE, $CFG;
 		
 		\core_php_time_limit::raise();
 		raise_memory_limit(MEMORY_HUGE);
@@ -572,9 +572,34 @@ class data_exporter extends data {
 			}
 		}
 
+		$plugininfo = \core_plugin_manager::instance()->get_plugin_info('block_exacomp');;
+
+		// nicht passwortgeschützte info dateien:
+		$data = (object)[];
+		$data->datatype = 'block_exacomp_class_export';
+		$data->dataversion = '0.1';
+		$data->exporttime = time();
+		$data->pluginversion = $plugininfo->versiondisk;
+		$data->pluginrelease = $plugininfo->release;
+		$data->moodleversion = $CFG->version;
+		$data->moodlerelease = $CFG->release;
+		$data->is_encrypted = !!$secret;
+
+		$info_text = "";
+		$info_text .= "release: {$plugininfo->release}\n";
+		$info_text .= "version: {$plugininfo->versiondisk}\n";
+		$info_text .= "moodle-release: {$CFG->release}\n";
+		$info_text .= "moodle-version: {$CFG->version}\n";
+		$info_text .= "export time: ".\userdate(time(), '%Y-%m-%d %H:%M')."\n";
+		$info_text .= "encryption: ".($secret ? "yes" : "no")."\n";
+
+		$zip->addFromString('info.json', json_encode($data, JSON_PRETTY_PRINT));
+		$zip->addFromString('info.txt', $info_text);
+
 		$zip->close();
-		
-		$filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').($secret?'-passwortgeschuetzt':'').'.zip';
+
+		$extra = ($secret?'-'.block_exacomp_trans(['de:passwortgeschuetzt', 'en:passwordprotected']):'');
+		$filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').$extra.'.zip';
 		header('Content-Type: application/zip');
 		header('Content-Length: ' . filesize($zipfile));
 		header('Content-Disposition: attachment; filename="'.$filename.'"');
