@@ -94,10 +94,13 @@ class generalxml_upload_form extends \moodleform {
             $mform->addRule('file', null, 'required', null, 'client');
             $mform->addElement('static', '','' ,block_exacomp_get_string("dest_course"));
             $mform->addElement('select', 'template', block_exacomp_get_string("choosecoursetemplate"), ['' => ''] + get_all_courses_key_value());
-            //$mform->addRule('template', null, 'required', null, 'client');
-            $mform->addElement('static', '','' ,'' );
         }
 
+		$mform->addElement('text', 'password', block_exacomp_trans([
+			'de:Passwort der Zip-Datei',
+			'en:Zip-File Password'
+		]).':');
+		$mform->setType('password', PARAM_TEXT);
 	}
 
 	function definition_after_data() {
@@ -274,9 +277,9 @@ try {
         $course_template = null;
     }
     if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
-        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC);
+        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC, $import_data->password);
     } elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
-        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT);
+        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $import_data->password);
 	} elseif ($isAdmin && ($importtype == 'demo')) {
 		//do demo import
 		

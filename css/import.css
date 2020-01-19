@@ -1,5 +1,0 @@
-
-/* bug with layout of import form*/
-form.exacomp_import .row {
-    display: block !important;
-}

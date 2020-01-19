@@ -511,7 +511,7 @@ class data_exporter extends data {
 
 	static $filter_descriptors;
 	
-	public static function do_export($filter_descriptors = null) {
+	public static function do_export($secret, $filter_descriptors = null) {
 		global $SITE;
 		
 		\core_php_time_limit::raise();
@@ -564,9 +564,17 @@ class data_exporter extends data {
 		}
 		
 		$zip->addFromString('data.xml', $xml->asPrettyXML());
+
+		if ($secret) {
+			// encrypt all files in zip file
+			for ($i = 0; $i < $zip->count(); $i++) {
+				$zip->setEncryptionIndex($i, ZipArchive::EM_AES_256, $secret);
+			}
+		}
+
 		$zip->close();
 		
-		$filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').'.zip';
+		$filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').($secret?'-passwortgeschuetzt':'').'.zip';
 		header('Content-Type: application/zip');
 		header('Content-Length: ' . filesize($zipfile));
 		header('Content-Disposition: attachment; filename="'.$filename.'"');
@@ -1296,7 +1304,7 @@ class data_importer extends data {
 	 */
 	private static $zip;
 	
-	public static function do_import_string($data = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT ) {
+	public static function do_import_string($data = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null) {
 		global $CFG;
 
 		if (!$data) {
@@ -1306,8 +1314,8 @@ class data_importer extends data {
 		$file = tempnam($CFG->tempdir, "zip");
 		file_put_contents($file, $data);
 
-		$ret = self::do_import_file($file, $course_template,  $par_source);
-		
+		$ret = self::do_import_file($file, $course_template, $par_source, $password);
+
 		@unlink($file);
 		
 		return $ret;
@@ -1329,7 +1337,7 @@ class data_importer extends data {
 		}
 		if (file_exists($url)) {
 			// it's a file
-		    return self::do_import_file($url, $course_template, $par_source, $simulate, $schedulerId);
+		    return self::do_import_file($url, $course_template, $par_source, null, $simulate, $schedulerId);
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1339,7 +1347,7 @@ class data_importer extends data {
 		}
 
 		file_put_contents($file, $handle);
-		$ret = self::do_import_file($file, $course_template, $par_source, $simulate, $schedulerId);
+		$ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId);
 		
 		@unlink($file);
 		
@@ -1352,11 +1360,12 @@ class data_importer extends data {
 	 * @param $course_template of template-course for importing activities
 	 * @param int $par_source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects
 	 *         data from topic leven downwards (topics, descriptors, examples)
+	 * @param string $password
      * @param bool $simulate need for simulate importing. We can get settings of importing without real importing
      * @param int $schedulerId if it is for scheduler task - id of task; -1 if it is main scheduler task: \block_exacomp\task\import
      * @return bool
 	 */
-	public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
+	public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $simulate = false, $schedulerId = 0) {
 	    global $USER, $CFG, $DB;
 
 		if (!$file) {
@@ -1391,10 +1400,34 @@ class data_importer extends data {
 			// a zip file
 			self::$zip = $zip;
 
-			if (!$xml = $zip->getFromName('data.xml')) {
+			$firstFile = $zip->statIndex(0);
+			if (!$firstFile) {
 				throw new import_exception('wrong zip file format');
 			}
-			
+
+			$zipIsEncrypted = !!@$firstFile['encryption_method'];
+			if ($password) {
+				$zip->setPassword($password);
+			}
+
+			if (!$xml = $zip->getFromName('data.xml')) {
+				if ($zipIsEncrypted) {
+					if ($password) {
+						throw new import_exception(block_exacomp_trans([
+							'de:Falsches Passwort',
+							'en:Wrong password'
+						]));
+					} else {
+						throw new import_exception(block_exacomp_trans([
+							'de:Diese Datei ist Passwort geschützt',
+							'en:This file is password protected'
+						]));
+					}
+				} else {
+					throw new import_exception('wrong zip file format');
+				}
+			}
+
 			/*
 			 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 			 * immediate useage
@@ -1816,7 +1849,7 @@ class data_importer extends data {
                 $selectedGrids = array_keys($selectedGrids);
                 $subjectsIds = implode(',', $selectedGrids);
             } else {
-                return arrray(); // no any selected grid
+                return array(); // no any selected grid
                 //$subjectsIds = '';
             }
         }

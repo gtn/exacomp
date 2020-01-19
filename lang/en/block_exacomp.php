@@ -836,3 +836,4 @@ $string['selectcourse_filter_onlyselected'] = 'Show only selected grids';
 $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Nothing to show';
 $string['descriptor_description'] = 'Competency description';
+$string['export_password_message'] = 'Please remember the password "<strong>{$a}</strong>" before proceeding';

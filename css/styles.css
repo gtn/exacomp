@@ -1028,11 +1028,6 @@ not used anymore?
 	top: 0;
 }
 
-
-#block_exacomp .row  {
-	display: table-row;
-}
-
 #block_exacomp .subjects_menu {
 	width: 185px;
 	padding-right: 16px;

@@ -11275,3 +11275,14 @@ function block_exacomp_get_config_dakora_language_file($returnContent = false) {
 function block_exacomp_get_config_dakora_timeout() {
     return get_config('exacomp', 'dakora_timeout');
 }
+
+function block_exacomp_randomPassword($length = 12) {
+    $alphabet = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < $length; $i++) {
+        $n = random_int(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
+}
