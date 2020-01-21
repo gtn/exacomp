@@ -1765,7 +1765,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
             "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid,
             e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
             e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
-            de.sorting
+            de.sorting, e.courseid, e.activityid, e.activitylink
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
             ." WHERE "
@@ -1783,6 +1783,10 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
             $example->solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, 0);
 
             if ($showonlyvisible && !$example->visible) {
+                unset($examples[$example->id]);
+            }
+
+            if ($example->courseid > 0 && $example->courseid != $courseid) {
                 unset($examples[$example->id]);
             }
         }
@@ -5931,6 +5935,12 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
 
     if ($visibleExamples === null) {
         $visibleExamples = array();
+    }
+
+    // if the example has courseid and it is not equal $courseid
+    if ($example->courseid > 0 && $example->courseid != $courseid) {
+        $visibleExamples[$courseid][$example->id][$studentid] = false;
+        return false;
     }
 
     if (isset($visibleExamples[$courseid][$example->id][$studentid])) {

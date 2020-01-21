@@ -143,6 +143,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	$newExample->externaltask = '';
     	if (!empty($formdata->assignment)) {
     		if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
+                // externaltask
     			$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
                 // get icon path for activity and save it to database
                 $mod_info = get_fast_modinfo($courseid);
@@ -150,6 +151,14 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
                     $cm = $mod_info->cms[$module->id];
                     $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
                 }
+                // activityid
+                $newExample->activityid = $module->id;
+                // courseid
+                $newExample->courseid = $module->course;
+                // activitylink
+                $activitylink = block_exacomp_get_activityurl($module)->out(false);
+                $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+                $newExample->activitylink = $activitylink;
     		}
     	}
     	if (count($example_icons)) {
@@ -275,9 +284,10 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	// currently externaltask can only hold a module url
     	// read the id from the url and assign it to the form
     	// TODO: later add a modid field or so
-    	if ($example->externaltask && preg_match('![^a-z]id=(?<id>[0-9]+)!', $example->externaltask, $matches)) {
+    	/*if ($example->externaltask && preg_match('![^a-z]id=(?<id>[0-9]+)!', $example->externaltask, $matches)) {
     		$example->assignment = $matches['id'];
-    	}
+    	}*/
+    	$example->assignment = $example->activityid;
     	$form->set_data($example);
     }
 //}

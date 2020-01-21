@@ -2354,7 +2354,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
 						$icontext = '<span data-tooltip-content="'.s($icon->text).'" class="exabis-tooltip">'.$icon->img.'</span>';
 					}
-					//EPORTFOLIOITEMS
+					// EPORTFOLIOITEMS
 					if ($data->exaport_exists) {
 						if (isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])) {
 							$shared = false;
