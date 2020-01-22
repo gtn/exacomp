@@ -115,6 +115,10 @@ return [
 		'Moodle-Aktivitäten zuordnen',
 		'Assign Moodle activities',
 	],
+	'tab_teacher_settings_activitiestodescriptors' => [
+		'Moodle-Aktivitäten zuordnen NEU',
+		'Assign Moodle activities NEW',
+	],
 	'tab_teacher_settings_badges' => [
 		'Auszeichnungen bearbeiten',
 		'Edit badges',

@@ -48,6 +48,7 @@ $string['tab_teacher_settings_configuration'] = 'Einstellungen';
 $string['tab_teacher_settings_selection_st'] = 'Schulart / Bezüge zum Bildungsplan';
 $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
+$string['tab_teacher_settings_activitiestodescriptors'] = 'Moodle-Aktivitäten zuordnen NEU';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neuen Kompetenzraster anlegen';
 $string['tab_teacher_settings_taxonomies'] = 'Taxonomien';

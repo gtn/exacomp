@@ -1127,6 +1127,20 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 }
 
 /**
+ * get topics associated with descriptor
+ * @param integer $descriptorid
+ */
+function block_exacomp_get_topics_by_descriptor($descriptorid) {
+    global $DB;
+    return $DB->get_records_sql("
+		SELECT t.*, t.id AS topicdescid
+		  FROM {".BLOCK_EXACOMP_DB_TOPICS."} t		
+		    JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON dt.topicid = t.id
+		WHERE dt.descrid = ?
+	", [$descriptorid]);
+}
+
+/**
  * receives a list of items and returns them sorted
  * @param unknown $items can be array of different types of items, like topics, subjects...
  * @param unknown $sortings associated array with sorting options
@@ -1936,12 +1950,13 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
 	global $DB;
 
 	return $DB->get_records_sql("
-		SELECT d.*, de.id AS descexampid
+		SELECT DISTINCT d.*, d.id as dtemp
 		FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d		
 		JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON de.descrid=d.id
 		WHERE de.exampid = ?
 	", [$exampleid]);
 }
+
 
 /**
  * get descriptors associated with niveau
@@ -2462,22 +2477,30 @@ function block_exacomp_get_user_activities_competences_by_course($user, $coursei
  * @return \block_exacomp\tabobject[]
  */
 function block_exacomp_build_navigation_tabs_settings($courseid) {
+    $isDevelopment = (optional_param('dev', '', PARAM_ALPHA) == 'gtndev');
 	$usebadges = get_config('exacomp', 'usebadges');
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$settings_subtree = array();
+	$linkParams = array('courseid' => $courseid);
+	if ($isDevelopment) {
+	    $linkParams['dev'] = optional_param('dev', '', PARAM_ALPHA);
+    }
     // Edit course parameters submenu
-	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_configuration"), null, true);
+	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_configuration"), null, true);
 	// Subject selection submenu
-	$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_selection"), null, true);
+	$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_selection"), null, true);
     // Activities submenu
 	if (block_exacomp_is_activated($courseid)) {
 		if ($courseSettings->uses_activities) {
-			$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
+			$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
+			if ($isDevelopment) {
+                $settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
+            }
 		}
 	}
     // Badges submenu
 	if ($usebadges) {
-		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
+		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
 	}
 
 	return $settings_subtree;
@@ -3974,6 +3997,76 @@ function block_exacomp_get_activities_by_course($courseid) {
 
 	return $DB->get_records_sql($query, array($courseid));
 }
+
+/**
+ * @param array $descriptorsData
+ * @param array $topicsData
+ * @param integer $courseid
+ */
+function block_exacomp_update_example_activity_relations($descriptorsData = array(), $topicsData = array(), $courseid) {
+    global $DB, $CFG, $USER;
+    foreach ($descriptorsData as $activityid => $descriptors) {
+        $relatedDescriptors = array_filter($descriptors);
+        $relatedDescriptors = array_keys($relatedDescriptors);
+        block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
+    }
+
+}
+
+/**
+ * @param integer $courseid
+ * @param integer $activityid
+ * @param array $descriptors
+ */
+function block_exacomp_relate_example_to_activity($courseid, $activityid, $descriptors = array()){
+    global $DB, $CFG, $USER;
+    static $mod_info = null;
+    if ($mod_info === null) {
+        $mod_info = get_fast_modinfo($courseid);
+    }
+    if (count($descriptors)) { // if no any descriptor - no sence to insert the example (no relation to activity)
+        $existsRelatedExample =
+                $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
+                        IGNORE_MULTIPLE);
+        if ($existsRelatedExample) {
+            $exampleId = $existsRelatedExample->id;
+        } else {
+            $module = get_coursemodule_from_id(null, $activityid);
+            $activitylink = block_exacomp_get_activityurl($module)->out(false);
+            $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+            $externaltask = block_exacomp_get_activityurl($module)->out(false);
+            $cm = $mod_info->cms[$activityid];
+            $example_icons = $cm->get_icon_url()->out(false);
+            if ($example_icons) {
+                $example_icons = serialize(array('externaltask' => $example_icons));
+            } else {
+                $example_icons = null;
+            }
+            $newExample = (object) array(
+                    'title' => $module->name,
+                    'courseid' => $courseid,
+                    'activityid' => $activityid,
+                    'activitylink' => $activitylink,
+                    'externaltask' => $externaltask,
+                    'creatorid' => $USER->id,
+                    'parentid' => 0,
+                    'example_icon' => $example_icons
+            );
+            $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
+        }
+        // clean old relations to descriptors
+        $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
+        // insert new relations to descriptors
+        foreach ($descriptors as $descriptorid) {
+            $newRelation = (object) array(
+                    'exampid' => $exampleId,
+                    'descrid' => $descriptorid
+            );
+            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
+        }
+    }
+
+};
 
 /**
  * init data for competencegrid, shown in tab "Reports" or "Berichte"

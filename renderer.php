@@ -745,9 +745,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsColspan++;
 		}
 
-
-
-
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip competence-overview';
 		if (get_config('exacomp', 'disable_js_assign_competencies') && optional_param('colgroupid', 0, PARAM_INT) == -1) { // if pressed show all columns
             $table->attributes['class'] .= ' show-all-colgroups ';
@@ -4977,9 +4974,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	public function activity_legend($headertext) {
-		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
-
+	public function activity_legend($headertext = '') {
+	    $header = '';
+	    if ($headertext) {
+            $header .= html_writer::tag('p', $headertext);
+        }
+        $header .= html_writer::empty_tag('br');
 		return $header.html_writer::tag('p', block_exacomp_get_string("explaineditactivities_subjects")).html_writer::empty_tag('br');
 
 	}
@@ -5118,7 +5118,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$moduleCell->attributes['module-type='] = $module->modname;
 				if (block_exacomp_is_topicgrading_enabled()) {
                     $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topicdata['.$module->id.']['.$topic->id.']', 'value' => 0]);
-					$moduleCell->text .= html_writer::checkbox('topicdata['.$module->id.']['.$topic->id.']', "1", (in_array($topic->id, $module->topics)) ? true : false, '', array('class' => 'topiccheckbox'));
+					$moduleCell->text .= html_writer::checkbox('topicdata['.$module->id.']['.$topic->id.']',
+                            "1",
+                            (in_array($topic->id, $module->topics)) ? true : false,
+                            '',
+                            array('class' => 'topiccheckbox'.((in_array($topic->id, $module->topics)) ? ' checked-topic' : ''),
+                                    'data-topicId' => $topic->id,
+                                    'data-activityId' => $module->id));
 				}
 				$topicRow->cells[] = $moduleCell;
 			}
@@ -5126,12 +5132,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->descriptors_activities($rows, $level + 1, $topic->descriptors, $modules);
+				$this->descriptors_activities($rows, $level + 1, $topic->descriptors, $modules, $topic->id);
 			}
 		}
 	}
 
-	public function descriptors_activities(&$rows, $level, $descriptors, $modules) {
+	public function descriptors_activities(&$rows, $level, $descriptors, $modules, $topicid) {
 
 		foreach ($descriptors as $descriptor) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, false);
@@ -5152,7 +5158,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach ($modules as $module) {
 				$moduleCell = new html_table_cell();
                 $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'data['.$module->id.']['.$descriptor->id.']', 'value' => 0]);
-				$moduleCell->text .= html_writer::checkbox('data['.$module->id.']['.$descriptor->id.']', '1', (in_array($descriptor->id, $module->descriptors)) ? true : false);
+				$moduleCell->text .= html_writer::checkbox('data['.$module->id.']['.$descriptor->id.']',
+                        '1',
+                        (in_array($descriptor->id, $module->descriptors)) ? true : false,
+                        '',
+                        array('class' => 'descriptorcheckbox',
+                            'data-topicId' => $topicid,
+                            'data-descriptorId' => $descriptor->id,
+                            'data-activityId' => $module->id
+                        ));
 				$descriptorRow->cells[] = $moduleCell;
 			}
 

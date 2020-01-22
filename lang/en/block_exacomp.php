@@ -48,6 +48,7 @@ $string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
+$string['tab_teacher_settings_activitiestodescriptors'] = 'Assign Moodle activities NEW';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_teacher_settings_new_subject'] = 'Create new subject';
 $string['tab_teacher_settings_taxonomies'] = 'Taxonomies';
