@@ -3239,7 +3239,40 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid');
     }
+    
+    $mm = array();
+    $ret = array();
+    
+    foreach ($records as $record) {
+        $mm[$record->activityid][$record->comptype][$record->compid] = $record->compid;
+        $ret[1][$record->activityid] = $record->activitytitle;
+        //         if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+        //             $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
+        //         } else {
+        //             $mm->topics[$record->compid][$record->activityid] = $record->activityid;
+        //         }
+    }
+    $ret[0]= $mm;
+    return $ret;
+}
 
+    
+    function block_exacomp_get_assigments_of_examples($filter_descriptors) {
+        global $DB;
+        if ($filter_descriptors) {
+            $records = $DB->get_records_sql('
+            SELECT mm.id, descrid, activityid, activitytitle
+			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
+			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
+            JOIN {course_modules} m ON m.id = mm.activityid
+			WHERE (descrid IN ('.join(',',$filter_descriptors).') )');
+        } else {
+            $records = $DB->get_records_sql('
+            SELECT mm.id, descrid, activityid, activitytitle
+			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
+			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
+			JOIN {course_modules} m ON m.id = mm.activityid');
+        }
 
 
 
@@ -3247,7 +3280,7 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
        $ret = array();
 
        foreach ($records as $record) {
-           $mm[$record->activityid][$record->comptype][$record->compid] = $record->compid;
+           $mm[$record->activityid][0][$record->descrid] = $record->descrid;
            $ret[1][$record->activityid] = $record->activitytitle;
            //         if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
            //             $mm->competencies[$record->compid][$record->activityid] = $record->activityid;

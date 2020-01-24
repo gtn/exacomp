@@ -154,6 +154,7 @@
         <FIELD NAME="activityid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="activitylink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="activitytitle" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

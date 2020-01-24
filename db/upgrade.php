@@ -3523,6 +3523,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020012101, 'exacomp');
     }
+    
+    if ($oldversion < 2020012400) {
+        //adding a new table to save globalgradings
+        $table = new xmldb_table('block_exacompexamples');
+        $field = new xmldb_field('activitytitle', XMLDB_TYPE_CHAR, '1333', null, null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020012400, 'exacomp');
+    }
 
     /*
      * insert new upgrade scripts before this comment section
