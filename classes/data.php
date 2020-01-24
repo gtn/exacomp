@@ -1153,7 +1153,7 @@ class data_exporter extends data {
         if($activityid==-1){
 
 
-        $mm = block_exacomp_get_assigments_of_descrtopic(self::$filter_descriptors);
+            $mm = block_exacomp_get_assigments_of_examples(self::$filter_descriptors);
         $i = 1;
         $dbItem = new \stdClass();
 
@@ -1169,13 +1169,12 @@ class data_exporter extends data {
             $xmlItem->addChildWithCDATAIfValue('title', $mm[1][$k]);
             $xmlItem->addChildWithCDATAIfValue('type', $module_type);
             foreach ($activity as $ke => $comptype) {
-                if ($ke == 0) {
-
                     $descriptors = g::$DB->get_records_sql("
 				        SELECT DISTINCT d.id, d.source, d.sourceid
 				        FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
-				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid AND de.comptype = 0
-				        WHERE de.activityid = ?
+                        JOIN  {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON d.id = de.descrid
+			            JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = de.exampid
+				        WHERE e.activityid = ?
 			         ", array($dbItem->id));
 
                     $xmlItem->addChild('descriptors');
@@ -1183,21 +1182,6 @@ class data_exporter extends data {
                         $xmlDescriptor = $xmlItem->descriptors->addChild('descriptorid');
                         self::assign_source($xmlDescriptor, $descriptor);
                     }
-                } else {
-
-                    $topics = g::$DB->get_records_sql("
-				        SELECT DISTINCT d.id, d.source, d.sourceid
-				        FROM {".BLOCK_EXACOMP_DB_TOPICS."} d
-				        JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} de ON d.id = de.compid AND de.comptype = 1
-				        WHERE de.activityid = ?
-			         ", array($dbItem->id));
-
-                    $xmlItem->addChild('topics');
-                    foreach ($topics as $topic) {
-                        $xmlTopic = $xmlItem->topics->addChild('topicid');
-                        self::assign_source($xmlTopic, $topic);
-                    }
-                }
             }
 
             $backupid = moodle_backup($k, $USER->id);

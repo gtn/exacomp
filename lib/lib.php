@@ -3264,14 +3264,14 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
             SELECT mm.id, descrid, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
 			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
-            JOIN {course_modules} m ON m.id = mm.activityid
+            JOIN {course_modules} m ON m.id = e.activityid
 			WHERE (descrid IN ('.join(',',$filter_descriptors).') )');
         } else {
             $records = $DB->get_records_sql('
             SELECT mm.id, descrid, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
 			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
-			JOIN {course_modules} m ON m.id = mm.activityid');
+			JOIN {course_modules} m ON m.id = e.activityid');
         }
 
 
