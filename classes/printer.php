@@ -65,7 +65,7 @@ class printer_TCPDF extends \TCPDF {
 
 	public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '') {
 		$this->_initPage();
-		
+
 		$style = '';
 		if ($this->_style) {
 			$style = "<style> $this->_style </style>";
@@ -104,7 +104,7 @@ class printer {
 	    ob_start();
 
 	    $pdf = new printer_TCPDF('L');
-	    
+
 		$pdf->setStyle('
 			* {
 				font-size: 9pt;
@@ -134,12 +134,12 @@ class printer {
 				background-color: #e6e6e6;
 			}
 				');
-		
+
 		$pdf->setHeaderMargin(5);
 		$pdf->SetTopMargin(40);
 
 		foreach ($html_tables as $html_table) {
-		    
+
 			// convert padding to spaces, because tcpdf doesn't support padding
 			/*
 			$html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
@@ -169,10 +169,10 @@ class printer {
 
 // 		die();
 		$pdf->Output();
-		
+
 		exit;
 	}
-	
+
 	static function competenceprofile_overview($studentid, $html_header, $html_tables) {
 	    //print_r($html_tables); exit;
 	    ob_start();
@@ -273,7 +273,7 @@ class printer {
 	    ob_start();
 
 	    $pdf = new printer_TCPDF('L');
-	    
+
 
 		$pdf->setStyle('
 			* {
@@ -298,13 +298,13 @@ class printer {
 		$pdf->setHeaderMargin(5);
 		$pdf->SetTopMargin(20);
 
-		foreach ($html_tables as $html_table) {		    
+		foreach ($html_tables as $html_table) {
 			// add spacing for examples
-			
+
 		    $html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
 		        return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
 		    }, $html_table);
-		    
+
 			$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
 
             if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
@@ -320,10 +320,10 @@ class printer {
 // 			var_dump($html_table);
 // 			die();
 			$pdf->writeHTML($html_table);
-			
+
 			//var_dump($html_table);
 		}
-		
+
 		$pdf->Output();
 
 		exit;
@@ -829,7 +829,7 @@ class printer {
 				margin: 0;
 			}
 			table td {
-				border: 0.2pt solid #555;
+				border: 0.2pt solid #111;
 				margin: 40px;
 			}
 			table {
@@ -847,6 +847,8 @@ class printer {
         //    die('error #gg98daa');
         //}
         //$html_content = str_replace($matches[1], '', $html_content);
+
+
         $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
         //$pdf->setHeaderHTML($html_content.$matches[0].'</table>');
 

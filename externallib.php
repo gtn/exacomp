@@ -7735,7 +7735,7 @@ class block_exacomp_external extends external_api {
 	        'name' => $name,
 	        'skz' => $skz,
 	    ));
-        //$isTeacher = block_exacomp_is_teacher(700,$USER->id); //700 was the courseid when it was hardcoded
+
         $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb','courseid'),$USER->id);
 
         if ($isTeacher) {
@@ -9699,12 +9699,9 @@ class block_exacomp_external extends external_api {
 
 
                 $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
-                $examples = block_exacomp_get_examples_for_pool($userid, $courseid);
+                //$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 
                 $examples = $descriptor->examples;
-
-//                var_dump($descriptor);
-//                die;
 
                 if(isset($examples[$exampleid])){
                     $found = true;

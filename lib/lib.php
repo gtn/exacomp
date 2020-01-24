@@ -9853,8 +9853,8 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
 					echo '<td width="5%" class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				    //$html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
 				}
-				echo '<td class="exarep_studentAssessment" width="10%" style="padding: 0 10px;">'.$eval->get_student_value_title($item::TYPE).'</td>';
-				echo '<td class="exarep_teacherAssessment" width="10%" style="padding: 0 10px;">';
+				echo '<td class="exarep_studentAssessment" width="15%" style="padding: 0 10px;">'.$eval->get_student_value_title($item::TYPE).'</td>';
+				echo '<td class="exarep_teacherAssessment" width="15%" style="padding: 0 10px;">';
                 switch ($item_scheme) {
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                         echo block_exacomp_format_eval_value($eval->additionalinfo);
@@ -9924,8 +9924,8 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
                 if (@$filter['time']['active']) {
                     $html .= '<th width="5%" class="heading"></th>';
                 }
-				$html .= '<th width="10%" class="heading studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
-				$html .= '<th width="10%" class="heading teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
+				$html .= '<th width="15%" class="heading studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
+				$html .= '<th width="15%" class="heading teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
 //				$html .= '<th width="10%" class="heading exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>'; //remove? RW
 				$html .= '<th width="10%" class="heading difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
                 $html .= '</tr>';
