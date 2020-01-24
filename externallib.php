@@ -7735,8 +7735,9 @@ class block_exacomp_external extends external_api {
 	        'name' => $name,
 	        'skz' => $skz,
 	    ));
+        //$isTeacher = block_exacomp_is_teacher(700,$USER->id); //700 was the courseid when it was hardcoded
+        $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb','courseid'),$USER->id);
 
-        $isTeacher = block_exacomp_is_teacher(700,$USER->id);
         if ($isTeacher) {
             do {
                 $nps = "";
