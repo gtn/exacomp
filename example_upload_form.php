@@ -72,11 +72,11 @@ class block_exacomp_example_upload_form extends moodleform {
         $mform->addElement('text', 'timeframe', block_exacomp_get_string("timeframe_example"), 'maxlength="255" size="60"');
         $mform->setType('timeframe', PARAM_TEXT);
 
-		if (@$this->_customdata['taxonomies']) {
+		//if (@$this->_customdata['taxonomies']) {
 			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),@$this->_customdata['taxonomies']);
 			$tselect->setMultiple(true);
 			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => @$this->_customdata['exampleid']),"","taxid")));
-		}
+		//}
 
 		$mform->addElement('header', 'link', block_exacomp_get_string('link'));
 
