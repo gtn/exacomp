@@ -1168,21 +1168,15 @@ class data_exporter extends data {
             self::assign_source($xmlItem, $dbItem);
             $xmlItem->addChildWithCDATAIfValue('title', $mm[1][$k]);
             $xmlItem->addChildWithCDATAIfValue('type', $module_type);
-            foreach ($activity as $ke => $comptype) {
-                    $descriptors = g::$DB->get_records_sql("
-				        SELECT DISTINCT d.id, d.source, d.sourceid
-				        FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
-                        JOIN  {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON d.id = de.descrid
-			            JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = de.exampid
+                    $example = g::$DB->get_records_sql("
+				        SELECT DISTINCT e.id, e.source, e.sourceid
+				        FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
 				        WHERE e.activityid = ?
 			         ", array($dbItem->id));
 
-                    $xmlItem->addChild('descriptors');
-                    foreach ($descriptors as $descriptor) {
-                        $xmlDescriptor = $xmlItem->descriptors->addChild('descriptorid');
-                        self::assign_source($xmlDescriptor, $descriptor);
-                    }
-            }
+                        $xmlExample = $xmlItem->descriptors->addChild('exampleid');
+                        self::assign_source($xmlExample, $example);
+                    
 
             $backupid = moodle_backup($k, $USER->id);
 

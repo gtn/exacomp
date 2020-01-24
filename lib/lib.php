@@ -3261,17 +3261,15 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
         global $DB;
         if ($filter_descriptors) {
             $records = $DB->get_records_sql('
-            SELECT mm.id, descrid, activityid, activitytitle
+            SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
 			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
-            JOIN {course_modules} m ON m.id = e.activityid
 			WHERE (descrid IN ('.join(',',$filter_descriptors).') )');
         } else {
             $records = $DB->get_records_sql('
-            SELECT mm.id, descrid, activityid, activitytitle
+            SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
-			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
-			JOIN {course_modules} m ON m.id = e.activityid');
+			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid');
         }
 
 
@@ -3282,6 +3280,7 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
        foreach ($records as $record) {
            $mm[$record->activityid][0][$record->descrid] = $record->descrid;
            $ret[1][$record->activityid] = $record->activitytitle;
+           $ret[2][$record->activityid] = $record->exampid;
            //         if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
            //             $mm->competencies[$record->compid][$record->activityid] = $record->activityid;
            //         } else {
