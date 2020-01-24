@@ -2109,7 +2109,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$key = new xmldb_key('taxid', XMLDB_KEY_FOREIGN, array('taxid'));
 		// Launch drop key primary.
 		$dbman->drop_key($table, $key);
-		//var_dump($dbman->index_exists($table, $key));
 		if ($dbman->field_exists($table, $field)) {
 			$dbman->drop_field($table, $field);
 		}

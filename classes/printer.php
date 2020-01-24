@@ -162,8 +162,7 @@ class printer {
 			$pdf->setHeaderHTML($html_header.$matches[0].'</table>');
 
 			$pdf->AddPage();
-// 			var_dump($html_table);
-// 			die();
+
 			$pdf->writeHTML($html_table);
 		}
 
@@ -317,11 +316,8 @@ class printer {
             $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
 
 			$pdf->AddPage();
-// 			var_dump($html_table);
-// 			die();
 			$pdf->writeHTML($html_table);
 
-			//var_dump($html_table);
 		}
 
 		$pdf->Output();

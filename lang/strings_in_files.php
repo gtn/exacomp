@@ -151,7 +151,6 @@ echo '</table>';
 echo '<hr />';
 echo '<table>';
 foreach ($all_matches_get_string as $match) {
-	// var_dump($match->matches);
 	echo "<tr><td>{$match->file}:{$match->line}</td><td>";
 	echo $match->translation_found ? 'found' : 'not found';
 	echo "</td><td>";

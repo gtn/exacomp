@@ -885,10 +885,6 @@ class block_exacomp_external extends external_api {
 
         static::validate_parameters(static::diggr_get_user_role_parameters(), array());
 
-//        var_dump("diggr get user role called");
-//        die;
-
-
         $trainer = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array(
             'trainerid' => $USER->id,
         ));
@@ -1615,7 +1611,7 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return external_function_parameters
 	 */
-	public static function create_example_parameters() {
+	public static function create_or_update_example_parameters() {
 		return new external_function_parameters (array(
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
 			'name' => new external_value (PARAM_TEXT, 'title of example'),
@@ -1633,20 +1629,20 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
-	 * Create an example
+	 * Create an example or update it
 	 * create example
 	 * @ws-type-write
 	 *
 	 * @return array
 	 */
-	public static function create_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1) {
+	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1) {
 		global $DB, $USER;
 
 		if (empty ($name)) {
 			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
 
-		static::validate_parameters(static::create_example_parameters(), array(
+		static::validate_parameters(static::create_or_update_example_parameters(), array(
             'exampleid' => $exampleid,
 			'name' => $name,
 			'description' => $description,
@@ -1865,235 +1861,11 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return external_multiple_structure
 	 */
-	public static function create_example_returns() {
+	public static function create_or_update_example_returns() {
 		return new external_single_structure (array(
 			'exampleid' => new external_value (PARAM_INT, 'id of created example'),
 		));
 	}
-
-
-
-
-
-
-
-
-
-
-//
-//    /**
-//     * Returns description of method parameters
-//     *
-//     * @return external_function_parameters
-//     */
-//    public static function edit_example_parameters() {
-//        return new external_function_parameters (array(
-//            'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
-//            'name' => new external_value (PARAM_TEXT, 'title of example'),
-//            'description' => new external_value (PARAM_TEXT, 'description of example'),
-//            'externalurl' => new external_value (PARAM_TEXT, ''),
-//            'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
-//            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
-//            'solutionfileitemid' => new external_value (PARAM_INT, 'fileitemid', VALUE_DEFAULT, 0),
-//            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
-//            'courseid' => new external_value (PARAM_INT, null, VALUE_DEFAULT, 0),
-//            'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
-//            'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
-//        ));
-//    }
-//
-//    /**
-//     * Create an example
-//     * create example
-//     * @ws-type-write
-//     *
-//     * @param $name
-//     * @param $description
-//     * @param $externalurl
-//     * @param $comps
-//     * @param $filename
-//     * @return array
-//     */
-//    public static function edit_example($exampleid, $name, $description, $externalurl, $comps, $fileitemids = '0', $solutionfileitemid = 0, $taxonomies = '', $courseid, $filename, $crosssubjectid) {
-//        global $DB, $USER;
-//
-//        if (empty ($name)) {
-//            throw new invalid_parameter_exception ('Parameter can not be empty');
-//        }
-//
-//
-//        static::validate_parameters(static::edit_example_parameters(), array(
-//            'exampleid' => $exampleid,
-//            'name' => $name,
-//            'description' => $description,
-//            'externalurl' => $externalurl,
-//            'comps' => $comps,
-//            'fileitemids' => $fileitemids,
-//            'solutionfileitemid' => $solutionfileitemid,
-//            'taxonomies' => $taxonomies,
-//            'courseid' => $courseid,
-//            'filename' => $filename,
-//            'crosssubjectid' => $crosssubjectid,
-//        ));
-//
-//        $example = block_exacomp\example::get($exampleid);
-//        block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
-//
-//        // insert into examples and example_desc
-//        $id = $exampleid;
-//        $example->title = $name;
-//        $example->description = $description;
-//        $example->externalurl = $externalurl;
-//        $example->creatorid = $USER->id;
-//        $example->timestamp = time();
-//        if ($courseid) {
-//            // dakora ab 2017-09-19 übergibt auch die courseid
-//            $example->source = block_exacomp_is_teacher($courseid)
-//                ? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
-//                : BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
-//        } else {
-//            // bei elove wird keine courseid übergeben
-//            // elove logik: dakora_get_user_role() kann nicht verwendet werden
-//            $example->source = static::get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
-//                ? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
-//                : BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
-//        }
-//
-//        $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
-//
-//
-//        if ($fileitemids != '') {
-//            //Delete old files
-//            $context = context_user::instance($USER->id);
-//            $fs = get_file_storage();
-//            $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
-//
-//            //Add new files
-//            $fileitemids = explode(',', $fileitemids);
-//            foreach ($fileitemids as $fileitemid){
-//                $context = context_user::instance($USER->id);
-//                $fs = get_file_storage();
-//
-//                if ($filename) {
-//                    // TODO: filename sollte nicht mehr notwendig sein, das ist alter code?
-//                    $file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename);
-//                } else {
-//                    $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
-//                }
-//                if (!$file) {
-//                    throw new moodle_exception('file not found');
-//                }
-//
-//                $fs->create_file_from_storedfile(array(
-//                    'contextid' => context_system::instance()->id,
-//                    'component' => 'block_exacomp',
-//                    'filearea' => 'example_task',
-//                    'itemid' => $example->id,
-//                ), $file);
-//                $file->delete();
-//            }
-//        }
-//
-//        if ($solutionfileitemid != 0) {
-//            $context = context_user::instance($USER->id);
-//            $fs = get_file_storage();
-//
-//            //Delete old files
-//            $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $example->id);
-//
-//            $file = reset($fs->get_area_files($context->id, 'user', 'draft', $solutionfileitemid, null, false));
-//            if (!$file) {
-//                throw new moodle_exception('solution file not found');
-//            }
-//
-//            $fs->create_file_from_storedfile([
-//                'contextid' => context_system::instance()->id,
-//                'component' => 'block_exacomp',
-//                'filearea' => 'example_solution',
-//                'itemid' => $example->id,
-//            ], $file);
-//
-//            $file->delete();
-//        }
-//
-//        if($crosssubjectid != -1){
-//            $insert = new stdClass ();
-//            $insert->exampid = $id;
-//            $insert->id_foreign = $crosssubjectid;
-//            $insert->table_foreign = 'cross';
-//            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-//
-//            //vorerst notlösung:
-//            $insert = new stdClass();
-//            $insert->courseid = $courseid;
-//            $insert->exampleid = $id;
-//            $insert->studentid = 0;
-//            $insert->visible = 1;
-//            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-//// 		    //visibility entries for this example in course where descriptors are associated
-//// 		    $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
-//// 		    foreach ($courseids as $courseid) {
-//// 		        $insert = new stdClass();
-//// 		        $insert->courseid = $courseid;
-//// 		        $insert->exampleid = $id;
-//// 		        $insert->studentid = 0;
-//// 		        $insert->visible = 1;
-//// 		        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-//// 		    }
-//        }else{
-//            $descriptors = explode(',', $comps);
-//            foreach ($descriptors as $descriptor) {
-//                $insert = new stdClass ();
-//                $insert->exampid = $id;
-//                $insert->descrid = $descriptor;
-//                $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-//
-//                //visibility entries for this example in course where descriptors are associated
-//                $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
-//                foreach ($courseids as $courseid) {
-//                    $insert = new stdClass();
-//                    $insert->courseid = $courseid;
-//                    $insert->exampleid = $id;
-//                    $insert->studentid = 0;
-//                    $insert->visible = 1;
-//                    $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-//                }
-//            }
-//        }
-//
-//
-//        $taxonomies = trim($taxonomies) ? explode(',', trim($taxonomies)) : [];
-//        foreach ($taxonomies as $taxid) {
-//            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
-//                'exampleid' => $id,
-//                'taxid' => $taxid,
-//            ]);
-//        }
-//
-//
-//
-//        return array(
-//            "exampleid" => $id,
-//        );
-//    }
-//
-//    /**
-//     * Returns desription of method return values
-//     *
-//     * @return external_multiple_structure
-//     */
-//    public static function edit_example_returns() {
-//        return new external_single_structure (array(
-//            'exampleid' => new external_value (PARAM_INT, 'id of created example'),
-//        ));
-//    }
-
-
-
-
-
-
-
 
 
 
@@ -3936,9 +3708,6 @@ class block_exacomp_external extends external_api {
 				}
 			}
 		}
-
-//        var_dump($final_descriptors);
-//        die();
 
 		return $final_descriptors;
 
@@ -6185,9 +5954,7 @@ class block_exacomp_external extends external_api {
 		if ($type == "file") {
 		    $context = context_user::instance($USER->id);
 		    $fs = get_file_storage();
-// 		    var_dump($fs);
 		    try {
-		        //var_dump($context->id,$fileitmeid,$filename);
                 $fileitemids = explode(',', $fileitemids);
                 $filenames = explode(',', $filenames);
 
@@ -6196,7 +5963,6 @@ class block_exacomp_external extends external_api {
                     foreach($fileitemids as $fileitemid){
                         $filename = $filenames[$i];
                         $i++;
-//                        var_dump($filename);
                         $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
                         if ($old) {
                             $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
@@ -6839,12 +6605,10 @@ class block_exacomp_external extends external_api {
 	        $data['teachercomment'] = '';
 	        $data['teacherfile'] = '';
 	        $itemcomments = \block_exaport\api::get_item_comments($itemInformation->id);
-	        //var_dump($itemcomments);
 	        $timemodified_compare = 0; //used for finding the most recent comment to display it in Dakora
 	        $timemodified_compareTeacher = 0;
 	        foreach ($itemcomments as $itemcomment) {
 	            if ($userid == $itemcomment->userid) {
-	                //var_dump($itemcomment->timemodified);
 	                if($itemcomment->timemodified > $timemodified_compare){
 	                    $data['studentcomment'] = $itemcomment->entry;
 	                    $timemodified_compare = $itemcomment->timemodified;
@@ -7277,9 +7041,6 @@ class block_exacomp_external extends external_api {
 
 		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp,true);
 
-//		var_dump($statistics);
-//		die;
-
 		$statistics_return = array();
 		foreach ($statistics as $key => $statistic) {
 			$return = array();
@@ -7290,8 +7051,6 @@ class block_exacomp_external extends external_api {
 //                if(block_exacomp_get_assessment_comp_diffLevel()==0) { //if no niveaus are allowed but because of the old settings a niveau has been set for this competence: act like there is no niveau
 //                    $niveauid = -1;
 //                }
-
-//                var_dump($niveauid);
 
                 $niveau = new stdClass();
                 $niveau->id = (int)$niveauid; // quick bugfix: when "points" is set in the plugin settings, the last niveaus is "".. this would lead to an error since int is expected
@@ -7306,7 +7065,6 @@ class block_exacomp_external extends external_api {
 
                 }
                 $niveau->evaluations = $evaluations;
-//                var_dump($return);
 
                 $return[$niveauid] = $niveau;
 			}
@@ -8882,9 +8640,6 @@ class block_exacomp_external extends external_api {
 	            $descriptor_return->reviewerid = $grading->reviewerid;
                 $descriptor_return->gradinghistory = $grading->gradinghistory;
 
-//                var_dump($grading->gradinghistory);
-
-
 	            //Reviewername finden
 	            $reviewerid = $grading->reviewerid;
 	            $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
@@ -9072,10 +8827,6 @@ class block_exacomp_external extends external_api {
 		foreach ($children as $child) {
 			if ($child->examples || $show_all) {
 				$child_return = static::dakora_get_descriptor_details($courseid, $child->id, $userid, $forall, $crosssubjid);
-//
-//				var_dump($child_return);
-//				die;
-//
 
 				$child_return->visible = (!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student)) || $forall)) ? 1 : 0;
 				$child_return->used = (block_exacomp_descriptor_used($courseid, $child, $userid)) ? 1 : 0;
@@ -9100,7 +8851,6 @@ class block_exacomp_external extends external_api {
 			}
 
 			foreach ($parent_descriptor->examples as $example) {
-// 			    var_dump($example);
 //			    $example_return->tax = "A"; //cannot be exacuted
 				$example_return = new stdClass();
 				$example_return->exampleid = $example->id;

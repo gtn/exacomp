@@ -34,7 +34,6 @@ function moodle_restore($data, $courseid, $userdoingrestore)
 
     $controller->execute_plan();
 
-//     var_dump($courseid);
 
     // Commit.
  //   $transaction->allow_commit();

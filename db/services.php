@@ -135,12 +135,12 @@ submit example for elove and diggr
 Add item',
     'type' => 'read',
   ),
-  'block_exacomp_create_example' => 
+  'block_exacomp_create_or_update_example' => 
   array (
     'classname' => 'block_exacomp_external',
-    'methodname' => 'create_example',
+    'methodname' => 'create_or_update_example',
     'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => 'Create an example
+    'description' => 'Create an example or update it
 create example',
     'type' => 'write',
   ),
@@ -877,7 +877,7 @@ $services = array (
       12 => 'block_exacomp_get_item_for_example',
       13 => 'block_exacomp_get_competencies_for_upload',
       14 => 'block_exacomp_submit_example',
-      15 => 'block_exacomp_create_example',
+      15 => 'block_exacomp_create_or_update_example',
       16 => 'block_exacomp_grade_item',
       17 => 'block_exacomp_get_user_examples',
       18 => 'block_exacomp_get_user_profile',

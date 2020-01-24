@@ -28,9 +28,6 @@ function block_exacomp_load_service($serviceshortname) {
 function block_exacomp_get_login_data() {
 	$exa_tokens = [];
 
-//    var_dump("aasdf");
-//    die;
-
 	$services = optional_param('services', '', PARAM_TEXT);
 	$services = array_keys(
 		['moodle_mobile_app' => 1, 'exacompservices' => 1] // default services
@@ -124,9 +121,6 @@ if (isguestuser()) {
 
 $loginData = block_exacomp_get_login_data();
 
-//var_dump("HERE");
-//die;
-
 
 //Here after the user is logged in
 //Check if this user is a teacher from eeducation. If they are: add to course with id=700
@@ -159,8 +153,7 @@ if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
 //                }
 //                $instance = $DB->get_record('enrol', array('id' => $instanceid));
 //            }
-//            var_dump($instance);
-//            die;
+
             if($manualinstance != null){
                 $enrol->enrol_user($manualinstance, $userid, 3); //The roleid of "editingteacher" is 3 in mdl_role table
             }
@@ -170,8 +163,7 @@ if(strcmp(strstr($email,"@"),"@eeducation.at") == 0){
 
 
 if (optional_param('withlogout', '', PARAM_BOOL)) {
-//    var_dump("from login form");
-//    die;
+
 	// came from login form
 	echo $OUTPUT->header();
 
@@ -196,8 +188,7 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 
 	exit;
 } else {
-//    var_dump("already logged in");
-//    die;
+
 	// was already logged in, show info and continue button... always comes here?
 	echo $OUTPUT->header();
 
