@@ -35,7 +35,7 @@ $subjectid = optional_param('subjectid', 0, PARAM_INT);
 $topicid = optional_param('topicid', 0, PARAM_INT);
 $niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 
 $slicestudentlist = false;
 if (get_config('exacomp', 'disable_js_assign_competencies')) {

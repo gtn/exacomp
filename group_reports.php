@@ -42,7 +42,7 @@ if ($wstoken) {
     $authenticationinfo = $webservicelib->authenticate_user($wstoken);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher();

@@ -35,7 +35,7 @@ if (!$topic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid)))
 	print_error('invalidtopic', 'block_exacomp', $topicid);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 $context = context_course::instance($courseid);
 

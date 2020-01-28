@@ -21,7 +21,7 @@ require __DIR__.'/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_cross_subjects_overview';

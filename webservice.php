@@ -424,7 +424,7 @@ class block_exacomp_simple_service {
 			print_error('invalidcourse', 'block_simplehtml', $courseid);
 		}
 
-		require_login($course);
+		block_exacomp_require_login($course);
 
 		return $course;
 	}

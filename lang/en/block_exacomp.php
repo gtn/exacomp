@@ -841,4 +841,4 @@ $string['export_password_message'] = 'Please remember the password "<strong>{$a}
 $string['settings_heading_security'] = 'Security';
 $string['settings_heading_security_description'] = '';
 $string['settings_export_password'] = 'Passwort protection (AES-256 encryption) for competence grid export';
-$string['settings_export_password_description'] = '';
+$string['settings_export_password_description'] = '(Only available from php version 7.2 on)';

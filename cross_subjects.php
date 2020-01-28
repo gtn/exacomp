@@ -25,7 +25,7 @@ $group = optional_param('group', 0, PARAM_INT);
 $style = optional_param('style', 0, PARAM_INT);
 
 // CHECK TEACHER
-require_login($courseid);
+block_exacomp_require_login($courseid);
 $isTeacher = block_exacomp_is_teacher();
 
 $studentid = block_exacomp_get_studentid() ;

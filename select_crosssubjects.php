@@ -29,7 +29,7 @@ if ($descrid > 0 && (!$descriptor = $DB->get_record('block_exacompdescriptors', 
 	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 $context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 

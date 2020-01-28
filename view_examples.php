@@ -35,7 +35,7 @@ if (!$course = $DB->get_record('course', array(
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 $context = context_course::instance($courseid);
 

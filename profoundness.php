@@ -23,7 +23,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $studentid = optional_param('studentid', 0, PARAM_INT);
 $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_profoundness';

@@ -32,7 +32,7 @@ if (!$example = $DB->get_record('block_exacompexamples', array('id' => $examplei
 	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 $itemInformation = block_exacomp_get_current_item_for_example($USER->id, $exampleid);
 if ($itemInformation && !optional_param('newsubmission', false, PARAM_BOOL)) {

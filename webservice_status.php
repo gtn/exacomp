@@ -21,7 +21,7 @@ require __DIR__.'/inc.php';
 
 $courseid = required_param ( 'courseid', PARAM_INT );
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 block_exacomp_require_admin();
 
 $PAGE->set_context(context_system::instance());

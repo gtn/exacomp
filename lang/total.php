@@ -3055,7 +3055,7 @@ ihrem Raster',
         'Passwort protection (AES-256 encryption) for competence grid export'
 	],
 	'settings_export_password_description' => [
-		'',
-		''
+		'(Nur ab php Version 7.2 verfügbar)',
+		'(Only available from php version 7.2 on)'
 	],
 ];

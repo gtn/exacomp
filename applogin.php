@@ -108,11 +108,11 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/blocks/exacomp/applogin.php', array('app' => required_param('app', PARAM_TEXT), 'app_version' => required_param('app_version', PARAM_TEXT)));
 $PAGE->set_pagelayout('embedded');
 
-require_login(0,false,null,true,false);
+block_exacomp_require_login(0,false,null,true,false);
 
 if (isguestuser()) {
 	// is guest user
-	require_login();
+	block_exacomp_require_login();
 	$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin.php?'.$_SERVER['QUERY_STRING'].'&withlogout=1';
 	redirect($CFG->wwwroot.'/login/index.php');
 	exit;

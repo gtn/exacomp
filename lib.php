@@ -29,7 +29,7 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 	}
 
 	// Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
-	require_login($course, true, $cm);
+	block_exacomp_require_login($course, true, $cm);
 
 	// Check the relevant capabilities - these may vary depending on the filearea being accessed.
 

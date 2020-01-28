@@ -11421,3 +11421,12 @@ function block_exacomp_random_password($length = 12) {
     }
     return implode($pass); //turn the array into a string
 }
+
+function block_exacomp_require_login($courseorid = null, $autologinguest = true, $cm = null, $setwantsurltome = true, $preventredirect = false) {
+	require_login($courseorid, $autologinguest, $cm, $setwantsurltome, $preventredirect);
+
+	if (class_exists('\block_exa2fa\api')) {
+		\block_exa2fa\api::check_user_a2fa_requirement('block_exacomp');
+	}
+}
+

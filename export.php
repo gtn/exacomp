@@ -25,7 +25,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 $course_context = context_course::instance($courseid);
 
@@ -40,7 +40,9 @@ $output = block_exacomp_get_renderer();
 function block_exacomp_require_secret() {
 	global $PAGE, $courseid;
 
-	if (!get_config('exacomp', 'export_password')) {
+	// zip encoding only available from php 7.2 on
+	$needsSecret = get_config('exacomp', 'export_password') && (version_compare(phpversion(), '7.2') >= 0);
+	if (!$needsSecret) {
 		// no secret needed
 		return '';
 	}

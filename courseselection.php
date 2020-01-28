@@ -26,7 +26,7 @@ $action = optional_param('action', "", PARAM_ALPHAEXT);
 
 $changeFilter = optional_param('filter_submit', "", PARAM_RAW);
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 block_exacomp_require_teacher();
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */

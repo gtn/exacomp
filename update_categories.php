@@ -24,7 +24,7 @@ require_once __DIR__.'/update_categories_form.php';
 $courseid = required_param('courseid', PARAM_INT);
 $descrid = required_param('descrid', PARAM_INT);
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 $context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 

@@ -853,4 +853,4 @@ $string['export_password_message'] = 'Bitte notieren Sie sich das Passwort "<str
 $string['settings_heading_security'] = 'Sicherheit';
 $string['settings_heading_security_description'] = '';
 $string['settings_export_password'] = 'Sicherung von Kompetenzrastern mit Passwort schützen (AES-256 Verschlüsselung)';
-$string['settings_export_password_description'] = '';
+$string['settings_export_password_description'] = '(Nur ab php Version 7.2 verfügbar)';

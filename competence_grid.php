@@ -26,7 +26,7 @@ $report = optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT);
 // TODO: add evaluation niveaus in report2, report3, then enable them again on this page
 $report = BLOCK_EXACOMP_REPORT1;
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher();

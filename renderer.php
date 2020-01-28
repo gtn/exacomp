@@ -81,6 +81,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			$extras .= ob_get_clean();
+		} else {
+			if (class_exists('\block_exa2fa\api')) {
+				$extras .= \block_exa2fa\api::render_timeout_info('block_exacomp');
+			}
 		}
 
 		if ($tabtree === null) {

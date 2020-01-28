@@ -25,7 +25,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error("That's an invalid course id");
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 $context = context_system::instance();
 $coursecontext = context_course::instance($courseid);

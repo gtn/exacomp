@@ -23,7 +23,7 @@ require_once __DIR__.'/example_upload_form.php';
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = optional_param('exampleid', 0, PARAM_INT);
 
-require_login($courseid);
+block_exacomp_require_login($courseid);
 
 if ($exampleid) {
 	if (!$example = block_exacomp\example::get($exampleid)) {

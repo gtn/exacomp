@@ -35,7 +35,7 @@ if ($exampleid && (!$example = $DB->get_record('block_exacompexamples', array('i
 	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 $item = $DB->get_record('block_exacompitemexample', array("exampleid"=>$exampleid),'*',IGNORE_MULTIPLE);
 if($exampleid && $item) {

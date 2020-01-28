@@ -35,7 +35,7 @@ if (!$example = $DB->get_record('block_exacompexamples', array('id' => $examplei
 	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 
 $context = context_course::instance($courseid);
 

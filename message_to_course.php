@@ -28,7 +28,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
-require_login($course);
+block_exacomp_require_login($course);
 block_exacomp_require_teacher($courseid);
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
