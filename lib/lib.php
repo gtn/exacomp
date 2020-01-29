@@ -4079,6 +4079,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
                     'courseid' => $courseid,
                     'activityid' => $activityid,
                     'activitylink' => $activitylink,
+                    'activitytitle' => $module->name,
                     'externaltask' => $externaltask,
                     'creatorid' => $USER->id,
                     'parentid' => 0,
@@ -11426,7 +11427,11 @@ function block_exacomp_require_login($courseorid = null, $autologinguest = true,
 	require_login($courseorid, $autologinguest, $cm, $setwantsurltome, $preventredirect);
 
 	if (class_exists('\block_exa2fa\api')) {
-		\block_exa2fa\api::check_user_a2fa_requirement('block_exacomp');
+	    if (method_exists(\block_exa2fa\api::class, 'check_user_a2fa_requirement')) {
+            \block_exa2fa\api::check_user_a2fa_requirement('block_exacomp');
+        } else {
+            die('update block_exa2fa to last version!');
+        }
 	}
 }
 
