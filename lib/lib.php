@@ -3888,10 +3888,9 @@ function block_exacomp_get_exacomp_courses($userid) {
 }
 
 /**
- *
  * Gets URL for particular activity
- * @param unknown_type $activity
- * @param unknown_type $student
+ * @param mixed $activity
+ * @param boolean $student
  */
 function block_exacomp_get_activityurl($activity, $student = false) {
 	global $DB;
