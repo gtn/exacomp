@@ -1104,6 +1104,9 @@ $options = array('' => block_exacomp_get_string('settings_addblock_to_newcourse_
 $settings->add(new admin_setting_configselect('exacomp/addblock_to_new_course',
         block_exacomp_get_string('settings_addblock_to_newcourse'),
         block_exacomp_get_string('settings_addblock_to_newcourse_description'), '', $options));
+$settings->add(new admin_setting_configcheckbox('exacomp/assign_activities_old_method',
+        block_exacomp_get_string('block_exacomp_assign_activities_old_method_head'),
+        block_exacomp_get_string('block_exacomp_assign_activities_old_method_body'), 0));
 
 // Apps-Einstellungen (configuration for apps).
 $settings->add(new admin_setting_heading('exacomp/heading_apps',

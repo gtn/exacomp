@@ -35,7 +35,6 @@ if (strcmp("mysql",$CFG->dbtype)==0) {
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
-$development = optional_param("dev", "", PARAM_TEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -65,9 +64,7 @@ $page_params =  array('courseid' => $courseid);
 if ($columngroupnumber !== null) {
     $page_params['colgroupid'] = $columngroupnumber;
 }
-if ($development) {
-    $page_params['dev'] = $development;
-}
+
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/activities_to_descriptors.php', $page_params);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));

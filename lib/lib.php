@@ -2477,14 +2477,10 @@ function block_exacomp_get_user_activities_competences_by_course($user, $coursei
  * @return \block_exacomp\tabobject[]
  */
 function block_exacomp_build_navigation_tabs_settings($courseid) {
-    $isDevelopment = (optional_param('dev', '', PARAM_ALPHA) == 'gtndev');
 	$usebadges = get_config('exacomp', 'usebadges');
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$settings_subtree = array();
 	$linkParams = array('courseid' => $courseid);
-	if ($isDevelopment) {
-	    $linkParams['dev'] = optional_param('dev', '', PARAM_ALPHA);
-    }
     // Edit course parameters submenu
 	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_configuration"), null, true);
 	// Subject selection submenu
@@ -2492,10 +2488,10 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
     // Activities submenu
 	if (block_exacomp_is_activated($courseid)) {
 		if ($courseSettings->uses_activities) {
-			$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
-			if ($isDevelopment) {
-                $settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
+		    if (get_config('exacomp', 'assign_activities_old_method')) {
+                $settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
             }
+			$settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
 		}
 	}
     // Badges submenu

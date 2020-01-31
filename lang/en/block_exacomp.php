@@ -48,7 +48,7 @@ $string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
-$string['tab_teacher_settings_activitiestodescriptors'] = 'Assign Moodle activities NEW';
+$string['tab_teacher_settings_activitiestodescriptors'] = 'Relate Moodle acitvities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_teacher_settings_new_subject'] = 'Create new subject';
 $string['tab_teacher_settings_taxonomies'] = 'Taxonomies';
@@ -635,6 +635,8 @@ $string['notification_weekly_schedule_context'] = 'Weekly schedule';
 $string['inwork'] = '{$a->inWork}/{$a->total} in work';
 $string['block_exacomp_notifications_head'] = 'Notifications and Messages';
 $string['block_exacomp_notifications_body'] = 'Users will get notified after relevant actions.';
+$string['block_exacomp_assign_activities_old_method_head'] = 'Show Tab "Assign Moodle activities" old';
+$string['block_exacomp_assign_activities_old_method_body'] = 'This Tab was default replaced with Tab "Relate Moodle acitvities"';
 
 
 // === Logging ===

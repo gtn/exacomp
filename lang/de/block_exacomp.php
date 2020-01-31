@@ -48,7 +48,7 @@ $string['tab_teacher_settings_configuration'] = 'Einstellungen';
 $string['tab_teacher_settings_selection_st'] = 'Schulart / Bezüge zum Bildungsplan';
 $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
-$string['tab_teacher_settings_activitiestodescriptors'] = 'Moodle-Aktivitäten zuordnen NEU';
+$string['tab_teacher_settings_activitiestodescriptors'] = 'Moodle-Aktivitäten verknüpfen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neuen Kompetenzraster anlegen';
 $string['tab_teacher_settings_taxonomies'] = 'Taxonomien';
@@ -641,6 +641,8 @@ $string['notification_weekly_schedule_context'] = 'Wochenplan';
 $string['inwork'] = '{$a->inWork}/{$a->total} Materialien in Arbeit';
 $string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen aktivieren';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
+$string['block_exacomp_assign_activities_old_method_head'] = 'Tab Moodle-Aktivitäten zuordnen alt anzeigen';
+$string['block_exacomp_assign_activities_old_method_body'] = 'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.';
 
 
 // === Logging ===

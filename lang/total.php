@@ -116,8 +116,8 @@ return [
 		'Assign Moodle activities',
 	],
 	'tab_teacher_settings_activitiestodescriptors' => [
-		'Moodle-Aktivitäten zuordnen NEU',
-		'Assign Moodle activities NEW',
+		'Moodle-Aktivitäten verknüpfen',
+		'Relate Moodle acitvities',
 	],
 	'tab_teacher_settings_badges' => [
 		'Auszeichnungen bearbeiten',
@@ -2259,6 +2259,14 @@ return [
 	'block_exacomp_notifications_body' => [
 		'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.',
 		'Users will get notified after relevant actions.',
+	],
+	'block_exacomp_assign_activities_old_method_head' => [
+		'Tab Moodle-Aktivitäten zuordnen alt anzeigen',
+		'Show Tab "Assign Moodle activities" old',
+	],
+	'block_exacomp_assign_activities_old_method_body' => [
+		'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.',
+		'This Tab was default replaced with Tab "Relate Moodle acitvities"',
 	],
 
 
