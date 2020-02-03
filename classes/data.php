@@ -1517,7 +1517,7 @@ class data_importer extends data {
                     if ($newMapping) {
                         self::update_categorymapping_for_source($source_local_id, $newMapping, $simulate);
                     } else {
-                        $difflevels = preg_split("/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+                        $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted();
                         $categoryMapping = self::get_categorymapping_for_source($source_local_id,
                                 ($simulate || $schedulerId > 0 ? true : false));
                         $categories = array();

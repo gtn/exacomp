@@ -5433,10 +5433,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) { //prints the statistic
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
 				$tables = array();
-				$tables[] = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], block_exacomp_get_string('descriptors'), block_exacomp_get_assessment_comp_diffLevel(),block_exacomp_get_assessment_comp_scheme()); //print competencies
-				$tables[] = $this->subject_statistic_table($course->id, $stat['child_evaluations'], block_exacomp_get_string('childcompetencies_compProfile'), block_exacomp_get_assessment_childcomp_diffLevel(),block_exacomp_get_assessment_childcomp_scheme());
+				$tables[] = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], block_exacomp_get_string('descriptors'), block_exacomp_get_assessment_comp_diffLevel(), block_exacomp_get_assessment_comp_scheme()); //print competencies
+				$tables[] = $this->subject_statistic_table($course->id, $stat['child_evaluations'], block_exacomp_get_string('childcompetencies_compProfile'), block_exacomp_get_assessment_childcomp_diffLevel(), block_exacomp_get_assessment_childcomp_scheme());
 				if (block_exacomp_course_has_examples($course->id)) {
-				    $tables[] = $this->subject_statistic_table($course->id, $stat['example_evaluations'], block_exacomp_get_string('materials_compProfile'), block_exacomp_get_assessment_example_diffLevel(),block_exacomp_get_assessment_example_scheme());
+				    $tables[] = $this->subject_statistic_table($course->id, $stat['example_evaluations'], block_exacomp_get_string('materials_compProfile'), block_exacomp_get_assessment_example_diffLevel(), block_exacomp_get_assessment_example_scheme());
 				}
 
 				$innersection = html_writer::tag('legend', block_exacomp_get_string('innersection2'), array('class' => 'competence_profile_insectitle'));
@@ -5789,9 +5789,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
     //TODO: make generic
 	function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true, $assessmentScheme ) {
 		$content = '';
-
+				
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
-		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, false,$assessmentScheme);
+		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, $assessmentScheme);
         $value_titles = array_filter($value_titles, 'strlen'); // remove empty, but except '0'
         $count_values = count($value_titles);
 		$value_titles_long = \block_exacomp\global_config::get_teacher_eval_items($courseid, false);
@@ -5839,7 +5839,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if (!$showdifflevel) {
             $stat = array_intersect_key( $stat, array_flip( array(-1)) ); // leave only with key = '-1'
         }
-
 		foreach ($stat as $niveau => $data) {
 			$row = new html_table_row();
 			$cell = new html_table_cell();

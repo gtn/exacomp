@@ -1374,8 +1374,9 @@ class global_config {
 
 	/**
 	 * Returns all diffLevel_options, specified by the admin
+     * deprecated ?
 	 */
-	static function get_diffLevel_options($include_empty = false) {
+/*	static function get_diffLevel_options($include_empty = false) {
 	    static $values;
 
 	    if ($values === null) {
@@ -1388,14 +1389,14 @@ class global_config {
 	    }
 
 	    return $ret;
-	}
+	}*/
 
 	/**
 	 * Returns all evaluation verbose_options, specified by the admin
 	 * deprecated ???  or at least not used as planned
 	 * the verbose options are saved in mdl_config_plugins as a string, instead of in the mdl_block_exacompeval_niveau table
 	 */
-	static function get_verbose_options($include_empty = false) {
+/*	static function get_verbose_options($include_empty = false) {
 	    static $values;
 	    if ($values === null) {
 	        $values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, array('option_type' => 'verbose_options'), '', 'id,title');
@@ -1407,7 +1408,7 @@ class global_config {
 	    }
 
 	    return $ret;
-	}
+	}*/
 
 	/**
 	 * Returns title for one evaluation niveau

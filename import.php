@@ -120,7 +120,7 @@ class generalxml_upload_form extends \moodleform {
                     $mform->addElement('html', '<input type="hidden" name="currentImportStep" value="compareCategories">');
                     $categoryMapping = \block_exacomp\data_importer::get_categorymapping_for_source($data['sourceId'], $forSchedulerTask);
                     // input form for comparing categories
-                    $difflevels = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+                    $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted();
                     $difflevels = array_combine($difflevels, $difflevels);
                     $difflevels = array(
                                     '--as_is--' => block_exacomp_get_string('import_mapping_as_is'),

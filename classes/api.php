@@ -156,7 +156,7 @@ class api {
 	    
 		$subjects = db_layer_all_user_courses::create($studentid)->get_subjects();
 
-		$niveau_titles = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, [], '', 'id,title');
+        $niveau_titles = block_exacomp_get_assessment_diffLevel_options_splitted();
 
 		// todo check timestamp for current semester
 

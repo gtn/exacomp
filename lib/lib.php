@@ -485,13 +485,24 @@ function block_exacomp_get_assessment_verbose_negative_threshold(){
     return get_config('exacomp', 'assessment_verbose_negative');
 }
 
-
 function block_exacomp_get_assessment_diffLevel_options() {
     static $value;
     if ($value !== null) {
         return $value;
     }
     $value = trim(get_config('exacomp', 'assessment_diffLevel_options'));
+    return $value;
+    //return trim(get_config('exacomp', 'assessment_diffLevel_options'));
+}
+
+function block_exacomp_get_assessment_diffLevel_options_splitted() {
+    static $value;
+    if ($value !== null) {
+        return $value;
+    }
+    $value = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+    // indexes - from 1: like ID in database
+    $value = array_combine(range(1, count($value)), array_values($value));
     return $value;
     //return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
@@ -517,7 +528,7 @@ function block_exacomp_get_assessment_verbose_options_short($getforlanguage = nu
 }
 
 function block_exacomp_get_assessment_diffLevel_verb($value) {
-    $difflevels = preg_split("/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+    $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted();
     // start from 1
     $difflevels = array_combine(range(1, count($difflevels)), array_values($difflevels));
     if (array_key_exists($value, $difflevels)) {
@@ -6738,17 +6749,18 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 	global $DB, $USER;
 
     //if teacher: only show the examples that this teacher added to the plannning storage (creatorid)
-    if($studentid == 0){
-        $sql = "select s.*,
+    if ($studentid == 0) {
+        $sql = "SELECT s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid,
-				e.schedule_marker			  
+				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
+				e.schedule_marker
+				-- evalniveau.title as niveau,			  
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid 
-			LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid
+			-- LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid -- moved to exacomp plugin settings
 			WHERE s.studentid = ? AND s.courseid = ? AND (
 				-- innerhalb end und start
 				(s.start > ? AND s.end < ?)
@@ -6756,17 +6768,18 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end, $USER->id));
-    }else{
-        $sql = "select s.*,
+    } else {
+        $sql = "SELECT s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau, s.courseid as schedulecourseid,
+				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
 				e.schedule_marker
+				-- evalniveau.title as niveau,
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid 
-			LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid
+			-- LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid -- moved to exacomp plugin settings
 			WHERE s.studentid = ? AND s.courseid = ? AND (
 				-- innerhalb end und start
 				(s.start > ? AND s.end < ?)
@@ -6775,6 +6788,12 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 			ORDER BY e.title";
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
     }
+    if (is_array($entries)) {
+        $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted();
+        foreach ($entries as $k => $entry) {
+            $entries[$k]->niveau = $niveautitles[$entry->evalniveauid]; 
+        }
+    }    
 
 	return $entries;
 }
@@ -7320,7 +7339,6 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 		return;
 	}
 
-
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
 // 	if ($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturl = ? AND fullmessage = ? AND timecreated > ?",
 // 	    array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturl' => $contexturl,'fullmessage' => $message, (time() - 5 * 60)))
@@ -7330,10 +7348,10 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 
 	require_once($CFG->dirroot.'/message/lib.php');
 
-
-	if((float)$CFG->version >= 2018120300){ //bigger than 3.6
-	    $eventdata = new core\message\message(); //works but is it inteded like that? RW TODO
-	}else{
+	//if ((float)$CFG->version >= 2018120300){ //bigger than 3.6
+	if ((float)$CFG->version >= 2016102700){ //bigger than 3.2dev (Build: 20161027)
+	    $eventdata = new core\message\message(); // works but is it inteded like that? RW TODO
+	} else {
 	    $eventdata = new stdClass ();
 	}
 
@@ -7344,7 +7362,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
     $eventdata->name = $notificationtype;
 
 
-    if($notificationtype=="instantmessage"){
+    if ($notificationtype == "instantmessage"){
 //        if((float)$CFG->version < 2018051700){//if lower than version 3.5
             $eventdata->subject = $subject;
 //        }
@@ -7353,7 +7371,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
         $eventdata->fullmessageformat = 0;
         $eventdata->courseid = 0; //must be integer.. probably legacy... moodle always sends "1" in Moodle3.6
         $eventdata->smallmessage = $message;
-    }else{
+    } else {
         $eventdata->subject = $subject;
         $eventdata->fullmessageformat = FORMAT_HTML;
         $eventdata->fullmessagehtml = $message;
@@ -7365,7 +7383,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 
     }
 
-    message_send($eventdata);
+    @message_send($eventdata);
 }
 
 /**
@@ -7712,7 +7730,6 @@ function block_exacomp_course_has_examples($courseid) {
 		JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid
 		JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
 		WHERE ct.courseid = ?";
-
 	return (bool)g::$DB->get_field_sql($sql, array($courseid));
 }
 
@@ -8428,11 +8445,8 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	// create grading statistic
 	//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid)); //deprecated/not generic? RW or just wrong?
-    $schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,$compAssessment);
-
-	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid,false,block_exacomp_get_assessment_example_scheme());
-
-
+    $schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, $compAssessment);
+	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, block_exacomp_get_assessment_example_scheme());
 
 // 	switch (block_exacomp_get_assessment_comp_scheme()) {
 // 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
@@ -8452,65 +8466,99 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	// 	 $schemeItems_descriptors = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR); //get the generic schemeItems RW
 
-
-    //RW this is deprecated, instead use "block_exacomp_get_assessment_comp_diffLevel".. but this is different for competencies, examples, topics, etc
 	$evaluationniveau_items = block_exacomp_use_eval_niveau()
 		? \block_exacomp\global_config::get_evalniveaus() : [
         '-1' => ''
     ];
 
-	//if diff levels are not active, but some gradings already have them ---> handle those gradings like there is no niveau
-	if(block_exacomp_get_assessment_comp_diffLevel() == 0){
-        $evaluationniveau_items = ['-1' => ''];
-	}
+	// if diff levels are not active, but some gradings already have them ---> handle those gradings like there is no niveau
+	if (block_exacomp_get_assessment_comp_diffLevel() == 1){
+        $evaluationniveau_items_comp = $evaluationniveau_items + ['-1' => ''];
+	} else {
+        $evaluationniveau_items_comp = ['-1' => ''];
+    }
+    if (block_exacomp_get_assessment_childcomp_diffLevel() == 1){
+        $evaluationniveau_items_childcomp = $evaluationniveau_items + ['-1' => ''];
+    } else {
+        $evaluationniveau_items_childcomp = ['-1' => ''];
+    }
+    if (block_exacomp_get_assessment_example_diffLevel() == 1){
+        $evaluationniveau_items_example = $evaluationniveau_items + ['-1' => ''];
+    } else {
+        $evaluationniveau_items_example = ['-1' => ''];
+    }
 
-    foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
-		$descriptorgradings[$niveaukey] = [];
-		$childgradings[$niveaukey] = [];
-		$examplegradings[$niveaukey] = [];
-
-		foreach ($schemeItems_descriptors as $schemekey => $schemetitle) { // TODO: not only for descriptors, but also for example  RW
-			if ($schemekey > -1) {
-				$descriptorgradings[$niveaukey][$schemekey] = 0;
-				$childgradings[$niveaukey][$schemekey] = 0;
-				$examplegradings[$niveaukey][$schemekey] = 0;
-			}
-		}
-	}
-
-
-
+    foreach ($evaluationniveau_items_comp as $niveaukey => $niveauitem) {
+        $descriptorgradings[$niveaukey] = [];
+        foreach ($schemeItems_descriptors as $schemekey => $schemetitle) {
+            if ($schemekey > -1) {
+                $descriptorgradings[$niveaukey][$schemekey] = 0;
+            }
+        }
+    }
+    foreach ($evaluationniveau_items_childcomp as $niveaukey => $niveauitem) {
+        $childgradings[$niveaukey] = [];
+        foreach ($schemeItems_descriptors as $schemekey => $schemetitle) {
+            if ($schemekey > -1) {
+                $childgradings[$niveaukey][$schemekey] = 0;
+            }
+        }
+    }
+    foreach ($evaluationniveau_items_example as $niveaukey => $niveauitem) {
+        $examplegradings[$niveaukey] = [];
+        foreach ($schemeItems_examples as $schemekey => $schemetitle) {
+            if ($schemekey > -1) {
+                $examplegradings[$niveaukey][$schemekey] = 0;
+            }
+        }
+    }
 
 	foreach ($descriptors as $descriptor) {
 	    $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
 
 		// check if grading is within timeframe
 	    if ($eval && ($eval->value || $eval->additionalinfo) !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-			$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+			//$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+            if (block_exacomp_get_assessment_comp_diffLevel()) {
+                $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
+            } else {
+                $niveaukey = -1;
+            }
             // increase counter in statistic
 			if ($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // additionalinfo nutzen, nicht value
                 if (isset($descriptorgradings[$niveaukey][$eval->additionalinfo])) {
                     $descriptorgradings[$niveaukey][$eval->additionalinfo]++;
                 }else{
-                    @$descriptorgradings[-1][$eval->additionalinfo]++;
+                    @$descriptorgradings[0][$eval->additionalinfo]++;
                 }
             } else { // POINTS or YESNO  or Verbose
                 if (isset($descriptorgradings[$niveaukey][$eval->value])) {
                     $descriptorgradings[$niveaukey][$eval->value]++;
-                }else{
-                    @$descriptorgradings[-1][$eval->value]++;
+                } else {
+                    @$descriptorgradings[0][$eval->value]++;
                 }
 			}
 		}
 	}
+    // clean empty niveau if niveau is used and no any data in this row
+    if (block_exacomp_get_assessment_comp_diffLevel()) {
+        if (!count(array_filter($descriptorgradings[-1]))) {
+            unset($descriptorgradings[-1]);
+        }
+    }
 
-	if(!$onlyDescriptors){
+	if (!$onlyDescriptors){
 	    foreach ($child_descriptors as $child) {
 	        $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child->id);
 
 	        // check if grading is within timeframe
 	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-	            $niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+	            //$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+                if (block_exacomp_get_assessment_childcomp_diffLevel()) {
+                    $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
+                } else {
+                    $niveaukey = -1;
+                }
 
 	            // increase counter in statistic
 	            if (isset($childgradings[$niveaukey][$eval->value])) {
@@ -8518,31 +8566,46 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	            }
 	        }
 	    }
+        // clean empty niveau if niveau is used and no any data in this row
+        if (block_exacomp_get_assessment_childcomp_diffLevel()) {
+            if (!count(array_filter($childgradings[-1]))) {
+                unset($childgradings[-1]);
+            }
+        }
 	}
 
-	if(!$onlyDescriptors){
+	if (!$onlyDescriptors) {
 	    foreach ($examples as $example) {
 	        $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_EXAMPLE, $example->id);
-
 	        // check if grading is within timeframe
 	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
-	            $niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-
+	            //$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
+                if (block_exacomp_get_assessment_example_diffLevel()) {
+                    $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
+                } else {
+                    $niveaukey = -1;
+                }
 	            // increase counter in statistic
 	            if (isset($examplegradings[$niveaukey][$eval->value])) {
 	                $examplegradings[$niveaukey][$eval->value]++;
 	            }
 	        }
 	    }
+	    // clean empty niveau if niveau is used and no any data in this row
+        if (block_exacomp_get_assessment_example_diffLevel()) {
+            if (!count(array_filter($examplegradings[-1]))) {
+                //unset($examplegradings[-1]);
+            }
+        }
 	}
 
-	if(!$onlyDescriptors){
+	if (!$onlyDescriptors){
 	    return [
 	        "descriptor_evaluations" => $descriptorgradings,
 	        "child_evaluations" => $childgradings,
 	        "example_evaluations" => $examplegradings,
 	    ];
-	}else{
+	} else {
 	    return [
 	        "descriptor_evaluations" => $descriptorgradings,
 	        "descriptorsToGain" => count($descriptors),
@@ -8925,8 +8988,9 @@ function block_exacomp_is_external_trainer($trainerid) {
  * @param int $subjectid
  * @param int $courseid
  * @return object
+ * @deprecated
  */
-function block_exacomp_get_user_subject_evaluation($userid, $subjectid, $courseid) {
+/*function block_exacomp_get_user_subject_evaluation($userid, $subjectid, $courseid) {
 	return g::$DB->get_record_sql("
 		SELECT cu.additionalinfo, en.title as niveau
 		FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} as cu
@@ -8937,7 +9001,7 @@ function block_exacomp_get_user_subject_evaluation($userid, $subjectid, $coursei
 		$subjectid,
 		BLOCK_EXACOMP_ROLE_TEACHER,
 	]);
-}
+}*/
 
 /**
  * searches the competence grid of one course and returns only the found items
