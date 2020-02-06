@@ -750,7 +750,7 @@ $string['use_isglobal'] = 'Überfachlicher Kurs';
 $string['globalgradings'] = 'Überfachliche Bewertungen';
 $string['assign_dakora_teacher'] = 'Lehrkraft für überfachliche Kompetenzen zuweisen';
 $string['assign_dakora_teacher_link'] = 'Hier klicken um Lehrkraft für überfachliche Kompetenzen zuzuweisen';
-
+$string['transferable_skills'] = 'Überfachliche Kompetenzen';
 
 
 //Dakora strings

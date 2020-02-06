@@ -7892,14 +7892,14 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 
 	$subject = block_exacomp\db_layer_student::create($courseid)->get_subject($subjectid);
-
+	
 	if (!$subject) {
 		return;
 	}
 
 	$table_content = new stdClass();
 	$table_content->content = array();
-
+    
 	$use_evalniveau = block_exacomp_use_eval_niveau();
 	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
@@ -7907,7 +7907,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
 
-		// gesamt fÃ¼r topic
+		// gesamt for topic
 		$data->topic_evalniveauid =
 			(($use_evalniveau) ?
 				((isset($user->topics->niveau[$topic->id]))
@@ -7930,7 +7930,6 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		    : ((isset($user->topics->teacher[$topic->id]))
 		        ? $user->topics->teacher[$topic->id] : '-1')); // $scheme_items[$user->topics->teacher[$topic->id]] would deliver the text... float expected
 		//$data->topic_eval = 2;
-
 
 		$data->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
 		$data->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id])) ? $user->topics->timestamp_teacher[$topic->id] : 0);

@@ -1216,7 +1216,7 @@ class global_config {
                                 2 => block_exacomp_get_string('comp_2'),
                                 3 => block_exacomp_get_string('comp_3'),
                         );
-                    } // else use value scheme set in the course
+                    } // else use value scheme set in the course (old ?)
                     else {
                         // TODO: add settings to g::$COURSE?
                         $course_grading = block_exacomp_get_settings_by_course(($courseid == 0) ? g::$COURSE->id : $courseid)->grading;

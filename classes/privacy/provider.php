@@ -223,7 +223,6 @@ class provider implements
             $courseid = $context->instanceid;
             $grades = array();
             $tree = block_exacomp_get_competence_tree($courseid);
-            //echo "<pre>debug:<strong>provider.php:92</strong>\r\n"; print_r($tree); echo '</pre>'; // !!!!!!!!!! delete it
             foreach ($tree as $subject) {
                 if (!array_key_exists($subject->id, $grades)) {
                     $grades[$subject->id] = array();
@@ -314,7 +313,6 @@ class provider implements
             $courseid = $context->instanceid;
             $grades = array();
             $tree = block_exacomp_get_competence_tree($courseid);
-            //echo "<pre>debug:<strong>provider.php:92</strong>\r\n"; print_r($tree); echo '</pre>'; // !!!!!!!!!! delete it
             foreach ($tree as $subject) {
                 if (!array_key_exists($subject->id, $grades)) {
                     $grades[$subject->id] = array();

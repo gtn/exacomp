@@ -742,7 +742,7 @@ $string['use_isglobal'] = 'global course';
 $string['globalgradings'] = 'global gradings';
 $string['assign_dakora_teacher'] = 'assign teacher for interdisciplinary subjects';
 $string['assign_dakora_teacher_link'] = 'Click here to assign teacher for interdisciplinary subjects';
-
+$string['transferable_skills'] = 'Transferable skills';
 
 
 //Dakora strings

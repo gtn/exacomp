@@ -74,7 +74,6 @@ $graph_options->zMax = 10;
 */
 
 $evaluation = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start, $end)['average_descriptor_evaluations'];
-//echo "<pre>debug:<strong>3dchart.php:77</strong>\r\n"; print_r($evaluation); echo '</pre>'; // !!!!!!!!!! delete it
 $graph_options->xLabels = array_map(function($label) {
 	// remove LFS at the beginning
 	return preg_replace('!^'.preg_quote(block_exacomp_get_string('niveau_short'), '!').'!', '', $label);
@@ -89,8 +88,6 @@ if (block_exacomp_get_assessment_comp_diffLevel()) {
 }
 $graph_options->yLabels = array_values($evalniveau_titles) + ['2'];
 $y_id_to_index = array_combine(array_keys($evalniveau_titles), array_keys($graph_options->yLabels));
-//echo "<pre>debug:<strong>3dchart.php:92</strong>\r\n"; print_r($evalniveau_titles); echo '</pre>';  // !!!!!!!!!! delete it
-//echo "<pre>debug:<strong>3dchart.php:92</strong>\r\n"; print_r($y_id_to_index); echo '</pre>'; exit; // !!!!!!!!!! delete it
 $ylabels_long = $graph_options->yLabels;
 
 // add student's evaluation
@@ -98,8 +95,6 @@ end($graph_options->yLabels);
 $student_value_index = key($graph_options->yLabels) + 1;
 $graph_options->yLabels[$student_value_index] = block_exacomp_get_string('selfevaluation_short');
 $ylabels_long[$student_value_index] = block_exacomp_get_string('selfevaluation');
-
-//echo "<pre>debug:<strong>3dchart.php:77</strong>\r\n"; print_r($evaluation); echo '</pre>'; exit; // !!!!!!!!!! delete it
 
 // php <5.6.0 has no filter key function
 function block_exacomp_array_filter_keys($arr, $cb) {

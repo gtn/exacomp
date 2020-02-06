@@ -2649,7 +2649,10 @@ return [
         'Hier klicken um Lehrkraft für überfachliche Kompetenzen zuzuweisen',
         'Click here to assign teacher for interdisciplinary subjects',
     ],
-
+    'transferable_skills' => [
+        'Überfachliche Kompetenzen',
+        'Transferable skills'
+    ],
 
 
     //Dakora strings
