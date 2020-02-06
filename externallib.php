@@ -7800,7 +7800,12 @@ class block_exacomp_external extends external_api {
 			'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
             'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
 						'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
-				'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
+            'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
+            'categories' => new external_multiple_structure (new external_single_structure ([
+                'id' => new external_value (PARAM_INT, 'id'),
+                'title' => new external_value (PARAM_TEXT, 'name'),
+                'source' => new external_value (PARAM_TEXT, 'source'),
+            ]), 'values'),
 		));
 	}
 
@@ -7866,6 +7871,7 @@ class block_exacomp_external extends external_api {
             'exaportactive' => $exaportactive,
             'customlanguagefile' => block_exacomp_get_config_dakora_language_file(true), // Returns JSON content.
             'timeout' => block_exacomp_get_config_dakora_timeout(),
+            'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES,null,'source','id, title, source')
 		);
 	}
 
