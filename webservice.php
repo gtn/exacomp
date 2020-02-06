@@ -205,15 +205,19 @@ class block_exacomp_simple_service {
 	                $user_courses[$course->id] = $course;
 	            }
 	        }
-	        if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
-	            $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
-	            foreach($user_courses as $course) {
-	                // if selected
-	                if (isset($profile_settings->exacomp[$course->id]))
-	                    $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
-	            }
-	            $html_tables[] = $html_content;
-
+	        if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1) {
+                $html_content .= html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
+                foreach ($user_courses as $course) {
+                    // if selected
+                    if (isset($profile_settings->exacomp[$course->id])) {
+                        $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id));
+                    }
+                }
+                // Überfachliche Kompetenzen
+                // used last course from foreach! TODO: check it!
+                $html_content .= $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id), true); //prints global values
+                $html_tables[] = $html_content;
+            }
 	    }
 
 	    block_exacomp\printer::competenceprofile_overview($studentid, $html_header, $html_tables);
