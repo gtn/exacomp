@@ -1174,7 +1174,7 @@ class data_exporter extends data {
 				        WHERE e.activityid = ?
 			         ", array($dbItem->id));
 
-                        $xmlExample = $xmlItem->descriptors->addChild('exampleid');
+                        $xmlExample = $xmlItem->addChild('exampleid');
                         self::assign_source($xmlExample, $example);
                     
 

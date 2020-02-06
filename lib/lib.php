@@ -3271,12 +3271,13 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
             SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
 			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
-			WHERE (descrid IN ('.join(',',$filter_descriptors).') )');
+			WHERE (descrid IN ('.join(',',$filter_descriptors).') ) AND NOT activityid = 0');
         } else {
             $records = $DB->get_records_sql('
             SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} mm
-			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid');
+			JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = mm.exampid
+            WHERE NOT activityid = 0');
         }
 
 
