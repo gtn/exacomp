@@ -26,6 +26,7 @@ function moodle_restore($data, $courseid, $userdoingrestore)
         die('No Admin!');
     }
 
+    $transaction = $DB->start_delegated_transaction();
     // $data: the name of the folder in CFG->backuptempdir
     // $courseid: destination course of this restore
     // Restore backup into course.
@@ -34,7 +35,6 @@ function moodle_restore($data, $courseid, $userdoingrestore)
 
     $controller->execute_plan();
 
-
     // Commit.
- //   $transaction->allow_commit();
+   $transaction->allow_commit();
 }

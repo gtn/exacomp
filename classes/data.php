@@ -833,6 +833,10 @@ class data_exporter extends data {
 			$xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
 			$xmlItem->addChildWithCDATAIfValue('description', $dbItem->description);
 			$xmlItem->addChildWithCDATAIfValue('author', $dbItem->get_author());
+			$xmlItem->addChildWithCDATAIfValue('activitytitle', $dbItem->activitytitle);
+			$xmlItem->addChildWithCDATAIfValue('activityid', $dbItem->activityid);
+			$xmlItem->addChildWithCDATAIfValue('activitylink', $dbItem->activitylink);
+			$xmlItem->addChildWithCDATAIfValue('courseid', $dbItem->courseid);
 			$xmlItem->sorting = $dbItem->sorting;
 			$xmlItem->timeframe = $dbItem->timeframe;
 
@@ -1155,7 +1159,7 @@ class data_exporter extends data {
 
             $mm = block_exacomp_get_assigments_of_examples(self::$filter_descriptors);
         $i = 1;
-        $dbItem = new \stdClass();
+//         $dbItem = new \stdClass();
 
         $xmlItems = $xmlParent->addChild('activities');
 
