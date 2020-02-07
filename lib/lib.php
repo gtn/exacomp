@@ -223,6 +223,7 @@ function block_exacomp_init_js_css() {
 	    'topic_3dchart_empty', 'columnselect', 'n1.unit', 'n2.unit', 'n3.unit', 'n4.unit', 'n5.unit', 'n6.unit', 'n7.unit',
 	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation', 'dismiss_gradingisold',
         'donotleave_page_message',
+        'pre_planning_materials_assigned',
 	    ],
         'block_exacomp'
         //['5' => sprintf("%.1f", block_exacomp_get_assessment_grade_limit())] // Important to keep array keys!!  5 => value_too_large. Disabled now. Using JS direct value
@@ -382,6 +383,13 @@ function block_exacomp_get_assessment_any_diffLevel_exist() {
  */
 function block_exacomp_evaluation_niveau_type() {
 	return get_config('exacomp', 'adminscheme');
+}
+
+function block_exacomp_use_old_activities_method() { // default false
+    if (get_config('exacomp', 'assign_activities_old_method')) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -2499,7 +2507,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
     // Activities submenu
 	if (block_exacomp_is_activated($courseid)) {
 		if ($courseSettings->uses_activities) {
-		    if (get_config('exacomp', 'assign_activities_old_method')) {
+		    if (block_exacomp_use_old_activities_method()) {
                 $settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
             }
 			$settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
@@ -4093,6 +4101,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
                     'example_icon' => $example_icons
             );
             $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
+            block_exacomp_set_example_visibility($exampleId, $courseid, 1, 0);
         }
         // clean old relations to descriptors
         $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));

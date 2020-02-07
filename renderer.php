@@ -163,7 +163,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content = "";
 		$right_content = "";
-
 		if ($isTeacher) {
 			if ($this->is_edit_mode()) {
 				// display a hidden field? not needed, because the form never gets submitted (it's ajax)
@@ -3966,12 +3965,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 break;
             case 'edit_activities':
+            case 'activities_to_descriptors':
                 if ($item_count < BLOCK_EXACOMP_MODULES_PER_COLUMN) {
                     return;
                 }
                 $items_per_column = BLOCK_EXACOMP_MODULES_PER_COLUMN;
                 $config_enabled = get_config('exacomp', 'disable_js_edit_activities'); // is this enabled in plugin settings?
-                $script = '/blocks/exacomp/edit_activities.php';
+                $script = '/blocks/exacomp/'.$scriptname.'.php';
                 $all_link_title = block_exacomp_get_string('all_activities');
                 // insert all needed params!!!
                 $urlparams = array(
@@ -5331,7 +5331,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function no_activities_warning($isTeacher = true) {
 		global $COURSE;
 		if ($isTeacher) {
-			return html_writer::link(new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid' => $COURSE->id)), block_exacomp_get_string("no_activities_selected"));
+		    if (block_exacomp_use_old_activities_method()) {
+                return html_writer::link(new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid' => $COURSE->id)), block_exacomp_get_string("no_activities_selected"));
+            } else {
+                return html_writer::link(new moodle_url('/blocks/exacomp/activities_to_descriptors.php', array('courseid' => $COURSE->id)), block_exacomp_get_string("no_activities_selected"));
+            }
 		} else {
 			return block_exacomp_get_string("no_activities_selected_student");
 		}

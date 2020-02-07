@@ -109,7 +109,8 @@
 		   
 		});
 		
-		alert('Ausgewählte Materialien wurden den ausgewählten Schülern/Gruppen zugeteilt.');
+		// alert('Ausgewählte Materialien wurden den ausgewählten Schülern/Gruppen zugeteilt.');
+		alert(M.str.block_exacomp.pre_planning_materials_assigned);
 		$("input:checkbox").attr('checked', false);
 	});
 	
@@ -150,12 +151,7 @@
 		li.data('event', data);
 	}
 	$(function() {
-	
-		var $eventDiv = $( '#external-events' );
-		var $trash = $( '#trash' );
-		var $sortableUl = $( '#sortable' );
-		
-		var pool_items;
+
 		/* initialize the external events
 		-----------------------------------------------------------------*/
 	

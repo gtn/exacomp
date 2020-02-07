@@ -164,7 +164,7 @@ $modules = $allModules = block_exacomp_get_allowed_course_modules_for_course($CO
 $visible_modules = [];
 $modules_to_filter = [];
 
-$colselector = $output->students_column_selector(count($allModules), 'edit_activities');
+$colselector = $output->students_column_selector(count($allModules), 'activities_to_descriptors');
 
 if ($modules) {
     if ($slicemodulelist) {

@@ -81,10 +81,16 @@ if ($action == 'save') {
 	} else {
 		$course_settings = block_exacomp_get_settings_by_course($courseid);
 		if ($course_settings->uses_activities){
-			if (block_exacomp_is_activated($courseid))
-			$headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
-				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
-				. html_writer::link(new moodle_url('edit_activities.php', array('courseid'=>$courseid)), block_exacomp_get_string('next_step'));
+			if (block_exacomp_is_activated($courseid)) {
+			    if (block_exacomp_use_old_activities_method()) {
+			        $linkTo = html_writer::link(new moodle_url('edit_activities.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
+                } else {
+                    $linkTo = html_writer::link(new moodle_url('activities_to_descriptors.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
+                }
+                $headertext = block_exacomp_get_string("save_success").html_writer::empty_tag('br')
+                        .html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
+                        .$linkTo;
+            }
 		} else {
 			 $headertext = block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
 				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('completed_config');

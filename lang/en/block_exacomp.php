@@ -844,3 +844,4 @@ $string['settings_heading_security'] = 'Security';
 $string['settings_heading_security_description'] = '';
 $string['settings_export_password'] = 'Passwort protection (AES-256 encryption) for competence grid export';
 $string['settings_export_password_description'] = '(Only available from php version 7.2 on)';
+$string['pre_planning_materials_assigned'] = 'Selected materials were assigned to the selected students / groups.';

@@ -3069,4 +3069,8 @@ ihrem Raster',
 		'(Nur ab php Version 7.2 verfügbar)',
 		'(Only available from php version 7.2 on)'
 	],
+    'pre_planning_materials_assigned' => [
+        'Ausgewählte Materialien wurden den ausgewählten Schülern/Gruppen zugeteilt.',
+        'Selected materials were assigned to the selected students / groups.'
+    ]
 ];

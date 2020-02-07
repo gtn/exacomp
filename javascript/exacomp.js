@@ -950,8 +950,6 @@ var formunsaved = false;
 	});
 	window.onbeforeunload = function unloadPage() {
 		if (formunsaved && $('form.checksaving_on_leavepage').length) {
-            console.log('leave page');
-            console.log(M.str.block_exacomp.donotleave_page_message);
 			// show message, but this message often is reloading via default browser message
 			return M.str.block_exacomp.donotleave_page_message + '  ';
 		}
