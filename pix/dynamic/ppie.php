@@ -81,7 +81,7 @@ switch ($assessmentType) {
         break;
     case 1: // Grade
     case 3: // Points
-        if (($assessmentType == 1 && !$evalValue)
+        if (($assessmentType == 1 && (!$evalValue || $evalValue == -1))
             || $assessmentType == 3 && ($evalValue == -1 || (!$evalValue && $evalValue !==0))
             || ($diffLevel && !$niveauTitle)) {
             nullPicture(true);

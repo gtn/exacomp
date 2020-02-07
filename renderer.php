@@ -5417,6 +5417,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $subjectGenericData = $this->competence_profile_grid(null, null, $student->id, $max_scheme);
             $newSubjectData = array();
             $avgSubjectsTmp = $avgTopicsTmp = $avgNiveausTmp = array(); //array('sum' => 0, 'count' => 0);
+            $roundFunction = function($level, $value) {
+                $assessmentType = block_exacomp_additional_grading($level);
+                switch ($assessmentType) {
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                        return round($value, 0, PHP_ROUND_HALF_DOWN);
+                        break;
+                    default:
+                        return round($value);
+                }
+                return $value;
+            };
             // get values for every subjects by course for calculate averages in next step
             foreach ($subjectGenericData as $sId => $subjectData) {
                 if (!array_key_exists($sId, $newSubjectData)) {
@@ -5487,12 +5498,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
             foreach ($subjectGenericData as $sId => $subjectData) {
                 if (array_key_exists($sId, $avgSubjectsTmp)) {
                     if (@$avgSubjectsTmp[$sId]['evalniveau_count'] > 0) {
-                        $new_evalniveau = round($avgSubjectsTmp[$sId]['evalniveau_sum'] / $avgSubjectsTmp[$sId]['evalniveau_count']);
+                        $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_SUBJECT, $avgSubjectsTmp[$sId]['evalniveau_sum'] / $avgSubjectsTmp[$sId]['evalniveau_count']);
                         $newSubjectData[$sId]->subject_evalniveau = @$evaluationniveau_items[$new_evalniveau] ?: '';
                         $newSubjectData[$sId]->subject_evalniveauid = $new_evalniveau;
                     }
                     if (@$avgSubjectsTmp[$sId]['count'] > 0) {
-                        $newSubjectData[$sId]->subject_eval = round($avgSubjectsTmp[$sId]['sum'] / $avgSubjectsTmp[$sId]['count']);
+                        $newSubjectData[$sId]->subject_eval = $roundFunction(BLOCK_EXACOMP_TYPE_SUBJECT, $avgSubjectsTmp[$sId]['sum'] / $avgSubjectsTmp[$sId]['count']);
                     }
                 }
                 foreach ($subjectData['courses_table_content'] as $cId => $courseContent) {
@@ -5500,24 +5511,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         foreach ($topicData->niveaus as $niveauTitle => $niveauData) {
                             if (array_key_exists($tId, $avgTopicsTmp)) {
                                 if (@$avgTopicsTmp[$tId]['evalniveau_count'] > 0) {
-                                    $new_evalniveau = round($avgTopicsTmp[$tId]['evalniveau_sum'] / $avgTopicsTmp[$tId]['evalniveau_count']);
+                                    $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_TOPIC, $avgTopicsTmp[$tId]['evalniveau_sum'] / $avgTopicsTmp[$tId]['evalniveau_count']);
                                     $newSubjectData[$sId]->content[$tId]->topic_evalniveau = @$evaluationniveau_items[$new_evalniveau] ?: '';
                                     $newSubjectData[$sId]->content[$tId]->topic_evalniveauid = $new_evalniveau;
                                 }
                                 if (@$avgTopicsTmp[$tId]['count'] > 0) {
-                                    $newSubjectData[$sId]->content[$tId]->topic_eval = round($avgTopicsTmp[$tId]['sum'] / $avgTopicsTmp[$tId]['count']);
+                                    $newSubjectData[$sId]->content[$tId]->topic_eval = $roundFunction(BLOCK_EXACOMP_TYPE_TOPIC, $avgTopicsTmp[$tId]['sum'] / $avgTopicsTmp[$tId]['count']);
                                 }
                             }
                             foreach ($topicData->niveaus as $niveauTitle => $niveauData) {
                                 if (array_key_exists($tId.':::'.$niveauTitle, $avgNiveausTmp)) {
                                     if (@$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count'] > 0) {
-                                        $new_evalniveau = round($avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_sum'] / $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count']);
+                                        $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_sum'] / $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count']);
                                         $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->evalniveau = @$evaluationniveau_items[$new_evalniveau] ?: '';
                                         $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->evalniveauid = $new_evalniveau;
                                     }
                                     if (@$avgNiveausTmp[$tId.':::'.$niveauTitle]['count'] > 0) {
                                         $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->eval =
-                                                round($avgNiveausTmp[$tId.':::'.$niveauTitle]['sum'] / $avgNiveausTmp[$tId.':::'.$niveauTitle]['count']);
+                                                $roundFunction(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $avgNiveausTmp[$tId.':::'.$niveauTitle]['sum'] / $avgNiveausTmp[$tId.':::'.$niveauTitle]['count']);
                                     }
                                 }
                             }
