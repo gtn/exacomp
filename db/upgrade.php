@@ -3562,6 +3562,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020012904, 'exacomp');
     }
 
+    if ($oldversion < 2020020700) {
+        $examples = $DB->get_records_sql(' SELECT * FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} WHERE activityid > 0 AND courseid > 0 ');
+        foreach ($examples as $example) {
+            block_exacomp_set_example_visibility($example->id, $example->courseid, 1, 0);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020020700, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
