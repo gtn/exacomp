@@ -6525,6 +6525,7 @@ class block_exacomp_external extends external_api {
 			'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)'),
 			'url' => new external_value (PARAM_TEXT, 'url'),
 			'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
+			'teacherevaluation' => new external_value (PARAM_INT, 'teacher grading (double of teachervalue?)'),
 			'studentvalue' => new external_value (PARAM_INT, 'student grading'),
 			'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 			'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
@@ -6564,6 +6565,7 @@ class block_exacomp_external extends external_api {
 	        $data['filename'] = "";
 	        $data['mimetype'] = "";
 	        $data['teachervalue'] = isset ($exampleEvaluation->teacher_evaluation) ? $exampleEvaluation->teacher_evaluation : -1;
+            $data['teacherevaluation'] = $data['teachervalue'];
 	        $data['studentvalue'] = isset ($exampleEvaluation->student_evaluation) ? $exampleEvaluation->student_evaluation : -1;
 	        $data['evalniveauid'] = isset ($exampleEvaluation->evalniveauid) ? $exampleEvaluation->evalniveauid : null;
 	        $data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
@@ -6576,8 +6578,6 @@ class block_exacomp_external extends external_api {
 	        //$data['additionalinfo'] = isset ($itemInformation->additionalinfo) ? $itemInformation->additionalinfo : -1;
 	        $data['additionalinfo'] = isset ($exampleEvaluation->additionalinfo) ? $exampleEvaluation->additionalinfo : -1;
             $data['studentfiles'] = $studentfiles;
-
-
 
 	        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 	        if ($files = block_exaport_get_item_file($itemInformation,false)) {
