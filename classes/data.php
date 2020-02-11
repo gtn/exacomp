@@ -1159,12 +1159,12 @@ class data_exporter extends data {
 
             $mm = block_exacomp_get_assigments_of_examples(self::$filter_descriptors);
         $i = 1;
-//         $dbItem = new \stdClass();
 
         $xmlItems = $xmlParent->addChild('activities');
 
 
         foreach ($mm[0] as $k => $activity) {
+            $dbItem = new \stdClass();
             $xmlItem = $xmlItems->addChild('activity');
             $module_type = g::$DB->get_field('course_modules', 'module', array('id' => $k));
             $dbItem->id = $k;
@@ -1179,8 +1179,7 @@ class data_exporter extends data {
 			         ", array($dbItem->id));
 
                         $xmlExample = $xmlItem->addChild('exampleid');
-                        self::assign_source($xmlExample, $example);
-                    
+                        self::assign_source($xmlExample, reset($example)); // TODO: only one example?
 
             $backupid = moodle_backup($k, $USER->id);
 

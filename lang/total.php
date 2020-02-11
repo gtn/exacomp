@@ -117,7 +117,7 @@ return [
 	],
 	'tab_teacher_settings_activitiestodescriptors' => [
 		'Moodle-Aktivitäten verknüpfen',
-		'Relate Moodle acitvities',
+		'Relate Moodle activities',
 	],
 	'tab_teacher_settings_badges' => [
 		'Auszeichnungen bearbeiten',
@@ -2266,7 +2266,7 @@ return [
 	],
 	'block_exacomp_assign_activities_old_method_body' => [
 		'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.',
-		'This Tab was default replaced with Tab "Relate Moodle acitvities"',
+		'This Tab was default replaced with Tab "Relate Moodle activities"',
 	],
 
 
