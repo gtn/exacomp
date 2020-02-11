@@ -6801,7 +6801,9 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
     if (is_array($entries)) {
         $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted();
         foreach ($entries as $k => $entry) {
-            $entries[$k]->niveau = $niveautitles[$entry->evalniveauid]; 
+            if ($entry->evalniveauid) {
+                $entries[$k]->niveau = $niveautitles[$entry->evalniveauid];
+            }
         }
     }    
 
