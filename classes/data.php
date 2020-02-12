@@ -1161,7 +1161,7 @@ class data_exporter extends data {
         $i = 1;
 
         $xmlItems = $xmlParent->addChild('activities');
-
+        $activityTitles = array();
 
         foreach ($mm[0] as $k => $activity) {
             $dbItem = new \stdClass();
@@ -1170,7 +1170,14 @@ class data_exporter extends data {
             $dbItem->id = $k;
 
             self::assign_source($xmlItem, $dbItem);
-            $xmlItem->addChildWithCDATAIfValue('title', $mm[1][$k]);
+            $activityTitle = '';
+            // TODO: some examples have not activitytitles in DB record
+            // this case creates activity with empty title. It is bad. Attempt to resolve this (regarding on order of examples):
+            if (!array_key_exists($k, $activityTitles) && $mm[1][$k]) {
+                $activityTitle = $mm[1][$k];
+                $activityTitles[$k] = $activityTitle;
+            }
+            $xmlItem->addChildWithCDATAIfValue('title', $activityTitle);
             $xmlItem->addChildWithCDATAIfValue('type', $module_type);
                     $example = g::$DB->get_records_sql("
 				        SELECT DISTINCT e.id, e.source, e.sourceid
@@ -1413,8 +1420,11 @@ class data_importer extends data {
 			if ($password) {
 				$zip->setPassword($password);
 			}
-
-			if (!$xml = $zip->getFromName('data.xml')) {
+			$xml = $zip->getFromName('data.xml');
+			if (!$xml) {
+                $xml = $zip->getFromName('/data.xml'); // TODO: some .zip has slash before filename. why?
+            }
+			if (!$xml) {
 				if ($zipIsEncrypted) {
 					if ($password) {
 						throw new import_exception(block_exacomp_trans([
@@ -1431,7 +1441,6 @@ class data_importer extends data {
 					throw new import_exception('wrong zip file format');
 				}
 			}
-
 			/*
 			 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 			 * immediate useage
@@ -1725,6 +1734,12 @@ class data_importer extends data {
                                self::insert_activity($activity, $course_template);
                                continue;
                            }
+                       }
+                   }
+                   if (isset($activity->exampleid)) {
+                       if (in_array((int)$activity->exampleid->attributes()->id, $examplesFromSelected)) {
+                           self::insert_activity($activity, $course_template);
+                           continue;
                        }
                    }
 
@@ -2611,6 +2626,11 @@ class data_importer extends data {
 	            block_exacomp_set_compactivity($activityid, $topicid, 1, $activity->title); //isset($activity->id) ? intval($activityid) : intval($activity->sourceid)
 	        }
 	    }
+        if (isset($xmlItem->exampleid)) {
+            $exampleid = self::get_database_id($xmlItem->exampleid); // exampleid must be found automatically
+            $activityid = self::get_new_activity_id($activity->title, $activity->type, $course_template);
+            block_exacomp_relate_example_to_activity($course_template, $activityid, null, $exampleid);
+        }
 
 	    return $activity;
 	}

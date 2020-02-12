@@ -4064,17 +4064,22 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
  * @param integer $courseid
  * @param integer $activityid
  * @param array $descriptors
+ * @param integer $exampleid
  */
-function block_exacomp_relate_example_to_activity($courseid, $activityid, $descriptors = array()){
+function block_exacomp_relate_example_to_activity($courseid, $activityid, $descriptors = array(), $exampleid = null){
     global $DB, $CFG, $USER;
     static $mod_info = null;
     if ($mod_info === null) {
         $mod_info = get_fast_modinfo($courseid);
     }
-    if (count($descriptors)) { // if no any descriptor - no sence to insert the example (no relation to activity)
-        $existsRelatedExample =
-                $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
-                        IGNORE_MULTIPLE);
+    if (count($descriptors) || $exampleid) { // if no any descriptor - no sence to insert the example (no relation to activity)
+        if ($exampleid > 0) {
+            $existsRelatedExample = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid), '*', IGNORE_MULTIPLE);
+        } else {
+            $existsRelatedExample =
+                    $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
+                            IGNORE_MULTIPLE);
+        }
         if ($existsRelatedExample) {
             $exampleId = $existsRelatedExample->id;
         } else {
@@ -4103,15 +4108,17 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
             $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
             block_exacomp_set_example_visibility($exampleId, $courseid, 1, 0);
         }
-        // clean old relations to descriptors
-        $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
-        // insert new relations to descriptors
-        foreach ($descriptors as $descriptorid) {
-            $newRelation = (object) array(
-                    'exampid' => $exampleId,
-                    'descrid' => $descriptorid
-            );
-            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
+        if (!$exampleid) {
+            // clean old relations to descriptors
+            $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
+            // insert new relations to descriptors
+            foreach ($descriptors as $descriptorid) {
+                $newRelation = (object) array(
+                        'exampid' => $exampleId,
+                        'descrid' => $descriptorid
+                );
+                $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
+            }
         }
     }
 

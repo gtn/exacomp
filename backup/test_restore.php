@@ -20,8 +20,8 @@
 require __DIR__ . '/../inc.php';
 require_once ($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
-function moodle_restore($data, $courseid, $userdoingrestore)
-{
+function moodle_restore($data, $courseid, $userdoingrestore) {
+    global $DB;
     if (! is_siteadmin()) {
         die('No Admin!');
     }
