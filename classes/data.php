@@ -1198,7 +1198,7 @@ class data_exporter extends data {
                 if (! $file->isDir()) {
                     // Get real and relative path for current file
                     $filePath = $file->getRealPath();
-                    $relativePath = 'activities/activity' . $i . '/' . substr($filePath, strlen($source) + 1);
+                    $relativePath = 'activities/' . $k . '/' . substr($filePath, strlen($source) + 1);
 
                     // Add current file to archive
                     $zip->addFile($filePath, $relativePath);
