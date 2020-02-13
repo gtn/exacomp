@@ -1289,7 +1289,7 @@ class block_exacomp_external extends external_api {
 			require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
 			$item->userid = $userid;
-			if ($file = block_exaport_get_item_file($item)) {
+			if ($file = block_exaport_get_item_single_file($item)) {
 				$item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$itemid."&wstoken=".static::wstoken());
 				$item->isimage = $file->is_valid_image();
 				$item->filename = $file->get_filename();
@@ -6580,7 +6580,7 @@ class block_exacomp_external extends external_api {
             $data['studentfiles'] = $studentfiles;
 
 	        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
-	        if ($files = block_exaport_get_item_file($itemInformation,false)) {
+	        if ($files = block_exaport_get_item_files($itemInformation)) {
 	            /*
 	             * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
 	             * 'userid' => $userid,
