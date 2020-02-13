@@ -1160,33 +1160,33 @@ class data_exporter extends data {
             $mm = block_exacomp_get_assigments_of_examples(self::$filter_descriptors);
         $i = 1;
 
-//         $xmlItems = $xmlParent->addChild('activities');
+        $xmlItems = $xmlParent->addChild('activities');
         $activityTitles = array();
 
         foreach ($mm[0] as $k => $activity) {
-//             $dbItem = new \stdClass();
-//             $xmlItem = $xmlItems->addChild('activity');
-//             $module_type = g::$DB->get_field('course_modules', 'module', array('id' => $k));
-//             $dbItem->id = $k;
+            $dbItem = new \stdClass();
+            $xmlItem = $xmlItems->addChild('activity');
+            $module_type = g::$DB->get_field('course_modules', 'module', array('id' => $k));
+            $dbItem->id = $k;
 
-//             self::assign_source($xmlItem, $dbItem);
-//             $activityTitle = '';
-//             // TODO: some examples have not activitytitles in DB record
-//             // this case creates activity with empty title. It is bad. Attempt to resolve this (regarding on order of examples):
-//             if (!array_key_exists($k, $activityTitles) && $mm[1][$k]) {
-//                 $activityTitle = $mm[1][$k];
-//                 $activityTitles[$k] = $activityTitle;
-//             }
-//             $xmlItem->addChildWithCDATAIfValue('title', $activityTitle);
-//             $xmlItem->addChildWithCDATAIfValue('type', $module_type);
-//                     $example = g::$DB->get_records_sql("
-// 				        SELECT DISTINCT e.id, e.source, e.sourceid
-// 				        FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
-// 				        WHERE e.activityid = ?
-// 			         ", array($dbItem->id));
+            self::assign_source($xmlItem, $dbItem);
+            $activityTitle = '';
+            // TODO: some examples have not activitytitles in DB record
+            // this case creates activity with empty title. It is bad. Attempt to resolve this (regarding on order of examples):
+            if (!array_key_exists($k, $activityTitles) && $mm[1][$k]) {
+                $activityTitle = $mm[1][$k];
+                $activityTitles[$k] = $activityTitle;
+            }
+            $xmlItem->addChildWithCDATAIfValue('title', $activityTitle);
+            $xmlItem->addChildWithCDATAIfValue('type', $module_type);
+                    $example = g::$DB->get_records_sql("
+				        SELECT DISTINCT e.id, e.source, e.sourceid
+				        FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+				        WHERE e.activityid = ?
+			         ", array($dbItem->id));
 
-//                         $xmlExample = $xmlItem->addChild('exampleid');
-//                         self::assign_source($xmlExample, reset($example)); // TODO: only one example?
+                        $xmlExample = $xmlItem->addChild('exampleid');
+                        self::assign_source($xmlExample, reset($example)); // TODO: only one example?
 
             $backupid = moodle_backup($k, $USER->id);
 
