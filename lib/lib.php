@@ -223,7 +223,6 @@ function block_exacomp_init_js_css() {
 	    'topic_3dchart_empty', 'columnselect', 'n1.unit', 'n2.unit', 'n3.unit', 'n4.unit', 'n5.unit', 'n6.unit', 'n7.unit',
 	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation', 'dismiss_gradingisold',
         'donotleave_page_message',
-        'pre_planning_materials_assigned',
 	    ],
         'block_exacomp'
         //['5' => sprintf("%.1f", block_exacomp_get_assessment_grade_limit())] // Important to keep array keys!!  5 => value_too_large. Disabled now. Using JS direct value
@@ -383,13 +382,6 @@ function block_exacomp_get_assessment_any_diffLevel_exist() {
  */
 function block_exacomp_evaluation_niveau_type() {
 	return get_config('exacomp', 'adminscheme');
-}
-
-function block_exacomp_use_old_activities_method() { // default false
-    if (get_config('exacomp', 'assign_activities_old_method')) {
-        return true;
-    }
-    return false;
 }
 
 /**
@@ -2507,7 +2499,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
     // Activities submenu
 	if (block_exacomp_is_activated($courseid)) {
 		if ($courseSettings->uses_activities) {
-		    if (block_exacomp_use_old_activities_method()) {
+		    if (get_config('exacomp', 'assign_activities_old_method')) {
                 $settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
             }
 			$settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
@@ -3977,6 +3969,25 @@ function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activi
 
 /**
  *
+ * Assign one example to one activity
+ * @param unknown_type $activityid
+ * @param unknown_type $exampleid
+ */
+function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytitle = null) {
+    global $DB, $COURSE;
+    
+    if ($activitytitle == null){
+        $cmmod = $DB->get_record('course_modules', array("id" => $activityid));
+        $modulename = $DB->get_record('modules', array("id" => $cmmod->module));
+        $instance = get_coursemodule_from_id($modulename->name, $activityid);
+        $activitytitle = $instance->name;
+    }
+    $newExampId = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLES, array("activityid" => $activityid, "sourceid" => $exampleid));
+    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $newExampId,"activityid" => $activityid, "activitytitle" => $activitytitle));
+}
+
+/**
+ *
  * Delete competence, activity associations
  */
 function block_exacomp_delete_competences_activities($modulekey = null, $comptype = null) {
@@ -4064,22 +4075,17 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
  * @param integer $courseid
  * @param integer $activityid
  * @param array $descriptors
- * @param integer $exampleid
  */
-function block_exacomp_relate_example_to_activity($courseid, $activityid, $descriptors = array(), $exampleid = null){
+function block_exacomp_relate_example_to_activity($courseid, $activityid, $descriptors = array()){
     global $DB, $CFG, $USER;
     static $mod_info = null;
     if ($mod_info === null) {
         $mod_info = get_fast_modinfo($courseid);
     }
-    if (count($descriptors) || $exampleid) { // if no any descriptor - no sence to insert the example (no relation to activity)
-        if ($exampleid > 0) {
-            $existsRelatedExample = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid), '*', IGNORE_MULTIPLE);
-        } else {
-            $existsRelatedExample =
-                    $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
-                            IGNORE_MULTIPLE);
-        }
+    if (count($descriptors)) { // if no any descriptor - no sence to insert the example (no relation to activity)
+        $existsRelatedExample =
+                $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
+                        IGNORE_MULTIPLE);
         if ($existsRelatedExample) {
             $exampleId = $existsRelatedExample->id;
         } else {
@@ -4106,19 +4112,16 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
                     'example_icon' => $example_icons
             );
             $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
-            block_exacomp_set_example_visibility($exampleId, $courseid, 1, 0);
         }
-        if (!$exampleid) {
-            // clean old relations to descriptors
-            $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
-            // insert new relations to descriptors
-            foreach ($descriptors as $descriptorid) {
-                $newRelation = (object) array(
-                        'exampid' => $exampleId,
-                        'descrid' => $descriptorid
-                );
-                $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
-            }
+        // clean old relations to descriptors
+        $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
+        // insert new relations to descriptors
+        foreach ($descriptors as $descriptorid) {
+            $newRelation = (object) array(
+                    'exampid' => $exampleId,
+                    'descrid' => $descriptorid
+            );
+            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
         }
     }
 
@@ -6808,9 +6811,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
     if (is_array($entries)) {
         $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted();
         foreach ($entries as $k => $entry) {
-            if ($entry->evalniveauid) {
-                $entries[$k]->niveau = $niveautitles[$entry->evalniveauid];
-            }
+            $entries[$k]->niveau = $niveautitles[$entry->evalniveauid]; 
         }
     }    
 
@@ -8544,13 +8545,12 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
             }
             // increase counter in statistic
 			if ($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // additionalinfo nutzen, nicht value
-			    $addval = round($eval->additionalinfo, 0, PHP_ROUND_HALF_DOWN);
-                if (isset($descriptorgradings[$niveaukey][$addval])) {
-                    $descriptorgradings[$niveaukey][$addval]++;
-                } else {
-                    @$descriptorgradings[0][$addval]++;
+                if (isset($descriptorgradings[$niveaukey][$eval->additionalinfo])) {
+                    $descriptorgradings[$niveaukey][$eval->additionalinfo]++;
+                }else{
+                    @$descriptorgradings[0][$eval->additionalinfo]++;
                 }
-            } else { // POINTS or YESNO or Verbose
+            } else { // POINTS or YESNO  or Verbose
                 if (isset($descriptorgradings[$niveaukey][$eval->value])) {
                     $descriptorgradings[$niveaukey][$eval->value]++;
                 } else {

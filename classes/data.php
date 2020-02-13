@@ -1657,6 +1657,19 @@ class data_importer extends data {
 
         $examplesFromSelected = self::get_examples_for_descriptors_from_xml($xml, $descriptorsFromSelectedGrids);
 		if (isset($xml->examples)) {
+		    $GLOBALS['activexamples'] = array();
+		    // old activityid
+		    $GLOBALS['activexamples'][0] = array();
+		    //new activityid
+		    $GLOBALS['activexamples'][1] = array();
+		    //example sourceid
+		    $GLOBALS['activexamples'][2] = array();
+		    if( $course_template != 0) {
+		        if ($ret === true) { // only if it is zip
+		            extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
+		        }
+		    }
+
 			foreach($xml->examples->example as $example) {
 			    if (in_array((int)$example->attributes()->id, $examplesFromSelected)) {
                     self::insert_example($example);
@@ -1705,46 +1718,17 @@ class data_importer extends data {
 
 
 
-
+//cleanup and insert activities into DB
 		if( $course_template != 0) {
-		    if (isset($xml->activities)) {
-		      if ($ret === true) { // only if it is zip
-		          extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
-		      }
-		      for ($i = 1;$i <= count($xml->activities->activity); $i++){
-		          @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
-		          moodle_restore('activity'. $i, $course_template, $USER->id);
-		       }
+		    
+		    for($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
+		        block_exacomp_set_exampleactivity($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][2][$i]);
+		    }
+
 		      @rmdir($CFG->tempdir . '/backup/activities');
 		      unlink($CFG->tempdir . '/backup/data.xml');
 
 
-		      foreach($xml->activities->activity as $activity) {
-                  if (isset($activity->descriptors)) {
-                      foreach ($activity->descriptors->descriptorid as $descriptorid) {
-                          if (in_array((int)$descriptorid->attributes()->id, $descriptorsFromSelectedGrids)) {
-                              self::insert_activity($activity, $course_template);
-                              continue;
-                          }
-                      }
-                  }
-		           if (isset($activity->topics)) {
-                       foreach ($activity->topics->topicid as $topicid) {
-                           if (in_array((int)$topicid->attributes()->id, $topicsFromSelectedGrids)) {
-                               self::insert_activity($activity, $course_template);
-                               continue;
-                           }
-                       }
-                   }
-                   if (isset($activity->exampleid)) {
-                       if (in_array((int)$activity->exampleid->attributes()->id, $examplesFromSelected)) {
-                           self::insert_activity($activity, $course_template);
-                           continue;
-                       }
-                   }
-
-		      }
-		  }
 		  $DB->set_field(BLOCK_EXACOMP_DB_SETTINGS, "istemplate", 1, array('courseid' => $course_template));
 	   }
 
@@ -2278,6 +2262,12 @@ class data_importer extends data {
 		if ($xmlItem->filetask) {
 			self::insert_file('example_task', $xmlItem->filetask, $item);
 		}
+		if($xmlItem->activityid){
+		    if($course_template != 0){
+		        self::insert_activity($xmlItem, $course_template, $item->ethema_parent['@attributes']['id']);
+		    }
+		    
+		}
 
 		self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_EXAMPTAX, 'exampleid', $item->id);
 		if ($xmlItem->taxonomies) {
@@ -2610,29 +2600,22 @@ class data_importer extends data {
 		return $skill;
 	}
 
-	private static function insert_activity($xmlItem, $course_template){
-	    $activity = self::parse_xml_item($xmlItem);
-	    if (isset($xmlItem->descriptors)) {
-	        foreach($xmlItem->descriptors->descriptorid as $descriptor) {
-	            $descriptorid = self::get_database_id($descriptor);
-	            $activityid = self::get_new_activity_id($activity->title, $activity->type, $course_template);
-	            block_exacomp_set_compactivity($activityid, $descriptorid, 0, $activity->title); // isset($activity->id) ? intval($activityid) : intval($activity->sourceid)
+	private static function insert_activity($xmlItem, $course_template, $exampleid){
+	    global $CFG;
+	    $example = self::parse_xml_item($xmlItem);
+	    if (isset($xmlItem->activityid)) {
+	        if( $key = array_search($xmlItem->activityid, $GLOBALS['activexamples'][0])){
+	            array_push($GLOBALS['activexamples'][0], $xmlItem->activityid);
+	            array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
+	            array_push($GLOBALS['activexamples'][2], $exampleid);
+	        } else {
+	            array_push($GLOBALS['activexamples'][0], $xmlItem->activityid);
+	            @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
+	            moodle_restore('activity'. $i, $course_template, $USER->id);
+	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	        }
 	    }
-	    if (isset($xmlItem->topics)) {
-	        foreach($xmlItem->topics->topicid as $topic) {
-	            $topicid = self::get_database_id($topic);
-	            $activityid = self::get_new_activity_id($activity->title, $activity->type, $course_template);
-	            block_exacomp_set_compactivity($activityid, $topicid, 1, $activity->title); //isset($activity->id) ? intval($activityid) : intval($activity->sourceid)
-	        }
-	    }
-        if (isset($xmlItem->exampleid)) {
-            $exampleid = self::get_database_id($xmlItem->exampleid); // exampleid must be found automatically
-            $activityid = self::get_new_activity_id($activity->title, $activity->type, $course_template);
-            block_exacomp_relate_example_to_activity($course_template, $activityid, null, $exampleid);
-        }
-
-	    return $activity;
+	        return $example;
 	}
 
 	public static function get_new_activity_id($activity_title, $activity_type, $course_template){

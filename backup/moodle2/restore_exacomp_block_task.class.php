@@ -56,19 +56,13 @@ class restore_exacomp_block_task extends restore_block_task {
 		global $DB;
 
 		// this part needs to run after all activites have been added
-		if (!empty($GLOBALS['block_exacomp_imported_activities'])) {
-			foreach ($GLOBALS['block_exacomp_imported_activities'] as $activity) {
-				
-				$idrecord = restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', $activity->oldactivityid);
-				if ($idrecord && ($cm = block_exacomp_get_cm_from_cmid($idrecord->newitemid))) {
-					// activity found
-					$activity->activityid = $cm->id;
-					$activity->activitytitle = $cm->name;
-					$DB->update_record("block_exacompcompactiv_mm", $activity);
-				} else {
-					// activity not found, delete it
-					$DB->delete_records("block_exacompcompactiv_mm", array('id' => $activity->id));
-				}
+		if (!empty($GLOBALS['activexamples'])) {
+		    $idrecord = restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', end($GLOBALS['activexamples'][0]));
+			if ($idrecord && ($cm = block_exacomp_get_cm_from_cmid($idrecord->newitemid))) {
+				// activity found
+			    array_push($GLOBALS['activexamples'][1], $cm->id);
+			} else {
+			    array_push($GLOBALS['activexamples'][1], -1);
 			}
 		}
 	}
