@@ -6644,6 +6644,7 @@ class block_exacomp_external extends external_api {
 	        $data['studentcomment'] = "";
 	        $data['teacherfile'] = '';
 	        $data['teachervalue'] = isset ($exampleEvaluation->teacher_evaluation) ? $exampleEvaluation->teacher_evaluation : -1;
+            $data['teacherevaluation'] = $data['teachervalue'];
 	        $data['studentvalue'] = isset ($exampleEvaluation->student_evaluation) ? $exampleEvaluation->student_evaluation : -1;
 	        $data['evalniveauid'] = isset ($exampleEvaluation->evalniveauid) ? $exampleEvaluation->evalniveauid : null;
 	        $data['timestampteacher'] = isset ($exampleEvaluation->timestamp_teacher) ? $exampleEvaluation->timestamp_teacher : 0;
@@ -6658,11 +6659,6 @@ class block_exacomp_external extends external_api {
 	    } else {
 	        $data['resubmission'] = false;
 	    }
-
-
-
-
-
 
 	    return $data;
 	}
