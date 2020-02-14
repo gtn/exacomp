@@ -1724,6 +1724,8 @@ class data_importer extends data {
 		    for($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
 		        block_exacomp_set_exampleactivity($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][2][$i]);
 		    }
+		    var_dump($GLOBALS['activexamples']);
+		    die;
 
 		      @rmdir($CFG->tempdir . '/backup/activities');
 		      unlink($CFG->tempdir . '/backup/data.xml');
@@ -2610,8 +2612,8 @@ class data_importer extends data {
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	        } else {
 	            array_push($GLOBALS['activexamples'][0], $xmlItem->activityid);
-	            @rename($CFG->tempdir . '/backup/activities/activity'. $i, $CFG->tempdir . '/backup/activity'. $i);
-	            moodle_restore('activity'. $i, $course_template, $USER->id);
+	            @rename($CFG->tempdir . '/backup/activities/'.$xmlItem->activityid, $CFG->tempdir . '/backup/'.$xmlItem->activityid);
+	            moodle_restore(''.$xmlItem->activityid, $course_template, $USER->id);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	        }
 	    }
