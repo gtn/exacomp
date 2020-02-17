@@ -6971,7 +6971,12 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		//$subjects = block_exacomp_get_subjects_by_course($courseid);
 
-		$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid);
+        $subjectinfo = array(
+                'teacher' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_TEACHER),
+                'student' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT)
+        );
+        // for testing in old app
+        //$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT);
 
 		return $subjectinfo;
 	}
@@ -6982,23 +6987,31 @@ class block_exacomp_external extends external_api {
 	 * @return external_single_structure
 	 */
 	public static function dakora_get_competence_grid_for_profile_returns() {
+	    $table_structure = array(
+                'rows' => new external_multiple_structure (new external_single_structure (array(
+                        'columns' => new external_multiple_structure (new external_single_structure(array(
+                                'text' => new external_value (PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
+                                'evaluation' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_DEFAULT, -1),
+                                //'evaluation' => new external_value (PARAM_TEXT, 'evaluation', VALUE_DEFAULT, '-1'),
+                                'evaluation_text' => new external_value (PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
+                                'evaluation_mapped' => new external_value (PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
+                                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
+                                'show' => new external_value (PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
+                                'visible' => new external_value(PARAM_BOOL, 'cell visibility', VALUE_DEFAULT, true),
+                                'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
+                                'span' => new external_value (PARAM_INT, 'colspan'),
+                                'timestamp' => new external_value (PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
+                                'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor',false),
+                        ))),
+                ))),
+        );
 		return new external_single_structure (array(
-			'rows' => new external_multiple_structure (new external_single_structure (array(
-				'columns' => new external_multiple_structure (new external_single_structure(array(
-					'text' => new external_value (PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
-					'evaluation' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_DEFAULT, -1),
-					'evaluation_text' => new external_value (PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
-					'evaluation_mapped' => new external_value (PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
-					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
-					'show' => new external_value (PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
-					'visible' => new external_value(PARAM_BOOL, 'cell visibility', VALUE_DEFAULT, true),
-					'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
-					'span' => new external_value (PARAM_INT, 'colspan'),
-					'timestamp' => new external_value (PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
-				    'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor',false),
-				))),
-			))),
-		));
+                    'teacher' => new external_single_structure($table_structure),
+                    'student' => new external_single_structure($table_structure)
+                )
+		);
+		// for testing in old app
+        //return new external_single_structure($table_structure);
 	}
 
 

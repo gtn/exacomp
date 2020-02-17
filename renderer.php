@@ -5776,6 +5776,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($courseid !== null && $subject !== null) {
             list ($course_subjects, $table_column, $table_header, $table_content) =
                     block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id);
+            
             // aggregate all data to next generation of global report
             if (@$subject->isglobal) { // only isglobal?
                 if (!array_key_exists($subject->id, $subjectGenericData)) {

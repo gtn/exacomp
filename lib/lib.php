@@ -7951,6 +7951,8 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		        ? $user->topics->teacher[$topic->id] : '-1')); // $scheme_items[$user->topics->teacher[$topic->id]] would deliver the text... float expected
 		//$data->topic_eval = 2;
 
+        $data->topic_selfeval = 123;
+
 		$data->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
 		$data->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id])) ? $user->topics->timestamp_teacher[$topic->id] : 0);
 		$data->topic_id = $topic->id;
@@ -8021,6 +8023,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 
 	foreach ($topic->descriptors as $descriptor) {
 		$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+		$student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
 		$niveau = \block_exacomp\niveau::get($descriptor->niveauid);
 		if (!$niveau) {
 			continue;
@@ -8046,6 +8049,13 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
             (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // DESCRIPTORS!!!
             ? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
             : (($evaluation && $evaluation->value || ($evaluation && $evaluation->value == "0")) ? $evaluation->value : -1); //nuller anzeigen!
+        if (block_exacomp_get_assessment_comp_SelfEval() && $student_evaluation) {
+            $data->niveaus[$niveau->title]->self_evalid = $student_evaluation->value;
+            $data->niveaus[$niveau->title]->self_eval = $student_evaluation->get_value_title();
+        } else {
+            $data->niveaus[$niveau->title]->self_evalid = -1;
+            $data->niveaus[$niveau->title]->self_eval = '';
+        }
 
 		$data->niveaus[$niveau->title]->show = true;
 		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
@@ -8062,13 +8072,14 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 
 /**
  * format data to access via WS
- * @param unknown $courseid
- * @param unknown $userid
- * @param unknown $subjectid
+ * @param integer $courseid
+ * @param integer $userid
+ * @param integer $subjectid
+ * @param integer $targetrole
  * @return \block_exacomp\stdClass
  * see ws dakora_get_competence_grid_for_profile for return value description
  */
-function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid) {
+function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, $targetrole = BLOCK_EXACOMP_ROLE_TEACHER) {
 	global $DB;
 	list($course_subjects, $table_rows, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
 
@@ -8125,11 +8136,21 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			//$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $element->descriptorid);
 			//$content_row->columns[$current_idx]->evaluation = ($grading->value !== null) ? $grading->value : -1;
 
-			$content_row->columns[$current_idx]->evaluation = (empty($element->eval) && $element->eval != '0') ? -1 : $element->eval;
-			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
-			$content_row->columns[$current_idx]->show = $element->show;
-			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
-			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
+            switch($targetrole) {
+                case BLOCK_EXACOMP_ROLE_TEACHER:
+                    $content_row->columns[$current_idx]->evaluation = (empty($element->eval) && $element->eval != '0') ? -1 : $element->eval;
+                    $content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
+                    $content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
+                    break;
+                case BLOCK_EXACOMP_ROLE_STUDENT:
+                    $content_row->columns[$current_idx]->evaluation_text = ($element->self_eval ? $element->self_eval : '') ;
+                    $content_row->columns[$current_idx]->evaluation = -1;
+                    $content_row->columns[$current_idx]->evaluation_mapped = -1; //($element->self_evalid && $element->self_evalid > -1 ? $element->self_evalid : -1) ;
+                    $content_row->columns[$current_idx]->evalniveauid = -1;
+                    break;
+            }
+            $content_row->columns[$current_idx]->show = $element->show;
+            $content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
 			$content_row->columns[$current_idx]->timestamp = $element->timestamp;
 
 			$content_row->columns[$current_idx]->gradingisold = $element->gradingisold;
@@ -8144,11 +8165,28 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 
 		if (block_exacomp_is_topicgrading_enabled()) { //TOPICS
 			$topic_eval = new stdClass();
-			$topic_eval->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
-			$topic_eval->evaluation = (empty($rowcontent->topic_eval) && $rowcontent->topic_eval != '0') ? -1 : $rowcontent->topic_eval;
-			//$topic_eval->evaluation = (empty($rowcontent->topic_eval)|| strlen(trim($element->eval)) == 0) ? -1 : $rowcontent->topic_eval;   old
-			$topic_eval->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
-			$topic_eval->evalniveauid = $rowcontent->topic_evalniveauid;
+            switch($targetrole) {
+                case BLOCK_EXACOMP_ROLE_TEACHER:
+                    $topic_eval->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
+                    $topic_eval->evaluation = (empty($rowcontent->topic_eval) && $rowcontent->topic_eval != '0') ? -1 : $rowcontent->topic_eval;
+                    //$topic_eval->evaluation = (empty($rowcontent->topic_eval)|| strlen(trim($element->eval)) == 0) ? -1 : $rowcontent->topic_eval;   old
+                    $topic_eval->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
+                    $topic_eval->evalniveauid = $rowcontent->topic_evalniveauid;
+                    break;
+                case BLOCK_EXACOMP_ROLE_STUDENT:
+                    $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_TOPIC, $rowcontent->topic_id);
+                    if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
+                        $topic_eval->evaluation_text = $student_evaluation->get_value_title();
+                        $topic_eval->evaluation = -1; // $student_evaluation->value;
+                        $topic_eval->evaluation_mapped = -1 ; // $student_evaluation->value;
+                    } else {
+                        $topic_eval->evaluation_text = '';
+                        $topic_eval->evaluation = -1;
+                        $topic_eval->evaluation_mapped = -1;
+                    }
+                    $topic_eval->evalniveauid = -1;
+                    break;
+            }
 			$topic_eval->topicid = $rowcontent->topic_id;
 			$topic_eval->span = 0;
 			$topic_eval->visible = $rowcontent->visible;
@@ -8168,10 +8206,27 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[0]->span = count($table_header);
 
 		$content_row->columns[1] = new stdClass();
-		$content_row->columns[1]->evaluation = (empty($table_content->subject_eval) && $table_content->subject_eval!='0')  ? -1 : $table_content->subject_eval;
-		$content_row->columns[1]->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval));
-		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
-		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
+        switch($targetrole) {
+            case BLOCK_EXACOMP_ROLE_TEACHER:
+                $content_row->columns[1]->evaluation = (empty($table_content->subject_eval) && $table_content->subject_eval != '0')  ? -1 : $table_content->subject_eval;
+                $content_row->columns[1]->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval));
+                $content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
+                $content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
+                break;
+            case BLOCK_EXACOMP_ROLE_STUDENT:
+                $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subjectid);
+                if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
+                    $content_row->columns[1]->evaluation_text = $student_evaluation->get_value_title();
+                    $content_row->columns[1]->evaluation = -1 ;// $student_evaluation->value;
+                    $content_row->columns[1]->evaluation_mapped = -1 ; // $student_evaluation->value;
+                } else {
+                    $content_row->columns[1]->evaluation_text = '';
+                    $content_row->columns[1]->evaluation = -1;
+                    $content_row->columns[1]->evaluation_mapped = -1;
+                }
+                $content_row->columns[1]->evalniveauid = -1;
+                break;
+        }
 		$content_row->columns[1]->span = 0;
 
 // 		$content_row->columns[1] = new stdClass();
