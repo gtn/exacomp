@@ -3982,8 +3982,7 @@ function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytit
         $instance = get_coursemodule_from_id($modulename->name, $activityid);
         $activitytitle = $instance->name;
     }
-    $newExampId = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLES, array("activityid" => $activityid, "sourceid" => $exampleid));
-    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $newExampId,"activityid" => $activityid, "activitytitle" => $activitytitle));
+    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $exampleid,"activityid" => $activityid, "activitytitle" => $activitytitle));
 }
 
 /**

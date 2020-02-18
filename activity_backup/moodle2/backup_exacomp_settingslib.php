@@ -17,22 +17,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require __DIR__.'/../inc.php';
-require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
-
-if (!is_siteadmin()) {
-    die('No Admin!');
-}
-
-$CFG->keeptempdirectoriesonbackup = true;
-
-$courseid = 2;
-$user_doing_the_backup = 2; // Set this to the id of your admin accouun
-
-$bc = new backup_controller(backup::TYPE_1COURSE, $courseid, backup::FORMAT_MOODLE,
-    backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user_doing_the_backup);
-
-$bc->get_plan()->set_excluding_activities();
-$bc->execute_plan();
-
-die('done');
+// This activity has not particular settings but the inherited from the generic
+// backup_activity_task so here there isn't any class definition, like the ones
+// existing in /backup/moodle2/backup_settingslib.php (activities section)

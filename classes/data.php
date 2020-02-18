@@ -1656,6 +1656,7 @@ class data_importer extends data {
 		}
 
         $examplesFromSelected = self::get_examples_for_descriptors_from_xml($xml, $descriptorsFromSelectedGrids);
+        
 		if (isset($xml->examples)) {
 		    $GLOBALS['activexamples'] = array();
 		    // old activityid
@@ -1665,14 +1666,17 @@ class data_importer extends data {
 		    //example sourceid
 		    $GLOBALS['activexamples'][2] = array();
 		    if( $course_template != 0) {
+		        
 		        if ($ret === true) { // only if it is zip
 		            extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
 		        }
 		    }
 
 			foreach($xml->examples->example as $example) {
+			    
 			    if (in_array((int)$example->attributes()->id, $examplesFromSelected)) {
-                    self::insert_example($example);
+			        
+			        self::insert_example($example, 0, $course_template);
                 }
 			}
 			// update eTheMa parents
@@ -1724,8 +1728,8 @@ class data_importer extends data {
 		    for($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
 		        block_exacomp_set_exampleactivity($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][2][$i]);
 		    }
-		    var_dump($GLOBALS['activexamples']);
-		    die;
+// 		    var_dump($GLOBALS['activexamples']);
+// 		    die;
 
 		      @rmdir($CFG->tempdir . '/backup/activities');
 		      unlink($CFG->tempdir . '/backup/data.xml');
@@ -2230,7 +2234,7 @@ class data_importer extends data {
 		return $item;
 	}
 
-	private static function insert_example($xmlItem, $parent = 0) {
+	private static function insert_example($xmlItem, $parent = 0, $course_template) {
 		$item = self::parse_xml_item($xmlItem);
 		$item->parentid = $parent;
 
@@ -2264,9 +2268,11 @@ class data_importer extends data {
 		if ($xmlItem->filetask) {
 			self::insert_file('example_task', $xmlItem->filetask, $item);
 		}
+		
 		if($xmlItem->activityid){
+
 		    if($course_template != 0){
-		        self::insert_activity($xmlItem, $course_template, $item->ethema_parent['@attributes']['id']);
+		        self::insert_activity($xmlItem, $course_template, $item->id);
 		    }
 		    
 		}
@@ -2294,7 +2300,7 @@ class data_importer extends data {
 
 		if ($xmlItem->children) {
 			foreach ($xmlItem->children->example as $child) {
-				self::insert_example($child, $item->id);
+			    self::insert_example($child, $item->id, $course_template);
 			}
 		}
 
@@ -2603,20 +2609,23 @@ class data_importer extends data {
 	}
 
 	private static function insert_activity($xmlItem, $course_template, $exampleid){
-	    global $CFG;
+	    global $CFG, $USER;
 	    $example = self::parse_xml_item($xmlItem);
 	    if (isset($xmlItem->activityid)) {
-	        if( $key = array_search($xmlItem->activityid, $GLOBALS['activexamples'][0])){
-	            array_push($GLOBALS['activexamples'][0], $xmlItem->activityid);
+	        if( $key = array_search($example->activityid, $GLOBALS['activexamples'][0])){
+	            array_push($GLOBALS['activexamples'][0], $example->activityid);
 	            array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	        } else {
-	            array_push($GLOBALS['activexamples'][0], $xmlItem->activityid);
-	            @rename($CFG->tempdir . '/backup/activities/'.$xmlItem->activityid, $CFG->tempdir . '/backup/'.$xmlItem->activityid);
-	            moodle_restore(''.$xmlItem->activityid, $course_template, $USER->id);
+	            array_push($GLOBALS['activexamples'][0], $example->activityid);
+	            @rename($CFG->tempdir . '/backup/activities/'.$example->activityid, $CFG->tempdir . '/backup/'.$example->activityid);
+	            moodle_restore(''.$example->activityid, $course_template, $USER->id);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	        }
 	    }
+// 	    echo "hallo";
+// 	    var_dump($GLOBALS['activexamples']);
+// 	    die;
 	        return $example;
 	}
 

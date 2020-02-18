@@ -17,22 +17,28 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+
+global $CFG;
 require __DIR__.'/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
-if (!is_siteadmin()) {
-    die('No Admin!');
+
+function moodle_backup($activityid, $user_doing_the_backup){
+
+    if (!is_siteadmin()) {
+        die('No Admin!');
+    }
+
+    global $CFG;
+    $CFG->keeptempdirectoriesonbackup = true;
+    
+    
+    $bc = new backup_controller(backup::TYPE_1ACTIVITY, $activityid, backup::FORMAT_MOODLE,
+        backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user_doing_the_backup);
+    
+    $backup_id = $bc->get_backupid();
+    $bc->get_plan()->set_excluding_activities();
+    $bc->execute_plan();
+    return $backup_id;
+    
 }
-
-$CFG->keeptempdirectoriesonbackup = true;
-
-$courseid = 2;
-$user_doing_the_backup = 2; // Set this to the id of your admin accouun
-
-$bc = new backup_controller(backup::TYPE_1COURSE, $courseid, backup::FORMAT_MOODLE,
-    backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user_doing_the_backup);
-
-$bc->get_plan()->set_excluding_activities();
-$bc->execute_plan();
-
-die('done');

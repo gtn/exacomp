@@ -17,22 +17,24 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require __DIR__.'/../inc.php';
-require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+require __DIR__ . '/../inc.php';
+require_once ($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
-if (!is_siteadmin()) {
-    die('No Admin!');
+function moodle_restore($data, $courseid, $userdoingrestore) {
+    global $DB;
+    if (! is_siteadmin()) {
+        die('No Admin!');
+    }
+
+    $transaction = $DB->start_delegated_transaction();
+    // $data: the name of the folder in CFG->backuptempdir
+    // $courseid: destination course of this restore
+    // Restore backup into course.
+    $controller = new restore_controller($data, $courseid, backup::INTERACTIVE_NO, backup::MODE_IMPORT, $userdoingrestore, backup::TARGET_CURRENT_ADDING);
+    $controller->execute_precheck();
+
+    $controller->execute_plan();
+
+    // Commit.
+   $transaction->allow_commit();
 }
-
-$CFG->keeptempdirectoriesonbackup = true;
-
-$courseid = 2;
-$user_doing_the_backup = 2; // Set this to the id of your admin accouun
-
-$bc = new backup_controller(backup::TYPE_1COURSE, $courseid, backup::FORMAT_MOODLE,
-    backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user_doing_the_backup);
-
-$bc->get_plan()->set_excluding_activities();
-$bc->execute_plan();
-
-die('done');
