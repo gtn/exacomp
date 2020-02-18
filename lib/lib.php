@@ -8144,8 +8144,9 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
                     break;
                 case BLOCK_EXACOMP_ROLE_STUDENT:
                     $content_row->columns[$current_idx]->evaluation_text = ($element->self_eval ? $element->self_eval : '') ;
-                    $content_row->columns[$current_idx]->evaluation = -1;
-                    $content_row->columns[$current_idx]->evaluation_mapped = -1; //($element->self_evalid && $element->self_evalid > -1 ? $element->self_evalid : -1) ;
+                    $eval_val = ($element->self_evalid && $element->self_evalid > -1 ? $element->self_evalid : -1) ;
+                    $content_row->columns[$current_idx]->evaluation = $eval_val;
+                    $content_row->columns[$current_idx]->evaluation_mapped = $eval_val;
                     $content_row->columns[$current_idx]->evalniveauid = -1;
                     break;
             }
@@ -8177,8 +8178,8 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
                     $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_TOPIC, $rowcontent->topic_id);
                     if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
                         $topic_eval->evaluation_text = $student_evaluation->get_value_title();
-                        $topic_eval->evaluation = -1; // $student_evaluation->value;
-                        $topic_eval->evaluation_mapped = -1 ; // $student_evaluation->value;
+                        $topic_eval->evaluation = $student_evaluation->value;
+                        $topic_eval->evaluation_mapped = $student_evaluation->value;
                     } else {
                         $topic_eval->evaluation_text = '';
                         $topic_eval->evaluation = -1;
@@ -8217,8 +8218,8 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
                 $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subjectid);
                 if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
                     $content_row->columns[1]->evaluation_text = $student_evaluation->get_value_title();
-                    $content_row->columns[1]->evaluation = -1 ;// $student_evaluation->value;
-                    $content_row->columns[1]->evaluation_mapped = -1 ; // $student_evaluation->value;
+                    $content_row->columns[1]->evaluation = $student_evaluation->value;
+                    $content_row->columns[1]->evaluation_mapped = $student_evaluation->value;
                 } else {
                     $content_row->columns[1]->evaluation_text = '';
                     $content_row->columns[1]->evaluation = -1;
