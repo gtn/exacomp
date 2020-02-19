@@ -6209,6 +6209,7 @@ class block_exacomp_external extends external_api {
 	        'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
 	        'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 	        'numbering' => new external_value (PARAM_TEXT, 'numbering'),
+            'categories' => new external_value (PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
 	        'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 	        'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
 	        'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
@@ -6362,6 +6363,7 @@ class block_exacomp_external extends external_api {
 			'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
 			'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 			'numbering' => new external_value (PARAM_TEXT, 'numbering'),
+            'categories' => new external_value (PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 			'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
 		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
@@ -8642,9 +8644,12 @@ class block_exacomp_external extends external_api {
 	    $descriptor_return->timestampteacher = 0;
 	    $descriptor_return->reviewerid = 0;
 	    $descriptor_return->reviewername = null;
-
-
-
+	    $selected_categories = $DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $descriptorid), "", "catid");
+	    if ($selected_categories) {
+            $descriptor_return->categories = implode(',', array_keys($selected_categories));
+        } else {
+            $descriptor_return->categories = '';
+        }
 
 	    if (!$forall) {
 	        if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {
@@ -9605,4 +9610,90 @@ class block_exacomp_external extends external_api {
         $string = trim($string, chr(0xC2).chr(0xA0));
         return $string;
     }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function update_descriptor_category_parameters() {
+        return new external_function_parameters (array(
+                'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+                'categories' => new external_value (PARAM_TEXT, 'list of categories', VALUE_DEFAULT, ''),
+                'newcategory' => new external_value (PARAM_RAW, 'new category title', VALUE_DEFAULT, ''),
+        ));
+    }
+
+    /**
+     * update an descriptor category
+     * @ws-type-write
+     * @param $descriptorid
+     * @param $categories
+     * @param $newcategory
+     * @return array
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     */
+    public static function update_descriptor_category($descriptorid, $categories = '', $newcategory = '') {
+        global $CFG, $DB, $USER;
+
+        if (empty ($descriptorid)) {
+            throw new invalid_parameter_exception ('Parameter can not be empty');
+        }
+
+        static::validate_parameters(static::update_descriptor_category(), array(
+                'descriptorid' => $descriptorid,
+                'categories' => $categories,
+                'newcategory' => $newcategory,
+        ));
+
+        $descriptor = block_exacomp\descriptor::get($descriptorid);
+
+        block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $descriptor);
+
+        if ($descriptorid > 0) {
+            $newCat = trim($newcategory);
+            if ($newCat != '') {
+                $newCategory = new \stdClass();
+                $newCategory->title = $newCat;
+                $newCategory->parentid = 0;
+                $newCategory->sorting = $DB->get_field(BLOCK_EXACOMP_DB_CATEGORIES, 'MAX(sorting)', array()) + 1;
+                $newCategory->source = 0;
+                $newCategory->sourceid = 0;
+                $newCategory->lvl = 5;
+                $newCategory->id = $DB->insert_record(BLOCK_EXACOMP_DB_CATEGORIES, $newCategory);
+                // new category will be used for descriptor.
+                // TODO: add to category list?
+                $categories = $newCategory->id;
+            }
+
+            // Clear the existing categories.
+            $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, ['descrid' => $descriptorid]);
+            // Insert new list.
+            $categories = trim($categories) ? explode(',', trim($categories)) : [];
+            foreach ($categories as $catid) {
+                $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
+                        'descrid' => $descriptorid,
+                        'catid' => $catid,
+                ]);
+            }
+
+        }
+
+        return array(
+                "success" => true,
+        );
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function update_descriptor_category_returns() {
+        return new external_single_structure (array(
+                'success' => new external_value (PARAM_BOOL, 'true if successful'),
+        ));
+    }
+
 }

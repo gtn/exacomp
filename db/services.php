@@ -851,6 +851,14 @@ get admin evaluation configurations',
     'description' => 'send message',
     'type' => 'write',
   ),
+  'block_exacomp_update_descriptor_category' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'update_descriptor_category',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'update an descriptor category',
+    'type' => 'write',
+  ),
 );
 
 $services = array (
@@ -960,6 +968,7 @@ $services = array (
       95 => 'dakora_set_cross_subject_descriptor',
       96 => 'dakora_dismiss_oldgrading_warning',
       97 => 'dakora_send_message',
+      98 => 'block_exacomp_update_descriptor_category',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,

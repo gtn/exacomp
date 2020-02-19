@@ -40,9 +40,9 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
 /* CONTENT REGION */
-$categories = $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES,null,"","id, title");
+$categories = $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, "", "id, title");
 $form = new block_exacomp_update_categories_form($_SERVER['REQUEST_URI'],
-    array("descrid" => $descrid,"categories"=>$categories));
+    array("descrid" => $descrid, "categories"=>$categories));
 $item = $descrid ? \block_exacomp\descriptor::get($descrid) : null;
 
 if ($formdata = $form->get_data()) {

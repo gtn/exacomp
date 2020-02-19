@@ -36,7 +36,7 @@ class block_exacomp_update_categories_form extends moodleform {
 	    if ($this->_customdata['categories']) {
 	        $cselect = $mform->addElement('select', 'catid', block_exacomp_get_string('descriptor_categories') ,$this->_customdata['categories']);
 	        $cselect->setMultiple(true);
-	        $cselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_DESCCAT,array("descrid" => $this->_customdata['descrid']),"","catid")));
+	        $cselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $this->_customdata['descrid']), "", "catid")));
 	    }
 
 	    $this->add_action_buttons(true);
