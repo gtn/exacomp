@@ -23,8 +23,11 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/../lib/exabis_special_id_generator.php';
 if (is_siteadmin()) { // Moodle is broken before log in
-    require_once __DIR__.'/../backup/test_backup.php';
-    require_once __DIR__.'/../backup/test_restore.php';
+    // TODO: disabled temporary , because below code is for testing, but not for working (SZ)
+    if (11 == 22) {
+        require_once __DIR__.'/../backup/test_backup.php';
+        require_once __DIR__.'/../backup/test_restore.php';
+    }
 }
 
 use block_exacomp\globals as g;
