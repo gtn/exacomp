@@ -22,7 +22,7 @@ namespace block_exacomp;
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/../lib/exabis_special_id_generator.php';
-if (!is_siteadmin()) { // Moodle is broken before log in
+if (is_siteadmin()) { // Moodle is broken before log in
     require_once __DIR__.'/../backup/test_backup.php';
     require_once __DIR__.'/../backup/test_restore.php';
 }
