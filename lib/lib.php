@@ -10743,7 +10743,6 @@ function block_exacomp_save_report_settings($courseid, $delete = false) {
     }
 }
 
-// TODO: do we need this function yet?
 function block_exacomp_update_evaluation_niveau_tables($data='',$option_type='niveau') {
 	if ($data != ''){
 		//$titles = explode(",",$data);
@@ -10784,6 +10783,9 @@ function block_exacomp_update_evaluation_niveau_tables($data='',$option_type='ni
 		// to insert record with a specific id, use insert_record_raw and set $customsequence = true
 		g::$DB->insert_record(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, $entry);
 	}
+
+	// insert fake descriptor 'free_materials'
+    g::$DB->insert_record_raw('block_exacompdescriptors', ['id' => -1, 'title' => 'free_materials', 'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR], true, false, true);
 }
 
 /**

@@ -3437,7 +3437,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         //$sql = 'INSERT INTO {block_exacompdescriptors} (`id`, `title`) VALUES (-1,"free_materials")';
         //$DB->Execute($sql);
         $DB->delete_records('block_exacompdescriptors', array("id" => -1));
-        $DB->insert_record_raw('block_exacompdescriptors', ['id' => -1, 'title' => 'free_materials'], true, false, true);
+        $DB->insert_record_raw('block_exacompdescriptors', ['id' => -1, 'title' => 'free_materials', 'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR], true, false, true);
 
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2019101701, 'exacomp');
@@ -3587,6 +3587,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
         // exacomp savepoint reached
         upgrade_block_savepoint(true, 2020022000, 'exacomp');
+    }
+
+    if ($oldversion < 2020022001) {
+        $updateFreeDescriptor = $DB->execute(' UPDATE {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} 
+                                                    SET source = '.BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR.' 
+                                                    WHERE id = -1 ');
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020022001, 'exacomp');
     }
 
     /*
