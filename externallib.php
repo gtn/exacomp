@@ -6977,6 +6977,8 @@ class block_exacomp_external extends external_api {
                 'teacher' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_TEACHER),
                 'student' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT)
         );
+        $globalcompetences = array('12' => $subjectinfo['teacher']);
+        $subjectinfo['globalcompetences'] = $globalcompetences;
         // for testing in old app
         //$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT);
 
@@ -6990,6 +6992,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_competence_grid_for_profile_returns() {
 	    $table_structure = array(
+	            'title' => new external_value (PARAM_TEXT, 'title of table', VALUE_DEFAULT, ""),
                 'rows' => new external_multiple_structure (new external_single_structure (array(
                         'columns' => new external_multiple_structure (new external_single_structure(array(
                                 'text' => new external_value (PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
@@ -7009,7 +7012,9 @@ class block_exacomp_external extends external_api {
         );
 		return new external_single_structure (array(
                     'teacher' => new external_single_structure($table_structure),
-                    'student' => new external_single_structure($table_structure)
+                    'student' => new external_single_structure($table_structure),
+                    'globalcompetences' => new external_multiple_structure(new external_single_structure($table_structure), '', VALUE_DEFAULT, array()),
+                    //'globalcompetences' =>  new external_multiple_structure (new external_single_structure(array($table_structure)))
                 )
 		);
 		// for testing in old app
@@ -9618,33 +9623,36 @@ class block_exacomp_external extends external_api {
      */
     public static function update_descriptor_category_parameters() {
         return new external_function_parameters (array(
-                'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+                'descriptorid' => new external_value (PARAM_INT, 'id of descriptor', VALUE_REQUIRED),
                 'categories' => new external_value (PARAM_TEXT, 'list of categories', VALUE_DEFAULT, ''),
                 'newcategory' => new external_value (PARAM_RAW, 'new category title', VALUE_DEFAULT, ''),
+                'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
         ));
     }
 
     /**
      * update an descriptor category
      * @ws-type-write
-     * @param $descriptorid
-     * @param $categories
-     * @param $newcategory
+     * @param integer $descriptorid
+     * @param string $categories
+     * @param string $newcategory
+     * @param integer $courseid
      * @return array
      * @throws invalid_parameter_exception
      * @throws moodle_exception
      */
-    public static function update_descriptor_category($descriptorid, $categories = '', $newcategory = '') {
+    public static function update_descriptor_category($descriptorid, $categories = '', $newcategory = '', $courseid = 0) {
         global $CFG, $DB, $USER;
 
-        if (empty ($descriptorid)) {
-            throw new invalid_parameter_exception ('Parameter can not be empty');
+        if (empty($descriptorid)) {
+            throw new invalid_parameter_exception ('Parameter descriptorid can not be empty');
         }
 
-        static::validate_parameters(static::update_descriptor_category(), array(
+        static::validate_parameters(static::update_descriptor_category_parameters(), array(
                 'descriptorid' => $descriptorid,
                 'categories' => $categories,
                 'newcategory' => $newcategory,
+                'courseid' => $courseid,
         ));
 
         $descriptor = block_exacomp\descriptor::get($descriptorid);

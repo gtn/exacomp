@@ -8082,12 +8082,14 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 	global $DB;
 	list($course_subjects, $table_rows, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
 
-	$spanning_niveaus = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_NIVEAUS, 'title', 'span=?', array(
-		1,
-	));//calculate the col span for spanning niveaus
+	$spanning_niveaus = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_NIVEAUS, 'title', 'span=?', array(1));
+	//calculate the col span for spanning niveaus
 	$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
 
+	$subjectData = $DB->get_record(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subjectid]);
+
 	$table = new stdClass();
+	$table->title = $subjectData->title;
 	$table->rows = array();
 
 	$header_row = new stdClass();
