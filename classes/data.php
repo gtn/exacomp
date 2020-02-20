@@ -22,13 +22,9 @@ namespace block_exacomp;
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/../lib/exabis_special_id_generator.php';
-if (is_siteadmin()) { // Moodle is broken before log in
-    // TODO: disabled temporary , because below code is for testing, but not for working (SZ)
-    if (11 == 22) {
-        require_once __DIR__.'/../backup/test_backup.php';
-        require_once __DIR__.'/../backup/test_restore.php';
-    }
-}
+
+        require_once __DIR__.'/../backup/activity_backup.php';
+        require_once __DIR__.'/../backup/activity_restore.php';
 
 use block_exacomp\globals as g;
 use Super\Fs;
@@ -833,6 +829,10 @@ class data_exporter extends data {
 				$dbItem->source = null;
 				$dbItem->sourceid = null;
 			}
+			
+			// temporary
+			global $DB;
+			$activitytype = $DB->get_field('course_modules', 'module', array('id' => $dbItem->activityid));
 			self::assign_source($xmlItem, $dbItem);
 			$xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
 			$xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
@@ -840,6 +840,7 @@ class data_exporter extends data {
 			$xmlItem->addChildWithCDATAIfValue('author', $dbItem->get_author());
 			$xmlItem->addChildWithCDATAIfValue('activitytitle', $dbItem->activitytitle);
 			$xmlItem->addChildWithCDATAIfValue('activityid', $dbItem->activityid);
+			$xmlItem->addChildWithCDATAIfValue('activitytype', $activitytype);
 			$xmlItem->addChildWithCDATAIfValue('activitylink', $dbItem->activitylink);
 			$xmlItem->addChildWithCDATAIfValue('courseid', $dbItem->courseid);
 			$xmlItem->sorting = $dbItem->sorting;
@@ -1670,6 +1671,8 @@ class data_importer extends data {
 		    $GLOBALS['activexamples'][1] = array();
 		    //example sourceid
 		    $GLOBALS['activexamples'][2] = array();
+		    //example activitytype temporary
+		    $GLOBALS['activexamples'][3] = array();
 		    if( $course_template != 0) {
 		        
 		        if ($ret === true) { // only if it is zip
@@ -1731,7 +1734,8 @@ class data_importer extends data {
 		if( $course_template != 0) {
 		    
 		    for($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
-		        block_exacomp_set_exampleactivity($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][2][$i]);
+		        $activityid = self::get_new_activity_id($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][3][$i], $course_template);
+		        block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples'][2][$i]);
 		    }
 // 		    var_dump($GLOBALS['activexamples']);
 // 		    die;
@@ -2619,13 +2623,16 @@ class data_importer extends data {
 	    if (isset($xmlItem->activityid)) {
 	        if( $key = array_search($example->activityid, $GLOBALS['activexamples'][0])){
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
-	            array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
+	            array_push($GLOBALS['activexamples'][1], $example->activitytitle); //array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
+	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
 	        } else {
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
 	            @rename($CFG->tempdir . '/backup/activities/'.$example->activityid, $CFG->tempdir . '/backup/'.$example->activityid);
 	            moodle_restore(''.$example->activityid, $course_template, $USER->id);
+	            array_push($GLOBALS['activexamples'][1], $example->activitytitle);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
+	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
 	        }
 	    }
 // 	    echo "hallo";
