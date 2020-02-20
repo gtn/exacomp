@@ -23,6 +23,7 @@
         <FIELD NAME="benefit" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
         <FIELD NAME="knowledgecheck" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
         <FIELD NAME="catid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="category id foreign key"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom descriptor"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -45,6 +46,7 @@
         <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic"/>
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="span" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom topic"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -67,6 +69,7 @@
         <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="is the subject a global subject"/>
         <FIELD NAME="version" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="grid version"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom subject"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

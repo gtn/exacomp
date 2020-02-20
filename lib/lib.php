@@ -9629,6 +9629,14 @@ function block_exacomp_require_item_capability($cap, $item) {
 			throw new block_exacomp_permission_exception('Not a custom topic');
 		}
 	} elseif ($item instanceof \block_exacomp\descriptor && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
+        // only if it is not imported utem (custom)
+        if ($item->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || $item->source === 0) {
+            // is this a creator of custom element?
+            if ($item->creatorid == g::$USER->id || $item->creatorid === null) {
+                // User is creator
+                return true;
+            }
+        }
 		if (!block_exacomp_is_teacher(g::$COURSE->id)) {
 			throw new block_exacomp_permission_exception('User is no teacher');
 		}

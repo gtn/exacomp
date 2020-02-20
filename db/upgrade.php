@@ -3572,6 +3572,23 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020020700, 'exacomp');
     }
 
+    if ($oldversion < 2020022000) {
+
+        // Define field creatorid to be added to some tables
+        $tables = array('block_exacompdescriptors', 'block_exacomptopics', 'block_exacompsubjects');
+        foreach ($tables as $tablename) {
+            $table = new xmldb_table($tablename);
+            $field = new xmldb_field('creatorid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, null);
+            // Conditionally launch add field creatorid
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        // exacomp savepoint reached
+        upgrade_block_savepoint(true, 2020022000, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
