@@ -100,6 +100,7 @@ if($formdata = $form->get_data()) {
 		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 		$new->subjid = required_param('subjectid', PARAM_INT);
+        $new->creatorid = g::$USER->id;
 		
 		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
 		

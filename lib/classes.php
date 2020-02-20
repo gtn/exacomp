@@ -493,6 +493,7 @@ class db_layer_all_user_courses extends db_layer_student {
 }
 
 /**
+/**
  * Class db_record
  * @package block_exacomp
  * @property int $id
@@ -987,6 +988,7 @@ class descriptor extends db_record {
 
 		$descriptor->source = BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR;
 		$descriptor->sorting = $max_sorting + 1;
+		$descriptor->creatorid = g::$USER->id;
 		$descriptor->insert();
 
 		//topic association

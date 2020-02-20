@@ -18,7 +18,10 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
-require_once __DIR__.'/backup/test_backup.php';
+// temporary disabled
+if (11 == 22) {
+    require_once __DIR__.'/backup/test_backup.php';
+}
 
 $courseid = required_param ( 'courseid', PARAM_INT );
 $action = required_param('action', PARAM_TEXT);
