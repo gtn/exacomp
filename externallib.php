@@ -6975,10 +6975,40 @@ class block_exacomp_external extends external_api {
 
         $subjectinfo = array(
                 'teacher' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_TEACHER),
-                'student' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT)
+                'student' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT),
+                'globalcompetences' => array()
         );
-        $globalcompetences = array('12' => $subjectinfo['teacher']);
-        $subjectinfo['globalcompetences'] = $globalcompetences;
+        // global values
+        $possible_courses = block_exacomp_get_exacomp_courses($userid);
+        $user_courses = array();
+        foreach($possible_courses as $course){
+            $user_courses[$course->id] = $course;
+        }
+        // go across courses and subjects to get all statistic
+        foreach ($user_courses as $cid => $course) {
+            $competence_tree = block_exacomp_get_competence_tree($cid, null, null, false, null, true,
+                    array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+            foreach ($competence_tree as $subject) {
+                $tmp1 = block_exacomp_get_competence_profile_grid_for_ws($cid, $userid, $subject->id, BLOCK_EXACOMP_ROLE_TEACHER);
+            }
+        }
+        $globalTableData = block_exacomp_get_competence_profile_grid_for_ws(null, $userid, null, BLOCK_EXACOMP_ROLE_TEACHER);
+        $newSubjectData = block_exacomp_new_subject_data_for_competence_profile($globalTableData);
+        if (count($newSubjectData)) {
+            foreach ($newSubjectData as $sId => $subjectData) {
+                //throw new invalid_parameter_exception(print_r($subjectData, true));
+                $subjectinfo['globalcompetences'][] = block_exacomp_get_competence_profile_grid_for_ws(
+                        null,
+                        $userid,
+                        $sId,
+                        BLOCK_EXACOMP_ROLE_TEACHER,
+                        array(  $globalTableData[$sId]['table_rows'],
+                                $globalTableData[$sId]['table_header'],
+                                $subjectData
+                        ));
+            }
+        }
+
         // for testing in old app
         //$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT);
 
@@ -7014,7 +7044,6 @@ class block_exacomp_external extends external_api {
                     'teacher' => new external_single_structure($table_structure),
                     'student' => new external_single_structure($table_structure),
                     'globalcompetences' => new external_multiple_structure(new external_single_structure($table_structure), '', VALUE_DEFAULT, array()),
-                    //'globalcompetences' =>  new external_multiple_structure (new external_single_structure(array($table_structure)))
                 )
 		);
 		// for testing in old app

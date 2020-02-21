@@ -361,6 +361,13 @@ function block_exacomp_is_elove_student_self_assessment_enabled() {
 	return get_config('exacomp', 'elove_student_self_assessment');
 }
 
+function block_exacomp_use_old_activities_method() {
+    if (get_config('exacomp', 'assign_activities_old_method')) {
+        return true;
+    }
+    return false;
+}
+
 function block_exacomp_use_eval_niveau() {
 	$evaluation_niveau = block_exacomp_get_assessment_diffLevel_options();
     return $evaluation_niveau != '';
@@ -2499,7 +2506,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
     // Activities submenu
 	if (block_exacomp_is_activated($courseid)) {
 		if ($courseSettings->uses_activities) {
-		    if (get_config('exacomp', 'assign_activities_old_method')) {
+		    if (block_exacomp_use_old_activities_method()) {
                 $settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
             }
 			$settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
@@ -8075,12 +8082,42 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
  * @param integer $userid
  * @param integer $subjectid
  * @param integer $targetrole
+ * @param array $custom_data
  * @return \block_exacomp\stdClass
  * see ws dakora_get_competence_grid_for_profile for return value description
  */
-function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, $targetrole = BLOCK_EXACOMP_ROLE_TEACHER) {
+function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, $targetrole = BLOCK_EXACOMP_ROLE_TEACHER, $custom_data = null) {
 	global $DB;
-	list($course_subjects, $table_rows, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
+    static $subjectGenericData = null;
+    if ($subjectGenericData === null) {
+        $subjectGenericData = array();
+    }
+    if ($courseid !== null && $subjectid !== null) {
+        $subjectData = $DB->get_record(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subjectid]);
+        list ($course_subjects, $table_rows, $table_header, $table_content) =
+                block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
+
+        // aggregate all data to next generation of global report
+        if (@$subjectData->isglobal) { // only isglobal?
+            if (!array_key_exists($subjectid, $subjectGenericData)) {
+                $subjectGenericData[$subjectid] = array(
+                        'table_rows' => $table_rows,
+                        'table_header' => $table_header,
+                        'courses_table_content' => []
+                );
+            }
+            if (!array_key_exists($courseid, $subjectGenericData[$subjectid]['courses_table_content'])) {
+                $subjectGenericData[$subjectid]['courses_table_content'][$courseid] = $table_content;
+            }
+        }
+    } else if ($custom_data != null) {
+        // use manual generated data (averages)
+        list ($table_rows, $table_header, $table_content) = $custom_data;
+    } else {
+        // if no courseID - return ALL data of sybjects by courses
+        return $subjectGenericData;
+    }
+    //list ($course_subjects, $table_rows, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
 
 	$spanning_niveaus = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_NIVEAUS, 'title', 'span=?', array(1));
 	//calculate the col span for spanning niveaus
@@ -8153,9 +8190,9 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
             }
             $content_row->columns[$current_idx]->show = $element->show;
             $content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
-			$content_row->columns[$current_idx]->timestamp = $element->timestamp;
+			$content_row->columns[$current_idx]->timestamp = (int)$element->timestamp;
 
-			$content_row->columns[$current_idx]->gradingisold = $element->gradingisold;
+			$content_row->columns[$current_idx]->gradingisold = (bool)$element->gradingisold;
 
 			if (in_array($niveau, $spanning_niveaus)) {
 				$content_row->columns[$current_idx]->span = $spanning_colspan;
@@ -8192,7 +8229,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$topic_eval->topicid = $rowcontent->topic_id;
 			$topic_eval->span = 0;
 			$topic_eval->visible = $rowcontent->visible;
-			$topic_eval->timestamp = $rowcontent->timestamp;
+			$topic_eval->timestamp = (int)$rowcontent->timestamp;
 			$content_row->columns[$current_idx] = $topic_eval;
 		}
 
@@ -10787,7 +10824,16 @@ function block_exacomp_update_evaluation_niveau_tables($data='',$option_type='ni
 	}
 
 	// insert fake descriptor 'free_materials'
-    g::$DB->insert_record_raw('block_exacompdescriptors', ['id' => -1, 'title' => 'free_materials', 'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR], true, false, true);
+    if (g::$DB->record_exists(BLOCK_EXACOMP_DB_DESCRIPTORS, ['id' => -1])) {
+        // update record is it exists already
+        g::$DB->execute(' UPDATE {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} 
+                                                    SET source = '.BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR.' 
+                                                    WHERE id = -1 ');
+    } else {
+        // insert new
+        g::$DB->insert_record_raw(BLOCK_EXACOMP_DB_DESCRIPTORS,
+                ['id' => -1, 'title' => 'free_materials', 'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR], true, false, true);
+    }
 }
 
 /**
@@ -11580,3 +11626,144 @@ function block_exacomp_require_login($courseorid = null, $autologinguest = true,
 	}
 }
 
+function block_exacomp_new_subject_data_for_competence_profile($subjectGenericData) {
+    global $DB;
+    $use_evalniveau = array(
+            BLOCK_EXACOMP_TYPE_SUBJECT => block_exacomp_get_assessment_subject_diffLevel(),
+            BLOCK_EXACOMP_TYPE_TOPIC => block_exacomp_get_assessment_topic_diffLevel(),
+            BLOCK_EXACOMP_TYPE_DESCRIPTOR => block_exacomp_get_assessment_comp_diffLevel(),
+    );
+    $evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+    $newSubjectData = array();
+    $avgSubjectsTmp = $avgTopicsTmp = $avgNiveausTmp = array(); //array('sum' => 0, 'count' => 0);
+    $roundFunction = function($level, $value) {
+        $assessmentType = block_exacomp_additional_grading($level);
+        switch ($assessmentType) {
+            case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                return round($value, 0, PHP_ROUND_HALF_DOWN);
+                break;
+            default:
+                return round($value);
+        }
+        return $value;
+    };
+    // get values for every subjects by course for calculate averages in next step
+    foreach ($subjectGenericData as $sId => $subjectData) {
+        if (!array_key_exists($sId, $newSubjectData)) {
+            $newSubjectData[$sId] = (object)array(
+                    'subject_evalniveau' => '',
+                    'subject_evalniveauid' => -1,
+                    'subject_eval' => -1,
+                    'timestamp' => '',
+                    'subject_title' => reset($subjectData['courses_table_content'])->subject_title,
+                    'content' => array()
+            );
+        }
+        foreach ($subjectData['courses_table_content'] as $cId => $courseContent) {
+            foreach ($courseContent->content as $tId => $topicData) {
+                if (!array_key_exists($tId, $newSubjectData[$sId]->content)) {
+                    $newSubjectData[$sId]->content[$tId] = (object)array(
+                            'niveaus' => array(),
+                            'span' => 0,
+                            'topic_evalniveauid' => 0,
+                            'topic_evalniveau' => '',
+                            'topic_eval' => -1,
+                            'visible' => $topicData->visible,
+                            'timestamp' => '',
+                            'topic_id' => $tId
+                    );
+                }
+                if ($use_evalniveau[BLOCK_EXACOMP_TYPE_TOPIC] && @$topicData->topic_evalniveauid != '' && $topicData->topic_evalniveauid > 0) {
+                    @$avgTopicsTmp[$tId]['evalniveau_sum'] += $topicData->topic_evalniveauid;
+                    @$avgTopicsTmp[$tId]['evalniveau_count']++;
+                }
+                if ($topicData->topic_eval != '' && $topicData->topic_eval > -1) {
+                    @$avgTopicsTmp[$tId]['sum'] += $topicData->topic_eval;
+                    @$avgTopicsTmp[$tId]['count']++;
+                }
+                foreach ($topicData->niveaus as $niveauTitle => $niveauData) {
+                    if (!array_key_exists($niveauTitle, $newSubjectData[$sId]->content[$tId]->niveaus)) {
+                        $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle] = (object)array(
+                                'evalniveau' => '',
+                                'evalniveauid' => -1, // block_exacomp_use_eval_niveau() ? -1 : 0 ???
+                                'eval' => -1,
+                                'show' => $niveauData->show,
+                                'visible' => $niveauData->visible,
+                                'timestamp' => 0,
+                                'gradingisold' => '',
+                        );
+                    }
+                    if ($use_evalniveau[BLOCK_EXACOMP_TYPE_DESCRIPTOR] && @$niveauData->evalniveauid != '' && $niveauData->evalniveauid > 0) {
+                        @$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_sum'] += $niveauData->evalniveauid;
+                        @$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count']++;
+                    }
+                    if ($niveauData->eval != '' && $niveauData->eval > -1) {
+                        @$avgNiveausTmp[$tId.':::'.$niveauTitle]['sum'] += $niveauData->eval;
+                        @$avgNiveausTmp[$tId.':::'.$niveauTitle]['count']++;
+                    }
+                }
+            }
+
+            if ($use_evalniveau[BLOCK_EXACOMP_TYPE_SUBJECT] && @$courseContent->subject_evalniveauid != '' && $courseContent->subject_evalniveauid > 0) {
+                @$avgSubjectsTmp[$sId]['evalniveau_sum'] += $courseContent->subject_evalniveauid;
+                @$avgSubjectsTmp[$sId]['evalniveau_count']++;
+            }
+            if (@$courseContent->subject_eval != '' && $courseContent->subject_eval > -1) {
+                @$avgSubjectsTmp[$sId]['sum'] += $courseContent->subject_eval;
+                @$avgSubjectsTmp[$sId]['count']++;
+            }
+        }
+    }
+    foreach ($subjectGenericData as $sId => $subjectData) {
+        if (array_key_exists($sId, $avgSubjectsTmp)) {
+            if (@$avgSubjectsTmp[$sId]['evalniveau_count'] > 0) {
+                $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_SUBJECT,
+                        $avgSubjectsTmp[$sId]['evalniveau_sum'] / $avgSubjectsTmp[$sId]['evalniveau_count']);
+                $newSubjectData[$sId]->subject_evalniveau = @$evaluationniveau_items[$new_evalniveau] ?: '';
+                $newSubjectData[$sId]->subject_evalniveauid = $new_evalniveau;
+            }
+            if (@$avgSubjectsTmp[$sId]['count'] > 0) {
+                $newSubjectData[$sId]->subject_eval =
+                        $roundFunction(BLOCK_EXACOMP_TYPE_SUBJECT, $avgSubjectsTmp[$sId]['sum'] / $avgSubjectsTmp[$sId]['count']);
+            }
+        }
+        foreach ($subjectData['courses_table_content'] as $cId => $courseContent) {
+            foreach ($courseContent->content as $tId => $topicData) {
+                foreach ($topicData->niveaus as $niveauTitle => $niveauData) {
+                    if (array_key_exists($tId, $avgTopicsTmp)) {
+                        if (@$avgTopicsTmp[$tId]['evalniveau_count'] > 0) {
+                            $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_TOPIC,
+                                    $avgTopicsTmp[$tId]['evalniveau_sum'] / $avgTopicsTmp[$tId]['evalniveau_count']);
+                            $newSubjectData[$sId]->content[$tId]->topic_evalniveau =
+                                    @$evaluationniveau_items[$new_evalniveau] ?: '';
+                            $newSubjectData[$sId]->content[$tId]->topic_evalniveauid = $new_evalniveau;
+                        }
+                        if (@$avgTopicsTmp[$tId]['count'] > 0) {
+                            $newSubjectData[$sId]->content[$tId]->topic_eval = $roundFunction(BLOCK_EXACOMP_TYPE_TOPIC,
+                                    $avgTopicsTmp[$tId]['sum'] / $avgTopicsTmp[$tId]['count']);
+                        }
+                    }
+                    foreach ($topicData->niveaus as $niveauTitle => $niveauData) {
+                        if (array_key_exists($tId.':::'.$niveauTitle, $avgNiveausTmp)) {
+                            if (@$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count'] > 0) {
+                                $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_DESCRIPTOR,
+                                        $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_sum'] /
+                                        $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count']);
+                                $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->evalniveau =
+                                        @$evaluationniveau_items[$new_evalniveau] ?: '';
+                                $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->evalniveauid = $new_evalniveau;
+                            }
+                            if (@$avgNiveausTmp[$tId.':::'.$niveauTitle]['count'] > 0) {
+                                $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->eval =
+                                        $roundFunction(BLOCK_EXACOMP_TYPE_DESCRIPTOR,
+                                                $avgNiveausTmp[$tId.':::'.$niveauTitle]['sum'] /
+                                                $avgNiveausTmp[$tId.':::'.$niveauTitle]['count']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $newSubjectData;
+}
