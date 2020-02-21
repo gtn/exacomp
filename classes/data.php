@@ -23,8 +23,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/../lib/exabis_special_id_generator.php';
 
-        require_once __DIR__.'/../backup/activity_backup.php';
-        require_once __DIR__.'/../backup/activity_restore.php';
+require_once __DIR__.'/../backup/activity_backup.php';
+require_once __DIR__.'/../backup/activity_restore.php';
 
 use block_exacomp\globals as g;
 use Super\Fs;
@@ -1204,7 +1204,7 @@ class data_exporter extends data {
                 if (! $file->isDir()) {
                     // Get real and relative path for current file
                     $filePath = $file->getRealPath();
-                    $relativePath = 'activities/' . $k . '/' . substr($filePath, strlen($source) + 1);
+                    $relativePath = 'activities/activity' . $k . '/' . substr($filePath, strlen($source) + 1);
 
                     // Add current file to archive
                     $zip->addFile($filePath, $relativePath);
@@ -1308,7 +1308,7 @@ class data_course_backup extends data {
 }
 
 class data_importer extends data {
-
+   
 	private static $import_source_type;
 	private static $import_source_global_id;
 	private static $import_source_local_id;
@@ -1674,7 +1674,7 @@ class data_importer extends data {
 		    //example activitytype temporary
 		    $GLOBALS['activexamples'][3] = array();
 		    if( $course_template != 0) {
-		        
+
 		        if ($ret === true) { // only if it is zip
 		            extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
 		        }
@@ -1731,14 +1731,16 @@ class data_importer extends data {
 
 
 //cleanup and insert activities into DB
+
 		if( $course_template != 0) {
+
 		    
 		    for($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
 		        $activityid = self::get_new_activity_id($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][3][$i], $course_template);
 		        block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples'][2][$i]);
 		    }
-// 		    var_dump($GLOBALS['activexamples']);
-// 		    die;
+			
+
 
 		      @rmdir($CFG->tempdir . '/backup/activities');
 		      unlink($CFG->tempdir . '/backup/data.xml');
@@ -2277,8 +2279,8 @@ class data_importer extends data {
 		if ($xmlItem->filetask) {
 			self::insert_file('example_task', $xmlItem->filetask, $item);
 		}
-		
-		if($xmlItem->activityid){
+
+		if($xmlItem->activitytype){
 
 		    if($course_template != 0){
 		        self::insert_activity($xmlItem, $course_template, $item->id);
@@ -2620,7 +2622,9 @@ class data_importer extends data {
 	private static function insert_activity($xmlItem, $course_template, $exampleid){
 	    global $CFG, $USER;
 	    $example = self::parse_xml_item($xmlItem);
-	    if (isset($xmlItem->activityid)) {
+
+
+	    if ($example->activityid != 0) {
 	        if( $key = array_search($example->activityid, $GLOBALS['activexamples'][0])){
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
 	            array_push($GLOBALS['activexamples'][1], $example->activitytitle); //array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
@@ -2628,16 +2632,15 @@ class data_importer extends data {
 	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
 	        } else {
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
-	            @rename($CFG->tempdir . '/backup/activities/'.$example->activityid, $CFG->tempdir . '/backup/'.$example->activityid);
-	            moodle_restore(''.$example->activityid, $course_template, $USER->id);
+	            @rename($CFG->tempdir . '/backup/activities/activity'.$example->activityid, $CFG->tempdir . '/backup/activity'.$example->activityid);
+	            moodle_restore('activity'.$example->activityid, $course_template, $USER->id);
 	            array_push($GLOBALS['activexamples'][1], $example->activitytitle);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
 	        }
+
 	    }
-// 	    echo "hallo";
-// 	    var_dump($GLOBALS['activexamples']);
-// 	    die;
+
 	        return $example;
 	}
 
