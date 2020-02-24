@@ -9702,9 +9702,9 @@ function block_exacomp_require_item_capability($cap, $item) {
 			throw new block_exacomp_permission_exception('No course descriptor');
 		}
 
-		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+		/*if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 			throw new block_exacomp_permission_exception('Not a custom descriptor');
-		}
+		}*/
 	} elseif ($item instanceof \block_exacomp\cross_subject && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
 		if (block_exacomp_is_admin()) {
 			return true;

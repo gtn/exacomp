@@ -9671,7 +9671,7 @@ class block_exacomp_external extends external_api {
      * @throws moodle_exception
      */
     public static function update_descriptor_category($descriptorid, $categories = '', $newcategory = '', $courseid = 0) {
-        global $CFG, $DB, $USER;
+        global $CFG, $DB, $USER, $COURSE;
 
         if (empty($descriptorid)) {
             throw new invalid_parameter_exception ('Parameter descriptorid can not be empty');
@@ -9685,6 +9685,10 @@ class block_exacomp_external extends external_api {
         ));
 
         $descriptor = block_exacomp\descriptor::get($descriptorid);
+
+        if ($courseid = optional_param('courseid', 0, PARAM_INT)) {
+            $COURSE->id = $courseid; // TODO: another way?
+        }
 
         block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $descriptor);
 
