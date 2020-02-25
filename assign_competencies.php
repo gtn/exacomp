@@ -51,7 +51,7 @@ $isTeacher = block_exacomp_is_teacher();
 if (!$isTeacher) {
     $editmode = 0;
 }
-$isEditingTeacher = block_exacomp_is_editingteacher($courseid,$USER->id);
+$isEditingTeacher = block_exacomp_is_editingteacher($courseid, $USER->id);
 
 $studentid = block_exacomp_get_studentid() ;
 if ($studentid == 0) {
@@ -135,10 +135,6 @@ if ($course_settings->nostudents) {
     $allCourseStudents = array();
 }
 
-
-//echo $courseid;
-//echo $selectedSubject;
-
 $competence_tree = block_exacomp_get_competence_tree($courseid,
                         $selectedSubject ? $selectedSubject->id : null,
                         $selectedTopic ? $selectedTopic->id : null,
@@ -152,7 +148,6 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,
                         false,
                         ($isTeacher) ? false : true,
                         false);
-
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector = "";

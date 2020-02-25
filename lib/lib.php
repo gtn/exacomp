@@ -982,6 +982,33 @@ function block_exacomp_get_subject_by_descriptorid($descriptorid) {
     return $DB->get_record('block_exacompsubjects', array('id' => $subjectid->subjid));
 }
 
+function block_exacomp_get_subject_by_example($exampleid) {
+    global $DB;
+    $resultSubject = null;
+    $descriptors = block_exacomp_get_descriptors_by_example($exampleid);
+    foreach ($descriptors as $descriptor) {
+        $full = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array("id" => $descriptor->id));
+        $sql = "select s.* 
+                  FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s, 
+                        {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, 
+                        {".BLOCK_EXACOMP_DB_TOPICS."} t
+		WHERE dt.descrid = ? 
+		        AND t.id = dt.topicid 
+		        AND t.subjid = s.id";
+
+        if ($full->parentid == 0){
+            $subject = $DB->get_record_sql($sql, array($full->id), IGNORE_MULTIPLE);
+        } else {
+            $subject = $DB->get_record_sql($sql, array($full->parentid), IGNORE_MULTIPLE);
+        }
+        if ($subject) {
+            $resultSubject = $subject;
+            break;
+        }
+    }
+    return $resultSubject;
+}
+
 /**
  * Gets all available subjects
  */
@@ -1071,24 +1098,11 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
  * @param int $exampleid
  */
 function block_exacomp_get_subjecttitle_by_example($exampleid) {
-	global $DB;
-
-	$descriptors = block_exacomp_get_descriptors_by_example($exampleid);
-	foreach ($descriptors as $descriptor) {
-		$full = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array("id" => $descriptor->id));
-		$sql = "select s.* FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_TOPICS."} t
-		WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
-
-		if($full->parentid == 0){
-		    $subject = $DB->get_record_sql($sql, array($full->id), IGNORE_MULTIPLE);
-		}else{
-		    $subject = $DB->get_record_sql($sql, array($full->parentid), IGNORE_MULTIPLE);
-		}
-
-		if ($subject) {
-		    return $subject->title;
-		}
-	}
+    $subject = block_exacomp_get_subject_by_example($exampleid);
+    if ($subject) {
+        return $subject->title;
+    }
+    return null;
 }
 
 /**
@@ -1627,8 +1641,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	}
-
-
+	
 
 	$sql = '
 		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
@@ -2004,7 +2017,7 @@ function block_exacomp_get_descriptors_by_niveau($courseid, $niveauid, $topicid 
  * @param int $topicid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true, $filteredDescriptors = null) {
 	global $DB;
 
 	if (!$showalldescriptors) {
@@ -2049,7 +2062,14 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors, 0, $showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
 	}
 
-
+	if ($filteredDescriptors && is_array($filteredDescriptors) && count($filteredDescriptors) > 0) {
+        $allDescriptors = array_filter($allDescriptors,
+                function ($key) use ($filteredDescriptors) {
+                    return in_array($key, $filteredDescriptors);
+                },
+                ARRAY_FILTER_USE_KEY
+        );
+    }
 
 	foreach ($allDescriptors as $descriptor) {
 
@@ -9470,7 +9490,7 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 				'role' => $role
 			]);
 
-            $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
+            $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0, false, block_exacomp_additional_grading($comptype));
 			if ($record) {
 				$changed = false;
 				if (array_key_exists('additionalinfo', $data) && $data['additionalinfo'] != $record->additionalinfo) {

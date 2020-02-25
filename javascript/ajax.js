@@ -682,25 +682,27 @@
 	// global var hack
 	i_want_my_reload = true;
 
-	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
+	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button], #grade_example_related input[type=submit]', function(event) {
 		if ($(this).is('.allow-submit')) return;
 		event.preventDefault();
 		var courseid = block_exacomp.get_param('courseid');
 
 		// only for crosssubjects
 		var crosssubjid = block_exacomp.get_param('crosssubjid');
+		var button_id = $(this).attr('id');
 
-		switch ($(this).attr('id')) {
+		switch (button_id) {
+		case 'btn_submit_example_related':
 		case 'btn_submit':
 			var reload = i_want_my_reload;
 
 			function all_done() {
 				if (reload) {
 					location.reload();
-					alert(M.util.get_string('save_changes_competence_evaluation','block_exacomp'));
+					alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
 				} else {
 					document.location.href='#';
-					alert(M.util.get_string('save_changes_competence_evaluation','block_exacomp'));
+					alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
 				}
 			}
 
@@ -753,16 +755,31 @@
 				multiQueryData.subjects_additional_grading = subjects_additional_grading;
 			}
 
-			if (!$.isEmptyObject(multiQueryData)) {
-				block_exacomp.call_ajax({
-					action: 'multi',
-					// send data as json, because php max input setting
-					data: JSON.stringify(multiQueryData)
-				}).done(function(msg) {
-					all_done();
-				});
-			} else {
-				all_done();
+			if (button_id == 'btn_submit') {
+                if (!$.isEmptyObject(multiQueryData)) {
+                    block_exacomp.call_ajax({
+                        action: 'multi',
+                        // send data as json, because php max input setting
+                        data: JSON.stringify(multiQueryData)
+                    }).done(function (msg) {
+                        all_done();
+                    });
+                } else {
+                    all_done();
+                }
+            } else {
+                if (!$.isEmptyObject(multiQueryData)) {
+                    block_exacomp.call_ajax({
+                        action: 'multi',
+                        // send data as json, because php max input setting
+                        data: JSON.stringify(multiQueryData)
+                    }).done(function (msg) {
+                        alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
+                        block_exacomp.popup_close()
+                    });
+                } else {
+                    block_exacomp.popup_close()
+                }
 			}
 
 			break;
@@ -853,10 +870,23 @@
 			popupheight = windowheight;
 		}
 		// open iframe from exa-url OR href attribute
+		var exaData = {};
+		$(this).each(function() {
+            $.each(this.attributes, function(i,a){
+            	attrName = a.name;
+            	if (attrName.indexOf('exa-data-') !== -1) {
+                    attrName = attrName.replace('exa-data-', '');
+            		exaData[attrName] = a.value;
+                }
+            })
+        })
 		block_exacomp.popup_iframe({
 			url: this.getAttribute('exa-url') || this.getAttribute('href'),
 			width: this.getAttribute('exa-width'),
 			height: popupheight,
+            title: this.getAttribute('exa-title') || 'Popup',
+            fromAjax: this.getAttribute('exa-fromAjax') || null,
+			exaData: exaData,
 		});
 	});
 

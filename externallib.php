@@ -6556,6 +6556,7 @@ class block_exacomp_external extends external_api {
 	    }
 	    $itemInformation = block_exacomp_get_current_item_for_example($userid, $exampleid);
 	    $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid));
+	    //throw new invalid_parameter_exception (print_r($exampleEvaluation, true));
 	    $data = array();
 	    $filedata = array();
         $studentfiles = array();

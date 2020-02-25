@@ -98,6 +98,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this->wrapperdivstart();
 	}
 
+	public function header_simple() {
+        return parent::header().$this->wrapperdivstart();
+    }
+
 	public function footer() {
 		return
 			$this->wrapperdivend().
@@ -737,8 +741,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html.html_writer::end_tag('form');
 	}
 
-	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $isEditingTeacher = true) {
+	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $isEditingTeacher = true, $forExampleRelated = false) {
 		global $DB, $USER, $PAGE, $COURSE;
+
+        $hideAllActionButtons = false;
+        if ($forExampleRelated) {
+            $hideAllActionButtons = true;
+        }
 
 		$table = new html_table();
 		$rows = array();
@@ -1204,8 +1213,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     //auch für alle schüler auf wochenplan legen
                                     if (!$this->is_edit_mode()) {
                                         if ($visible_example) { //prevent errors
+                                            // example pool
                                             $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
-
+                                            // add to pre-planning
                                             $titleCell->text .= html_writer::link("#",
                                                 html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title' => block_exacomp_get_string('pre_planning_storage'))),
                                                 array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $courseid));
@@ -1779,7 +1789,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 // 			echo "<br>";
 
 			$row_cnt = count($rows); // save row count to calc print_width
-			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher); //renders the topics
+			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher, false, $hideAllActionButtons); //renders the topics
 
 			if ($this->is_print_mode()) {
 				$row = $rows[$row_cnt];
@@ -1818,7 +1828,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		if (!$this->is_print_mode()) {
 			if ($rows && !$this->is_edit_mode() && $students) {
-				$buttons = html_writer::tag("input", "", array("id" => "btn_submit",
+			    $submitid = 'btn_submit';
+			    if ($forExampleRelated) {
+                    $submitid = 'btn_submit_example_related';
+                }
+				$buttons = html_writer::tag("input", "", array("id" => $submitid,
                                                                 "name" => "btn_submit",
                                                                 "type" => "submit",
                                                                 "class" => "btn btn-default",
@@ -1832,7 +1846,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html;
 	}
 
-	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $crosssubjid = 0, $isEditingTeacher = true, $forReport = false) {
+	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $crosssubjid = 0, $isEditingTeacher = true, $forReport = false, $hideAllActionButtons = false) {
 		global $DB, $USER, $COURSE;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 0 || $topicparam == BLOCK_EXACOMP_SHOW_ALL_TOPICS) {
@@ -2129,8 +2143,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 // 				    echo "<br>";
 // 				    echo "<br>";
 
-					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, false, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport);
-					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, true, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport);
+					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, false, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport, $hideAllActionButtons);
+					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, true, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport, $hideAllActionButtons);
 				}
 
 
@@ -2163,9 +2177,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true, $forReport = false) {
+	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true, $forReport = false, $hideAllActionButtons = false) {
 		global $USER, $COURSE, $DB;
-
 
 		$evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
 
@@ -2699,7 +2712,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                         $titleCell->text = html_writer::div(html_writer::tag('span', $exampletitle), '', ['title' => $title]);
 
-                        if (!$this->is_print_mode() && !$forReport) {
+                        if (!$this->is_print_mode() && !$forReport && !$hideAllActionButtons) {
 
                             if ($editmode) {
                                 //echo "HIER IST ER IM EDITMODE";
@@ -2821,9 +2834,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     //auch für alle schüler auf wochenplan legen
                                     if (!$this->is_edit_mode()) {
                                         if ($visible_example) { //prevent errors
+                                            // example pool button
                                             $titleCell->text .= $this->schedule_icon($example->id,
                                                     ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
-
+                                            // pre-planning button
                                             $titleCell->text .= html_writer::link("#",
                                                     html_writer::empty_tag('img',
                                                             array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
@@ -2831,6 +2845,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                                     array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule',
                                                             'exampleid' => $example->id, 'studentid' => 0,
                                                             'courseid' => $data->courseid));
+
                                         }
                                     }
                                     $titleCell->text .= $this->competence_association_icon($example->id, $data->courseid,
@@ -2842,7 +2857,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
                             $titleCell->text .= '</span>';
-
+                            // grade related descriptors and thier examples
+                            $relatedDescriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, ['exampid' => $example->id]);
+                            if (count($relatedDescriptors) > 1) { // only if this example is related more than one descriptor
+                                $titleCell->text .= html_writer::div(
+                                    $this->example_grade_related_icon($example->id, $data->courseid, array_keys($students))
+                                );
+                            }
                         }
                         $exampleRow->cells[] = $titleCell;
 
@@ -3842,6 +3863,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			"#",
 			$this->pix_icon("e/insert_date", block_exacomp_get_string("example_pool")),
 			array('class' => 'add-to-schedule', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
+	}
+
+	public function example_grade_related_icon($exampleid, $courseid, $students) {
+        $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
+        $icon = html_writer::empty_tag('img',
+                array('src' => new moodle_url('/blocks/exacomp/pix/related_wired.png'),
+                        'alt' => block_exacomp_get_string("grade_example_related"),
+                        'title' => block_exacomp_get_string("grade_example_related"),
+                        'width' => '16'));
+        $url = new moodle_url('/blocks/exacomp/ajax.php',
+                array(  'action' => 'grade_example_related_form',
+                        'sesskey' => sesskey(),
+                        'exampleid' => $exampleid,
+                        'courseid' => $courseid,
+                        'showevaluation' => $showevaluation,
+                        'students' => implode(',', $students)));
+        return html_writer::link("#",
+                $icon,
+                array(  'class' => 'add-to-schedule',
+                        'exa-type' => 'iframe-popup', //'grade-example-related',
+                        'exa-url' => $url->out(false),
+                        'exa-title' => block_exacomp_get_string("grade_example_related"),
+                        'exa-fromAjax' => 1,
+                        'exa-data-courseid' => $courseid, // next attributes need for ajax reqeust
+                        'exa-data-exampleid' => $exampleid,
+                        'exa-data-students' => implode(',', $students),
+                        'exa-data-showevaluation' => $showevaluation,
+                )
+        );
 	}
 
 	public function competence_association_icon($exampleid, $courseid, $editmode) {

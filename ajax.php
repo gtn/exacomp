@@ -444,8 +444,9 @@ switch($action){
 			
 			$tables = $output->subject_statistic_table ( $course->id, $stat['descriptor_evaluations'], 'Kompetenzen' );
 			$tables .= $output->subject_statistic_table ( $course->id, $stat['child_evaluations'], 'Teilkompetenzen' );
-			if(block_exacomp_course_has_examples($course->id))
-				$tables .= $output->subject_statistic_table ( $course->id, $stat['example_evaluations'], 'Lernmaterialien' );
+			if (block_exacomp_course_has_examples($course->id)) {
+                $tables .= $output->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
+            }
 			echo html_writer::tag ( 'div', $tables, array (
 					'class' => 'statistictables',
 					'exa-subjectid' => $subjectid,
@@ -455,6 +456,62 @@ switch($action){
 			exit;
 		}
 		break;
+    case 'grade_example_related_form' :
+        if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_EXAMPLE)) {
+            $content = '';
+            $courseid = required_param ( 'courseid', PARAM_INT );
+            $exampleid = required_param ( 'exampleid', PARAM_INT );
+            $students = required_param ('students', PARAM_RAW);
+            $output = block_exacomp_get_renderer ();
+            $relatedDescriptors = array_keys(block_exacomp_get_descriptors_by_example($exampleid));
+            $scheme = block_exacomp_get_grading_scheme($courseid);
+            $isEditingTeacher = block_exacomp_is_editingteacher($courseid, $USER->id);
+            $course_settings = block_exacomp_get_settings_by_course($courseid);
+            $subject = block_exacomp_get_subject_by_example($exampleid);
+            $competence_tree = block_exacomp_get_competence_tree($courseid,
+                    $subject->id,
+                    null,
+                    false, // show all descriptors
+                    BLOCK_EXACOMP_SHOW_ALL_NIVEAUS,
+                    true,
+                    $course_settings->filteredtaxonomies,
+                    true, // called from overview
+                    false,
+                    false,
+                    false,
+                    (block_exacomp_is_teacher()) ? false : true,
+                    true, // include childs
+                    $relatedDescriptors
+            );
+            $students = explode(',', $students);
+            $allStudents = block_exacomp_get_students_by_course($courseid);
+            // filter students
+            $studentsArr = array();
+            foreach ($students as $stId) {
+                // fill student with needed data
+                $student = $allStudents[$stId];
+                $student = block_exacomp_get_user_information_by_course($student, $courseid);
+                $studentsArr[$stId] = $student;
+            }
+            $content .= $output->competence_overview (
+                    $competence_tree,
+                    $courseid,
+                    $studentsArr,
+                    false,
+                    BLOCK_EXACOMP_ROLE_TEACHER,
+                    $scheme,
+                    false,
+                    0,
+                    $isEditingTeacher,
+                    true);
+            echo html_writer::tag('div', $content, array('id' => 'grade_example_related',
+                                                         'class' => 'grade_example_related'
+                                                        /*, 'style' => 'max-height:100%; overflow: scroll;'*/
+                                ));
+            //echo $content;
+        }
+        exit;
+        break;
 	default:
 		throw new moodle_exception('wrong action: '.$action);
 }

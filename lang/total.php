@@ -3072,5 +3072,9 @@ ihrem Raster',
     'pre_planning_materials_assigned' => [
         'Ausgewählte Materialien wurden den ausgewählten Schülern/Gruppen zugeteilt.',
         'Selected materials were assigned to the selected students / groups.'
-    ]
+    ],
+    'grade_example_related' => [
+        'Verbundene Kompetenzen und Materialien bewerten.',
+        'Assess related competences and descriptors'
+    ],
 ];

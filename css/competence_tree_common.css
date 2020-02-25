@@ -1,13 +1,16 @@
-#block_exacomp .percent-rating-text {
+#block_exacomp .percent-rating-text,
+#grade_example_related .percent-rating-text {
 	width: 30px;
 }
-#block_exacomp .percent-rating {
+#block_exacomp .percent-rating,
+#grade_example_related .percent-rating {
 	width: 40px;
 	cursor: pointer;
 	text-align: right;
 }
 
-#block_exacomp  .competencegrid_tooltip {
+#block_exacomp .competencegrid_tooltip,
+#grade_example_related .competencegrid_tooltip {
 	border: none;
     background-color: inherit;
     cursor: pointer;
