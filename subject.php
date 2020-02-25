@@ -124,7 +124,7 @@ class block_exacomp_local_item_form extends moodleform {
 $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
 if ($item) $form->set_data($item);
 
-if($formdata = $form->get_data()) {
+if ($formdata = $form->get_data()) {
 	
 	$new = new stdClass();
 	$new->title = $formdata->title;
@@ -138,7 +138,7 @@ if($formdata = $form->get_data()) {
 	    //Subject
 		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
-        $new->creatorid = g::$USER->id;
+        $new->creatorid = $USER->id;
 		
 		if(!$DB->record_exists(BLOCK_EXACOMP_DB_EDULEVELS, array('source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM))){
 		    $newEL = new stdClass();
@@ -166,7 +166,7 @@ if($formdata = $form->get_data()) {
 		$newTopic->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$newTopic->sourceid = 0;
 		$newTopic->subjid = $new->id;
-        $newTopic->creatorid = g::$USER->id;
+        $newTopic->creatorid = $USER->id;
 
 		$topicid = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $newTopic);
 		    
