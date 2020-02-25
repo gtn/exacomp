@@ -2860,7 +2860,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $titleCell->text .= '</span>';
                             // grade related descriptors and thier examples
                             $relatedDescriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, ['exampid' => $example->id]);
-                            if (count($relatedDescriptors) > 1) { // only if this example is related more than one descriptor
+                            if (count($relatedDescriptors) > 1 && !$this->is_edit_mode()) { // only if this example is related more than one descriptor
                                 $titleCell->text .= html_writer::div(
                                     $this->example_grade_related_icon($example->id, $data->courseid, array_keys($students))
                                 );
