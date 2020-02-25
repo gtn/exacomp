@@ -188,8 +188,18 @@ switch($action){
 				'niveauid' => PARAM_INT,
 			)));
 
-			foreach($examples as $example){
-				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $example->value, $example->niveauid);
+			foreach ($examples as $example){
+			    if (block_exacomp_get_assessment_example_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+			        // use 'additionalinfo' field for grading
+                    // and number format to value
+                    block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid,
+                            ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, number_format($example->value),
+                            $example->niveauid, str_replace(',', '.', $example->value));
+                } else {
+                    block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid,
+                            ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $example->value,
+                            $example->niveauid);
+                }
 			}
             if ($isTeacher) {
                 block_exacomp_etheme_autograde_examples_tree($courseid, $examples);

@@ -2712,6 +2712,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                         $titleCell->text = html_writer::div(html_writer::tag('span', $exampletitle), '', ['title' => $title]);
 
+                        // example buttons
                         if (!$this->is_print_mode() && !$forReport && !$hideAllActionButtons) {
 
                             if ($editmode) {
@@ -2974,8 +2975,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                                 ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
                                         break;
                                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE: // Input.
-                                        $example_params['value'] = isset($student->examples->teacher[$example->id]) ?
-                                                block_exacomp_format_eval_value($student->examples->teacher[$example->id]) :
+                                        //$example_params['value'] = isset($student->examples->teacher[$example->id]) ?
+                                        //        block_exacomp_format_eval_value($student->examples->teacher[$example->id]) :
+                                        //        ""; // TODO: may be $student->examples->teacher_additional_grading?
+                                        $example_params['value'] = isset($student->examples->teacher_additional_grading[$example->id]) ?
+                                                block_exacomp_format_eval_value($student->examples->teacher_additional_grading[$example->id]) :
                                                 ""; // TODO: may be $student->examples->teacher_additional_grading?
                                         $teacher_evaluation_cell->text =
                                                 '<span class="percent-rating">'.html_writer::empty_tag('input', $example_params).

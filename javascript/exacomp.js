@@ -207,7 +207,7 @@ var formunsaved = false;
 
 		popup_close: function () {
 			var parent = window.opener || window.parent;
-console.log('close popup');
+
 			// close inline popup
 			if (parent.block_exacomp.last_popup) {
 				parent.block_exacomp.last_popup.hide();

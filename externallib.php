@@ -8916,7 +8916,6 @@ class block_exacomp_external extends external_api {
 				if (!array_key_exists($example->id, $examples_return)) {
 					$examples_return[$example->id] = $example_return;
 				}
-
 			}
 		}
 
