@@ -20,8 +20,11 @@
 use block_exacomp\data_importer;
 
 require __DIR__.'/inc.php';
-require_once __DIR__.'/backup/test_backup.php';
-require_once __DIR__.'/backup/test_restore.php';
+// temporary disabled (there are errors)
+if (11 == 22) {
+    require_once __DIR__.'/backup/test_backup.php';
+    require_once __DIR__.'/backup/test_restore.php';
+}
 require_once __DIR__.'/classes/data.php';
 
 global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
