@@ -293,7 +293,7 @@ var formunsaved = false;
 						});
 					});
 
-					$table.find('tr').each(function(){
+					/*$table.find('tr').each(function(){
 						var rowColSpan = 0;
 						$(this).find('td,tr').each(function(i, col){
 							if (rowColSpan < options.title_colspan) {
@@ -308,7 +308,7 @@ var formunsaved = false;
 
 							rowColSpan += this.colSpan;
 						});
-					});
+					});*/
 
 
 

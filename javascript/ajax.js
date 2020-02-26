@@ -880,6 +880,17 @@
                 }
             })
         })
+		// concrete unique cases
+		if ($(this).hasClass('example-related-button')) { // example related competencies
+			// get shown students (for students pagebrowser)
+			var shownStudents = [];
+			$('table.competence-overview .exabis_comp_top_studentcol:visible').each(function () {
+				var stid = $(this).attr('data-studentid');
+                shownStudents.indexOf(stid) === -1 ? shownStudents.push(stid) : null;
+            })
+			exaData.students = shownStudents.join(',');
+		}
+
 		block_exacomp.popup_iframe({
 			url: this.getAttribute('exa-url') || this.getAttribute('href'),
 			width: this.getAttribute('exa-width'),

@@ -477,9 +477,9 @@ switch($action){
             $scheme = block_exacomp_get_grading_scheme($courseid);
             $isEditingTeacher = block_exacomp_is_editingteacher($courseid, $USER->id);
             $course_settings = block_exacomp_get_settings_by_course($courseid);
-            $subject = block_exacomp_get_subject_by_example($exampleid);
+            $subjects = block_exacomp_get_subjects_by_example($exampleid);
             $competence_tree = block_exacomp_get_competence_tree($courseid,
-                    $subject->id,
+                    $subjects,
                     null,
                     false, // show all descriptors
                     BLOCK_EXACOMP_SHOW_ALL_NIVEAUS,

@@ -1009,6 +1009,28 @@ function block_exacomp_get_subject_by_example($exampleid) {
     return $resultSubject;
 }
 
+// if the example is related to a few subjects
+// @return array ids
+function block_exacomp_get_subjects_by_example($exampleid) {
+    global $DB;
+    $resultSubjects = [];
+    $descriptors = block_exacomp_get_descriptors_by_example($exampleid);
+    $sql = ' SELECT DISTINCT s.id, s.id as tmp 
+                FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
+                    JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
+                    JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dtmm ON dtmm.topicid = t.id
+                    JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} demm ON demm.descrid = dtmm.descrid
+                WHERE demm.exampid = ?
+    ';
+    $fullList = $DB->get_records_sql($sql, array($exampleid));
+    foreach ($fullList as $s) {
+        if (!in_array($s->id, $resultSubjects)) {
+            $resultSubjects[] = $s->id;
+        }
+    }
+    return $resultSubjects;
+}
+
 /**
  * Gets all available subjects
  */
@@ -1116,7 +1138,7 @@ function block_exacomp_get_topics_by_course($courseid, $showalldescriptors = fal
 /**
  * Gets all topics from a particular subject
  * @param int $courseid
- * @param int $subjectid
+ * @param int|array $subjectid
  * @param bool $showalldescriptors
  * @param bool $showonlyvisible
  * @return array
@@ -1131,10 +1153,17 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	}
 
+    $subjectSqlON = '';
+	if (is_array($subjectid)) {
+        $subjectSqlON = ' AND t.subjid IN ('.implode(',', $subjectid).') ';
+    } elseif ($subjectid > 0) {
+        $subjectSqlON = ' AND t.subjid = ? ';
+    }
+
 	$sql = '
 		SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
-		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ' : '').'
+		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.$subjectSqlON.'
 		JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
 		-- left join, because courseid=0 has no topicvisibility!
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=ct.courseid'
@@ -1149,7 +1178,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
 	$params = array($courseid);
-	if ($subjectid > 0) {
+	if (!is_array($subjectid) && $subjectid > 0) {
 		$params[] = $subjectid;
 	}
 
@@ -1343,15 +1372,15 @@ function block_exacomp_sort_items(&$items, $sortings) {
 function block_exacomp_get_all_topics($subjectid = null, $showonlyvisible = false) {
 	global $DB;
 
-	$topics = $DB->get_records_sql('
-			SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
-			FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
-			JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
-			'.($subjectid == null ? '' : '
-					-- only show active ones
-					WHERE s.id = ?
-					').'
-			', array($subjectid));
+	$sql = 'SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+			  FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
+			JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id ';
+	if (is_array($subjectid) && count($subjectid) > 0) {
+        $sql .= ' WHERE s.id IN ('.implode(',', $subjectid).') ';
+	} elseif ($subjectid !== null) {
+        $sql .= ' WHERE s.id = ? ';
+    }
+	$topics = $DB->get_records_sql($sql, array($subjectid));
 
 	return block_exacomp_sort_items($topics, ['subj_' => BLOCK_EXACOMP_DB_SUBJECTS, '' => BLOCK_EXACOMP_DB_TOPICS]);
 }
@@ -2034,7 +2063,12 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	// 1. GET SUBJECTS
 	if ($courseid == 0) {
 		$allSubjects = block_exacomp_get_all_subjects();
-	} elseif ($subjectid) {
+	} elseif (is_array($subjectid)) {
+        $allSubjects = [];
+	    foreach ($subjectid as $sid) {
+            $allSubjects[$sid] = \block_exacomp\subject::get($sid);
+        }
+    } elseif ($subjectid) {
 		$allSubjects = array($subjectid => \block_exacomp\subject::get($subjectid));
 	} else {
 		$allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);

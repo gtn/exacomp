@@ -825,6 +825,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
 
 				$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-'.$columnGroup;
+                $studentCell->attributes['data-studentid'] = $student->id;
 				$studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
 				$studentCell->colspan = $studentsColspan;
 				$studentCell->text = fullname($student);
@@ -859,8 +860,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$firstCol = new html_table_cell();
 					$firstCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-'.$columnGroup;
+                    $firstCol->attributes['data-studentid'] = $student->id;
 					$secCol = new html_table_cell();
 					$secCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-'.$columnGroup;
+                    $secCol->attributes['data-studentid'] = $student->id;
 
 					if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 						$firstCol->text = block_exacomp_get_string('studentshortcut');
@@ -2861,8 +2864,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             // grade related descriptors and thier examples
                             $relatedDescriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, ['exampid' => $example->id]);
                             if (count($relatedDescriptors) > 1 && !$this->is_edit_mode()) { // only if this example is related more than one descriptor
+                                $studentList = array_map(function ($s) {return $s->id;}, $students);
                                 $titleCell->text .= html_writer::div(
-                                    $this->example_grade_related_icon($example->id, $data->courseid, array_keys($students))
+                                    $this->example_grade_related_icon($example->id, $data->courseid, $studentList)
                                 );
                             }
                         }
@@ -3885,7 +3889,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'students' => implode(',', $students)));
         return html_writer::link("#",
                 $icon,
-                array(  'class' => 'add-to-schedule',
+                array(  'class' => 'example-related-button',
                         'exa-type' => 'iframe-popup', //'grade-example-related',
                         'exa-url' => $url->out(false),
                         'exa-title' => block_exacomp_get_string("grade_example_related"),
