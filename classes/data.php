@@ -829,6 +829,14 @@ class data_exporter extends data {
 				$dbItem->source = null;
 				$dbItem->sourceid = null;
 			}
+
+			// if example is related to activity, but has not a title of activity. Trying to add it
+			if ($dbItem->activityid > 0 && !$dbItem->activitytitle) {
+                $module = get_coursemodule_from_id(null, $dbItem->activityid);
+                if ($module) {
+                    $dbItem->activitytitle = $module->name;
+                }
+            }
 			
 			// temporary
 			global $DB;
@@ -1687,6 +1695,7 @@ class data_importer extends data {
 			        self::insert_example($example, 0, $course_template);
                 }
 			}
+
 			// update eTheMa parents
             if (count(self::$updateLaterBySources) > 0) {
                 foreach (self::$updateLaterBySources as $tablename => $tabledata) {
@@ -1734,13 +1743,10 @@ class data_importer extends data {
 
 		if( $course_template != 0) {
 
-		    
-		    for($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
+		    for ($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
 		        $activityid = self::get_new_activity_id($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][3][$i], $course_template);
 		        block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples'][2][$i]);
 		    }
-			
-
 
 		      @rmdir($CFG->tempdir . '/backup/activities');
 		      unlink($CFG->tempdir . '/backup/data.xml');
@@ -2285,7 +2291,6 @@ class data_importer extends data {
 		    if($course_template != 0){
 		        self::insert_activity($xmlItem, $course_template, $item->id);
 		    }
-		    
 		}
 
 		self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_EXAMPTAX, 'exampleid', $item->id);
@@ -2623,9 +2628,9 @@ class data_importer extends data {
 	    global $CFG, $USER;
 	    $example = self::parse_xml_item($xmlItem);
 
-
 	    if ($example->activityid != 0) {
-	        if( $key = array_search($example->activityid, $GLOBALS['activexamples'][0])){
+            $key = array_search($example->activityid, $GLOBALS['activexamples'][0]);
+            if ($key !== false) { // is possible, that found key is '0'
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
 	            array_push($GLOBALS['activexamples'][1], $example->activitytitle); //array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
@@ -2633,7 +2638,9 @@ class data_importer extends data {
 	        } else {
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
 	            @rename($CFG->tempdir . '/backup/activities/activity'.$example->activityid, $CFG->tempdir . '/backup/activity'.$example->activityid);
-	            moodle_restore('activity'.$example->activityid, $course_template, $USER->id);
+	            //if (file_exists($CFG->tempdir . '/backup/activity'.$example->activityid)) {
+                    moodle_restore('activity'.$example->activityid, $course_template, $USER->id);
+                //}
 	            array_push($GLOBALS['activexamples'][1], $example->activitytitle);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
@@ -2647,7 +2654,7 @@ class data_importer extends data {
 	public static function get_new_activity_id($activity_title, $activity_type, $course_template){
 	    global $DB;
 	    $type = $DB->get_field('modules', 'name' , array('id' => $activity_type));
- 	    $instance= $DB->get_field($type, 'MAX(id)' , array('name' => $activity_title, 'course' => $course_template));
+ 	    $instance = $DB->get_field($type, 'MAX(id)' , array('name' => $activity_title, 'course' => $course_template));
  	    $id = $DB->get_field('course_modules', 'id', array('instance' => intval($instance), 'deletioninprogress' => 0, 'module' => $activity_type));
 	    return $id;
 	}

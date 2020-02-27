@@ -4031,8 +4031,9 @@ function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activi
 /**
  *
  * Assign one example to one activity
- * @param unknown_type $activityid
- * @param unknown_type $exampleid
+ * @param integer $activityid
+ * @param integer $exampleid
+ * @param string $activitytitle
  */
 function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytitle = null) {
     global $DB, $COURSE;
@@ -4043,7 +4044,7 @@ function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytit
         $instance = get_coursemodule_from_id($modulename->name, $activityid);
         $activitytitle = $instance->name;
     }
-    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $exampleid,"activityid" => $activityid, "activitytitle" => $activitytitle));
+    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $exampleid, "activityid" => $activityid, "activitytitle" => $activitytitle));
 }
 
 /**
