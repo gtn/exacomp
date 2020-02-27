@@ -1043,9 +1043,6 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_verbose_options_short_description'),
         block_exacomp_get_string('settings_assessment_verbose_options_short_default'),
         PARAM_TEXT));
-$settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/useprofoundness',
-        block_exacomp_get_string('useprofoundness'),
-        '', 0));
 $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/assessment_SelfEval_useVerbose',
         block_exacomp_get_string('assessment_SelfEval_useVerbose'),
         '', 0));
@@ -1054,7 +1051,9 @@ $settings->add(new block_exacomp_selfevaluation_configtable('exacomp/assessment_
 $settings->add(new admin_setting_configcheckbox('exacomp/example_autograding',
         block_exacomp_get_string('settings_example_autograding'),
         block_exacomp_get_string('settings_example_autograding_description'), 0));
-
+$settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/useprofoundness',
+        block_exacomp_get_string('useprofoundness'),
+        '', 0));
 
 // Darstellung (visualisation).
 $settings->add(new admin_setting_heading('exacomp/heading_visualisation',

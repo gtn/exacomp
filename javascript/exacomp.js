@@ -171,13 +171,52 @@ var formunsaved = false;
 			// preload M.core.dialogue
 			Y.use('moodle-core-notification-dialogue', function() {
 				if (config.fromAjax) {
+					if ($(block_exacomp.last_popup).length) {
+                        block_exacomp.last_popup.hide();
+					}
+					var canvasid = 'exacomp_spinner' + Math.floor(Date.now() / 1000);
+					// add spinner
+                    var blockContent = '<div width="100%" height="100%" style="width: 100%; height:100%; display: table;">' +
+						'<div style="text-align: center; display: table-cell; vertical-align: middle;">' +
+							'<canvas id="' + canvasid + '" height="120" width="120" style="background: transparent;" />' +
+						'</div>' +
+					'</div>';
+                    block_exacomp.last_popup = popupInit(config, blockContent);
+                    var canvas = document.getElementById(canvasid);
+                    var context = canvas.getContext('2d');
+                    var start = new Date();
+                    var lines = 16,
+                        cW = context.canvas.width,
+                        cH = context.canvas.height;
+
+                    var draw = function() {
+                        var rotation = parseInt(((new Date() - start) / 1000) * lines) / lines;
+                        context.save();
+                        context.clearRect(0, 0, cW, cH);
+                        context.translate(cW / 2, cH / 2);
+                        context.rotate(Math.PI * 2 * rotation);
+                        for (var i = 0; i < lines; i++) {
+
+                            context.beginPath();
+                            context.rotate(Math.PI * 2 / lines);
+                            context.moveTo(cW / 10, 0);
+                            context.lineTo(cW / 4, 0);
+                            context.lineWidth = cW / 30;
+                            context.strokeStyle = "rgba(150,150,150," + i / lines + ")";
+                            context.stroke();
+                        }
+                        context.restore();
+                    };
+                    window.setInterval(draw, 1000 / 30);
+
                     var ajaxRequest = '';
                     block_exacomp.call_ajax(Object.assign({
                         action: 'grade_example_related_form'},
                         config.exaData
 					)).then(function(msg) {
                         ajaxRequest = msg;
-                        // console.log(msg);
+                        block_exacomp.last_popup.hide();
+                        canvas.remove();
                         var blockContent = '<div width="100%" height="100%" style="max-height:100%; overflow: scroll;">' + ajaxRequest + '</div>';
                         block_exacomp.last_popup = popupInit(config, blockContent);
                     });
