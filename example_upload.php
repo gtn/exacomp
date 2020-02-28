@@ -119,10 +119,10 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	}
     }
 
-    if($descrid != -1){
+    if ($descrid != -1) {
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
             array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
-    }else if($crosssubjid != -1){
+    } elseif ($crosssubjid != -1){
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
             array("crosssubjid" => $crosssubjid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
     }
@@ -134,11 +134,14 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	$newExample->description = $formdata->description;
         $newExample->timeframe = $formdata->timeframe;
     	$newExample->creatorid = $USER->id;
-    	if (!empty($formdata->externalurl))
-    		$newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
-    	else
-    		$newExample->externalurl = null;
-    	$newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+    	if (!empty($formdata->externalurl)) {
+            $newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == true) ? $formdata->externalurl : "http://".$formdata->externalurl;
+        } else {
+            $newExample->externalurl = null;
+        }
+        if ($formdata->exampleid == 0) { // for new examples/ not for updated
+            $newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+        }
 
     	$newExample->externaltask = '';
     	if (!empty($formdata->assignment)) {

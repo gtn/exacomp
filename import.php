@@ -79,8 +79,8 @@ class generalxml_upload_form extends \moodleform {
 		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
 		$this->_form->_attributes['class'] = "mform exacomp_import";
 		$check = \block_exacomp\data::has_data();
-
-		if ($importtype == 'custom') {
+		
+        if ($importtype == 'custom') {
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));
 		} elseif ($importtype == 'scheduler') {
             $mform->addElement('header', 'comment', block_exacomp_get_string("scheduler_import_settings"));
@@ -92,7 +92,7 @@ class generalxml_upload_form extends \moodleform {
         if ($importtype != 'scheduler') {
             $mform->addElement('filepicker', 'file', block_exacomp_get_string("file"), null);
             $mform->addRule('file', null, 'required', null, 'client');
-            $mform->addElement('static', '','' ,block_exacomp_get_string("dest_course"));
+            $mform->addElement('static', 'destination_text', '' ,block_exacomp_get_string("dest_course"));
             $mform->addElement('select', 'template', block_exacomp_get_string("choosecoursetemplate"), ['' => ''] + get_all_courses_key_value());
         }
 
@@ -219,8 +219,40 @@ class generalxml_upload_form extends \moodleform {
                     $mform->addElement('html', '</div');
                     break;
             }
-
-        }
+            
+            // hide general fields if it is a step of importing
+            if (@$data['result']) {
+                // file
+                $fileElement = $mform->getElement('file');
+                $currFileValue = $fileElement->_attributes['value'];
+                $mform->removeElement('file');
+                $mform->addElement('hidden', 'file');
+                $mform->setType('file', PARAM_INT);
+                $mform->setDefault('file', $currFileValue);
+                // destination_text
+                $mform->removeElement('destination_text');
+                // course template
+                $templateElement = $mform->getElement('template');
+                $values = @$templateElement->_values;
+                if ($values) {
+                    $currTemplateValue = reset($values); // only one template!
+                } else {
+                    $currTemplateValue = '';
+                }
+                $mform->removeElement('template');
+                $mform->addElement('hidden', 'template');
+                $mform->setType('template', PARAM_INT);
+                $mform->setDefault('template', $currTemplateValue);
+                // zip password
+                $passwordElement = $mform->getElement('password');
+                $currPasswordValue = $passwordElement->_attributes['value'];
+                $mform->removeElement('password');
+                $mform->addElement('hidden', 'password');
+                $mform->setType('password', PARAM_TEXT);
+                $mform->setDefault('password', $currPasswordValue);
+            }
+        }        
+        
         if ($forSchedulerTask) {
             $this->add_action_buttons(false, block_exacomp_get_string('save')); // settings of scheduler importing
         } else {

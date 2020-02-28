@@ -2865,9 +2865,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $relatedDescriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, ['exampid' => $example->id]);
                             if (count($relatedDescriptors) > 1 && !$this->is_edit_mode()) { // only if this example is related more than one descriptor
                                 $studentList = array_map(function ($s) {return $s->id;}, $students);
-                                $titleCell->text .= html_writer::div(
-                                    $this->example_grade_related_icon($example->id, $data->courseid, $studentList)
-                                );
+                                $titleCell->text .= $this->example_grade_related_icon($example->id, $data->courseid, $studentList);
                             }
                         }
                         $exampleRow->cells[] = $titleCell;

@@ -1076,7 +1076,9 @@ class data_exporter extends data {
 		foreach ($dbItems as $dbItem) {
 			$xmlItem = $xmlItems->addChild('niveau');
 			self::assign_source($xmlItem, $dbItem);
-			$xmlItem->addChildWithCDATAIfValue('subtitle', $dbItem->get_subtitle());
+			//$subtitle = $dbItem->get_subtitle();
+            $subtitle = $dbItem->subtitle;
+			$xmlItem->addChildWithCDATAIfValue('subtitle', $subtitle);
 		}
 	}
 
@@ -2275,7 +2277,9 @@ class data_importer extends data {
 
 		// if local example, move to source teacher
 		if (!$item->source) {
-			g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLES, array('source' => BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null), array("id"=>$item->id));
+			g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLES,
+                    array('source' => BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null),
+                    array("id"=>$item->id));
 		}
 
 		// has to be called after inserting the example, because the id is needed!
