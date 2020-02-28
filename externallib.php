@@ -7085,7 +7085,8 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 
-		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp,true);
+		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp, true);
+        //throw new invalid_parameter_exception (print_r($statistics));
 
 		$statistics_return = array();
 		foreach ($statistics as $key => $statistic) {
@@ -7104,7 +7105,14 @@ class block_exacomp_external extends external_api {
                 foreach ($niveaustat as $evalvalue => $sum) {
                     $eval = new stdClass();
                     if(!($evalvalue === "")){ //when the grading has existed but is reset to none, there is "" saved... DONT include these
-                        $eval->value = $evalvalue;
+                        switch (block_exacomp_get_assessment_comp_scheme()) {
+                            case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                                $eval->value = round($evalvalue, 0, PHP_ROUND_HALF_DOWN);
+                                break;
+                            default:
+                                $eval->value = round($evalvalue);
+                        }
+                        //$eval->value = $evalvalue;
                         $eval->sum = $sum;
                         $evaluations[] = $eval;
                     }
@@ -7115,6 +7123,7 @@ class block_exacomp_external extends external_api {
                 $return[$niveauid] = $niveau;
 			}
 			$statistics_return[$key]["niveaus"] = $return;
+            //throw new invalid_parameter_exception (print_r($return));
 		}
 
 		$statistics_return['descriptor_evaluations']['descriptorsToGain'] = $statistics["descriptorsToGain"];
