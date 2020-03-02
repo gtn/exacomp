@@ -8040,30 +8040,33 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		? $user->subjects->timestamp_teacher[$subject->id] : '';
 
 	$table_content->subject_title = $subject->title;
-	foreach ($table_header as $key => $niveau) {
+
+    foreach ($table_header as $key => $niveau) {
+        $niveaukey = /*$niveau->numb.'-'.$niveau->sorting.'-'.*/$niveau->title;
 		if (isset($niveau->span) && $niveau->span == 1) {
 			unset($table_header[$key]);
 		} elseif ($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
 			foreach ($table_content->content as $row) {
 				if ($row->span != 1) {
-					if (!array_key_exists($niveau->title, $row->niveaus)) { //Hier werden die Total bewertungen von den Topics Ã¼berschrieben!
-						$row->niveaus[$niveau->title] = new stdClass();
-						$row->niveaus[$niveau->title]->eval = '';
-						$row->niveaus[$niveau->title]->evalniveau = '';
-						$row->niveaus[$niveau->title]->evalniveauid = ($use_evalniveau) ? -1 : 0;
-						$row->niveaus[$niveau->title]->show = false;
-						$row->niveaus[$niveau->title]->visible = true;
-						$row->niveaus[$niveau->title]->timestamp = 0;
+					if (!array_key_exists($niveaukey, $row->niveaus)) { //Hier werden die Total bewertungen von den Topics Ã¼berschrieben!
+						$row->niveaus[$niveaukey] = new stdClass();
+						$row->niveaus[$niveaukey]->eval = '';
+						$row->niveaus[$niveaukey]->evalniveau = '';
+						$row->niveaus[$niveaukey]->evalniveauid = ($use_evalniveau) ? -1 : 0;
+						$row->niveaus[$niveaukey]->show = false;
+						$row->niveaus[$niveaukey]->visible = true;
+						$row->niveaus[$niveaukey]->timestamp = 0;
 					}
 				}
 			}
 		}
 	}
 
-	foreach ($table_content->content as $row) {
-		#sort crosssub entries
+    // niveaus sorting: numb, sorting
+    // sorted in previous function. TODO: right?
+	/* foreach ($table_content->content as $row) {
 		ksort($row->niveaus);
-	}
+	} */
 
 	return array($course_subjects, $table_column, $table_header, $table_content);
 }

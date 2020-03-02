@@ -6997,7 +6997,6 @@ class block_exacomp_external extends external_api {
         $newSubjectData = block_exacomp_new_subject_data_for_competence_profile($globalTableData);
         if (count($newSubjectData)) {
             foreach ($newSubjectData as $sId => $subjectData) {
-                //throw new invalid_parameter_exception(print_r($subjectData, true));
                 $subjectinfo['globalcompetences'][] = block_exacomp_get_competence_profile_grid_for_ws(
                         null,
                         $userid,
