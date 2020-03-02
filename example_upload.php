@@ -91,40 +91,24 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     $example_activities = array();
 
     if ($csettings->uses_activities) {
-    	$example_activities[0] = block_exacomp_get_string('none');
-
-    	$modinfo = get_fast_modinfo($COURSE->id);
-    	$modules = $modinfo->get_cms();
-    	foreach($modules as $mod){
-
-    		$module = block_exacomp_get_coursemodule($mod);
-
-    		//Skip Nachrichtenforum
-    		if(strcmp($module->name, block_exacomp_get_string('namenews','mod_forum'))==0){
-    			continue;
-    		}
-
-    		$module_type = $DB->get_record('course_modules', array('id'=>$module->id));
-
-    		$forum = $DB->get_record('modules', array('name'=>'forum'));
-    		//skip News forum in any language, supported_modules[1] == forum
-    		if($module_type->module == $forum->id){
-    			$forum = $DB->get_record('forum', array('id'=>$module->instance));
-    			if(strcmp($forum->type, 'news')==0){
-    				continue;
-    			}
-    		}
-
-    		$example_activities[$module->id] = $module->name;
-    	}
+        $example_activities = block_exacomp_list_possible_activities_for_example($COURSE->id);
     }
 
     if ($descrid != -1) {
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
-            array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
+            array("descrid" => $descrid,
+                    "taxonomies" => $taxonomies,
+                    "tree" => $tree,
+                    "topicid" => $topicid,
+                    "exampleid" => $exampleid,
+                    "uses_activities" => $csettings->uses_activities,
+                    "activities" => $example_activities));
     } elseif ($crosssubjid != -1){
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
-            array("crosssubjid" => $crosssubjid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
+            array("crosssubjid" => $crosssubjid,
+                    "exampleid" => $exampleid,
+                    "uses_activities" => $csettings->uses_activities,
+                    "activities" => $example_activities));
     }
 
     if ($formdata = $form->get_data()) {

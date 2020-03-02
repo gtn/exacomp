@@ -7317,13 +7317,14 @@ function block_exacomp_empty_pre_planning_storage($courseid) {
 function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 	global $DB;
 
-	$sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue FROM {block_exacompexamples} e
-			JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
-			JOIN {block_exaportitem} i ON ie.itemid = i.id
-			WHERE e.id = ?
-			AND i.userid = ?
-			ORDER BY ie.timecreated DESC
-			LIMIT 1';
+	$sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue 
+              FROM {block_exacompexamples} e
+			    JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
+			    JOIN {block_exaportitem} i ON ie.itemid = i.id
+			  WHERE e.id = ?
+			      AND i.userid = ?
+			  ORDER BY ie.timecreated DESC
+			  LIMIT 1';
 
 	return $DB->get_record_sql($sql, array($exampleid, $userid));
 }
@@ -11824,4 +11825,35 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
         }
     }
     return $newSubjectData;
+}
+
+function block_exacomp_list_possible_activities_for_example($courseid) {
+    global $DB;
+    $example_activities = array(
+            0 => block_exacomp_get_string('none')
+    );
+
+    $modinfo = get_fast_modinfo($courseid);
+    $modules = $modinfo->get_cms();
+    foreach ($modules as $mod) {
+        $module = block_exacomp_get_coursemodule($mod);
+        if ($module->deletioninprogress) {
+            continue;
+        }
+        // Skip Nachrichtenforum
+        if (strcmp($module->name, block_exacomp_get_string('namenews', 'mod_forum')) == 0) {
+            continue;
+        }
+        $module_type = $DB->get_record('course_modules', array('id' => $module->id));
+        $forum = $DB->get_record('modules', array('name' => 'forum'));
+        // skip News forum in any language, supported_modules[1] == forum
+        if ($module_type->module == $forum->id){
+            $forum = $DB->get_record('forum', array('id' => $module->instance));
+            if (strcmp($forum->type, 'news') == 0){
+                continue;
+            }
+        }
+        $example_activities[$module->id] = $module->name;
+    }
+    return $example_activities;
 }

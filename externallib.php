@@ -1625,6 +1625,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
 		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
+		    'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
 		));
 	}
 
@@ -1635,8 +1636,8 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return array
 	 */
-	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1) {
-		global $DB, $USER;
+	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0) {
+		global $DB, $USER, $CFG;
 
 		if (empty ($name)) {
 			throw new invalid_parameter_exception ('Parameter can not be empty');
@@ -1655,6 +1656,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => $courseid,
 			'filename' => $filename,
 		    'crosssubjectid' => $crosssubjectid,
+		    'activityid' => $activityid,
 		));
 
         //Update material that already exists
@@ -1692,11 +1694,51 @@ class block_exacomp_external extends external_api {
             $example->blocking_event = 2;
             $example->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_USER_FREE_ELEMENT;
         }
+        $example->activityid = $activityid;
+        $example_icons = array();
+        if ($exampleid != -1) {
+            $ex = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, ['id' => $exampleid]);
+            if ($ex->example_icon) {
+                $example_icons = unserialize($ex->example_icon);
+            }
+        }
+        if ($activityid) {
+            if ($module = get_coursemodule_from_id(null, $activityid)) {
+                // externaltask
+                $example->externaltask = block_exacomp_get_activityurl($module)->out(false);
+                // get icon path for activity and save it to database
+                $mod_info = get_fast_modinfo($courseid);
+                if (array_key_exists($module->id, $mod_info->cms)) {
+                    $cm = $mod_info->cms[$module->id];
+                    $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
+                }
+                // activitylink
+                $activitylink = block_exacomp_get_activityurl($module)->out(false);
+                $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+                $example->activitylink = $activitylink;
+            }
+            $example->activitylink = '';
+            $example->activitytitle = '';
+            $example->courseid = $courseid;
+        } else {
+            $example->activitylink = '';
+            $example->activitytitle = '';
+            $example->courseid = 0;
+            if (array_key_exists('externaltask', $example_icons)) {
+                unset($example_icons['externaltask']);
+            }
+        }
 
-		if($exampleid != -1){
+        if (count($example_icons)) {
+            $example->example_icon = serialize($example_icons);
+        } else {
+            $example->example_icon = '';
+        }
+
+		if ($exampleid != -1){
             $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
             $id = $exampleid;
-        }else{
+        } else {
             $example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
         }
 
@@ -6344,6 +6386,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 
 		$descriptor_return = static::get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid);
+        $descriptor_return->activitylist = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
 
 		return $descriptor_return;
 	}
@@ -6444,8 +6487,8 @@ class block_exacomp_external extends external_api {
 			    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 			    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
                 'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
-                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
-                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
+                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
+                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
 			))),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -6463,8 +6506,9 @@ class block_exacomp_external extends external_api {
 			)),
 			'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
-            'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text',VALUE_OPTIONAL),
-            'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text',VALUE_OPTIONAL),
+            'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
+            'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
+            'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
 		));
 	}
 
@@ -6515,7 +6559,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
-	 * Returns desription of method return values
+	 * Returns description of method return values
 	 *
 	 * @return external_multiple_structure
 	 */
@@ -6544,6 +6588,8 @@ class block_exacomp_external extends external_api {
                 'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
                 'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
             ))),
+            'activityid' => new external_value (PARAM_INT, 'activityid'),
+            'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list'),
         ));
 	}
 
@@ -6662,6 +6708,9 @@ class block_exacomp_external extends external_api {
 	    } else {
 	        $data['resubmission'] = false;
 	    }
+	    // add activity data
+	    $data['activityid'] = ($example && @$example->activityid ? $example->activityid : 0);
+	    $data['activitylist'] = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
 
 	    return $data;
 	}

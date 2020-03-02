@@ -2929,7 +2929,14 @@ Returns:<pre>{
     "visible": "int null (visibility of example in current context)",
     "used": "int null (used in current context)",
     "globalgradings": "raw null (Globalgradings as text)",
-    "gradinghistory": "raw null (Gradinghistory as text)"
+    "gradinghistory": "raw null (Gradinghistory as text)",
+    "activitylist": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
+        },
+        "..."
+    ]
 }</pre>
 <h2>dakora_get_example_information</h2>
 <div>get information and submission for example
@@ -2982,6 +2989,14 @@ Returns:<pre>{
             "file": "url null (file url)",
             "mimetype": "text null (mime type for file)",
             "fileindex": "text null (mime type for file)"
+        },
+        "..."
+    ],
+    "activityid": "int null (activityid)",
+    "activitylist": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
         },
         "..."
     ]
