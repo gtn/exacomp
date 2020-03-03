@@ -8086,6 +8086,10 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 	$use_evalniveau = block_exacomp_use_eval_niveau();
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 
+    $niveausAvgsCalc = array();
+    $evalniveauAvgsCalc = array();
+    $niveausAvgsSelfCalc = array();
+
 	foreach ($topic->descriptors as $descriptor) {
 		$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
 		$student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
@@ -8093,15 +8097,24 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		if (!$niveau) {
 			continue;
 		}
+		if (!key_exists($niveau->title, $niveausAvgsCalc)) {
+            $niveausAvgsCalc[$niveau->title] = array();
+            $evalniveauAvgsCalc[$niveau->title] = array();
+            $niveausAvgsSelfCalc[$niveau->title] = array();
+        }
 
 		$data->niveaus[$niveau->title] = new stdClass();
 
 		if ($use_evalniveau && $evaluation && $evaluation->evalniveauid) {
-			$data->niveaus[$niveau->title]->evalniveau = @$evaluationniveau_items[$evaluation->evalniveauid];
-			$data->niveaus[$niveau->title]->evalniveauid = $evaluation->evalniveauid ?: -1;
+		    $v = $evaluation->evalniveauid;
+		    if ($v > -1) { // add only evaluated values
+                $evalniveauAvgsCalc[$niveau->title][] = $v;
+            }
+			//$data->niveaus[$niveau->title]->evalniveau = @$evaluationniveau_items[$evaluation->evalniveauid];
+			//$data->niveaus[$niveau->title]->evalniveauid = $evaluation->evalniveauid ?: -1;
 		} else {
-			$data->niveaus[$niveau->title]->evalniveau = '';
-			$data->niveaus[$niveau->title]->evalniveauid = -1;  //Ã¤ndert fÃ¼r jeden LFS was
+			//$data->niveaus[$niveau->title]->evalniveau = '';
+			//$data->niveaus[$niveau->title]->evalniveauid = -1;  //Ã¤ndert fÃ¼r jeden LFS was
 		}
 
 
@@ -8110,16 +8123,33 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 // 			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
 // 				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
 // 				: (($evaluation && $evaluation->value) ? $evaluation->value : -1);
-		$data->niveaus[$niveau->title]->eval =
+
+        if ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE)) {
+            $v = (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '');
+            if ($v) { // add only evaluated values
+                $niveausAvgsCalc[$niveau->title][] = $v;
+            }
+        } else {
+            $v = (($evaluation && $evaluation->value || ($evaluation && $evaluation->value == "0")) ? $evaluation->value : -1);
+            if ($v > -1) { // add only evaluated values
+                $niveausAvgsCalc[$niveau->title][] = $v;
+            }
+        };
+
+        /*$data->niveaus[$niveau->title]->eval =
             (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // DESCRIPTORS!!!
             ? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
             : (($evaluation && $evaluation->value || ($evaluation && $evaluation->value == "0")) ? $evaluation->value : -1); //nuller anzeigen!
+        */
         if (block_exacomp_get_assessment_comp_SelfEval() && $student_evaluation) {
-            $data->niveaus[$niveau->title]->self_evalid = $student_evaluation->value;
-            $data->niveaus[$niveau->title]->self_eval = $student_evaluation->get_value_title();
+            if ($student_evaluation->value) { // add only evaluated values
+                $niveausAvgsSelfCalc[$niveau->title] = $student_evaluation->value;
+            }
+            //$data->niveaus[$niveau->title]->self_evalid = $student_evaluation->value;
+            //$data->niveaus[$niveau->title]->self_eval = $student_evaluation->get_value_title();
         } else {
-            $data->niveaus[$niveau->title]->self_evalid = -1;
-            $data->niveaus[$niveau->title]->self_eval = '';
+            //$data->niveaus[$niveau->title]->self_evalid = -1;
+            //$data->niveaus[$niveau->title]->self_eval = '';
         }
 
 		$data->niveaus[$niveau->title]->show = true;
@@ -8131,6 +8161,42 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->span = 1;
 		}
 	}
+
+	// get averages for descriptors
+    if (count($niveausAvgsCalc) > 0) {
+        foreach ($niveausAvgsCalc as $nTitle => $nValues) {
+            if (count($nValues) > 0) {
+                $data->niveaus[$nTitle]->eval = round(array_sum($nValues) / count($nValues), 1);
+            } else {
+                $data->niveaus[$nTitle]->eval =
+                    (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ? '' : '-1';
+            }
+        }
+    }
+    if (count($evalniveauAvgsCalc) > 0) {
+        foreach ($evalniveauAvgsCalc as $nTitle => $nValues) {
+            if (count($nValues) > 0) {
+                $evalniveauid = round(array_sum($nValues) / count($nValues));
+                $data->niveaus[$nTitle]->evalniveauid = $evalniveauid;
+                $data->niveaus[$nTitle]->evalniveau = @$evaluationniveau_items[$evalniveauid];
+            } else {
+                $data->niveaus[$nTitle]->evalniveauid = -1;
+                $data->niveaus[$nTitle]->evalniveau = '';
+            }
+        }
+    }
+    if (count($niveausAvgsSelfCalc) > 0) {
+        foreach ($niveausAvgsSelfCalc as $nTitle => $nValues) {
+            if (count($nValues) > 0) {
+                $evalid = round(array_sum($nValues) / count($nValues));
+                $data->niveaus[$nTitle]->self_evalid = $evalid;
+                $data->niveaus[$nTitle]->self_eval = block_exacomp\global_config::get_student_eval_title_by_id($evalid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+            } else {
+                $data->niveaus[$nTitle]->self_evalid = -1;
+                $data->niveaus[$nTitle]->self_eval = '';
+            }
+        }
+    }
 
 	return $data;
 }

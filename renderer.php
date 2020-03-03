@@ -4833,7 +4833,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
-		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'Exportieren')), '', array('id' => 'exabis_save_button'));
+		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'Exportieren', 'class' => 'btn btn-default')), '', array('id' => 'exabis_save_button'));
 
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'export_selected')), "id" => "course-selection"));
 	}

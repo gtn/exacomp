@@ -187,7 +187,6 @@ foreach($crosssubjects as $crosssubjectsOfCourse) {
     foreach($crosssubjectsOfCourse as $crosssubj){
         //if selected
 
-
         if(block_exacomp_student_crosssubj($crosssubj->id,$studentid)){
             //maybe find solution with better perfocrmance, without laoding course again
             $courseOfCrosssubj = $DB->get_record('course', array('id' => $crosssubj->courseid));
