@@ -59,10 +59,13 @@ if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
     block_exacomp_delete_tree($courseid, 'subject', $item->id);
     $forward = optional_param('forward', '', PARAM_URL);
     if ($forward) {
-        echo $output->popup_close_and_forward($forward);
+        //echo $output->popup_close_and_forward($forward);
+        $url = $forward;
     } else {
-        echo $output->popup_close_and_reload();
+        //echo $output->popup_close_and_reload();
+        $url = $PAGE->url;
     }
+    redirect($url);
 	exit;
 }
 
@@ -201,7 +204,13 @@ if ($formdata = $form->get_data()) {
 		$subjectid = $item->id;
 	}
 	
-	echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&subjectid={$subjectid}");
+	//echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&subjectid={$subjectid}");
+    $url = new moodle_url('/blocks/exacomp/assign_competencies.php', array(
+            'courseid' => $courseid,
+            'editmode' => 1,
+            'subjectid' => $subjectid
+    ));
+    redirect($url);
 
 	exit;
 }

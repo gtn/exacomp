@@ -260,7 +260,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $extra = '';
             if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
                 $extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid='.$COURSE->id.'&id='.$subject->id]);
-                $deleteUrl = html_entity_decode(new block_exacomp\url('subject.php', ['courseid' => $COURSE->id, 'id' => $subject->id, 'action' => 'delete', 'forward' => g::$PAGE->url]));
+                $forwardUrl = g::$PAGE->url;
+                // if the Subject is only single and it will be deleted now - redirect to Settings page
+                $courseid = optional_param('courseid', 1, PARAM_INT);
+                $topicSelectedAnotherSql = 'SELECT * 
+                                    FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ctmm
+                                        JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.id = ctmm.topicid        
+                                    WHERE ctmm.courseid = ?
+                                            AND t.subjid != ?';
+                $topicSelectedAnother = g::$DB->get_records_sql($topicSelectedAnotherSql, [$courseid, $subject->id]);
+                if (!$topicSelectedAnother || count($topicSelectedAnother) == 0) {
+                    $forwardUrl = new moodle_url('/blocks/exacomp/edit_course.php', ['courseid' => $courseid]);
+                }
+                $deleteUrl = html_entity_decode(new block_exacomp\url('subject.php', ['courseid' => $COURSE->id, 'id' => $subject->id, 'action' => 'delete', 'forward' => $forwardUrl]));
                 $extra .= ' '.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                         null, [
                             'title' => block_exacomp_get_string("delete"),
