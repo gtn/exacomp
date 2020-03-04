@@ -5466,18 +5466,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $this->notification($message);
 	}
 
-    function competence_profile_crosssubject($course, $student, $showall = true, $max_scheme = 3, $crosssubj = null) {
-
-    }
+    // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet for CROSSSUBJECTS
+//    function competence_profile_crosssubject($course, $student, $showall = true, $max_scheme = 3, $crosssubj = null) {
+//
+//    }
 
     // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet
-	function competence_profile_course($course, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false) {
+	function competence_profile_course($course=-1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj=-1) {
         static $allStats = null;
         $content = '';
         if ($allStats === null || !array_key_exists($course->id, $allStats)) {
             // keys: course->id | subject->id ==> niveau->id (assessment_diffLevel_options)  | grade options
             $allStats[$course->id] = [];
         }
+
         if ($forGlobalReport) { // GLOBAL REPORT
             // Grid view
             $subjectGenericData = $this->competence_profile_grid(null, null, $student->id, $max_scheme);
@@ -5556,9 +5558,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $content .= html_writer::tag('fieldset', $innersection,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
             }
-        } else { // !$forGlobalReport - reports for course-subject
-            $competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true,
+        } else { // !$forGlobalReport - reports for course-subject or crosssubject
+            if($crosssubj != -1){ //if crosssubject:
+                $courseid = $crosssubj->courseid;
+                $competence_tree = block_exacomp_get_competence_tree_for_cross_subject($courseid,
+                    $crosssubj,
+                    true,
+                    array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES),
+                    $student->id,
+                    false);
+            }else{ //if course
+                $courseid = $course->id;
+                $competence_tree = block_exacomp_get_competence_tree($courseid, null, null, false, null, true,
                     array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+            }
+
 
             // sorting by Subject's isglobal (if isglobal=1 - go to last)
             // 1 method: chages sorting of other subjects
@@ -5586,27 +5600,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
                         array('class' => 'competence_profile_insectitle'));
                 $innersection .= html_writer::tag('div',
-                        $this->competence_profile_grid($course->id, $subject, $student->id, $max_scheme),
+                        $this->competence_profile_grid($courseid, $subject, $student->id, $max_scheme),
                         array('class' => 'container', 'id' => 'charts'));
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                         'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
 
                 // Statistics
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) { //prints the statistic
-                    $stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
+                    $stat = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subject->id, $student->id);
                     if ($subject->isglobal) { // only isglobal subjects!
-                        //$allStats[$course->id][$subject->id]['subject'] = $subject;
-                        $allStats[$course->id][$subject->id]['stats'] = $stat;
+                        //$allStats[$courseid][$subject->id]['subject'] = $subject;
+                        $allStats[$courseid][$subject->id]['stats'] = $stat;
                     }
                     $tables = array();
-                    $tables[] = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'],
+                    $tables[] = $this->subject_statistic_table($courseid, $stat['descriptor_evaluations'],
                             block_exacomp_get_string('descriptors'), block_exacomp_get_assessment_comp_diffLevel(),
                             block_exacomp_get_assessment_comp_scheme()); //print competencies
-                    $tables[] = $this->subject_statistic_table($course->id, $stat['child_evaluations'],
+                    $tables[] = $this->subject_statistic_table($courseid, $stat['child_evaluations'],
                             block_exacomp_get_string('childcompetencies_compProfile'),
                             block_exacomp_get_assessment_childcomp_diffLevel(), block_exacomp_get_assessment_childcomp_scheme());
-                    if (block_exacomp_course_has_examples($course->id)) {
-                        $tables[] = $this->subject_statistic_table($course->id, $stat['example_evaluations'],
+                    if (block_exacomp_course_has_examples($courseid)) {
+                        $tables[] = $this->subject_statistic_table($courseid, $stat['example_evaluations'],
                                 block_exacomp_get_string('materials_compProfile'), block_exacomp_get_assessment_example_diffLevel(),
                                 block_exacomp_get_assessment_example_scheme());
                     }
@@ -5617,7 +5631,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $tempTable = new html_table();
                         $tempTable->attributes['class'] = 'statistictables';
                         $tempTable->attributes['exa-subjectid'] = $subject->id;
-                        $tempTable->attributes['exa-courseid'] = $course->id;
+                        $tempTable->attributes['exa-courseid'] = $courseid;
                         $row = new html_table_row();
                         foreach ($tables as $tableItem) {
                             $cell = new html_table_cell();
@@ -5630,7 +5644,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     } else {
                         $innersection .= html_writer::tag('div', implode(' ', $tables),
                                 array('class' => 'statistictables', 'exa-subjectid' => $subject->id,
-                                        'exa-courseid' => $course->id));
+                                        'exa-courseid' => $courseid));
                     }
                     $content .= html_writer::tag('fieldset', $innersection,
                             array('class' => ' competence_profile_innersection exa-collapsible'));
@@ -5638,10 +5652,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
 
                 // Comparison: Teacher-Student
-                list($student, $subject) = block_exacomp_get_data_for_profile_comparison($course->id, $subject, $student);
+                list($student, $subject) = block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student);
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection3'),
                         array('class' => 'competence_profile_insectitle'));
-                $innersection .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student),
+                $innersection .= html_writer::tag('div', $this->comparison_table($courseid, $subject, $student),
                         array('class' => 'comparisondiv'));
                 $content .= html_writer::tag('fieldset', $innersection,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
@@ -5654,7 +5668,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
                             ['height' => $height,
                                     'width' => $width,
-                                    'courseid' => $course->id,
+                                    'courseid' => $courseid,
                                     'studentid' => $student->id
                             ]);
                     $tempTable = new html_table();
@@ -5698,7 +5712,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($forGlobalReport) {
             $cn = block_exacomp_get_string('transferable_skills');
         } else {
-            $cn = $course->fullname;
+            if($crosssubj != -1){
+                $cn = $crosssubj->title;
+            }else{
+                $cn = $course->fullname;
+            }
         }
         $courseNameWrapped = html_writer::tag('h3', $cn, array('class' => 'competence_profile_coursename'));
 		return $courseNameWrapped.html_writer::div($content, "competence_profile_coursedata");
