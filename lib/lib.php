@@ -5107,6 +5107,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_s
 
 	$allDescriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, false);
 
+
 	$subjects = [];
 	$topics = [];
 
@@ -5154,6 +5155,30 @@ function block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid) {
 		WHERE dc.crosssubjid = ?
 	", array($crosssubjid));
 }
+
+//function block_exacomp_get_topics_assigned_to_cross_subject($crosssubjid) {
+//    $descriptors = block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid);
+//    $topics = array();
+//    foreach ($descriptors as $descriptor){
+//        if($descriptor->parentid == 0){
+//            $topics[] = $descriptor;
+//        }
+//    }
+//
+//    foreach ($allDescriptors as $descriptor) {
+//        // get descriptor topic
+//        if (empty($allTopics[$descriptor->topicid])) {
+//            continue;
+//        }
+//        $topic = $topics[$descriptor->topicid] = $allTopics[$descriptor->topicid];
+//        $topic->descriptors[$descriptor->id] = $descriptor;
+//    }
+//
+//    $topics = block_exacomp_get_all_topics();
+//
+//
+//    return $topics;
+//}
 
 /**
  * get descriptors for crosssubject
@@ -7950,9 +7975,11 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  * get data for grid table in profile, where topics are listed on vertical axis, niveaus on horizontal
  * and each cell represent descriptor evaluation
  * additionally topic and subject evaluation is also included
+ * if crosssubj is passed, then only the selection of topics that is included in this crosssubject should be returned
  * @param unknown $courseid
  * @param unknown $studentid
  * @param unknown $subjectid
+ * @param unknown $crosssubj
  * @return array{[subject_title, subject_eval, subject_evalniveau, subject_evalniveauid, timestamp,
  *                  content {[topicid] => [topic_evalniveau, topic_evalniveauid, topic_eval, topicid, visible, timestamp, span,
  *                            niveaus {[niveautitle] => [evalniveau, evalniveauid, eval, visible, show, timestamp, span]}
@@ -7965,7 +7992,7 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *       show = false, if niveau not used within current topic
  *       span = 1 or 0 inidication if niveau is across (Ã¼bergreifend)
  */
-function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid) {
+function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid, $crosssubj = null) {
 
 	global $DB;
 	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, BLOCK_EXACOMP_SHOW_ALL_TOPICS, 0, false, block_exacomp_is_teacher(), $studentid);
@@ -7985,7 +8012,22 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$use_evalniveau = block_exacomp_use_eval_niveau();
 	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+
+
+
+
 	foreach ($subject->topics as $topic) {
+        //If crosssubj, only show those topics which are in the crossubj
+//        $topicsOfCrossubj = block_exacomp_get_topics_assigned_to_cross_subject($crosssubj->id);
+//        $topicIDsOfCrossubj = array_column($topicsOfCrossubj,'id');
+
+//        var_dump($subject->topics);
+//        die;
+
+//        if(!array_key_exists($topic->id, $topicIDsOfCrossubj)){
+//            continue;
+//        }
+
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
 

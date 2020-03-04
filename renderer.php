@@ -5573,7 +5573,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
             }
 
-
             // sorting by Subject's isglobal (if isglobal=1 - go to last)
             // 1 method: chages sorting of other subjects
             /*usort($competence_tree, function($s1, $s2) {
@@ -5600,7 +5599,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
                         array('class' => 'competence_profile_insectitle'));
                 $innersection .= html_writer::tag('div',
-                        $this->competence_profile_grid($courseid, $subject, $student->id, $max_scheme),
+                        $this->competence_profile_grid($courseid, $subject, $student->id, $max_scheme,null, $crosssubj),
                         array('class' => 'container', 'id' => 'charts'));
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                         'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
@@ -5722,7 +5721,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $courseNameWrapped.html_writer::div($content, "competence_profile_coursedata");
 	}
 
-	private function competence_profile_grid($courseid, $subject, $studentid, $max_scheme, $custom_data = null) {
+	private function competence_profile_grid($courseid, $subject, $studentid, $max_scheme, $custom_data = null, $crosssubj = null) {
 		global $DB, $CFG;
 		static $spanning_niveaus = null;
 		static $subjectGenericData = null;
@@ -5735,7 +5734,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         
         if ($courseid !== null && $subject !== null) {
             list ($course_subjects, $table_column, $table_header, $table_content) =
-                    block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id);
+                    block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id, $crosssubj);
 
             // aggregate all data to next generation of global report
             if (@$subject->isglobal) { // only isglobal?

@@ -196,7 +196,7 @@ foreach($crosssubjects as $crosssubjectsOfCourse) {
 
 foreach ($user_courses as $course) {
 	//if selected
-    //echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
+    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
 }
 // Überfachliche Kompetenzen
 // used last course from foreach! TODO: check it!
