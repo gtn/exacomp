@@ -263,9 +263,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $forwardUrl = g::$PAGE->url;
                 // if the Subject is only single and it will be deleted now - redirect to Settings page
                 $courseid = optional_param('courseid', 1, PARAM_INT);
-                $topicSelectedAnotherSql = 'SELECT * 
+                $topicSelectedAnotherSql = 'SELECT *
                                     FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ctmm
-                                        JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.id = ctmm.topicid        
+                                        JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.id = ctmm.topicid
                                     WHERE ctmm.courseid = ?
                                             AND t.subjid != ?';
                 $topicSelectedAnother = g::$DB->get_records_sql($topicSelectedAnotherSql, [$courseid, $subject->id]);
@@ -4415,7 +4415,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 // up/down buttons
                 end($taxonomies);
                 if ($taxkey !== key($taxonomies)) {
-                    $row->cells[] = '<a href="'.$_SERVER['REQUEST_URI'].'&action=sorting&dir=down&taxid='.intval($taxonomy->id).'"                                     
+                    $row->cells[] = '<a href="'.$_SERVER['REQUEST_URI'].'&action=sorting&dir=down&taxid='.intval($taxonomy->id).'"
                                     class="small">'
                             .html_writer::span($this->pix_icon("i/down", block_exacomp_get_string("move_down")))
                             .'</a>';
@@ -4424,7 +4424,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 reset($taxonomies);
                 if ($taxkey !== key($taxonomies)) {
-                    $row->cells[] = '<a href="'.$_SERVER['REQUEST_URI'].'&action=sorting&dir=up&taxid='.intval($taxonomy->id).'"                                     
+                    $row->cells[] = '<a href="'.$_SERVER['REQUEST_URI'].'&action=sorting&dir=up&taxid='.intval($taxonomy->id).'"
                                     class="small">'
                             .html_writer::span($this->pix_icon("i/up", block_exacomp_get_string("move_up")))
                             .'</a>';
@@ -4477,10 +4477,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
     public function imported_taxonomies($courseid) {
 	    global $CFG, $DB;
         $content = '';
-        $taxonomies = $DB->get_records_sql("SELECT tax.*, ds.name as sourcename 
+        $taxonomies = $DB->get_records_sql("SELECT tax.*, ds.name as sourcename
 		                    FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} tax
 		                    JOIN {".BLOCK_EXACOMP_DB_DATASOURCES."} ds ON ds.id = tax.source
-		                    WHERE tax.source != ? 
+		                    WHERE tax.source != ?
 		                    ORDER BY ds.name, tax.sorting", [BLOCK_EXACOMP_DATA_SOURCE_CUSTOM]);
         if ($taxonomies && count($taxonomies) > 0) {
             $content .= '<br />';
@@ -4862,9 +4862,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             } else {
                 $notes = '';
             }
-			$cell->text = html_writer::div('<input type="checkbox" 
-			                                        exa-name="subjects" 
-                                                    id="subject_'.$subject->id.'" 
+			$cell->text = html_writer::div('<input type="checkbox"
+			                                        exa-name="subjects"
+                                                    id="subject_'.$subject->id.'"
 			                                        value="'.$subject->id.'"'.
                                                     (!$subject->can_delete ? ' class="be-sure"' : '').
                                                     //(!$subject->can_delete ? ' disabled="disabled"' : '').
@@ -4887,8 +4887,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $notes .= $another_childern_source_message;
                 }
 				$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-				$cell->text = html_writer::div('<input type="checkbox" 
-				                                        exa-name="topics" 
+				$cell->text = html_writer::div('<input type="checkbox"
+				                                        exa-name="topics"
 				                                        id="topic_'.$topic->id.'"
 				                                        value="'.$topic->id.'"'.
                                                         (!$topic->can_delete ? ' class="be-sure"' : '').
@@ -4913,8 +4913,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $notes .= $another_childern_source_message;
                     }
 					$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-					$cell->text = html_writer::div('<input type="checkbox" 
-					                                        exa-name="descriptors" 
+					$cell->text = html_writer::div('<input type="checkbox"
+					                                        exa-name="descriptors"
 					                                        id="descriptor_'.$descriptor->id.'"
 					                                        value="'.$descriptor->id.'"'.
                                                             (!$descriptor->can_delete ? ' class="be-sure"' : '').
@@ -4940,8 +4940,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $notes .= $another_childern_source_message;
                         }
 						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-						$cell->text = html_writer::div('<input type="checkbox" 
-						                                        exa-name="descriptors" 
+						$cell->text = html_writer::div('<input type="checkbox"
+						                                        exa-name="descriptors"
 						                                        id="descriptor_'.$child_descriptor->id.'"
 						                                        value="'.$child_descriptor->id.'"'.
                                                                 (!$child_descriptor->can_delete ? ' class="be-sure"' : '').
@@ -4964,8 +4964,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $notes .= $another_source_message;
                             }
 							$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-							$cell->text = html_writer::div('<input type="checkbox" 
-							                                        exa-name="examples" 
+							$cell->text = html_writer::div('<input type="checkbox"
+							                                        exa-name="examples"
 							                                        id="example_'.$example->id.'"
                                                                     value="'.$example->id.'"'.
                                                                     (!$example->can_delete ? ' class="be-sure"' : '').
@@ -4990,8 +4990,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $notes .= $another_source_message;
                         }
 						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
-						$cell->text = html_writer::div('<input type="checkbox" 
-						                                        exa-name="examples" 
+						$cell->text = html_writer::div('<input type="checkbox"
+						                                        exa-name="examples"
 						                                        id="example_'.$example->id.'"
                                                                 value="'.$example->id.'"'.
                                                                 (!$example->can_delete ? ' class="be-sure"' : '').
@@ -5839,7 +5839,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             'diffLevel' => block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 1 : 0,
                             'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
                     ];
-                    
+
                     if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)&&$element->evalniveau && !($element->eval > -1)){
                         $params['evalValue'] = '-';
                     }
@@ -6507,16 +6507,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		]
 		};
-			
+
 		var ctx = document.getElementById('.json_encode($canvas_id).').getContext("2d")
 		ctx.canvas.height = 300;
 		ctx.canvas.width = 600;
-		
+
 		new Chart(ctx).Line(timelinedata, {
 				responsive: false, // can\'t be responsive, because Graph.js 1.0.2 does not work with hidden divs
 			bezierCurve : false
 		});
-	
+
 		</script>
 		';
 
@@ -7126,7 +7126,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             //$taxonomies = $alltax + $taxonomies;
             $taxonomies = $DB->get_records_sql("SELECT tax.*, ds.name as sourcename
 		                    FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} tax
-		                    LEFT JOIN {".BLOCK_EXACOMP_DB_DATASOURCES."} ds ON ds.id = tax.source		                     
+		                    LEFT JOIN {".BLOCK_EXACOMP_DB_DATASOURCES."} ds ON ds.id = tax.source
 		                    ORDER BY ds.name, tax.sorting");
             $input_taxonomies = html_writer::empty_tag('br');
             if ($taxonomies && count($taxonomies) > 0) {
