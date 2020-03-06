@@ -4845,6 +4845,19 @@ class block_exacomp_external extends external_api {
 
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
+
+			//Check if editable or locked
+			//For blocking events if student: flag if this is my own event (can edit) or one the teacher gave to me. Teacher can edit anyways
+            $example->editable = true;
+            if(($example->state > 3 && $example->state < 9)) {
+                $example->editable = false;
+            }else if($example->state == 9){
+                if($USER->id == $example->creatorid){
+                    $example->editable = true;
+                }else{
+                    $example->editable = false;
+                }
+            }
 		}
 
 		return $examples;
@@ -4874,6 +4887,7 @@ class block_exacomp_external extends external_api {
 		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'schedule_marker' => new external_value(PARAM_TEXT, 'tag for the marker on the material in the weekly schedule', VALUE_OPTIONAL),
+            'editable' => new external_value(PARAM_BOOL, 'for blocking events: show if editable'),
 		)));
 	}
 
