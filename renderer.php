@@ -5500,7 +5500,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
             //$content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
             //        'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
-            
+
             // Statistics
             // calculate global sums
             $allStats = array_filter($allStats);
@@ -5728,10 +5728,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($subjectGenericData === null) {
             $subjectGenericData = array();
         }
-        
+
 		$content = '';
         $columnscounter = 0;
-        
+
         if ($courseid !== null && $subject !== null) {
             list ($course_subjects, $table_column, $table_header, $table_content) =
                     block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id, $crosssubj);
@@ -5815,6 +5815,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $isSpanTopic = $rowcontent->span;
 
 			// competences
+
 			foreach ($rowcontent->niveaus as $niveau => $element) {
 
 				//if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
@@ -5827,29 +5828,36 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $width = 50;
                     $imgWidth = $width; $imgHeight = $height;
                     $image_resize = 20; // resize image if need border graph
+                    //var_dump(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+                    //die;
                     $params = ['height' => $height,
                             'width' => $width,
                             'evalValue' => $element->eval,
                             'evalMax' => block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR),
-                            'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? $element->evalniveau : '',
+//                            'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? $element->evalniveau : '-',
+                            'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)&&$element->evalniveau ? $element->evalniveau : '-',
                             'diffLevel' => block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 1 : 0,
                             'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
                     ];
-                    // when the image must be resized (border graph is added)
-                    if ((block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
-                            && block_exacomp_get_assessment_comp_diffLevel()
-                            && (isset($element->eval) && $element->eval > -1 && $element->evalniveau)
-                            )
-                        || (
-                            (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE && $element->eval > 0
-                                || block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS && $element->eval > -1) // zero is possible
-                            && block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
-                            && $element->evalniveau
-                            )
-                    ) {
-                            $imgWidth = $width + $image_resize;
-                            $imgHeight = $height + $image_resize;
+
+                    var_dump($element->eval);
+                    if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)&&$element->evalniveau && !($element->eval > -1)){
+                        $params['evalValue'] = '-';
                     }
+
+                    if ((
+                            (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE && ($element->eval > 0 || block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) && $element->evalniveau)
+                                || block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS && ($element->eval > -1 )) // zero is possible
+                            && block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
+                        )
+                    ){
+//                        $imgWidth = $width + $image_resize;
+//                        $imgHeight = $height + $image_resize;
+                    }
+
+
+
+
                     if (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE) {
                         $verboseTitles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
                         // use short: TODO: when we need to use long titles?
@@ -5873,7 +5881,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
                     } else {
                         $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/ppie.php', $params);
-                        $cell->text = html_writer::img($elementSrc, '',
+                        $cell->text = html_writer::img($elementSrc, '-',
                                 ['width' => $imgWidth, 'height' => $imgHeight, 'border' => 0]);
                         //$cell->text .= print_r($element, true);
                         /*$cell->text = html_writer::empty_tag('canvas', [
@@ -6025,7 +6033,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     //TODO: make generic
 	function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true, $assessmentScheme ) {
 		$content = '';
-				
+
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus(true);
 		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, $assessmentScheme);
         $value_titles = array_filter($value_titles, 'strlen'); // remove empty, but leave '0'
