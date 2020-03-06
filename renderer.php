@@ -5828,8 +5828,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $width = 50;
                     $imgWidth = $width; $imgHeight = $height;
                     $image_resize = 20; // resize image if need border graph
-                    //var_dump(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR));
-                    //die;
+
                     $params = ['height' => $height,
                             'width' => $width,
                             'evalValue' => $element->eval,
@@ -5933,6 +5932,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$rowcontent->topic_eval = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
 				}
 
+
 				$topic_eval_cell = new html_table_cell ();
                 $height = 50;
                 $width = 50;
@@ -5942,27 +5942,36 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'width' => $width,
                         'evalValue' =>  $rowcontent->topic_eval,
                         'evalMax' => block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_TOPIC),
-                        'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC) ? $rowcontent->topic_evalniveau : '',
+//                        'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC) ? $rowcontent->topic_evalniveau : '',
+                        'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC)&&$rowcontent->topic_evalniveau ? $rowcontent->topic_evalniveau : '-',
                         'diffLevel' => block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC) ? 1 : 0,
                         'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)
                 ];
+
+                if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC)&&$rowcontent->topic_evalniveau && ($rowcontent->topic_evalniveau == -1  || $rowcontent->topic_evalniveau == 0 || $rowcontent->topic_evalniveau == "")){
+                    $params['evalValue'] = '-';
+                }
+
                 // when the image must be resized (border graph is added)
-                if ((block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
-                                && block_exacomp_get_assessment_topic_diffLevel()
-                                && (isset($rowcontent->topic_eval) && $rowcontent->topic_eval > -1 && $rowcontent->topic_evalniveau)
-                        )
-                        || (
-                                (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE
-                                        || block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)
-                                && block_exacomp_get_assessment_topic_diffLevel()
-                                && $rowcontent->topic_eval
-                                && $rowcontent->topic_eval > -1
-                                && $rowcontent->topic_evalniveau
-                        )
-                ) {
+                if ((
+                        (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE && ($rowcontent->topic_eval > 0 || block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC) && $rowcontent->topic_evalniveau)
+                            || block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS && ($rowcontent->topic_eval > -1 )) // zero is possible
+                        && block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC)
+                    )
+                    || (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
+                        && (block_exacomp_get_assessment_comp_diffLevel()  && $rowcontent->topic_evalniveau
+                            || (isset($rowcontent->topic_eval) && $rowcontent->topic_eval > -1))
+                    )
+                    || (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS
+                        && (block_exacomp_get_assessment_comp_diffLevel()  && $rowcontent->topic_evalniveau
+                            || (isset($rowcontent->topic_eval) && $rowcontent->topic_eval > -1))
+                    )
+                ){
                     $imgWidth = $width + $image_resize;
                     $imgHeight = $height + $image_resize;
                 }
+
+
                 if (block_exacomp_get_assessment_topic_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE) {
                     $verboseTitles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
                     // use short: TODO: when we need to use long titles?
