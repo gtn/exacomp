@@ -5840,7 +5840,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
                     ];
 
-                    if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)&&$element->evalniveau && !($element->eval > -1)){
+
+                    if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)&&$element->evalniveau && ($element->eval == -1  || $element->eval == 0 || $element->eval == "")){
                         $params['evalValue'] = '-';
                     }
 
@@ -5849,9 +5850,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 || block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS && ($element->eval > -1 )) // zero is possible
                             && block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
                         )
+                        || (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE
+                            && (block_exacomp_get_assessment_comp_diffLevel()  && $element->evalniveau
+                            || (isset($element->eval) && $element->eval > -1))
+                        )
+                        || (block_exacomp_get_assessment_comp_scheme() == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS
+                            && (block_exacomp_get_assessment_comp_diffLevel()  && $element->evalniveau
+                                || (isset($element->eval) && $element->eval > -1))
+                        )
                     ){
-//                        $imgWidth = $width + $image_resize;
-//                        $imgHeight = $height + $image_resize;
+                        $imgWidth = $width + $image_resize;
+                        $imgHeight = $height + $image_resize;
                     }
 
 
@@ -5897,7 +5906,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$cell->attributes['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
 				$cell->attributes['exa-timestamp'] = $element->timestamp;
-                $cell->attributes['align'] = 'center';
+//                $cell->attributes['vertical-align'] = 'middle';
+                $cell->attributes['class'] .= ' centered';
 
 				if (in_array($niveau, $spanning_niveaus)) {
 					$cell->colspan = $spanning_colspan; // deprecated. Needed for support old data

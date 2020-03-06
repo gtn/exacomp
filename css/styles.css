@@ -23,7 +23,7 @@
 	background-color: #0075dd !important;
 	color: #a2a2a2 !important;
 	font-size: 0.75em;
-	
+
 }
 #block_exacomp #lmoB,
 #block_exacomp .lmoB {
@@ -44,7 +44,7 @@
 	background-color: #00CC00 !important;
 	color: #a2a2a2 !important;
 	font-size: 0.75em;
-	
+
 }
 
 #block_exacomp #green2,
@@ -241,6 +241,14 @@ td.contentcell {
 	word-wrap: break-word;
 	vertical-align: top;
 }
+
+#block_exacomp .header,
+#block_exacomp .cell {
+	vertical-align: middle;
+	text-align: center;
+}
+
+
 
 #block_exacomp .cell .statistic_head .cell, #block_exacomp .cell .crosssubjects .cell {
 	vertical-align: middle;
@@ -782,13 +790,13 @@ hide arrow
 
 #block_exacomp .competence_profile_radargraph .radargraph,
 #block_exacomp .competence_profile_piegraph .piegraph,
-#block_exacomp .competence_profile_radargraph .piegraph 
+#block_exacomp .competence_profile_radargraph .piegraph
 #block_exacomp .competence_profile_timelinegraph .timeline{
 	margin: 0 auto
 }
 
 #block_exacomp .competence_profile_piegraph .piegraph,
-#block_exacomp .competence_profile_radargraph .piegraph 
+#block_exacomp .competence_profile_radargraph .piegraph
 #block_exacomp .competence_profile_timelinegraph .timeline{
 	margin-bottom: 40px
 }
@@ -836,7 +844,7 @@ hide arrow
 	animation: 2s linear 0s normal none infinite progress-bar-stripes;
 }
 
-@media print { 
+@media print {
 	#block_exacomp .stripes {
 		position: relative;
 		overflow: hidden;
@@ -967,7 +975,7 @@ not used anymore?
 /*
 #block_exacomp div.associated_div li:last-child, #block_exacomp div.associated_div li li:last-child, #block_exacomp div.associated_div li li li:last-child {
 	padding-bottom: 0px;
-} 
+}
 */
 #block_exacomp div.associated_div li.associated {
 	 color: #000;
@@ -1250,4 +1258,8 @@ table.exacomp_source_delete td {
 input[type=checkbox].be-sure {
 	border-color: red !important;
 	outline: 1px solid red;
+}
+
+#block_exacomp .centered .cell {
+	vertical-align: middle;
 }
