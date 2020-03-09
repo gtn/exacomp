@@ -3074,6 +3074,7 @@ class block_exacomp_external extends external_api {
 			'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
+            'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
 		   // 'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor'),
 		)));
 	}
@@ -6400,7 +6401,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 
 		$descriptor_return = static::get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid);
-        $descriptor_return->activitylist = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
+        //$descriptor_return->activitylist = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
 
 		return $descriptor_return;
 	}
@@ -6522,7 +6523,7 @@ class block_exacomp_external extends external_api {
 			'used' => new external_value (PARAM_INT, 'used in current context'),
             'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
             'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
-            'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
+            //'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
 		));
 	}
 
@@ -9039,7 +9040,8 @@ class block_exacomp_external extends external_api {
 // 					}
 					$topic_return->visible = (block_exacomp_is_topic_visible($courseid, $topic, $userid)) ? 1 : 0;
 					$topic_return->used = (block_exacomp_is_topic_used($courseid, $topic, $userid)) ? 1 : 0;
-					$topics_return[] = $topic_return;
+                    $topic_return->activitylist = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
+                    $topics_return[] = $topic_return;
 				}
 			}
 		}
