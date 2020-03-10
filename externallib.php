@@ -3056,7 +3056,11 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 		}
 
-		return static::dakora_get_topics_by_course_common($courseid, false, $userid, $groupid);
+        $return = new stdClass();
+        $return->topics = static::dakora_get_topics_by_course_common($courseid, false, $userid, $groupid);
+        $return->activitylist = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
+
+        return $return;
 	}
 
 	/**
@@ -3065,18 +3069,20 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_all_topics_by_course_returns() {
-		return new external_multiple_structure (new external_single_structure (array(
-			'topicid' => new external_value (PARAM_INT, 'id of topic'),
-			'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
- 		    'topicdescription' => new external_value (PARAM_RAW, 'description of topic'),
-			'numbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
-			'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-			'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
-			'used' => new external_value (PARAM_INT, 'used in current context'),
-            'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
-		   // 'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor'),
-		)));
+        return new external_single_structure (array(
+		        'topics' => new external_multiple_structure (new external_single_structure (array(
+                    'topicid' => new external_value (PARAM_INT, 'id of topic'),
+                    'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+                    'topicdescription' => new external_value (PARAM_RAW, 'description of topic'),
+                    'numbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
+                    'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+                    'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
+                    'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
+                    'used' => new external_value (PARAM_INT, 'used in current context'),
+                   // 'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor'),
+                ))),
+                'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
+		));
 	}
 
 	/*
@@ -9040,7 +9046,6 @@ class block_exacomp_external extends external_api {
 // 					}
 					$topic_return->visible = (block_exacomp_is_topic_visible($courseid, $topic, $userid)) ? 1 : 0;
 					$topic_return->used = (block_exacomp_is_topic_used($courseid, $topic, $userid)) ? 1 : 0;
-                    $topic_return->activitylist = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
                     $topics_return[] = $topic_return;
 				}
 			}
