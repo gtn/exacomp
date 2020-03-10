@@ -6610,7 +6610,7 @@ class block_exacomp_external extends external_api {
                 'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
             ))),
             'activityid' => new external_value (PARAM_INT, 'activityid'),
-            'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list'),
+            //'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list'),
         ));
 	}
 
@@ -6731,7 +6731,7 @@ class block_exacomp_external extends external_api {
 	    }
 	    // add activity data
 	    $data['activityid'] = ($example && @$example->activityid ? $example->activityid : 0);
-	    $data['activitylist'] = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
+	    //$data['activitylist'] = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
 
 	    return $data;
 	}
