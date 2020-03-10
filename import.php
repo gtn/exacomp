@@ -93,7 +93,7 @@ class generalxml_upload_form extends \moodleform {
             $mform->addElement('filepicker', 'file', block_exacomp_get_string("file"), null);
             $mform->addRule('file', null, 'required', null, 'client');
             $mform->addElement('static', 'destination_text', '' ,block_exacomp_get_string("dest_course"));
-            $mform->addElement('select', 'template', block_exacomp_get_string("choosecoursetemplate"), ['' => ''] + get_all_courses_key_value());
+            $mform->addElement('select', 'template', block_exacomp_get_string("choosecoursetemplate"), ['' => ''] + block_exacomp_get_course_names());
         }
 
 		$mform->addElement('text', 'password', block_exacomp_trans([

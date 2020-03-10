@@ -3935,6 +3935,26 @@ function block_exacomp_get_courseids() {
 	return $exabis_competences_courses;
 }
 
+/**block_instances
+ *
+ * Returns all course ids where an instance of Exabis Competences is installed
+ */
+function block_exacomp_get_course_names() {
+
+    $instances = g::$DB->get_records('block_instances', array('blockname' => 'exacomp'));
+    
+    $exabis_competences_courses = array();
+    
+    foreach ($instances as $instance) {
+        $context = g::$DB->get_record('context', array('id' => $instance->parentcontextid, 'contextlevel' => CONTEXT_COURSE));
+        if ($context) {
+            $exabis_competences_courses[$context->instanceid] = g::$DB->get_field('course','shortname', array('id' => $context->instanceid));
+        }
+    }
+    
+    return $exabis_competences_courses;
+}
+
 /**
  *
  * This method returns all courses the user is entrolled to and exacomp is installed
