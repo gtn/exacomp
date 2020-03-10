@@ -51,7 +51,7 @@ class restore_exacomp_activity_structure_step extends restore_activity_structure
         $data->timeclose = $this->apply_date_offset($data->timeclose);
         
         // insert the choice record
-        $newitemid = $DB->insert_record('choice', $data);
+        // $newitemid = $DB->insert_record('exacomp', $data); 
         // immediately after inserting "activity" record, call this
         $this->apply_activity_instance($newitemid);
     }

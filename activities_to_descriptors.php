@@ -19,6 +19,8 @@
 
 use block_exacomp\data_importer;
 
+
+
 require __DIR__.'/inc.php';
 // temporary disabled (there are errors)
 if (11 == 22) {
@@ -157,6 +159,27 @@ if ($action == "filter") {
 		
 	if (isset($_POST['module_filter'])) {
         $selected_modules = $_POST['module_filter'];
+    }
+}
+
+if ($action == "export-activity") {
+    
+    $zip = ZipArchive::create_temp_file();
+    $backupid = moodle_backup(optional_param("activityid", PARAM_INT), $USER->id);
+    
+    $source = $CFG->dataroot . '/temp/backup/'.$backupid;
+    $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+    
+    foreach ($files as $name => $file) {
+        // Skip directories (they would be added automatically)
+        if (! $file->isDir()) {
+            // Get real and relative path for current file
+            $filePath = $file->getRealPath();
+            $relativePath = 'activities/activity' . 1 . '/' . substr($filePath, strlen($source) + 1);
+            
+            // Add current file to archive
+            $zip->addFile($filePath, $relativePath);
+        }
     }
 }
 

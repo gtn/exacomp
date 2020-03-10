@@ -64,13 +64,8 @@ class restore_exacomp_activity_task extends restore_activity_task {
         
         // this part needs to run after all activites have been added
         if (!empty($GLOBALS['activexamples'])) {
-            $idrecord = restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', end($GLOBALS['activexamples'][0]));
-            if ($idrecord && ($cm = block_exacomp_get_cm_from_cmid($idrecord->newitemid))) {
-                // activity found
-                array_push($GLOBALS['activexamples'][1], $cm->id);
-            } else {
-                array_push($GLOBALS['activexamples'][1], -1);
-            }
+                array_push($GLOBALS['activexamples'][1], get_activityid());
+            
         }
     }
 

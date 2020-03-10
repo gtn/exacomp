@@ -1007,19 +1007,28 @@ Params: <table>
 </td>
 <td>id of user, 0 for current user</td>
 </table>
-Returns:<pre>[
-    {
-        "topicid": "int null (id of topic)",
-        "topictitle": "text null (title of topic)",
-        "topicdescription": "raw null (description of topic)",
-        "numbering": "text null (numbering for topic)",
-        "subjectid": "int null (id of subject)",
-        "subjecttitle": "text null (title of subject)",
-        "visible": "int null (visibility of topic in current context)",
-        "used": "int null (used in current context)"
-    },
-    "..."
-]</pre>
+Returns:<pre>{
+    "topics": [
+        {
+            "topicid": "int null (id of topic)",
+            "topictitle": "text null (title of topic)",
+            "topicdescription": "raw null (description of topic)",
+            "numbering": "text null (numbering for topic)",
+            "subjectid": "int null (id of subject)",
+            "subjecttitle": "text null (title of subject)",
+            "visible": "int null (visibility of topic in current context)",
+            "used": "int null (used in current context)"
+        },
+        "..."
+    ],
+    "activitylist": [
+        {
+            "id": "int null (id)",
+            "name": "text null (name)"
+        },
+        "..."
+    ]
+}</pre>
 <h2>dakora_get_descriptors</h2>
 <div>get descriptors for topic for dakora app associated with examples
 get descriptors for one topic, considering the visibility</div>
@@ -2938,14 +2947,7 @@ Returns:<pre>{
     "visible": "int null (visibility of example in current context)",
     "used": "int null (used in current context)",
     "globalgradings": "raw null (Globalgradings as text)",
-    "gradinghistory": "raw null (Gradinghistory as text)",
-    "activitylist": [
-        {
-            "id": "int null (id)",
-            "name": "text null (name)"
-        },
-        "..."
-    ]
+    "gradinghistory": "raw null (Gradinghistory as text)"
 }</pre>
 <h2>dakora_get_example_information</h2>
 <div>get information and submission for example
