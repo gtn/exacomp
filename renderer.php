@@ -5472,7 +5472,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //    }
 
     // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet
-	function competence_profile_course($course=-1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj=-1) {
+	function competence_profile_course($course=-1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj=null) {
         static $allStats = null;
         $content = '';
         if ($allStats === null || !array_key_exists($course->id, $allStats)) {
@@ -5559,7 +5559,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         array('class' => ' competence_profile_innersection exa-collapsible'));
             }
         } else { // !$forGlobalReport - reports for course-subject or crosssubject
-            if($crosssubj != -1){ //if crosssubject:
+            if($crosssubj){ //if crosssubject:
                 $courseid = $crosssubj->courseid;
                 $competence_tree = block_exacomp_get_competence_tree_for_cross_subject($courseid,
                     $crosssubj,
@@ -5733,8 +5733,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $columnscounter = 0;
 
         if ($courseid !== null && $subject !== null) {
+
             list ($course_subjects, $table_column, $table_header, $table_content) =
                     block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id, $crosssubj);
+
+            /*
+             * $table_header are the niveaus (column titles)
+             * $table_column are the parent-descriptors... so actually the rows
+             *
+             */
+
+//            var_dump($table_content);
+//            die;
+
 
             // aggregate all data to next generation of global report
             if (@$subject->isglobal) { // only isglobal?
