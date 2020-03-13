@@ -200,22 +200,45 @@ switch ($assessmentType) {
         break;
 }
 
+
+//$assessmentType==1 //Grade
+//($evalMax-$evalValue)
+
 $MyData = new pData();
 $labels = array();
 $colors = array();
 $raysCount = 50;
+
 for ($i = 0; $i < $raysCount; $i++) {
     $segments[$i] = 100 / $raysCount;
     $labels[$i] = $i;
     //$colors[$i] = array('R' => 140, 'G' => 182, 'B' => 196);
     $MyData->Palette[$i] = array('R' => 140, 'G' => 182, 'B' => 196, 'Alpha' => 100);
-    if ($evalMax > 0) {
-        if ($i >= ($evalValue * 100 / $evalMax) / (100 / $raysCount)) {
+    if($assessmentType == 1){ //grade
+        if ($evalMax > 0) {
+            if($evalValue==0){//no grading: no circle
+                $MyData->Palette[$i]['Alpha'] = 0;
+            }else{
+                if($evalValue == $evalMax && $i <= 1) {
+                    $MyData->Palette[$i]['Alpha'] = 100;
+                }else if ($i >= (($evalMax-$evalValue) * 100 / ($evalMax-1)) / (100 / $raysCount)) {
+                    $MyData->Palette[$i]['Alpha'] = 0;
+                }
+
+            }
+        } else {
             $MyData->Palette[$i]['Alpha'] = 0;
         }
-    } else {
-        $MyData->Palette[$i]['Alpha'] = 0;
+    }else{
+        if ($evalMax > 0) {
+            if ($i >= ($evalValue * 100 / $evalMax) / (100 / $raysCount)) {
+                $MyData->Palette[$i]['Alpha'] = 0;
+            }
+        } else {
+            $MyData->Palette[$i]['Alpha'] = 0;
     }
+}
+
 }
 
 $MyData->addPoints($segments, "segments");
