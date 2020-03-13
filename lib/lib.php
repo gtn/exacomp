@@ -1476,6 +1476,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	}
 
 	// TODO: block_exacomp_external::require_teacher_permission($courseid, $userid);
+    // TODO: scheduler task "autotest" ?
 	if ($role == BLOCK_EXACOMP_ROLE_STUDENT && $userid != $USER->id) {
 		return -1;
 	}
@@ -1506,8 +1507,20 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	} else {
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 	}
+    $objecttable = '';
+	switch ($comptype) {
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+            $objecttable = 'block_exacompdescriptors';
+            break;
+        case BLOCK_EXACOMP_TYPE_TOPIC:
+            $objecttable = 'block_exacomptopics';
+            break;
+        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+            $objecttable = 'block_exacompexamples';
+            break;
+    }
 
-	\block_exacomp\event\competence_assigned::log(['objecttable' => ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'courseid' => $courseid, 'relateduserid' => $userid]);
+	\block_exacomp\event\competence_assigned::log(['objecttable' => $objecttable, 'objectid' => $compid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 
 	return 1;
 }
@@ -3888,19 +3901,35 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids, $deleteOn
 function block_exacomp_get_active_tests_by_course($courseid) {
 	global $DB;
 
-	$sql = "SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
+	if (block_exacomp_use_old_activities_method()) {
+        $sql = "SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
             FROM {block_exacompcompactiv_mm} activ 
               JOIN {course_modules} cm ON cm.id = activ.activityid 
               JOIN {modules} m ON m.id = cm.module 
               JOIN {quiz} q ON cm.instance = q.id 
             WHERE m.name = 'quiz' AND cm.course = ?";
 
-	$tests = $DB->get_records_sql($sql, array($courseid));
+        $tests = $DB->get_records_sql($sql, array($courseid));
 
-	foreach ($tests as $test) {
-		$test->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
-		$test->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
-	}
+        foreach ($tests as $test) {
+            $test->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                    array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
+            $test->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                    array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
+        }
+    } else {
+        $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
+            FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e 
+              JOIN {course_modules} cm ON cm.id = e.activityid 
+              JOIN {modules} m ON m.id = cm.module 
+              JOIN {quiz} q ON cm.instance = q.id 
+            WHERE m.name = \'quiz\' AND cm.course = ? ';
+        $tests = $DB->get_records_sql($sql, array($courseid));
+
+        foreach ($tests as $test) {
+            $test->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $test->activityid, 'courseid' => $courseid), '', 'id');
+        }
+    }
 
 	return $tests;
 }
@@ -3914,34 +3943,33 @@ function block_exacomp_get_active_tests_by_course($courseid) {
 function block_exacomp_get_related_activities($courseid, $conditions = array()) {
 	global $DB;
 
-/*	$cms = get_course_mods($courseid);
+	if (block_exacomp_use_old_activities_method()) {
+	    $tablename = BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY;
+    } else {
+	    $tablename = BLOCK_EXACOMP_DB_EXAMPLES;
+    }
+    $sql = 'SELECT DISTINCT cm.*, m.name as modname
+                FROM {'.$tablename.'} t 
+                    JOIN {course_modules} cm ON cm.id = t.activityid 
+                    JOIN {modules} m ON m.id = cm.module              
+                WHERE cm.course = ? ';
 
-	if (count($conditions) > 0) {
-	    foreach ($cms as $cm) {
+    $cond = array($courseid);
 
+    if (@$conditions['availability']) {
+        $sql .= ' AND availability IS NOT NULL ';
+    }
+    $acts = $DB->get_records_sql($sql, $cond);
+
+    foreach ($acts as $activ) {
+        if (block_exacomp_use_old_activities_method()) {
+            $activ->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                    array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
+            $activ->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                    array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
+        } else {
+            $activ->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activ->activityid, 'courseid' => $courseid), '', 'id');
         }
-    }
-
-	return $cms;*/
-
-	$sql = "SELECT DISTINCT cm.*, m.name as modname
-        FROM {block_exacompcompactiv_mm} activ 
-            JOIN {course_modules} cm ON cm.id = activ.activityid 
-            JOIN {modules} m ON m.id = cm.module              
-		WHERE cm.course = ?";
-
-	$cond = array($courseid);
-
-	if ($conditions['availability']) {
-	    $sql .= ' AND availability IS NOT NULL ';
-    }
-	$acts = $DB->get_records_sql($sql, $cond);
-
-	foreach ($acts as $activ) {
-        $activ->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
-                array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
-        $activ->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
-                array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
     }
 
 	return $acts;
@@ -4739,13 +4767,18 @@ function block_exacomp_perform_auto_test() {
                     $studentGradeResult = 0;
                 }
 
-				// assign competencies if test is successfully completed AND test grade update since last auto assign
-				if (isset($quiz->grade)
-                        && (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade
+				// assign competencies if test is successfully completed AND test grade updated since last auto assign
+				if (isset($quiz->grade) && floatval($test->grade) > 0
+                        //&& (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade
+                        && ((floatval($quiz->grade) * 100) / floatval($test->grade)) >= $testlimit
                         && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)
                 ) {
 				    $changedquizes[$quiz->quiz] = $quiz->timemodified;
-                    block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, true, $maxGrade, $studentGradeResult);
+				    if (block_exacomp_use_old_activities_method()) {
+                        block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
+                    } else {
+                        block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
+                    }
 
 					if (!$quiz_assignment) {
 						$quiz_assignment = new \stdClass();
@@ -4840,7 +4873,11 @@ function block_exacomp_perform_auto_test() {
                             if (!$existing ||
                                     ($existing && unserialize($existing->relateddata) != unserialize($datatoDB['relateddata']))) {
                                 // data was changed - save grading to competences!
-                                block_exacomp_assign_competences($courseid, $student->id, $cm->topics, $cm->descriptors, true, $maxResults, $studentResults);
+                                if (block_exacomp_use_old_activities_method()) {
+                                    block_exacomp_assign_competences($courseid, $student->id, $cm->topics, $cm->descriptors, null, true, $maxResults, $studentResults);
+                                } else {
+                                    block_exacomp_assign_competences($courseid, $student->id, null, null, $cm->examples, true, $maxResults, $studentResults);
+                                }
                             } else {
                                 // data was not changed. nothing to do
                             }
@@ -4859,7 +4896,7 @@ function block_exacomp_perform_auto_test() {
 	return true;
 }
 
-function block_exacomp_assign_competences($courseid, $studentid, $topics, $descriptors, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) {
+function block_exacomp_assign_competences($courseid, $studentid, $topics, $descriptors, $examples, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) {
     if (isset($descriptors)) {
         $grading_scheme = block_exacomp_get_assessment_comp_scheme();
         foreach ($descriptors as $descriptor) {
@@ -4868,7 +4905,7 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
                 block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), $comptype = 0);
             }
             //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
             mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
         }
     }
@@ -4877,12 +4914,26 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
         foreach ($topics as $topic) {
             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), $comptype = 1);
+                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), BLOCK_EXACOMP_TYPE_EXAMPLE);
             }
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            block_exacomp_set_user_competence($studentid, $topic->compid, BLOCK_EXACOMP_TYPE_TOPIC, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
             mtrace("set topic competence ".$topic->compid." for user ".$studentid.'<br>');
+
+        }
+    }
+    if (isset($examples)) {
+        $grading_scheme = block_exacomp_get_assessment_example_scheme();
+        foreach ($examples as $example) {
+            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE)) {
+                //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
+                block_exacomp_save_additional_grading_for_comp($courseid, $example->id, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), BLOCK_EXACOMP_TYPE_EXAMPLE);
+            }
+
+            //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+            block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            mtrace("set example grading: ".$example->id." for user ".$studentid.'<br>');
 
         }
     }
@@ -7818,6 +7869,9 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 	}
 	if (block_exacomp_is_teacher($courseid)){
     	if ($record) {
+    	    if ($realid = @$record->{'@interal-original-data'}->id) {
+    	        $record->id = $realid;
+            }
     	    $record->gradingisold = 0;
     		// falls sich die bewertung geÃ¤ndert hat, timestamp neu setzen
     		if ($record->value != $value || $record->additionalinfo != $additionalinfo) {
@@ -7827,7 +7881,10 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$record->reviewerid = $USER->id;
     		$record->additionalinfo = $additionalinfo;
     		$record->value = $value;
-            $record->gradinghistory .= $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$record->timestamp).": ".$value."<br>";
+            if (!property_exists($record, 'gradinghistory')) {
+                $record->gradinghistory = '';
+            }
+            $record->gradinghistory .= $USER->firstname." ".$USER->lastname." ".date("Y-m-d", $record->timestamp).": ".$value."<br>";
 
     		if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $record);
@@ -9579,7 +9636,7 @@ function block_exacomp_get_comp_eval($courseid, $role, $studentid, $comptype, $c
 		}
 
 		$data = [
-			'id' => 'example:'.$eval->id,
+			'id' => 'example:'.$eval->id, // TODO: 'example:' is needed yet?
 			'courseid' => $eval->courseid,
 			'userid' => $eval->studentid,
 			'comptype' => BLOCK_EXACOMP_TYPE_EXAMPLE,
