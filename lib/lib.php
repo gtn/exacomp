@@ -7869,7 +7869,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 	}
 	if (block_exacomp_is_teacher($courseid)){
     	if ($record) {
-    	    if ($realid = @$record->{'@interal-original-data'}->id) {
+    	    if (property_exists($record, '@interal-original-data') && $realid = @$record->{'@interal-original-data'}->id) {
     	        $record->id = $realid;
             }
     	    $record->gradingisold = 0;
