@@ -5959,7 +5959,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)
                 ];
 
-                if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC)&&$rowcontent->topic_evalniveau && ($rowcontent->topic_evalniveau == -1  || $rowcontent->topic_evalniveau == 0 || $rowcontent->topic_evalniveau == "")){
+//                var_dump($rowcontent->topic_eval);
+//                die;
+
+//                if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)&&$element->evalniveau && ($element->eval == -1  || $element->eval == 0 || $element->eval == "")){
+//                    $params['evalValue'] = '-';
+//                }
+
+                if(block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_TOPIC)&&$rowcontent->topic_evalniveau && ($rowcontent->topic_eval == -1  || $rowcontent->topic_eval == 0 || $rowcontent->topic_eval == "")){
                     $params['evalValue'] = '-';
                 }
 
