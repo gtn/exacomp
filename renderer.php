@@ -5606,7 +5606,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 // Statistics
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) { //prints the statistic
-                    $stat = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subject->id, $student->id);
+                    $stat = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subject->id, $student->id,0,0,false,$crosssubj);
                     if ($subject->isglobal) { // only isglobal subjects!
                         //$allStats[$courseid][$subject->id]['subject'] = $subject;
                         $allStats[$courseid][$subject->id]['stats'] = $stat;

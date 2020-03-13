@@ -5207,7 +5207,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_s
 	$allTopics = block_exacomp_get_all_topics();
 	$allSubjects = block_exacomp_get_subjects();
 
-	$allDescriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, false);
+	$allDescriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject);
 
 
 	$subjects = [];
@@ -5314,7 +5314,7 @@ function block_exacomp_clear_topics_for_crosssubject($topics,$courseid,$crosssub
  * @param string $showalldescriptors
  * @return unknown
  */
-function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, $showalldescriptors = null) {
+function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, $parent = true) {
 	global $DB;
 
 	$crosssubjid = is_scalar($cross_subject) ? $cross_subject : $cross_subject->id;
@@ -5336,17 +5336,14 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subje
 			$show_childs[$cross_descr->id] = true;
 	}
 	*/
-
-	if ($showalldescriptors === null) {
-		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
-	}
-
-	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, d.profoundness, d.sorting, d.parentid, n.sorting as niveau '
-		.'FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t '
-		.'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-		.'JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
-		.'LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
-		.'WHERE d.id IN('.join(',', $searchDescriptorIds).')';
+	
+    $sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, d.profoundness, d.sorting, d.parentid, n.sorting as niveau '
+        .'FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t '
+        .'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+        .'JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
+        .'LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
+        .'WHERE (d.id IN('.join(',', $searchDescriptorIds).')) AND '
+        .(($parent) ? 'd.parentid = 0' : 'd.parentid!=0');
 
 	$descriptors = \block_exacomp\descriptor::get_objects_sql($sql);
 
@@ -8852,11 +8849,22 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  * RW 2018:
  * $onlyDescriptors for the webservice that only needs the descriptors (better performance)
  */
-function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0, $onlyDescriptors = false) {
+function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0, $onlyDescriptors = false, $crosssubj=null) {
 	// TODO: is visibility hier fÃ¼rn hugo? Bewertungen kann es eh nur fÃ¼r sichtbare geben ...
-	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
-	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
-	$examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
+    if($crosssubj){
+        $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
+        $child_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id, false);
+        $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid); // TODO: change for crosssubject
+    }else{
+        $descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
+        $child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
+        $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
+    }
+
+//    var_dump($descriptors);
+//    echo "<br><br><br>";
+//    var_dump($child_descriptors);
+//    die;
 
 	$descriptorgradings = []; // array[niveauid][value][number of examples evaluated with this value and niveau]
 	$childgradings = [];
