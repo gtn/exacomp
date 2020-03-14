@@ -186,9 +186,6 @@ foreach($crosssubjects as $crosssubjectsOfCourse) {
     foreach($crosssubjectsOfCourse as $crosssubj){
         //if selected
         if(block_exacomp_student_crosssubj($crosssubj->id,$studentid)){ // TODO: there only is an association if there is an EXPLICIT one... not if "all students" is selected"
-            //maybe find solution with better perfocrmance, without loading course again
-            //$courseOfCrosssubj = $DB->get_record('course', array('id' => $crosssubj->courseid));
-            //echo $output->competence_profile_crosssubject($crosssubj,$student,true,block_exacomp_get_grading_scheme($crosssubj->id),$crosssubj);
            echo $output->competence_profile_course(-1,$student,true,block_exacomp_get_grading_scheme($crosssubj->id),false,$crosssubj);
         }
     }
@@ -196,7 +193,7 @@ foreach($crosssubjects as $crosssubjectsOfCourse) {
 
 foreach ($user_courses as $course) {
 	//if selected
-    //echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
+    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
 }
 // Überfachliche Kompetenzen
 // used last course from foreach! TODO: check it!

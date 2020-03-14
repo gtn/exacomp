@@ -5743,10 +5743,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
              *
              */
 
-//            var_dump($table_content);
-//            die;
-
-
             // aggregate all data to next generation of global report
             if (@$subject->isglobal) { // only isglobal?
                 if (!array_key_exists($subject->id, $subjectGenericData)) {

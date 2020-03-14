@@ -1178,9 +1178,6 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     ');
 
 
-
-
-
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
 	$params = array($courseid);
 	if (!is_array($subjectid) && $subjectid > 0) {
@@ -1191,19 +1188,6 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 
     //If crosssubject then only get those topics where a descriptor has been added
     if($crosssubj){
-//        $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
-//        $topicsOfCrosssubj = array();
-//        foreach ($descriptors as $descriptor) {
-//            $topicsOfCrosssubj[$descriptor->topicid] = $descriptor->topicid;
-//        }
-//
-//        foreach($topics as $key => $topic){
-//            if(isset($topicsOfCrosssubj[$topic->id])){
-//                //ok
-//            }else{
-//                unset($topics[$key]);
-//            }
-//        }
         $topics = block_exacomp_clear_topics_for_crosssubject($topics,$courseid,$crosssubj);
     }
 
@@ -2203,17 +2187,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects = false, $crosssubj=null) {
-//	if($crosssubj){
-//
-//    }else{
-//
-//    }
 
     $courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false, $crosssubj);
 	$courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects);
-	
-//	var_dump($courseTopics);
-//    die;
 
 	$topic = new \stdClass();
 	$topic->id = $topicid;
@@ -5314,12 +5290,23 @@ function block_exacomp_clear_topics_for_crosssubject($topics,$courseid,$crosssub
  * @param string $showalldescriptors
  * @return unknown
  */
-function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, $parent = true) {
+function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, $onlyAssignedChildren = false) {
 	global $DB;
 
 	$crosssubjid = is_scalar($cross_subject) ? $cross_subject : $cross_subject->id;
 
 	$assignedDescriptors = block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid);
+
+	//return only the assigned children, needed for statistics... otherwise return all assigned parents and parents of assigned children
+	if($onlyAssignedChildren){
+        foreach($assignedDescriptors as $key => $assignedDescriptor){
+            if($assignedDescriptor->parentid == 0){
+                unset($assignedDescriptors[$key]);
+            }
+        }
+        return $assignedDescriptors;
+    }
+
 	if (!$assignedDescriptors) {
 		return [];
 	}
@@ -5342,12 +5329,12 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subje
         .'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
         .'JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
         .'LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
-        .'WHERE (d.id IN('.join(',', $searchDescriptorIds).')) AND '
-        .(($parent) ? 'd.parentid = 0' : 'd.parentid!=0');
+        .'WHERE d.id IN('.join(',', $searchDescriptorIds).')';
+
 
 	$descriptors = \block_exacomp\descriptor::get_objects_sql($sql);
 
-	foreach ($descriptors as $descriptor) {
+    foreach ($descriptors as $descriptor) {
 		if (isset($assignedDescriptors[$descriptor->id])) {
 			// assigned, ok
 		} else {
@@ -8150,21 +8137,6 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
 
 	foreach ($subject->topics as $topic) {
-        //If crosssubj, only show those topics which are in the crossubj
-//        $topicsOfCrossubj = block_exacomp_get_topics_assigned_to_cross_subject($crosssubj->id);
-//        $topicIDsOfCrossubj = array_column($topicsOfCrossubj,'id');
-
-
-
-//        if(!array_key_exists($topic->id, $topicIDsOfCrossubj)){
-//            continue;
-//        }
-
-
-
-//        var_dump($subject->topics);
-//        die;
-
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
 
@@ -8853,18 +8825,13 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	// TODO: is visibility hier fÃ¼rn hugo? Bewertungen kann es eh nur fÃ¼r sichtbare geben ...
     if($crosssubj){
         $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
-        $child_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id, false);
+        $child_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id, true);
         $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid); // TODO: change for crosssubject
     }else{
         $descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
         $child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
         $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
     }
-
-//    var_dump($descriptors);
-//    echo "<br><br><br>";
-//    var_dump($child_descriptors);
-//    die;
 
 	$descriptorgradings = []; // array[niveauid][value][number of examples evaluated with this value and niveau]
 	$childgradings = [];
@@ -8925,6 +8892,8 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
             }
         }
     }
+
+
     foreach ($evaluationniveau_items_childcomp as $niveaukey => $niveauitem) {
         $childgradings[$niveaukey] = [];
         foreach ($schemeItems_descriptors as $schemekey => $schemetitle) {
@@ -8944,7 +8913,6 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	foreach ($descriptors as $descriptor) {
 	    $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-
 		// check if grading is within timeframe
 	    if ($eval && ($eval->value || $eval->additionalinfo) !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 			//$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
@@ -8979,7 +8947,6 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	if (!$onlyDescriptors){
 	    foreach ($child_descriptors as $child) {
 	        $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child->id);
-
 	        // check if grading is within timeframe
 	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 	            //$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
