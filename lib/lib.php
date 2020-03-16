@@ -961,7 +961,8 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
         }
     }
 
-	return block_exacomp_sort_items($subjects, [BLOCK_EXACOMP_IS_GLOBAL, BLOCK_EXACOMP_DB_SUBJECTS]);
+	//return block_exacomp_sort_items($subjects, [BLOCK_EXACOMP_IS_GLOBAL, BLOCK_EXACOMP_DB_SUBJECTS]);
+	return $subjects; // TODO: sorted in sql ?
 }
 
 /**
