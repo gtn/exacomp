@@ -249,7 +249,16 @@ td.contentcell {
 }
 
 #block_exacomp #course-selection .header,
-#block_exacomp #course-selection .cell {
+#block_exacomp #course-selection .cell ,
+#block_exacomp .exabis_comp_comp .c0,
+#block_exacomp .exabis_comp_comp .c1,
+#block_exacomp .compprofiletable .c0,
+#block_exacomp .comparison_topic .c0,
+#block_exacomp .comparison_topic .c1,
+#block_exacomp .comparison_desc .c0,
+#block_exacomp .comparison_desc .c1,
+
+#block_exacomp .desctitle{
 	text-align: left;
 }
 
