@@ -3597,6 +3597,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020022001, 'exacomp');
     }
 
+    if ($oldversion < 2020031601) {
+        // not all installations have free descriptors yet
+        if (!$DB->get_record('block_exacompdescriptors', ['id' => -1], '*', IGNORE_MISSING)) {
+            $DB->insert_record_raw('block_exacompdescriptors', ['id' => -1, 'title' => 'free_materials', 'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR], true, false, true);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020031601, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

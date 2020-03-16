@@ -3607,10 +3607,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		static::require_can_access_example($exampleid, $courseid);
 
-
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
-
-
 
 		if ($forall) {
             $source = 'C';
@@ -9510,7 +9507,6 @@ class block_exacomp_external extends external_api {
 			throw new block_exacomp_permission_exception("Example '$exampleid' not found");
 		}
 
-
 		if ($example->blocking_event == 1) {
 			$schedule = g::$DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $exampleid]);
 			if (!$schedule) {
@@ -9537,7 +9533,6 @@ class block_exacomp_external extends external_api {
 			$examples = block_exacomp_get_examples_by_course($courseid);
 			$examples_crosssubj = block_exacomp_get_crosssubject_examples_by_course($courseid);
 			$found = false;
-
 
 			if (isset($examples[$exampleid]) || isset($examples_crosssubj[$exampleid])) {
 				// ok: is course example
@@ -9568,7 +9563,7 @@ class block_exacomp_external extends external_api {
 				}
 			}
 
-			//try to find it in free materials
+			// try to find it in free materials
 			if(!$found && $example->blocking_event == 2){
                 $sql = 'SELECT * '
                     .'FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} '
@@ -9578,7 +9573,6 @@ class block_exacomp_external extends external_api {
                 $descriptors = \block_exacomp\descriptor::get_objects_sql($sql);
 
                 $descriptor = array_pop($descriptors); //there will only be this single descriptor in the return array
-
 
                 $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
                 //$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
