@@ -283,7 +283,8 @@
 			// var parent = containerBlock.parentNode;
 			// parent.innerHTML = 'ddfgdfg';
 
-			// var containerBlock = $(el).find('.marker_' + marker);//.closest('.marker_' + marker)[0];
+			// var containerBlock = $(el).find('.marker_' + marker);
+			// .closest('.marker_' + marker)[0];
             // containerBlock.before($('<div class="marker-badge">' + badge_text + '</div>'));
 			// console.log(containerBlock);
 			// containerBlock = $(containerBlock).closest('div');
@@ -310,12 +311,12 @@
 		}
     }
 	
-	function add_trash_item(data){
-		var el = $( "<div class='fc-event'>" ).appendTo( $trash ).text( 
-				data.title);
+	function add_trash_item(data) {
+		var el = $("<div class='fc-event'>").appendTo($trash).text(data.title);
 		
-		if(data.state < 9)
-			el.append('	<div class="event-assoc">'+data.assoc_url+'</div>');
+		if (data.state < 9) {
+            el.append('	<div class="event-assoc">' + data.assoc_url + '</div>');
+        }
 		
 		data.deleted = 1;
 		el.data('event', data);
@@ -328,7 +329,6 @@
 		el.addTouch();
 		
 		schedules_to_delete[data.id] = data.id;
-		
 	}
 	
 	function hover_check(e) {
