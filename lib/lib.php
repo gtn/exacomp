@@ -955,7 +955,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
     $hideglobalsubjects = @$coursesettings->hideglobalsubjects;
     if ($hideglobalsubjects == 1){
         foreach ($subjects as $key => $subject) {
-            if($subject->isglobal){
+            if ($subject->isglobal) {
                 unset($subjects[$key]);
             }
         }
@@ -2168,6 +2168,22 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		$subject->topics[$topic->id] = $topic;
 		$subjects[$subject->id] = $subject;
 	}
+	// sorting of subjects
+    if (count($subjects) > 0) {
+        $correctSorting = $DB->get_fieldset_sql('
+                            SELECT s.id 
+                              FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s 
+                              WHERE s.id IN ('.implode(',', array_keys($subjects)).')
+                              ORDER BY s.isglobal, s.title   
+                        ');
+        $newSubjects = array();
+        foreach ($correctSorting as $sKey) {
+            if (array_key_exists($sKey, $subjects)) {
+                $newSubjects[$sKey] = $subjects[$sKey];
+            }
+        }
+        $subjects = $newSubjects;
+    }
 
 	// sort topics
 	foreach ($subjects as $subject) {
