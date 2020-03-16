@@ -90,7 +90,7 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, $page_identifier);
 
 /* CONTENT REGION */
-if($isTeacher){
+if ($isTeacher) {
 	echo block_exacomp_get_string("choosestudent");
 	echo $output->studentselector($coursestudents, ($student) ? $student->id : @$groupidForSelector, 2, $groups);
 } else {
@@ -107,7 +107,7 @@ if($studentid == 0) {
 				html_writer::tag("input", "", array("id"=>"add-examples-to-schedule-for-all", "name" => "add-examples-to-schedule-for-all", "type" => "submit", "value" => block_exacomp_get_string("save_selection")))
 			,"alert alert-warning");
 }
-if($studentid < -1) { //if studentid is smaller than -1 it is a locagroupid    change wording todo RW
+if ($studentid < -1) { //if studentid is smaller than -1 it is a locagroupid    change wording todo RW
     //((-1)*dropdownvalue)-1   the -1 is used for ALL_STUDENTS, this is why i calculate it like this    RW
     $groupid = (-1)*$studentid - 1;
     echo html_writer::div(block_exacomp_get_string('add_example_for_group_to_schedule') .

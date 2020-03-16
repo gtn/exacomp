@@ -248,6 +248,12 @@ td.contentcell {
 	text-align: center;
 }
 
+#block_exacomp #course-selection .header,
+#block_exacomp #course-selection .cell {
+	text-align: left;
+}
+
+
 
 
 #block_exacomp .cell .statistic_head .cell, #block_exacomp .cell .crosssubjects .cell {
