@@ -8160,6 +8160,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
 
+
 		// gesamt for topic
 		$data->topic_evalniveauid =
 			(($use_evalniveau) ?
@@ -8315,7 +8316,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
         */
         if (block_exacomp_get_assessment_comp_SelfEval() && $student_evaluation) {
             if ($student_evaluation->value) { // add only evaluated values
-                $niveausAvgsSelfCalc[$niveau->title] = $student_evaluation->value;
+                $niveausAvgsSelfCalc[$niveau->title][] = $student_evaluation->value;
             }
             //$data->niveaus[$niveau->title]->self_evalid = $student_evaluation->value;
             //$data->niveaus[$niveau->title]->self_eval = $student_evaluation->get_value_title();
@@ -8466,36 +8467,37 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 
 		$current_idx = 1;
 		foreach ($rowcontent->niveaus as $niveau => $element) { //DESCRIPTORS
-			$content_row->columns[$current_idx] = new stdClass();
+		    $cellContent = new stdClass();
 
 			//$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $element->descriptorid);
 			//$content_row->columns[$current_idx]->evaluation = ($grading->value !== null) ? $grading->value : -1;
 
             switch($targetrole) {
                 case BLOCK_EXACOMP_ROLE_TEACHER:
-                    $content_row->columns[$current_idx]->evaluation = (empty($element->eval) && $element->eval != '0') ? -1 : $element->eval;
-                    $content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
-                    $content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
+                    $cellContent->evaluation = (empty($element->eval) && $element->eval != '0') ? -1 : $element->eval;
+                    $cellContent->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
+                    $cellContent->evalniveauid = $element->evalniveauid;
                     break;
                 case BLOCK_EXACOMP_ROLE_STUDENT:
-                    $content_row->columns[$current_idx]->evaluation_text = ($element->self_eval ? $element->self_eval : '') ;
+                    $cellContent->evaluation_text = ($element->self_eval ? $element->self_eval : '') ;
                     $eval_val = ($element->self_evalid && $element->self_evalid > -1 ? $element->self_evalid : -1) ;
-                    $content_row->columns[$current_idx]->evaluation = $eval_val;
-                    $content_row->columns[$current_idx]->evaluation_mapped = $eval_val;
-                    $content_row->columns[$current_idx]->evalniveauid = -1;
+                    $cellContent->evaluation = $eval_val;
+                    $cellContent->evaluation_mapped = $eval_val;
+                    $cellContent->evalniveauid = -1;
                     break;
             }
-            $content_row->columns[$current_idx]->show = $element->show;
-            $content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
-			$content_row->columns[$current_idx]->timestamp = (int)$element->timestamp;
+            $cellContent->show = $element->show;
+            $cellContent->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
+			$cellContent->timestamp = (int)$element->timestamp;
 
-			$content_row->columns[$current_idx]->gradingisold = (bool)$element->gradingisold;
+            $cellContent->gradingisold = (bool)$element->gradingisold;
 
 			if (in_array($niveau, $spanning_niveaus)) {
-				$content_row->columns[$current_idx]->span = $spanning_colspan;
+                $cellContent->span = $spanning_colspan;
 			} else {
-				$content_row->columns[$current_idx]->span = 0;
+                $cellContent->span = 0;
 			}
+            $content_row->columns[$current_idx] = $cellContent;
 			$current_idx++;
 		}
 
