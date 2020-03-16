@@ -8135,6 +8135,8 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 
 	$subject = block_exacomp\db_layer_student::create($courseid)->get_subject($subjectid);
+
+	block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
 	
 	if (!$subject) {
 		return;
