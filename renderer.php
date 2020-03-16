@@ -3897,8 +3897,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $user = $DB->get_record('user', ['id' => $studentid], '*', IGNORE_MISSING);
             $userdata = (object) [
                 'fullname' => fullname($user),
-                'firstname' => fullname($user->firstname),
-                'lastname' => fullname($user->lastname),
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
             ];
         }
 	    if ($studentid > 0) {
