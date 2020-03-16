@@ -2046,6 +2046,14 @@ return [
 		'Planungsspeicher',
 		'Example pool',
 	],
+	'example_pool_example_button' => [
+		'in den Planungsspeicher {$a->fullname}',
+		'in the example pool for {$a->fullname}',
+	],
+	'example_pool_example_button_forall' => [
+		'in den Planungsspeicher aller Kursteilnehmer/innen',
+		'in the example pool for all course participants',
+	],
 	'example_trash' => [
 		'Papierkorb',
 		'Trash bin',
@@ -2074,6 +2082,14 @@ return [
 		'Planungsspeicher',
 		'Planning storage',
 	],
+	'pre_planning_storage_popup_button' => [
+		'Material verteilen',
+		'Planning storage',
+	],
+    'pre_planning_storage_example_button' => [
+        'in meinen Planungsspeicher',
+        'in my planning storage',
+    ],
 	'pre_planning_storage_added' => [
 		'Lernmaterial wurde zum Planungsspeicher hinzugefügt.',
 		'Example added to the planning storage.',

@@ -200,10 +200,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$right_content .= html_writer::tag('button',
 					html_writer::empty_tag('img', ['src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png')]),
 					array(
-						'id' => 'pre_planning_storage_submit', 'name' => 'pre_planning_storage_submit',
-						'title' => block_exacomp_get_string('pre_planning_storage'),
+						'id' => 'pre_planning_storage_submit',
+                        'name' => 'pre_planning_storage_submit',
+						'title' => block_exacomp_get_string('pre_planning_storage_popup_button'),
 						'type' => 'button', /* browser default setting for html buttons is submit */
-						'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false),
+						'exa-type' => 'iframe-popup',
+                        'exa-url' => $url->out(false),
                         'class' => 'btn btn-default',
 					)
 				);
@@ -1232,8 +1234,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
                                             // add to pre-planning
                                             $titleCell->text .= html_writer::link("#",
-                                                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title' => block_exacomp_get_string('pre_planning_storage'))),
-                                                array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $courseid));
+                                                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
+                                                                                     'title' => block_exacomp_get_string('pre_planning_storage_example_button'))),
+                                                array(  'class' => 'add-to-preplanning',
+                                                        'exa-type' => 'add-example-to-schedule',
+                                                        'exampleid' => $example->id,
+                                                        'studentid' => 0,
+                                                        'courseid' => $courseid));
                                         }
                                     }
                                     $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
@@ -2856,10 +2863,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             // pre-planning button
                                             $titleCell->text .= html_writer::link("#",
                                                     html_writer::empty_tag('img',
-                                                            array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
-                                                                    'title' => block_exacomp_get_string('pre_planning_storage'))),
-                                                    array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule',
-                                                            'exampleid' => $example->id, 'studentid' => 0,
+                                                            array(  'src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
+                                                                    'title' => block_exacomp_get_string('pre_planning_storage_example_button'))),
+                                                    array('class' => 'add-to-preplanning',
+                                                            'exa-type' => 'add-example-to-schedule',
+                                                            'exampleid' => $example->id,
+                                                            'studentid' => 0,
                                                             'courseid' => $data->courseid));
 
                                         }
@@ -3578,8 +3587,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             $titleCell->text .= $this->schedule_icon($example->id, ($studentid) ? $studentid : BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $courseid);
 
                                             $titleCell->text .= html_writer::link("#",
-                                                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title' => block_exacomp_get_string('pre_planning_storage'))),
-                                                array('class' => 'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $courseid));
+                                                html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
+                                                                                    'title' => block_exacomp_get_string('pre_planning_storage_example_button'))),
+                                                array(  'class' => 'add-to-preplanning',
+                                                        'exa-type' => 'add-example-to-schedule',
+                                                        'exampleid' => $example->id,
+                                                        'studentid' => 0,
+                                                        'courseid' => $courseid));
                                         }
                                     }
                                     // 			                        $titleCell->text .= $this->competence_association_icon($example->id, $courseid, $editmode);
@@ -3877,9 +3891,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function schedule_icon($exampleid, $studentid, $courseid) {
+        global $DB;
+	    static $userdata = null;
+	    if ($userdata === null && $studentid > 0) {
+            $user = $DB->get_record('user', ['id' => $studentid], '*', IGNORE_MISSING);
+            $userdata = (object) [
+                'fullname' => fullname($user),
+                'firstname' => fullname($user->firstname),
+                'lastname' => fullname($user->lastname),
+            ];
+        }
+	    if ($studentid > 0) {
+            $buttontitle = block_exacomp_get_string("example_pool_example_button", 'block_exacomp', $userdata);
+        } else {
+            $buttontitle = block_exacomp_get_string("example_pool_example_button_forall");
+        }
 		return html_writer::link(
 			"#",
-			$this->pix_icon("e/insert_date", block_exacomp_get_string("example_pool")),
+			$this->pix_icon("e/insert_date", $buttontitle),
 			array('class' => 'add-to-schedule', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
 
@@ -6718,10 +6747,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$right_content .= html_writer::tag('button',
 				html_writer::empty_tag('img', ['src' => new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png')]),
 				array(
-					'id' => 'pre_planning_storage_submit', 'name' => 'pre_planning_storage_submit',
-					'title' => block_exacomp_get_string('pre_planning_storage'),
+					'id' => 'pre_planning_storage_submit',
+                    'name' => 'pre_planning_storage_submit',
+					'title' => block_exacomp_get_string('pre_planning_storage_popup_button'),
 					'type' => 'button', /* browser default setting for html buttons is submit */
-					'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false),
+					'exa-type' => 'iframe-popup',
+                    'exa-url' => $url->out(false),
 				)
 			);
 		}
