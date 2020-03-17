@@ -1754,8 +1754,7 @@ class data_importer extends data {
 		    }
 
 		      @rmdir($CFG->tempdir . '/backup/activities');
-		      unlink($CFG->tempdir . '/backup/data.xml');
-
+		      @unlink($CFG->tempdir . '/backup/data.xml');
 
 		  $DB->set_field(BLOCK_EXACOMP_DB_SETTINGS, "istemplate", 1, array('courseid' => $course_template));
 	   }
