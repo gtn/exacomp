@@ -1424,21 +1424,24 @@ class data_importer extends data {
 		$ret = $zip->open($file, ZipArchive::CHECKCONS);
 		// TODO: if it is not zip? - possible?
 		if ($ret === true) {
-			// a zip file
-			self::$zip = $zip;
+            // a zip file
+            self::$zip = $zip;
 
-			$firstFile = $zip->statIndex(0);
-			if (!$firstFile) {
-				throw new import_exception('wrong zip file format');
-			}
+            $firstFile = $zip->statIndex(0);
+            if (!$firstFile) {
+                throw new import_exception('wrong zip file format');
+            }
 
-			$zipIsEncrypted = !!@$firstFile['encryption_method'];
-			if ($password) {
-				$zip->setPassword($password);
-			}
-			$xml = $zip->getFromName('data.xml');
+            $zipIsEncrypted = !!@$firstFile['encryption_method'];
+            if ($password) {
+                $zip->setPassword($password);
+            }
+            $xml = $zip->getFromName('data.xml');
 			if (!$xml) {
                 $xml = $zip->getFromName('/data.xml'); // TODO: some .zip has slash before filename. why?
+            }
+			if (!$xml) {
+                $xml = $zip->getFromName('\\data.xml'); // and again the slash!
             }
 			if (!$xml) {
 				if ($zipIsEncrypted) {
