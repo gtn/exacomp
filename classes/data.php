@@ -2645,6 +2645,7 @@ class data_importer extends data {
 	        } else {
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
 	            @rename($CFG->tempdir . '/backup/activities/activity'.$example->activityid, $CFG->tempdir . '/backup/activity'.$example->activityid);
+
 	            //if (file_exists($CFG->tempdir . '/backup/activity'.$example->activityid)) {
                     moodle_restore('activity'.$example->activityid, $course_template, $USER->id);
                 //}
@@ -2760,28 +2761,26 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 
 // function to extract a folder of a zip-file to a destination path
 
-function extract_zip_subdir($zipfile, $subpath, $destination, $temp_cache, $traverse_first_subdir=true){
+function extract_zip_subdir($zipfile, $subpath, $destination, $temp_cache, $traverse_first_subdir = false){
     $zip = new ZipArchive;
 //     echo "extracting $zipfile... ";
-    if(substr($temp_cache, -1) !== DIRECTORY_SEPARATOR) {
-        $temp_cache .= DIRECTORY_SEPARATOR;
+    if(substr($temp_cache, -1) !== '/') {
+        $temp_cache .= '/';
     }
     $res = $zip->open($zipfile);
     if ($res === TRUE) {
-        if ($traverse_first_subdir==true){
+        if ($traverse_first_subdir){
             $zip_dir = $temp_cache . $zip->getNameIndex(0);
         }
         else {
-            $temp_cache = $temp_cache . basename($zipfile, ".zip");
+            $temp_cache = $temp_cache . basename($zipfile, ".tmp");
             $zip_dir = $temp_cache;
         }
-//         echo "  to $temp_cache... \n";
         $zip->extractTo($temp_cache);
         $zip->close();
-//         echo "ok\n";
-//         echo "moving subdir... ";
-//         echo "\n $zip_dir / $subpath -- to -- >  $destination\n";
-        @rename($zip_dir . DIRECTORY_SEPARATOR . $subpath, $destination);
+        //echo "<br>".$zip_dir . '/' . $subpath." -- to -- >  $destination\n";
+        //@rename($zip_dir . '/' . $subpath, $destination); // Windows has a problem with renaming to existing directory
+        directory_copy($zip_dir.'/'.$subpath, $destination);
 //         echo "ok\n";
 //         echo "cleaning extraction dir... ";
         rrmdir($zip_dir);
@@ -2834,6 +2833,22 @@ function rrmdir($source, $removeOnlyChildren = false)
     }
 
     return true;
+}
+
+function directory_copy($source, $destionation) {
+    $dir = opendir($source);
+    @mkdir($destionation);
+    // Loop through the files in source directory
+    while ($file = readdir($dir)) {
+        if (($file != '.') && ($file != '..')) {
+            if ( is_dir($source.'/'.$file)) {
+                directory_copy($source . '/' . $file, $destionation . '/' . $file);
+            } else {
+                copy($source.'/'.$file, $destionation.'/'.$file);
+            }
+        }
+    }
+    closedir($dir);
 }
 
 class import_exception extends moodle_exception {
