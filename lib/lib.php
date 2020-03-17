@@ -4933,34 +4933,61 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
     }
 }
 
-function block_exacomp_get_gained_competences($course, $student) {
+function block_exacomp_get_gained_competences($course, $student, $crosssubj=null) {
 
 	$gained_competencies_teacher = [];
 	$gained_competencies_student = [];
 
 	$total_descriptors = 0;
 
-	$dbLayer = \block_exacomp\db_layer_student::create($course->id, $student->id);
-	$topics = $dbLayer->get_topics();
-	$descriptors = $dbLayer->get_descriptor_parents();
+	if($crosssubj){
+        $descriptorOfCrosssubject = block_exacomp_get_descriptors_for_cross_subject($crosssubj->courseid,$crosssubj->id);
+    }else{
+        $dbLayer = \block_exacomp\db_layer_student::create($course->id, $student->id);
+        $topics = $dbLayer->get_topics();
+        $descriptors = $dbLayer->get_descriptor_parents();
+    }
 
-	foreach ($descriptors as $descriptor) {
-		if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id)) {
-			$gained_competencies_teacher[] = $comp;
-		}
-		if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id)) {
-			$gained_competencies_student[] = $comp;
-		}
-	}
+	//TODO: this should be a bug, the descriptors of the WHOLE COURSE are used for a visualization of ONE SUBJECT... this cannot be right
 
-	foreach ($topics as $topic) {
-		if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id)) {
-			$gained_competencies_teacher[] = $comp;
-		}
-		if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id)) {
-			$gained_competencies_student[] = $comp;
-		}
-	}
+//	if($crosssubj){
+//        foreach ($descriptors as $descriptor) {
+//            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id)) {
+//                $gained_competencies_teacher[] = $comp;
+//            }
+//            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id)) {
+//                $gained_competencies_student[] = $comp;
+//            }
+//        }
+//
+//        foreach ($topics as $topic) {
+//            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id)) {
+//                $gained_competencies_teacher[] = $comp;
+//            }
+//            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id)) {
+//                $gained_competencies_student[] = $comp;
+//            }
+//        }
+//    }else{
+        foreach ($descriptors as $descriptor) {
+            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id)) {
+                $gained_competencies_teacher[] = $comp;
+            }
+            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id)) {
+                $gained_competencies_student[] = $comp;
+            }
+        }
+
+        foreach ($topics as $topic) {
+            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id)) {
+                $gained_competencies_teacher[] = $comp;
+            }
+            if ($comp = block_exacomp_get_comp_eval_gained($course->id, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id)) {
+                $gained_competencies_student[] = $comp;
+            }
+        }
+//    }
+
 
 	return [$gained_competencies_teacher, $gained_competencies_student, count($descriptors)];
 }
@@ -8158,8 +8185,10 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
 	foreach ($subject->topics as $topic) {
 		// auswertung pro lfs
-		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
+		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic, $crosssubj);
 
+//		var_dump($data);
+//		die;
 
 		// gesamt for topic
 		$data->topic_evalniveauid =
@@ -8251,7 +8280,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
  * @param \block_exacomp\topic $topic
  * @return object
  */
-function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic) {
+function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic, $crosssubj=null) {
 	$data = (object)[];
 	$data->niveaus = array();
 	$data->span = @$topic->span ? $topic->span : 0;
@@ -8263,6 +8292,9 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
     $evalniveauAvgsCalc = array();
     $niveausAvgsSelfCalc = array();
 
+    $descriptorsOfCrosssubj = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
+
+    //$topic->descriptors are only PARENTdescriptors, which in turn have childdescriptors in the structure
 	foreach ($topic->descriptors as $descriptor) {
 		$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
 		$student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
@@ -8333,6 +8365,12 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 		if ($niveau->span == 1) { // deprecated, but needed for support old installations
 			$data->span = 1;
 		}
+
+        if(isset($descriptorsOfCrosssubj[$descriptor->id])){
+            //ok
+        }else{
+            $data->niveaus[$niveau->title] = false;
+        }
 	}
 
 	// get averages for descriptors

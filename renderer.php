@@ -5693,12 +5693,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($this->is_print_mode()) {
                     $height = 300;
                     $width = 600;
-                    $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
+                    if($crosssubj){
+                        $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
                             ['height' => $height,
-                                    'width' => $width,
-                                    'courseid' => $courseid,
-                                    'studentid' => $student->id
+                                'width' => $width,
+                                'courseid' => $courseid,
+                                'studentid' => $student->id
                             ]);
+                    }else{
+                        $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
+                            ['height' => $height,
+                                'width' => $width,
+                                'courseid' => $courseid,
+                                'studentid' => $student->id
+                            ]);
+                    }
+
                     $tempTable = new html_table();
                     $tempTable->attributes['class'] = 'competence_profile_timelinegraph';
                     $row = new html_table_row();
@@ -5718,7 +5728,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 } else {
                     $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
                             'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
-                    $innersection .= html_writer::div($this->timeline_graph($course, $student), "competence_profile_timelinegraph");
+                    if($crosssubj){
+                        $innersection .= html_writer::div($this->timeline_graph($course, $student,false, $crosssubj), "competence_profile_timelinegraph");
+                    }else{
+                        $innersection .= html_writer::div($this->timeline_graph($course, $student), "competence_profile_timelinegraph");
+                    }
                 }
                 $content .= html_writer::tag('fieldset', $innersection,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
@@ -6421,10 +6435,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function timeline_graph($course, $student, $returnData = false) {
-		$timeline_data = block_exacomp_get_gained_competences($course, $student);
+	public function timeline_graph($course, $student, $returnData = false, $crosssubj=null) {
+        $timeline_data = block_exacomp_get_gained_competences($course, $student, $crosssubj);
 
 		list ($gained_competencies_teacher, $gained_competencies_student, $total_competencies) = $timeline_data;
+
 
 		$max_timestamp = time();
 		$min_timestamp = strtotime('yesterday', time());
