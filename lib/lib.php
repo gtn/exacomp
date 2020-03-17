@@ -8187,9 +8187,6 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic, $crosssubj);
 
-//		var_dump($data);
-//		die;
-
 		// gesamt for topic
 		$data->topic_evalniveauid =
 			(($use_evalniveau) ?
@@ -8292,7 +8289,10 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
     $evalniveauAvgsCalc = array();
     $niveausAvgsSelfCalc = array();
 
-    $descriptorsOfCrosssubj = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
+    if($crosssubj){
+        $descriptorsOfCrosssubj = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
+    }
+
 
     //$topic->descriptors are only PARENTdescriptors, which in turn have childdescriptors in the structure
 	foreach ($topic->descriptors as $descriptor) {
@@ -8366,10 +8366,13 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->span = 1;
 		}
 
-        if(isset($descriptorsOfCrosssubj[$descriptor->id])){
-            //ok
-        }else{
-            $data->niveaus[$niveau->title] = false;
+		//Hide niveaus that are not used in the crosssubject
+        if($crosssubj){
+            if(isset($descriptorsOfCrosssubj[$descriptor->id])){
+                //ok
+            }else{
+                $data->niveaus[$niveau->title] = false;
+            }
         }
 	}
 
