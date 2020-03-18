@@ -8187,6 +8187,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		// auswertung pro lfs
 		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic, $crosssubj);
 
+
 		// gesamt for topic
 		$data->topic_evalniveauid =
 			(($use_evalniveau) ?
@@ -8291,17 +8292,23 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 
     if($crosssubj){
         $descriptorsOfCrosssubj = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
+        $niveausAlreadyCheckedForShowing = array();
     }
+
+
 
 
     //$topic->descriptors are only PARENTdescriptors, which in turn have childdescriptors in the structure
 	foreach ($topic->descriptors as $descriptor) {
-		$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+
+
+      	$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
 		$student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
 		$niveau = \block_exacomp\niveau::get($descriptor->niveauid);
 		if (!$niveau) {
 			continue;
 		}
+
 		if (!key_exists($niveau->title, $niveausAvgsCalc)) {
             $niveausAvgsCalc[$niveau->title] = array();
             $evalniveauAvgsCalc[$niveau->title] = array();
@@ -8310,51 +8317,40 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 
 		$data->niveaus[$niveau->title] = new stdClass();
 
-		if ($use_evalniveau && $evaluation && $evaluation->evalniveauid) {
+		//dont display niveaus that are not used in this crosssubject
+        $useEval = true;
+        if($crosssubj){
+            if(isset($descriptorsOfCrosssubj[$descriptor->id])){
+                //ok
+            }else{
+                $useEval = false;
+            }
+        }
+
+        if ($use_evalniveau && $evaluation && $evaluation->evalniveauid) {
 		    $v = $evaluation->evalniveauid;
-		    if ($v > -1) { // add only evaluated values
+		    if ($v > -1 && $useEval) { // add only evaluated values
                 $evalniveauAvgsCalc[$niveau->title][] = $v;
             }
-			//$data->niveaus[$niveau->title]->evalniveau = @$evaluationniveau_items[$evaluation->evalniveauid];
-			//$data->niveaus[$niveau->title]->evalniveauid = $evaluation->evalniveauid ?: -1;
-		} else {
-			//$data->niveaus[$niveau->title]->evalniveau = '';
-			//$data->niveaus[$niveau->title]->evalniveauid = -1;  //Ã¤ndert fÃ¼r jeden LFS was
 		}
-
-
-		//deprecated code before generic grading
-// 		$data->niveaus[$niveau->title]->eval =
-// 			(block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // TOPIC or ... ?
-// 				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
-// 				: (($evaluation && $evaluation->value) ? $evaluation->value : -1);
 
         if ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE)) {
             $v = (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '');
-            if ($v) { // add only evaluated values
+            if ($v && $useEval) { // add only evaluated values
                 $niveausAvgsCalc[$niveau->title][] = $v;
             }
         } else {
             $v = (($evaluation && $evaluation->value || ($evaluation && $evaluation->value == "0")) ? $evaluation->value : -1);
-            if ($v > -1) { // add only evaluated values
+            if ($v > -1 && $useEval) { // add only evaluated values
                 $niveausAvgsCalc[$niveau->title][] = $v;
             }
         };
 
-        /*$data->niveaus[$niveau->title]->eval =
-            (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) // DESCRIPTORS!!!
-            ? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
-            : (($evaluation && $evaluation->value || ($evaluation && $evaluation->value == "0")) ? $evaluation->value : -1); //nuller anzeigen!
-        */
+
         if (block_exacomp_get_assessment_comp_SelfEval() && $student_evaluation) {
-            if ($student_evaluation->value) { // add only evaluated values
+            if ($student_evaluation->value  && $useEval) { // add only evaluated values
                 $niveausAvgsSelfCalc[$niveau->title][] = $student_evaluation->value;
             }
-            //$data->niveaus[$niveau->title]->self_evalid = $student_evaluation->value;
-            //$data->niveaus[$niveau->title]->self_eval = $student_evaluation->get_value_title();
-        } else {
-            //$data->niveaus[$niveau->title]->self_evalid = -1;
-            //$data->niveaus[$niveau->title]->self_eval = '';
         }
 
 		$data->niveaus[$niveau->title]->show = true;
@@ -8366,14 +8362,18 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->span = 1;
 		}
 
-		//Hide niveaus that are not used in the crosssubject
+        //Hide niveaus that are not used in the crosssubject
         if($crosssubj){
             if(isset($descriptorsOfCrosssubj[$descriptor->id])){
                 //ok
+                $niveausAlreadyCheckedForShowing[$niveau->title] = true;
             }else{
-                $data->niveaus[$niveau->title] = false;
+                if(!$niveausAlreadyCheckedForShowing[$niveau->title]){
+                    $data->niveaus[$niveau->title]->show = false;
+                }
             }
         }
+
 	}
 
 	// get averages for descriptors
