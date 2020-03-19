@@ -878,6 +878,7 @@ class data_exporter extends data {
 			$xmlItem->addChildWithCDATAIfValue('externaltask', $dbItem->externaltask);
 			$xmlItem->addChildWithCDATAIfValue('externalsolution', $dbItem->externalsolution);
 			$xmlItem->addChildWithCDATAIfValue('tips', $dbItem->tips);
+			$xmlItem->addChildWithCDATAIfValue('author_origin', $dbItem->author_origin);
 
 
 			$descriptors = g::$DB->get_records_sql("
