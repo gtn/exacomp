@@ -55,10 +55,6 @@ class restore_exacomp_block_task extends restore_block_task {
     public function after_restore() {
         global $DB;
         
-        if (!empty($GLOBALS['activexamples'])) {
-            array_push($GLOBALS['activexamples'][1], $this->get_activityid());
-            $DB->insert_record("block_exacompcompactiv_mm", -1,-1,"esgeht","hierauch", 1);
-        }
         // this part needs to run after all activites have been added
         if (!empty($GLOBALS['block_exacomp_imported_activities'])) {
             foreach ($GLOBALS['block_exacomp_imported_activities'] as $activity) {

@@ -50,7 +50,7 @@ $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
 $string['tab_teacher_settings_activitiestodescriptors'] = 'Moodle-Aktivitäten verknüpfen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
-$string['tab_teacher_settings_new_subject'] = 'Neuen Kompetenzraster anlegen';
+$string['tab_teacher_settings_new_subject'] = 'Neues Kompetenzraster anlegen';
 $string['tab_teacher_settings_taxonomies'] = 'Taxonomien';
 $string['tab_teacher_report_general'] = 'Berichte';
 $string['tab_teacher_report_annex'] = 'Berichte ';
@@ -843,16 +843,15 @@ $string['report all topics'] = 'Alle  Kompetenzbereiche von Bildungsstandard/Ras
 $string['report all descriptor parents'] = 'Alle  Kompetenzen von Kompetenzbereichen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
 $string['report all descriptor children'] = 'Alle  Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
 $string['report all descriptor examples'] = 'Alle  Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen';
-$string['topic_description'] = 'Erstellen Sie ihren ersten Kompetenzbereich, das ist die erste Zeile in
-ihrem Raster';
-$string['niveau_description'] = 'Erstellen Sie ihren ersten Lernfortschritt, das sind die Spalten in
-ihrem Raster';
+$string['topic_description'] = 'Bezeichnung der ersten Zeile (z.B. Kompetenzbereich)';
+$string['niveau_description'] = 'Bezeichnung der ersten Spalte (z.B. LFS 1)';
+$string['descriptor_description'] = 'Eintrag der ersten Zelle (z.B. Kompetenzbeschreibung)';
 $string['selectcourse_filter'] = 'Filter';
 $string['selectcourse_filter_schooltype'] = 'Schulart';
 $string['selectcourse_filter_onlyselected'] = 'Nur ausgewählte Raster anzeigen';
 $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Nothing to show';
-$string['descriptor_description'] = 'Competenzbeschreibung';
+$string['descriptor_label'] = 'Kompetenzbeschreibung';
 $string['export_password_message'] = 'Bitte notieren Sie sich das Passwort "<strong>{$a}</strong>", bevor Sie fortfahren.<br/><br/>
 		Hinweis: Passwortgeschützte zip-Dateien können unter Windows zwar geöffnet werden, aber die Dateien innerhalb der Zip-Datei können nur mit einem externen Programm (z.B. 7-Zip) extrahiert werden.
 		';

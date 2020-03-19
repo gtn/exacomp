@@ -124,7 +124,7 @@ return [
 		'Edit badges',
 	],
 	'tab_teacher_settings_new_subject' => [
-		'Neuen Kompetenzraster anlegen',
+		'Neues Kompetenzraster anlegen',
 		'Create new subject',
 	],
 	'tab_teacher_settings_taxonomies' => [
@@ -3030,13 +3030,15 @@ return [
         'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ',
     ],
     'topic_description' => [
-        'Erstellen Sie ihren ersten Kompetenzbereich, das ist die erste Zeile in
-ihrem Raster',
+        'Bezeichnung der ersten Zeile (z.B. Kompetenzbereich)',
         'Create your first topic:'
     ],
     'niveau_description' => [
-        'Erstellen Sie ihren ersten Lernfortschritt, das sind die Spalten in
-ihrem Raster',
+        'Bezeichnung der ersten Spalte (z.B. LFS 1)',
+        'Create your first Niveau:'
+    ],
+    'descriptor_description' => [
+        'Eintrag der ersten Zelle (z.B. Kompetenzbeschreibung)',
         'Create your first Niveau:'
     ],
     'selectcourse_filter' => [
@@ -3059,8 +3061,8 @@ ihrem Raster',
         'Nothing to show',
         'Nothing to show',
     ],
-    'descriptor_description' => [
-        'Competenzbeschreibung',
+    'descriptor_label' => [
+        'Kompetenzbeschreibung',
         'Competency description'
     ],
 	'export_password_message' => [

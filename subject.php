@@ -116,7 +116,8 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->setType('niveau_numb', PARAM_TEXT);
 		
 		$mform->addElement('html', '<h2> '.block_exacomp_get_string("descriptors").' </h2>');
-		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('descriptor_description'), 'maxlength="255" size="60"');
+		$mform->addElement('html', '<p> '.block_exacomp_get_string("descriptor_description").' </p>');
+		$mform->addElement('textarea', 'descriptor_title', block_exacomp_get_string('descriptor_label'), 'rows="6" cols="100" size="60"');
 		$mform->setType('descriptor_title', PARAM_TEXT);
 		$mform->addRule('descriptor_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 		
