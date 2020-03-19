@@ -247,7 +247,11 @@ function block_exacomp_init_js_weekly_schedule() {
 
 	$PAGE->requires->css('/blocks/exacomp/javascript/fullcalendar/fullcalendar.css');
 	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
-    $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
+    // fullcalendar.js has a few changes from origin: regarding to language wordings
+    // This fullcalendar.js can broke working of Moodle JS merging
+    // So - generate fullcalendar.min.js and use it
+    //$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
+    $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.min.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/locale-all.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/jquery.ui.touch.js');
 }
@@ -6852,33 +6856,33 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 
 	//if teacher: only show the examples that this teacher added to the plannning storage (creatorid)
 	if($studentid == 0){
-        $sql = "select s.*,
+        $sql = "SELECT DISTINCT s.id, s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
 				e.schedule_marker
 			FROM {block_exacompschedule} s
-			JOIN {block_exacompexamples} e ON e.id = s.exampleid
-			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
-			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
+			  JOIN {block_exacompexamples} e ON e.id = s.exampleid
+			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
+			    LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
 			WHERE s.studentid = ? AND s.deleted = 0 AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
 				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
-			) AND s.creatorid = ?
+            ) AND s.creatorid = ?
 			ORDER BY s.id";
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week, $USER->id));
     } else {
-        $sql = "select s.*,
+        $sql = "SELECT DISTINCT s.id, s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
 				e.schedule_marker
 			FROM {block_exacompschedule} s
-			JOIN {block_exacompexamples} e ON e.id = s.exampleid
-			JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
-			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
+			  JOIN {block_exacompexamples} e ON e.id = s.exampleid
+			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
+			    LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
 			WHERE s.studentid = ? AND s.deleted = 0 AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
