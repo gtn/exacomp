@@ -9767,6 +9767,7 @@ class block_exacomp_external extends external_api {
         }
 
         block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $descriptor);
+        $newCategoryReturn = null;
 
         if ($descriptorid > 0) {
             $newCat = trim($newcategory);
@@ -9782,6 +9783,11 @@ class block_exacomp_external extends external_api {
                 // new category will be used for descriptor.
                 // TODO: add to category list?
                 $categories = $newCategory->id;
+                $newCategoryReturn = (object) [
+                    'id' => $newCategory->id,
+                    'title' => $newCategory->title,
+                    'source' => $newCategory->source
+                ];
             }
 
             // Clear the existing categories.
@@ -9797,9 +9803,15 @@ class block_exacomp_external extends external_api {
 
         }
 
-        return array(
+        $return = array(
                 "success" => true,
         );
+
+        if ($newCategoryReturn) {
+            $return['newCategory'] = $newCategoryReturn;
+        }
+
+        return $return;
     }
 
     /**
@@ -9810,6 +9822,12 @@ class block_exacomp_external extends external_api {
     public static function update_descriptor_category_returns() {
         return new external_single_structure (array(
                 'success' => new external_value (PARAM_BOOL, 'true if successful'),
+                'newCategory' => new external_single_structure (array(
+                        'id' => new external_value (PARAM_INT, 'id of new category'),
+                        'title' => new external_value (PARAM_TEXT, 'title of new category'),
+                        'source' => new external_value (PARAM_INT, 'cource of new category'),
+
+                ), 'data of new category', VALUE_OPTIONAL),
         ));
     }
 
