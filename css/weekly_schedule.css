@@ -251,6 +251,16 @@
 	/*border: 1px solid #96a7b7;*/
 }
 
+#block_exacomp .fc-backgroundevent {
+	background-color: #026cc5;
+	pointer-events: none;
+	cursor: default;
+	border: 1px solid #0162b3;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	/*border: 1px solid #96a7b7;*/
+}
+
 #block_exacomp .different-course {
 	background-color: #acbcca;
 	border: 1px solid #acbcca;

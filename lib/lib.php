@@ -5925,6 +5925,33 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
 	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid.'&studentid='.$studentid.'&subjectid='.$topic->subjid.'&topicid='.$topic->id.'&exampleid='.$exampleid;
 }
 
+
+/**
+ * function for testing import of ics to weekly_schedule
+ */
+function block_exacomp_import_ics_to_weekly_schedule(){
+    require __DIR__.'/../calFileParser/CalFileParser.php';
+    $cal = new CalFileParser();
+    $cal->set_timezone('Europe/Berlin');
+//    $example1 = $cal->parse('C:\moodle_3_7_experimental\server\moodle\blocks\exacomp\calFileParser\examples/schedule.ical');
+    $icsData = $cal->parse('https://urania.webuntis.com/WebUntis/Ical.do?school=hak-steyr&id=RIEPL&token=91282f616c9ee2a17aedb037f42e06');
+//    var_dump($icsData);
+    $timeStart = $icsData[3]['DTSTART']->getTimestamp();
+    $timeEnd = $icsData[3]['DTEND']->getTimestamp();
+    var_dump($timeStart);
+    var_dump($timeEnd);
+    $blockingEventId = block_exacomp_create_blocking_event(2,"FROM ICS",4,2);
+    var_dump($blockingEventId);
+    block_exacomp_add_example_to_schedule(4, $blockingEventId, 4, 2,$timeStart,$timeEnd);
+}
+
+
+
+
+
+
+
+
 /**
  * add example to students schedule, if start and end not set, example is added to planning storage
  * @param unknown $studentid
@@ -8063,6 +8090,8 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 
 		$vibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
 	}
+
+	return $exampleid;
 }
 
 /**

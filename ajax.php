@@ -380,6 +380,16 @@ switch($action){
 			block_exacomp_remove_example_from_schedule($schedule->id);
 		}
 		break;
+    case 'import-ics':
+        //$studentid = required_param('studentid', PARAM_INT);
+        $studentid = optional_param('studentid', null, PARAM_INT);
+        if (!$studentid) {
+            $studentid = $USER->id;
+        }
+
+//        block_exacomp_add_example_to_schedule(4, 1, 4, 2);
+        block_exacomp_import_ics_to_weekly_schedule();
+        break;
 	case 'get-pre-planning-storage':
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);

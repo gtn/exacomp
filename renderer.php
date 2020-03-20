@@ -7117,7 +7117,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$trash = $this->example_trash();
 		$clear = html_writer::div('', '', array('style' => 'clear:both'));
 
-		return html_writer::div($pool.$calendar.$trash.$clear, '', array('id' => 'wrap'));
+		$createElementButton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics', 'value' => "import_ics"));
+
+		return html_writer::div($pool.$calendar.$trash.$clear.$createElementButton, '', array('id' => 'wrap'));
 	}
 
 	public function example_trash($trash_examples = array(), $persistent_trash = true) {

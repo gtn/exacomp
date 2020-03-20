@@ -37,6 +37,17 @@
 		});
 	});
 
+	$(document).on('click', '#import_ics', function(event) {
+		studentid = block_exacomp.get_studentid();
+
+		block_exacomp.call_ajax({
+			studentid: studentid,
+			action : 'import-ics'
+		}).done(function(msg) {
+			// location.reload();
+		});
+	});
+
 	$(document).on('click', '#event-copy', function(event) {
 		exacomp_calendar_copy_event($(this).attr("exa-scheduleid"));
 	});
@@ -585,6 +596,7 @@
 
 		/* initialize the external events
 		-----------------------------------------------------------------*/
+		debugger
 
 		$eventDiv = $( '#external-events' );
 		$trash = $( '#trash' );
@@ -594,7 +606,7 @@
 
 			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
 			$.each(configuration.trash, function(i, item){ add_trash_item(item); });
-
+			debugger
 			create_calendar();
 		});
 
