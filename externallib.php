@@ -2896,12 +2896,16 @@ class block_exacomp_external extends external_api {
 		}
 
 		$mapping = true;
-		if($parent && block_exacomp_get_assessment_comp_scheme()!=1){
+		//if($parent && block_exacomp_get_assessment_comp_scheme()!=1){
+		if ($parent && block_exacomp_additional_grading($comptype) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
 		    $mapping = false;
 		}
-		if(!$parent && block_exacomp_get_assessment_childcomp_scheme()!=1){
-		    $mapping = false;
-		}
+		//if(!$parent && block_exacomp_get_assessment_childcomp_scheme()!=1){
+        if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) {
+            if (!$parent && block_exacomp_additional_grading($comptype) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+                $mapping = false;
+            }
+        }
 
 		if ($mapping && $role == BLOCK_EXACOMP_ROLE_TEACHER) { // grade ==> mapping needed, save mapped value and save additionalinfo
 		    //check if teacher, because the student sends the selfevaluationvalue in $value, not in $additinalinfo
