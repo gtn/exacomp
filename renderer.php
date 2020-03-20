@@ -5729,9 +5729,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
                             'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
                     if($crosssubj){
-                        $innersection .= html_writer::div($this->timeline_graph($course, $student,false, $crosssubj), "competence_profile_timelinegraph");
+                        $innersection .= html_writer::div($this->timeline_graph($course, $student,false, $subject, $crosssubj), "competence_profile_timelinegraph");
                     }else{
-                        $innersection .= html_writer::div($this->timeline_graph($course, $student), "competence_profile_timelinegraph");
+                        $innersection .= html_writer::div($this->timeline_graph($course, $student, false, $subject), "competence_profile_timelinegraph");
                     }
                 }
                 $content .= html_writer::tag('fieldset', $innersection,
@@ -6435,8 +6435,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function timeline_graph($course, $student, $returnData = false, $crosssubj=null) {
-        $timeline_data = block_exacomp_get_gained_competences($course, $student, $crosssubj);
+	public function timeline_graph($course, $student, $returnData = false, $subject=null, $crosssubj=null) {
+        $timeline_data = block_exacomp_get_gained_competences($course, $student, $subject, $crosssubj);
 
 		list ($gained_competencies_teacher, $gained_competencies_student, $total_competencies) = $timeline_data;
 
