@@ -44,7 +44,7 @@
 			studentid: studentid,
 			action : 'import-ics'
 		}).done(function(msg) {
-			// location.reload();
+			location.reload();
 		});
 	});
 
@@ -422,6 +422,13 @@
 							event.durationEditable = false;
 						}
 
+						//background events should only be there for visualization
+						if(event.state == 10){
+							event.editable = false;
+							event.startEditable = false;
+							event.durationEditable = false;
+						}
+
 						// past event
 						if (moment(event.start).isBefore(moment(), "day")){
 							event.editable = false;
@@ -484,7 +491,7 @@
 					((event.externaltask != null) ? '	<div class="event-task">'+event.externaltask+'</div>' : '' )+
 					((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
 					((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
-					((event.courseid == courseid)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
+					((event.courseid == courseid && event.state != 10)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
                     ((event.schedule_marker != null && event.schedule_marker != '') ? '	<div class="event-schedulermarker marker_'+event.schedule_marker+'">' + event.schedule_marker_short + '</div>' : '' )+
 					'</div>');
 

@@ -368,6 +368,12 @@
 	border: 1px solid #593d1e !important;
 }
 
+#block_exacomp .state10 {
+	background-color: #593d1e;
+	opacity: 0.4;
+	border: 1px solid #593d1e !important;
+	color: #FFFFFF;
+}
 
 #block_exacomp .event-schedulermarker {
 	/*text-align: right;*/

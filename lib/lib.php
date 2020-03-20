@@ -5933,23 +5933,14 @@ function block_exacomp_import_ics_to_weekly_schedule(){
     require __DIR__.'/../calFileParser/CalFileParser.php';
     $cal = new CalFileParser();
     $cal->set_timezone('Europe/Berlin');
-//    $example1 = $cal->parse('C:\moodle_3_7_experimental\server\moodle\blocks\exacomp\calFileParser\examples/schedule.ical');
     $icsData = $cal->parse('https://urania.webuntis.com/WebUntis/Ical.do?school=hak-steyr&id=RIEPL&token=91282f616c9ee2a17aedb037f42e06');
-//    var_dump($icsData);
-    $timeStart = $icsData[3]['DTSTART']->getTimestamp();
-    $timeEnd = $icsData[3]['DTEND']->getTimestamp();
-    var_dump($timeStart);
-    var_dump($timeEnd);
-    $blockingEventId = block_exacomp_create_blocking_event(2,"FROM ICS",4,2);
-    var_dump($blockingEventId);
-    block_exacomp_add_example_to_schedule(4, $blockingEventId, 4, 2,$timeStart,$timeEnd);
+    foreach($icsData as $event){
+        $timeStart = $event['DTSTART']->getTimestamp();
+        $timeEnd = $event['DTEND']->getTimestamp();
+        $blockingEventId = block_exacomp_create_background_event(2,$event["SUMMARY"],4,2);
+        block_exacomp_add_example_to_schedule(4, $blockingEventId, 4, 2,$timeStart,$timeEnd);
+    }
 }
-
-
-
-
-
-
 
 
 /**
@@ -5965,7 +5956,7 @@ function block_exacomp_import_ics_to_weekly_schedule(){
  * @param char $source  'S' for student, 'T' for teacher individually, 'C' for central.. if teacher assigns many at one time
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent=false) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
@@ -5997,15 +5988,14 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
             block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source);
         }
 	}else {
-	    $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated,
-	        'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory, 'source' => $source ));
+        $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated,
+            'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory, 'source' => $source ));
 
-	    //only send a notification if a teacher adds an example for a student and not for pre planning storage
-	    if ($creatorid != $studentid && $studentid > 0) {
-	        block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
-	    }
-
-	    \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
+        //only send a notification if a teacher adds an example for a student and not for pre planning storage
+        if ($creatorid != $studentid && $studentid > 0) {
+            block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+        }
+        \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
 	}
 	return true;
 }
@@ -7310,11 +7300,17 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	//state 4 = evaluated -> only from teacher exacomp evaluation nE
 	//state 5 = evaluated -> only from teacher exacomp evaluation > nE
 	//state 9 = locked time
+    //state 10 = backgroundEvent
 
 	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 	if ($example->blocking_event == 1) {
 		return BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME;
 	}
+
+	//background event: should only be visible, nothing else... will be used for imported events from ics files from e.g. Webuntis
+    if ($example->blocking_event == 3) {
+        return 10;
+    }
 
 	$comp = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid));
 	$gradingScheme = block_exacomp_get_assessment_example_scheme();
@@ -8091,8 +8087,47 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 		$vibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
 	}
 
-	return $exampleid;
 }
+
+/**
+ * create an example only available on weekly schedule, to define occupied time slots, currently only for teachers
+ * @param unknown $courseid
+ * @param unknown $title
+ * @param unknown $creatorid
+ * @param unknown $studentid
+ */
+function block_exacomp_create_background_event($courseid, $title, $creatorid, $studentid) {
+    global $DB;
+
+    $example = new stdClass();
+    $example->title = $title;
+    $example->creatorid = $creatorid;
+    $example->blocking_event = 3;
+
+    $exampleid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
+
+    $schedule = new stdClass();
+    $schedule->studentid = $studentid;
+    $schedule->exampleid = $exampleid;
+    $schedule->creatorid = $creatorid;
+    $schedule->courseid = $courseid;
+
+    $scheduleid = $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, $schedule);
+
+    $record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => 0, 'visible' => 1));
+    if (!$record) {
+        $visibility = new stdClass();
+        $visibility->courseid = $courseid;
+        $visibility->exampleid = $exampleid;
+        $visibility->studentid = 0;
+        $visibility->visible = 1;
+
+        $vibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
+    }
+
+    return $exampleid;
+}
+
 
 /**
  * needed to create example over webservice API
