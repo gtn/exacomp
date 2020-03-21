@@ -2151,7 +2151,22 @@ class data_importer extends data {
 			return;
 		}
 
-		$filecontent = self::$zip->getFromName($xmlItem->filepath);
+		$filepathOrig = $xmlItem->filepath->__toString();
+		$filecontent = self::$zip->getFromName($filepathOrig);
+		// different servers (and zip) can have different options, so:
+        // usually it is different slashes in zips
+		if (!$filecontent) {
+            $filepath = '/'.$filepathOrig;
+            $filecontent = self::$zip->getFromName($filepath);
+        }
+        if (!$filecontent) {
+            $filepath = str_replace('/', '\\', $filepathOrig);
+            $filecontent = self::$zip->getFromName($filepath);
+        }
+        if (!$filecontent) {
+            $filepath = '\\'.str_replace('/', '\\', $filepathOrig);
+            $filecontent = self::$zip->getFromName($filepath);
+        }
 
 		$fs = get_file_storage();
 
