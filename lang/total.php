@@ -2543,8 +2543,8 @@ return [
         'new'
     ],
     'import_used_preselected_from_previous' => [
-        'is used preselected values from your previous importing from this source',
-        'is used preselected values from your previous importing from this source'
+        'Falls eine XML-Datei bereits zuvor importiert worden ist, werden dieselben Voreinstellungen der Datenquelle verwendet',
+        'If an XML has been imported previously, these values are preselected'
     ],
     'import_from_related_komet' => [
         'Bildungsstandards aus zugehörigem KOMET importieren/aktualisieren',

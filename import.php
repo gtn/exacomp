@@ -104,7 +104,7 @@ class generalxml_upload_form extends \moodleform {
 	}
 
 	function definition_after_data() {
-        global $CFG;
+        global $CFG, $DB;
         //parent::definition_after_data();
         $forSchedulerTask = false;
         $mform =& $this->_form;
@@ -171,7 +171,12 @@ class generalxml_upload_form extends \moodleform {
                     // if used preselected values - message
                     $currentSelected = block_exacomp\data_importer::get_selectedgrids_for_source($data['sourceId'], $forSchedulerTask);
                     if ($currentSelected || $currentAllGrids == 1) {
-                        $mform->addElement('html', '<div class="alert alert-info small">'.block_exacomp_get_string('import_used_preselected_from_previous').'</div>');
+                        // additional condition: at least one subject is from this source
+                        $subjectExisting = $DB->get_records('block_exacompsubjects', ['source' => $data['sourceId']]);
+                        if ($subjectExisting) {
+                            $mform->addElement('html', '<div class="alert alert-info small">'.
+                                    block_exacomp_get_string('import_used_preselected_from_previous').'</div>');
+                        }
                     }
                     // import all subjects
                     $params = array('class' => 'import-all-subjects');

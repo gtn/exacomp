@@ -67,7 +67,8 @@ class block_exacomp extends block_list {
 			$checkConfig = block_exacomp_is_configured();
 		}
 
-		$has_data = block_exacomp\data::has_data();
+		//$has_data = block_exacomp\data::has_data();
+		$has_data = true; // 22.03.2020 SZ
 
 		$courseSettings = block_exacomp_get_settings_by_course($courseid);
 
@@ -83,7 +84,6 @@ class block_exacomp extends block_list {
 		$isStudent = has_capability('block/exacomp:student', $currentcontext) && $courseid != 1 && !has_capability('block/exacomp:admin', $currentcontext);
 		$isTeacherOrStudent = $isTeacher || $isStudent;
 		// $lis = block_exacomp_is_altversion();
-
 		if ($checkConfig && $has_data) {    //Modul wurde konfiguriert
 
 			if ($isTeacherOrStudent && $ready_for_use) {

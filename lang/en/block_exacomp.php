@@ -714,7 +714,7 @@ $string['export_selective'] = 'Select competence grids for export';
 $string['select_all'] = 'select all';
 $string['deselect_all'] = 'deselect all';
 $string['new'] = 'new';
-$string['import_used_preselected_from_previous'] = 'is used preselected values from your previous importing from this source';
+$string['import_used_preselected_from_previous'] = 'If an XML has been imported previously, these values are preselected';
 $string['import_from_related_komet'] = 'Import/update grids from related KOMET';
 $string['import_activate_scheduled_tasks'] = 'Activate these tasks';
 

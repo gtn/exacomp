@@ -40,8 +40,15 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $paramname = $this->name;
             switch ($paramname) {
                 case 'assessment_grade_verbose':
+                    $defaultVal = block_exacomp_get_string('settings_assessment_grade_verbose_default');
                 case 'assessment_verbose_options':
+                    if (!isset($defaultVal)) {
+                        $defaultVal = block_exacomp_get_string('settings_assessment_verbose_options_default');
+                    }
                     $copyofget = trim($get);
+                    if ($copyofget == '') {
+                        return $get; // get default or empty?
+                    }
                     $get = json_decode($get, true);
                     if (json_last_error() && $copyofget != '') {
                         return $copyofget; // return string if it is not json data
@@ -62,9 +69,16 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $paramname = $this->name;
             switch ($paramname) {
                 case 'assessment_grade_verbose':
+                    $defaultVal = block_exacomp_get_string('settings_assessment_grade_verbose_default');
                 case 'assessment_verbose_options':
+                    if (!isset($defaultVal)) {
+                        $defaultVal = block_exacomp_get_string('settings_assessment_verbose_options_default');
+                    }
                     $olddata = get_config('exacomp', $paramname);
                     $copyofold = trim($olddata);
+                    if ($copyofold == '') {
+                        $data = $defaultVal; // get default or empty?
+                    }
                     $olddata = json_decode($olddata, true);
                     if (json_last_error() && $copyofold != '') { // Old data is not json
                         $olddata['de'] = $copyofold;
@@ -101,12 +115,15 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         $e->setAttribute('readOnly', 'readonly');
                     }
                 }
-                // add onfocus listener: for 'assessment_grade_verbose_negative'
+                // add onChange listener: for 'assessment_grade_verbose_negative'
                 foreach($selector->query('//input[@id=\'id_s_exacomp_assessment_verbose_options\'][1]') as $e ) {
                     $e->setAttribute('onChange', $e->getAttribute('onChange').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
+                    //$script = $doc->createElement('script', 'reloadVerboseNegativeSelectbox();');
+                    //$e->parentNode->appendChild($script);
                 }
                 $output = $doc->saveHTML($doc->documentElement);
             }
+
             // add message about default (DE) value if the user uses not DE interface language
             if ($this->lang != 'de') { // only for NON DE
                 switch ($this->name) {
@@ -115,13 +132,16 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         $doc = new DOMDocument();
                         $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                         $selector = new DOMXPath($doc);
-                        $message = block_exacomp_get_string('settings_default_de_value').call_user_func('block_exacomp_get_'.$this->name, 'de');
-                        $br = $doc->createElement('br');
-                        foreach($selector->query('//*[@name="s_exacomp_'.$this->name.'"]') as $e ) {
-                            $span = $doc->createElement('span', $message);
-                            $span->setAttribute('class', 'text-info small');
-                            $e->parentNode->insertBefore($br, $e->nextSibling);
-                            $e->parentNode->insertBefore($span, $e->nextSibling);
+                        $de_value = call_user_func('block_exacomp_get_'.$this->name, 'de');
+                        if ($de_value) {
+                            $message = block_exacomp_get_string('settings_default_de_value').$de_value;
+                            $br = $doc->createElement('br');
+                            foreach ($selector->query('//*[@name="s_exacomp_'.$this->name.'"]') as $e) {
+                                $span = $doc->createElement('span', $message);
+                                $span->setAttribute('class', 'text-info small');
+                                $e->parentNode->insertBefore($br, $e->nextSibling);
+                                $e->parentNode->insertBefore($span, $e->nextSibling);
+                            }
                         }
                         $output = $doc->saveHTML($doc->documentElement);
                 }
@@ -223,6 +243,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     });
                     selectbox.value = selected_value;
                 };
+            reloadVerboseNegativeSelectbox();
             </script>';
             return $output;
         }
@@ -614,6 +635,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 
                     $newvalue = null;
                     $copyofvalue = trim($value);
+                    //if (!$copyofvalue) {
+                    //    $newvalue = $this->config_read($targetparam);
+                    //}
                     $get = json_decode($value, true);
                     if (json_last_error() && $copyofvalue != '') {
                         $newvalue = $copyofvalue; // return string if it is not json data
@@ -752,7 +776,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                             ));
 
                     // add mesage about default (DE) value if the user uses not DE interface language
-                    if ($this->lang != 'de') { // only for NON DE
+                    if ($this->lang != 'de' && block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de')) { // only for NON DE
                         $message = block_exacomp_get_string('settings_default_de_value').block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de');
                         $input .= '<span class="text-info small">'.$message.'</span>';
                     }
@@ -1014,14 +1038,22 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
         block_exacomp_get_string('settings_assessment_grade_negativ'),
         block_exacomp_get_string('settings_assessment_grade_negativ_description'),
         6, PARAM_INT));
+$verb_default = block_exacomp_get_string('settings_assessment_grade_verbose_default');
+/*if (!$verb_default) { // lang files are not generated in first installation?
+    $verb_default = 'very good, good, satisfactory, sufficient, deficient, insufficient'; // 'en' is default
+    if (current_language() == 'de') {
+        $verb_default = 'sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend';
+    }
+}*/
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_verbose',
         block_exacomp_get_string('settings_assessment_grade_verbose'),
         block_exacomp_get_string('settings_assessment_grade_verbose_description'),
-        block_exacomp_get_string('settings_assessment_grade_verbose_default'),
+        $verb_default,
         PARAM_TEXT));
 $settings->add(new block_exacomp_admin_setting_extraconfigcheckbox('exacomp/use_grade_verbose_competenceprofile',
         block_exacomp_get_string('use_grade_verbose_competenceprofile'),
-        block_exacomp_get_string('use_grade_verbose_competenceprofile_descr'), 1));
+        block_exacomp_get_string('use_grade_verbose_competenceprofile_descr'),
+        1));
 
 $settings->add(new block_exacomp_admin_setting_diffLevelOptions('exacomp/assessment_diffLevel_options',
         block_exacomp_get_string('settings_assessment_diffLevel_options'),

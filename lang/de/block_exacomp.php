@@ -722,7 +722,7 @@ $string['export_selective'] = 'Selektiver Export';
 $string['select_all'] = 'alle wählen';
 $string['deselect_all'] = 'alle abwählen';
 $string['new'] = 'neu';
-$string['import_used_preselected_from_previous'] = 'is used preselected values from your previous importing from this source';
+$string['import_used_preselected_from_previous'] = 'Falls eine XML-Datei bereits zuvor importiert worden ist, werden dieselben Voreinstellungen der Datenquelle verwendet';
 $string['import_from_related_komet'] = 'Bildungsstandards aus zugehörigem KOMET importieren/aktualisieren';
 $string['import_activate_scheduled_tasks'] = 'Activate these tasks';
 

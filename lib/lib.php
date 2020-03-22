@@ -11131,7 +11131,8 @@ function block_exacomp_update_evaluation_niveau_tables($data='',$option_type='ni
 		//$titles = explode(",",$data);
         $titles = preg_split( "/(\/|,)/", $data);
         // array from 1, not from 0
-        array_unshift($titles, null); unset($titles[0]);
+        array_unshift($titles, null);
+        unset($titles[0]);
     } else {
 		//$evaluation_niveau = block_exacomp_evaluation_niveau_type();
 		$evaluation_niveau = block_exacomp_get_assessment_diffLevel_options();
