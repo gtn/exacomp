@@ -1025,15 +1025,15 @@ $settings->add(new block_exacomp_assessment_configtable('exacomp/assessment_mapp
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_points_limit',
         block_exacomp_get_string('settings_assessment_points_limit'),
         block_exacomp_get_string('settings_assessment_points_limit_description'),
-        20, PARAM_INT));
+        10, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_points_negativ',
         block_exacomp_get_string('settings_assessment_points_negativ'),
         block_exacomp_get_string('settings_assessment_points_negativ_description'),
-        8, PARAM_INT));
+        3, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_limit',
         block_exacomp_get_string('settings_assessment_grade_limit'),
         block_exacomp_get_string('settings_assessment_grade_limit_description'),
-        20, PARAM_INT));
+        6, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_negativ',
         block_exacomp_get_string('settings_assessment_grade_negativ'),
         block_exacomp_get_string('settings_assessment_grade_negativ_description'),
