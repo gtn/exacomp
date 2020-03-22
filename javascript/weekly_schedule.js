@@ -37,14 +37,19 @@
 		});
 	});
 
-	$(document).on('click', '#import_ics', function(event) {
+	$(document).on('click', '#import_ics_button', function(event) {
+		link = $('#import_ics_link').val();
+		creatorid = $(this).attr('creatorid');
 		studentid = block_exacomp.get_studentid();
-
+		courseid = block_exacomp.get_param('courseid');
 		block_exacomp.call_ajax({
 			studentid: studentid,
+			link: link,
+			creatorid: creatorid,
+			courseid: courseid,
 			action : 'import-ics'
 		}).done(function(msg) {
-			location.reload();
+			// location.reload();
 		});
 	});
 

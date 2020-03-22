@@ -382,13 +382,14 @@ switch($action){
 		break;
     case 'import-ics':
         //$studentid = required_param('studentid', PARAM_INT);
+        $creatorid = required_param('creatorid', PARAM_INT);
+        $courseid = required_param('courseid', PARAM_INT);
         $studentid = optional_param('studentid', null, PARAM_INT);
+        $link = optional_param('link', null, PARAM_TEXT);
         if (!$studentid) {
             $studentid = $USER->id;
         }
-
-//        block_exacomp_add_example_to_schedule(4, 1, 4, 2);
-        block_exacomp_import_ics_to_weekly_schedule();
+        block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid);
         break;
 	case 'get-pre-planning-storage':
 		$creatorid = required_param('creatorid', PARAM_INT);

@@ -5929,16 +5929,33 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
 /**
  * function for testing import of ics to weekly_schedule
  */
-function block_exacomp_import_ics_to_weekly_schedule(){
+function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid){
+
+    $timeslots = block_exacomp_build_json_time_slots($date = null);
+    $units = (get_config("exacomp", "scheduleunits")) ? get_config("exacomp", "scheduleunits") : 8;
+    $interval = (get_config("exacomp", "scheduleinterval")) ? get_config("exacomp", "scheduleinterval") : 50;
+    $time = (get_config("exacomp", "schedulebegin")) ? get_config("exacomp", "schedulebegin") : "07:45";
+
+    var_dump($timeslots);
+
+
     require __DIR__.'/../calFileParser/CalFileParser.php';
     $cal = new CalFileParser();
     $cal->set_timezone('Europe/Berlin');
-    $icsData = $cal->parse('https://urania.webuntis.com/WebUntis/Ical.do?school=hak-steyr&id=RIEPL&token=91282f616c9ee2a17aedb037f42e06');
+//    $icsData = $cal->parse('https://urania.webuntis.com/WebUntis/Ical.do?school=hak-steyr&id=RIEPL&token=91282f616c9ee2a17aedb037f42e06');
+    $icsData = $cal->parse($link);
+    $start = $icsData[3]['DTSTART'];
+    $end = $icsData[3]['DTEND'];
+    var_dump($start);
+    var_dump($end);
+    die;
+
     foreach($icsData as $event){
         $timeStart = $event['DTSTART']->getTimestamp();
         $timeEnd = $event['DTEND']->getTimestamp();
-        $blockingEventId = block_exacomp_create_background_event(2,$event["SUMMARY"],4,2);
-        block_exacomp_add_example_to_schedule(4, $blockingEventId, 4, 2,$timeStart,$timeEnd);
+        $blockingEventId = block_exacomp_create_background_event($courseid,$event["SUMMARY"],$creatorid,$studentid);
+//        block_exacomp_add_example_to_schedule(4, $blockingEventId, 4, 2,$timeStart,$timeEnd);
+        block_exacomp_add_example_to_schedule($studentid, $blockingEventId, $creatorid, $courseid,$timeStart,$timeEnd);
     }
 }
 

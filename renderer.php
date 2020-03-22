@@ -7111,15 +7111,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 	public function side_wrap_weekly_schedule() {
+	    global $USER;
 		$pool = $this->example_pool();
 
 		$calendar = html_writer::div('', '', array('id' => 'calendar'));
 		$trash = $this->example_trash();
 		$clear = html_writer::div('', '', array('style' => 'clear:both'));
 
-		$createElementButton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics', 'value' => "import_ics"));
+        $importICSlink = html_writer::empty_tag('input', array('type' => 'url', 'id' => 'import_ics_link', 'placeholder' => "www.myicsfile.at"));
+        $importICSbutton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics_button', 'value' => "import ics", 'creatorid' => $USER->id));
 
-		return html_writer::div($pool.$calendar.$trash.$clear.$createElementButton, '', array('id' => 'wrap'));
+		return html_writer::div($pool.$calendar.$trash.$clear.$importICSlink.$importICSbutton, '', array('id' => 'wrap'));
 	}
 
 	public function example_trash($trash_examples = array(), $persistent_trash = true) {
