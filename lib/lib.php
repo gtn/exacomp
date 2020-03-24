@@ -5946,9 +5946,9 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
     $icsData = $cal->parse($link);
     $start = $icsData[3]['DTSTART'];
     $end = $icsData[3]['DTEND'];
-    var_dump($start);
-    var_dump($end);
-    die;
+//    var_dump($start);
+//    var_dump($end);
+//    die;
 
     foreach($icsData as $event){
         $timeStart = $event['DTSTART']->getTimestamp();
