@@ -7032,8 +7032,8 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters (array(
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user'),
-			'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'crosssubjcid' => new external_value (PARAM_INT, 'id of crosssubject'),
+			'subjectid' => new external_value (PARAM_INT, 'id of subject', VALUE_DEFAULT, -1),
+            'crosssubjcid' => new external_value (PARAM_INT, 'id of crosssubject', VALUE_DEFAULT, -1),
 		));
 	}
 
@@ -7043,11 +7043,11 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-read
 	 */
-	public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid) {
+	public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid, $crosssubjcid) {
 		global $USER;
 
 		static::validate_parameters(static::dakora_get_competence_grid_for_profile_parameters(), array('courseid' => $courseid,
-			'userid' => $userid, 'subjectid' => $subjectid));
+			'userid' => $userid, 'subjectid' => $subjectid, 'crosssubjcid' => $crosssubjcid));
 
 		if ($userid == 0) {
 			$userid = $USER->id;
