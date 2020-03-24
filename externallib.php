@@ -7023,6 +7023,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user'),
 			'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+            'crosssubjcid' => new external_value (PARAM_INT, 'id of crosssubject'),
 		));
 	}
 
@@ -7046,8 +7047,8 @@ class block_exacomp_external extends external_api {
 		//$subjects = block_exacomp_get_subjects_by_course($courseid);
 
         $subjectinfo = array(
-                'teacher' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_TEACHER),
-                'student' => block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT),
+                'teacher' => array(block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_TEACHER)),
+                'student' => array(block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT)),
                 'globalcompetences' => array()
         );
         // global values
@@ -7112,8 +7113,8 @@ class block_exacomp_external extends external_api {
                 ))),
         );
 		return new external_single_structure (array(
-                    'teacher' => new external_single_structure($table_structure),
-                    'student' => new external_single_structure($table_structure),
+                    'teacher' => new external_multiple_structure (new external_single_structure($table_structure)),
+                    'student' => new external_multiple_structure (new external_single_structure($table_structure)),
                     'globalcompetences' => new external_multiple_structure(new external_single_structure($table_structure), '', VALUE_DEFAULT, array()),
                 )
 		);

@@ -3181,56 +3181,69 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>id of subject</td>
+<tr>
+<td>crosssubjcid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
 </table>
 Returns:<pre>{
-    "teacher": {
-        "title": "text null (title of table)",
-        "rows": [
-            {
-                "columns": [
-                    {
-                        "text": "text null (cell text)",
-                        "evaluation": "float null (evaluation)",
-                        "evaluation_text": "text null (evaluation text)",
-                        "evaluation_mapped": "int null (mapped evaluation)",
-                        "evalniveauid": "int null (evaluation niveau id)",
-                        "show": "bool null (show cell)",
-                        "visible": "bool null (cell visibility)",
-                        "topicid": "int null (topic id)",
-                        "span": "int null (colspan)",
-                        "timestamp": "int null (evaluation timestamp, 0 if not set)",
-                        "gradingisold": "bool null (true when there are childdescriptors with newer gradings than the parentdescriptor)"
-                    },
-                    "..."
-                ]
-            },
-            "..."
-        ]
-    },
-    "student": {
-        "title": "text null (title of table)",
-        "rows": [
-            {
-                "columns": [
-                    {
-                        "text": "text null (cell text)",
-                        "evaluation": "float null (evaluation)",
-                        "evaluation_text": "text null (evaluation text)",
-                        "evaluation_mapped": "int null (mapped evaluation)",
-                        "evalniveauid": "int null (evaluation niveau id)",
-                        "show": "bool null (show cell)",
-                        "visible": "bool null (cell visibility)",
-                        "topicid": "int null (topic id)",
-                        "span": "int null (colspan)",
-                        "timestamp": "int null (evaluation timestamp, 0 if not set)",
-                        "gradingisold": "bool null (true when there are childdescriptors with newer gradings than the parentdescriptor)"
-                    },
-                    "..."
-                ]
-            },
-            "..."
-        ]
-    },
+    "teacher": [
+        {
+            "title": "text null (title of table)",
+            "rows": [
+                {
+                    "columns": [
+                        {
+                            "text": "text null (cell text)",
+                            "evaluation": "float null (evaluation)",
+                            "evaluation_text": "text null (evaluation text)",
+                            "evaluation_mapped": "int null (mapped evaluation)",
+                            "evalniveauid": "int null (evaluation niveau id)",
+                            "show": "bool null (show cell)",
+                            "visible": "bool null (cell visibility)",
+                            "topicid": "int null (topic id)",
+                            "span": "int null (colspan)",
+                            "timestamp": "int null (evaluation timestamp, 0 if not set)",
+                            "gradingisold": "bool null (true when there are childdescriptors with newer gradings than the parentdescriptor)"
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ],
+    "student": [
+        {
+            "title": "text null (title of table)",
+            "rows": [
+                {
+                    "columns": [
+                        {
+                            "text": "text null (cell text)",
+                            "evaluation": "float null (evaluation)",
+                            "evaluation_text": "text null (evaluation text)",
+                            "evaluation_mapped": "int null (mapped evaluation)",
+                            "evalniveauid": "int null (evaluation niveau id)",
+                            "show": "bool null (show cell)",
+                            "visible": "bool null (cell visibility)",
+                            "topicid": "int null (topic id)",
+                            "span": "int null (colspan)",
+                            "timestamp": "int null (evaluation timestamp, 0 if not set)",
+                            "gradingisold": "bool null (true when there are childdescriptors with newer gradings than the parentdescriptor)"
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ],
     "globalcompetences": [
         {
             "title": "text null (title of table)",
