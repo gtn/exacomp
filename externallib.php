@@ -9780,9 +9780,11 @@ class block_exacomp_external extends external_api {
                 $newCategory->sourceid = 0;
                 $newCategory->lvl = 5;
                 $newCategory->id = $DB->insert_record(BLOCK_EXACOMP_DB_CATEGORIES, $newCategory);
-                // new category will be used for descriptor.
-                // TODO: add to category list?
-                $categories = $newCategory->id;
+                // new category will be added for descriptor.
+                if ($categories) {
+                    $categories .= ',';
+                }
+                $categories .= $newCategory->id;
                 $newCategoryReturn = (object) [
                     'id' => $newCategory->id,
                     'title' => $newCategory->title,
@@ -9794,11 +9796,13 @@ class block_exacomp_external extends external_api {
             $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, ['descrid' => $descriptorid]);
             // Insert new list.
             $categories = trim($categories) ? explode(',', trim($categories)) : [];
-            foreach ($categories as $catid) {
-                $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
-                        'descrid' => $descriptorid,
-                        'catid' => $catid,
-                ]);
+            if ($categories && count($categories) > 0) {
+                foreach ($categories as $catid) {
+                    $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
+                            'descrid' => $descriptorid,
+                            'catid' => $catid,
+                    ]);
+                }
             }
 
         }
