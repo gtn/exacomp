@@ -5180,6 +5180,13 @@ function block_exacomp_get_crosssubjects() {
 }
 
 /**
+ * returns the crosssubject with this id
+ */
+function block_exacomp_get_crosssubject_by_id($id) {
+    return g::$DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$id));
+}
+
+/**
  * @param $courseid
  * @param null $studentid
  * @return block_exacomp\cross_subject[]
@@ -5310,7 +5317,9 @@ function block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid) {
  * this is not perfect runtime-wise but there are so many places on where to get topics, that this way is easier
  */
 function block_exacomp_clear_topics_for_crosssubject($topics,$courseid,$crosssubj){
-    $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj->id);
+    $crosssubjid = is_scalar($crosssubj) ? $crosssubj : $crosssubj->id;
+
+    $descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid,$crosssubj);
     $topicsOfCrosssubj = array();
     foreach ($descriptors as $descriptor) {
         $topicsOfCrosssubj[$descriptor->topicid] = $descriptor->topicid;
@@ -8153,7 +8162,6 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
  *       span = 1 or 0 inidication if niveau is across (Ã¼bergreifend)
  */
 function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid, $crosssubj = null) {
-
 	global $DB;
 	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, BLOCK_EXACOMP_SHOW_ALL_TOPICS, 0, false, block_exacomp_is_teacher(), $studentid, false, false, $crosssubj);
 
@@ -8423,7 +8431,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
  * @return \block_exacomp\stdClass
  * see ws dakora_get_competence_grid_for_profile for return value description
  */
-function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, $targetrole = BLOCK_EXACOMP_ROLE_TEACHER, $custom_data = null) {
+function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, $targetrole = BLOCK_EXACOMP_ROLE_TEACHER, $custom_data = null, $crosssubj = null) {
 	global $DB;
     static $subjectGenericData = null;
     if ($subjectGenericData === null) {
@@ -8432,7 +8440,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
     if ($courseid !== null && $subjectid !== null) {
         $subjectData = $DB->get_record(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subjectid]);
         list ($course_subjects, $table_rows, $table_header, $table_content) =
-                block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
+                block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid, $crosssubj);
 
         // aggregate all data to next generation of global report
         if (@$subjectData->isglobal) { // only isglobal?
@@ -8618,6 +8626,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 
 	return $table;
 }
+
 
 /**
  * if additional grading is enabled, already existing evaluation for topic, subjects and descriptors are mapped to notes from 1 to 6

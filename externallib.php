@@ -7033,7 +7033,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user'),
 			'subjectid' => new external_value (PARAM_INT, 'id of subject', VALUE_DEFAULT, -1),
-            'crosssubjcid' => new external_value (PARAM_INT, 'id of crosssubject', VALUE_DEFAULT, -1),
+            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject', VALUE_DEFAULT, -1),
 		));
 	}
 
@@ -7043,11 +7043,11 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-read
 	 */
-	public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid, $crosssubjcid) {
+	public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid=-1, $crosssubjid=-1) {
 		global $USER;
 
 		static::validate_parameters(static::dakora_get_competence_grid_for_profile_parameters(), array('courseid' => $courseid,
-			'userid' => $userid, 'subjectid' => $subjectid, 'crosssubjcid' => $crosssubjcid));
+			'userid' => $userid, 'subjectid' => $subjectid, 'crosssubjid' => $crosssubjid));
 
 		if ($userid == 0) {
 			$userid = $USER->id;
@@ -7056,11 +7056,32 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		//$subjects = block_exacomp_get_subjects_by_course($courseid);
 
-        $subjectinfo = array(
+
+        if($subjectid != -1){
+            $subjectinfo = array(
                 'teacher' => array(block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_TEACHER)),
                 'student' => array(block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT)),
                 'globalcompetences' => array()
-        );
+            );
+        }else if($crosssubjid != -1){
+            $subjectinfo = array(
+                'teacher' => block_exacomp_get_competence_profile_crosssubject_grid_for_ws($courseid, $userid, $crosssubjid, BLOCK_EXACOMP_ROLE_TEACHER),
+                'student' => block_exacomp_get_competence_profile_crosssubject_grid_for_ws($courseid, $userid, $crosssubjid, BLOCK_EXACOMP_ROLE_STUDENT),
+                'globalcompetences' => array()
+            );
+
+            $crosssubject = block_exacomp_get_crosssubject_by_id($crosssubjid);
+            $subjects = block_exacomp_get_subjects_for_cross_subject($crosssubjid);
+
+            foreach($subjects as $id => $subj){
+                $subjectinfo['teacher'][] = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subj->id, BLOCK_EXACOMP_ROLE_TEACHER, null, $crosssubject);
+                $subjectinfo['student'][] = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subj->id, BLOCK_EXACOMP_ROLE_STUDENT, null, $crosssubject);
+            }
+
+//            var_dump($subjectinfo);
+//            die;
+        }
+
         // global values
         $possible_courses = block_exacomp_get_exacomp_courses($userid);
         $user_courses = array();
@@ -7093,6 +7114,10 @@ class block_exacomp_external extends external_api {
 
         // for testing in old app
         //$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid, BLOCK_EXACOMP_ROLE_STUDENT);
+//      var_dump($subjectinfo['teacher'][0]->rows[1]);
+//        var_dump($subjectinfo);
+//        die;
+
 
 		return $subjectinfo;
 	}
