@@ -8751,19 +8751,28 @@ class block_exacomp_external extends external_api {
 	    $descriptor_return = new stdClass();
 	    $descriptor_return->descriptorid = $descriptorid;
 	    $descriptor_return->parentid = $descriptor->parentid;
-	    $descriptor_return->descriptortitle = static::custom_htmltrim($descriptor->title);
+        $selected_categories = $DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $descriptorid), "", "catid");
+        if ($selected_categories) {
+            $descriptor_return->categories = implode(',', array_keys($selected_categories));
+        } else {
+            $descriptor_return->categories = '';
+        }
+	    if ($selected_categories) {
+	        $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp 
+	                                                        FROM {'.BLOCK_EXACOMP_DB_CATEGORIES.'} c
+	                                                        WHERE c.id IN ('.implode(',', array_keys($selected_categories)).')');
+            $descCategories = '. '.get_string('dakora_niveau_after_descriptor_title', 'block_exacomp').': '.implode(', ', array_keys($categoryTitlesRes));
+            $descriptor->title = rtrim($descriptor->title, '.');
+        } else {
+            $descCategories = '';
+        }
+	    $descriptor_return->descriptortitle = static::custom_htmltrim($descriptor->title).$descCategories;
 	    $descriptor_return->teacherevaluation = -1;
 	    $descriptor_return->additionalinfo = null;
 	    $descriptor_return->evalniveauid = null;
 	    $descriptor_return->timestampteacher = 0;
 	    $descriptor_return->reviewerid = 0;
 	    $descriptor_return->reviewername = null;
-	    $selected_categories = $DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $descriptorid), "", "catid");
-	    if ($selected_categories) {
-            $descriptor_return->categories = implode(',', array_keys($selected_categories));
-        } else {
-            $descriptor_return->categories = '';
-        }
 
 	    if (!$forall) {
 	        if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptorid)) {

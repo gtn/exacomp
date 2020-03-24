@@ -2684,6 +2684,10 @@ return [
         'deutscher string3',
         'english string3'
     ],
+    'dakora_niveau_after_descriptor_title' => [
+        'Niveau',
+        'Level',
+    ],
 
     'active_show' => [
         'aktiv (anzeigen)',

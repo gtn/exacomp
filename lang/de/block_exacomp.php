@@ -761,6 +761,7 @@ $string['transferable_skills'] = 'Überfachliche Kompetenzen';
 $string['dakora_string1'] = 'deutscher string1';
 $string['dakora_string2'] = 'deutscher string2';
 $string['dakora_string3'] = 'deutscher string3';
+$string['dakora_niveau_after_descriptor_title'] = 'Niveau';
 $string['active_show'] = 'aktiv (anzeigen)';
 $string['donotleave_page_message'] = 'You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?';
 $string['privacy:metadata:block_exacompcompuser'] = 'Storage for student evaluations';
