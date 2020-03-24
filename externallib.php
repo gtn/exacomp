@@ -702,6 +702,16 @@ class block_exacomp_external extends external_api {
 				$descriptors[$descriptor_mm->descrid]->evaluation = 0;
 			}
 
+            $selected_categories = $DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $descriptor_mm->descrid), "", "catid");
+            if ($selected_categories) {
+                $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp 
+	                                                        FROM {'.BLOCK_EXACOMP_DB_CATEGORIES.'} c
+	                                                        WHERE c.id IN ('.implode(',', array_keys($selected_categories)).')');
+                $descCategories = '. '.get_string('dakora_niveau_after_descriptor_title', 'block_exacomp').': '.implode(', ', array_keys($categoryTitlesRes));
+                $descriptors[$descriptor_mm->descrid]->title = rtrim($descriptors[$descriptor_mm->descrid]->title, '.');
+                $descriptors[$descriptor_mm->descrid]->title .= $descCategories;
+            }
+
 			$descriptors[$descriptor_mm->descrid]->descriptorid = $descriptor_mm->descrid;
 		}
 
