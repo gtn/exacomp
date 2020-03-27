@@ -178,22 +178,20 @@ echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' 
 
 foreach ($user_courses as $course) {
     //if selected
-    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
+//    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
 }
 
 
 //Add crosssubjects
 $crosssubjects = array();
 foreach($user_courses as $course){
-    $crosssubjects[] = block_exacomp_get_cross_subjects_by_course($course->id);
+    $crosssubjects[] = block_exacomp_get_cross_subjects_by_course($course->id,$student->id);
 }
+
 
 foreach($crosssubjects as $crosssubjectsOfCourse) {
     foreach($crosssubjectsOfCourse as $crosssubj){
-        //if selected
-        if(block_exacomp_student_crosssubj($crosssubj->id,$studentid)){ // TODO: there only is an association if there is an EXPLICIT one... not if "all students" is selected"
-            echo $output->competence_profile_course(-1,$student,true,block_exacomp_get_grading_scheme($crosssubj->id),false,$crosssubj);
-        }
+        echo $output->competence_profile_course(-1,$student,true,block_exacomp_get_grading_scheme($crosssubj->id),false,$crosssubj);
     }
 }
 
