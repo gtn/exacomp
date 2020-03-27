@@ -9169,10 +9169,11 @@ class block_exacomp_external extends external_api {
 		return $descriptors_return;
 	}
 
-	private static function dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, $only_associated) {
+	//TODO: RW    only_associated maybe has the wrong meaning now... onlyAssignedChildren=true returns only the children that have been directly assigned
+	private static function dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, $only_associated=false) {
 		global $DB;
 
-		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
+		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $only_associated);
 
 		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		$non_topic_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
