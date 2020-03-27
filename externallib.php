@@ -7192,9 +7192,9 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 
 		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp, true);
-        //throw new invalid_parameter_exception (print_r($statistics));
 
 		$statistics_return = array();
+        //throw new invalid_parameter_exception (print_r($statistics));
 		foreach ($statistics as $key => $statistic) {
 			$return = array();
 			foreach ($statistic as $niveauid => $niveaustat) {
@@ -7204,7 +7204,6 @@ class block_exacomp_external extends external_api {
 //                if(block_exacomp_get_assessment_comp_diffLevel()==0) { //if no niveaus are allowed but because of the old settings a niveau has been set for this competence: act like there is no niveau
 //                    $niveauid = -1;
 //                }
-
                 $niveau = new stdClass();
                 $niveau->id = (int)$niveauid; // quick bugfix: when "points" is set in the plugin settings, the last niveaus is "".. this would lead to an error since int is expected
                 $evaluations = array();

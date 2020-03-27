@@ -8993,10 +8993,12 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
             }
             // increase counter in statistic
 			if ($compAssessment == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) { // additionalinfo nutzen, nicht value
-                if (isset($descriptorgradings[$niveaukey][$eval->additionalinfo])) {
-                    $descriptorgradings[$niveaukey][$eval->additionalinfo]++;
-                }else{
-                    @$descriptorgradings[0][$eval->additionalinfo]++;
+			    // it can be not integer. Make it:
+                $indexVal = round($eval->additionalinfo, 0, PHP_ROUND_HALF_DOWN);
+                if (isset($descriptorgradings[$niveaukey][$indexVal])) {
+                    $descriptorgradings[$niveaukey][$indexVal]++;
+                } else {
+                    @$descriptorgradings[0][$indexVal]++;
                 }
             } else { // POINTS or YESNO  or Verbose
                 if (isset($descriptorgradings[$niveaukey][$eval->value])) {
