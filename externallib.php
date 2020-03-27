@@ -8816,7 +8816,13 @@ class block_exacomp_external extends external_api {
 	            $descriptor_return->evalniveauid = $grading->evalniveauid;
 	            $descriptor_return->timestampteacher = $grading->timestamp;
 	            $descriptor_return->reviewerid = $grading->reviewerid;
-                $descriptor_return->gradinghistory = $grading->gradinghistory;
+
+                if(block_exacomp_is_teacher($courseid)){
+                    $descriptor_return->gradinghistory = $grading->gradinghistory;
+                }
+
+
+
 
 	            //Reviewername finden
 	            $reviewerid = $grading->reviewerid;
