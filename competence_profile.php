@@ -178,7 +178,7 @@ echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' 
 
 foreach ($user_courses as $course) {
     //if selected
-//    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
+    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
 }
 
 
