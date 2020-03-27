@@ -7305,8 +7305,9 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
         if($gradingScheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE){ //the grading is in additionalinfo instead of teacher_evaluation
             if($comp->additionalinfo == block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE)){
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
+            }else if($comp->additionalinfo != -1 && $comp->additionalinfo != 0){
+                return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV;
             }
-            return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV;
         }else if($gradingScheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){
             if ($comp->teacher_evaluation < block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)/2) {
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
