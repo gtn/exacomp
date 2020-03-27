@@ -2911,12 +2911,12 @@ class block_exacomp_external extends external_api {
 		    $mapping = false;
 		}
 		//if(!$parent && block_exacomp_get_assessment_childcomp_scheme()!=1){
-        if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) {
-            if (!$parent && block_exacomp_additional_grading($comptype) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+        // dakora app sends always DESCRIPTOR types. So we need to check $parent variable
+        if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+            if (!$parent && block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
                 $mapping = false;
             }
         }
-
 		if ($mapping && $role == BLOCK_EXACOMP_ROLE_TEACHER) { // grade ==> mapping needed, save mapped value and save additionalinfo
 		    //check if teacher, because the student sends the selfevaluationvalue in $value, not in $additinalinfo
 		    $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
