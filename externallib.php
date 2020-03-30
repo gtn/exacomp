@@ -7065,8 +7065,8 @@ class block_exacomp_external extends external_api {
             );
         }else if($crosssubjid != -1){
             $subjectinfo = array(
-                'teacher' => block_exacomp_get_competence_profile_crosssubject_grid_for_ws($courseid, $userid, $crosssubjid, BLOCK_EXACOMP_ROLE_TEACHER),
-                'student' => block_exacomp_get_competence_profile_crosssubject_grid_for_ws($courseid, $userid, $crosssubjid, BLOCK_EXACOMP_ROLE_STUDENT),
+                'teacher' => array(),
+                'student' => array(),
                 'globalcompetences' => array()
             );
 
@@ -7077,9 +7077,6 @@ class block_exacomp_external extends external_api {
                 $subjectinfo['teacher'][] = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subj->id, BLOCK_EXACOMP_ROLE_TEACHER, null, $crosssubject);
                 $subjectinfo['student'][] = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subj->id, BLOCK_EXACOMP_ROLE_STUDENT, null, $crosssubject);
             }
-
-//            var_dump($subjectinfo);
-//            die;
         }
 
         // global values
