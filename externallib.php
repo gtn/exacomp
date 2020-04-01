@@ -6621,7 +6621,8 @@ class block_exacomp_external extends external_api {
                 'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
             ))),
             'activityid' => new external_value (PARAM_INT, 'activityid'),
-            //'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list'),
+            'activitytitle' => new external_value (PARAM_TEXT, 'activity title', VALUE_OPTIONAL),
+            'activitytype' => new external_value (PARAM_TEXT, 'activity type - key for activity icons in Dakora', VALUE_OPTIONAL),
         ));
 	}
 
@@ -6742,7 +6743,22 @@ class block_exacomp_external extends external_api {
 	    }
 	    // add activity data
 	    $data['activityid'] = ($example && @$example->activityid ? $example->activityid : 0);
-	    //$data['activitylist'] = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));
+	    $data['activitytitle'] = ($example && @$example->activitytitle ? $example->activitytitle : '');
+	    $modname = null;
+	    if ($example->activityid) {
+            if ($module = get_coursemodule_from_id(null, $example->activityid)) {
+                // get type of activity
+                $mod_info = get_fast_modinfo($courseid);
+                if (array_key_exists($module->id, $mod_info->cms)) {
+                    $cm = $mod_info->cms[$module->id];
+                    $modname = $cm->modname;
+                    if (!$data['activitytitle'] && $cm->name) {
+                        $data['activitytitle'] = $cm->name;
+                    }
+                }
+            }
+        }
+        $data['activitytype'] = $modname;
 
 	    return $data;
 	}
@@ -7191,7 +7207,6 @@ class block_exacomp_external extends external_api {
 		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp, true);
 
 		$statistics_return = array();
-        //throw new invalid_parameter_exception (print_r($statistics));
 		foreach ($statistics as $key => $statistic) {
 			$return = array();
 			foreach ($statistic as $niveauid => $niveaustat) {
