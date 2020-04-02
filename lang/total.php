@@ -599,7 +599,7 @@ return [
         'Automatically generated ID of this Exacomp installation. This ID can not be changed',
     ],
     'settings_admin_preconfiguration_none' => [
-        'Keine Vorkonfiguration verwenden',
+        'Eigene Konfiguration',
         'No preconfiguration',
     ],
     'settings_default_de_value' => [
