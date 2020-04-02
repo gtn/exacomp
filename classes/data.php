@@ -1750,8 +1750,8 @@ class data_importer extends data {
 		if( $course_template != 0) {
 
 		    for ($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
-		        //$activityid = self::get_new_activity_id($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][3][$i], $course_template);
-		        block_exacomp_set_exampleactivity($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][2][$i]);
+		        $activityid = self::get_new_activity_id($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][3][$i], $course_template);
+		        block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples'][2][$i]);
 		    }
 
 		      @rmdir($CFG->tempdir . '/backup/activities');
@@ -2654,7 +2654,7 @@ class data_importer extends data {
             $key = array_search($example->activityid, $GLOBALS['activexamples'][0]);
             if ($key !== false) { // is possible, that found key is '0'
 	            array_push($GLOBALS['activexamples'][0], $example->activityid);
-	            array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]); //array_push($GLOBALS['activexamples'][1], $example->activitytitle);
+	            array_push($GLOBALS['activexamples'][1], $example->activitytitle); //array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
 	        } else {
@@ -2664,7 +2664,7 @@ class data_importer extends data {
 	            //if (file_exists($CFG->tempdir . '/backup/activity'.$example->activityid)) {
                     moodle_restore('activity'.$example->activityid, $course_template, $USER->id);
                 //}
-	            //array_push($GLOBALS['activexamples'][1], $example->activitytitle);
+	            array_push($GLOBALS['activexamples'][1], $example->activitytitle);
 	            array_push($GLOBALS['activexamples'][2], $exampleid);
 	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
 	        }
