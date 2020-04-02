@@ -5754,8 +5754,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($forGlobalReport) {
             $cn = block_exacomp_get_string('transferable_skills');
         } else {
-            if($crosssubj != -1){
-                $cn = $crosssubj->title;
+            if($crosssubj){
+                $cn = block_exacomp_get_string('crosssubject').": ".$crosssubj->title;
             }else{
                 $cn = $course->fullname;
             }
