@@ -137,6 +137,9 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
                 if (array_key_exists($module->id, $mod_info->cms)) {
                     $cm = $mod_info->cms[$module->id];
                     $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
+                    if ($cm->name) {
+                        $newExample->activitytitle = $cm->name;
+                    }
                 }
                 // activityid
                 $newExample->activityid = $module->id;
