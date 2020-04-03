@@ -4113,7 +4113,7 @@ function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activi
  * @param string $activitytitle
  */
 function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytitle = null) {
-    global $DB, $COURSE;
+    global $DB, $COURSE, $CFG;
     
     if ($activitytitle == null){
         $cmmod = $DB->get_record('course_modules', array("id" => $activityid));
@@ -4121,7 +4121,11 @@ function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytit
         $instance = get_coursemodule_from_id($modulename->name, $activityid);
         $activitytitle = $instance->name;
     }
-    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $exampleid, "activityid" => $activityid, "activitytitle" => $activitytitle));
+    $link = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLES,'activitylink', array('id' => $exampleid));
+
+    $newLink = explode("=", $link);
+    $newLink[0] = $newLink[0]."=".$activityid;
+    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $exampleid, "activityid" => $activityid, "activitytitle" => $activitytitle, "activitylink" => $newLink[0],"externaltask" => $CFG->wwwroot."/".$newLink[0]));
 }
 
 /**
