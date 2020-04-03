@@ -1037,7 +1037,7 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessme
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_grade_negativ',
         block_exacomp_get_string('settings_assessment_grade_negativ'),
         block_exacomp_get_string('settings_assessment_grade_negativ_description'),
-        6, PARAM_INT));
+        5, PARAM_INT));
 $verb_default = block_exacomp_get_string('settings_assessment_grade_verbose_default');
 /*if (!$verb_default) { // lang files are not generated in first installation?
     $verb_default = 'very good, good, satisfactory, sufficient, deficient, insufficient'; // 'en' is default
