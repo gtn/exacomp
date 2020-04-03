@@ -442,6 +442,10 @@ return [
         'Generisches Bewertungsschema',
         'Generic assessment scheme',
     ],
+    'settings_assessment_are_you_sure_to_change' => [
+        'Wollen sie wirklich das Bewertungsschema ändern? Bestehende Bewertungen können verloren gehen oder ihre Aussagekraft verlieren',
+        'Do you really want to change grading schema? Existing gradings can get lost or get wrong values',
+    ],
     'settings_assessment_scheme_0' => [
         'Keines',
         'None',

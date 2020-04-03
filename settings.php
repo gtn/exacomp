@@ -432,6 +432,11 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     $output .= 'preconfigurations['.$key.'] = \''.json_encode($config).'\';'."\r\n";
                 }
                 $output .= 'function setupPreconfiguration(select) {
+                    var selectedValue = select.value;
+                    // Confirm:
+                    if (selectedValue > 0 && !confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {
+                        return false;
+                    }
                     // Enable all elements before any doings
                     var elementsList = document.getElementsByClassName(\'exacomp_forpreconfig\');
                     for (var i = 0, length = elementsList.length; i < length; i++) {
@@ -448,8 +453,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         elementsList[i].removeAttribute("readOnly");
                         elementsList[i].removeAttribute("disabled");
                         elementsList[i].style.opacity = 1;
-                    }
-		            var selectedValue = select.value;
+                    }		           
                     if (selectedValue > 0) {
                         var preconfigData = preconfigurations[selectedValue];                        
                         var preconfigObject = JSON.parse(preconfigData);
@@ -925,7 +929,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         'id' => $id,
                         'name' => $name,
                         'value' => $i,
-                        'class' => 'exacomp_forpreconfig'
+                        'class' => 'exacomp_forpreconfig',
+                        'onClick' => ' if (!confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {return false};'
                     );
                     if ($data[$target]['scheme'] == $i) {
                         $schemeradioattributes['checked'] = 'checked';
@@ -953,6 +958,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         $checkboxattributes['style'] = 'opacity: 0.5;';
                         $checkboxattributes['onClick'] = 'return false;';
                         $checkboxattributes['onKeydown'] = 'return false;';
+                    } else {
+                        $checkboxattributes['onClick'] = ' if (!confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {return false};';
+                        $checkboxattributes['onKeydown'] = ' if (!confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {return false};';
                     }
                     $checkbox = html_writer::checkbox($name,
                             '1',

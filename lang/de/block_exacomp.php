@@ -135,6 +135,7 @@ $string['settings_new_app_login_description'] = 'Der neue App-Login erlaubt Benu
 $string['settings_heading_performance'] = 'Performance';
 $string['settings_heading_performance_description'] = 'Sollte sich die Kompetenzraster-Ansicht nur langsam aufbauen, können diese Einstellungen zur Lade-Optimierung verwendet werden.';
 $string['settings_heading_scheme'] = 'Generisches Bewertungsschema';
+$string['settings_assessment_are_you_sure_to_change'] = 'Wollen sie wirklich das Bewertungsschema ändern? Bestehende Bewertungen können verloren gehen oder ihre Aussagekraft verlieren';
 $string['settings_assessment_scheme_0'] = 'Keines';
 $string['settings_assessment_scheme_1'] = 'Noten';
 $string['settings_assessment_scheme_2'] = 'Verbalisierung';

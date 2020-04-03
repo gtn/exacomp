@@ -135,6 +135,7 @@ $string['settings_new_app_login_description'] = 'The new App-Login allows users 
 $string['settings_heading_performance'] = 'Performance';
 $string['settings_heading_performance_description'] = 'Try to change these parameters if some pages work very slow. Can be changed some visuality/usability';
 $string['settings_heading_scheme'] = 'Generic assessment scheme';
+$string['settings_assessment_are_you_sure_to_change'] = 'Do you really want to change grading schema? Existing gradings can get lost or get wrong values';
 $string['settings_assessment_scheme_0'] = 'None';
 $string['settings_assessment_scheme_1'] = 'Grade';
 $string['settings_assessment_scheme_2'] = 'Verbose';
