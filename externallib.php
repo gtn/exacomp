@@ -886,7 +886,7 @@ class block_exacomp_external extends external_api {
      * Get role for user: 1=trainer 2=student
      * @ws-type-read
      * @diggr (2019-08-02: only used in diggr)
-     * return 1 for trainer
+     * return 1 for trainer or teacher
      * 2 for student
      * 0 if false
      *
@@ -916,7 +916,15 @@ class block_exacomp_external extends external_api {
             ];
         }
 
-        // neither student or trainer
+        //Added this for dgb: if the teacher is a teacher of the DGB course, it is fine.
+        //In ELOVE the teacher would have to be an EXTERNALTRAINER, in DGB, being an externltrainer OR being teacher in the DGB course suffices
+        $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb','courseid'),$USER->id);
+        if($isTeacher){
+            return (object)[
+                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
+            ];
+        }
+        // neither student or trainer or teacher
         return (object)[
             "role" => 0,
         ];
@@ -1520,6 +1528,8 @@ class block_exacomp_external extends external_api {
 			$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id' => $exampleid));
 			$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
 			$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
+//			var_dump($subject_category);
+//            die;
 			if (!$subject_category) {
 				$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $elove_category->id);
 			}
@@ -7668,7 +7678,10 @@ class block_exacomp_external extends external_api {
 	        'skz' => $skz,
 	    ));
 
-        $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb','courseid'),$USER->id);
+        $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb','courseid'),$USER->id); //this seems to be a problem sometimes
+       // block_exacomp_is_teacher_in_any_course
+//        var_dump(get_config('auth_dgb','courseid'));
+//        die;
 
         if ($isTeacher) {
             do {
