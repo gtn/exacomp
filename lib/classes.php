@@ -1085,14 +1085,21 @@ class example extends db_record {
 	}
 
 	function get_author() {
+	    if ($this->get_author_origin()) {
+	        return $this->get_author_origin();
+        }
 		if ($this->creatorid && $user = g::$DB->get_record('user', ['id' => $this->creatorid])) {
 			return fullname($user);
 		} else {
-			return $this->author;
+            return $this->author;
 		}
 	}
 
-	function get_task_file_url($position = 0) {
+    function get_author_origin() {
+        return $this->author_origin;
+    }
+
+    function get_task_file_url($position = 0) {
 		// get from filestorage
 		$file = block_exacomp_get_file($this, 'example_task');
 		if (!$file) {
