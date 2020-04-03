@@ -1528,8 +1528,7 @@ class block_exacomp_external extends external_api {
 			$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id' => $exampleid));
 			$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
 			$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
-//			var_dump($subject_category);
-//            die;
+
 			if (!$subject_category) {
 				$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $elove_category->id);
 			}
@@ -5995,8 +5994,13 @@ class block_exacomp_external extends external_api {
 				$course_category = block_exaport_create_user_category($course->fullname, $USER->id); //create new category for portfoliofiles
 			}
 
-			$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id' => $exampleid));
-			$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
+			$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid), 'title, blocking_event');
+			$exampletitle = $example->title;
+			if($example->blocking_event == 2){ //if freematerial, create the category with name "freematerials"
+                $subjecttitle = get_string('freematerials', 'block_exacomp');
+            }else{
+                $subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
+            }
 			$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
 			if (!$subject_category) {
 				$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);

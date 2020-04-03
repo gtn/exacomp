@@ -3103,4 +3103,10 @@ return [
         'Verbundene Kompetenzen und Materialien bewerten.',
         'Assess related competences and descriptors'
     ],
+    'freematerials' => [
+        'Freie Materialien',
+        'free materials'
+    ],
+
+
 ];
