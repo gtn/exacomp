@@ -93,7 +93,10 @@ $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/d3.min.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/jquery.responsiveTabs.min.js', true);
 $PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
+$PAGE->requires->css('/blocks/exacomp/css/responsive-tabs.css', true);
+$PAGE->requires->css('/blocks/exacomp/css/responsive-tabs-style.css', true);
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -176,32 +179,57 @@ foreach($possible_courses as $course){
 
 echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class' => 'competence_profile_sectiontitle'));
 
+echo html_writer::start_div('exacomp_tabbed');
+$reportTabs = [];
+$reportContents = [];
+
+// courses
 foreach ($user_courses as $course) {
     //if selected
-    echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id)); //prints the actual content
-}
-
-
-//Add crosssubjects
-$crosssubjects = array();
-foreach($user_courses as $course){
-    $crosssubjects[] = block_exacomp_get_cross_subjects_by_course($course->id,$student->id);
-}
-
-
-foreach($crosssubjects as $crosssubjectsOfCourse) {
-    foreach($crosssubjectsOfCourse as $crosssubj){
-        echo $output->competence_profile_course(-1,$student,true,block_exacomp_get_grading_scheme($crosssubj->id),false,$crosssubj);
+    $cont = $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id), false, null, true); //prints the actual content
+    if ($cont) {
+        $reportTabs[] = '<li class="nav-item"><a href="#exacomp_tabbed_course_'.$course->id.'">'.$course->fullname.'</a></li>';
+        $reportContents[] = html_writer::div($cont, '', ['id' => 'exacomp_tabbed_course_'.$course->id]);
     }
 }
 
-
-
-
+// Add crosssubjects
+$crosssubjects = array();
+foreach ($user_courses as $course){
+    $crosssubjects[] = block_exacomp_get_cross_subjects_by_course($course->id, $student->id);
+}
+foreach ($crosssubjects as $crosssubjectsOfCourse) {
+    foreach ($crosssubjectsOfCourse as $crosssubj) {
+        $cont = $output->competence_profile_course(-1, $student, true, block_exacomp_get_grading_scheme($crosssubj->id), false, $crosssubj, true);
+        if ($cont) {
+            $reportTabs[] = '<li class="nav-item"><a href="#exacomp_tabbed_crossubject_'.$crosssubj->id.'">'.$crosssubj->title.'</a></li>';
+            $reportContents[] = html_writer::div($cont, '', ['id' => 'exacomp_tabbed_crossubject_'.$crosssubj->id]);
+        }
+    }
+}
 
 // Überfachliche Kompetenzen
 // used last course from foreach! TODO: check it!
-echo $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id), true); //prints global values
+$cont = $output->competence_profile_course($course, $student, true, block_exacomp_get_grading_scheme($course->id), true, null, true); //prints global values
+if ($cont) {
+    $reportTabs[] = '<li class="nav-item"><a href="#exacomp_tabbed_global">'.block_exacomp_get_string('transferable_skills').'</a></li>';
+    $reportContents[] = html_writer::div($cont, '', ['id' => 'exacomp_tabbed_global']);
+}
+
+// echo tabbed content
+if (count($reportTabs) > 0) {
+    //echo '<ul class="nav nav-tabs">';
+    echo '<ul>';
+    echo implode('', $reportTabs);
+    echo '</ul>';
+}
+if (count($reportContents) > 0) {
+    foreach ($reportContents as $rep) {
+        echo $rep;
+    }
+}
+
+echo html_writer::end_div(); // end .exacomp_tabbed
 
 /* END CONTENT REGION */
 echo $output->footer();

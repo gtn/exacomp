@@ -5501,7 +5501,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //    }
 
     // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet
-	function competence_profile_course($course=-1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj=null) {
+	function competence_profile_course($course=-1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj=null, $withoutHeaders = false) {
         static $allStats = null;
         $content = '';
         if ($allStats === null || !array_key_exists($course->id, $allStats)) {
@@ -5628,7 +5628,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
                         array('class' => 'competence_profile_insectitle'));
                 $innersection .= html_writer::tag('div',
-                        $this->competence_profile_grid($courseid, $subject, $student->id, $max_scheme,null, $crosssubj),
+                        $this->competence_profile_grid($courseid, $subject, $student->id, $max_scheme, null, $crosssubj),
                         array('class' => 'container', 'id' => 'charts'));
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                         'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
@@ -5751,16 +5751,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				});
                     });    </script>";
         }*/
-        if ($forGlobalReport) {
-            $cn = block_exacomp_get_string('transferable_skills');
-        } else {
-            if($crosssubj){
-                $cn = block_exacomp_get_string('crosssubject').": ".$crosssubj->title;
-            }else{
-                $cn = $course->fullname;
+        $courseNameWrapped = '';
+        if (!$withoutHeaders) {
+            if ($forGlobalReport) {
+                $cn = block_exacomp_get_string('transferable_skills');
+            } else {
+                if ($crosssubj) {
+                    $cn = block_exacomp_get_string('crosssubject').": ".$crosssubj->title;
+                } else {
+                    $cn = $course->fullname;
+                }
             }
+            $courseNameWrapped = html_writer::tag('h3', $cn, array('class' => 'competence_profile_coursename'));
         }
-        $courseNameWrapped = html_writer::tag('h3', $cn, array('class' => 'competence_profile_coursename'));
 		return $courseNameWrapped.html_writer::div($content, "competence_profile_coursedata");
 	}
 

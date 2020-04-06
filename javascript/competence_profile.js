@@ -1,7 +1,14 @@
 $(document).ready(function(){
-	 $(this).find('.exa-collapsible-open').each(function () {
-		 $(this).removeClass('exa-collapsible-open');	
-	 })
+     $(this).find('.exa-collapsible-open').each(function () {
+         $(this).removeClass('exa-collapsible-open');
+     });
+
+    $('.exacomp_tabbed').responsiveTabs({
+        // navigationContainer: 'ul',
+        // collapsible: false,
+        // startCollapsed: false,
+        startCollapsed: 'accordion'
+    });
 });
 
 /*$(document).on('click', 'a.print', function(e) {
@@ -13,8 +20,7 @@ $(document).ready(function(){
 });*/
 		 
 (function ($) {
-	
-	
+
     $.fn.donut = function(options) {
         var settings = $.extend({
             colors: [],
