@@ -1887,7 +1887,7 @@ class block_exacomp_external extends external_api {
             $insert = new stdClass ();
             $insert->exampid = $id;
             $insert->table_foreign = 'free_material';
-            $insert->descrid = $comps;
+            $insert->id_foreign = $comps;
             $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
 
             $insert = new stdClass();
