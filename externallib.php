@@ -3727,7 +3727,7 @@ class block_exacomp_external extends external_api {
             $descriptor->reviewerid = null;
 			$descriptor->id = $descriptor->descriptorid;
             $descriptor->evalniveauid = null;
-			$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
+			$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id), '*', IGNORE_MULTIPLE); // get only one topic relation
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 
 			$topic = \block_exacomp\topic::get($descriptor->topicid);

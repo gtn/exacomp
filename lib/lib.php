@@ -6460,7 +6460,6 @@ function block_exacomp_get_descriptor_numbering($descriptor) {
 
 	if (!isset($numberingCache[$id])) {
 		// build cache
-
 		if (isset($descriptor->topic) && $descriptor->topic instanceof \block_exacomp\topic) {
 			$topic = $descriptor->topic;
 		} elseif (!empty($descriptor->topicid)) {
