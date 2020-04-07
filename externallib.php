@@ -3736,7 +3736,8 @@ class block_exacomp_external extends external_api {
 				$descriptor->child = (($parentid = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS, 'parentid', array('id' => $descriptor->id))) > 0) ? 1 : 0;
 				$descriptor->parentid = $parentid;
                 //new 16.05.2019 rw:
-                $descriptor->teacherevaluation = $descriptor->evaluation; //redundant? getting block_exacomp_get_comp_eval anyway
+                //$descriptor->teacherevaluation = $descriptor->evaluation; //redundant? getting block_exacomp_get_comp_eval anyway
+                $descriptor->teacherevaluation = -1; // never graded / SZ 07.04.2020
                 $descriptor->studentevaluation = -1;
                 $descriptor->timestampstudent = 0;
                 if (!$forall) {
