@@ -565,12 +565,12 @@ class block_exacomp_external extends external_api {
 
 		// fall back to old fields
 		// TODO: check if this can be deleted?!?
-		/*if (!$example->externalurl && $example->externaltask) {
+		if (!$example->externalurl && $example->externaltask) {
 			$example->externalurl = $example->externaltask;
 		}
 		if (!$example->externalurl && $example->task) {
 			$example->externalurl = $example->task;
-		}*/
+		}
 
 		if ($example->externaltask) {
 			$example->externaltask = static::format_url($example->externaltask);
@@ -581,12 +581,12 @@ class block_exacomp_external extends external_api {
 		}
 
 		// TODO: task field still needed in exacomp?
-		/*if (!$example->task) {
+		if (!$example->task) {
 			$example->task = $example->taskfileurl;
 		}
 		if (!$example->task) {
 			$example->task = $example->externalurl;
-		}*/
+		}
 
         $example->solutionfilename = "";
 		$solution = block_exacomp_get_file($example, 'example_solution');
