@@ -11301,7 +11301,7 @@ function block_exacomp_get_date_of_birth($userid) {
 
      $examples = \block_exacomp\example::get_objects_sql(
          "SELECT DISTINCT mm.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
-			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
+			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author, e.courseid
 			, mm.sorting, mm.id_foreign
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=?"
