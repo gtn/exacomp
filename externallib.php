@@ -6285,11 +6285,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	public static function dakora_get_descriptors_details_returns() {
-// 	    return new external_single_structure (array(
-// 	        'success' => new external_value (PARAM_BOOL, 'status'),
-// 	        'itemid' => new external_value (PARAM_INT, 'itemid'),
-// 	    ));
-	       return new external_multiple_structure ( new external_single_structure (array(
+       return new external_multiple_structure ( new external_single_structure (array(
 	        'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
 	        'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
 	        'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
@@ -6340,6 +6336,7 @@ class block_exacomp_external extends external_api {
 	                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 	                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 	                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                    'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                     'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
                     'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
 	            ))),
@@ -6384,6 +6381,7 @@ class block_exacomp_external extends external_api {
 	            'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 	            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 	            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                 'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
                 'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
 	        ))),
