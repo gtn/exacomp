@@ -6629,7 +6629,12 @@ class block_exacomp_external extends external_api {
 			'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
 			'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
 			'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
-			'teacherfile' => new external_value (PARAM_TEXT),
+			'teacherfile' => new external_single_structure(array(
+                    'filename' => new external_value (PARAM_TEXT, 'title of item'),
+                    'file' => new external_value (PARAM_URL, 'file url'),
+                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
+            ), '', VALUE_OPTIONAL),
 			'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
 			'teacheritemvalue' => new external_value (PARAM_INT, 'item teacher grading'),
 			'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
@@ -6705,7 +6710,7 @@ class block_exacomp_external extends external_api {
 	        }
 	        $data['studentcomment'] = '';
 	        $data['teachercomment'] = '';
-	        $data['teacherfile'] = '';
+	        //$data['teacherfile'] = [];
 	        $itemcomments = \block_exaport\api::get_item_comments($itemInformation->id);
 	        $timemodified_compare = 0; //used for finding the most recent comment to display it in Dakora
 	        $timemodified_compareTeacher = 0;
@@ -6719,13 +6724,20 @@ class block_exacomp_external extends external_api {
 	                if($itemcomment->timemodified > $timemodified_compareTeacher){
 	                    $data['teachercomment'] = $itemcomment->entry;
 	                    if ($itemcomment->file) { //the most recent file is being kept, so if there is a newer comment without a file, the last file is still shown
+                            $tFile = $itemcomment->file;
 	                        $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
 	                            'userid' => $userid,
 	                            'itemid' => $itemInformation->id,
 	                            'commentid' => $itemcomment->id,
 	                            'wstoken' => static::wstoken(),
 	                        ]);
-	                        $data['teacherfile'] = $fileurl;
+                            $teacherfile = [
+                                    'file' => $fileurl,
+                                    'mimetype' => $tFile->get_mimetype(),
+                                    'filename' => $tFile->get_filename(),
+                                    'fileindex' => $tFile->get_contenthash(),
+                            ];
+                            $data['teacherfile'] = $teacherfile;
 	                    }
 	                    $timemodified_compareTeacher = $itemcomment->timemodified;
 	                }
@@ -6744,7 +6756,7 @@ class block_exacomp_external extends external_api {
 	        $data['mimetype'] = "";
 	        $data['teachercomment'] = "";
 	        $data['studentcomment'] = "";
-	        $data['teacherfile'] = '';
+	        //$data['teacherfile'] = [];
 	        $data['teachervalue'] = isset ($exampleEvaluation->teacher_evaluation) ? $exampleEvaluation->teacher_evaluation : -1;
             $data['teacherevaluation'] = $data['teachervalue'];
 	        $data['studentvalue'] = isset ($exampleEvaluation->student_evaluation) ? $exampleEvaluation->student_evaluation : -1;
