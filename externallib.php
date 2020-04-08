@@ -688,6 +688,9 @@ class block_exacomp_external extends external_api {
 
 		$descriptors = array();
 		foreach ($descriptors_exam_mm as $descriptor_mm) {
+		    if ($descriptor_mm->descrid == -1) { // for free_material
+                continue;
+            }
 			$descriptors[$descriptor_mm->descrid] = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array(
 				'id' => $descriptor_mm->descrid,
 			));
@@ -1887,7 +1890,7 @@ class block_exacomp_external extends external_api {
             $insert = new stdClass ();
             $insert->exampid = $id;
             $insert->table_foreign = 'free_material';
-            $insert->id_foreign = $comps;
+            $insert->descrid = $comps;
             $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
 
             $insert = new stdClass();
