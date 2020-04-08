@@ -1642,7 +1642,7 @@ class block_exacomp_external extends external_api {
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
 			'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
-			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma', VALUE_DEFAULT, '-1'),
+			'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
 			'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
 			'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
@@ -1714,7 +1714,7 @@ class block_exacomp_external extends external_api {
 
         //add blockingevent tag, since it is a free_element that should be handled as a blocking event in many instances. Maybe add filed "free element" or check in a different way in the require_can_access_example
         //the require_can_access_example checks if a student has access, and they have access to their blocking and free elements ==> set blocking_event flag
-        if($comps == -1 && $crosssubjectid == -1) {
+        if($comps == "freemat" && $crosssubjectid == -1) {
             $example->blocking_event = 2;
             $example->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_USER_FREE_ELEMENT;
         }
@@ -1767,7 +1767,7 @@ class block_exacomp_external extends external_api {
         }
 
         //in order for the free material to be accessible: code is mainly the same as block_exacomp_create_blocking_event
-        if($comps == -1 && $crosssubjectid == -1){
+        if($comps == "freemat" && $crosssubjectid == -1){
                 $schedule = new stdClass();
             $schedule->studentid = $USER->id;
             $schedule->exampleid = $example->id;
@@ -1866,7 +1866,7 @@ class block_exacomp_external extends external_api {
 // 		        $insert->visible = 1;
 // 		        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
 // 		    }
-		}else if ($comps != -1){
+		}else if ($comps != "freemat" && $comps != '0'){ //descriptors of course, and NOT edit but create
 		    $descriptors = explode(',', $comps);
 		    foreach ($descriptors as $descriptor) {
 		        $insert = new stdClass ();
@@ -1885,12 +1885,12 @@ class block_exacomp_external extends external_api {
 		            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
 		        }
 		    }
-		}else{
+		}else if($comps == "freemat"){
 		    //Free material, not linked to a "real" competence
             $insert = new stdClass ();
             $insert->exampid = $id;
             $insert->table_foreign = 'free_material';
-            $insert->descrid = $comps;
+            $insert->descrid = '-1';
             $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
 
             $insert = new stdClass();
@@ -1900,6 +1900,7 @@ class block_exacomp_external extends external_api {
             $insert->visible = 1;
             $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
         }
+		//if not crosssubjectid, not comps, and not freemat then don't update the associations... comps should be ="0"
 
         //clear the taxonomies
 		if($exampleid != -1){
