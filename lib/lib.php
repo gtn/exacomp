@@ -3093,6 +3093,7 @@ function block_exacomp_get_output_fields($topic) {
     $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
     $output_title = str_replace($remove, ' ', $output_title); // new lines to space
     $output_title = preg_replace('!\s+!', ' ', $output_title); // multiple spaces to single
+    $output_title = html_entity_decode(htmlentities($output_title, ENT_IGNORE)); // for some hidden symbols
 	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $output_title, $matches)) {
 		//$output_id = $matches[1];
 		$output_id = '';
