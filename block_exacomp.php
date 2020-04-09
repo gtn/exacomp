@@ -171,6 +171,15 @@ class block_exacomp extends block_list {
 				$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/info.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 			}*/
 		} else {
+		    
+		    if ($isTeacher) {
+    		    if (!$ready_for_use) {
+    		        $icon = '<img src="'.$CFG->wwwroot.'/blocks/exacomp/pix/subject.png'.'" class="icon" alt="" />';
+    		        $this->content->items[] = '<a title="'.block_exacomp_get_string('tab_teacher_settings_new_subject').'" '.
+    		  		        ' href="'.$CFG->wwwroot.'/blocks/exacomp/subject.php?courseid='.$courseid.'&embedded=false'.'">'.
+    		  		        $icon.block_exacomp_get_string('tab_teacher_settings_new_subject').'</a>';
+    		    }
+		    }
 			if ($isTeacher && !has_capability('block/exacomp:admin', $globalcontext)) {
 				$this->content->items[] = block_exacomp_get_string('admin_config_pending');
 				//$this->content->icons[] = '';
