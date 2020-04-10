@@ -2991,7 +2991,12 @@ Returns:<pre>{
     "timestampteacher": "int null (timestamp for teacher evaluation)",
     "timestampstudent": "int null (timestamp for student evaluation)",
     "teachercomment": "text null (teacher comment)",
-    "teacherfile": "text null ()",
+    "teacherfile": {
+        "filename": "text null (title of item)",
+        "file": "url null (file url)",
+        "mimetype": "text null (mime type for file)",
+        "fileindex": "text null (mime type for file)"
+    },
     "studentcomment": "text null (student comment)",
     "teacheritemvalue": "int null (item teacher grading)",
     "resubmission": "bool null (resubmission is allowed\/not allowed)",
