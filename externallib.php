@@ -688,9 +688,7 @@ class block_exacomp_external extends external_api {
 
 		$descriptors = array();
 		foreach ($descriptors_exam_mm as $descriptor_mm) {
-		    if ($descriptor_mm->descrid == -1) { // for free_material
-                continue;
-            }
+		   
 			$descriptors[$descriptor_mm->descrid] = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array(
 				'id' => $descriptor_mm->descrid,
 			));
