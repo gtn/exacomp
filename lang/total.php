@@ -3107,6 +3107,25 @@ return [
         'Freie Materialien',
         'free materials'
     ],
-
+    'radargraphtitle' => [
+        'radar graph',
+        'radar graph',
+    ],
+    'radargrapherror' => [
+        'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden',
+        'Radargraph can only be displayed with 3-7 axis',
+    ],
+    'studentcomp' => [
+        'Laut Selbsteinschätzung erreichte Kompetenzen',
+        'self evaluated competencies',
+    ],
+    'teachercomp' => [
+        'Erreichte Kompetenzen',
+        'gained competencies',
+    ],
+    'pendingcomp' => [
+        'Ausstehende Kompetenzen',
+        'pending competencies',
+    ],
 
 ];

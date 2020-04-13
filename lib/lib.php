@@ -484,6 +484,66 @@ function block_exacomp_get_assessment_grade_verbose($getforlanguage = null) {
     //return get_config('exacomp', 'assessment_grade_verbose');
 }
 
+function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqual = true) {
+    $limit = block_exacomp_get_assessment_negative_threshold($level);
+    $scheme = block_exacomp_additional_grading($level);
+    switch ($scheme) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            return true; // TODO: always negative?
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            if ($withEqual) {
+                if ($value >= $limit) {
+                    return true;
+                }
+            } else {
+                if ($value > $limit) {
+                    return true;
+                }
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            if ($withEqual) {
+                if ($value <= $limit) {
+                    return true;
+                }
+            } else {
+                if ($value < $limit) {
+                    return true;
+                }
+            }
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            if ($value <= 1) {
+                return true; // TODO: is this ok condition?
+            }
+            break;
+    }
+    return false;
+}
+
+function block_exacomp_get_assessment_negative_threshold($level) {
+    $type = block_exacomp_additional_grading($level);
+    switch ($type) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            return 0;
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            return block_exacomp_get_assessment_grade_negative_threshold();
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            return block_exacomp_get_assessment_verbose_negative_threshold();
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+            return block_exacomp_get_assessment_points_negative_threshold();
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            return 1; // yes
+            break;
+    }
+}
+
 function block_exacomp_get_assessment_points_negative_threshold(){
     return get_config('exacomp', 'assessment_points_negativ');
 }
@@ -1479,8 +1539,6 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		'evalniveauid' => $evalniveauid,
 		'reviewerid' => $USER->id,
 	], $savegradinghistory);
-
-
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid);
@@ -9748,9 +9806,6 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 	unset($data['comptype']);
 	unset($data['compid']);
 
-
-
-
 	if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
 		if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			if (array_key_exists('reviewerid', $data)) {
@@ -12158,4 +12213,78 @@ function block_exacomp_list_possible_activities_for_example($courseid) {
         $example_activities[$module->id] = $module->name;
     }
     return $example_activities;
+}
+
+/**
+ * $topics['topicid'] = $topic
+ * $topic->student = 0-100 percentage
+ * $topic->teacher = 0-100 percentage
+ * @return array $topics
+ */
+function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjectid = null) {
+    global $DB;
+    $scheme = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+    $direction = ' >= '; // different for Points/Verb/Grade
+    switch ($scheme) {
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
+            return array(); // no assessment - no data for graph
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+            $direction = ' <= '; // highest value is worse
+            break;
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+            $direction = ' >= '; // highest value is better
+            break;
+    }
+    //$maxVal = block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+    $negativeLimit = block_exacomp_get_assessment_negative_threshold(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+
+    $studentEvalItems = \block_exacomp\global_config::get_student_eval_items();
+    $selfLimit = ceil(max(array_keys($studentEvalItems)) / 2);
+    if ($subjectid) {
+        // for topics only from this subject
+        $topics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+    } else {
+        // for all topics in course
+        $topics = block_exacomp_get_topics_by_course($courseid);
+    }
+    
+    foreach ($topics as $topic) {
+        $totalDescr = block_exacomp_get_descriptors_by_topic($courseid, $topic->id, false, true);
+        // for teacher
+        $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp 
+                    FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} c, {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt
+                    WHERE c.compid = dt.descrid 
+                        AND dt.topicid = ? 
+                        AND c.comptype = 0 
+                        AND c.role = ? 
+                        AND c.userid = ? 
+                        AND c.value '.$direction.' ? 
+                        AND c.courseid = ? ';
+        $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $negativeLimit, $courseid));
+        $topic->teacher = 0;
+        if (count($totalDescr) > 0) {
+            $topic->teacher = (count($competencies) / count($totalDescr)) * 100;
+        }
+        // for student
+        $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp 
+                    FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} c, {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt
+		            WHERE c.compid = dt.descrid 
+		                AND dt.topicid = ? 
+		                AND c.comptype = 0 
+		                AND c.role = ? 
+		                AND c.userid = ? 
+		                AND c.value >= ? 
+		                AND c.courseid = ? ';
+
+        $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $selfLimit, $courseid));
+        $topic->student = 0;
+        if (count($totalDescr) > 0) {
+            $topic->student = (count($competencies) / count($totalDescr)) * 100;
+        }
+        $topic->title = trim(html_entity_decode($topic->title));
+    }
+    return $topics;
 }

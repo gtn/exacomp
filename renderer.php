@@ -5501,7 +5501,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //    }
 
     // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet
-	function competence_profile_course($course=-1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj=null, $withoutHeaders = false) {
+	function competence_profile_course($course = -1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj = null, $withoutHeaders = false) {
+	    global $CFG;
         static $allStats = null;
         $content = '';
         if ($allStats === null || !array_key_exists($course->id, $allStats)) {
@@ -5588,7 +5589,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         array('class' => ' competence_profile_innersection exa-collapsible'));
             }
         } else { // !$forGlobalReport - reports for course-subject or crosssubject
-            if($crosssubj){ //if crosssubject:
+            if ($crosssubj) { //if crosssubject:
                 $courseid = $crosssubj->courseid;
                 $competence_tree = block_exacomp_get_competence_tree_for_cross_subject($courseid,
                     $crosssubj,
@@ -5596,7 +5597,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES),
                     $student->id,
                     false);
-            }else{ //if course
+            } else { //if course
                 $courseid = $course->id;
                 $competence_tree = block_exacomp_get_competence_tree($courseid, null, null, false, null, true,
                     array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
@@ -5632,6 +5633,47 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         array('class' => 'container', 'id' => 'charts'));
                 $content .= html_writer::tag('fieldset', $innersection, array('id' => 'toclose', 'name' => 'toclose',
                         'class' => ' competence_profile_innersection exa-collapsible exa-collapsible-open'));
+                if ($this->is_print_mode()) {
+                    $content .= '<br>';
+                }
+
+                // radar graphs - before statistics?
+                if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+                    $radar_graph_content = html_writer::tag('legend', block_exacomp_get_string('radargraphtitle'),
+                            array('class' => 'competence_profile_insectitle'));
+                    $topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id, $subject->id);
+                    if (count($topics) < 3 || count($topics) > 7) {
+                        //print error
+                        $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
+                        $radar_graph_content .= html_writer::div($img . block_exacomp_get_string('radargrapherror'), 'competence_profile_grapherror');
+                    } else {
+                        if ($this->is_print_mode()) {
+                            $imgWidth = 700;
+                            $imgHeight = 350; // legend is in picture!
+                            $radarParams = [
+                                    'courseid' => $course->id,
+                                    'studentid' => $student->id,
+                                    'subjectid' => $subject->id,
+                                    'width' => $imgWidth,
+                                    'height' => $imgHeight,
+                                    'graphAction' => 'competenceProfileRadar'
+                            ];
+                            $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/radar.php', $radarParams);
+                            $radarImage = html_writer::img($elementSrc, '',
+                                    ['width' => $imgWidth, 'height' => $imgHeight, 'border' => 0]);
+                            $radar_graph_content .= html_writer::div(html_writer::div($radarImage)); // divs - more for PDF
+                        } else {
+                            $radar_graph = html_writer::div($this->radar_graph($topics), 'competence_profile_radargraph');
+                            $radar_graph_content .= html_writer::div($radar_graph, 'competence_profile_graphbox clearfix');
+                            $radar_graph_content .= html_writer::div($this->radar_graph_legend(), 'radargraph_legend');
+                        }
+                    }
+                    $content .= html_writer::tag('fieldset', $radar_graph_content,
+                            array('class' => ' competence_profile_innersection exa-collapsible'));
+                }
+                if ($this->is_print_mode()) {
+                    $content .= '<br>';
+                }
 
                 // Statistics
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) { //prints the statistic
@@ -5676,7 +5718,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     }
                     $content .= html_writer::tag('fieldset', $innersection,
                             array('class' => ' competence_profile_innersection exa-collapsible'));
-
+                }
+                if ($this->is_print_mode()) {
+                    $content .= '<br>';
                 }
 
                 // Comparison: Teacher-Student
@@ -5687,20 +5731,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         array('class' => 'comparisondiv'));
                 $content .= html_writer::tag('fieldset', $innersection,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
+                if ($this->is_print_mode()) {
+                    $content .= '<br>';
+                }
 
                 // Chronological sequence of gained outcomes
                 $innersection = '';
                 if ($this->is_print_mode()) {
                     $height = 300;
                     $width = 600;
-                    if($crosssubj){
+                    if ($crosssubj) {
                         $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
                             ['height' => $height,
                                 'width' => $width,
                                 'courseid' => $courseid,
                                 'studentid' => $student->id
                             ]);
-                    }else{
+                    } else {
                         $elementSrc = new moodle_url('/blocks/exacomp/pix/dynamic/timeline_competenceprofile.php',
                             ['height' => $height,
                                 'width' => $width,
@@ -5728,14 +5775,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 } else {
                     $innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs',
                             'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
-                    if($crosssubj){
+                    if ($crosssubj) {
                         $innersection .= html_writer::div($this->timeline_graph($course, $student,false, $subject, $crosssubj), "competence_profile_timelinegraph");
-                    }else{
+                    } else {
                         $innersection .= html_writer::div($this->timeline_graph($course, $student, false, $subject), "competence_profile_timelinegraph");
                     }
                 }
                 $content .= html_writer::tag('fieldset', $innersection,
                         array('class' => ' competence_profile_innersection exa-collapsible'));
+                if ($this->is_print_mode()) {
+                    $content .= '<br>';
+                }
             }
         }
 
@@ -8025,4 +8075,69 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		</div>
 		<?php
 	}
+
+    function radar_graph($records) {
+        global $CFG;
+
+        if (count($records) < 3 || count($records) > 7) {
+            //print error
+            $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
+            return html_writer::div($img . block_exacomp_get_string('radargrapherror'), 'competence_profile_grapherror');
+        }
+
+        static $canvasid_i = 0;
+        $canvasid_i++;
+        $canvasid = 'canvas_radar_graph_'.$canvasid_i;
+
+        $content = html_writer::div(html_writer::tag('canvas', '', array("id" => $canvasid)), "radargraph", array("style" => "height:100%"));
+        ob_start();
+        ?>
+        <script>
+            var radarChartData = {
+                labels: <?php echo json_encode(array_values(array_map(function($a) { return $a->title; }, $records))); ?>,
+                datasets: [ {
+                    label: <?php echo json_encode(get_string("studentcomp", "block_exacomp")); ?>,
+                    fillColor: "rgba(249,178,51,0.2)",
+                    strokeColor: "#f9b233",
+                    pointColor: "#f9b233",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(151,187,205,1)",
+                    data: <?php echo json_encode(array_values(array_map(function($a) { return round($a->student, 2); }, $records))); ?>,
+                }, {
+                    label: <?php echo json_encode(get_string("teachercomp", "block_exacomp")); ?>,
+                    fillColor: "rgba(72,165,63,0.2)",
+                    strokeColor: "rgba(72,165,63,1)",
+                    pointColor: "rgba(72,165,63,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(151,187,205,1)",
+                    data: <?php echo json_encode(array_values(array_map(function($a) { return round($a->teacher, 2); }, $records))); ?>,
+                } ]
+            };
+
+            var ctx = document.getElementById(<?php echo json_encode($canvasid); ?>).getContext("2d");
+            ctx.canvas.width = 600;
+            ctx.canvas.height = 300;
+
+            new Chart(ctx).Radar(radarChartData, {
+                responsive: false, // can't be responsive, because Graph.js 1.0.2 does not work with hidden divs
+                multiTooltipTemplate: "<%= value %>"+"%"
+            });
+
+        </script>
+        <?php
+        $content .= ob_get_clean();
+        return $content;
+    }
+
+    public function radar_graph_legend() {
+        $content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;", "competenceyellow");
+        $content .= ' '.block_exacomp_get_string("studentcomp").' ';
+        $content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
+        $content .= ' '.block_exacomp_get_string("teachercomp").' '.html_writer::empty_tag('br');
+        return $content;
+    }
+
+
 }

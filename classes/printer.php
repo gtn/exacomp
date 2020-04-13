@@ -166,7 +166,8 @@ class printer {
 			$pdf->writeHTML($html_table);
 		}
 
-// 		die();
+		echo $html_table; exit;
+ 		//die();
 		$pdf->Output();
 
 		exit;
@@ -261,7 +262,7 @@ class printer {
 			$pdf->AddPage();
 			$pdf->writeHTML($html_table);
 		}
-
+         //echo $html_table; exit;
 		$pdf->Output();
 
 		exit;
