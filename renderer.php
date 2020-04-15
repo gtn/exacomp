@@ -5642,7 +5642,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $radar_graph_content = html_writer::tag('legend', block_exacomp_get_string('radargraphtitle'),
                             array('class' => 'competence_profile_insectitle'));
                     $topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id, $subject->id);
-                    if (count($topics) < 3 || count($topics) > 7) {
+                    if (count($topics) < 3 || count($topics) > 13) {
                         //print error
                         $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
                         $radar_graph_content .= html_writer::div($img . block_exacomp_get_string('radargrapherror'), 'competence_profile_grapherror');
@@ -8079,7 +8079,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     function radar_graph($records) {
         global $CFG;
 
-        if (count($records) < 3 || count($records) > 7) {
+        if (count($records) < 3 || count($records) > 13) {
             //print error
             $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
             return html_writer::div($img . block_exacomp_get_string('radargrapherror'), 'competence_profile_grapherror');

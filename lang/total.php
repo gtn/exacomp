@@ -3108,12 +3108,12 @@ return [
         'free materials'
     ],
     'radargraphtitle' => [
-        'radar graph',
-        'radar graph',
+        'Netzdiagramm',
+        'Radar Graph',
     ],
     'radargrapherror' => [
-        'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden',
-        'Radargraph can only be displayed with 3-7 axis',
+        'Der Radargraph kann nur bei 3-13 Achsen dargestellt werden',
+        'Radargraph can only be displayed with 3-13 axis',
     ],
     'studentcomp' => [
         'Laut Selbsteinschätzung erreichte Kompetenzen',
