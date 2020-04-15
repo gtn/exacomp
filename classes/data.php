@@ -1540,6 +1540,14 @@ class data_importer extends data {
         // work with GetPost, because additional form settings are not initialized yet
         $newSelecting = optional_param_array('selectedGrid', null, PARAM_RAW);
         $currentImportStep = optional_param('currentImportStep', 'compareCategories', PARAM_RAW);
+
+        // if the script is called from CLI, for example /cli/import.php: PATH_TO_PHP/php.exe PATH_TO_MOODLE\blocks\exacomp\cli\import.php PATH_TO_XML_FILE
+        // we need to ignore steps
+        $is_web = http_response_code() !== FALSE;
+        if (!$is_web) { // no any http response. TODO: is this enough condition?
+            $currentImportStep = '-- cli-script --';
+        }
+
         switch ($currentImportStep) {
             case 'compareCategories':
                 // we need to compare assessment_diffLevel_options with XML categories and rename it if needed
