@@ -1541,7 +1541,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	], $savegradinghistory);
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
-		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid);
+		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $compid, $comptype);
         if($subjectid == -1){
             $subject = block_exacomp_get_subject_by_descriptorid($compid);
         }else{
@@ -7750,8 +7750,6 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 	$subject .= "\n\r".$studentcomment;
 
 	$gridurl = block_exacomp_get_gridurl_for_example($courseid, $userto->id, $example->id);
-//	var_dump($gridurl);
-//	die;
 
 	$message = block_exacomp_get_string('notification_submission_body', null, array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_submission_context');
@@ -7816,8 +7814,8 @@ function block_exacomp_notify_all_teachers_about_self_assessment($courseid) {
  * @param unknown $userto
  * @param unknown $courseid
  */
-function block_exacomp_send_grading_notification($userfrom, $userto, $courseid) {
-	global $CFG, $USER, $SITE;
+function block_exacomp_send_grading_notification($userfrom, $userto, $courseid, $compid, $comptype) {
+	global $CFG, $USER, $SITE, $DB;
 
 	$course = get_course($courseid);
 
@@ -7825,7 +7823,17 @@ function block_exacomp_send_grading_notification($userfrom, $userto, $courseid) 
 	$message = block_exacomp_get_string('notification_grading_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_grading_context');
 
-	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
+	//$courseid, $topicid, $descriptorid
+
+    if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
+        $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $compid));
+        $topicid = $descriptor_topic_mm->topicid;
+        $viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'topicid' => $topicid, 'descriptorid' => $compid));
+    }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
+        $viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'topicid' => $compid));
+    }
+
+
 
 	block_exacomp_send_notification("grading", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
@@ -7835,6 +7843,7 @@ function block_exacomp_send_grading_notification($userfrom, $userto, $courseid) 
  * @param unknown $courseid
  * @param unknown $students
  */
+// TODO: is this ever used?
 function block_exacomp_notify_students_about_grading($courseid, $students) {
 	global $USER, $DB;
 
