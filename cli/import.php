@@ -17,11 +17,15 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+
 /**
  * CLI import
  *
  * Notes:
+ *   - this script is used to import xml data to exacomp
  *   - it is required to use the web server account when executing PHP CLI scripts
+ *   - to run from windows: 1) change to directory of php.exe (i.e. xampp/php) 2) run in windows cmd: 'php.exe C:\xampp\htdocs\moodle\blocks\exacomp\cli\import.php C:\xampp\htdocs\moodle\data.xml'
+
  *
  */
 
