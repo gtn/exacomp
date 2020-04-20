@@ -9810,7 +9810,7 @@ class block_exacomp_external extends external_api {
         $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
         $string = str_replace($remove, ' ', $string); // new lines to space
         $string = preg_replace('!\s+!', ' ', $string); // multiple spaces to single
-        $string = html_entity_decode(htmlentities($string, ENT_IGNORE)); // for some hidden symbols
+        $string = fix_utf8($string);
         // here is possible &nbsp;, but also are possible umlauts...
         $string = strtr($string, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
         $string = trim($string, chr(0xC2).chr(0xA0));
