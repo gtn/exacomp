@@ -861,3 +861,4 @@ $string['settings_export_password'] = 'Sicherung von Kompetenzrastern mit Passwo
 $string['settings_export_password_description'] = '(Nur ab php Version 7.2 verfügbar)';
 $string['pre_planning_materials_assigned'] = 'Ausgewählte Materialien wurden den ausgewählten Schülern/Gruppen zugeteilt.';
 $string['grade_example_related'] = 'Verbundene Kompetenzen und Materialien bewerten.';
+$string['import_ics'] = 'Kalenderdateiimport';

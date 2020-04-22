@@ -5936,8 +5936,21 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
     $interval = (get_config("exacomp", "scheduleinterval")) ? get_config("exacomp", "scheduleinterval") : 50;
     $time = (get_config("exacomp", "schedulebegin")) ? get_config("exacomp", "schedulebegin") : "07:45";
 
-    var_dump($timeslots);
+    //convert the timeslots to timestamps so i can compare them usefully
+    $timeslottimestamps = array();
+    foreach($timeslots as $key => $timeslot){
+//        $timeslots[$key]["starttimestamp"] =  DateTime::createFromFormat('H:i', $timeslot['start']);
+//        $timeslots[$key]["endtimestamp"] =  DateTime::createFromFormat('H:i', $timeslot['end']);
+        $timeslottimestamps[] =  DateTime::createFromFormat('H:i', $timeslot['start'])->getTimestamp();
+        $timeslottimestamps[] =  DateTime::createFromFormat('H:i', $timeslot['end'])->getTimestamp();
+    }
 
+//    var_dump($timeslots);
+//    die;
+
+//    var_dump($timeslots[0]["start"]);
+//    var_dump($timeslots[0]["end"]);
+//    die;
 
     require __DIR__.'/../calFileParser/CalFileParser.php';
     $cal = new CalFileParser();
@@ -5950,13 +5963,96 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
 //    var_dump($end);
 //    die;
 
+
+    $now = new DateTime();
     foreach($icsData as $event){
+        //skip all events that happened before now:
+//        var_dump($event['DTSTART']->getTimestamp());
+//        var_dump($now->getTimestamp());
+        if($event['DTSTART']->getTimestamp() < $now->getTimestamp()){
+            continue;
+        }
+
+
+//        var_dump($event['DTSTART']->format('H:i'));
+//        var_dump($event['DTEND']->format('H:i'));
+
+//        $date = $event['DTSTART']->format('j-M-Y');
+//        $newDate = DateTime::createFromFormat('j-M-Y', $date);
+//        var_dump($newDate);
+
+//        var_dump($event['DTEND']);
+//        $event['DTEND']->setTime(05,16);
+//        var_dump($event['DTEND']);
+
+        //Idea: map the time to the closest timeslot:
+        //Get the hours and minutes of the timeslots, create date from it, do the same for timestamp
+        //Compare the timestamps and find closest
+        //update the timestamp with the closes hours and minutes
+        $eventStartStamp = DateTime::createFromFormat('H:i', $event['DTSTART']->format('H:i'))->getTimestamp();
+        $eventEndStamp = DateTime::createFromFormat('H:i', $event['DTEND']->format('H:i'))->getTimestamp();
+
+        //START
+        $smallestDifference = 999999999999;
+        $keyOfBestFit = -1;
+        foreach($timeslottimestamps as $key => $timeslottimestamp){
+            $currdiff = abs($timeslottimestamp-$eventStartStamp);
+            if($currdiff == 0){
+                //nothing to do, since it fits a timestamp perfectly
+                break;
+            }
+            if($currdiff<$smallestDifference){
+                $keyOfBestFit = $key;
+                $smallestDifference = $currdiff;
+            }
+        }
+
+        if($keyOfBestFit!=-1){
+            //set the time of the event to the nearest hours and mins that are available from the timestamps
+            //for this, I have to create a date from the dimestamp
+            $hour = date('H',$timeslottimestamps[$keyOfBestFit]);
+            $minute = date('i',$timeslottimestamps[$keyOfBestFit]);
+            $event['DTSTART']->setTime($hour,$minute);
+            //now i have to correct the date
+        }
+
+
+        //END
+        $smallestDifference = 999999999999;
+        $keyOfBestFit = -1;
+        foreach($timeslottimestamps as $key => $timeslottimestamp){
+            $currdiff = abs($timeslottimestamp-$eventEndStamp);
+            if($currdiff == 0){
+                //nothing to do, since it fits a timestamp perfectly
+                break;
+            }
+            if($currdiff<$smallestDifference){
+                $keyOfBestFit = $key;
+                $smallestDifference = $currdiff;
+            }
+        }
+
+        if($keyOfBestFit!=-1){
+            //set the time of the event to the nearest hours and mins that are available from the timestamps
+            //for this, I have to create a date from the dimestamp
+            $hour = date('H',$timeslottimestamps[$keyOfBestFit]);
+            $minute = date('i',$timeslottimestamps[$keyOfBestFit]);
+
+//            var_dump($hour);
+//            var_dump($minute);
+//            var_dump($event['DTEND']);
+//            die;
+            //update the time, to a valid timeslot time
+            $event['DTEND']->setTime($hour,$minute);
+        }
+
         $timeStart = $event['DTSTART']->getTimestamp();
         $timeEnd = $event['DTEND']->getTimestamp();
         $blockingEventId = block_exacomp_create_background_event($courseid,$event["SUMMARY"],$creatorid,$studentid);
 //        block_exacomp_add_example_to_schedule(4, $blockingEventId, 4, 2,$timeStart,$timeEnd);
         block_exacomp_add_example_to_schedule($studentid, $blockingEventId, $creatorid, $courseid,$timeStart,$timeEnd);
     }
+    return true;
 }
 
 

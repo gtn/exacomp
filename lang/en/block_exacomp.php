@@ -851,3 +851,4 @@ $string['settings_export_password'] = 'Passwort protection (AES-256 encryption) 
 $string['settings_export_password_description'] = '(Only available from php version 7.2 on)';
 $string['pre_planning_materials_assigned'] = 'Selected materials were assigned to the selected students / groups.';
 $string['grade_example_related'] = 'Assess related competences and descriptors';
+$string['import_ics'] = 'Calendar import';

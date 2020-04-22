@@ -2249,9 +2249,9 @@ return [
 		'Dear {$a->receiver}, </br></br>{$a->teacher} commented in {$a->course} the example {$a->example}.</br></br> This message has been generated form moodle site {$a->site}.',
 	],
 	'notification_example_comment_context' => [
-		'Kommentar',
-		'Comment',
-	],
+        'Kommentar',
+        'Comment',
+    ],
 	'notification_weekly_schedule_subject' => [
 		'{$a->site}: Neue Aufgabe am Wochenplan',
 		'{$a->site}: New example on the schedule',
@@ -3094,5 +3094,9 @@ return [
     'grade_example_related' => [
         'Verbundene Kompetenzen und Materialien bewerten.',
         'Assess related competences and descriptors'
+    ],
+    'import_ics' => [
+        'Kalenderdateiimport',
+        'Calendar import',
     ],
 ];

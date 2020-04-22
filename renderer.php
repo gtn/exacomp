@@ -7111,18 +7111,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 	public function side_wrap_weekly_schedule() {
-	    global $USER;
+
 		$pool = $this->example_pool();
 
 		$calendar = html_writer::div('', '', array('id' => 'calendar'));
 		$trash = $this->example_trash();
 		$clear = html_writer::div('', '', array('style' => 'clear:both'));
 
+        $import_ics = $this->import_examples_ics();
+
+		return html_writer::div($pool.$calendar.$trash.$import_ics.$clear, '', array('id' => 'wrap'));
+	}
+
+	public function import_examples_ics(){
+        global $USER;
+        $content = html_writer::tag('h4', block_exacomp_get_string('import_ics'));
         $importICSlink = html_writer::empty_tag('input', array('type' => 'url', 'id' => 'import_ics_link', 'placeholder' => "www.myicsfile.at"));
         $importICSbutton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics_button', 'value' => "import ics", 'creatorid' => $USER->id));
-
-		return html_writer::div($pool.$calendar.$trash.$clear.$importICSlink.$importICSbutton, '', array('id' => 'wrap'));
-	}
+        $content .= $importICSlink;
+        $content .= $importICSbutton;
+        return html_writer::div($content, '', array('id' => 'import_ics'));
+    }
 
 	public function example_trash($trash_examples = array(), $persistent_trash = true) {
 		$content = html_writer::tag('h4', block_exacomp_get_string('example_trash'));

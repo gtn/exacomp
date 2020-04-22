@@ -39,9 +39,11 @@
 
 	$(document).on('click', '#import_ics_button', function(event) {
 		link = $('#import_ics_link').val();
+		;
 		creatorid = $(this).attr('creatorid');
 		studentid = block_exacomp.get_studentid();
 		courseid = block_exacomp.get_param('courseid');
+		alert(studentid);
 		block_exacomp.call_ajax({
 			studentid: studentid,
 			link: link,
