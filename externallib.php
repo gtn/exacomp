@@ -6172,7 +6172,7 @@ class block_exacomp_external extends external_api {
 	        $itemexample->status = 1;
 
 	        $DB->update_record('block_exacompitemexample', $itemexample);
-	        if ($comment) {
+	        if ($comment || $filename != '') {
 // 	            $oldComment = $DB->get_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
 // 	            if($oldComment){
 // 	                $oldComment->itemid = $itemid;
@@ -6187,12 +6187,12 @@ class block_exacomp_external extends external_api {
 // 	                    $DB->delete_records('files', array('itemid' => $commentid, 'userid' => $USER->id, 'filearea' => 'item_comment_file', 'component' => 'block_exaport'));
 // 	                }
 // 	            }else{
-	                $insert = new stdClass ();
-	                $insert->itemid = $itemid;
-	                $insert->userid = $USER->id;
-	                $insert->entry = $comment;
-	                $insert->timemodified = time();
-	                $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
+                $insert = new stdClass ();
+                $insert->itemid = $itemid;
+                $insert->userid = $USER->id;
+                $insert->entry = $comment;
+                $insert->timemodified = time();
+                $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
 // 	            }
 
 	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment);
