@@ -457,6 +457,7 @@ class block_exacomp_simple_service {
 					'numbering' => $item->get_numbering(),
 					'title' => $item->title,
 					'children' => static::json_items($item->children, $by),
+                    'niveauid' => $item->get_niveau()->id,
 				];
 				if ($by == BLOCK_EXACOMP_DB_SUBJECTS) {
 					$results[$item->id]->examples = static::json_items($item->examples, $by);

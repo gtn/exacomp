@@ -953,6 +953,10 @@ class descriptor extends db_record {
 		return block_exacomp_get_descriptor_numbering($this);
 	}
 
+	function get_niveau() {
+	    return \block_exacomp\niveau::get($this->niveauid);
+	}
+
 	function get_detailedtype() {
 		return $this->parentid ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 	}
