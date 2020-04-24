@@ -454,7 +454,7 @@ class block_exacomp_simple_service {
 			} elseif ($item instanceof \block_exacomp\descriptor) {
 				$results[$item->id] = (object)[
 					'id' => $item->id,
-					'numbering' => $item->get_numbering(),
+					'numbering' => $item->get_numbering(true),
 					'title' => $item->title,
 					'children' => static::json_items($item->children, $by),
                     'niveauid' => $item->get_niveau()->id,

@@ -949,8 +949,8 @@ class descriptor extends db_record {
 		}
 	}
 
-	function get_numbering() {
-		return block_exacomp_get_descriptor_numbering($this);
+	function get_numbering($reloadTopic = false) {
+		return block_exacomp_get_descriptor_numbering($this, $reloadTopic);
 	}
 
 	function get_niveau() {

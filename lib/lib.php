@@ -6506,9 +6506,10 @@ function block_exacomp_get_visible_css($visible, $role) {
 /**
  * get numbering for descriptor
  * @param unknown $descriptor
+ * @param boolean $reloadTopic
  * @return string
  */
-function block_exacomp_get_descriptor_numbering($descriptor) {
+function block_exacomp_get_descriptor_numbering($descriptor, $reloadTopic = false) {
 	if (!block_exacomp_is_numbering_enabled()) {
 		return '';
 	}
@@ -6518,6 +6519,11 @@ function block_exacomp_get_descriptor_numbering($descriptor) {
 	static $numberingCache = [];
 
 	if (!isset($numberingCache[$id])) {
+	    // if the descriptor is from search result tree - his topic has not full descriptors list (only founded)
+        // so, we need to reload all descriptors for this topic
+        if ($reloadTopic) {
+            unset($descriptor->topic);
+        }
 		// build cache
 		if (isset($descriptor->topic) && $descriptor->topic instanceof \block_exacomp\topic) {
 			$topic = $descriptor->topic;
