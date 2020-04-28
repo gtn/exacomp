@@ -1,3 +1,19 @@
+v4.6.4 (2020042000)
+- interdisciplinary competences: new role for defining courses as haven interdisciplinary competence grids. these grids also have to be marked as interdisciplinary in the comet-tool.
+- implementation of grading history
+- time-budgets of materials are now available
+- implementation of grading history if more trainers grade a student the grading history is shown
+- teachers can hide "interdisciplinary subjects" from a course so the will not show in the competence grid they use in the course
+- better sorting of linked competences
+- average calculation in competence profile if more competences are in one cell
+- automatic competentence assessment now works with new scheme: moodle activities and exacomp material
+- thematical combined competence grids in competence profile
+- translations done
+- taxonomy editing now possible
+- pre-planning storage works with group functionality
+- taxonomy filters moved to view_examples.php
+- themes can be assessed now file-upload with additional info for theme competency-based layout in additon group reports with assessment in tabular form change of theme-icon warning if child-competences have had additional assessment mapping to new difficulty levels during import of xml-file selection of xml-file (with more competence grids) during import
+
 v4.6.3
 themes can be assessed now
 file-upload with additional info for theme
