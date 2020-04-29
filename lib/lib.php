@@ -6015,8 +6015,11 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 
 	$timecreated = $timemodified = time();
 
-	// prÃ¼fen, ob element schon zur gleichen zeit im wochenplan ist
-	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
+	// prüfen, ob element schon zur gleichen zeit im wochenplan ist
+	if ($studentid==0){ // 2 teachers of same course should be able to add example in there planing scheduler, so creatorid have to be asked here. for student below this is not necessary
+		if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'creatorid' => $creatorid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
+		return true;}
+	}else if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
 	//if not given by the function call, find out the ethema parameter:
