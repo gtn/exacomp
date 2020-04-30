@@ -238,7 +238,7 @@ $string['help_content'] = '<h1>Video zur Einführung</h1>
 // === Import ===
 $string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>';
 $string['importwebservice'] = 'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.';
-$string['import_max_execution_time'] = 'Wichtig: Die aktuellen Servereinstellung beschränken den Import auf {$a} Sekunden. Falls der Import länger dauert, wird er abgebrochen und es werden keine Daten importiert. Am Bildschirm wird in diesem Fall eine Sever Fehlermeldung (wie z.B. "500 Internal Server Error") angezeigt.';
+$string['import_max_execution_time'] = 'Wichtig: die aktuellen Servereinstellungen beschränken den Import auf {$a} Sekunden. Falls der Import-Vorgang länger dauert, wird dieser abgebrochen, es werden keine Daten importiert. Am Ausgabegerät wird in diesem Fall eine serverseitige Fehlermeldung ausgegeben (z.B. "500 Internal Server Error").';
 $string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
 $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.';
 $string['doimport'] = 'Bildungsstandards importieren';

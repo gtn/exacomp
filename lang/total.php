@@ -816,7 +816,7 @@ return [
 		'It is possible to keep the data up to date via a <a href="{$a}">Server-URL</a>.',
 	],
 	'import_max_execution_time' => [
-		'Wichtig: Die aktuellen Servereinstellung beschränken den Import auf {$a} Sekunden. Falls der Import länger dauert, wird er abgebrochen und es werden keine Daten importiert. Am Bildschirm wird in diesem Fall eine Sever Fehlermeldung (wie z.B. "500 Internal Server Error") angezeigt.',
+		'Wichtig: die aktuellen Servereinstellungen beschränken den Import auf {$a} Sekunden. Falls der Import-Vorgang länger dauert, wird dieser abgebrochen, es werden keine Daten importiert. Am Ausgabegerät wird in diesem Fall eine serverseitige Fehlermeldung ausgegeben (z.B. "500 Internal Server Error").',
 		'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".',
 	],
 	'importdone' => [
