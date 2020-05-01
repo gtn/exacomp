@@ -3167,5 +3167,12 @@ return [
         'Ausstehende Kompetenzen',
         'pending competencies',
     ],
+    'topicgrading' => [
+        'Gesamtbewertung des Themas: ',
+        'Total topic grading: ',
+    ],
+
+
+
 
 ];

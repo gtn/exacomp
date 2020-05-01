@@ -879,3 +879,4 @@ $string['radargrapherror'] = 'Der Radargraph kann nur bei 3-13 Achsen dargestell
 $string['studentcomp'] = 'Laut Selbsteinschätzung erreichte Kompetenzen';
 $string['teachercomp'] = 'Erreichte Kompetenzen';
 $string['pendingcomp'] = 'Ausstehende Kompetenzen';
+$string['topicgrading'] = 'Gesamtbewertung des Themas: ';

@@ -5622,6 +5622,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $competence_tree = $newArr + $isglobalArr;
             }
 
+
+            if($crosssubj){
+                $grading = block_exacomp_get_comp_eval($crosssubj->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->id);
+                $content .= html_writer::tag("h2", block_exacomp_get_string("topicgrading").$grading->value, array("class" => "competence_profile_coursetitle"));
+                $content .= html_writer::tag("br","");
+        }
+
             foreach ($competence_tree as $subject) {
                 $content .= html_writer::tag("h4", $subject->title, array("class" => "competence_profile_coursetitle"));
 

@@ -869,3 +869,4 @@ $string['radargrapherror'] = 'Radargraph can only be displayed with 3-13 axis';
 $string['studentcomp'] = 'self evaluated competencies';
 $string['teachercomp'] = 'gained competencies';
 $string['pendingcomp'] = 'pending competencies';
+$string['topicgrading'] = 'Total topic grading: ';
