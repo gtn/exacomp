@@ -57,14 +57,16 @@
 		creatorid = $(this).attr('creatorid');
 		studentid = block_exacomp.get_studentid();
 		courseid = block_exacomp.get_param('courseid');
-		block_exacomp.call_ajax({
-			studentid: studentid,
-			creatorid: creatorid,
-			courseid: courseid,
-			action : 'delete-imports'
-		}).done(function(msg) {
-			location.reload();
-		});
+		if (confirm(M.util.get_string('delete_ics_imports_confirmation', 'block_exacomp'))) {
+			block_exacomp.call_ajax({
+				studentid: studentid,
+				creatorid: creatorid,
+				courseid: courseid,
+				action : 'delete-imports'
+			}).done(function(msg) {
+				location.reload();
+			});
+		}
 	});
 
 	$(document).on('click', '#event-copy', function(event) {

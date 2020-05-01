@@ -613,6 +613,7 @@ $string['pre_planning_storage_disabled'] = 'Lernmaterial ist versteckt und kann 
 $string['add_example_for_all_students_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für alle Schüler/innen auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
 $string['add_example_for_group_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
 $string['add_example_for_all_students_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?';
+$string['delete_ics_imports_confirmation'] = 'Sind Sie sicher, dass Sie die die von ihnen importierten Termine für den ausgewählten Wochenplan entfernen möchten?';
 $string['add_example_for_group_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan legen möchten?';
 $string['participating_student'] = 'Kursteilnehmer/in';
 $string['n1.unit'] = '1. Einheit:';

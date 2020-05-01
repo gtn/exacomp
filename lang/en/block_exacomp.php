@@ -607,6 +607,7 @@ $string['pre_planning_storage_disabled'] = 'Hidden example can not be added to p
 $string['add_example_for_all_students_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.';
 $string['add_example_for_group_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students of the selected group. This requires extra confirmation.';
 $string['add_example_for_all_students_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students, do you want to continue?';
+$string['delete_ics_imports_confirmation'] = 'You are about to remove your imported tasks for this weekly schedule, do you want to continue?';
 $string['add_example_for_group_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students of this group, do you want to continue?';
 $string['participating_student'] = 'student';
 $string['n1.unit'] = '1. unit';

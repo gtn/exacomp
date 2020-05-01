@@ -2154,6 +2154,10 @@ return [
 		'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?',
 		'You are about to add the examples to the schedules of all students, do you want to continue?',
 	],
+    'delete_ics_imports_confirmation' => [
+        'Sind Sie sicher, dass Sie die die von ihnen importierten Termine für den ausgewählten Wochenplan entfernen möchten?',
+        'You are about to remove your imported tasks for this weekly schedule, do you want to continue?',
+    ],
     'add_example_for_group_to_schedule_confirmation' => [
         'Sind Sie sicher, dass Sie die Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan legen möchten?',
         'You are about to add the examples to the schedules of all students of this group, do you want to continue?',
