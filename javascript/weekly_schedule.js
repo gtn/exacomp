@@ -42,6 +42,7 @@
 		creatorid = $(this).attr('creatorid');
 		studentid = block_exacomp.get_studentid();
 		courseid = block_exacomp.get_param('courseid');
+		alert(M.util.get_string('import_ics_loading_time', 'block_exacomp'));
 		block_exacomp.call_ajax({
 			studentid: studentid,
 			link: link,
@@ -49,6 +50,7 @@
 			courseid: courseid,
 			action : 'import-ics'
 		}).done(function(msg) {
+			alert("done");
 			location.reload();
 		});
 	});

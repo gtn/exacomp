@@ -2158,6 +2158,10 @@ return [
         'Sind Sie sicher, dass Sie die die von ihnen importierten Termine für den ausgewählten Wochenplan entfernen möchten?',
         'You are about to remove your imported tasks for this weekly schedule, do you want to continue?',
     ],
+    'import_ics_loading_time' => [
+        'Das Importieren kann bis zu mehreren Minuten dauern.',
+        'Importing can take up to several Minutes.',
+    ],
     'add_example_for_group_to_schedule_confirmation' => [
         'Sind Sie sicher, dass Sie die Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan legen möchten?',
         'You are about to add the examples to the schedules of all students of this group, do you want to continue?',
