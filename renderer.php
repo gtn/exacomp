@@ -5625,7 +5625,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             if($crosssubj){
                 $grading = block_exacomp_get_comp_eval($crosssubj->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->id);
-                $content .= html_writer::tag("h2", block_exacomp_get_string("topicgrading").$grading->value, array("class" => "competence_profile_coursetitle"));
+                switch (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB)) {
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                        $addtext = block_exacomp_format_eval_value($grading->additionalinfo);
+                        break;
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                        $value = @$grading->value === null ? -1 : @$grading->value;
+                        $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+                        if (isset($teacher_eval_items[$value])) {
+                            $addtext = $teacher_eval_items[$value];
+                        }
+                        break;
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                        $addtext = block_exacomp_format_eval_value($grading->value);
+                        break;
+                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                        if ($grading->value > 0) {
+                            $addtext = 'X';
+                        }
+                        break;
+                }
+                $content .= html_writer::tag("h2", block_exacomp_get_string("topicgrading").$addtext, array("class" => "competence_profile_coursetitle"));
                 $content .= html_writer::tag("br","");
         }
 
