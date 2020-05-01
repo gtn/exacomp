@@ -5939,51 +5939,26 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
     //convert the timeslots to timestamps so i can compare them usefully
     $timeslottimestamps = array();
     foreach($timeslots as $key => $timeslot){
-//        $timeslots[$key]["starttimestamp"] =  DateTime::createFromFormat('H:i', $timeslot['start']);
-//        $timeslots[$key]["endtimestamp"] =  DateTime::createFromFormat('H:i', $timeslot['end']);
         $timeslottimestamps[] =  DateTime::createFromFormat('H:i', $timeslot['start'])->getTimestamp();
         $timeslottimestamps[] =  DateTime::createFromFormat('H:i', $timeslot['end'])->getTimestamp();
     }
 
-//    var_dump($timeslots);
-//    die;
 
-//    var_dump($timeslots[0]["start"]);
-//    var_dump($timeslots[0]["end"]);
-//    die;
 
     require __DIR__.'/../calFileParser/CalFileParser.php';
     $cal = new CalFileParser();
     $cal->set_timezone('Europe/Berlin');
-//    $icsData = $cal->parse('https://urania.webuntis.com/WebUntis/Ical.do?school=hak-steyr&id=RIEPL&token=91282f616c9ee2a17aedb037f42e06');
     $icsData = $cal->parse($link);
     $start = $icsData[3]['DTSTART'];
     $end = $icsData[3]['DTEND'];
-//    var_dump($start);
-//    var_dump($end);
-//    die;
 
 
     $now = new DateTime();
     foreach($icsData as $event){
         //skip all events that happened before now:
-//        var_dump($event['DTSTART']->getTimestamp());
-//        var_dump($now->getTimestamp());
         if($event['DTSTART']->getTimestamp() < $now->getTimestamp()){
             continue;
         }
-
-
-//        var_dump($event['DTSTART']->format('H:i'));
-//        var_dump($event['DTEND']->format('H:i'));
-
-//        $date = $event['DTSTART']->format('j-M-Y');
-//        $newDate = DateTime::createFromFormat('j-M-Y', $date);
-//        var_dump($newDate);
-
-//        var_dump($event['DTEND']);
-//        $event['DTEND']->setTime(05,16);
-//        var_dump($event['DTEND']);
 
         //Idea: map the time to the closest timeslot:
         //Get the hours and minutes of the timeslots, create date from it, do the same for timestamp
@@ -6038,10 +6013,6 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
             $hour = date('H',$timeslottimestamps[$keyOfBestFit]);
             $minute = date('i',$timeslottimestamps[$keyOfBestFit]);
 
-//            var_dump($hour);
-//            var_dump($minute);
-//            var_dump($event['DTEND']);
-//            die;
             //update the time, to a valid timeslot time
             $event['DTEND']->setTime($hour,$minute);
         }
@@ -6049,11 +6020,33 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
         $timeStart = $event['DTSTART']->getTimestamp();
         $timeEnd = $event['DTEND']->getTimestamp();
         $blockingEventId = block_exacomp_create_background_event($courseid,$event["SUMMARY"],$creatorid,$studentid);
-//        block_exacomp_add_example_to_schedule(4, $blockingEventId, 4, 2,$timeStart,$timeEnd);
         block_exacomp_add_example_to_schedule($studentid, $blockingEventId, $creatorid, $courseid,$timeStart,$timeEnd);
     }
     return true;
 }
+
+/**
+ * delete all ics_imports of this creator for this student in this course
+ */
+function block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$creatorid){
+    global $DB;
+    // this JOIN is not working, why?
+//    DELETE FROM `mdl_block_exacompschedule` s
+//JOIN 'mdl_block_exacompexamples' e on e.id = s.exampleid AND e.blocking_event=3
+    //solution without join:
+//    DELETE s FROM `mdl_block_exacompschedule` s, `mdl_block_exacompexamples` e
+//WHERE s.exampleid = e.id AND e.blocking_event = 3
+//    AND s.courseid = AND studentid = AND creatorid =
+
+    $sql = "DELETE s,e
+        FROM {block_exacompschedule} s, {block_exacompexamples} e
+        WHERE e.id = s.exampleid
+        AND s.studentid = ? AND s.courseid = ? AND s.creatorid = ?
+        AND e.blocking_event = 3";
+
+    var_dump($DB->execute($sql, array($studentid,$courseid,$creatorid)));
+}
+
 
 
 /**
@@ -8203,7 +8196,7 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 }
 
 /**
- * create an example only available on weekly schedule, to define occupied time slots, currently only for teachers
+ * create an event imported from an ICS file
  * @param unknown $courseid
  * @param unknown $title
  * @param unknown $creatorid
@@ -8224,8 +8217,6 @@ function block_exacomp_create_background_event($courseid, $title, $creatorid, $s
     $schedule->exampleid = $exampleid;
     $schedule->creatorid = $creatorid;
     $schedule->courseid = $courseid;
-
-    $scheduleid = $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, $schedule);
 
     $record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => 0, 'visible' => 1));
     if (!$record) {
