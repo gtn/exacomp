@@ -7130,8 +7130,12 @@ class block_exacomp_external extends external_api {
             $crosssubj_teachergrading = block_exacomp_get_comp_eval($crosssubject->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubject->id);
             $crosssubj_studentgrading = block_exacomp_get_comp_eval($crosssubject->courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubject->id);
 
-            $subjectinfo['teacher']['crosssubjgrading'] = $crosssubj_teachergrading;
-            $subjectinfo['student']['crosssubjgrading'] = $crosssubj_studentgrading;
+            if($crosssubj_teachergrading){
+                $subjectinfo['teacher']['crosssubjgrading'] = $crosssubj_teachergrading;
+            }
+            if($crosssubj_studentgrading){
+                $subjectinfo['student']['crosssubjgrading'] = $crosssubj_studentgrading;
+            }
 
             foreach($subjects as $id => $subj){
                 $subjectinfo['teacher']['gridgradings'][] = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subj->id, BLOCK_EXACOMP_ROLE_TEACHER, null, $crosssubject);
