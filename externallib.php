@@ -7115,11 +7115,11 @@ class block_exacomp_external extends external_api {
         }else if($crosssubjid != -1){
             $subjectinfo = array(
                 'teacher' => array(
-                    'crosssubjeval' => -1,
+                    'crosssubjgrading' => array(),
                     'gridgradings' => array()
                 ),
                 'student' => array(
-                    'crosssubjeval' => -1,
+                    'crosssubjgrading' => array(),
                     'gridgradings' => array()
                 ),
                 'globalcompetences' => array()
@@ -7127,30 +7127,11 @@ class block_exacomp_external extends external_api {
 
             $crosssubject = block_exacomp_get_crosssubject_by_id($crosssubjid);
             $subjects = block_exacomp_get_subjects_for_cross_subject($crosssubjid);
-            $crosssubj_teachereval = block_exacomp_get_comp_eval($crosssubject->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubject->id);
-            $crosssubj_studenteval = block_exacomp_get_comp_eval($crosssubject->courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubject->id);
-            switch (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB)) {
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                    $teachereval = block_exacomp_format_eval_value($crosssubj_teachereval->additionalinfo);
-                    break;
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                    $value = @$crosssubj_teachereval->value === null ? -1 : @$crosssubjgrading->value;
-                    $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
-                    if (isset($teacher_eval_items[$value])) {
-                        $teachereval = $teacher_eval_items[$value];
-                    }
-                    break;
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-                    $teachereval = block_exacomp_format_eval_value($crosssubj_teachereval->value);
-                    break;
-                case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-                    if ($crosssubj_teachereval->value > 0) {
-                        $teachereval = 'X';
-                    }
-                    break;
-            }
-            $subjectinfo['teacher']['crosssubjeval'] = $teachereval;
-            $subjectinfo['student']['crosssubjeval'] = $crosssubj_studenteval->value; //TODO: make generic, or is this handeld in Dakora?
+            $crosssubj_teachergrading = block_exacomp_get_comp_eval($crosssubject->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubject->id);
+            $crosssubj_studentgrading = block_exacomp_get_comp_eval($crosssubject->courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubject->id);
+
+            $subjectinfo['teacher']['crosssubjgrading'] = $crosssubj_teachergrading;
+            $subjectinfo['student']['crosssubjgrading'] = $crosssubj_studentgrading;
 
             foreach($subjects as $id => $subj){
                 $subjectinfo['teacher']['gridgradings'][] = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subj->id, BLOCK_EXACOMP_ROLE_TEACHER, null, $crosssubject);
@@ -7225,11 +7206,19 @@ class block_exacomp_external extends external_api {
         );
 		return new external_single_structure (array(
                     'teacher' => new external_single_structure (array(
-                        'crosssubjeval' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'crosssubjgrading' => new external_single_structure(array(
+                            'value' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                            'additionalinfo'=> new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                            'evalniveauid'=> new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL)
+                        ),null,VALUE_OPTIONAL),
                         'gridgradings' => new external_multiple_structure (new external_single_structure($table_structure))
                     )),
                     'student' => new external_single_structure (array(
-                        'crosssubjeval' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'crosssubjgrading' => new external_single_structure(array(
+                            'value' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                            'additionalinfo'=> new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                            'evalniveauid'=> new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL)
+                        ),null,VALUE_OPTIONAL),
                         'gridgradings' => new external_multiple_structure (new external_single_structure($table_structure))
                     )),
                     'globalcompetences' => new external_multiple_structure(new external_single_structure($table_structure), '', VALUE_DEFAULT, array()),
