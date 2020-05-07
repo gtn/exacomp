@@ -234,13 +234,14 @@ class block_exacomp_external extends external_api {
 				global $CFG;
 				if ($CFG->version >= 2016052300) {
 					$quizes = $DB->get_records_sql("SELECT q.id, q.name, q.grade
-							FROM {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} ca
-							JOIN {course_modules} cm ON ca.activityid = cm.id
+							FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
+                            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON ex.id = dex.exampid
+							JOIN {course_modules} cm ON ex.activityid = cm.id
 							JOIN {modules} m ON cm.module = m.id
 							JOIN {quiz} q ON cm.instance = q.id
-							WHERE m.name = 'quiz' AND ca.compid = ? AND ca.comptype = ?
+							WHERE m.name = 'quiz' AND dex.descrid = ?
 							", array(
-							$descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR,
+							$descriptor->id, 
 						)
 					);
 
