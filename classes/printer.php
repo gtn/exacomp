@@ -462,6 +462,12 @@ class printer {
 			.state9 {
 				background-color: #593d1e;
 			}
+			
+			.state10 {
+				background-color: #593d1e;
+				opacity: 0.5;
+			}
+			
 			.different-course {
 				background-color: #acbcca;
 			}

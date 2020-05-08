@@ -5997,6 +5997,130 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
 	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid.'&studentid='.$studentid.'&subjectid='.$topic->subjid.'&topicid='.$topic->id.'&exampleid='.$exampleid;
 }
 
+
+/**
+ * function for testing import of ics to weekly_schedule
+ */
+function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid){
+
+    $timeslots = block_exacomp_build_json_time_slots($date = null);
+    $units = (get_config("exacomp", "scheduleunits")) ? get_config("exacomp", "scheduleunits") : 8;
+    $interval = (get_config("exacomp", "scheduleinterval")) ? get_config("exacomp", "scheduleinterval") : 50;
+    $time = (get_config("exacomp", "schedulebegin")) ? get_config("exacomp", "schedulebegin") : "07:45";
+
+    //convert the timeslots to timestamps so i can compare them usefully
+    $timeslottimestamps = array();
+    foreach($timeslots as $key => $timeslot){
+        $timeslottimestamps[] =  DateTime::createFromFormat('H:i', $timeslot['start'])->getTimestamp();
+        $timeslottimestamps[] =  DateTime::createFromFormat('H:i', $timeslot['end'])->getTimestamp();
+    }
+
+
+
+    require __DIR__ . '/../lib/calFileParser/CalFileParser.php';
+    $cal = new CalFileParser();
+    $cal->set_timezone('Europe/Berlin');
+    $icsData = $cal->parse($link);
+    $start = $icsData[3]['DTSTART'];
+    $end = $icsData[3]['DTEND'];
+
+
+    $now = new DateTime();
+    foreach($icsData as $event){
+        //skip all events that happened before now:
+        if($event['DTSTART']->getTimestamp() < $now->getTimestamp()){
+            continue;
+        }
+
+        //Idea: map the time to the closest timeslot:
+        //Get the hours and minutes of the timeslots, create date from it, do the same for timestamp
+        //Compare the timestamps and find closest
+        //update the timestamp with the closes hours and minutes
+        $eventStartStamp = DateTime::createFromFormat('H:i', $event['DTSTART']->format('H:i'))->getTimestamp();
+        $eventEndStamp = DateTime::createFromFormat('H:i', $event['DTEND']->format('H:i'))->getTimestamp();
+
+        //START
+        $smallestDifference = 999999999999;
+        $keyOfBestFit = -1;
+        foreach($timeslottimestamps as $key => $timeslottimestamp){
+            $currdiff = abs($timeslottimestamp-$eventStartStamp);
+            if($currdiff == 0){
+                //nothing to do, since it fits a timestamp perfectly
+                break;
+            }
+            if($currdiff<$smallestDifference){
+                $keyOfBestFit = $key;
+                $smallestDifference = $currdiff;
+            }
+        }
+
+        if($keyOfBestFit!=-1){
+            //set the time of the event to the nearest hours and mins that are available from the timestamps
+            //for this, I have to create a date from the dimestamp
+            $hour = date('H',$timeslottimestamps[$keyOfBestFit]);
+            $minute = date('i',$timeslottimestamps[$keyOfBestFit]);
+            $event['DTSTART']->setTime($hour,$minute);
+            //now i have to correct the date
+        }
+
+
+        //END
+        $smallestDifference = 999999999999;
+        $keyOfBestFit = -1;
+        foreach($timeslottimestamps as $key => $timeslottimestamp){
+            $currdiff = abs($timeslottimestamp-$eventEndStamp);
+            if($currdiff == 0){
+                //nothing to do, since it fits a timestamp perfectly
+                break;
+            }
+            if($currdiff<$smallestDifference){
+                $keyOfBestFit = $key;
+                $smallestDifference = $currdiff;
+            }
+        }
+
+        if($keyOfBestFit!=-1){
+            //set the time of the event to the nearest hours and mins that are available from the timestamps
+            //for this, I have to create a date from the dimestamp
+            $hour = date('H',$timeslottimestamps[$keyOfBestFit]);
+            $minute = date('i',$timeslottimestamps[$keyOfBestFit]);
+
+            //update the time, to a valid timeslot time
+            $event['DTEND']->setTime($hour,$minute);
+        }
+
+        $timeStart = $event['DTSTART']->getTimestamp();
+        $timeEnd = $event['DTEND']->getTimestamp();
+        $blockingEventId = block_exacomp_create_background_event($courseid,$event["SUMMARY"],$creatorid,$studentid);
+        block_exacomp_add_example_to_schedule($studentid, $blockingEventId, $creatorid, $courseid,$timeStart,$timeEnd);
+    }
+    return true;
+}
+
+/**
+ * delete all ics_imports of this creator for this student in this course
+ */
+function block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$creatorid){
+    global $DB;
+    // this JOIN is not working, why?
+//    DELETE FROM `mdl_block_exacompschedule` s
+//JOIN 'mdl_block_exacompexamples' e on e.id = s.exampleid AND e.blocking_event=3
+    //solution without join:
+//    DELETE s FROM `mdl_block_exacompschedule` s, `mdl_block_exacompexamples` e
+//WHERE s.exampleid = e.id AND e.blocking_event = 3
+//    AND s.courseid = AND studentid = AND creatorid =
+
+    $sql = "DELETE s,e
+        FROM {block_exacompschedule} s, {block_exacompexamples} e
+        WHERE e.id = s.exampleid
+        AND s.studentid = ? AND s.courseid = ? AND s.creatorid = ?
+        AND e.blocking_event = 3";
+
+    var_dump($DB->execute($sql, array($studentid,$courseid,$creatorid)));
+}
+
+
+
 /**
  * add example to students schedule, if start and end not set, example is added to planning storage
  * @param unknown $studentid
@@ -6010,7 +6134,7 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
  * @param char $source  'S' for student, 'T' for teacher individually, 'C' for central.. if teacher assigns many at one time
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent=false) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
@@ -6045,15 +6169,14 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
             block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source);
         }
 	}else {
-	    $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated,
-	        'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory, 'source' => $source ));
+        $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated,
+            'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory, 'source' => $source ));
 
-	    //only send a notification if a teacher adds an example for a student and not for pre planning storage
-	    if ($creatorid != $studentid && $studentid > 0) {
-	        block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
-	    }
-
-	    \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
+        //only send a notification if a teacher adds an example for a student and not for pre planning storage
+        if ($creatorid != $studentid && $studentid > 0) {
+            block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+        }
+        \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
 	}
 	return true;
 }
@@ -7363,11 +7486,17 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	//state 4 = evaluated -> only from teacher exacomp evaluation nE
 	//state 5 = evaluated -> only from teacher exacomp evaluation > nE
 	//state 9 = locked time
+    //state 10 = backgroundEvent
 
 	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 	if ($example->blocking_event == 1) {
 		return BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME;
 	}
+
+	//background event: should only be visible, nothing else... will be used for imported events from ics files from e.g. Webuntis
+    if ($example->blocking_event == 3) {
+        return 10;
+    }
 
 	$comp = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid));
 	$gradingScheme = block_exacomp_get_assessment_example_scheme();
@@ -8153,7 +8282,46 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 
 		$vibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
 	}
+
 }
+
+/**
+ * create an event imported from an ICS file
+ * @param unknown $courseid
+ * @param unknown $title
+ * @param unknown $creatorid
+ * @param unknown $studentid
+ */
+function block_exacomp_create_background_event($courseid, $title, $creatorid, $studentid) {
+    global $DB;
+
+    $example = new stdClass();
+    $example->title = $title;
+    $example->creatorid = $creatorid;
+    $example->blocking_event = 3;
+
+    $exampleid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
+
+    $schedule = new stdClass();
+    $schedule->studentid = $studentid;
+    $schedule->exampleid = $exampleid;
+    $schedule->creatorid = $creatorid;
+    $schedule->courseid = $courseid;
+
+    $record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => 0, 'visible' => 1));
+    if (!$record) {
+        $visibility = new stdClass();
+        $visibility->courseid = $courseid;
+        $visibility->exampleid = $exampleid;
+        $visibility->studentid = 0;
+        $visibility->visible = 1;
+
+        $vibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
+    }
+
+    return $exampleid;
+}
+
 
 /**
  * needed to create example over webservice API

@@ -142,7 +142,7 @@
 	background: #eeeeee; */
 	text-align: left;
 	min-height: 100px;
-	background: #eee; 
+	background: #eee;
 }
 #block_exacomp #external-events.hover {
 	background: #d5ecff;
@@ -153,6 +153,16 @@
 	padding: 17px 10px 0 10px;
 	/* border: 1px solid #ccc; */
 	background: #eee; 
+	text-align: left;
+	margin-top: 25px;
+	float: left;
+}
+
+#block_exacomp #import_ics {
+	width: 20%;
+	padding: 17px 10px 0 10px;
+	/* border: 1px solid #ccc; */
+	background: #eee;
 	text-align: left;
 	margin-top: 25px;
 	float: left;
@@ -174,6 +184,11 @@
 	margin: 0 auto 15px;
 }
 
+#block_exacomp #import_ics h4 {
+	background: transparent url("../pix/exacomp_week_trash.png") no-repeat scroll right bottom;
+	height: 28px;
+	margin: 0 auto 15px;
+}
 
 
 #block_exacomp #trash .fc-event {
@@ -245,6 +260,16 @@
 
 #block_exacomp .fc-event {
 	background-color: #026cc5;
+	border: 1px solid #0162b3;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	/*border: 1px solid #96a7b7;*/
+}
+
+#block_exacomp .fc-backgroundevent {
+	background-color: #026cc5;
+	pointer-events: none;
+	cursor: default;
 	border: 1px solid #0162b3;
 	margin-top: 2px;
 	margin-bottom: 2px;
@@ -358,6 +383,12 @@
 	border: 1px solid #593d1e !important;
 }
 
+#block_exacomp .state10 {
+	background-color: #593d1e;
+	opacity: 0.4;
+	border: 1px solid #593d1e !important;
+	color: #FFFFFF;
+}
 
 #block_exacomp .event-schedulermarker {
 	/*text-align: right;*/

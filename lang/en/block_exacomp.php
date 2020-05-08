@@ -444,10 +444,10 @@ $string['comp_field_idea'] = 'Skill';
 $string['comp'] = 'Topic';
 $string['progress'] = 'Progress';
 $string['instruction'] = 'Instruction';
-$string['instruction_content'] = 'This is an overview for learning resources that are associated with 
+$string['instruction_content'] = 'This is an overview for learning resources that are associated with
 				standards and ticking off competencies for students. Students can
 				assess their competencies. Moodle activities that were turned in by
-				students are displayed with a red icon. ePortfolio-artifacts of students 
+				students are displayed with a red icon. ePortfolio-artifacts of students
 				are displayed in blue icons.';
 
 
@@ -608,6 +608,8 @@ $string['pre_planning_storage_disabled'] = 'Hidden example can not be added to p
 $string['add_example_for_all_students_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.';
 $string['add_example_for_group_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students of the selected group. This requires extra confirmation.';
 $string['add_example_for_all_students_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students, do you want to continue?';
+$string['delete_ics_imports_confirmation'] = 'You are about to remove your imported tasks for this weekly schedule, do you want to continue?';
+$string['import_ics_loading_time'] = 'Importing can take up to several Minutes.';
 $string['add_example_for_group_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students of this group, do you want to continue?';
 $string['participating_student'] = 'student';
 $string['n1.unit'] = '1. unit';
@@ -870,3 +872,4 @@ $string['studentcomp'] = 'self evaluated competencies';
 $string['teachercomp'] = 'gained competencies';
 $string['pendingcomp'] = 'pending competencies';
 $string['topicgrading'] = 'Total topic grading: ';
+$string['import_ics'] = 'Calendar import';

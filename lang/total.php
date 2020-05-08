@@ -1572,21 +1572,21 @@ return [
 		'Instruction',
 	],
 	'instruction_content' => [
-		'Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche 
-				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. 
+		'Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche
+				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden.
 				Darüber hinaus können Sie das Erreichen der Teilkompetenzen
 				eintragen. Je nach Konzept der Schule kann die Bearbeitung des
 				Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz
 				markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung
-				gekennzeichnet werden. Keinenfalls müssen die Schüler/innen 
+				gekennzeichnet werden. Keinenfalls müssen die Schüler/innen
 				alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz
 				bereits vorliegt, kann das hier eingetragen werden. Die Schüler/innen
 				müssen dann keine zugehörigen Lernmaterialien
 				bearbeiten.',
-		'This is an overview for learning resources that are associated with 
+		'This is an overview for learning resources that are associated with
 				standards and ticking off competencies for students. Students can
 				assess their competencies. Moodle activities that were turned in by
-				students are displayed with a red icon. ePortfolio-artifacts of students 
+				students are displayed with a red icon. ePortfolio-artifacts of students
 				are displayed in blue icons.',
 	],
 
@@ -2158,6 +2158,14 @@ return [
 		'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler/innen auf den Wochenplan legen möchten?',
 		'You are about to add the examples to the schedules of all students, do you want to continue?',
 	],
+    'delete_ics_imports_confirmation' => [
+        'Sind Sie sicher, dass Sie die die von ihnen importierten Termine für den ausgewählten Wochenplan entfernen möchten?',
+        'You are about to remove your imported tasks for this weekly schedule, do you want to continue?',
+    ],
+    'import_ics_loading_time' => [
+        'Das Importieren kann bis zu mehreren Minuten dauern.',
+        'Importing can take up to several Minutes.',
+    ],
     'add_example_for_group_to_schedule_confirmation' => [
         'Sind Sie sicher, dass Sie die Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan legen möchten?',
         'You are about to add the examples to the schedules of all students of this group, do you want to continue?',
@@ -2285,9 +2293,9 @@ return [
         'Dear {$a->receiver}, </br></br>{$a->teacher} commented in {$a->course} the example {$a->example}.</br></br>',
     ],
 	'notification_example_comment_context' => [
-		'Kommentar',
-		'Comment',
-	],
+        'Kommentar',
+        'Comment',
+    ],
 	'notification_weekly_schedule_subject' => [
 		'{$a->site}: Neue Aufgabe am Wochenplan',
 		'{$a->site}: New example on the schedule',
@@ -3171,8 +3179,8 @@ return [
         'Gesamtbewertung des Themas: ',
         'Total topic grading: ',
     ],
-
-
-
-
+    'import_ics' => [
+        'Kalenderdateiimport',
+        'Calendar import',
+    ]
 ];

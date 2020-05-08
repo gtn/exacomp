@@ -37,7 +37,6 @@
 	$(document).on('click', '#blocking_event_create', function(event) {
 		title = $('#blocking_event_title').val();
 		creatorid = $(this).attr('creatorid');
-		
 		block_exacomp.call_ajax({
 			title : title,
 			creatorid : creatorid,

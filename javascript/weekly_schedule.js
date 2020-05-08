@@ -37,6 +37,40 @@
 		});
 	});
 
+	$(document).on('click', '#import_ics_button', function(event) {
+		link = $('#import_ics_link').val();
+		creatorid = $(this).attr('creatorid');
+		studentid = block_exacomp.get_studentid();
+		courseid = block_exacomp.get_param('courseid');
+		alert(M.util.get_string('import_ics_loading_time', 'block_exacomp'));
+		block_exacomp.call_ajax({
+			studentid: studentid,
+			link: link,
+			creatorid: creatorid,
+			courseid: courseid,
+			action : 'import-ics'
+		}).done(function(msg) {
+			alert("done");
+			location.reload();
+		});
+	});
+
+	$(document).on('click', '#delete_imports_button', function(event) {
+		creatorid = $(this).attr('creatorid');
+		studentid = block_exacomp.get_studentid();
+		courseid = block_exacomp.get_param('courseid');
+		if (confirm(M.util.get_string('delete_ics_imports_confirmation', 'block_exacomp'))) {
+			block_exacomp.call_ajax({
+				studentid: studentid,
+				creatorid: creatorid,
+				courseid: courseid,
+				action : 'delete-imports'
+			}).done(function(msg) {
+				location.reload();
+			});
+		}
+	});
+
 	$(document).on('click', '#event-copy', function(event) {
 		exacomp_calendar_copy_event($(this).attr("exa-scheduleid"));
 	});
@@ -411,6 +445,13 @@
 							event.durationEditable = false;
 						}
 
+						//background events should only be there for visualization
+						if(event.state == 10){
+							event.editable = false;
+							event.startEditable = false;
+							event.durationEditable = false;
+						}
+
 						// past event
 						if (moment(event.start).isBefore(moment(), "day")){
 							event.editable = false;
@@ -473,7 +514,7 @@
 					((event.externaltask != null) ? '	<div class="event-task">'+event.externaltask+'</div>' : '' )+
 					((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
 					((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
-					((event.courseid == courseid)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
+					((event.courseid == courseid && event.state != 10)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
                     ((event.schedule_marker != null && event.schedule_marker != '') ? '	<div class="event-schedulermarker marker_'+event.schedule_marker+'">' + event.schedule_marker_short + '</div>' : '' )+
 					'</div>');
 
@@ -585,6 +626,7 @@
 
 		/* initialize the external events
 		-----------------------------------------------------------------*/
+		debugger
 
 		$eventDiv = $( '#external-events' );
 		$trash = $( '#trash' );
@@ -594,7 +636,7 @@
 
 			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
 			$.each(configuration.trash, function(i, item){ add_trash_item(item); });
-
+			debugger
 			create_calendar();
 		});
 
