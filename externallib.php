@@ -8834,7 +8834,7 @@ class block_exacomp_external extends external_api {
 
 
         $timecreated = time();
-        block_exacomp_send_message($userfrom, $userto, $messagetext, date("D, d.m.Y", $timecreated), date("H:s", $timecreated));
+        block_exacomp_send_message($userfrom, $userto, $messagetext, date("D, d.m.Y", $timecreated), date("H:s", $timecreated),true);
 
         return array('success' => true);
     }

@@ -7806,11 +7806,12 @@ function block_exacomp_get_message_icon($userid) {
  * @param unknown $message
  * @param unknown $context
  * @param unknown $contexturl
+ * @param unknown $dakoramessage if true this comes from a webservice from dakora and should ignore the setting "exacomp | notifications" that allowes/dissalowes notifications
  */
-function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl=null) {
+function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl=null,$dakoramessage=false) {
 	global $CFG, $DB;
 
-	if (!get_config('exacomp', 'notifications')) {
+	if (!get_config('exacomp', 'notifications') && !$dakoramessage) {
 		return;
 	}
 
@@ -7866,14 +7867,15 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
  * @param unknown $userfrom
  * @param unknown $userto
  * @param unknown $messagetext
+ * @param unknown $dakoramessage if true this comes from a webservice from dakora and should ignore the setting "exacomp | notifications" that allowes/dissalowes notifications
  */
-function block_exacomp_send_message($userfrom, $userto, $messagetext, $date, $time) {
+function block_exacomp_send_message($userfrom, $userto, $messagetext, $date, $time, $dakoramessage=false) {
   global $CFG, $USER, $SITE;
 
   $subject = "new message from "+fullname($userfrom);
   $context = "message";
 
-  block_exacomp_send_notification("instantmessage", $userfrom, $userto, $subject, $messagetext, $context);
+  block_exacomp_send_notification("instantmessage", $userfrom, $userto, $subject, $messagetext, $context,null, $dakoramessage);
 }
 
 /**

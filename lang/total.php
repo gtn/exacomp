@@ -2163,8 +2163,8 @@ return [
         'You are about to remove your imported tasks for this weekly schedule, do you want to continue?',
     ],
     'import_ics_loading_time' => [
-        'Das Importieren kann bis zu mehreren Minuten dauern.',
-        'Importing can take up to several Minutes.',
+        'Importieren gestartet.',
+        'Importing started.',
     ],
     'add_example_for_group_to_schedule_confirmation' => [
         'Sind Sie sicher, dass Sie die Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan legen möchten?',
@@ -2321,8 +2321,8 @@ return [
 		'{$a->inWork}/{$a->total} in work',
 	],
 	'block_exacomp_notifications_head' => [
-		'Mitteilungen und Benachrichtigungen aktivieren',
-		'Notifications and Messages',
+		'Benachrichtigungen aktivieren',
+		'activate notifications',
 	],
 	'block_exacomp_notifications_body' => [
 		'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.',
