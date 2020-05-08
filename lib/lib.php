@@ -5945,7 +5945,7 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
 
 
 
-    require __DIR__.'/../calFileParser/CalFileParser.php';
+    require __DIR__ . '/../lib/calFileParser/CalFileParser.php';
     $cal = new CalFileParser();
     $cal->set_timezone('Europe/Berlin');
     $icsData = $cal->parse($link);
