@@ -6004,7 +6004,6 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
  * function for testing import of ics to weekly_schedule
  */
 function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid){
-
     $timeslots = block_exacomp_build_json_time_slots($date = null);
     $units = (get_config("exacomp", "scheduleunits")) ? get_config("exacomp", "scheduleunits") : 8;
     $interval = (get_config("exacomp", "scheduleinterval")) ? get_config("exacomp", "scheduleinterval") : 50;
@@ -6094,8 +6093,7 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
         $timeEnd = $event['DTEND']->getTimestamp();
 
         $blockingEventId = block_exacomp_create_background_event($courseid,$event["SUMMARY"],$creatorid,$studentid);
-        // TODO: here a lot of time is spent if a student is selected by a teacher... this is probably due to the messages genearated
-        block_exacomp_add_example_to_schedule($studentid, $blockingEventId, $creatorid, $courseid,$timeStart,$timeEnd);
+        block_exacomp_add_example_to_schedule($studentid, $blockingEventId, $creatorid, $courseid,$timeStart,$timeEnd,-1,-1,null,true);
     }
     return true;
 }
@@ -6171,13 +6169,16 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
         foreach ($childexamples as $example) {
             block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source);
         }
-	}else {
+	}else{
         $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated,
             'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory, 'source' => $source ));
 
         //only send a notification if a teacher adds an example for a student and not for pre planning storage
-        if ($creatorid != $studentid && $studentid > 0) {
-            block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+        //also, don't send notifications for ics_imports
+        if(!$icsBackgroundEvent){
+            if ($creatorid != $studentid && $studentid > 0) {
+                block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+            }
         }
         \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
 	}
