@@ -168,6 +168,13 @@
 	float: left;
 }
 
+#block_exacomp #import_ics #delete_imports_button{
+	white-space: normal;
+}
+
+
+
+
 #block_exacomp #trash.hover {
 	background: #fddedd;
 	border-color: #fddedd;

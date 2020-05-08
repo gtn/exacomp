@@ -7205,10 +7205,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function import_examples_ics(){
         global $USER;
-        $content = html_writer::tag('h4', block_exacomp_get_string('import_ics'));
+        $content = html_writer::tag('h4', block_exacomp_get_string('import_ics_title'));
         $importICSlink = html_writer::empty_tag('input', array('type' => 'url', 'id' => 'import_ics_link', 'placeholder' => "www.myicsfile.at"));
-        $importICSbutton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics_button', 'value' => "import ics", 'creatorid' => $USER->id));
-        $deleteImportsButton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'delete_imports_button', 'value' => "delete imports", 'creatorid' => $USER->id));
+        $importICSbutton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics_button', 'value' => block_exacomp_get_string('import_ics'), 'creatorid' => $USER->id));
+        $deleteImportsButton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'delete_imports_button', 'value' => block_exacomp_get_string('delete_imports'), 'creatorid' => $USER->id));
         $content .= $importICSlink;
         $content .= $importICSbutton;
         $content .= $deleteImportsButton;

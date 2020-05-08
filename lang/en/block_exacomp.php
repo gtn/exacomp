@@ -872,4 +872,6 @@ $string['studentcomp'] = 'self evaluated competencies';
 $string['teachercomp'] = 'gained competencies';
 $string['pendingcomp'] = 'pending competencies';
 $string['topicgrading'] = 'Total topic grading: ';
-$string['import_ics'] = 'Calendar import';
+$string['import_ics_title'] = 'Calendar import';
+$string['import_ics'] = 'import calendar';
+$string['delete_imports'] = 'delete my imports';

@@ -224,6 +224,8 @@ function block_exacomp_init_js_css() {
 	    'n8.unit', 'n9.unit', 'n10.unit', 'save_changes_competence_evaluation', 'dismiss_gradingisold',
         'donotleave_page_message',
         'pre_planning_materials_assigned',
+        'delete_ics_imports_confirmation',
+        'import_ics_loading_time',
 	    ],
         'block_exacomp'
         //['5' => sprintf("%.1f", block_exacomp_get_assessment_grade_limit())] // Important to keep array keys!!  5 => value_too_large. Disabled now. Using JS direct value
@@ -6024,7 +6026,6 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
     $start = $icsData[3]['DTSTART'];
     $end = $icsData[3]['DTEND'];
 
-
     $now = new DateTime();
     foreach($icsData as $event){
         //skip all events that happened before now:
@@ -6091,7 +6092,9 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
 
         $timeStart = $event['DTSTART']->getTimestamp();
         $timeEnd = $event['DTEND']->getTimestamp();
+
         $blockingEventId = block_exacomp_create_background_event($courseid,$event["SUMMARY"],$creatorid,$studentid);
+        // TODO: here a lot of time is spent if a student is selected by a teacher... this is probably due to the messages genearated
         block_exacomp_add_example_to_schedule($studentid, $blockingEventId, $creatorid, $courseid,$timeStart,$timeEnd);
     }
     return true;

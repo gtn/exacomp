@@ -2159,7 +2159,7 @@ return [
 		'You are about to add the examples to the schedules of all students, do you want to continue?',
 	],
     'delete_ics_imports_confirmation' => [
-        'Sind Sie sicher, dass Sie die die von ihnen importierten Termine für den ausgewählten Wochenplan entfernen möchten?',
+        'Sind Sie sicher, dass Sie die die von Ihnen importierten Termine für den ausgewählten Wochenplan entfernen möchten?',
         'You are about to remove your imported tasks for this weekly schedule, do you want to continue?',
     ],
     'import_ics_loading_time' => [
@@ -3179,8 +3179,16 @@ return [
         'Gesamtbewertung des Themas: ',
         'Total topic grading: ',
     ],
-    'import_ics' => [
+    'import_ics_title' => [
         'Kalenderdateiimport',
         'Calendar import',
-    ]
+    ],
+    'import_ics' => [
+        'Kalender importieren',
+        'import calendar',
+    ],
+    'delete_imports' => [
+        'Importierte Termine löschen',
+        'delete my imports',
+    ],
 ];

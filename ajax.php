@@ -388,6 +388,8 @@ switch($action){
         $link = optional_param('link', null, PARAM_TEXT);
         if (!$studentid) {
             $studentid = $USER->id;
+        }else if($studentid==BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+            $studentid = 0;
         }
         block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid);
         break;
@@ -398,6 +400,8 @@ switch($action){
         $studentid = optional_param('studentid', null, PARAM_INT);
         if (!$studentid) {
             $studentid = $USER->id;
+        }else if($studentid==BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+            $studentid = 0;
         }
         block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$creatorid);
         break;
