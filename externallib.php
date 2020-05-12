@@ -9965,4 +9965,93 @@ class block_exacomp_external extends external_api {
         ));
     }
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_url_preview_parameters() {
+        return new external_function_parameters (array(
+            'url' => new external_value (PARAM_TEXT, 'url to fetch preview', VALUE_REQUIRED)
+        ));
+    }
+
+    /**
+     * gets title description and image of website
+     * @ws-type-read
+     * @param string $url
+     * @return array
+     */
+    public static function get_url_preview($url) {
+        static::validate_parameters(static::get_url_preview_parameters(), array(
+            'url' => $url,
+        ));
+
+        // disable errors on invalid html
+        libxml_use_internal_errors(true);
+
+        $dom = new DOMDocument;
+        try {
+//            $dom->loadHTMLFile('https://www.nachrichten.at/oberoesterreich/oberoesterreicher-knackt-lotto-jackpot;art4,3257353');
+            $dom->loadHTMLFile($url);
+
+        } catch (Exception $e) {
+        }
+
+        if ($dom->documentElement) {
+
+            $title = null;
+            $imageUrl = null;
+            $description = null;
+
+            $metaElements = $dom->getElementsByTagName('meta');
+
+            foreach ($metaElements as $metaElement) {
+                $name = $metaElement->getAttribute("name") ?: $metaElement->getAttribute("property");
+                $content = $metaElement->getAttribute("content");
+
+                if ($name == "og:title") {
+                    $title = $content;
+                }
+
+                if ($name == "description" || $name == "og:description") {
+                    $description = $content;
+                }
+
+                if ($name == "og:image") {
+                    $imageUrl = $content;
+                }
+            }
+
+            if (empty($title)) {
+                $titleElements = $dom->getElementsByTagName('title');
+                $title = $titleElements->length ? utf8_decode($titleElements->item(0)->textContent) : null;
+            }
+//
+//            echo $title;
+//            echo "\r\n" . $description;
+//            echo "\r\n" . $imageUrl;
+
+            $return = array(
+                "title" => $title,
+                "description" => $description,
+                "imageurl" => $imageUrl
+            );
+
+            return $return;
+        }
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function get_url_preview_returns() {
+        return new external_single_structure (array(
+            "title" => new external_value (PARAM_TEXT, 'true if successful'),
+            "description" => new external_value (PARAM_TEXT, 'true if successful'),
+            "imageurl" => new external_value (PARAM_TEXT, 'true if successful')
+        ));
+    }
 }

@@ -859,6 +859,14 @@ get admin evaluation configurations',
     'description' => 'update an descriptor category',
     'type' => 'write',
   ),
+  'block_exacomp_get_url_preview' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'get_url_preview',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'gets title description and image of website',
+    'type' => 'read',
+  ),
 );
 
 $services = array (
@@ -969,6 +977,7 @@ $services = array (
       96 => 'dakora_dismiss_oldgrading_warning',
       97 => 'dakora_send_message',
       98 => 'block_exacomp_update_descriptor_category',
+      99 => 'block_exacomp_get_url_preview',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,
