@@ -5622,7 +5622,7 @@ function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid) {
 			}
 
 			if (!$used_in_other_crosssub) { // delete visibility if not used in other cross subject in this course
-				$DB->delete_records(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('descrid' => $descrid, 'courseid' => $cross_courseid, 'studentid' => 0));
+				//$DB->delete_records(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('descrid' => $descrid, 'courseid' => $cross_courseid, 'studentid' => 0));
 			}
 		}
 	}
