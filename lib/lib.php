@@ -1556,7 +1556,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
         }
 //        block_exacomp_update_gradinghistory_text($compid,$userid,$courseid,$comptype);
 	} else {
-		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
+		block_exacomp_notify_all_teachers_about_self_assessment($courseid,$compid, $comptype);
 	}
     $objecttable = '';
 	switch ($comptype) {
@@ -7925,30 +7925,41 @@ function block_exacomp_notify_all_teachers_about_submission($courseid, $examplei
  * @param unknown $userto
  * @param unknown $courseid
  */
-function block_exacomp_send_self_assessment_notification($userfrom, $userto, $courseid) {
-	global $SITE;
+function block_exacomp_send_self_assessment_notification($userfrom, $userto, $courseid, $compid, $comptype) {
+	global $SITE, $DB;
 
 	$course = get_course($courseid);
 	$subject = block_exacomp_get_string('notification_self_assessment_subject_noSiteName', null, array('course' => $course->shortname));
 	$message = block_exacomp_get_string('notification_self_assessment_body_noSiteName', null, array('course' => $course->fullname, 'student' => fullname($userfrom), 'receiver' => fullname($userto)));
 	$context = block_exacomp_get_string('notification_self_assessment_context');
 
-	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
+//	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
 
-	block_exacomp_send_notification("self_assessment", $userfrom, $userto, $subject, $message, $context, $viewurl);
+    if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
+        $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $compid));
+        $topicid = $descriptor_topic_mm->topicid;
+        $viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'topicid' => $topicid, 'descriptorid' => $compid));
+    }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
+        $viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'topicid' => $compid));
+    }
+
+
+    block_exacomp_send_notification("self_assessment", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
 
 /**
  * send specific notification to all course teachers: new student evaluation available
  * @param unknown $courseid
+ * @param $compid
+ * @param $comptype
  */
-function block_exacomp_notify_all_teachers_about_self_assessment($courseid) {
+function block_exacomp_notify_all_teachers_about_self_assessment($courseid,$compid, $comptype) {
 	global $USER, $DB;
 
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
 	if ($teachers) {
 		foreach ($teachers as $teacher) {
-			block_exacomp_send_self_assessment_notification($USER, $teacher, $courseid);
+			block_exacomp_send_self_assessment_notification($USER, $teacher, $courseid,$compid, $comptype);
 		}
 	}
 }
@@ -7958,6 +7969,10 @@ function block_exacomp_notify_all_teachers_about_self_assessment($courseid) {
  * @param unknown $userfrom
  * @param unknown $userto
  * @param unknown $courseid
+ * @param $compid
+ * @param $comptype
+ * @throws dml_exception
+ * @throws moodle_exception
  */
 function block_exacomp_send_grading_notification($userfrom, $userto, $courseid, $compid, $comptype) {
 	global $CFG, $USER, $SITE, $DB;

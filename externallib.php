@@ -241,7 +241,7 @@ class block_exacomp_external extends external_api {
 							JOIN {quiz} q ON cm.instance = q.id
 							WHERE m.name = 'quiz' AND dex.descrid = ?
 							", array(
-							$descriptor->id, 
+							$descriptor->id,
 						)
 					);
 
@@ -689,7 +689,7 @@ class block_exacomp_external extends external_api {
 
 		$descriptors = array();
 		foreach ($descriptors_exam_mm as $descriptor_mm) {
-		   
+
 			$descriptors[$descriptor_mm->descrid] = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array(
 				'id' => $descriptor_mm->descrid,
 			));
@@ -9046,6 +9046,7 @@ class block_exacomp_external extends external_api {
 	        $descriptor_return->gradingisold = false;
 	    }
 
+
 	    return $descriptor_return;
 	}
 
@@ -9243,6 +9244,8 @@ class block_exacomp_external extends external_api {
 
 
 		usort($descriptors_return, "static::cmp_niveausort");
+
+
 
 		return $descriptors_return;
 	}
