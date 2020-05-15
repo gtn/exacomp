@@ -12448,13 +12448,15 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
         // for teacher
         $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp 
                     FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} c, {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt
+                        LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON dt.descrid = d.id
                     WHERE c.compid = dt.descrid 
                         AND dt.topicid = ? 
                         AND c.comptype = 0 
                         AND c.role = ? 
                         AND c.userid = ? 
                         AND c.value '.$direction.' ? 
-                        AND c.courseid = ? ';
+                        AND c.courseid = ? 
+                        AND d.parentid = 0'; // only parents?
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $negativeLimit, $courseid));
         $topic->teacher = 0;
         if (count($totalDescr) > 0) {
@@ -12463,14 +12465,15 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
         // for student
         $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp 
                     FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} c, {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt
+                        LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON dt.descrid = d.id
 		            WHERE c.compid = dt.descrid 
 		                AND dt.topicid = ? 
 		                AND c.comptype = 0 
 		                AND c.role = ? 
 		                AND c.userid = ? 
 		                AND c.value >= ? 
-		                AND c.courseid = ? ';
-
+		                AND c.courseid = ? 
+		                AND d.parentid = 0';
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $selfLimit, $courseid));
         $topic->student = 0;
         if (count($totalDescr) > 0) {
