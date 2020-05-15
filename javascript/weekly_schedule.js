@@ -34,7 +34,7 @@
 			showimports: showimports,
 			action : 'update_show_imports'
 		}).done(function(msg) {
-			location.reload();
+			$('#calendar').fullCalendar('refetchEvents');
 		});
 	});
 
