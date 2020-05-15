@@ -39,20 +39,25 @@
 
 	$(document).on('click', '#import_ics_button', function(event) {
 		link = $('#import_ics_link').val();
-		creatorid = $(this).attr('creatorid');
-		studentid = block_exacomp.get_studentid();
-		courseid = block_exacomp.get_param('courseid');
-		alert(M.util.get_string('import_ics_loading_time', 'block_exacomp'));
-		block_exacomp.call_ajax({
-			studentid: studentid,
-			link: link,
-			creatorid: creatorid,
-			courseid: courseid,
-			action : 'import-ics'
-		}).done(function(msg) {
-			alert("done");
-			location.reload();
-		});
+		debugger
+		if($('#import_ics_link').val()==""){
+			alert(M.util.get_string('ics_provide_link_text', 'block_exacomp'));
+		}else{
+			creatorid = $(this).attr('creatorid');
+			studentid = block_exacomp.get_studentid();
+			courseid = block_exacomp.get_param('courseid');
+			alert(M.util.get_string('import_ics_loading_time', 'block_exacomp'));
+			block_exacomp.call_ajax({
+				studentid: studentid,
+				link: link,
+				creatorid: creatorid,
+				courseid: courseid,
+				action : 'import-ics'
+			}).done(function(msg) {
+				alert("done");
+				location.reload();
+			});
+		}
 	});
 
 	$(document).on('click', '#delete_imports_button', function(event) {

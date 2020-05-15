@@ -2166,6 +2166,10 @@ return [
         'Importieren gestartet.',
         'Importing started.',
     ],
+    'ics_provide_link_text' => [
+        'Bitte geben Sie einen Link an.',
+        'Please provide a link.',
+    ],
     'add_example_for_group_to_schedule_confirmation' => [
         'Sind Sie sicher, dass Sie die Lernmaterialien für die ausgewählte Gruppe auf deren Wochenplan legen möchten?',
         'You are about to add the examples to the schedules of all students of this group, do you want to continue?',
@@ -3180,8 +3184,8 @@ return [
         'Total topic grading: ',
     ],
     'import_ics_title' => [
-        'Kalenderdateiimport',
-        'Calendar import',
+        'WebUntis-Import',
+        'WebUntis import',
     ],
     'import_ics' => [
         'Kalender importieren',

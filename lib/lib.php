@@ -226,6 +226,7 @@ function block_exacomp_init_js_css() {
         'pre_planning_materials_assigned',
         'delete_ics_imports_confirmation',
         'import_ics_loading_time',
+        'ics_provide_link_text',
 	    ],
         'block_exacomp'
         //['5' => sprintf("%.1f", block_exacomp_get_assessment_grade_limit())] // Important to keep array keys!!  5 => value_too_large. Disabled now. Using JS direct value
@@ -1756,7 +1757,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	}
-	
+
 
 	$sql = '
 		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
@@ -3410,10 +3411,10 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid');
     }
-    
+
     $mm = array();
     $ret = array();
-    
+
     foreach ($records as $record) {
         $mm[$record->activityid][$record->comptype][$record->compid] = $record->compid;
         $ret[1][$record->activityid] = $record->activitytitle;
@@ -3427,7 +3428,7 @@ function block_exacomp_get_assigments_of_descrtopic($filter_descriptors) {
     return $ret;
 }
 
-    
+
     function block_exacomp_get_assigments_of_examples($filter_descriptors) {
         global $DB;
         if ($filter_descriptors) {
@@ -4060,16 +4061,16 @@ function block_exacomp_get_courseids() {
 function block_exacomp_get_course_names() {
 
     $instances = g::$DB->get_records('block_instances', array('blockname' => 'exacomp'));
-    
+
     $exabis_competences_courses = array();
-    
+
     foreach ($instances as $instance) {
         $context = g::$DB->get_record('context', array('id' => $instance->parentcontextid, 'contextlevel' => CONTEXT_COURSE));
         if ($context) {
             $exabis_competences_courses[$context->instanceid] = g::$DB->get_field('course','shortname', array('id' => $context->instanceid));
         }
     }
-    
+
     return $exabis_competences_courses;
 }
 
@@ -4175,7 +4176,7 @@ function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activi
  */
 function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytitle = null) {
     global $DB, $COURSE, $CFG;
-    
+
     if ($activitytitle == null){
         $cmmod = $DB->get_record('course_modules', array("id" => $activityid));
         $modulename = $DB->get_record('modules', array("id" => $cmmod->module));
@@ -5440,7 +5441,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subje
 			$show_childs[$cross_descr->id] = true;
 	}
 	*/
-	
+
     $sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, d.profoundness, d.sorting, d.parentid, n.sorting as niveau '
         .'FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t '
         .'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -7258,9 +7259,9 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
     if (is_array($entries)) {
         $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted();
         foreach ($entries as $k => $entry) {
-            $entries[$k]->niveau = $niveautitles[$entry->evalniveauid]; 
+            $entries[$k]->niveau = $niveautitles[$entry->evalniveauid];
         }
-    }    
+    }
 
 	return $entries;
 }
@@ -8426,14 +8427,14 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$subject = block_exacomp\db_layer_student::create($courseid)->get_subject($subjectid);
 
 	block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
-	
+
 	if (!$subject) {
 		return;
 	}
 
 	$table_content = new stdClass();
 	$table_content->content = array();
-    
+
 	$use_evalniveau = block_exacomp_use_eval_niveau();
 	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
@@ -12442,7 +12443,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
         // for all topics in course
         $topics = block_exacomp_get_topics_by_course($courseid);
     }
-    
+
     foreach ($topics as $topic) {
         $totalDescr = block_exacomp_get_descriptors_by_topic($courseid, $topic->id, false, true);
         // for teacher
