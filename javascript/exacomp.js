@@ -1028,9 +1028,9 @@ var formunsaved = false;
 		}
 	};
 
-	function displaySpinner() {
+    window.displaySpinner = function() {
         var canvasid = 'exacomp_spinner' + Math.floor(Date.now() / 1000);
-        var blockContent = '<div width="100%" height="100%" style="width: 100%; height:100%; display: table; position: absolute; top: 0px; left: 0px;">' +
+        var blockContent = '<div width="100%" height="100%" style="width: 100%; height:100%; display: table; position: fixed; top: 0px; left: 0px;">' +
             '<div style="text-align: center; display: table-cell; vertical-align: middle;">' +
             '<canvas id="' + canvasid + '" height="120" width="120" style="background: transparent;" />' +
             '</div>' +
@@ -1062,6 +1062,7 @@ var formunsaved = false;
             context.restore();
         };
         window.setInterval(draw, 1000 / 30);
+        return canvasid;
     }
 
 }();
