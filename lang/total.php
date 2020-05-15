@@ -3187,6 +3187,10 @@ return [
         'WebUntis-Import',
         'WebUntis import',
     ],
+    'show_imports_checkbox_label' => [
+        'WebUntis Anzeigen: ',
+        'Show WebUntis: ',
+    ],
     'import_ics' => [
         'Kalender importieren',
         'import calendar',

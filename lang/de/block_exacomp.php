@@ -884,5 +884,6 @@ $string['teachercomp'] = 'Erreichte Kompetenzen';
 $string['pendingcomp'] = 'Ausstehende Kompetenzen';
 $string['topicgrading'] = 'Gesamtbewertung des Themas: ';
 $string['import_ics_title'] = 'WebUntis-Import';
+$string['show_imports_checkbox_label'] = 'WebUntis Anzeigen: ';
 $string['import_ics'] = 'Kalender importieren';
 $string['delete_imports'] = 'Importierte Termine löschen';

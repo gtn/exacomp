@@ -152,7 +152,7 @@
 	width: 20%;
 	padding: 17px 10px 0 10px;
 	/* border: 1px solid #ccc; */
-	background: #eee; 
+	background: #eee;
 	text-align: left;
 	margin-top: 25px;
 	float: left;
@@ -223,7 +223,7 @@
 	font-size: 11px;
 	color: #666;
 }
-	
+
 #block_exacomp #external-events p input {
 	margin: 0;
 	vertical-align: middle;

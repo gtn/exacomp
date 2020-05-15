@@ -874,5 +874,6 @@ $string['teachercomp'] = 'gained competencies';
 $string['pendingcomp'] = 'pending competencies';
 $string['topicgrading'] = 'Total topic grading: ';
 $string['import_ics_title'] = 'WebUntis import';
+$string['show_imports_checkbox_label'] = 'Show WebUntis: ';
 $string['import_ics'] = 'import calendar';
 $string['delete_imports'] = 'delete my imports';

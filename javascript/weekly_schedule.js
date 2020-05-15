@@ -26,9 +26,20 @@
 	var EXAMPLE_STATE_EVALUATED = 4; // evaluated -> only from teacher TODO: item or exacomp evaluation?
 	var EXAMPLE_STATE_BLOCKED = 9; //blocking event
 
+
+	//
+	$(document).on('click', '#show_imports_checkbox', function(event){
+		showimports = $('#show_imports_checkbox')[0].checked;
+		block_exacomp.call_ajax({
+			showimports: showimports,
+			action : 'update_show_imports'
+		}).done(function(msg) {
+			location.reload();
+		});
+	});
+
 	$(document).on('click', '#empty_trash', function(event) {
 		studentid = block_exacomp.get_studentid();
-
 		block_exacomp.call_ajax({
 			studentid: studentid,
 			action : 'empty-trash'
@@ -39,7 +50,6 @@
 
 	$(document).on('click', '#import_ics_button', function(event) {
 		link = $('#import_ics_link').val();
-		debugger
 		if($('#import_ics_link').val()==""){
 			alert(M.util.get_string('ics_provide_link_text', 'block_exacomp'));
 		}else{
@@ -175,6 +185,7 @@
 	}
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
 		studentid = block_exacomp.get_studentid();
+
 
 		block_exacomp.call_ajax({
 			studentid : studentid,
@@ -436,6 +447,7 @@
 			},
 
 			events: function(start, end, timezone, callback){
+				debugger
 				// console.log('events');
 				exacomp_calendar_load_events(start, end, timezone, function(events) {
 					// convert to calendar timeslots
@@ -452,9 +464,14 @@
 
 						//background events should only be there for visualization
 						if(event.state == 10){
-							event.editable = false;
-							event.startEditable = false;
-							event.durationEditable = false;
+							if($('#show_imports_checkbox')[0].checked){
+								event.editable = false;
+								event.startEditable = false;
+								event.durationEditable = false;
+							}else{
+								return;
+							}
+
 						}
 
 						// past event
@@ -631,7 +648,7 @@
 
 		/* initialize the external events
 		-----------------------------------------------------------------*/
-		debugger
+		// debugger
 
 		$eventDiv = $( '#external-events' );
 		$trash = $( '#trash' );
@@ -641,7 +658,7 @@
 
 			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
 			$.each(configuration.trash, function(i, item){ add_trash_item(item); });
-			debugger
+
 			create_calendar();
 		});
 

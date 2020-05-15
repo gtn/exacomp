@@ -23,6 +23,8 @@ if (11 == 22) {
     require_once __DIR__.'/backup/test_backup.php';
 }
 
+use block_exacomp\globals as g;
+
 $courseid = required_param ( 'courseid', PARAM_INT );
 $action = required_param('action', PARAM_TEXT);
 
@@ -42,10 +44,10 @@ switch($action){
     case ('dismiss_gradingisold_warning'):
         $descrid = required_param('descrid', PARAM_INT);
         $studentid = required_param('studentid', PARAM_INT);
-        
+
         //block_exacomp_set_descriptor_grading_timestamp($courseid,$descrid,$studentid);
         block_exacomp_unset_descriptor_gradingisold($courseid,$descrid,$studentid);
-      
+
         break;
 	case ('crosssubj-descriptors'):
 		$descrid = required_param('descrid', PARAM_INT);
@@ -54,21 +56,21 @@ switch($action){
 
 		$not_crosssubjects = required_param('not_crosssubjects', PARAM_TEXT);
 		$not_subj_ids = json_decode($not_crosssubjects);
-		
+
 		foreach($not_subj_ids as $not_subj_id)
 			if(!is_numeric($not_subj_id))
 				print_error('invalidparameter', 'block_exacomp', $not_subj_id);
-		
+
 		foreach($subj_ids as $subj_id)
-			if(!is_numeric($subj_id))		
+			if(!is_numeric($subj_id))
 				print_error('invalidparameter', 'block_exacomp', $subj_id);
-		
+
 		foreach($not_subj_ids as $not_subj_id)
 		block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
-			
+
 		foreach($subj_ids as $subj_id)
 		block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
-			
+
 		break;
 	case('export-activity'):
 
@@ -85,7 +87,7 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		$visible = required_param('value', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
-		
+
 		block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid);
 		break;
 	case('hide-example'):
@@ -93,7 +95,7 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		$visible = required_param('value', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
-		
+
 		block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid);
 		break;
 	case('hide-solution'):
@@ -101,7 +103,7 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		$visible = required_param('value', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
-		
+
 		block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $studentid);
 		break;
 	case('hide-topic'):
@@ -109,7 +111,7 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		$visible = required_param('value', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
-	
+
 		block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $studentid);
 		break;
 	case('add-example-to-schedule'):
@@ -118,8 +120,8 @@ switch($action){
 		$courseid = optional_param('courseid',null, PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$creatorid = $USER->id;
-		
-		
+
+
 		if($groupid!=null){ //add for group
 		    $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
 		    foreach($groupmembers as $member){
@@ -133,7 +135,7 @@ switch($action){
 		        foreach($course_students as $student){
 		            block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 		        }
-		        
+
 		        echo block_exacomp_get_string('weekly_schedule_added_all');
 		    } elseif ($studentid == 0){
 		        if (!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
@@ -163,7 +165,7 @@ switch($action){
 				\block_exacomp\descriptor::insertInCourse($courseid, $descriptor);
 			}
 		}
-		
+
 
 		if (!empty($data->competencies_by_type)) {
 			$competencies_by_type = block_exacomp\param::clean_array($data->competencies_by_type, array(PARAM_INT=>array((object)array(
@@ -172,7 +174,7 @@ switch($action){
 				'value' => PARAM_INT,
 				'niveauid' => PARAM_INT,
 			))));
-			
+
 			foreach ($competencies_by_type as $comptype => $competencies) {
 				foreach($competencies as $comp){
 					block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $comp->value, $comp->niveauid );
@@ -239,7 +241,7 @@ switch($action){
 							array(PARAM_INT=>PARAM_TEXT)
 					)
 					);
-				
+
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
 					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_TOPIC);
@@ -252,7 +254,7 @@ switch($action){
 							array(PARAM_INT=>PARAM_TEXT)
 					)
 			);
-		
+
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
 					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_CROSSSUB);
@@ -265,7 +267,7 @@ switch($action){
 							array(PARAM_INT=>PARAM_TEXT)
 					)
 					);
-		
+
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
 					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_SUBJECT);
@@ -275,18 +277,18 @@ switch($action){
 		die('ok');
 	case 'delete-crosssubject':
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
-		
+
 		// TODO: pruefen ob mein crosssubj?
-		
+
 		//delete student-crosssubject association
 		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
-		
+
 		//delete descriptor-crosssubject association
 		$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
-		
+
 		//delete crosssubject overall evaluations
 		$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid'=>$crosssubjectid, 'comptype'=>BLOCK_EXACOMP_TYPE_CROSSSUB));
-		
+
 		//delete crosssubject
 		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
@@ -296,12 +298,12 @@ switch($action){
 		$end = required_param('end', PARAM_INT);
 		$deleted = optional_param('deleted', 0, PARAM_INT);
 		echo $start;
-		
+
 		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
 		exit;
 	case 'remove-example-from-schedule':
 		$scheduleid = required_param('scheduleid', PARAM_INT);
-		
+
 		block_exacomp_remove_example_from_schedule($scheduleid);
 		break;
 	case 'copy-example-from-schedule':
@@ -316,13 +318,13 @@ switch($action){
         }
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
-		
+
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end);
 		foreach($examples as $example){
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
 		}
 		$json_examples = block_exacomp_get_json_examples($examples);
-		
+
 		echo json_encode($json_examples);
 		exit;
 	case 'get-weekly-schedule-configuration':
@@ -331,7 +333,7 @@ switch($action){
 		if (!$studentid){
 		    $studentid = $USER->id;
 		}
-		
+
 		// -1 => teacher wants to add examples for all students to their schedule
 		if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 			// check for teacher permissions
@@ -342,7 +344,7 @@ switch($action){
 		}else if ($studentid < -1) { // smaller -1, teacher wants to add examples for a group
 		    $studentid = 0;
 		}
-		
+
 		//$pool_course = required_param('pool_course', PARAM_INT);
 		$pool_course = optional_param('pool_course', null, PARAM_INT);
 		if (!$pool_course) {
@@ -355,18 +357,18 @@ switch($action){
 			$example_pool->state = block_exacomp_get_dakora_state_for_example($example_pool->courseid, $example_pool->exampleid, $studentid);
 		}
 		$json_examples_pool = block_exacomp_get_json_examples($examples_pool);
-		
+
 		$examples_trash = block_exacomp_get_examples_for_trash($studentid, $pool_course);
 		$json_examples_trash = block_exacomp_get_json_examples($examples_trash);
-		
+
 		$json_time_slots = block_exacomp_build_json_time_slots();
-		
+
 		$configuration = array();
 		$configuration['pool'] = $json_examples_pool; //for pool
 		$configuration['trash'] = $json_examples_trash; //for trash
 		$configuration['slots'] = $json_time_slots; //for calendar
 		echo json_encode($configuration);
-		
+
 		exit;
 	case 'empty-trash':
 		//$studentid = required_param('studentid', PARAM_INT);
@@ -374,7 +376,7 @@ switch($action){
 		if (!$studentid) {
 		    $studentid = $USER->id;
         }
-		
+
 		$schedules = block_exacomp_get_examples_for_trash($studentid, $courseid);
 		foreach($schedules as $schedule){
 			block_exacomp_remove_example_from_schedule($schedule->id);
@@ -393,6 +395,10 @@ switch($action){
         }
         block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid);
         break;
+    case 'update_show_imports' :
+        $showimports = required_param ( 'showimports', PARAM_BOOL );
+        $_SESSION['showimports-'.g::$COURSE->id]=$showimports;
+        break;
     case 'delete-imports':
         //$studentid = required_param('studentid', PARAM_INT);
         $creatorid = required_param('creatorid', PARAM_INT);
@@ -408,9 +414,9 @@ switch($action){
 	case 'get-pre-planning-storage':
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
-		
+
 		$json_examples = block_exacomp_get_json_examples($examples, false);
-		
+
 		echo json_encode($json_examples);
 		exit;
 	case 'add-examples-to-schedule-for-all':
@@ -426,7 +432,7 @@ switch($action){
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$descrid = required_param('descrid', PARAM_INT);
 		$direction = required_param('direction', PARAM_TEXT);
-		
+
 		if ($direction == 'up') {
 			block_exacomp_example_up($exampleid, $descrid);
 		} else {
@@ -437,7 +443,7 @@ switch($action){
 		if (!$isTeacher) {
 			print_error('noteacher');
 		}
-		
+
 		block_exacomp_delete_custom_descriptor(required_param('id', PARAM_INT));
 		break;
 	case 'allow-resubmission':
@@ -447,7 +453,7 @@ switch($action){
 		$studentid = required_param('studentid', PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$courseid = required_param('courseid', PARAM_INT);
-		
+
 		echo block_exacomp_allow_resubmission($studentid, $exampleid, $courseid);
 		exit;
 	case 'send-message-to-course':
@@ -456,15 +462,15 @@ switch($action){
 			}
 			$message = required_param('message', PARAM_TEXT);
 			$courseid = required_param('courseid', PARAM_INT);
-		
+
 			echo block_exacomp_send_message_to_course($courseid, $message);
 			exit;
 	case 'create_blocking_event':
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
-		
+
 		block_exacomp_create_blocking_event($courseid, $title, $creatorid, 0);
-		
+
 		break;
 	case 'get_statistics_for_profile' :
 		if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_SUBJECT)) {
@@ -473,10 +479,10 @@ switch($action){
 			$studentid = required_param ( 'studentid', PARAM_INT );
 			$start = optional_param ( 'start', 0, PARAM_INT );
 			$end = optional_param ( 'end', 0, PARAM_INT );
-			
+
 			$stat = block_exacomp_get_evaluation_statistic_for_subject ( $courseid, $subjectid, $studentid, $start, $end );
 			$output = block_exacomp_get_renderer ();
-			
+
 			$tables = $output->subject_statistic_table ( $course->id, $stat['descriptor_evaluations'], 'Kompetenzen' );
 			$tables .= $output->subject_statistic_table ( $course->id, $stat['child_evaluations'], 'Teilkompetenzen' );
 			if (block_exacomp_course_has_examples($course->id)) {
@@ -491,6 +497,7 @@ switch($action){
 			exit;
 		}
 		break;
+
     case 'grade_example_related_form' :
         if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_EXAMPLE)) {
             $content = '';

@@ -7196,7 +7196,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$calendar = html_writer::div('', '', array('id' => 'calendar'));
 		$trash = $this->example_trash();
-		$clear = html_writer::div('', '', array('style' => 'clear:both'));
+		$clear = html_writer::div('', '', array('style' => 'clear:both')); // what is this?
 
         $import_ics = $this->import_examples_ics();
 
@@ -7209,9 +7209,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $importICSlink = html_writer::empty_tag('input', array('type' => 'url', 'id' => 'import_ics_link', 'placeholder' => "www.myicsfile.at"));
         $importICSbutton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics_button', 'value' => block_exacomp_get_string('import_ics'), 'creatorid' => $USER->id));
         $deleteImportsButton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'delete_imports_button', 'value' => block_exacomp_get_string('delete_imports'), 'creatorid' => $USER->id));
+        $showImportsCheckboxText =  html_writer::tag('label', block_exacomp_get_string('show_imports_checkbox_label')." ");
+        if($_SESSION['showimports-'.g::$COURSE->id]){
+            $showImportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'show_imports_checkbox', 'checked' => true));
+        }else{
+            $showImportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'show_imports_checkbox'));
+        }
+
         $content .= $importICSlink;
+        $content .= '<br>';
         $content .= $importICSbutton;
+        $content .= '<br>';
         $content .= $deleteImportsButton;
+        $content .= '<br>';
+        $content .= $showImportsCheckboxText;
+        $content .= $showImportsCheckbox;
         return html_writer::div($content, '', array('id' => 'import_ics'));
     }
 
