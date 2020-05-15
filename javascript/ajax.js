@@ -696,11 +696,16 @@
 		case 'btn_submit':
 			var reload = i_want_my_reload;
 
+            var spinnerId = displaySpinner();
+
 			function all_done() {
 				if (reload) {
+					// do not hide spinner - page will be reloaded
 					location.reload();
 					alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
 				} else {
+					// hide spinner
+					$('#'+spinnerId).remove();
 					document.location.href='#';
 					alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
 				}
@@ -780,6 +785,8 @@
                 } else {
                     block_exacomp.popup_close()
                 }
+                // hide spinner
+                $('#'+spinnerId).remove();
 			}
 
 			break;
