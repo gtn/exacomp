@@ -540,6 +540,27 @@ class block_exacomp_external extends external_api {
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
 			'id' => $exampleid,
 		));
+		
+		
+		//da jetzt prüfen ob Quiz prüfen
+		$quizDB = $DB->get_records_sql("SELECT q.id, q.name, q.grade
+							FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ca
+							JOIN {course_modules} cm ON ca.activityid = cm.id
+							JOIN {modules} m ON cm.module = m.id
+							JOIN {quiz} q ON cm.instance = q.id
+							WHERE m.name = 'quiz' AND  ca.id = ?
+							", array(
+							    $exampleid,
+							)
+		    );
+		
+		$example->quiz = new stdClass ();
+		foreach ($quizDB as $quiz) {
+		  $example->quiz->quizid = $quiz->id;
+		  $example->quiz->quiz_title = $quiz->name;
+		  $example->quiz->quiz_grade = $quiz->grade;
+		}
+		
 		$example->hassubmissions = !!$DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid));
 
         //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
@@ -619,6 +640,11 @@ class block_exacomp_external extends external_api {
 			//'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),
 			'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'), // like in Dakora?
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
+		    'quiz' => new external_single_structure (array(
+		        'quizid' => new external_value (PARAM_INT, 'id of quiz'),
+		        'quiz_title' => new external_value (PARAM_TEXT, 'title of quiz'),
+		        'quiz_grade' => new external_value (PARAM_FLOAT, 'sum grade of quiz'),  
+		    )),
 		));
 	}
 
