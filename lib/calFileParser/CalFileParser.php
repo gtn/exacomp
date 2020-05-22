@@ -118,10 +118,13 @@ class CalFileParser {
      * Parses iCal or vCal file and returns data of a type that is specified
      * @param string $file
      * @param string $output
+     * @param $file_contents
      * @return mixed|string
      */
-    public function parse($file = '', $output = '') {
-        $file_contents = $this->read_file($file);
+    public function parse($file = '', $output = '', $file_contents) {
+        if($file_contents==null){
+            $file_contents = $this->read_file($file);
+        }
 
         if ($file_contents === false) {
             return 'Error: File Could not be read';
@@ -300,7 +303,7 @@ class CalFileParser {
                         $strstr = strstr($date_format,"TZID");
                         $timezone = substr($strstr, 5);
                     }
-                    
+
                     // process all dates if there are more then one and comma seperated
                     $processed_value = array();
                     foreach(explode(",", $value) AS $date_value) {

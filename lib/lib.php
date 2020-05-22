@@ -6004,7 +6004,7 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
 /**
  * function for testing import of ics to weekly_schedule
  */
-function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid){
+function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid,$filecontent){
     $timeslots = block_exacomp_build_json_time_slots($date = null);
     $units = (get_config("exacomp", "scheduleunits")) ? get_config("exacomp", "scheduleunits") : 8;
     $interval = (get_config("exacomp", "scheduleinterval")) ? get_config("exacomp", "scheduleinterval") : 50;
@@ -6018,11 +6018,10 @@ function block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,
     }
 
 
-
     require __DIR__ . '/../lib/calFileParser/CalFileParser.php';
     $cal = new CalFileParser();
     $cal->set_timezone('Europe/Berlin');
-    $icsData = $cal->parse($link);
+    $icsData = $cal->parse($link,null,$filecontent);
     $start = $icsData[3]['DTSTART'];
     $end = $icsData[3]['DTEND'];
 

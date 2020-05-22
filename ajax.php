@@ -393,7 +393,7 @@ switch($action){
         }else if($studentid==BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
             $studentid = 0;
         }
-        block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid);
+        block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid,null);
         break;
     case 'update_show_imports' :
         $showimports = required_param ( 'showimports', PARAM_BOOL );

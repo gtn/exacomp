@@ -7218,12 +7218,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $content .= $importICSlink;
         $content .= '<br>';
+        $content .= " ".html_writer::link(
+                new moodle_url('/blocks/exacomp/webuntis_upload.php', array('courseid' => g::$COURSE->id, 'studentid' => block_exacomp_get_studentid())),
+                html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
+                array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+        $content .= '<br>';
         $content .= $importICSbutton;
         $content .= '<br>';
         $content .= $deleteImportsButton;
         $content .= '<br>';
         $content .= $showImportsCheckboxText;
         $content .= $showImportsCheckbox;
+
+
+
         return html_writer::div($content, '', array('id' => 'import_ics'));
     }
 
