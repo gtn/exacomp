@@ -3187,7 +3187,7 @@ return [
         'WebUntis-Import',
         'WebUntis import',
     ],
-    'show_imports_checkbox_label' => [
+    'hide_imports_checkbox_label' => [
         'WebUntis Anzeigen: ',
         'Show WebUntis: ',
     ],

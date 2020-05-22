@@ -28,11 +28,11 @@
 
 
 	//
-	$(document).on('click', '#show_imports_checkbox', function(event){
-		showimports = $('#show_imports_checkbox')[0].checked;
+	$(document).on('click', '#hide_imports_checkbox', function(event){
+		hideimports = $('#hide_imports_checkbox')[0].checked;
 		block_exacomp.call_ajax({
-			showimports: showimports,
-			action : 'update_show_imports'
+			hideimports: hideimports,
+			action : 'update_hide_imports'
 		}).done(function(msg) {
 			$('#calendar').fullCalendar('refetchEvents');
 		});
@@ -56,7 +56,7 @@
 			creatorid = $(this).attr('creatorid');
 			studentid = block_exacomp.get_studentid();
 			courseid = block_exacomp.get_param('courseid');
-			alert(M.util.get_string('import_ics_loading_time', 'block_exacomp'));
+			// alert(M.util.get_string('import_ics_loading_time', 'block_exacomp'));
 			block_exacomp.call_ajax({
 				studentid: studentid,
 				link: link,
@@ -464,7 +464,7 @@
 
 						//background events should only be there for visualization
 						if(event.state == 10){
-							if($('#show_imports_checkbox')[0].checked){
+							if($('#hide_imports_checkbox')[0].checked){
 								event.editable = false;
 								event.startEditable = false;
 								event.durationEditable = false;

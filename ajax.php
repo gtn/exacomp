@@ -395,9 +395,9 @@ switch($action){
         }
         block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,$link,$creatorid,null);
         break;
-    case 'update_show_imports' :
-        $showimports = required_param ( 'showimports', PARAM_BOOL );
-        $_SESSION['showimports-'.g::$COURSE->id]=$showimports;
+    case 'update_hide_imports' :
+        $hideimports = required_param ( 'hideimports', PARAM_BOOL );
+        $_SESSION['hideimports-'.g::$COURSE->id]=$hideimports;
         break;
     case 'delete-imports':
         //$studentid = required_param('studentid', PARAM_INT);

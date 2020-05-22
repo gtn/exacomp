@@ -7206,14 +7206,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function import_examples_ics(){
         global $USER;
         $content = html_writer::tag('h4', block_exacomp_get_string('import_ics_title'));
-        $importICSlink = html_writer::empty_tag('input', array('type' => 'url', 'id' => 'import_ics_link', 'placeholder' => "www.myicsfile.at"));
+        $importICSlink = html_writer::empty_tag('input', array('type' => 'url', 'id' => 'import_ics_link', 'placeholder' => "https://"));
         $importICSbutton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics_button', 'value' => block_exacomp_get_string('import_ics'), 'creatorid' => $USER->id));
         $deleteImportsButton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'delete_imports_button', 'value' => block_exacomp_get_string('delete_imports'), 'creatorid' => $USER->id));
-        $showImportsCheckboxText =  html_writer::tag('label', block_exacomp_get_string('show_imports_checkbox_label')." ");
-        if($_SESSION['showimports-'.g::$COURSE->id]){
-            $showImportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'show_imports_checkbox', 'checked' => true));
+        $hideimportsCheckboxText =  html_writer::tag('label', block_exacomp_get_string('hide_imports_checkbox_label')." ");
+        if($_SESSION['hideimports-'.g::$COURSE->id]){
+            $hideimportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'hide_imports_checkbox'));
         }else{
-            $showImportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'show_imports_checkbox'));
+            $hideimportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'hide_imports_checkbox', 'checked' => true));
         }
 
         $content .=  html_writer::tag('label', block_exacomp_get_string('upload_ics_file')." ");
@@ -7227,8 +7227,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //        $content .= '<br>';
         $content .= $deleteImportsButton;
 //        $content .= '<br>';
-        $content .= $showImportsCheckboxText;
-        $content .= $showImportsCheckbox;
+        $content .= $hideimportsCheckboxText;
+        $content .= $hideimportsCheckbox;
 
 
 
