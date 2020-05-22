@@ -877,3 +877,4 @@ $string['import_ics_title'] = 'WebUntis import';
 $string['show_imports_checkbox_label'] = 'Show WebUntis: ';
 $string['import_ics'] = 'import calendar';
 $string['delete_imports'] = 'delete my imports';
+$string['upload_ics_file'] = 'Choose file: ';

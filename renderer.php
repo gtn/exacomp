@@ -7216,17 +7216,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $showImportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'show_imports_checkbox'));
         }
 
-        $content .= $importICSlink;
-        $content .= '<br>';
+        $content .=  html_writer::tag('label', block_exacomp_get_string('upload_ics_file')." ");
         $content .= " ".html_writer::link(
                 new moodle_url('/blocks/exacomp/webuntis_upload.php', array('courseid' => g::$COURSE->id, 'studentid' => block_exacomp_get_studentid())),
                 html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
                 array("target" => "_blank", 'exa-type' => 'iframe-popup'));
-        $content .= '<br>';
+        $content .= $importICSlink;
+//        $content .= '<br>';
         $content .= $importICSbutton;
-        $content .= '<br>';
+//        $content .= '<br>';
         $content .= $deleteImportsButton;
-        $content .= '<br>';
+//        $content .= '<br>';
         $content .= $showImportsCheckboxText;
         $content .= $showImportsCheckbox;
 

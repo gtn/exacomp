@@ -158,6 +158,11 @@
 	float: left;
 }
 
+#block_exacomp #trash input {
+	padding: 0px 10px 0px 10px;
+	margin: 5px 10px 5px 0px;
+}
+
 #block_exacomp #import_ics {
 	width: 20%;
 	padding: 17px 10px 0 10px;
@@ -166,6 +171,16 @@
 	text-align: left;
 	margin-top: 25px;
 	float: left;
+	overflow: hidden;
+}
+
+#block_exacomp #import_ics input {
+	padding: 0px 10px 0px 10px;
+	margin: 5px 10px 5px 0px;
+}
+
+#block_exacomp #import_ics #import_ics_link {
+	width: 100%;
 }
 
 #block_exacomp #import_ics #delete_imports_button{

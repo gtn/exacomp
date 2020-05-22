@@ -3199,4 +3199,11 @@ return [
         'Importierte Termine löschen',
         'delete my imports',
     ],
+    'upload_ics_file' => [
+        'Datei auswählen: ',
+        'Choose file: ',
+    ],
+
+
+
 ];
