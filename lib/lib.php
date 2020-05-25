@@ -6111,13 +6111,34 @@ function block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$c
 //WHERE s.exampleid = e.id AND e.blocking_event = 3
 //    AND s.courseid = AND studentid = AND creatorid =
 
-    $sql = "DELETE s,e
+//        $sql = "DELETE s,e,vis
+//        FROM {block_exacompschedule} s, {block_exacompexamples} e, {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} vis
+//        WHERE e.id = s.exampleid AND s.exampleid = vis.exampleid AND s.courseid = vis.courseid
+//        AND s.studentid = ? AND s.courseid = ? AND s.creatorid = ?
+//        AND e.blocking_event = 3";
+
+    $sql = "DELETE s
         FROM {block_exacompschedule} s, {block_exacompexamples} e
         WHERE e.id = s.exampleid
         AND s.studentid = ? AND s.courseid = ? AND s.creatorid = ?
         AND e.blocking_event = 3";
 
-    var_dump($DB->execute($sql, array($studentid,$courseid,$creatorid)));
+    $DB->execute($sql, array($studentid,$courseid,$creatorid));
+
+    //Delete examples and visibility if they are not used in any place AND ARE ICS_IMPROTS of course
+    //if a teacher imports into their own schedule, and then distributes and then deletes from ONE student --> the example still exists in other schedules
+    //in every other case: the example is lost and should therefore be deleted
+    //this query in word: delete every example and visibilityentry of the example if that example is an ics_imports AND never referenced in ANY schedule
+    $sql = "DELETE e,v
+        FROM {block_exacompexamples} e, {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} v
+        WHERE e.id = v.exampleid 
+        AND e.blocking_event = 3
+        AND e.id NOT IN ( 
+            SELECT s.exampleid FROM {block_exacompschedule} s
+            WHERE s.courseid = ? AND s.creatorid = ?)";
+
+    $DB->execute($sql, array($courseid,$creatorid));
+
 }
 
 
