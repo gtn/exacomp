@@ -8291,16 +8291,22 @@ function block_exacomp_send_message_to_course($courseid, $message) {
 
 /**
  * create an example only available on weekly schedule, to define occupied time slots, currently only for teachers
- * @param unknown $courseid
- * @param unknown $title
- * @param unknown $creatorid
- * @param unknown $studentid
+ * @param integer $courseid
+ * @param string $title
+ * @param string $description
+ * @param string $timeframe
+ * @param string $externalurl
+ * @param integer $creatorid
+ * @param integer $studentid
  */
-function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $studentid) {
+function block_exacomp_create_blocking_event($courseid, $title, $description, $timeframe, $externalurl, $creatorid, $studentid) {
 	global $DB;
 
 	$example = new stdClass();
 	$example->title = $title;
+	$example->description = $description;
+	$example->timeframe = $timeframe;
+	$example->externalurl = $externalurl;
 	$example->creatorid = $creatorid;
 	$example->blocking_event = 1;
 

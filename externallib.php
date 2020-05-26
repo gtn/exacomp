@@ -542,7 +542,7 @@ class block_exacomp_external extends external_api {
 		));
 		
 		
-		//da jetzt prüfen ob Quiz prüfen
+		//da jetzt prï¿½fen ob Quiz prï¿½fen
 		$quizDB = $DB->get_records_sql("SELECT q.id, q.name, q.grade
 							FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ca
 							JOIN {course_modules} cm ON ca.activityid = cm.id
@@ -6934,6 +6934,9 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters (array(
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'title' => new external_value (PARAM_TEXT, 'title of new blocking event'),
+			'description' => new external_value (PARAM_TEXT, 'description of new blocking event'),
+			'timeframe' => new external_value (PARAM_TEXT, 'timeframe'),
+			'externalurl' => new external_value (PARAM_URL, 'external url'),
 			'userid' => new external_value (PARAM_INT, 'id of user'),
 			'preplanningstorage' => new external_value (PARAM_BOOL, 'in pre planning storage or for specific student'),
 		));
@@ -6945,11 +6948,17 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-write
 	 */
-	public static function dakora_create_blocking_event($courseid, $title, $userid, $preplanningstorage) {
+	public static function dakora_create_blocking_event($courseid, $title, $description, $timeframe, $externalurl, $userid, $preplanningstorage) {
 		global $USER;
 
-		static::validate_parameters(static::dakora_create_blocking_event_parameters(), array('courseid' => $courseid, 'title' => $title,
-			'userid' => $userid, 'preplanningstorage' => $preplanningstorage));
+		static::validate_parameters(static::dakora_create_blocking_event_parameters(), array(
+		    'courseid' => $courseid,
+            'title' => $title,
+            'description' => $description,
+            'timeframe' => $timeframe,
+            'externalurl' => $externalurl,
+			'userid' => $userid,
+            'preplanningstorage' => $preplanningstorage));
 
 		if ($userid == 0 && !$preplanningstorage && !block_exacomp_is_teacher($courseid)) {
 			$userid = $USER->id;
@@ -6957,7 +6966,7 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 
-		block_exacomp_create_blocking_event($courseid, $title, $USER->id, $userid);
+		block_exacomp_create_blocking_event($courseid, $title, $description, $timeframe, $externalurl, $USER->id, $userid);
 
 		return array("success" => true);
 	}

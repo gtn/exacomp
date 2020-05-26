@@ -468,8 +468,11 @@ switch($action){
 	case 'create_blocking_event':
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
+        $description = optional_param('description', '', PARAM_TEXT);
+        $timeframe = optional_param('timeframe', '', PARAM_TEXT);
+        $externalurl = optional_param('externalurl', '', PARAM_URL);
 
-		block_exacomp_create_blocking_event($courseid, $title, $creatorid, 0);
+		block_exacomp_create_blocking_event($courseid, $title, $description, $timeframe, $externalurl, $creatorid, 0);
 
 		break;
 	case 'get_statistics_for_profile' :
