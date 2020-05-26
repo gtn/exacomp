@@ -560,6 +560,11 @@ class block_exacomp_external extends external_api {
 		  $example->quiz->quiz_title = $quiz->name;
 		  $example->quiz->quiz_grade = $quiz->grade;
 		}
+		if($example->quiz->quizid == null){
+		    $example->quiz->quizid = -1;
+		    $example->quiz->quiz_title =  " ";
+		    $example->quiz->quiz_grade = 0.0;
+		}
 		
 		$example->hassubmissions = !!$DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid));
 
