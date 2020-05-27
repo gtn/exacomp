@@ -6156,20 +6156,21 @@ function block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$c
  * @param char $source  'S' for student, 'T' for teacher individually, 'C' for central.. if teacher assigns many at one time
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent=false) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
 
 	// prüfen, ob element schon zur gleichen zeit im wochenplan ist
-	if ($studentid==0){ // 2 teachers of same course should be able to add example in there planing scheduler, so creatorid have to be asked here. for student below this is not necessary
+	if ($studentid == 0) { // 2 teachers of same course should be able to add example in there planing scheduler, so creatorid have to be asked here. for student below this is not necessary
 		if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'creatorid' => $creatorid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
-		return true;}
-	}else if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
+		    return true;
+        }
+	} else if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
 		return true;
 	}
-	//if not given by the function call, find out the ethema parameter:
-	if($ethema_ismain == -1 && $ethema_issubcategory == -1){
+	// if not given by the function call, find out the ethema parameter:
+	if ($ethema_ismain == -1 && $ethema_issubcategory == -1){
 	    $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 	    $ethema_ismain = isset($example->ethema_ismain) ? $example->ethema_ismain : 0;
 	    $ethema_issubcategory = isset($example->ethema_issubcategory) ? $example->ethema_issubcategory : 0;
@@ -6179,24 +6180,36 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 	if ($ethema_ismain) {
 	    $subcategoryexamples = block_exacomp_get_eThema_children($exampleid);
         foreach ($subcategoryexamples as $example) {
-            if($example->ethema_issubcategory){
-                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 1, $source);
-            }else{
-                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source);
+            if ($example->ethema_issubcategory) {
+                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 1, $source, false, $distributionid);
+            } else {
+                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source, false, $distributionid);
             }
         }
 	} else if ($ethema_issubcategory) {
         $childexamples = block_exacomp_get_eThema_children($exampleid);
         foreach ($childexamples as $example) {
-            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source);
+            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source, false, $distributionid);
         }
-	}else{
-        $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated,
-            'timemodified' => $timemodified, 'start' => $start, 'end' => $end, 'deleted' => 0, 'ethema_ismain' => $ethema_ismain, 'ethema_issubcategory' => $ethema_issubcategory, 'source' => $source ));
+	} else {
+        $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array(
+            'studentid' => $studentid,
+            'exampleid' => $exampleid,
+            'courseid' => $courseid,
+            'creatorid' => $creatorid,
+            'timecreated' => $timecreated,
+            'timemodified' => $timemodified,
+            'start' => $start,
+            'end' => $end,
+            'deleted' => 0,
+            'ethema_ismain' => $ethema_ismain,
+            'ethema_issubcategory' => $ethema_issubcategory,
+            'source' => $source,
+            'distributionid' => $distributionid));
 
         //only send a notification if a teacher adds an example for a student and not for pre planning storage
         //also, don't send notifications for ics_imports
-        if(!$icsBackgroundEvent){
+        if (!$icsBackgroundEvent) {
             if ($creatorid != $studentid && $studentid > 0) {
                 block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
             }
@@ -6249,11 +6262,12 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 
 /**
  * add example to all planning storages for all students of group
- * @param unknown $courseid
- * @param unknown $groupid
+ * @param mixed $courseid
+ * @param integer $groupid
+ * @param integer $distributionid
  * @return boolean
  */
-function block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid) {
+function block_exacomp_add_examples_to_schedule_for_group($courseid, $groupid, $distributionid) {
     // Check Permission
     block_exacomp_require_teacher($courseid);
     // Get all examples to add:
@@ -6261,13 +6275,13 @@ function block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid) {
     $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
 
     // Get all students for the given group
-    $groupmembers = block_exacomp_groups_get_members($courseid,$groupid);
+    $groupmembers = block_exacomp_groups_get_members($courseid, $groupid);
 
     // Add examples for all users of group
     foreach ($examples as $example) {
         foreach ($groupmembers as $student) {
             if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
-                block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'C');
+                block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'C', false, $distributionid);
             }
         }
     }
@@ -6281,11 +6295,12 @@ function block_exacomp_add_examples_to_schedule_for_group($courseid,$groupid) {
 
 /**
  * add example to all planning storages for students
- * @param unknown $courseid
+ * @param mixed $courseid
  * @param array $students
+ * @param integer $distributionid
  * @return boolean
  */
-function block_exacomp_add_examples_to_schedule_for_students($courseid,$students) {
+function block_exacomp_add_examples_to_schedule_for_students($courseid, $students, $distributionid) {
     // Check Permission
     block_exacomp_require_teacher($courseid);
     // Get all examples to add:
@@ -6296,7 +6311,7 @@ function block_exacomp_add_examples_to_schedule_for_students($courseid,$students
     foreach ($examples as $example) {
         foreach ($students as $student) {
             if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
-                block_exacomp_add_example_to_schedule($student, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'C');
+                block_exacomp_add_example_to_schedule($student, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'C', false, $distributionid);
             }
         }
     }

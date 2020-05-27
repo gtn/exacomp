@@ -2424,6 +2424,37 @@ Params: <table>
 <td>default: string(0) ""
 </td>
 <td>json array of groups</td>
+<tr>
+<td>distributionid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>distribution id. used for undo button</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
+<h2>dakora_delete_examples_from_schedule</h2>
+<div>remove example from weekly schedule by teacherid and distribution id
+used for 'undo' button</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>teacherid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of teacher</td>
+<tr>
+<td>distributionid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>distribution id</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -3080,6 +3111,27 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>title of new blocking event</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of new blocking event</td>
+<tr>
+<td>timeframe</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>timeframe</td>
+<tr>
+<td>externalurl</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>external url</td>
 <tr>
 <td>userid</td>
 <td>int</td>

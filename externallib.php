@@ -5904,6 +5904,7 @@ class block_exacomp_external extends external_api {
 	        'students' => new external_value (PARAM_TEXT, 'json array of students'),
 	        //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
 	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
+	        'distributionid' => new external_value (PARAM_INT, 'distribution id. used for undo button', VALUE_DEFAULT, null),
 	    ));
 	}
 
@@ -5912,15 +5913,19 @@ class block_exacomp_external extends external_api {
 	 * add example to current pre planning storage
 	 *
 	 * @ws-type-write
-	 * @param int courseid
+	 * @param mixed $courseid
+	 * @param string $students
+	 * @param string $groups
+	 * @param integer $distributionid
 	 * @return examples
 	 */
-	public static function dakora_add_examples_to_selected_students_schedule($courseid, $students, $groups) {
+	public static function dakora_add_examples_to_selected_students_schedule($courseid, $students, $groups, $distributionid) {
 	    global $USER;
 	    static::validate_parameters(static::dakora_add_examples_to_selected_students_schedule_parameters(), array(
 	        'courseid' => $courseid,
 	        'students' => $students,
 	        'groups' => $groups,
+	        'distributionid' => $distributionid,
 	    ));
 
 	    static::require_can_access_course_user($courseid, $USER->id);
@@ -5932,9 +5937,9 @@ class block_exacomp_external extends external_api {
 	    $groups = json_decode($groups);
 
         foreach ($groups as $group){
-            block_exacomp_add_examples_to_schedule_for_group($courseid, $group);
+            block_exacomp_add_examples_to_schedule_for_group($courseid, $group, $distributionid);
         }
-        block_exacomp_add_examples_to_schedule_for_students($courseid, $students);
+        block_exacomp_add_examples_to_schedule_for_students($courseid, $students, $distributionid);
 
 	    return array(
 	        "success" => true,
@@ -5954,21 +5959,64 @@ class block_exacomp_external extends external_api {
 	}
 
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_delete_examples_from_schedule_parameters() {
+        return new external_function_parameters (array(
+            'teacherid' => new external_value(PARAM_INT, 'id of teacher'),
+            'distributionid' => new external_value(PARAM_INT, 'distribution id'),
+        ));
+    }
 
+    /**
+     * remove example from weekly schedule by teacherid and distribution id
+     * used for 'undo' button
+     *
+     * @ws-type-write
+     * @param integer $teacherid
+     * @param integer $distributionid
+     * @return list of descriptors
+     */
+    public static function dakora_delete_examples_from_schedule($teacherid, $distributionid) {
+        global $DB;
 
+        static::validate_parameters(static::dakora_delete_examples_from_schedule_parameters(), array(
+            'teacherid' => $teacherid,
+            'distributionid' => $distributionid,
+        ));
 
+        // get schedules for deleting
+        $toDelete = $DB->get_records_sql('SELECT * 
+                FROM BLOCK_EXACOMP_DB_SCHEDULE s
+                WHERE s.creatorid = ?
+                      AND studentid > 0
+                      AND distributionid = ?',
+            [$teacherid, $distributionid]
+        );
+        foreach ($toDelete as $scheduleid => $entry) {
+            // permissions are checked in lib.php
+            block_exacomp_remove_example_from_schedule($scheduleid);
+        }
 
+        return array(
+            "success" => true,
+        );
 
+    }
 
-
-
-
-
-
-
-
-
-
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function dakora_delete_examples_from_schedule_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        ));
+    }
 
 
 	/**
