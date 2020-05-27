@@ -5990,8 +5990,8 @@ class block_exacomp_external extends external_api {
 
         // get schedules for deleting
         $toDelete = $DB->get_records_sql('SELECT * 
-                FROM BLOCK_EXACOMP_DB_SCHEDULE s
-                WHERE s.creatorid = ?
+                FROM {BLOCK_EXACOMP_DB_SCHEDULE} 
+                WHERE creatorid = ?
                       AND studentid > 0
                       AND distributionid = ?',
             [$teacherid, $distributionid]
