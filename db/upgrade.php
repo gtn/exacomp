@@ -3609,7 +3609,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
     if ($oldversion < 2020031900) {
         $table = new xmldb_table('block_exacompexamples');
-        $field = new xmldb_field('distributionid', XMLDB_TYPE_TEXT, null, null, null, null, null, '');
+        $field = new xmldb_field('author_origin', XMLDB_TYPE_TEXT, null, null, null, null, null, '');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
