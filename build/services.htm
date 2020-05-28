@@ -2459,6 +2459,29 @@ Params: <table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
+<h2>dakora_undo_examples_from_schedule</h2>
+<div>remove example from weekly schedule by teacherid and distribution id
+used for 'undo' button</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>teacherid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of teacher</td>
+<tr>
+<td>distributionid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>distribution id</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
 <h2>dakora_submit_example</h2>
 <div>submit example solution
 Add student submission to example.</div>
