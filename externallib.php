@@ -5963,8 +5963,44 @@ class block_exacomp_external extends external_api {
      * Returns description of method parameters
      *
      * @return external_function_parameters
+     * @deprecated Delete after dakora app changed
      */
     public static function dakora_delete_examples_from_schedule_parameters() {
+        return self::dakora_undo_examples_from_schedule_parameters();
+
+    }
+
+    /**
+     * remove example from weekly schedule by teacherid and distribution id
+     * used for 'undo' button
+     *
+     * @ws-type-write
+     * @param integer $teacherid
+     * @param integer $distributionid
+     * @return list of descriptors
+     * @deprecated Delete after dakora app changed
+     */
+    public static function dakora_delete_examples_from_schedule($teacherid, $distributionid) {
+        return self::dakora_undo_examples_from_schedule($teacherid, $distributionid);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     * @deprecated Delete after dakora app changed
+     */
+    public static function dakora_delete_examples_from_schedule_returns() {
+        return self::dakora_undo_examples_from_schedule_returns();
+    }
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_undo_examples_from_schedule_parameters() {
         return new external_function_parameters (array(
             'teacherid' => new external_value(PARAM_INT, 'id of teacher'),
             'distributionid' => new external_value(PARAM_INT, 'distribution id'),
@@ -5980,10 +6016,10 @@ class block_exacomp_external extends external_api {
      * @param integer $distributionid
      * @return list of descriptors
      */
-    public static function dakora_delete_examples_from_schedule($teacherid, $distributionid) {
+    public static function dakora_undo_examples_from_schedule($teacherid, $distributionid) {
         global $DB;
 
-        static::validate_parameters(static::dakora_delete_examples_from_schedule_parameters(), array(
+        static::validate_parameters(static::dakora_undo_examples_from_schedule_parameters(), array(
             'teacherid' => $teacherid,
             'distributionid' => $distributionid,
         ));
@@ -5996,9 +6032,19 @@ class block_exacomp_external extends external_api {
                       AND distributionid = ?',
             [$teacherid, $distributionid]
         );
+        $returnToTeacherStorage = [];
         foreach ($toDelete as $scheduleid => $entry) {
+            if (!array_key_exists($entry->exampleid, $returnToTeacherStorage)) {
+                $returnToTeacherStorage[$entry->exampleid] = $entry;
+            }
             // permissions are checked in lib.php
             block_exacomp_remove_example_from_schedule($scheduleid);
+        }
+        // return examples to teacher storage
+        foreach ($returnToTeacherStorage as $exampleId => $example) {
+            $courseid = $example->courseid;
+            // student = 0, source = 0, distributionid = 0 !
+            block_exacomp_add_example_to_schedule(0, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, null, false, null);
         }
 
         return array(
@@ -6012,7 +6058,7 @@ class block_exacomp_external extends external_api {
      *
      * @return external_single_structure
      */
-    public static function dakora_delete_examples_from_schedule_returns() {
+    public static function dakora_undo_examples_from_schedule_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
