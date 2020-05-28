@@ -6044,7 +6044,7 @@ class block_exacomp_external extends external_api {
         foreach ($returnToTeacherStorage as $exampleId => $example) {
             $courseid = $example->courseid;
             // student = 0, source = 0, distributionid = 0 !
-            block_exacomp_add_example_to_schedule(0, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, null, false, null);
+            block_exacomp_add_example_to_schedule(0, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'T', false, null);
         }
 
         return array(
