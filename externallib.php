@@ -26,6 +26,8 @@ require_once $CFG->dirroot.'/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot.'/lib/filelib.php';
 
 use block_exacomp\globals as g;
+//use tool_policy\api;
+//use tool_policy\policy_version;
 
 class block_exacomp_external extends external_api {
 
@@ -540,8 +542,8 @@ class block_exacomp_external extends external_api {
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
 			'id' => $exampleid,
 		));
-		
-		
+
+
 		//da jetzt pr�fen ob Quiz pr�fen
 		$quizDB = $DB->get_records_sql("SELECT q.id, q.name, q.grade
 							FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ca
@@ -553,7 +555,7 @@ class block_exacomp_external extends external_api {
 							    $exampleid,
 							)
 		    );
-		
+
 		$example->quiz = new stdClass ();
 		foreach ($quizDB as $quiz) {
 		  $example->quiz->quizid = $quiz->id;
@@ -565,7 +567,7 @@ class block_exacomp_external extends external_api {
 		    $example->quiz->quiz_title =  " ";
 		    $example->quiz->quiz_grade = 0.0;
 		}
-		
+
 		$example->hassubmissions = !!$DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid));
 
         //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
@@ -648,7 +650,7 @@ class block_exacomp_external extends external_api {
 		    'quiz' => new external_single_structure (array(
 		        'quizid' => new external_value (PARAM_INT, 'id of quiz'),
 		        'quiz_title' => new external_value (PARAM_TEXT, 'title of quiz'),
-		        'quiz_grade' => new external_value (PARAM_FLOAT, 'sum grade of quiz'),  
+		        'quiz_grade' => new external_value (PARAM_FLOAT, 'sum grade of quiz'),
 		    )),
 		));
 	}
@@ -7828,6 +7830,127 @@ class block_exacomp_external extends external_api {
 			'enabled' => new external_value (PARAM_BOOL, ''),
 		));
 	}
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_get_site_policies_parameters() {
+        return new external_function_parameters (array());
+    }
+
+    /**
+     *
+     * @ws-type-read
+     * @return boolean
+     */
+    public static function dakora_get_site_policies() {
+        global $DB, $USER;
+        static::validate_parameters(static::dakora_get_site_policies_parameters(), array());
+
+        $policies = g::$DB->get_records("tool_policy_versions", array(
+
+        ));
+
+        $policies = tool_policy\api::list_current_versions(tool_policy\policy_version::AUDIENCE_LOGGEDIN);
+
+
+
+        // During the signup, show compulsory policies only.
+        foreach ($policies as $ix => $policyversion) {
+            if ($policyversion->optional == tool_policy\policy_version::AGREEMENT_OPTIONAL) {
+                unset($policies[$ix]);
+            }
+        }
+        $policies = array_values($policies);
+
+
+
+
+
+
+        //filter out already agreed policies
+        $lang = current_language();
+        foreach ($policies as $k => $policy) {
+            // Check if this policy version has been agreed or not.
+            $versionagreed = false;
+            $versiondeclined = false;
+            $acceptances = tool_policy\api::get_user_acceptances($USER->id);
+            $policy->versionacceptance = tool_policy\api::get_user_version_acceptance($USER->id, $policy->id, $acceptances);
+            if (!empty($policy->versionacceptance)) {
+                // The policy version has ever been replied to before. Check if status = 1 to know if still is accepted.
+                if ($policy->versionacceptance->status) {
+                    $versionagreed = true;
+                } else {
+                    $versiondeclined = true;
+                }
+                if ($versionagreed) {
+                    if ($policy->versionacceptance->lang != $lang) {
+                        // Add a message because this version has been accepted in a different language than the current one.
+                        $policy->versionlangsagreed = get_string('policyversionacceptedinotherlang', 'tool_policy');
+                    }
+                    $usermodified = $policy->versionacceptance->usermodified;
+                }
+            }
+            if($versionagreed){
+                unset($policies[$k]);
+            }
+
+            $policy->summary = strip_tags($policy->summary);
+            $policy->content = strip_tags($policy->content);
+        }
+
+//        var_dump($policies);
+//        die;
+
+//        return array(
+//            'name' => $policies->name,
+//            'summary' => $policies->summary,
+//            'content' => $policies->content,
+//        );
+        return $policies;
+    }
+
+    /**
+     * Returns description of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakora_get_site_policies_returns() {
+        return new external_multiple_structure (new external_single_structure (array(
+            'name' => new external_value (PARAM_TEXT, 'name'),
+            'summary' => new external_value (PARAM_TEXT, 'summary'),
+            'content' => new external_value (PARAM_TEXT, 'content')
+        )));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	/**
