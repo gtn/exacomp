@@ -2366,6 +2366,15 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 
 	$niveaus = array($defaultNiveau->id => $defaultNiveau) + $niveaus;
 
+	foreach($niveaus as $key => $niveau){
+//	    if( $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && !block_exacomp_is_niveau_visible($courseid,$topic,$studentid,$niveau->id)){
+//            unset($niveaus[$key]);
+//        }
+        if( $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS){
+            $niveau->visible = block_exacomp_is_niveau_visible($courseid,$topic,$studentid,$niveau->id);
+        }
+    }
+
 	if (isset($niveaus[$niveauid])) {
 		$selectedNiveau = $niveaus[$niveauid];
 	} else {
@@ -6524,6 +6533,48 @@ function block_exacomp_is_topic_visible_for_group($courseid, $topic, $groupid) {
     return true;
 }
 
+
+
+/**
+ * visibility for topic in course and user context
+ * @param unknown $courseid
+ * @param unknown $topic
+ * @param unknown $studentid
+ * @param unknown $niveauid
+ * @return boolean
+ */
+function block_exacomp_is_niveau_visible($courseid, $topic, $studentid, $niveauid) {
+    //global $DB;
+    // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
+    if ($studentid <= 0) {
+        $studentid = 0;
+    }
+
+//    var_dump($courseid);
+//    var_dump($topic->id);
+//    var_dump($studentid);
+//    var_dump($niveauid);
+//    die;
+
+    $visibilities = block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, 0,$topic->id);
+//    var_dump($visibilities);
+//    die;
+    if (isset($visibilities[$niveauid]) && !$visibilities[$niveauid]) {
+        return false;
+    }
+
+    if ($studentid > 0) {
+        // also check student if set
+        $visibilities = block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $studentid,$topic->id);
+        if (isset($visibilities[$niveauid]) && !$visibilities[$niveauid]) {
+            return false;
+        }
+    }
+
+
+    return true;
+}
+
 /**
  * visibility for descriptor in course and user context
  * @param unknown $courseid
@@ -9669,6 +9720,24 @@ function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $us
 }
 
 /**
+ * return all visible niveaus for a course and topic and user context with only one sql query
+ *
+ * @param int $courseid
+ * @param int $userid
+ * @param int $topicid
+ *
+ * @return: {{id}, {...}}
+ */
+function block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $userid = 0, $topicid) {
+    return Cache::staticCallback(__FUNCTION__, function($courseid, $userid, $topicid) {
+        return g::$DB->get_records_sql_menu("
+			SELECT DISTINCT tv.niveauid, tv.visible
+			FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv
+			WHERE tv.courseid = ? AND tv.studentid = ? AND tv.topicid = ? AND tv.niveauid IS NOT NULL", [$courseid, $userid, $topicid]);
+    }, func_get_args());
+}
+
+/**
  * returnes a list of examples whose solutions are visibile in course and user context
  * @param unknown $courseid
  * @param number $userid
@@ -9676,9 +9745,9 @@ function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $us
 function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $userid = 0) {
 	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid) {
 		return g::$DB->get_records_sql_menu("
-			SELECT DISTINCT sv.exampleid, sv.visible 
-			FROM {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} sv 
-			WHERE sv.courseid = ? AND sv.studentid=? 
+			SELECT DISTINCT sv.exampleid, sv.visible
+			FROM {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} sv
+			WHERE sv.courseid = ? AND sv.studentid=?
 		", [$courseid, $userid]);
 	}, func_get_args());
 }
@@ -9690,9 +9759,9 @@ function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 
  * but with improved performance
  */
 function block_exacomp_build_example_parent_names($courseid, $exampleid) {
-	$sql = "SELECT d.id as descrid, d.title as descrtitle, d.parentid as parentid, s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle, 
-				e.id as exampleid, e.title as exampletitle 
-			FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s 
+	$sql = "SELECT d.id as descrid, d.title as descrtitle, d.parentid as parentid, s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle,
+				e.id as exampleid, e.title as exampletitle
+			FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s
 			JOIN {".BLOCK_EXACOMP_DB_TOPICS."} t ON t.subjid = s.id
 			JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON t.id = ct.topicid
 			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON dt.topicid = t.id
@@ -11242,7 +11311,7 @@ function block_exacomp_group_reports_profoundness_result($filter) {
 
     $reportcontent .= '<style>
             .exabis_comp_comp, .exabis_comp_comp .highlight {
-                color: #000000 !important;            
+                color: #000000 !important;
             }
     </style>';
 
@@ -11871,8 +11940,8 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
             $psql = 'SELECT DISTINCT e2.*, ee.*
                         FROM {block_exacompexamples} e
                           JOIN {block_exacompexamples} e2 ON e2.ethema_parent = e.ethema_parent AND e2.ethema_important = 1
-                          LEFT JOIN {block_exacompexameval} ee ON ee.courseid = ? AND ee.studentid = ? AND ee.exampleid = e2.id 
-                        WHERE e.id IN ('.implode(',', $exampleids).') 
+                          LEFT JOIN {block_exacompexameval} ee ON ee.courseid = ? AND ee.studentid = ? AND ee.exampleid = e2.id
+                        WHERE e.id IN ('.implode(',', $exampleids).')
                             AND e.ethema_important = 1 '
                             /*.($forsubcategory ? ' AND e.ethema_issubcategory = 1 ' : '') // do not need, because JOIN*/;
             $allchilds = g::$DB->get_records_sql($psql, [$courseid, $userid]);
@@ -12517,16 +12586,16 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
     foreach ($topics as $topic) {
         $totalDescr = block_exacomp_get_descriptors_by_topic($courseid, $topic->id, false, true);
         // for teacher
-        $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp 
+        $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp
                     FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} c, {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt
                         LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON dt.descrid = d.id
-                    WHERE c.compid = dt.descrid 
-                        AND dt.topicid = ? 
-                        AND c.comptype = 0 
-                        AND c.role = ? 
-                        AND c.userid = ? 
-                        AND c.value '.$direction.' ? 
-                        AND c.courseid = ? 
+                    WHERE c.compid = dt.descrid
+                        AND dt.topicid = ?
+                        AND c.comptype = 0
+                        AND c.role = ?
+                        AND c.userid = ?
+                        AND c.value '.$direction.' ?
+                        AND c.courseid = ?
                         AND d.parentid = 0'; // only parents?
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $negativeLimit, $courseid));
         $topic->teacher = 0;
@@ -12534,16 +12603,16 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
             $topic->teacher = (count($competencies) / count($totalDescr)) * 100;
         }
         // for student
-        $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp 
+        $sql = 'SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp
                     FROM {'.BLOCK_EXACOMP_DB_COMPETENCES.'} c, {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt
                         LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON dt.descrid = d.id
-		            WHERE c.compid = dt.descrid 
-		                AND dt.topicid = ? 
-		                AND c.comptype = 0 
-		                AND c.role = ? 
-		                AND c.userid = ? 
-		                AND c.value >= ? 
-		                AND c.courseid = ? 
+		            WHERE c.compid = dt.descrid
+		                AND dt.topicid = ?
+		                AND c.comptype = 0
+		                AND c.role = ?
+		                AND c.userid = ?
+		                AND c.value >= ?
+		                AND c.courseid = ?
 		                AND d.parentid = 0';
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, $selfLimit, $courseid));
         $topic->student = 0;

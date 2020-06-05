@@ -114,6 +114,15 @@ switch($action){
 
 		block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $studentid);
 		break;
+    case('hide-niveau'):
+        $topicid = required_param('topicid', PARAM_INT);
+        $courseid = required_param('courseid', PARAM_INT);
+        $visible = required_param('value', PARAM_INT);
+        $studentid = required_param('studentid', PARAM_INT);
+        $niveauid = required_param('niveauid', PARAM_INT);
+
+        block_exacomp_set_niveau_visibility($topicid, $courseid, $visible, $studentid, $niveauid);
+        break;
 	case('add-example-to-schedule'):
 	    $studentid = optional_param('studentid',null, PARAM_INT);
 		$groupid = optional_param('groupid',null, PARAM_INT);

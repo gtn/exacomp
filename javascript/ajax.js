@@ -1167,6 +1167,72 @@
 	});
 
 
+	$(document).on('click', '#hide-niveau', function(event) {
+		event.preventDefault();
+
+		var tr = $(this).closest('tr');
+
+		var courseid = block_exacomp.get_param('courseid');
+		var studentid = block_exacomp.get_studentid() || 0;
+		var topicid = $(this).attr('topicid');
+		var niveauid = $(this).attr('niveauid');
+		var val = $(this).attr('state');
+		if(studentid < 0) {
+			// no negative studentid: (all users, gesamtübersicht,...)
+			studentid = 0;
+		}
+
+		if(val=='-'){
+			$(this).attr('state','+');
+			visible = 0;
+
+			$(this).trigger('rg2.lock');
+
+			//disable checkbox for teacher, when hiding descriptor for student
+			if(studentid > 0){
+				$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", true);
+				$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", true);
+			}
+
+			var img = $("img", this);
+			img.attr('src',$(this).attr('hideurl'));
+			img.attr('alt', M.util.get_string('show','moodle'));
+			img.attr('title', M.util.get_string('show','moodle'));
+
+		}else{
+			$(this).attr('state','-');
+			visible = 1;
+			$(this).trigger('rg2.unlock');
+
+			//enable checkbox for teacher, when showing descriptor for student
+			$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", false);
+			$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", false);
+
+			var img = $("img", this);
+			img.attr('src',$(this).attr('showurl'));
+			img.attr('alt', M.util.get_string('hide','moodle'));
+			img.attr('title', M.util.get_string('hide','moodle'));
+		}
+
+		block_exacomp.call_ajax({
+			topicid : topicid,
+			value : visible,
+			studentid : studentid,
+			niveauid : niveauid,
+			action : 'hide-niveau'
+		});
+
+	});
+
+
+
+
+
+
 	$(document).on('click', '#hide-solution', function(event) {
         event.preventDefault();
 
