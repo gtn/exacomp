@@ -1070,6 +1070,10 @@ not used anymore?
 	font-size: 0.9em;
 }
 
+#block_exacomp .subjects_menu ul li a.hidden {
+	color: #aaaaaa;
+}
+
 #block_exacomp .subjects_menu li a {
 	border-style: solid;
 	border-width: 1px;
@@ -1139,6 +1143,10 @@ not used anymore?
 	max-width: 85px;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+#block_exacomp .niveaus_menu ul li a span.title.hidden {
+	color: #aaaaaa;
 }
 
 #block_exacomp .niveaus_menu ul li a span.niveau-button {

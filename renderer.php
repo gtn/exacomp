@@ -321,7 +321,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'topicid' => $topic->id,
                         'colgroupid' => optional_param('colgroupid', 0, PARAM_INT),
                     ]), block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array(
-                        'class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '',
+                        'class' => (($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '') .' '. (($topic->visible) ? '' : 'hidden'),
                         'title' => $topic->description,
                     )));
                 }
@@ -366,7 +366,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id.'&backurl='.$PAGE->url
                             ]);
                 }
-                if($this->is_edit_mode() && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS){
+                if($this->is_edit_mode() && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $selectedTopic != null){
                     $title .= $this->visibility_icon_niveau($niveau->visible, $selectedTopic->id, $niveau->id);
                 }
                 $titleForTitle = $title;
@@ -376,8 +376,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 if ($niveau->id == 99999999) {
                     $title = '<span class="titleAll">'.$title.'</span>'; // Wrap title
-                } else {
+                } else if($niveau->visible) {
                     $title = '<span class="title">'.$title.'</span>'; // Wrap title
+                } else {
+                    $title = '<span class="title hidden">'.$title.'</span>'; // Wrap title
                 }
                 $content .= html_writer::tag('li',
                     html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
