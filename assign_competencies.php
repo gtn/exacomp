@@ -269,9 +269,6 @@ if ($course_settings->nostudents != 1 && $studentid) {
     echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
 }
 
-
-
-//Hier werden die Bewertungen und so geprinted
 echo $output->competence_overview($competence_tree,
                                     $courseid,
                                     $students,

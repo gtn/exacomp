@@ -1224,6 +1224,8 @@
 			studentid : studentid,
 			niveauid : niveauid,
 			action : 'hide-niveau'
+		}).done(function() {
+			location.reload();
 		});
 
 	});

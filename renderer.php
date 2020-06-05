@@ -347,41 +347,43 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= html_writer::start_tag('ul');
 
 		foreach ($niveaus as $niveau) {
-			$title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
-			$subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
+            if (block_exacomp_is_teacher() || block_exacomp_is_niveau_visible($COURSE->id, $selectedTopic, g::$USER->id, $niveau->id)) {
+                $title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
+                $subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
 
-			$extra = '';
-			if ($this->is_edit_mode() && $niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-                $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'forward' => g::$PAGE->url.'&editmode=1']));
-                $extra .= '&nbsp;'.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
-                                null, [
-                                        'class' => 'niveau-button',
-                                        'title' => block_exacomp_get_string("delete"),
-                                        'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
-                                ]);
-				$extra .= ''.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null,
-                                [   'class' => 'niveau-button',
-                                    'exa-type' => "iframe-popup",
-                                    'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id.'&backurl='.$PAGE->url
-                                ]);
-			}
-			if($this->is_edit_mode() && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS){
-                $title .= $this->visibility_icon_niveau(1, $selectedTopic->id, $niveau->id);
+                $extra = '';
+                if ($this->is_edit_mode() && $niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                    $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'forward' => g::$PAGE->url.'&editmode=1']));
+                    $extra .= '&nbsp;'.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
+                            null, [
+                                'class' => 'niveau-button',
+                                'title' => block_exacomp_get_string("delete"),
+                                'onclick' => 'if (confirm(\''.block_exacomp_get_string('really_delete').'\')) { window.location.href = \''.$deleteUrl.'\'; return false;} else {return false;};'
+                            ]);
+                    $extra .= ''.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null,
+                            [   'class' => 'niveau-button',
+                                'exa-type' => "iframe-popup",
+                                'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id.'&backurl='.$PAGE->url
+                            ]);
+                }
+                if($this->is_edit_mode() && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS){
+                    $title .= $this->visibility_icon_niveau($niveau->visible, $selectedTopic->id, $niveau->id);
+                }
+                $titleForTitle = $title;
+                if ($subtitle) {
+                    $titleForTitle .= ': '.$subtitle;
+                    $title .= '<span class="subtitle">'.$subtitle.'</span>';
+                }
+                if ($niveau->id == 99999999) {
+                    $title = '<span class="titleAll">'.$title.'</span>'; // Wrap title
+                } else {
+                    $title = '<span class="title">'.$title.'</span>'; // Wrap title
+                }
+                $content .= html_writer::tag('li',
+                    html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
+                        $title.$extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $titleForTitle))
+                );
             }
-            $titleForTitle = $title;
-			if ($subtitle) {
-                $titleForTitle .= ': '.$subtitle;
-                $title .= '<span class="subtitle">'.$subtitle.'</span>';
-            }
-            if ($niveau->id == 99999999) {
-                $title = '<span class="titleAll">'.$title.'</span>'; // Wrap title
-            } else {
-                $title = '<span class="title">'.$title.'</span>'; // Wrap title
-            }
-			$content .= html_writer::tag('li',
-				html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
-					$title.$extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $titleForTitle))
-			);
 		}
 
 		if ($this->is_edit_mode()) {
