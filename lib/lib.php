@@ -2205,6 +2205,11 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 			continue;
 		}
 		$topic = $allTopics[$descriptor->topicid];
+        //if the niveau of this topic is invisible: skip
+        if(!block_exacomp_is_niveau_visible($courseid,$topic,0,$descriptor->niveauid)){
+            continue;
+        }
+
 		$topic->descriptors[$descriptor->id] = $descriptor;
 	}
 
@@ -2255,6 +2260,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	foreach ($subjects as $subject) {
 		block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
 	}
+
+
 
 	return block_exacomp\subject::create_objects($subjects);
 }
