@@ -2133,13 +2133,13 @@ function block_exacomp_get_descriptors_by_niveau($courseid, $niveauid, $topicid 
  * @param int $topicid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true, $filteredDescriptors = null) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $calledfromoverview = false,
+                                           $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true, $filteredDescriptors = null, $editmode=false) {
 	global $DB;
 
 	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	}
-
 
 
 	$selectedTopic = null;
@@ -2206,7 +2206,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		}
 		$topic = $allTopics[$descriptor->topicid];
         //if the niveau of this topic is invisible: skip
-        if(!block_exacomp_is_niveau_visible($courseid,$topic,0,$descriptor->niveauid)){
+        if(!$editmode && !block_exacomp_is_niveau_visible($courseid,$topic,0,$descriptor->niveauid)){
             continue;
         }
 
@@ -6377,9 +6377,10 @@ function block_exacomp_add_days($date, $days) {
  * @param string $showallexamples
  * @return associative_array
  */
-function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false) {
+function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false, $editmode=false) {
 	//get all subjects, topics, descriptors and examples
-	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
+	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies,
+        false, false, true, false, false, true, null, $editmode);
 
 
 

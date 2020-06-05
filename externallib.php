@@ -3156,7 +3156,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'topicid' => new external_value (PARAM_INT, 'id of topic'),
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
 		));
 	}
 
@@ -3212,6 +3212,7 @@ class block_exacomp_external extends external_api {
 			'topicid' => new external_value (PARAM_INT, 'id of topic'),
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'editmode' => new external_value (PARAM_BOOL, 'when editmode is active, descriptors fo hidden niveaus should be loaded',VALUE_DEFAULT,0)
 		));
 	}
 
@@ -3222,13 +3223,14 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return array of user courses
 	 */
-	public static function dakora_get_all_descriptors($courseid, $topicid, $userid, $forall) {
+	public static function dakora_get_all_descriptors($courseid, $topicid, $userid, $forall, $editmode) {
 		global $USER;
 		static::validate_parameters(static::dakora_get_all_descriptors_parameters(), array(
 			'courseid' => $courseid,
 			'topicid' => $topicid,
 			'userid' => $userid,
 			'forall' => $forall,
+            'editmode' => $editmode
 		));
 
 		if ($userid == 0 && $forall == false) {
@@ -3236,7 +3238,7 @@ class block_exacomp_external extends external_api {
 		}
 
 
-		return static::dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, false);
+		return static::dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, false, $editmode);
 	}
 
 	/**
@@ -9442,7 +9444,7 @@ class block_exacomp_external extends external_api {
 	}
 
 
-	private static function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated) {
+	private static function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated, $editmode=false) {
 		global $DB;
 
 		if ($forall) {
@@ -9451,7 +9453,8 @@ class block_exacomp_external extends external_api {
 			static::require_can_access_course_user($courseid, $userid);
 		}
 
-		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true, $editmode);
+
 
 
 		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
@@ -9459,6 +9462,8 @@ class block_exacomp_external extends external_api {
 		if (!$forall) {
 			$non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 		}
+
+
 
 		$descriptors_return = array();
 		foreach ($tree as $subject) {

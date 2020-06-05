@@ -135,6 +135,9 @@ if ($course_settings->nostudents) {
     $allCourseStudents = array();
 }
 
+//var_dump($editmode);
+//die;
+
 $competence_tree = block_exacomp_get_competence_tree($courseid,
                         $selectedSubject ? $selectedSubject->id : null,
                         $selectedTopic ? $selectedTopic->id : null,
@@ -147,7 +150,9 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,
                         false,
                         false,
                         ($isTeacher) ? false : true,
-                        false);
+                        false,
+                        null,
+                        $editmode);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector = "";
