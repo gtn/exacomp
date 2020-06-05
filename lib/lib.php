@@ -11770,7 +11770,7 @@ function block_exacomp_get_date_of_birth($userid) {
                  block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $topicObj);
                  $DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('topicid' => $topicid, 'courseid' => $courseid));
                  $DB->delete_records(BLOCK_EXACOMP_DB_DESCTOPICS, array('topicid' => $topicid));
-                 $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array('topicid' => $topicid, 'courseid' => $courseid) 'niveauid' => NULL);
+                 $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array('topicid' => $topicid, 'courseid' => $courseid, 'niveauid' => NULL));
                  $descriptorsToDelete = array_merge($descriptorsToDelete, block_exacomp_get_descriptors_by_topic($courseid, $topicid, true));
                  $topicObj->delete();
              }
