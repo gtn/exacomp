@@ -1236,7 +1236,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.$subjectSqlON.'
     JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
     -- left join, because courseid=0 has no topicvisibility!
-    JOIN {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=ct.courseid'
+    JOIN {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=ct.courseid AND tvis.niveauid IS NULL'
         .($showonlyvisible ? ' AND tvis.visible = 1 ' : '')
         .($showalldescriptors ? '' : '
         -- only show active ones
@@ -3925,7 +3925,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples) {
 function block_exacomp_update_topic_visibilities($courseid, $topicids, $deleteOnly = null) {
 	global $DB;
 
-	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=0', array($courseid));
+	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=0 AND niveauid IS NULL', array($courseid));
 
 	//manage visibility, do not delete user visibility, but delete unused entries
 	foreach ($topicids as $topicid) {
@@ -3943,11 +3943,11 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids, $deleteOn
             if (!in_array($visible, $topicids) && in_array($visible, $deleteOnly)) {
                 // check if used in cross-subjects --> then it must still be visible
                 // and check it if it requested to delete
-                $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $visible));
+                $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $visible, "niveauid" => NULL));
             }
         } elseif (!in_array($visible, $topicids)) {
 			//check if used in cross-subjects --> then it must still be visible
-			$DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $visible));
+			$DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $visible, "niveauid" => NULL));
 		}
 	}
 
@@ -5702,16 +5702,40 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
 	global $DB;
 	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0) {//if visibility changed for all: delete individual settings
 		$studentid = 0;
-		$sql = "DELETE FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} WHERE topicid = ? AND courseid = ? and studentid <> 0";
+		$sql = "DELETE FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} WHERE topicid = ? AND courseid = ? and studentid <> 0 AND niveauid IS NULL";
 
 		$DB->execute($sql, array($topicid, $courseid));
 	}
 	g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_TOPICVISIBILITY,
 		['visible' => $visible],
-		['topicid' => $topicid, 'courseid' => $courseid, 'studentid' => $studentid]
+		['topicid' => $topicid, 'courseid' => $courseid, 'studentid' => $studentid, 'niveauid' => NULL]
 	);
-
 }
+
+
+/**
+ * change topic visibility settings, studentid = 0: visibility settings for all students
+ * @param unknown $topicid
+ * @param unknown $courseid
+ * @param unknown $visible
+ * @param unknown $studentid
+ * @param unknown $niveauid
+ *
+ */
+function block_exacomp_set_niveau_visibility($topicid, $courseid, $visible, $studentid, $niveauid) {
+    global $DB;
+    if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0) {//if visibility changed for all: delete individual settings
+        $studentid = 0;
+        $sql = "DELETE FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} WHERE topicid = ? AND courseid = ? and studentid <> 0 AND niveauid = ?";
+
+        $DB->execute($sql, array($topicid, $courseid, $niveauid));
+    }
+    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_TOPICVISIBILITY,
+        ['visible' => $visible],
+        ['topicid' => $topicid, 'courseid' => $courseid, 'studentid' => $studentid, 'niveauid' => $niveauid]
+    );
+}
+
 
 /**
  * check if topic or any underlying (descriptor, example) is used
@@ -8982,7 +9006,7 @@ function block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid
 		LEFT JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON d.id = dt.descrid
 		LEFT JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
 		LEFT JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dv ON d.id = dv.descrid AND dv.courseid = ct.courseid
-		LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+		LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid AND tv.niveauid IS NULL
 		LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICS."} t ON ct.topicid = t.id
 		WHERE ct.courseid = ? AND t.subjid = ? AND 
 				
@@ -9000,11 +9024,11 @@ function block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid
 		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS 
 		  (SELECT *
 		   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?)) 
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ? AND tvsub.niveauid IS NULL)) 
 		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS 
 		  (SELECT *
 		   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0 AND tvsub.niveauid IS NULL)))";
 
 	$params = array($courseid, $subjectid, $userid, $userid, $userid, $userid);
 
@@ -9030,7 +9054,7 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
 		LEFT JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
 		LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} ev ON e.id = ev.exampleid AND ev.courseid = ct.courseid
 		LEFT JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dv ON de.descrid = dv.descrid AND dv.courseid = ct.courseid
-		LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+		LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid AND tv.niveauid IS NULL
 		LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICS."} t ON ct.topicid = t.id
 		
 		WHERE ct.courseid = ? AND t.subjid = ?
@@ -9056,11 +9080,11 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
 		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
 		  (SELECT *
 		   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ? AND tvsub.niveauid IS NULL))
 		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
 		  (SELECT *
 		   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0 AND tvsub.niveauid IS NULL)))";
 
 	$params = array($courseid, $subjectid, $userid, $userid, $userid, $userid, $userid, $userid);
 
@@ -9640,7 +9664,7 @@ function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $us
 		return g::$DB->get_records_sql_menu("
 			SELECT DISTINCT tv.topicid, tv.visible
 			FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv
-			WHERE tv.courseid = ? AND tv.studentid = ?", [$courseid, $userid]);
+			WHERE tv.courseid = ? AND tv.studentid = ? AND tv.niveauid IS NULL", [$courseid, $userid]);
 	}, func_get_args());
 }
 
@@ -11746,7 +11770,7 @@ function block_exacomp_get_date_of_birth($userid) {
                  block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $topicObj);
                  $DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('topicid' => $topicid, 'courseid' => $courseid));
                  $DB->delete_records(BLOCK_EXACOMP_DB_DESCTOPICS, array('topicid' => $topicid));
-                 $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array('topicid' => $topicid, 'courseid' => $courseid));
+                 $DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array('topicid' => $topicid, 'courseid' => $courseid) 'niveauid' => NULL);
                  $descriptorsToDelete = array_merge($descriptorsToDelete, block_exacomp_get_descriptors_by_topic($courseid, $topicid, true));
                  $topicObj->delete();
              }

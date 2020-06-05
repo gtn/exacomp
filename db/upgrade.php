@@ -3523,7 +3523,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020012101, 'exacomp');
     }
-    
+
     if ($oldversion < 2020012400) {
         //adding a new table to save globalgradings
         $table = new xmldb_table('block_exacompexamples');
@@ -3625,6 +3625,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020052700, 'exacomp');
+    }
+
+    if ($oldversion < 2020060500) {
+        $table = new xmldb_table('block_exacomptopicvisibility');
+        $field = new xmldb_field('niveauid', XMLDB_TYPE_INTEGER, '20', null, null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020060500, 'exacomp');
     }
 
     /*

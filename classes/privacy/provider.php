@@ -153,7 +153,7 @@ class provider implements
         $contextlist = new \core_privacy\local\request\contextlist();
 
         $contextlist->add_user_context($userid);
-        
+
         $sql = 'SELECT c.id
                     FROM {context} c
                         INNER JOIN {block_instances} bi ON bi.blockname = ? AND bi.parentcontextid = c.id AND c.contextlevel = ?               
@@ -740,9 +740,9 @@ class provider implements
             $topichiddenData = array();
             $visibles = $DB->get_records_sql('SELECT t.title, tv.visible 
                     FROM {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tv
-                        LEFT JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON tv.topicid = t.id
+                        LEFT JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON tv.topicid = t.id 
                     WHERE tv.studentid = ?
-                        AND tv.courseid = ?
+                        AND tv.courseid = ? AND tv.niveauid IS NULL
                     ',
                     [$user->id, $courseid]
             );

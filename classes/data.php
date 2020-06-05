@@ -398,7 +398,7 @@ class data {
 			SELECT ct.courseid, ct.topicid, 0, 1
 			FROM {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct
 			LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON tv.topicid = ct.topicid
-			WHERE tv.id IS NULL -- only for those, who have no visibility yet
+			WHERE tv.id IS NULL AND tv.niveauid IS NULL -- only for those, who have no visibility yet
 		";
 		g::$DB->execute($sql);
 
@@ -837,7 +837,7 @@ class data_exporter extends data {
                     $dbItem->activitytitle = $module->name;
                 }
             }
-			
+
 			// temporary
 			global $DB;
 			$activitytype = $DB->get_field('course_modules', 'module', array('id' => $dbItem->activityid));
@@ -1319,7 +1319,7 @@ class data_course_backup extends data {
 }
 
 class data_importer extends data {
-   
+
 	private static $import_source_type;
 	private static $import_source_global_id;
 	private static $import_source_local_id;
@@ -1684,7 +1684,7 @@ class data_importer extends data {
 		}
 
         $examplesFromSelected = self::get_examples_for_descriptors_from_xml($xml, $descriptorsFromSelectedGrids);
-        
+
 		if (isset($xml->examples)) {
 		    $GLOBALS['activexamples'] = array();
 		    // old activityid
@@ -1703,9 +1703,9 @@ class data_importer extends data {
 		    }
 
 			foreach($xml->examples->example as $example) {
-			    
+
 			    if (in_array((int)$example->attributes()->id, $examplesFromSelected)) {
-			        
+
 			        self::insert_example($example, 0, $course_template);
                 }
 			}

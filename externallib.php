@@ -9514,11 +9514,11 @@ class block_exacomp_external extends external_api {
 		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $only_associated);
 
 		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-		$non_topic_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		$non_topic_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0 AND niveauid IS NULL', array($courseid, 0));
 
 		if (!$forall) {
 			$non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-			$non_topic_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+			$non_topic_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0 AND niveauid IS NULL', array($courseid, $userid));
 		} else {
 			$non_visibilities_student = [];
 			$non_topic_visibilities = [];
