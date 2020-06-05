@@ -246,10 +246,6 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
     			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
 
-    	foreach ($otherCourseids as $otherCourseid) {
-    		block_exacomp_clear_visibility_cache($otherCourseid);
-    	}
-
     	echo $output->popup_close_and_reload();
     	exit;
     }else if($form->is_cancelled()){

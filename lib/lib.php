@@ -5649,8 +5649,6 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 		['visible' => $visible],
 		['descrid' => $descrid, 'courseid' => $courseid, 'studentid' => $studentid]
 	);
-
-	block_exacomp_clear_visibility_cache($courseid);
 }
 
 /**
@@ -5671,8 +5669,6 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
 		['visible' => $visible],
 		['exampleid' => $exampleid, 'courseid' => $courseid, 'studentid' => $studentid]
 	);
-
-	block_exacomp_clear_visibility_cache($courseid);
 }
 
 /**
@@ -5714,7 +5710,7 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
 		['visible' => $visible],
 		['topicid' => $topicid, 'courseid' => $courseid, 'studentid' => $studentid]
 	);
-	block_exacomp_clear_visibility_cache($courseid);
+
 }
 
 /**
@@ -9663,13 +9659,7 @@ function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 
 	}, func_get_args());
 }
 
-/**
- * clear visibility cache if any visibility of any object in course changes
- * @param unknown $courseid
- */
-function block_exacomp_clear_visibility_cache($courseid) {
-	// not needed anymore
-}
+
 
 /**
  * create tree for one example, similar like block_exacomp_build_example_association_tree()

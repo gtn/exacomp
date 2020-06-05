@@ -1020,11 +1020,6 @@ class descriptor extends db_record {
 			$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, $visibility);
 		}
 
-		// reset desc visiblity in all associated courses
-		foreach ($otherCourseids as $otherCourseid) {
-			block_exacomp_clear_visibility_cache($otherCourseid);
-		}
-
 		return $descriptor;
 	}
 
