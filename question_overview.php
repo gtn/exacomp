@@ -37,6 +37,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
+
 require_login($course);
 
 $context = context_course::instance($courseid);
@@ -67,8 +68,11 @@ echo $output->header($context,$courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
 /* CONTENT REGION */
-
-
+$questions = block_exacomp_get_questions_of_quiz(moduleid);
+foreach ( $questions as $question){
+ var_dump ($question);
+}
+die;
 
 
 /* END CONTENT REGION */

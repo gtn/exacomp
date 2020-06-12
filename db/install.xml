@@ -686,5 +686,17 @@
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
       </KEYS>
     </TABLE>
+	    <TABLE NAME="block_exacompdescrquest_mm" COMMENT="This table stores connections between descripors and questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
+        <FIELD NAME="descrid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Deskriptors oder Topics"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
+        <KEY NAME="questid" TYPE="foreign" FIELDS="questid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
   </TABLES>
 </XMLDB>

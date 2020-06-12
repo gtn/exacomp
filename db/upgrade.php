@@ -3636,6 +3636,26 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020060500, 'exacomp');
     }
+	
+	    if ($oldversion < 2020061200) {
+        $table = new xmldb_table('block_exacompdescrquest_mm');
+		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('questid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('descrid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+		
+		$key = new xmldb_key('questid', XMLDB_KEY_FOREIGN, array('questid'), 'question', array('id'));
+        $dbman->add_key($table, $key);
+		$key = new xmldb_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
+        $dbman->add_key($table, $key);
+		
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020061200, 'exacomp');
+    }
 
     /*
      * insert new upgrade scripts before this comment section

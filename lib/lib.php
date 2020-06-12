@@ -12633,3 +12633,16 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
     }
     return $topics;
 }
+
+function block_exacomp_get_questions_of_quiz($moduleId) {
+    global $DB;
+
+    return $DB->get_records_sql('
+			SELECT qst.name
+			FROM {course_modules} cm
+			JOIN {quiz} q ON cm.instance = q.id
+			JOIN {quiz_slots} qs ON qs.quizid = q.id
+			JOIN {question} qst ON qst.id = qs.slot
+			WHERE ? = cm.id
+			', array($moduleId) );
+}
