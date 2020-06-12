@@ -1077,6 +1077,7 @@ Returns:<pre>[
         "niveaudescription": "text null (description of niveau)",
         "niveauid": "int null (id of niveau)",
         "visible": "int null (visibility of topic in current context)",
+        "niveauvisible": "bool null (if niveau is visible)",
         "used": "int null (used in current context)"
     },
     "..."
@@ -1133,7 +1134,8 @@ Returns:<pre>[
         "niveaudescription": "text null (description of niveau)",
         "visible": "int null (visibility of topic in current context)",
         "used": "int null (used in current context)",
-        "gradingisold": "bool null (true when there are newer gradings in the childcompetences)"
+        "gradingisold": "bool null (true when there are newer gradings in the childcompetences)",
+        "niveauvisible": "bool null (if niveau is visible)"
     },
     "..."
 ]</pre>
@@ -4069,6 +4071,64 @@ Params: <table>
 <td>default: int(-1)
 </td>
 <td>id of group</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
+<h2>dakora_set_niveau_visibility</h2>
+<div>set visibility for topic</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for topic in current context</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of group</td>
+<tr>
+<td>niveauid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of the descriptorniveau</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"

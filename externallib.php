@@ -3197,6 +3197,7 @@ class block_exacomp_external extends external_api {
  		    'niveaudescription' => new external_value (PARAM_TEXT, 'description of niveau'),
 			'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
+            'niveauvisible' => new external_value (PARAM_BOOL, 'if niveau is visible'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
 		)));
 	}
@@ -3256,7 +3257,8 @@ class block_exacomp_external extends external_api {
 		    'niveaudescription' => new external_value (PARAM_TEXT, 'description of niveau'),
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
-		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false)
+		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'niveauvisible' => new external_value (PARAM_BOOL, 'if niveau is visible'),
 		)));
 	}
 
@@ -8578,6 +8580,114 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static function dakora_set_niveau_visibility_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
+            //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
+            'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
+            'niveauid' => new external_value (PARAM_INT, 'id of the descriptorniveau'),
+        ));
+    }
+
+    /**
+     * set visibility for topic
+     * @ws-type-write
+     * @param $courseid
+     * @param $topicid
+     * @param $userid
+     * @param $forall
+     * @param $visible
+     * @return array
+     */
+    public static function dakora_set_niveau_visibility($courseid, $topicid, $userid, $forall, $visible, $groupid=-1, $niveauid) {
+        global $USER;
+        static::validate_parameters(static::dakora_set_niveau_visibility_parameters(), array(
+            'courseid' => $courseid,
+            'topicid' => $topicid,
+            'userid' => $userid,
+            'forall' => $forall,
+            'visible' => $visible,
+            'groupid' => $groupid,
+            'niveauid' => $niveauid,
+        ));
+
+        if ($userid == 0 && !$forall) {
+            $userid = $USER->id;
+        }
+
+        static::require_can_access_course_user($courseid, $userid);
+
+//        if($groupid != -1){
+//            block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
+//        }else{
+            block_exacomp_set_niveau_visibility($topicid, $courseid, $visible, $userid,$niveauid);
+//        }
+
+        return array('success' => true);
+    }
+
+    public static function dakora_set_niveau_visibility_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        ));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public static function dakora_set_example_solution_visibility_parameters() {
 		return new external_function_parameters (array(
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
@@ -9479,12 +9589,19 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->niveautitle = "";
 							$descriptor_return->niveausort = "";
 							$descriptor_return->niveauid = 0;
+                            $descriptor_return->niveauvisible = 0;
+
 
 							if ($descriptor->niveauid) {
 								$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
 								$descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
 								$descriptor_return->niveausort = $niveau->numb.','.$niveau->sorting;//static::custom_htmltrim($niveau->title);
 								$descriptor_return->niveauid = $niveau->id;
+
+//								var_dump($descriptor->niveauid);
+//								var_dump($niveau->id);
+//								die;
+                                $descriptor_return->niveauvisible = block_exacomp_is_niveau_visible($courseid,$topicid,$userid,$niveau->id);
 
 								$niveau = $DB->get_record('block_exacompsubjniveau_mm', array('subjectid' => $subject->id, 'niveauid' => $niveau->id));
 								$descriptor_return->niveaudescription = $niveau->subtitle;

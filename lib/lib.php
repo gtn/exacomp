@@ -6551,7 +6551,8 @@ function block_exacomp_is_topic_visible_for_group($courseid, $topic, $groupid) {
  * @param unknown $niveauid
  * @return boolean
  */
-function block_exacomp_is_niveau_visible($courseid, $topic, $studentid, $niveauid) {
+function block_exacomp_is_niveau_visible($courseid, $topicid, $studentid, $niveauid) {
+    $topicid = is_scalar($topicid) ? $topicid : $topicid->id;
     //global $DB;
     // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
     if ($studentid <= 0) {
@@ -6564,7 +6565,7 @@ function block_exacomp_is_niveau_visible($courseid, $topic, $studentid, $niveaui
 //    var_dump($niveauid);
 //    die;
 
-    $visibilities = block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, 0,$topic->id);
+    $visibilities = block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, 0,$topicid);
 //    var_dump($visibilities);
 //    die;
     if (isset($visibilities[$niveauid]) && !$visibilities[$niveauid]) {
@@ -6573,11 +6574,12 @@ function block_exacomp_is_niveau_visible($courseid, $topic, $studentid, $niveaui
 
     if ($studentid > 0) {
         // also check student if set
-        $visibilities = block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $studentid,$topic->id);
+        $visibilities = block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $studentid,$topicid);
         if (isset($visibilities[$niveauid]) && !$visibilities[$niveauid]) {
             return false;
         }
     }
+
 
 
     return true;
