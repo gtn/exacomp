@@ -5117,7 +5117,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 	public function activity_content($subjects, $modules) {
-		global $PAGE;
+		global $PAGE, $CFG, $COURSE;
 
         $nojs = (bool)get_config('exacomp', 'disable_js_edit_activities');
 
@@ -5159,12 +5159,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		    $cell2 = new html_table_cell();
 		    $moduleName = mb_strimwidth($module->name, 0, 33, "..."); // crop if > 30
 		    $moduleLink = html_writer::link(block_exacomp_get_activityurl($module), $moduleName, ['title' => $module->name]);
+			$quizLink = html_writer::link(new moodle_url($CFG->wwwroot . "/blocks/exacomp/question_overview.php?courseid=" . $COURSE->id . "&moduleid=" . $module->id), $moduleName, ['title' => $module->name]);
 		    if (count($modules) > 5) {
 		        $cell->attributes['class'] .= ' verticalCell ';
-		        $cell->text = '<div class="verticalText"><div class="verticalTextInner">'.$moduleLink.'</div></div>';
+		        if($module->modname == 'quiz'){
+		            $cell->text = '<div class="verticalText"><div class="verticalTextInner">'.$quizLink.'</div></div>';
+		        }else {
+		            $cell->text = '<div class="verticalText"><div class="verticalTextInner">'.$moduleLink.'</div></div>';
+		        }
 		    } else {
 		        $cell->attributes['class'] .= ' ec_tableheadwidth ';
-		        $cell->text = $moduleLink;
+		        if($module->modname == 'quiz'){
+		            $cell->text = $quizLink;
+		        }else {
+		            $cell->text =$moduleLink;
+		        }
 		    }
 		    $cell->attributes['module-type'] = $module->modname;
 
