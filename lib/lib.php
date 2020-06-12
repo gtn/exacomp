@@ -12638,11 +12638,11 @@ function block_exacomp_get_questions_of_quiz($moduleId) {
     global $DB;
 
     return $DB->get_records_sql('
-			SELECT qst.name
+			SELECT qst.id, qst.name
 			FROM {course_modules} cm
 			JOIN {quiz} q ON cm.instance = q.id
-			JOIN {quiz_slots} qs ON qs.quizid = q.id
+			JOIN {quiz_slots} qs ON q.id = qs.quizid
 			JOIN {question} qst ON qst.id = qs.slot
-			WHERE ? = cm.id
+			WHERE cm.id = ?
 			', array($moduleId) );
 }

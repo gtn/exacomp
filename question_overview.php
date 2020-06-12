@@ -20,7 +20,6 @@
 use block_exacomp\data_importer;
 
 
-
 require __DIR__.'/inc.php';
 
 require_once __DIR__.'/classes/data.php';
@@ -68,11 +67,13 @@ echo $output->header($context,$courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
 /* CONTENT REGION */
-$questions = block_exacomp_get_questions_of_quiz(moduleid);
+
+$questions = block_exacomp_get_questions_of_quiz(intval($moduleid));
+
 foreach ( $questions as $question){
- var_dump ($question);
+ echo '<p><a target="_blank" exa-type="iframe-popup" href="$CFG->wwwroot . "/blocks/exacomp/example_upload.php?courseid='. $COURSE->id .'&amp;questionid='. $question->id .'">' . $question->name. ' </a></p>';
 }
-die;
+
 
 
 /* END CONTENT REGION */
