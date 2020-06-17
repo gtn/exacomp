@@ -5910,7 +5910,7 @@ class block_exacomp_external extends external_api {
 	        'students' => new external_value (PARAM_TEXT, 'json array of students'),
 	        //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
 	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
-	        'distributionid' => new external_value (PARAM_INT, 'distribution id. used for undo button', VALUE_DEFAULT, null),
+	        'distributionid' => new external_value (PARAM_TEXT, 'distribution id. used for undo button', VALUE_DEFAULT, null),
 	    ));
 	}
 
@@ -5941,6 +5941,8 @@ class block_exacomp_external extends external_api {
 	    // TODO: input parameter prüfen? \block_exacomp\param::json()?
 	    $students = json_decode($students);
 	    $groups = json_decode($groups);
+
+	    $distributionid = (int)$distributionid;
 
         foreach ($groups as $group){
             block_exacomp_add_examples_to_schedule_for_group($courseid, $group, $distributionid);
