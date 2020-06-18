@@ -22,6 +22,7 @@ require_once __DIR__.'/example_upload_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = optional_param('exampleid', 0, PARAM_INT);
+$questionid = optional_param('questionid', 0, PARAM_INT);
 
 block_exacomp_require_login($courseid);
 
@@ -85,8 +86,13 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     if ($exampleid > 0) {
         $example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid), '', 'descrid');
     }
-
+    if(!$questionid){
     $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
+    } else {
+        //adjustet example_descripotors to question_descriptors
+        $question_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, array('questid' => $questionid), '', 'descrid');
+        $tree = block_exacomp_build_example_association_tree($courseid, $question_descriptors, $exampleid, $descrid);
+    }
     $csettings = block_exacomp_get_settings_by_course($courseid);
     $example_activities = array();
 
@@ -109,6 +115,12 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
                     "exampleid" => $exampleid,
                     "uses_activities" => $csettings->uses_activities,
                     "activities" => $example_activities));
+    }
+    elseif ($questionid){
+        
+        $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
+            array("questionid" => $questionid,
+                "tree" => $tree));
     }
 
     if ($formdata = $form->get_data()) {

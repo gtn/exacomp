@@ -29,16 +29,21 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform = & $this->_form;
 
 		$descrid = @$this->_customdata['descrid'] ? $this->_customdata['descrid'] : null;
+		$questionid = @$this->_customdata['questionid'] ? $this->_customdata['questionid'] : null;
         if (array_key_exists('crosssubjid', $this->_customdata)) {
             $crosssubjid = $this->_customdata['crosssubjid'];
         } else {
             $crosssubjid = null;
         }
 
-		if ($descrid) {
-		    $descrTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$descrid));
-		    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
-
+        if ($descrid || $questionid) {
+		    if($descrid){
+		      $descrTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$descrid));
+		      $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
+		    } else {
+		      $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, null));
+		    }
+		    
 		    $mform->addElement('hidden', 'id');
 		    $mform->setType('id', PARAM_INT);
 		    $mform->setDefault('id', 0);
@@ -61,51 +66,51 @@ class block_exacomp_example_upload_form extends moodleform {
 		} else if($crosssubjid) {
 		    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header"));
 		}
-
-		$mform->addElement('text', 'title', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
-		$mform->setType('title', PARAM_TEXT);
-		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
-
-		$mform->addElement('text', 'description', block_exacomp_get_string("description_example"), 'maxlength="255" size="60"');
-		$mform->setType('description', PARAM_TEXT);
-
-        $mform->addElement('text', 'timeframe', block_exacomp_get_string("timeframe_example"), 'maxlength="255" size="60"');
-        $mform->setType('timeframe', PARAM_TEXT);
-
-		//if (@$this->_customdata['taxonomies']) {
-			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),@$this->_customdata['taxonomies']);
-			$tselect->setMultiple(true);
-			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => @$this->_customdata['exampleid']),"","taxid")));
-		//}
-
-		$mform->addElement('header', 'link', block_exacomp_get_string('link'));
-
-		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
-		$mform->setType('externalurl', PARAM_TEXT);
-
-		$mform->addElement('header', 'filesheader', block_exacomp_get_string('files'));
-
-		$mform->addElement('filemanager', 'files', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 2));
-		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
-
-		if( @$this->_customdata['uses_activities'] ) {
-
-			$mform->addElement('header', 'assignments', block_exacomp_get_string('assignments'));
-			$mform->addElement('select', 'assignment', block_exacomp_get_string('assignments'), @$this->_customdata['activities']);
+		if(!$questionid){
+    		$mform->addElement('text', 'title', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
+    		$mform->setType('title', PARAM_TEXT);
+    		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+    
+    		$mform->addElement('text', 'description', block_exacomp_get_string("description_example"), 'maxlength="255" size="60"');
+    		$mform->setType('description', PARAM_TEXT);
+    
+            $mform->addElement('text', 'timeframe', block_exacomp_get_string("timeframe_example"), 'maxlength="255" size="60"');
+            $mform->setType('timeframe', PARAM_TEXT);
+    
+    		//if (@$this->_customdata['taxonomies']) {
+    			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),@$this->_customdata['taxonomies']);
+    			$tselect->setMultiple(true);
+    			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => @$this->_customdata['exampleid']),"","taxid")));
+    		//}
+    
+    		$mform->addElement('header', 'link', block_exacomp_get_string('link'));
+    
+    		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
+    		$mform->setType('externalurl', PARAM_TEXT);
+    
+    		$mform->addElement('header', 'filesheader', block_exacomp_get_string('files'));
+    
+    		$mform->addElement('filemanager', 'files', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 2));
+    		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
+    
+    		if( @$this->_customdata['uses_activities'] ) {
+    
+    			$mform->addElement('header', 'assignments', block_exacomp_get_string('assignments'));
+    			$mform->addElement('select', 'assignment', block_exacomp_get_string('assignments'), @$this->_customdata['activities']);
+    		}
+    		/* if(block_exacomp_is_altversion()) {
+    			$mform->addElement('checkbox', 'lisfilename', block_exacomp_get_string('lisfilename'));
+    			$mform->setDefault('lisfilename', 1);
+    		} */
+    
+    		$mform->addElement('hidden','topicid');
+    		$mform->setType('topicid', PARAM_INT);
+    		$mform->setDefault('topicid', @$this->_customdata['topicid']);
+    
+    		$mform->addElement('hidden','exampleid');
+    		$mform->setType('exampleid', PARAM_INT);
+    		$mform->setDefault('exampleid', @$this->_customdata['exampleid']);
 		}
-		/* if(block_exacomp_is_altversion()) {
-			$mform->addElement('checkbox', 'lisfilename', block_exacomp_get_string('lisfilename'));
-			$mform->setDefault('lisfilename', 1);
-		} */
-
-		$mform->addElement('hidden','topicid');
-		$mform->setType('topicid', PARAM_INT);
-		$mform->setDefault('topicid', @$this->_customdata['topicid']);
-
-		$mform->addElement('hidden','exampleid');
-		$mform->setType('exampleid', PARAM_INT);
-		$mform->setDefault('exampleid', @$this->_customdata['exampleid']);
-
 		$this->add_action_buttons(true);
 	}
 

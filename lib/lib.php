@@ -72,6 +72,7 @@ const BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY = 'block_exacompsolutvisibility';
 const BLOCK_EXACOMP_DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
 const BLOCK_EXACOMP_DB_IMPORTTASKS = 'block_exacompimporttasks';
 const BLOCK_EXACOMP_DB_GLOBALGRADINGS = 'block_exacompglobalgradings';
+const BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION = 'block_exacompdescrquest_mm';
 
 /**
  * PLUGIN ROLES
@@ -6371,13 +6372,13 @@ function block_exacomp_add_days($date, $days) {
 /**
  * get tree where a flag for each object (from subject to child descriptor) indicates if an example is associated with
  * @param unknown $courseid
- * @param array $example_descriptors
+ * @param array $associated_descriptors
  * @param number $exampleid
  * @param number $descriptorid
  * @param string $showallexamples
  * @return associative_array
  */
-function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false, $editmode=false) {
+function block_exacomp_build_example_association_tree($courseid, $associated_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false, $editmode=false) {
 	//get all subjects, topics, descriptors and examples
 	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies,
         false, false, true, false, false, true, null, $editmode);
@@ -6392,7 +6393,7 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 			if (isset($topic->descriptors)) {
 				foreach ($topic->descriptors as $dkey => $descriptor) {
 
-					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid, $showallexamples);
+				    $descriptor = block_exacomp_check_child_descriptors($descriptor, $associated_descriptors, $exampleid, $descriptorid, $showallexamples);
 
 					if ($descriptor->associated) {
 						$topic->associated = 1;
@@ -6412,18 +6413,18 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 /**
  * helper function for block_exacomp_build_example_association_tree
  * @param unknown $descriptor
- * @param unknown $example_descriptors
+ * @param unknown $associated_descriptors
  * @param unknown $exampleid
  * @param number $descriptorid
  * @param string $showallexamples
  * @return unknown
  */
-function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0, $showallexamples = false) {
+function block_exacomp_check_child_descriptors($descriptor, $associated_descriptors, $exampleid, $descriptorid = 0, $showallexamples = false) {
 
 	$descriptor->associated = 0;
 	$descriptor->direct_associated = 0;
 
-	if (array_key_exists($descriptor->id, $example_descriptors) || $descriptorid == $descriptor->id || ($showallexamples && !empty($descriptor->examples))) {
+	if (array_key_exists($descriptor->id, $associated_descriptors) || $descriptorid == $descriptor->id || ($showallexamples && !empty($descriptor->examples))) {
 		$descriptor->associated = 1;
 		$descriptor->direct_associated = 1;
 	}
@@ -6439,7 +6440,7 @@ function block_exacomp_check_child_descriptors($descriptor, $example_descriptors
 	//check children and their examples
 	foreach ($descriptor->children as $ckey => $cvalue) {
 		$keepDescriptor_child = false;
-		if (array_key_exists($cvalue->id, $example_descriptors) || $descriptorid == $ckey || ($showallexamples && !empty($cvalue->examples))) {
+		if (array_key_exists($cvalue->id, $associated_descriptors) || $descriptorid == $ckey || ($showallexamples && !empty($cvalue->examples))) {
 			$keepDescriptor_child = true;
 			$descriptor->associated = 1;
 		}
@@ -12636,7 +12637,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
 
 function block_exacomp_get_questions_of_quiz($moduleId) {
     global $DB;
-
+    
     return $DB->get_records_sql('
 			SELECT qst.id, qst.name
 			FROM {course_modules} cm
@@ -12645,4 +12646,15 @@ function block_exacomp_get_questions_of_quiz($moduleId) {
 			JOIN {question} qst ON qst.id = qs.slot
 			WHERE cm.id = ?
 			', array($moduleId) );
+}
+
+function block_exacomp_get__descriptor_of_question($questionid) {
+    global $DB;
+
+    return $DB->get_records_sql('
+			SELECT dis.id, dis.title
+			FROM {'.BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION.'} dq
+			JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} dis ON dq.descrid = dis.id
+			WHERE dq.questid = ?
+			', array($questionid) );
 }

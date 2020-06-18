@@ -70,10 +70,18 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 
 $questions = block_exacomp_get_questions_of_quiz(intval($moduleid));
 
-foreach ( $questions as $question){
- echo '<p><a target="_blank" exa-type="iframe-popup" href="$CFG->wwwroot . "/blocks/exacomp/example_upload.php?courseid='. $COURSE->id .'&amp;questionid='. $question->id .'">' . $question->name. ' </a></p>';
-}
 
+echo '<ul style="list-style: none;">';
+foreach ( $questions as $question){
+ $descriptors = block_exacomp_get__descriptor_of_question($question->id);
+ echo '<li><a target="_blank" exa-type="iframe-popup" href="'.$CFG->wwwroot . '/blocks/exacomp/example_upload.php?courseid='. $COURSE->id .'&amp;questionid='. $question->id .'">' . $question->name. ' </a></li>';
+ echo '<ul style="list-style: none;">';
+ foreach ( $descriptors as $descriptor){
+    echo '<li>' . $descriptor->title . '</li>';
+ }
+ echo '</ul>';
+}
+echo '</ul>';
 
 
 /* END CONTENT REGION */
