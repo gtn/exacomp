@@ -124,139 +124,156 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     }
 
     if ($formdata = $form->get_data()) {
-        $example_icons = array(); // it is possible to have different icons for different fields
-    	$newExample = new stdClass();
-    	$newExample->title = $formdata->title;
-    	$newExample->description = $formdata->description;
-        $newExample->timeframe = $formdata->timeframe;
-    	$newExample->creatorid = $USER->id;
-    	if (!empty($formdata->externalurl)) {
-            $newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == true) ? $formdata->externalurl : "http://".$formdata->externalurl;
+        if(!$questionid) {
+            $example_icons = array(); // it is possible to have different icons for different fields
+        	$newExample = new stdClass();
+        	$newExample->title = $formdata->title;
+        	$newExample->description = $formdata->description;
+            $newExample->timeframe = $formdata->timeframe;
+        	$newExample->creatorid = $USER->id;
+        	if (!empty($formdata->externalurl)) {
+                $newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == true) ? $formdata->externalurl : "http://".$formdata->externalurl;
+            } else {
+                $newExample->externalurl = null;
+            }
+            if ($formdata->exampleid == 0) { // for new examples/ not for updated
+                $newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+            }
+    
+        	$newExample->externaltask = '';
+        	if (!empty($formdata->assignment)) {
+        		if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
+                    // externaltask
+        			$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
+                    // get icon path for activity and save it to database
+                    $mod_info = get_fast_modinfo($courseid);
+                    if (array_key_exists($module->id, $mod_info->cms)) {
+                        $cm = $mod_info->cms[$module->id];
+                        $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
+                        if ($cm->name) {
+                            $newExample->activitytitle = $cm->name;
+                        }
+                    }
+                    // activityid
+                    $newExample->activityid = $module->id;
+                    // courseid
+                    $newExample->courseid = $module->course;
+                    // activitylink
+                    $activitylink = block_exacomp_get_activityurl($module)->out(false);
+                    $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+                    $newExample->activitylink = $activitylink;
+        		}
+        	}
+        	if (count($example_icons)) {
+                $newExample->example_icon = serialize($example_icons);
+            } else {
+                $newExample->example_icon = '';
+            }
+    
+        	if ($formdata->exampleid == 0) {
+        	    // insert new example
+        		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
+        		$newExample->sorting = $newExample->id;
+        		$DB->update_record('block_exacompexamples', $newExample);
+        	} else {
+        		// update example
+        		$newExample->id = $formdata->exampleid;
+        		$DB->update_record('block_exacompexamples', $newExample);
+        		$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $newExample->id));
+        	}
+    
+        	//insert taxid in exampletax_mm
+        	$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, ['exampleid' => $newExample->id]);
+        	if (!empty($formdata->taxid)) {
+        		foreach($formdata->taxid as $tax => $taxid)
+        			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
+        				'exampleid' => $newExample->id,
+        				'taxid' => $taxid
+        			]);
+        	}
+        	// or create a new taxonomy from example form
+            $newTax = trim(optional_param('newtaxonomy', '', PARAM_RAW));
+            if ($newTax != '') {
+                $newTaxonomy = new \stdClass();
+                $newTaxonomy->title = $newTax;
+                $newTaxonomy->parentid = 0;
+                $newTaxonomy->sorting = $DB->get_field(BLOCK_EXACOMP_DB_TAXONOMIES, 'MAX(sorting)', array()) + 1;
+                $newTaxonomy->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+                $newTaxonomy->sourceid = 0;
+                $newTaxonomy->id = $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, $newTaxonomy);
+                $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
+                        'exampleid' => $newExample->id,
+                        'taxid' => $newTaxonomy->id
+                ]);
+            }
+        	//add descriptor association
+        	$descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
+        	if ($descriptors) {
+        		foreach($descriptors as $descriptorid){
+        			$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+        			if(!$desc_examp){
+        				$sql = "SELECT MAX(sorting) as sorting FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} WHERE descrid=?";
+        				$max_sorting = $DB->get_record_sql($sql, array($descriptorid));
+        				$sorting = intval($max_sorting->sorting)+1;
+        				$insert = new stdClass();
+        				$insert->descrid = $descriptorid;
+        				$insert->exampid = $newExample->id;
+        				$insert->sorting = $sorting;
+    
+        				$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+        			}
+        			//block_exacomp_globals::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+        		}
+        	}else if($crosssubjid != -1){
+        	    $insert = new stdClass();
+        	    $insert->descrid = null;
+        	    $insert->id_foreign = $crosssubjid;
+        	    $insert->table_foreign = "cross";
+        	    $insert->exampid = $newExample->id;
+        	    //$insert->sorting = $sorting;
+        	    $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+        	}
+    
+        	// other courses
+        	$otherCourseids = block_exacomp_get_courseids_by_example($newExample->id);
+        	// add myself (should be in there anyway)
+        	if (!in_array($courseid, $otherCourseids)) {
+        		$otherCourseids[] = $courseid;
+        	}
+    
+        	foreach ($otherCourseids as $otherCourseid) {
+        		//add visibility if not exists
+        		if (!$DB->get_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+        			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+        		}
+        		if (!$DB->get_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+        			$DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+        		}
+        	}
+    
+        	block_exacomp_settstamp();
+    
+        	// save file
+        	file_save_draft_area_files($formdata->files, context_system::instance()->id, 'block_exacomp', 'example_task',
+        			$newExample->id, array('subdirs' => 0, 'maxfiles' => 2));
+        	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
+        			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
         } else {
-            $newExample->externalurl = null;
-        }
-        if ($formdata->exampleid == 0) { // for new examples/ not for updated
-            $newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
-        }
-
-    	$newExample->externaltask = '';
-    	if (!empty($formdata->assignment)) {
-    		if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
-                // externaltask
-    			$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
-                // get icon path for activity and save it to database
-                $mod_info = get_fast_modinfo($courseid);
-                if (array_key_exists($module->id, $mod_info->cms)) {
-                    $cm = $mod_info->cms[$module->id];
-                    $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
-                    if ($cm->name) {
-                        $newExample->activitytitle = $cm->name;
+            
+            //add descriptor association
+            $descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
+            if ($descriptors) {
+                foreach($descriptors as $descriptorid){
+                    $desc_quest = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, array('descrid'=>$descriptorid, 'questid'=>$questionid));
+                    if(!$desc_quest){
+                        $insert->descrid = $descriptorid;
+                        $insert->questid = $questionid;
+                        
+                        $DB->insert_record(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, $insert);
                     }
                 }
-                // activityid
-                $newExample->activityid = $module->id;
-                // courseid
-                $newExample->courseid = $module->course;
-                // activitylink
-                $activitylink = block_exacomp_get_activityurl($module)->out(false);
-                $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
-                $newExample->activitylink = $activitylink;
-    		}
-    	}
-    	if (count($example_icons)) {
-            $newExample->example_icon = serialize($example_icons);
-        } else {
-            $newExample->example_icon = '';
+            }
         }
-
-    	if ($formdata->exampleid == 0) {
-    	    // insert new example
-    		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
-    		$newExample->sorting = $newExample->id;
-    		$DB->update_record('block_exacompexamples', $newExample);
-    	} else {
-    		// update example
-    		$newExample->id = $formdata->exampleid;
-    		$DB->update_record('block_exacompexamples', $newExample);
-    		$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $newExample->id));
-    	}
-
-    	//insert taxid in exampletax_mm
-    	$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, ['exampleid' => $newExample->id]);
-    	if (!empty($formdata->taxid)) {
-    		foreach($formdata->taxid as $tax => $taxid)
-    			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
-    				'exampleid' => $newExample->id,
-    				'taxid' => $taxid
-    			]);
-    	}
-    	// or create a new taxonomy from example form
-        $newTax = trim(optional_param('newtaxonomy', '', PARAM_RAW));
-        if ($newTax != '') {
-            $newTaxonomy = new \stdClass();
-            $newTaxonomy->title = $newTax;
-            $newTaxonomy->parentid = 0;
-            $newTaxonomy->sorting = $DB->get_field(BLOCK_EXACOMP_DB_TAXONOMIES, 'MAX(sorting)', array()) + 1;
-            $newTaxonomy->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
-            $newTaxonomy->sourceid = 0;
-            $newTaxonomy->id = $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, $newTaxonomy);
-            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
-                    'exampleid' => $newExample->id,
-                    'taxid' => $newTaxonomy->id
-            ]);
-        }
-    	//add descriptor association
-    	$descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
-    	if ($descriptors) {
-    		foreach($descriptors as $descriptorid){
-    			$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
-    			if(!$desc_examp){
-    				$sql = "SELECT MAX(sorting) as sorting FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} WHERE descrid=?";
-    				$max_sorting = $DB->get_record_sql($sql, array($descriptorid));
-    				$sorting = intval($max_sorting->sorting)+1;
-    				$insert = new stdClass();
-    				$insert->descrid = $descriptorid;
-    				$insert->exampid = $newExample->id;
-    				$insert->sorting = $sorting;
-
-    				$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-    			}
-    			//block_exacomp_globals::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
-    		}
-    	}else if($crosssubjid != -1){
-    	    $insert = new stdClass();
-    	    $insert->descrid = null;
-    	    $insert->id_foreign = $crosssubjid;
-    	    $insert->table_foreign = "cross";
-    	    $insert->exampid = $newExample->id;
-    	    //$insert->sorting = $sorting;
-    	    $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-    	}
-
-    	// other courses
-    	$otherCourseids = block_exacomp_get_courseids_by_example($newExample->id);
-    	// add myself (should be in there anyway)
-    	if (!in_array($courseid, $otherCourseids)) {
-    		$otherCourseids[] = $courseid;
-    	}
-
-    	foreach ($otherCourseids as $otherCourseid) {
-    		//add visibility if not exists
-    		if (!$DB->get_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-    			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
-    		}
-    		if (!$DB->get_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-    			$DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
-    		}
-    	}
-
-    	block_exacomp_settstamp();
-
-    	// save file
-    	file_save_draft_area_files($formdata->files, context_system::instance()->id, 'block_exacomp', 'example_task',
-    			$newExample->id, array('subdirs' => 0, 'maxfiles' => 2));
-    	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
-    			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
 
     	echo $output->popup_close_and_reload();
     	exit;
