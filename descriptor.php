@@ -70,7 +70,7 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform = & $this->_form;
 
-		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="100"');
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
