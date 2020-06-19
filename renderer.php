@@ -2192,7 +2192,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$cell = new html_table_cell();
 					$cell->attributes['class'] = 'rg2-indent';
-					$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Kompetenz', 'en:New competence']), 'topicid' => $topic->id, 'niveauid' => $niveauid));
+					$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'class' => 'addCompetence', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Kompetenz', 'en:New competence']), 'topicid' => $topic->id, 'niveauid' => $niveauid));
 					if ($niveauid) {
 						$cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
 					} else {
@@ -3116,7 +3116,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if ($descriptor_in_crosssubj) {
 						$cell = new html_table_cell();
 						$cell->attributes['class'] = 'rg2-indent';
-						$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'placeholder' => block_exacomp_trans(['de:Neue Teilkompetenz', 'en:New child competence']), 'parentid' => $descriptor->id));
+						$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'class' => 'addCompetence', 'placeholder' => block_exacomp_trans(['de:Neue Teilkompetenz', 'en:New child competence']), 'parentid' => $descriptor->id));
 						$cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
 						$own_additionRow->cells[] = $cell;
 					}

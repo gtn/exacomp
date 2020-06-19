@@ -26,3 +26,6 @@ select[name=lis_subjects] {
 	line-height: 1.2;
 }
 
+#block_exacomp .addCompetence {
+	width:100%;
+}
