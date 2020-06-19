@@ -3199,6 +3199,7 @@ class block_exacomp_external extends external_api {
 			'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
             'niveauvisible' => new external_value (PARAM_BOOL, 'if niveau is visible'),
 			'used' => new external_value (PARAM_INT, 'used in current context'),
+			'niveausort' => new external_value(PARAM_INT, 'sorting for ids')
 		)));
 	}
 
@@ -3259,6 +3260,7 @@ class block_exacomp_external extends external_api {
 			'used' => new external_value (PARAM_INT, 'used in current context'),
 		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
             'niveauvisible' => new external_value (PARAM_BOOL, 'if niveau is visible'),
+            'niveausort' => new external_value(PARAM_INT, 'sorting for ids')
 		)));
 	}
 
@@ -9597,7 +9599,7 @@ class block_exacomp_external extends external_api {
 							if ($descriptor->niveauid) {
 								$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
 								$descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
-								$descriptor_return->niveausort = $niveau->numb.','.$niveau->sorting;//static::custom_htmltrim($niveau->title);
+								$descriptor_return->niveausort = $niveau->numb;//.','.$niveau->sorting;//static::custom_htmltrim($niveau->title);
 								$descriptor_return->niveauid = $niveau->id;
 
 //								var_dump($descriptor->niveauid);
