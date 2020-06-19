@@ -187,3 +187,7 @@
 #block_exacomp .spaltenbrowser .colgroup-link.current-colgroup {
 	font-weight: bold;
 }
+
+#block_exacomp .addCompetence {
+	width:80%;
+}
