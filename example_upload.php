@@ -296,10 +296,10 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     if($exampleid > 0) {
         $example->descriptors = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCEXAMP, 'descrid', 'exampid = ?',array($exampleid));
 
-    	$draftitemid = file_get_submitted_draft_itemid('file');
+    	$draftitemid = file_get_submitted_draft_itemid('files');
     	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid,
     			array('subdirs' => 0, 'maxfiles' => 2));
-    	$example->file = $draftitemid;
+    	$example->files = $draftitemid;
 
     	$draftitemid = file_get_submitted_draft_itemid('solution');
     	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid,
