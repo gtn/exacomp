@@ -262,7 +262,17 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
             
             //add descriptor association
             $descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
+            $descrids = array();
             if ($descriptors) {
+                $records = $DB->get_records(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, array('questid'=>$questionid));
+                foreach($records as $record){
+                    $descrids[] = $record->descrid;
+                }
+                foreach($descrids as $discrid){
+                    if(!in_array($discrid, $descriptors)){
+                        $DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, array('descrid'=>$discrid, 'questid'=>$questionid));
+                    }
+                }
                 foreach($descriptors as $descriptorid){
                     $desc_quest = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, array('descrid'=>$descriptorid, 'questid'=>$questionid));
                     if(!$desc_quest){
