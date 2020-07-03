@@ -53,7 +53,7 @@
 		<assessment_grade_limit>6</assessment_grade_limit>
 		<assessment_grade_negativ>5</assessment_grade_negativ>
 		<assessment_grade_verbose>sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend</assessment_grade_verbose>
-		<assessment_diffLevel_options>G,M,E</assessment_diffLevel_options>
+		<assessment_diffLevel_options>A,B,C</assessment_diffLevel_options>
 		<assessment_verbose_options>nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht</assessment_verbose_options>
 		<assessment_verbose_negative>0</assessment_verbose_negative>
 	</configOption>
