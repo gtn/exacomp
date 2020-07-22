@@ -4279,7 +4279,7 @@ function block_exacomp_get_activities_by_course($courseid) {
 
 /**
  * @param array $descriptorsData
- * @param array $topicsData
+ * @param array $topicsData // not used - needed descriptors will be selected via JS in the frontend
  * @param integer $courseid
  */
 function block_exacomp_update_example_activity_relations($descriptorsData = array(), $topicsData = array(), $courseid) {
@@ -4303,7 +4303,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
     if ($mod_info === null) {
         $mod_info = get_fast_modinfo($courseid);
     }
-    if (count($descriptors)) { // if no any descriptor - no sence to insert the example (no relation to activity)
+    if (count($descriptors)) { // if no any descriptor - no sense to insert the example (no relation to activity)
         $existsRelatedExample =
                 $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
                         IGNORE_MULTIPLE);
@@ -4824,8 +4824,8 @@ function block_exacomp_perform_auto_test() {
 	$courses = block_exacomp_get_courseids();
 
 	foreach ($courses as $courseid) {
-		//tests associated with competences
-		//get all tests that are associated with competences
+		// tests associated with competences
+		// get all tests that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
         $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);

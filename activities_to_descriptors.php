@@ -19,14 +19,7 @@
 
 use block_exacomp\data_importer;
 
-
-
 require __DIR__.'/inc.php';
-// temporary disabled (there are errors)
-if (11 == 22) {
-    require_once __DIR__.'/backup/test_backup.php';
-    require_once __DIR__.'/backup/test_restore.php';
-}
 require_once __DIR__.'/classes/data.php';
 
 global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
@@ -34,7 +27,6 @@ global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
 // TODO: was macht das? wieso brauchen wir das?
 if (strcmp("mysql",$CFG->dbtype)==0) {
 	$sql5 = "SET @@group_concat_max_len = 10125012";
-
 	$DB->execute($sql5);
 }
 

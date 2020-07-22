@@ -5162,16 +5162,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$quizLink = html_writer::link(new moodle_url($CFG->wwwroot . "/blocks/exacomp/question_overview.php?courseid=" . $COURSE->id . "&moduleid=" . $module->id), $moduleName, ['title' => $module->name]);
 		    if (count($modules) > 5) {
 		        $cell->attributes['class'] .= ' verticalCell ';
-		        if($module->modname == 'quiz'){
+		        if ($module->modname == 'quiz'){
 		            $cell->text = '<div class="verticalText"><div class="verticalTextInner">'.$quizLink.'</div></div>';
-		        }else {
+		        } else {
 		            $cell->text = '<div class="verticalText"><div class="verticalTextInner">'.$moduleLink.'</div></div>';
 		        }
 		    } else {
 		        $cell->attributes['class'] .= ' ec_tableheadwidth ';
-		        if($module->modname == 'quiz'){
+		        if ($module->modname == 'quiz'){
 		            $cell->text = $quizLink;
-		        }else {
+		        } else {
 		            $cell->text =$moduleLink;
 		        }
 		    }
