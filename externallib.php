@@ -9626,9 +9626,12 @@ class block_exacomp_external extends external_api {
 		}
 
 
-		usort($descriptors_return, "static::cmp_niveausort");
-
-
+		// TODO RW IS THIS IMPORTANT?   It creates a problem... it sorts by numbering ALPHABETICALLY
+        // M1.1-1
+        // M1.1-12
+        // M1.1-2
+        // commented it out for now since it is already sorted correctly before the line "usort...."
+//		usort($descriptors_return, "static::cmp_niveausort");
 
 		return $descriptors_return;
 	}
