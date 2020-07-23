@@ -263,6 +263,8 @@ echo $output->subjects_menu($courseSubjects, $selectedSubject, $selectedTopic, $
 echo '</div>';
 echo '<div class="gridlayout-right">';
 echo $output->niveaus_menu($niveaus, $selectedNiveau, $selectedTopic);
+//var_dump($niveaus);
+
 
 echo '<div class="clearfix"></div>';
 

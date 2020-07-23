@@ -2357,15 +2357,20 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 			});
 	}
 
-	// get niveau ids from descriptors
-	$niveau_ids = array();
-	foreach ($descriptors as $descriptor) {
-		$niveau_ids[$descriptor->niveauid] = $descriptor->niveauid;
-	}
+//  This would only get the niveaus of one topic, but I to check all topics ==> new function to unly have 1 sql query
+    // get niveau ids from descriptors
+//	$niveau_ids = array();
+//	foreach ($descriptors as $descriptor) {
+//		$niveau_ids[$descriptor->niveauid] = $descriptor->niveauid;
+//	}
+//
+//	// load niveaus from db
+//	$niveaus = g::$DB->get_records_list(BLOCK_EXACOMP_DB_NIVEAUS, 'id', $niveau_ids, 'numb, sorting');
+//	$niveaus = \block_exacomp\niveau::create_objects($niveaus);
 
-	// load niveaus from db
-	$niveaus = g::$DB->get_records_list(BLOCK_EXACOMP_DB_NIVEAUS, 'id', $niveau_ids, 'numb, sorting');
-	$niveaus = \block_exacomp\niveau::create_objects($niveaus);
+    $niveaus = block_exacomp_get_niveaus_for_subject($selectedSubject->id);
+    $niveaus = \block_exacomp\niveau::create_objects($niveaus);
+
 
 	$defaultNiveau = block_exacomp\niveau::create();
 	$defaultNiveau->id = BLOCK_EXACOMP_SHOW_ALL_NIVEAUS;
@@ -4367,7 +4372,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
 
 	$selection = array();
 
-		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);
+		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);  careful: changed this function on 23.07.2020... probably doesnt matter because this commented code is dead
 		$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
 		$descriptors = block_exacomp_get_descriptors_by_subject($subjectid);
 
@@ -4461,13 +4466,21 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
 function block_exacomp_get_niveaus_for_subject($subjectid) {
 	global $DB;
 	//sql could be optimized
-	$niveaus = "SELECT DISTINCT n.id as id, n.title, n.sorting 
+	$niveaus = "SELECT DISTINCT n.id as id, n.title, n.sorting, n.*
 			FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_NIVEAUS."} n
 			WHERE d.id=dt.descrid AND dt.topicid IN 
 				(SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?)
 			AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting, n.id";
 
-	return $DB->get_records_sql_menu($niveaus, array($subjectid));
+	return $DB->get_records_sql($niveaus, array($subjectid));
+	//before 23.07.2020:
+//       $niveaus = "SELECT DISTINCT n.id as id, n.title, n.sorting
+//			FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_NIVEAUS."} n
+//			WHERE d.id=dt.descrid AND dt.topicid IN
+//				(SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?)
+//			AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting, n.id";
+//
+//    var_dump($DB->get_records_sql_menu($niveaus, array($subjectid)));
 }
 
 /**
@@ -12637,7 +12650,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
 
 function block_exacomp_get_questions_of_quiz($moduleId) {
     global $DB;
-    
+
     return $DB->get_records_sql('
 			SELECT qst.id, qst.name
 			FROM {course_modules} cm
