@@ -10230,7 +10230,7 @@ class block_exacomp_external extends external_api {
 	protected function custom_htmltrim($string) {
 	    //$string = strip_tags($string);
         $string = nl2br($string);
-        $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>");
+        $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>". "<sup>", "</sup>");
         $string = str_replace($remove, ' ', $string); // new lines to space
         $string = preg_replace('!\s+!', ' ', $string); // multiple spaces to single
         $string = fix_utf8($string);
