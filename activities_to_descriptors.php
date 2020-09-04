@@ -122,9 +122,10 @@ if ($action == "import") {
     }
     // at second - relate example (create new) to new activity
     $records = $DB->get_records_sql('
-            SELECT e.id, e.activityid, m.module
+            SELECT e.id, e.activityid, m.name
             FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
-                JOIN {course_modules} m ON m.id = e.activityid
+                JOIN {course_modules} cm ON cm.id = e.activityid
+                LEFT JOIN {modules} m ON m.id = cm.module
 			WHERE m.course = '.$template.' AND m.deletioninprogress = 0
     ');
     foreach ($records as $record) {

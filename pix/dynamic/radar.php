@@ -60,7 +60,6 @@ switch ($graphAction) {
         break;
 }
 
-//echo "<pre>debug:<strong>radar.php:14</strong>\r\n"; print_r($radarData); echo '</pre>'; exit; // !!!!!!!!!! delete it
 
 /* Set the default font properties */
 $fontName = $pathToPChart.'fonts/verdana.ttf';

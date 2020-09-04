@@ -7239,9 +7239,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $importICSbutton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'import_ics_button', 'value' => block_exacomp_get_string('import_ics'), 'creatorid' => $USER->id));
         $deleteImportsButton = html_writer::empty_tag('input', array('type' => 'button', 'id' => 'delete_imports_button', 'value' => block_exacomp_get_string('delete_imports'), 'creatorid' => $USER->id));
         $hideimportsCheckboxText =  html_writer::tag('label', block_exacomp_get_string('hide_imports_checkbox_label')." ");
-        if($_SESSION['hideimports-'.g::$COURSE->id]){
+        if (@$_SESSION['hideimports-'.g::$COURSE->id]) {
             $hideimportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'hide_imports_checkbox'));
-        }else{
+        } else {
             $hideimportsCheckbox = html_writer::empty_tag('input', array('type' => 'checkbox', 'id' => 'hide_imports_checkbox', 'checked' => true));
         }
 

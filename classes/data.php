@@ -840,7 +840,8 @@ class data_exporter extends data {
 
 			// temporary
 			global $DB;
-			$activitytype = $DB->get_field('course_modules', 'module', array('id' => $dbItem->activityid));
+			$activitytypeId = $DB->get_field('course_modules', 'module', array('id' => $dbItem->activityid));
+            $activitytype = $DB->get_field('modules', 'name', array('id' => $activitytypeId));
 			self::assign_source($xmlItem, $dbItem);
 			$xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
 			$xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
@@ -1688,13 +1689,13 @@ class data_importer extends data {
 		if (isset($xml->examples)) {
 		    $GLOBALS['activexamples'] = array();
 		    // old activityid
-		    $GLOBALS['activexamples'][0] = array();
+		    $GLOBALS['activexamples']['old_activityid'] = array();
 		    //new activityid
-		    $GLOBALS['activexamples'][1] = array();
+		    $GLOBALS['activexamples']['new_activityid'] = array();
 		    //example sourceid
-		    $GLOBALS['activexamples'][2] = array();
+		    $GLOBALS['activexamples']['example_sourceid'] = array();
 		    //example activitytype temporary
-		    $GLOBALS['activexamples'][3] = array();
+		    $GLOBALS['activexamples']['activitytype'] = array();
 		    if( $course_template != 0) {
 
 		        if ($ret === true) { // only if it is zip
@@ -1756,10 +1757,9 @@ class data_importer extends data {
 //cleanup and insert activities into DB
 
 		if( $course_template != 0) {
-
-		    for ($i=0; $i<count($GLOBALS['activexamples'][0]); $i++){
-		        $activityid = self::get_new_activity_id($GLOBALS['activexamples'][1][$i], $GLOBALS['activexamples'][3][$i], $course_template);
-		        block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples'][2][$i]);
+		    for ($i=0; $i<count($GLOBALS['activexamples']['old_activityid']); $i++){
+		        $activityid = self::get_new_activity_id($GLOBALS['activexamples']['new_activityid'][$i], $GLOBALS['activexamples']['activitytype'][$i], $course_template);
+		        block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples']['example_sourceid'][$i]);
 		    }
 
 		      @rmdir($CFG->tempdir . '/backup/activities');
@@ -2298,6 +2298,10 @@ class data_importer extends data {
             $item->ethema_parent = $item->ethema_parent['@attributes']['id'];
         }
 
+        if ($course_template > 0) {
+            $item->courseid = $course_template; // TODO: right? (need for correct relation of activities)
+        }
+
         self::insert_or_update_item(BLOCK_EXACOMP_DB_EXAMPLES, $item);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_EXAMPLES, $item);
 
@@ -2315,7 +2319,6 @@ class data_importer extends data {
 		if ($xmlItem->filetask) {
 			self::insert_file('example_task', $xmlItem->filetask, $item);
 		}
-
 		if($xmlItem->activitytype){
 
 		    if($course_template != 0){
@@ -2659,22 +2662,22 @@ class data_importer extends data {
 	    $example = self::parse_xml_item($xmlItem);
 
 	    if ($example->activityid != 0) {
-            $key = array_search($example->activityid, $GLOBALS['activexamples'][0]);
+            $key = array_search($example->activityid, $GLOBALS['activexamples']['old_activityid']);
             if ($key !== false) { // is possible, that found key is '0'
-	            array_push($GLOBALS['activexamples'][0], $example->activityid);
-	            array_push($GLOBALS['activexamples'][1], $example->activitytitle); //array_push($GLOBALS['activexamples'][1], $GLOBALS['activexamples'][1][$key]);
-	            array_push($GLOBALS['activexamples'][2], $exampleid);
-	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
+	            array_push($GLOBALS['activexamples']['old_activityid'], $example->activityid);
+	            array_push($GLOBALS['activexamples']['new_activityid'], $example->activitytitle); //array_push($GLOBALS['activexamples']['new_activityid'], $GLOBALS['activexamples']['new_activityid'][$key]);
+	            array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
+	            array_push($GLOBALS['activexamples']['activitytype'], $example->activitytype);
 	        } else {
-	            array_push($GLOBALS['activexamples'][0], $example->activityid);
+	            array_push($GLOBALS['activexamples']['old_activityid'], $example->activityid);
 	            @rename($CFG->tempdir . '/backup/activities/activity'.$example->activityid, $CFG->tempdir . '/backup/activity'.$example->activityid);
 
 	            //if (file_exists($CFG->tempdir . '/backup/activity'.$example->activityid)) {
                     moodle_restore('activity'.$example->activityid, $course_template, $USER->id);
                 //}
-	            array_push($GLOBALS['activexamples'][1], $example->activitytitle);
-	            array_push($GLOBALS['activexamples'][2], $exampleid);
-	            array_push($GLOBALS['activexamples'][3], $example->activitytype);
+	            array_push($GLOBALS['activexamples']['new_activityid'], $example->activitytitle);
+	            array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
+	            array_push($GLOBALS['activexamples']['activitytype'], $example->activitytype);
 	        }
 
 	    }
@@ -2684,9 +2687,11 @@ class data_importer extends data {
 
 	public static function get_new_activity_id($activity_title, $activity_type, $course_template){
 	    global $DB;
-	    $type = $DB->get_field('modules', 'name' , array('id' => $activity_type));
+//	    $type = $DB->get_field('modules', 'name' , array('id' => $activity_type));
+        $type = $activity_type;
+        $activity_typeId = $DB->get_field('modules', 'id' , array('name' => $activity_type));
  	    $instance = $DB->get_field($type, 'MAX(id)' , array('name' => $activity_title, 'course' => $course_template));
- 	    $id = $DB->get_field('course_modules', 'id', array('instance' => intval($instance), 'deletioninprogress' => 0, 'module' => $activity_type));
+ 	    $id = $DB->get_field('course_modules', 'id', array('instance' => intval($instance), 'deletioninprogress' => 0, 'module' => $activity_typeId));
 	    return $id;
 	}
 

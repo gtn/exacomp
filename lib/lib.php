@@ -4212,9 +4212,10 @@ function block_exacomp_save_competences_activities($data, $courseid, $comptype) 
 /**
  *
  * Assign one competence to one activity
- * @param unknown_type $activityid
- * @param unknown_type $compid
- * @param unknown_type $comptype
+ * @param integer $activityid
+ * @param integer $compid
+ * @param mixed $comptype
+ * @param string $activitytitle
  */
 function block_exacomp_set_compactivity($activityid, $compid, $comptype, $activitytitle = null) {
 	global $DB, $COURSE;
