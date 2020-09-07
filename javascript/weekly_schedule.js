@@ -186,14 +186,13 @@
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
 		studentid = block_exacomp.get_studentid();
 
-
 		block_exacomp.call_ajax({
 			studentid : studentid,
 			start: start.format('X'),
 			end: end.format('X'),
 			action : 'get-examples-for-start-end'
 		}).done(function(calendar_items) {
-			//load them
+			// load them
 			callback($.parseJSON(calendar_items));
 		});
 	}
@@ -447,7 +446,7 @@
 			},
 
 			events: function(start, end, timezone, callback){
-				debugger
+				// debugger
 				// console.log('events');
 				exacomp_calendar_load_events(start, end, timezone, function(events) {
 					// convert to calendar timeslots

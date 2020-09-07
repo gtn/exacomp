@@ -7468,7 +7468,11 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
     if (is_array($entries)) {
         $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted();
         foreach ($entries as $k => $entry) {
-            $entries[$k]->niveau = $niveautitles[$entry->evalniveauid];
+            if ($entry->evalniveauid && array_key_exists($entry->evalniveauid, $niveautitles)) {
+                $entries[$k]->niveau = $niveautitles[$entry->evalniveauid];
+            } else {
+                $entries[$k]->niveau = '';
+            }
         }
     }
 
@@ -8009,16 +8013,17 @@ function block_exacomp_get_message_icon($userid) {
 
 /**
  * send notification to user
- * @param unknown $notificationtype
- * @param unknown $userfrom
- * @param unknown $userto
- * @param unknown $subject
- * @param unknown $message
- * @param unknown $context
- * @param unknown $contexturl
- * @param unknown $dakoramessage if true this comes from a webservice from dakora and should ignore the setting "exacomp | notifications" that allowes/dissalowes notifications
+ * @param string $notificationtype
+ * @param object|int $userfrom
+ * @param object|int $userto
+ * @param string $subject
+ * @param string $message
+ * @param string $context
+ * @param string $contexturl
+ * @param bool $dakoramessage if true this comes from a webservice from dakora and should ignore the setting "exacomp | notifications" that allowes/dissalowes notifications
+ * @param int $courseid required for message_sent
  */
-function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl=null,$dakoramessage=false) {
+function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl = null, $dakoramessage = false, $courseid = 0) {
 	global $CFG, $DB;
 
 	if (!get_config('exacomp', 'notifications') && !$dakoramessage) {
@@ -8055,7 +8060,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
         $eventdata->notification = 0;
         $eventdata->component = "moodle";
         $eventdata->fullmessageformat = 0;
-        $eventdata->courseid = 0; //must be integer.. probably legacy... moodle always sends "1" in Moodle3.6
+        $eventdata->courseid = $courseid; //must be integer.. probably legacy... moodle always sends "1" in Moodle3.6
         $eventdata->smallmessage = $message;
     } else {
         $eventdata->subject = $subject;
@@ -8066,7 +8071,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
         $eventdata->notification = 1;
         $eventdata->contexturl = $contexturl;
         $eventdata->contexturlname = $context;
-
+        $eventdata->courseid = $courseid;
     }
 
     @message_send($eventdata);
@@ -8242,7 +8247,7 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
 	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid, 'exampleid' => $exampleid));
 	//$viewurl = $CFG->wwwroot.'/blocks/exacomp/weekly_schedule.php?courseid='.$courseid.'&exampleid='.$exampleid;
 
-	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl);
+	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl, false, $courseid);
 }
 
 /**
