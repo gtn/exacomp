@@ -119,10 +119,10 @@ if ($formdata = $form->get_data()) {
 	//share the view with teachers
 	block_exaport_share_view_to_teachers($dbView->id, $courseid);
 		
-	//add item to view
-	$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
+	// add item to view
+	$DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id,' positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid' => $itemid));
 	
-	if(isset($formdata->file)) {
+	if (isset($formdata->file)) {
 		$filename = $form->get_new_filename('file');
 		$context = context_user::instance($USER->id);
 		try {
@@ -132,15 +132,23 @@ if ($formdata = $form->get_data()) {
 		}
 	}
 	$timecreated = time();
-	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>$timecreated,'status'=>0));
+	$DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0));
 
 	block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated);
 	
 	\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
-	echo $output->popup_close_and_reload();
+	// add "activity" relations to competences: TODO: is this ok?
+    $competences = $DB->get_records('block_exacompdescrexamp_mm', ['exampid' => $exampleid]);
+    foreach ($competences as $comp) {
+        if ($comp->descrid) {
+            $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
+        }
+    }
+
+    echo $output->popup_close_and_reload();
 	exit;
-}else if($form->is_cancelled()){
+} else if($form->is_cancelled()) {
     echo $output->popup_close_and_reload();
     exit;
 }

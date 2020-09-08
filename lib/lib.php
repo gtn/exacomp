@@ -3587,10 +3587,10 @@ function block_exacomp_get_eportfolioitem_association($students) {
 	foreach ($students as $student) {
 		$eportfolioitems = $DB->get_records_sql('
 			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name
-			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
-			JOIN {block_exaportitem} i ON mm.activityid=i.id
-			WHERE mm.eportfolioitem = 1 AND i.userid=?
-			ORDER BY compid', array($student->id));
+			    FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
+			        JOIN {block_exaportitem} i ON mm.activityid=i.id
+			    WHERE mm.eportfolioitem = 1 AND i.userid=?
+                ORDER BY compid', array($student->id));
 
 		$result[$student->id] = new stdClass();
 		$result[$student->id]->competencies = array();
@@ -3603,10 +3603,11 @@ function block_exacomp_get_eportfolioitem_association($students) {
 			$hash = 0;
 
 			$sql = '
-				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner FROM {block_exaportviewblock} vb
-				JOIN {block_exaportview} v ON vb.viewid=v.id
-				LEFT JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid
-				WHERE vb.itemid = ?';
+				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner 
+				  FROM {block_exaportviewblock} vb
+				    JOIN {block_exaportview} v ON vb.viewid=v.id
+				    LEFT JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid
+				  WHERE vb.itemid = ?';
 
 			$shared_info = $DB->get_records_sql($sql, array($item->activityid));
 
@@ -6741,22 +6742,22 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
         $visibleExamples = array();
     }
 
+    $exampleid = is_scalar($example) ? $example : $example->id;
+
     // if the example has courseid and it is not equal $courseid
     if ($example->courseid > 0 && $example->courseid != $courseid) {
-        $visibleExamples[$courseid][$example->id][$studentid] = false;
+        $visibleExamples[$courseid][$exampleid][$studentid] = false;
         return false;
     }
 
-    if (isset($visibleExamples[$courseid][$example->id][$studentid])) {
-        return $visibleExamples[$courseid][$example->id][$studentid];
+    if (isset($visibleExamples[$courseid][$exampleid][$studentid])) {
+        return $visibleExamples[$courseid][$exampleid][$studentid];
     }
 
     // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
     if ($studentid <= 0) {
         $studentid = 0;
     }
-
-    $exampleid = is_scalar($example) ? $example : $example->id;
 
     // TODO: also need check descriptor? then we also need to check crossdescriptors!
     /*
@@ -6767,7 +6768,7 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
 
     $visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, 0);
     if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-        $visibleExamples[$courseid][$example->id][$studentid] = false;
+        $visibleExamples[$courseid][$exampleid][$studentid] = false;
         return false;
     }
 
@@ -6775,12 +6776,12 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
         // also check student if set
         $visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
         if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-            $visibleExamples[$courseid][$example->id][$studentid] = false;
+            $visibleExamples[$courseid][$exampleid][$studentid] = false;
             return false;
         }
     }
 
-    $visibleExamples[$courseid][$example->id][$studentid] = true;
+    $visibleExamples[$courseid][$exampleid][$studentid] = true;
     return true;
 }
 
@@ -6798,8 +6799,10 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
         $visibleExampleSolutions = array();
     }
 
-    if (isset($visibleExampleSolutions[$courseid][$example->id][$studentid])) {
-        return $visibleExampleSolutions[$courseid][$example->id][$studentid];
+    $exampleid = is_scalar($example) ? $example : $example->id;
+
+    if (isset($visibleExampleSolutions[$courseid][$exampleid][$studentid])) {
+        return $visibleExampleSolutions[$courseid][$exampleid][$studentid];
     }
 
     // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
@@ -6807,11 +6810,9 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
         $studentid = 0;
     }
 
-    $exampleid = is_scalar($example) ? $example : $example->id;
-
     $visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 0);
     if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-        $visibleExampleSolutions[$courseid][$example->id][$studentid] = false;
+        $visibleExampleSolutions[$courseid][$exampleid][$studentid] = false;
         return false;
     }
 
@@ -6819,12 +6820,11 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
         // also check student if set
         $visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $studentid);
         if (isset($visibilities[$exampleid]) && !$visibilities[$exampleid]) {
-            $visibleExampleSolutions[$courseid][$example->id][$studentid] = false;
+            $visibleExampleSolutions[$courseid][$exampleid][$studentid] = false;
             return false;
         }
     }
-
-    $visibleExampleSolutions[$courseid][$example->id][$studentid] = true;
+    $visibleExampleSolutions[$courseid][$exampleid][$studentid] = true;
     return true;
 }
 
@@ -7932,7 +7932,6 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 			      AND i.userid = ?
 			  ORDER BY ie.timecreated DESC
 			  LIMIT 1';
-
 	return $DB->get_record_sql($sql, array($exampleid, $userid));
 }
 
