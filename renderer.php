@@ -2426,10 +2426,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 
 							if ($shared) {
-								$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png", "alt" => '')));
+								$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;')));
 							} //$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
 							else {
-								$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png", "alt" => ''));
+								$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;'));
 							}
 
 							$text = block_exacomp_get_string('eportitems').html_writer::tag('ul', $li_items);
@@ -3042,6 +3042,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? true : false,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $data->profoundness : null,
                                         ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+                                if ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) {
+                                    $student_evaluation_cell->text .= $this->submission_icon($data->courseid, $example->id, $student->id, true);
+                                }
                             }
                             $student_evaluation_cell->attributes['exa-timestamp'] =
                                     isset($student->examples->timestamp_teacher[$example->id]) ?
@@ -3848,7 +3851,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 
-	public function submission_icon($courseid, $exampleid, $studentid = 0) {
+	public function submission_icon($courseid, $exampleid, $studentid = 0, $forSelf = false) {
 	    static $isTeacher;
 		if ($this->is_print_mode() || !$this->exaportExists) {
 			return '';
@@ -3860,13 +3863,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
 
 		if (!$isTeacher) {
-			//if student, check for existing item
-			$itemExists = block_exacomp_get_current_item_for_example($studentid, $exampleid);
-
-			return html_writer::link(
-				new moodle_url('/blocks/exacomp/example_submission.php', array("courseid" => $courseid, "exampleid" => $exampleid)),
-				$this->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", block_exacomp_get_string('submission')),
-				array('exa-type' => 'iframe-popup'));
+			// if student, check for existing item
+            if ($studentid && $forSelf) {
+                if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $exampleid)) {
+                    $result = html_writer::link($url,
+                        $this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
+                        array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+                } else {
+                    $result = ''; // empty!
+                }
+            } else {
+                $itemExists = block_exacomp_get_current_item_for_example($studentid, $exampleid);
+                $result = html_writer::link(
+                    new moodle_url('/blocks/exacomp/example_submission.php', array("courseid" => $courseid, "exampleid" => $exampleid)),
+                    $this->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", block_exacomp_get_string('submission')),
+                    array('exa-type' => 'iframe-popup'));
+            }
+			return $result;
 		} elseif ($studentid) {
 			//works only if exaport is installed
 			if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $exampleid)) {
