@@ -1,3 +1,9 @@
+v4.6.4 (2020091000)
+- crosssubject total grading added to competence profile
+- ICS-Files and links now can be used to import calendars into the exacomp weekly-schedule. The importet appointments act as a special kind of blocking-events and can be shown/hidden by a checkbox.
+- Niveaus can now be hidden just like topics and competences
+- Automatic gaining of competencies expanded to all activities
+
 v4.6.4 (2020042000)
 - interdisciplinary competences: new role for defining courses as haven interdisciplinary competence grids. these grids also have to be marked as interdisciplinary in the comet-tool.
 - implementation of grading history
