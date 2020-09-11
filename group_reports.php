@@ -203,7 +203,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
     if ($action == 'search' && !$isTemplateDeleting) {
         echo html_writer::tag('h2', block_exacomp_get_string('result'));
 
-        $filterlogictext = "Filterlogic: <br>";
+        $filterlogictext = block_exacomp_get_string('filterlogic')."<br>";
 
         if($filter[BLOCK_EXACOMP_TYPE_SUBJECT]["visible"]){
             $filterlogictext .= block_exacomp_get_string('report all educational standards');
@@ -223,6 +223,13 @@ if (optional_param('print', false, PARAM_BOOL)) {
         if($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]["visible"]){
             $filterlogictext .= "<br>".block_exacomp_get_string('report all descriptor children');
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD,$filter,$filterlogictext);
+        }
+
+//        var_dump($filter);
+//        die;
+        if($filter[BLOCK_EXACOMP_TYPE_EXAMPLE]["visible"]){
+            $filterlogictext .= "<br>".block_exacomp_get_string('report all descriptor examples');
+            $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_EXAMPLE,$filter,$filterlogictext);
         }
 
         if($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_EXAMPLE]["visible"]){

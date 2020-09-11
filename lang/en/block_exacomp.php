@@ -850,6 +850,7 @@ $string['report all topics'] = 'All competence fields of educational standards t
 $string['report all descriptor parents'] = 'All competences of competence fields that have not been filtered AND pass following filters: ';
 $string['report all descriptor children'] = 'All child competences of competences that have not been filtered AND pass following filters: ';
 $string['report all descriptor examples'] = 'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ';
+$string['filterlogic'] = 'Filterlogic: ';
 $string['topic_description'] = 'Create your first topic:';
 $string['niveau_description'] = 'Create your first Niveau:';
 $string['descriptor_description'] = 'Create your first Niveau:';

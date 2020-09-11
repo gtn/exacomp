@@ -3070,24 +3070,28 @@ return [
         'to',
     ],
     'report all educational standards' => [
-        'Alle  Bildungsstandard/Raster welche folgenden Filterkriterien entsprechen: ',
+        'Alle Bildungsstandard/Raster welche folgenden Filterkriterien entsprechen: ',
         'All educational standards which pass following filters: ',
     ],
     'report all topics' => [
-        'Alle  Kompetenzbereiche von Bildungsstandard/Rastern die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
+        'Alle Kompetenzbereiche von Bildungsstandard/Rastern die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
         'All competence fields of educational standards that have not been filtered AND pass following filters: ',
     ],
     'report all descriptor parents' => [
-        'Alle  Kompetenzen von Kompetenzbereichen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
+        'Alle Kompetenzen von Kompetenzbereichen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
         'All competences of competence fields that have not been filtered AND pass following filters: ',
     ],
     'report all descriptor children' => [
-        'Alle  Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
+        'Alle Teilkompetenzen von Kompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
         'All child competences of competences that have not been filtered AND pass following filters: ',
     ],
     'report all descriptor examples' => [
-        'Alle  Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
+        'Alle Lernmaterialien von Kompetenzbereichen, Kompetenzen und Teilkompetenzen die nicht gefiltert wurden UND folgenden Filterkriterien entsprechen: ',
         'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ',
+    ],
+    'filterlogic' => [
+        'Filterkriterien: ',
+        'Filterlogic: ',
     ],
     'topic_description' => [
         'Bezeichnung der ersten Zeile (z.B. Kompetenzbereich)',
