@@ -104,8 +104,8 @@ $string['next_step_first_teacher_step'] = 'Click here to continue configuration.
 // === Block Settings ===
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
-$string['settings_autotest'] = 'Automatical gain of competence through Moodle-quizzes';
-$string['settings_autotest_description'] = 'Competences that are associated with quizzes are gained automatically if needed percentage of quiz is reached';
+$string['settings_autotest'] = 'Automatical grading through Moodle-activities';
+$string['settings_autotest_description'] = 'Competences or Assignments that are associated with activities are gained automatically if the completion requirements of the activity are met. ';
 $string['settings_testlimit'] = 'Quiz-percentage needed to gain competence';
 $string['settings_testlimit_description'] = 'This percentage has to be reached to gain the competence';
 $string['settings_usebadges'] = 'Connect to Moodle badges';

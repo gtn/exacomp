@@ -319,12 +319,12 @@ return [
 		'Url to a xml file, which is used for keeping the database entries up to date',
 	],
 	'settings_autotest' => [
-		'Automatischer Kompetenzerwerb durch Moodle-Tests',
-		'Automatical gain of competence through Moodle-quizzes',
+		'Automatische Beurteilung durch Moodle-Aktivitäten',
+		'Automatical grading through Moodle-activities',
 	],
 	'settings_autotest_description' => [
-		'Kompetenzen die mit Tests verbunden sind, gelten automatisch als erworben, wenn der angegebene Test-Prozentwert erreicht wurde',
-		'Competences that are associated with quizzes are gained automatically if needed percentage of quiz is reached',
+		'Kompetenzen oder Aufgaben die mit Aktivitäten verbunden sind, gelten automatisch als erworben, wenn die in der Aktivität angegebenen Aktivitätsabschlusskriterien erfüllt sind.',
+		'Competences or Assignments that are associated with activities are gained automatically if the completion requirements of the activity are met. ',
 	],
 	'settings_testlimit' => [
 		'Testlimit in %',

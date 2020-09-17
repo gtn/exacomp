@@ -104,8 +104,8 @@ $string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum nächsten Sch
 // === Block Settings ===
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
-$string['settings_autotest'] = 'Automatischer Kompetenzerwerb durch Moodle-Tests';
-$string['settings_autotest_description'] = 'Kompetenzen die mit Tests verbunden sind, gelten automatisch als erworben, wenn der angegebene Test-Prozentwert erreicht wurde';
+$string['settings_autotest'] = 'Automatische Beurteilung durch Moodle-Aktivitäten';
+$string['settings_autotest_description'] = 'Kompetenzen oder Aufgaben die mit Aktivitäten verbunden sind, gelten automatisch als erworben, wenn die in der Aktivität angegebenen Bedingungen erfüllt sind.';
 $string['settings_testlimit'] = 'Testlimit in %';
 $string['settings_testlimit_description'] = 'Dieser Prozentwert muss erreicht werden, damit die Kompetenz als erworben gilt';
 $string['settings_usebadges'] = 'Badges/Auszeichnungen verwenden';
