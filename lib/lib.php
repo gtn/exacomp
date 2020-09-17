@@ -3984,7 +3984,19 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids, $deleteOn
 function block_exacomp_get_active_tests_by_course($courseid) {
 	global $DB;
 
-	if (block_exacomp_use_old_activities_method()) {
+    $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
+            FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e 
+              JOIN {course_modules} cm ON cm.id = e.activityid 
+              JOIN {modules} m ON m.id = cm.module 
+              JOIN {quiz} q ON cm.instance = q.id 
+            WHERE m.name = \'quiz\' AND cm.course = ? ';
+    $testsForExamples = $DB->get_records_sql($sql, array($courseid));
+
+    foreach ($testsForExamples as $test) {
+        $test->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $test->activityid, 'courseid' => $courseid), '', 'id');
+    }
+
+	if (block_exacomp_use_old_activities_method()) { //if not, use ONLY new method. but if old method is active, use BOTH
         $sql = "SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
             FROM {block_exacompcompactiv_mm} activ 
               JOIN {course_modules} cm ON cm.id = activ.activityid 
@@ -3992,27 +4004,21 @@ function block_exacomp_get_active_tests_by_course($courseid) {
               JOIN {quiz} q ON cm.instance = q.id 
             WHERE m.name = 'quiz' AND cm.course = ?";
 
-        $tests = $DB->get_records_sql($sql, array($courseid));
+        $testsForDescriptors = $DB->get_records_sql($sql, array($courseid));
 
-        foreach ($tests as $test) {
+        foreach ($testsForDescriptors as $test) {
             $test->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                     array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
             $test->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                     array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
         }
+        $tests = array_merge($testsForExamples,$testsForDescriptors);
     } else {
-        $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
-            FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e 
-              JOIN {course_modules} cm ON cm.id = e.activityid 
-              JOIN {modules} m ON m.id = cm.module 
-              JOIN {quiz} q ON cm.instance = q.id 
-            WHERE m.name = \'quiz\' AND cm.course = ? ';
-        $tests = $DB->get_records_sql($sql, array($courseid));
-
-        foreach ($tests as $test) {
-            $test->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $test->activityid, 'courseid' => $courseid), '', 'id');
-        }
+        $tests = $testsForExamples;
     }
+
+//    var_dump($tests);
+//    die;
 
 	return $tests;
 }
@@ -4025,34 +4031,40 @@ function block_exacomp_get_active_tests_by_course($courseid) {
 function block_exacomp_get_active_activities_by_course($courseid) {
     global $DB;
 
-    if (block_exacomp_use_old_activities_method()) {
+    $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid
+        FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
+          JOIN {course_modules} cm ON cm.id = e.activityid
+          JOIN {modules} m ON m.id = cm.module
+        WHERE NOT m.name = \'quiz\' AND cm.course = ? ';
+    $activitiesForExamples = $DB->get_records_sql($sql, array($courseid));
+
+    foreach ($activitiesForExamples as $activity) {
+        $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->activityid, 'courseid' => $courseid), '', 'id');
+    }
+
+
+    if (block_exacomp_use_old_activities_method()) { //if not, use ONLY new method. but if old method is active, use BOTH
         $sql = "SELECT cm.instance as id, cm.id as activityid 
             FROM {block_exacompcompactiv_mm} activ 
               JOIN {course_modules} cm ON cm.id = activ.activityid 
               JOIN {modules} m ON m.id = cm.module 
             WHERE NOT m.name = 'quiz' AND cm.course = ? ";
 
-        $activities = $DB->get_records_sql($sql, array($courseid));
+        $activitiesForDescriptors = $DB->get_records_sql($sql, array($courseid));
 
-        foreach ($activities as $activity) {
+        foreach ($activitiesForDescriptors as $activity) {
             $activity->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                 array('activityid' => $activity->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
             $activity->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                 array('activityid' => $activity->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
         }
-    } else {
-        $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid
-            FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
-              JOIN {course_modules} cm ON cm.id = e.activityid
-              JOIN {modules} m ON m.id = cm.module
-            WHERE NOT m.name = \'quiz\' AND cm.course = ? ';
-        $activities = $DB->get_records_sql($sql, array($courseid));
-
-        foreach ($activities as $activity) {
-            $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->activityid, 'courseid' => $courseid), '', 'id');
-        }
+        $activities = array_merge($activitiesForDescriptors,$activitiesForExamples);
+    } else{
+        $activities = $activitiesForExamples;
     }
 
+//    var_dump($activities);
+//    die;
     return $activities;
 }
 
@@ -4350,7 +4362,12 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
     if ($mod_info === null) {
         $mod_info = get_fast_modinfo($courseid);
     }
+
+
     if (count($descriptors)) { // if no any descriptor - no sense to insert the example (no relation to activity)
+//        var_dump("Activityid: ", $activityid);
+//        var_dump("descriptors: ", $descriptors);
+
         $existsRelatedExample =
                 $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
                         IGNORE_MULTIPLE);
@@ -4870,13 +4887,14 @@ function block_exacomp_perform_auto_test() {
 
 	$autotest = get_config('exacomp', 'autotest');
 	$testlimit = get_config('exacomp', 'testlimit');
-
-	if (!$autotest) {
+    if (!$autotest) {
 		return;
 	}
 
 	//for all courses where exacomp is used
 	$courses = block_exacomp_get_courseids();
+
+
 
 	foreach ($courses as $courseid) {
 
@@ -4891,6 +4909,10 @@ function block_exacomp_perform_auto_test() {
         $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 		// get student grading for each test
+
+//        var_dump("ENDE");
+//        die;
+
 		foreach ($students as $student) {
             $changedquizes = array();
 			foreach ($tests as $test) {
@@ -4914,9 +4936,17 @@ function block_exacomp_perform_auto_test() {
                         && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)
                 ) {
 				    $changedquizes[$quiz->quiz] = $quiz->timemodified;
-				    if (block_exacomp_use_old_activities_method()) {
+
+                    // with this if, there is only one possibilty, but both should work in parallel
+//				    if (block_exacomp_use_old_activities_method()) {
+//                        block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
+//                    } else {
+//                        block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
+//                    }
+
+                    if ($test->descriptors) { // descriptors are associated and should be graded ... "old method"
                         block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
-                    } else {
+                    } else if($test->examples){ // examples are associated and should be graded ... "new method"
                         block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
                     }
 
@@ -4939,18 +4969,28 @@ function block_exacomp_perform_auto_test() {
                 $activity_completion = $DB->get_record('course_modules_completion', array('coursemoduleid' => $activity->activityid, 'userid' => $student->id));
                 $activity_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $activity->activityid, 'userid' => $student->id));
 
-//                var_dump($activity_completion);
-//                die;
-
                 // assign competencies if activity is completed AND completionstate updated since last autoassign
                 //COMPLETION_COMPLETE COMPLETION_COMPLETE_PASS COMPLETION_COMPLETE_FAIL
+//                var_dump($activity_completion);
+//                var_dump($activity_assignment);
+//                die;
+
+
                 if (($activity_completion->completionstate == COMPLETION_COMPLETE ||  $activity_completion->completionstate == COMPLETION_COMPLETE_PASS)
                     && (!$activity_assignment || $activity_assignment->timemodified < $activity_completion->timemodified)
                 ) {
                     $changedactivites[$activity->coursemoduleid] = $activity_completion->timemodified;
-                    if (block_exacomp_use_old_activities_method()) {
+
+
+                    // with this if, there is only one possibilty, but both should work in parallel
+//                    if (block_exacomp_use_old_activities_method()) {
+//                        block_exacomp_assign_competences($courseid, $student->id, $activity->topics, $activity->descriptors, null, false);
+//                    } else {
+//                        block_exacomp_assign_competences($courseid, $student->id, null, null, $activity->examples, false);
+//                    }
+                    if ($activity->descriptors) { // descriptors are associated and should be graded ... "old method"
                         block_exacomp_assign_competences($courseid, $student->id, $activity->topics, $activity->descriptors, null, false);
-                    } else {
+                    } else if($activity->examples){ // examples are associated and should be graded ... "new method"
                         block_exacomp_assign_competences($courseid, $student->id, null, null, $activity->examples, false);
                     }
 
@@ -5107,7 +5147,6 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
             block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
-
             mtrace("set example grading: ".$example->id." for user ".$studentid.'  '.block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult).'<br>');
         }
     }
