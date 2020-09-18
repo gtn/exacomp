@@ -2702,7 +2702,7 @@ return [
     ],
 
     'module_used_availabilitycondition_competences' => [
-        'Grant related exabis competencies when condition is met',
+        'Verknüpfte Exabis Kompetenzen automatisch erreichen, wenn die Bedingungen erfüllt sind.',
         'Grant related exabis competencies when condition is met',
     ],
     'use_isglobal' => [
