@@ -687,6 +687,7 @@ $string['submit_example'] = 'Abgeben';
 $string['enable_rest'] = 'REST Protokoll nicht aktiviert';
 $string['access_roles'] = 'Benutzerrollen mit Zugriff auf Webservices';
 $string['no_permission'] = 'Berechtigung wurde nicht erteilt';
+$string['no_permission_user'] = 'Berechtigung wurde für Authentifizierte/r Nutzer/in nicht erteilt';
 $string['description_createtoken'] = 'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
 4.1 Authentifizierte/r Nutzer/in wählen
 4.2 Bearbeiten auswählen
@@ -763,7 +764,7 @@ $string['save'] = 'Speichern';
 $string['add_competence_insert_learning_progress'] = 'Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!';
 $string['delete_level_from_another_source'] = 'Importierter Kompetenzraster hat Inhalte einer anderen Quelle. Diese können nur vom Admin gelöscht werden.';
 $string['delete_level_has_children_from_another_source'] = 'Importierter Kompetenzraster wurde in dieser Installation weiterbearbeitet. Diese Ergänzungen werden ausgewiesen und müssen gelöscht werden, bevor der gesamte Kompetenzraster löschbar wird.';
-$string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
+$string['module_used_availabilitycondition_competences'] = 'Verknüpfte Exabis Kompetenzen automatisch erreichen, wenn die Bedingungen erfüllt sind.';
 $string['use_isglobal'] = 'Überfachlicher Kurs';
 $string['globalgradings'] = 'Überfachliche Bewertungen';
 $string['assign_dakora_teacher'] = 'Lehrkraft für überfachliche Kompetenzen zuweisen';

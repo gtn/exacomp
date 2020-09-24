@@ -681,6 +681,7 @@ $string['submit_example'] = 'Submit';
 $string['enable_rest'] = 'REST Protocol not enabled';
 $string['access_roles'] = 'Roles with webservice access';
 $string['no_permission'] = 'Permissions not set';
+$string['no_permission_user'] = 'Permissions not set for role "authenticated user"';
 $string['description_createtoken'] = 'Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
 4.1 Select Authenticated User
 4.2 Click on "Edit"

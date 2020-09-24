@@ -115,13 +115,24 @@ $wsroles = get_roles_with_capability('moodle/webservice:createtoken');
 // get rolename in local language
 $wsroles = role_fix_names($wsroles, context_system::instance(), ROLENAME_ORIGINAL);
 
-if (count($wsroles)>1) {	//admin has always permission
-	$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
-	foreach ($wsroles as $role) {
-		$status .= $brtag.$role->localname;
-	}
+
+if (count($wsroles)>=1) {	//admin has always permission ---> 24.09.2020 NOT true, there was a customer who reset the createtoken for managers ==> problem
+    $authenticatedUser = null;
+    foreach ($wsroles as $role){
+        if($role->shortname == "user"){
+            $authenticatedUser = $role;
+        }
+    }
+    if($authenticatedUser != null){
+        $status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
+    }else{
+        $status = html_writer::tag('span', block_exacomp_get_string('no_permission_user'), array('class' => 'statuscritical'));
+    }
+    foreach ($wsroles as $role) {
+        $status .= $brtag.$role->localname;
+    }
 } else {
-	$status = html_writer::tag('span', 'Permissions not set', array('class' => 'statuscritical'));
+	$status = html_writer::tag('span', block_exacomp_get_string('no_permission'), array('class' => 'statuscritical'));
 }
 
 $row[1] = $status;

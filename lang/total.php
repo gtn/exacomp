@@ -2428,6 +2428,10 @@ return [
 		'Berechtigung wurde nicht erteilt',
 		'Permissions not set',
 	],
+    'no_permission_user' => [
+        'Berechtigung wurde für Authentifizierte/r Nutzer/in nicht erteilt',
+        'Permissions not set for role "authenticated user"',
+    ],
 	'description_createtoken' => [
 		'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
 4.1 Authentifizierte/r Nutzer/in wählen
