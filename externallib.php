@@ -201,7 +201,7 @@ class block_exacomp_external extends external_api {
 						$structure[$topic->id]->examples[$example->id]->example_title = static::custom_htmltrim($example->title);
 						$structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
 						$items_examp = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array(
-							'exampleid' => $example->id,
+							'exacomp_record_id' => $example->id,
 						));
 						$items = array();
 						foreach ($items_examp as $item_examp) {
@@ -403,7 +403,7 @@ class block_exacomp_external extends external_api {
 	                    $structure[$topic->id]->examples[$example->id]->example_title = static::custom_htmltrim($example->title);
 	                    $structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
 	                    $items_examp = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array(
-	                        'exampleid' => $example->id,
+	                        'exacomp_record_id' => $example->id,
 	                    ));
 	                    $items = array();
 	                    foreach ($items_examp as $item_examp) {
@@ -568,7 +568,7 @@ class block_exacomp_external extends external_api {
 		    $example->quiz->quiz_grade = 0.0;
 		}
 
-		$example->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid));
+		$example->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid));
 
         //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
         $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
@@ -1173,7 +1173,7 @@ class block_exacomp_external extends external_api {
 		$item = $DB->get_record('block_exaportitem', array('id' => $itemid, 'userid' => $USER->id));
 		if ($item) {
 			//check if the item is already graded
-			$itemexample = $DB->get_record_sql("SELECT id, exampleid, itemid, status, MAX(timecreated) from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie WHERE itemid = ?", array($itemid));
+			$itemexample = $DB->get_record_sql("SELECT id, exacomp_record_id, itemid, status, MAX(timecreated) from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie WHERE itemid = ?", array($itemid));
 			if ($itemexample->status == 0) {
 				//delete item and all associated content
 				$DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('id' => $itemexample->id));
@@ -1328,8 +1328,8 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ('Item not found');
 		}
 
-		$courseid = static::find_courseid_for_example($itemexample->exampleid);
-		static::require_can_access_example($itemexample->exampleid, $courseid);
+		$courseid = static::find_courseid_for_example($itemexample->exacomp_record_id);
+		static::require_can_access_example($itemexample->exacomp_record_id, $courseid);
 
 		$item->file = "";
 		$item->isimage = false;
@@ -1631,7 +1631,7 @@ class block_exacomp_external extends external_api {
 		}
 
 		if ($insert) {
-			$DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'studentvalue' => $studentvalue));
+			$DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'studentvalue' => $studentvalue));
 			if ($studentcomment != '') {
 				$DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
 			}
@@ -2094,7 +2094,7 @@ class block_exacomp_external extends external_api {
 			'itemid' => $itemid,
 		));
 
-		$exampleid = $update->exampleid;
+		$exampleid = $update->exacomp_record_id;
 
 		$update->itemid = $itemid;
 		$update->datemodified = time();
@@ -2245,7 +2245,7 @@ class block_exacomp_external extends external_api {
 						$elem->exampletitle = static::custom_htmltrim($example->example_title);
 						$elem->exampletopicid = $topic->topicid;
 						$items_examp = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array(
-							'exampleid' => $example->exampleid,
+							'exacomp_record_id' => $example->exampleid,
 						));
 						$items = array();
 						foreach ($items_examp as $item_examp) {
@@ -2430,7 +2430,7 @@ class block_exacomp_external extends external_api {
 								// CHECK FOR USER EXAMPLES
 								$sql = 'select * from {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie
 										JOIN {block_exaportitem} i ON i.id = ie.itemid
-										WHERE ie.exampleid = ? AND i.userid=? AND ie.status=2';
+										WHERE ie.exacomp_record_id = ? AND i.userid=? AND ie.status=2';
 								if ($DB->get_records_sql($sql, array(
 									$example->id,
 									$userid,
@@ -2532,13 +2532,13 @@ class block_exacomp_external extends external_api {
 		$userid = $user->userid;
 
 		$all_examples_reached = g::$DB->get_records_sql_menu("
-			select distinct ie.exampleid, ie.exampleid as tmp from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
+			select distinct ie.exacomp_record_id, ie.exacomp_record_id as tmp from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
 			JOIN {block_exaportitem} i ON i.id = ie.itemid
 			WHERE i.userid=? AND ie.status=2
 		", [$userid]);
 
 		$all_examples_submitted = g::$DB->get_records_sql_menu("
-			select distinct ie.exampleid, ie.exampleid as tmp from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
+			select distinct ie.exacomp_record_id, ie.exacomp_record_id as tmp from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
 			JOIN {block_exaportitem} i ON i.id = ie.itemid
 			WHERE i.userid=?
 		", [$userid]);
@@ -2797,7 +2797,7 @@ class block_exacomp_external extends external_api {
 		// also checks for permissions
 		block_exacomp_delete_custom_example($exampleid);
 
-		$items = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid));
+		$items = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid));
 		foreach ($items as $item) {
 			$DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('id' => $item->id));
 			static::delete_item($item->itemid);
@@ -6209,7 +6209,7 @@ class block_exacomp_external extends external_api {
 
 
 		if ($insert) {
-		    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
+		    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
 		    if ($studentcomment != '') {
 		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
 		    }
@@ -6300,7 +6300,7 @@ class block_exacomp_external extends external_api {
             block_exacomp_etheme_autograde_examples_tree($courseid, $examples);
         }
 	    if ($itemid > 0 && $userid > 0) {    //So the student will never reach this part, either the itemid is null, or submit example is used
-	        $itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid, 'itemid' => $itemid));
+	        $itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid));
 	        if (!$itemexample) {
 	            throw new invalid_parameter_exception("Wrong itemid given");
 	        }
@@ -9883,7 +9883,7 @@ class block_exacomp_external extends external_api {
 			JOIN {block_exacompdescriptors} d ON td.descrid = d.id
 			JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON de.descrid = d.id
 			JOIN {block_exacompexamples} e ON de.exampid = e.id
-			JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exampleid = e.id
+			JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = e.id
 			JOIN {block_exaportitem} i ON i.id = ie.itemid
 			WHERE ie.status = 0 AND i.userid = ?', array($userid));
 
