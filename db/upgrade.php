@@ -3658,11 +3658,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020092400) {
-        $table = new xmldb_table('block_exacompitem_mm');
-        $table->setName('block_exacompitem_mm');
-        $table->add_field('competence_type', XMLDB_TYPE_INTEGER, '10', null, true, false, BLOCK_EXACOMP_TYPE_EXAMPLE);
-        $renamefield = $table->getField('exampleid');
-        $renamefield->setName('exacomp_record_id');
+        $table = new xmldb_table('block_exacompitemexample');
+
+        $exampleid_field = new xmldb_field('exampleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $dbman->rename_field($table,$exampleid_field,'exacomp_record_id');
+
+        $competence_type = new xmldb_field('competence_type', XMLDB_TYPE_INTEGER, '10', null, true, false, BLOCK_EXACOMP_TYPE_EXAMPLE);
+        $dbman->add_field($table,$competence_type);
+
+        $dbman->rename_table($table,'block_exacompitem_mm');
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020092400, 'exacomp');
     }
