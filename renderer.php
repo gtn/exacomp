@@ -2232,6 +2232,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//		- visible in whole course
 			//	and - visible for specific student
 
+
 			$one_student = false;
 			$studentid = 0;
 			if (!$editmode && count($students) == 1 && $showstudents != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
@@ -2300,6 +2301,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     }
                 }
 				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname.($title ? $this->pix_icon("i/info", $title) : '')), '');
+                $titleCell->text .= $this->submission_icon($data->courseid, $descriptor->id, $USER->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 
 				// EDIT MODE BUTTONS
 				if ($editmode) {
@@ -3851,7 +3853,52 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 
-	public function submission_icon($courseid, $exampleid, $studentid = 0, $forSelf = false) {
+
+
+
+//    public function submission_icon($courseid, $exampleid, $studentid = 0, $forSelf = false) {
+//        static $isTeacher;
+//        if ($this->is_print_mode() || !$this->exaportExists) {
+//            return '';
+//        }
+//
+//        if ($isTeacher === null) {
+//            $context = context_course::instance($courseid);
+//            $isTeacher = block_exacomp_is_teacher($context);
+//        }
+//
+//        if (!$isTeacher) {
+//            // if student, check for existing item
+//            if ($studentid && $forSelf) {
+//                if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $exampleid)) {
+//                    $result = html_writer::link($url,
+//                        $this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
+//                        array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+//                } else {
+//                    $result = ''; // empty!
+//                }
+//            } else {
+//                $itemExists = block_exacomp_get_current_item_for_example($studentid, $exampleid);
+//                $result = html_writer::link(
+//                    new moodle_url('/blocks/exacomp/example_submission.php', array("courseid" => $courseid, "exampleid" => $exampleid)),
+//                    $this->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", block_exacomp_get_string('submission')),
+//                    array('exa-type' => 'iframe-popup'));
+//            }
+//            return $result;
+//        } elseif ($studentid) {
+//            //works only if exaport is installed
+//            if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $exampleid)) {
+//                return html_writer::link($url,
+//                    $this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
+//                    array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+//            } else {
+//                return "";
+//            }
+//        }
+//    }
+//
+	// competenceid was called exampleid earlier. Now we can have topics, descriptors and examples, so we call it competenceid for lack of better naming
+	public function submission_icon($courseid, $competenceid, $studentid = 0, $forSelf = false, $competencetype=BLOCK_EXACOMP_TYPE_EXAMPLE) {
 	    static $isTeacher;
 		if ($this->is_print_mode() || !$this->exaportExists) {
 			return '';
@@ -3862,34 +3909,40 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $isTeacher = block_exacomp_is_teacher($context);
         }
 
-		if (!$isTeacher) {
-			// if student, check for existing item
-            if ($studentid && $forSelf) {
-                if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $exampleid)) {
+		if($competencetype == BLOCK_EXACOMP_TYPE_EXAMPLE){
+            if (!$isTeacher) {
+                // if student, check for existing item
+                if ($studentid && $forSelf) {
+                    if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $competenceid)) {
+                        $result = html_writer::link($url,
+                            $this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
+                            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+                    } else {
+                        // goes here if as student and new example that has no submission
+                        $result = ''; // empty!
+                    }
+                } else {
+                    $itemExists = block_exacomp_get_current_item_for_example($studentid, $competenceid);
+                    $result = html_writer::link(
+                        new moodle_url('/blocks/exacomp/example_submission.php', array("courseid" => $courseid, "exampleid" => $competenceid)),
+                        $this->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", block_exacomp_get_string('submission')),
+                        array('exa-type' => 'iframe-popup'));
+                }
+            } elseif ($studentid) {
+                //works only if exaport is installed
+                if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $competenceid)) {
                     $result = html_writer::link($url,
                         $this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
                         array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                 } else {
-                    $result = ''; // empty!
+                    $result = '';
                 }
-            } else {
-                $itemExists = block_exacomp_get_current_item_for_example($studentid, $exampleid);
-                $result = html_writer::link(
-                    new moodle_url('/blocks/exacomp/example_submission.php', array("courseid" => $courseid, "exampleid" => $exampleid)),
-                    $this->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", block_exacomp_get_string('submission')),
-                    array('exa-type' => 'iframe-popup'));
             }
-			return $result;
-		} elseif ($studentid) {
-			//works only if exaport is installed
-			if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $exampleid)) {
-				return html_writer::link($url,
-					$this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
-					array("target" => "_blank", 'exa-type' => 'iframe-popup'));
-			} else {
-				return "";
-			}
-		}
+        }else{
+
+        }
+
+        return $result;
 	}
 
 	public function resubmission_icon($exampleid, $studentid, $courseid) {
