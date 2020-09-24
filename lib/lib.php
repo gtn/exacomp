@@ -7779,7 +7779,7 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	}
 
 	if (block_exacomp_exaportexists()) {
-		$sql = "select * FROM {block_exacompitem_mm} ie
+		$sql = "select * FROM {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
 				JOIN {block_exaportitem} i ON i.id = ie.itemid
 				WHERE ie.exampleid = ? AND i.userid = ?";
 
@@ -7965,7 +7965,7 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 
 	$sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue 
               FROM {block_exacompexamples} e
-			    JOIN {block_exacompitem_mm} ie ON ie.exampleid = e.id
+			    JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exampleid = e.id
 			    JOIN {block_exaportitem} i ON ie.itemid = i.id
 			  WHERE e.id = ?
 			      AND i.userid = ?

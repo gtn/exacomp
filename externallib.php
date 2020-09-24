@@ -1173,7 +1173,7 @@ class block_exacomp_external extends external_api {
 		$item = $DB->get_record('block_exaportitem', array('id' => $itemid, 'userid' => $USER->id));
 		if ($item) {
 			//check if the item is already graded
-			$itemexample = $DB->get_record_sql("SELECT id, exampleid, itemid, status, MAX(timecreated) from {block_exacompitem_mm} ie WHERE itemid = ?", array($itemid));
+			$itemexample = $DB->get_record_sql("SELECT id, exampleid, itemid, status, MAX(timecreated) from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie WHERE itemid = ?", array($itemid));
 			if ($itemexample->status == 0) {
 				//delete item and all associated content
 				$DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('id' => $itemexample->id));
@@ -1320,7 +1320,7 @@ class block_exacomp_external extends external_api {
 			"userid" => $userid,
 		);
 		$item = $DB->get_record("block_exaportitem", $conditions, 'id,userid,type,name,intro,url,courseid', MUST_EXIST);
-		$itemexample = $DB->get_record("block_exacompitem_mm", array(
+		$itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array(
 			"itemid" => $itemid,
 		));
 
@@ -2428,7 +2428,7 @@ class block_exacomp_external extends external_api {
 								$topic_total_examples++;
 
 								// CHECK FOR USER EXAMPLES
-								$sql = 'select * from {block_exacompitem_mm} ie
+								$sql = 'select * from {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie
 										JOIN {block_exaportitem} i ON i.id = ie.itemid
 										WHERE ie.exampleid = ? AND i.userid=? AND ie.status=2';
 								if ($DB->get_records_sql($sql, array(
@@ -2532,13 +2532,13 @@ class block_exacomp_external extends external_api {
 		$userid = $user->userid;
 
 		$all_examples_reached = g::$DB->get_records_sql_menu("
-			select distinct ie.exampleid, ie.exampleid as tmp from {block_exacompitem_mm} ie
+			select distinct ie.exampleid, ie.exampleid as tmp from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
 			JOIN {block_exaportitem} i ON i.id = ie.itemid
 			WHERE i.userid=? AND ie.status=2
 		", [$userid]);
 
 		$all_examples_submitted = g::$DB->get_records_sql_menu("
-			select distinct ie.exampleid, ie.exampleid as tmp from {block_exacompitem_mm} ie
+			select distinct ie.exampleid, ie.exampleid as tmp from {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
 			JOIN {block_exaportitem} i ON i.id = ie.itemid
 			WHERE i.userid=?
 		", [$userid]);
@@ -9883,7 +9883,7 @@ class block_exacomp_external extends external_api {
 			JOIN {block_exacompdescriptors} d ON td.descrid = d.id
 			JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON de.descrid = d.id
 			JOIN {block_exacompexamples} e ON de.exampid = e.id
-			JOIN {block_exacompitem_mm} ie ON ie.exampleid = e.id
+			JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exampleid = e.id
 			JOIN {block_exaportitem} i ON i.id = ie.itemid
 			WHERE ie.status = 0 AND i.userid = ?', array($userid));
 
