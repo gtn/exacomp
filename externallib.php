@@ -200,7 +200,7 @@ class block_exacomp_external extends external_api {
 						$structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
 						$structure[$topic->id]->examples[$example->id]->example_title = static::custom_htmltrim($example->title);
 						$structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
-						$items_examp = $DB->get_records('block_exacompitem_mm', array(
+						$items_examp = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array(
 							'exampleid' => $example->id,
 						));
 						$items = array();
@@ -402,7 +402,7 @@ class block_exacomp_external extends external_api {
 	                    $structure[$topic->id]->examples[$example->id]->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 	                    $structure[$topic->id]->examples[$example->id]->example_title = static::custom_htmltrim($example->title);
 	                    $structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
-	                    $items_examp = $DB->get_records('block_exacompitem_mm', array(
+	                    $items_examp = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array(
 	                        'exampleid' => $example->id,
 	                    ));
 	                    $items = array();
@@ -568,7 +568,7 @@ class block_exacomp_external extends external_api {
 		    $example->quiz->quiz_grade = 0.0;
 		}
 
-		$example->hassubmissions = !!$DB->get_records('block_exacompitem_mm', array('exampleid' => $exampleid));
+		$example->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid));
 
         //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
         $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
@@ -1176,7 +1176,7 @@ class block_exacomp_external extends external_api {
 			$itemexample = $DB->get_record_sql("SELECT id, exampleid, itemid, status, MAX(timecreated) from {block_exacompitem_mm} ie WHERE itemid = ?", array($itemid));
 			if ($itemexample->status == 0) {
 				//delete item and all associated content
-				$DB->delete_records('block_exacompitem_mm', array('id' => $itemexample->id));
+				$DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('id' => $itemexample->id));
 				$DB->delete_records('block_exaportitem', array('id' => $itemid));
 				if ($item->type == 'file') {
 					require_once $CFG->dirroot.'/blocks/exaport/inc.php';
@@ -1545,7 +1545,7 @@ class block_exacomp_external extends external_api {
 		//insert: if itemid == 0 OR status != 0
 		$insert = true;
 		if ($itemid != 0) {
-			$itemexample = $DB->get_record('block_exacompitem_mm', array('itemid' => $itemid));
+			$itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('itemid' => $itemid));
 			if ($itemexample->status == 0) {
 				$insert = false;
 			}
@@ -1631,14 +1631,14 @@ class block_exacomp_external extends external_api {
 		}
 
 		if ($insert) {
-			$DB->insert_record('block_exacompitem_mm', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'studentvalue' => $studentvalue));
+			$DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'studentvalue' => $studentvalue));
 			if ($studentcomment != '') {
 				$DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
 			}
 		} else {
 			$itemexample->timemodified = time();
 			$itemexample->studentvalue = $studentvalue;
-			$DB->update_record('block_exacompitem_mm', $itemexample);
+			$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $itemexample);
 			if ($studentcomment != '') {
 				$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
 				$DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
@@ -2090,7 +2090,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_user($userid);
 
 		// insert into block_exacompitem_mm
-		$update = $DB->get_record('block_exacompitem_mm', array(
+		$update = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array(
 			'itemid' => $itemid,
 		));
 
@@ -2101,7 +2101,7 @@ class block_exacomp_external extends external_api {
 		$update->teachervalue = $value;
 		$update->status = $status;
 
-		$DB->update_record('block_exacompitem_mm', $update);
+		$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $update);
 		// if the grading is good, tick the example in exacomp
 		$exameval = $DB->get_record('block_exacompexameval', array(
 			'exampleid' => $exampleid,
@@ -2244,7 +2244,7 @@ class block_exacomp_external extends external_api {
 						$elem->exampleid = $example->exampleid;
 						$elem->exampletitle = static::custom_htmltrim($example->example_title);
 						$elem->exampletopicid = $topic->topicid;
-						$items_examp = $DB->get_records('block_exacompitem_mm', array(
+						$items_examp = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array(
 							'exampleid' => $example->exampleid,
 						));
 						$items = array();
@@ -2797,9 +2797,9 @@ class block_exacomp_external extends external_api {
 		// also checks for permissions
 		block_exacomp_delete_custom_example($exampleid);
 
-		$items = $DB->get_records('block_exacompitem_mm', array('exampleid' => $exampleid));
+		$items = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid));
 		foreach ($items as $item) {
-			$DB->delete_records('block_exacompitem_mm', array('id' => $item->id));
+			$DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('id' => $item->id));
 			static::delete_item($item->itemid);
 		}
 
@@ -6117,7 +6117,7 @@ class block_exacomp_external extends external_api {
 		//insert: if itemid == 0 OR status != 0
 		$insert = true;
 		if ($itemid > 0) {
-			$itemexample = $DB->get_record('block_exacompitem_mm', array('itemid' => $itemid));
+			$itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('itemid' => $itemid));
 			if ($itemexample && ($itemexample->teachervalue == null || $itemexample->status == 0)) {
 				$insert = false;
 			}
@@ -6209,14 +6209,14 @@ class block_exacomp_external extends external_api {
 
 
 		if ($insert) {
-		    $DB->insert_record('block_exacompitem_mm', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
+		    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
 		    if ($studentcomment != '') {
 		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
 		    }
 		} else {
 		    $itemexample->timemodified = time();
 		    $itemexample->studentvalue = $studentvalue;
-		    $DB->update_record('block_exacompitem_mm', $itemexample);
+		    $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $itemexample);
 		    //$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));   //DO NOT DELETE OLD COMMENTS, instead, only show newest
 		    if ($studentcomment != '') {
 		        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
@@ -6300,14 +6300,14 @@ class block_exacomp_external extends external_api {
             block_exacomp_etheme_autograde_examples_tree($courseid, $examples);
         }
 	    if ($itemid > 0 && $userid > 0) {    //So the student will never reach this part, either the itemid is null, or submit example is used
-	        $itemexample = $DB->get_record('block_exacompitem_mm', array('exampleid' => $exampleid, 'itemid' => $itemid));
+	        $itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid, 'itemid' => $itemid));
 	        if (!$itemexample) {
 	            throw new invalid_parameter_exception("Wrong itemid given");
 	        }
 	        $itemexample->datemodified = time();
 	        $itemexample->status = 1;
 
-	        $DB->update_record('block_exacompitem_mm', $itemexample);
+	        $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $itemexample);
 	        if ($comment || $filename != '') {
 // 	            $oldComment = $DB->get_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));
 // 	            if($oldComment){
