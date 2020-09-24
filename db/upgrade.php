@@ -1425,7 +1425,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	if ($oldversion < 2015021903) {
 
 		// Define table block_exaportlovevet to be created.
-		$table = new xmldb_table('block_exacompitem_mm');
+		$table = new xmldb_table('block_exacompitemexample');
 
 		// Adding fields to table block_exaportlovevet.
 		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -2408,15 +2408,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 
-		// Changing the default of field teachervalue on table block_exacompitem_mm to drop it.
-		$table = new xmldb_table('block_exacompitem_mm');
+		// Changing the default of field teachervalue on table block_exacompitemexample to drop it.
+		$table = new xmldb_table('block_exacompitemexample');
 		$field = new xmldb_field('teachervalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'status');
 
 		// Launch change of default for field teachervalue.
 		$dbman->change_field_default($table, $field);
 
-		// Changing the default of field studentvalue on table block_exacompitem_mm to drop it.
-		$table = new xmldb_table('block_exacompitem_mm');
+		// Changing the default of field studentvalue on table block_exacompitemexample to drop it.
+		$table = new xmldb_table('block_exacompitemexample');
 		$field = new xmldb_field('studentvalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'teachervalue');
 
 		// Launch change of default for field studentvalue.
