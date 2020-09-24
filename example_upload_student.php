@@ -37,7 +37,7 @@ if ($exampleid && (!$example = $DB->get_record('block_exacompexamples', array('i
 
 block_exacomp_require_login($course);
 
-$item = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array("exampleid"=>$exampleid),'*',IGNORE_MULTIPLE);
+$item = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array("exacomp_record_id"=>$exampleid),'*',IGNORE_MULTIPLE);
 if($exampleid && $item) {
 	$url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$item->itemid));
 	redirect($url);
@@ -156,7 +156,7 @@ if($formdata = $form->get_data()) {
 		}
 	}
 
-	$DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM,array('exampleid'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
+	$DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM,array('exacomp_record_id'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
 
 	// add to weekly schedule
 	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid,null,null,-1,-1,'S');

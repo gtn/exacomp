@@ -6036,7 +6036,7 @@ function block_exacomp_example_used($courseid, $example, $studentid) {
 		//any submission made?
 		if (block_exacomp_exaportexists()) {
 			$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_ITEM_MM."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
-				"WHERE ie.exampleid = ? AND i.courseid = ?";
+				"WHERE ie.exacomp_record_id = ? AND i.courseid = ?";
 			$records = $DB->get_records_sql($sql, array($example->id, $courseid));
 			if ($records) {
                 $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
@@ -6075,7 +6075,7 @@ function block_exacomp_example_used($courseid, $example, $studentid) {
 		//submission made?
 		if (block_exacomp_exaportexists()) {
 			$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_ITEM_MM."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
-				"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
+				"WHERE ie.exacomp_record_id = ? AND i.userid = ? AND i.courseid = ?";
 			$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
 			if ($records) {
                 $block_exacomp_example_used_values[$courseid][$studentid][$example->id] = true;
@@ -7158,7 +7158,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 				$submission_exists = false;
 				if (block_exacomp_exaportexists()) {
 					$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_ITEM_MM."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
-						"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
+						"WHERE ie.exacomp_record_id = ? AND i.userid = ? AND i.courseid = ?";
 					$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
 					if ($records) {
 						$submission_exists = true;
@@ -7781,7 +7781,7 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	if (block_exacomp_exaportexists()) {
 		$sql = "select * FROM {".BLOCK_EXACOMP_DB_ITEM_MM."} ie
 				JOIN {block_exaportitem} i ON i.id = ie.itemid
-				WHERE ie.exampleid = ? AND i.userid = ?";
+				WHERE ie.exacomp_record_id = ? AND i.userid = ?";
 
 		$items_examp = $DB->get_records_sql($sql, array($exampleid, $studentid));
 
@@ -7965,7 +7965,7 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 
 	$sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue 
               FROM {block_exacompexamples} e
-			    JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exampleid = e.id
+			    JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = e.id
 			    JOIN {block_exaportitem} i ON ie.itemid = i.id
 			  WHERE e.id = ?
 			      AND i.userid = ?
@@ -12029,7 +12029,7 @@ function block_exacomp_get_date_of_birth($userid) {
                      $exampleObj = \block_exacomp\example::get($exampleid);
                      block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $exampleObj);
                      $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, array('exampleid' => $exampleid));
-                     $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exampleid' => $exampleid));
+                     $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid));
                      $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('exampleid' => $exampleid, 'courseid' => $courseid));
                      $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampleid' => $exampleid));
                      $DB->delete_records(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('exampleid' => $exampleid));
