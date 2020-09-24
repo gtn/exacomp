@@ -1425,7 +1425,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	if ($oldversion < 2015021903) {
 
 		// Define table block_exaportlovevet to be created.
-		$table = new xmldb_table('block_exacompitemexample');
+		$table = new xmldb_table('block_exacompitem_mm');
 
 		// Adding fields to table block_exaportlovevet.
 		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -2408,15 +2408,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 
-		// Changing the default of field teachervalue on table block_exacompitemexample to drop it.
-		$table = new xmldb_table('block_exacompitemexample');
+		// Changing the default of field teachervalue on table block_exacompitem_mm to drop it.
+		$table = new xmldb_table('block_exacompitem_mm');
 		$field = new xmldb_field('teachervalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'status');
 
 		// Launch change of default for field teachervalue.
 		$dbman->change_field_default($table, $field);
 
-		// Changing the default of field studentvalue on table block_exacompitemexample to drop it.
-		$table = new xmldb_table('block_exacompitemexample');
+		// Changing the default of field studentvalue on table block_exacompitem_mm to drop it.
+		$table = new xmldb_table('block_exacompitem_mm');
 		$field = new xmldb_field('studentvalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'teachervalue');
 
 		// Launch change of default for field studentvalue.
@@ -3636,8 +3636,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020060500, 'exacomp');
     }
-	
-	    if ($oldversion < 2020061200) {
+
+    if ($oldversion < 2020061200) {
         $table = new xmldb_table('block_exacompdescrquest_mm');
 		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('questid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
@@ -3647,14 +3647,24 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-		
+
 		$key = new xmldb_key('questid', XMLDB_KEY_FOREIGN, array('questid'), 'question', array('id'));
         $dbman->add_key($table, $key);
 		$key = new xmldb_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
         $dbman->add_key($table, $key);
-		
+
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020061200, 'exacomp');
+    }
+
+    if ($oldversion < 2020092400) {
+        $table = new xmldb_table('block_exacompitem_mm');
+        $table->setName('block_exacompitem_mm');
+        $table->add_field('competence_type', XMLDB_TYPE_INTEGER, '10', null, true, false, BLOCK_EXACOMP_TYPE_EXAMPLE);
+        $renamefield = $table->getField('exampleid');
+        $renamefield->setName('exacomp_record_id');
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020092400, 'exacomp');
     }
 
     /*

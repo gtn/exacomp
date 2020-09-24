@@ -78,16 +78,16 @@ $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'],
                                 'visible_solution' => $visible_solution));
 
 if ($formdata = $form->get_data()) {
-	
+
 	$type = 'file';
-	
+
 	//store item in the right portfolio category
 	$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
-		
+
 	if(!$course_category) {
 		$course_category = block_exaport_create_user_category($course->fullname, $USER->id,0, $course->id);
 	}
-	
+
 	$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id'=>$exampleid));
 	$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
 	$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
@@ -95,14 +95,14 @@ if ($formdata = $form->get_data()) {
 
 		$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
 	}
-	
+
 	if(!empty($formdata->url))
 		$formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == TRUE) ? $formdata->url : "http://" . $formdata->url;
-	
+
 	$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id, 'courseid' => $courseid));
 	//autogenerate a published view for the new item
 	$exampleTitle = $DB->get_field('block_exacompexamples','title',array("id"=>$exampleid));
-	
+
 	$dbView = new stdClass();
 	$dbView->userid = $USER->id;
 	$dbView->name = $exampleTitle;
@@ -113,15 +113,15 @@ if ($formdata = $form->get_data()) {
 		$hash = substr(md5(microtime()), 3, 8);
 	} while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
 	$dbView->hash = $hash;
-	
+
 	$dbView->id = $DB->insert_record('block_exaportview', $dbView);
-		
+
 	//share the view with teachers
 	block_exaport_share_view_to_teachers($dbView->id, $courseid);
-		
+
 	// add item to view
 	$DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id,' positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid' => $itemid));
-	
+
 	if (isset($formdata->file)) {
 		$filename = $form->get_new_filename('file');
 		$context = context_user::instance($USER->id);
@@ -132,10 +132,10 @@ if ($formdata = $form->get_data()) {
 		}
 	}
 	$timecreated = time();
-	$DB->insert_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0));
+	$DB->insert_record('block_exacompitem_mm', array('exampleid' => $exampleid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0));
 
 	block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated);
-	
+
 	\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
 	// add "activity" relations to competences: TODO: is this ok?

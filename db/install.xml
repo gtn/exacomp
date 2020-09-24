@@ -392,10 +392,11 @@
         <KEY NAME="badgeid" TYPE="foreign" FIELDS="badgeid" REFTABLE="badge" REFFIELDS="id" COMMENT="Fremdschlüssel Badgeid"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_exacompitemexample" COMMENT="this table is used in the lovevet app">
+    <TABLE NAME="block_exacompitem_mm" COMMENT="this table is used to connect exaportitems to exacomp topics, descriptors, examples">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="competence_type" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="4" COMMENT="4 is BLOCK_EXACOMP_TYPE_EXAMPLE, which was used before the rework, so it is set as default"/>
+        <FIELD NAME="exacomp_record_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="datemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
