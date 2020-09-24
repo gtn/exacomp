@@ -3260,7 +3260,7 @@ class block_exacomp_external extends external_api {
 			'used' => new external_value (PARAM_INT, 'used in current context'),
 		    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
             'niveauvisible' => new external_value (PARAM_BOOL, 'if niveau is visible'),
-            'niveausort' => new external_value(PARAM_INT, 'sorting for ids')
+            'niveausort' => new external_value(PARAM_INT, 'sorting for ids', false)
 		)));
 	}
 
@@ -9591,7 +9591,7 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 							$descriptor_return->niveaudescription = "";
 							$descriptor_return->niveautitle = "";
-							$descriptor_return->niveausort = "";
+//							$descriptor_return->niveausort = null;
 							$descriptor_return->niveauid = 0;
                             $descriptor_return->niveauvisible = 0;
 
