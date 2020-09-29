@@ -12793,3 +12793,7 @@ function block_exacomp_get__descriptor_of_question($questionid) {
 			WHERE dq.questid = ?
 			', array($questionid) );
 }
+
+function block_exacomp_disable_core_competency() {
+    set_config('enabled', 0, 'core_competency');
+}

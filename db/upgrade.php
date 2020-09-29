@@ -3671,6 +3671,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020092400, 'exacomp');
     }
 
+    if ($oldversion < 2020092901) {
+        block_exacomp_disable_core_competency();
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020092901, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
