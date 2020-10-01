@@ -22,67 +22,18 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_competence_submission_form extends moodleform {
 
     function definition() {
-        global $CFG, $USER, $DB;
+        global $DB;
 
         $mform = & $this->_form;
-
         $compid = $this->_customdata['compid'];
-        $isTeacher = $this->_customdata['isTeacher'];
-        $studentid = $this->_customdata['studentid'];
-
-        $isTeacher = block_exacomp_is_teacher();
         $competence = $DB->get_record('block_exacompdescriptors', ['id' => $compid]);
-        $competenceObj = block_exacomp\descriptor::get($compid);
-        $output = block_exacomp_get_renderer();
 
-        $fileLink = function($url, $img = null, $title = '') use ($output) {
-            if (!$img) {
-                $img = 'globesearch.png';
-            }
-            return html_writer::span($output->local_pix_icon($img, $title),
-                '',
-                array('onclick' => 'window.open("'.$url.'"); return false;',
-                    'style' => 'cursor: pointer;',
-                    'title' => $title)
-            );
-        };
         $competenceTitle = '';
         $competenceTitle .= '<h3 class="exacomp-submission-example-title">'.$competence->title.'</h3>';
         if ($competence->description) {
             $competenceTitle .= '<span class="exacomp-submission-example-description">'.$competence->description.'</span>';
         }
-        $files = '';
-        // completefile
-        if ($competence->completefile) {
-            $files .= ' '.$fileLink($competence->completefile, 'globesearch.png', block_exacomp_get_string('preview').': '.$competence->completefile);
-        }
-        // externaltask
-        if ($competence->externaltask) {
-            $files .= ' '.$fileLink($competence->externaltask, 'globesearch.png', block_exacomp_get_string('preview').': '.$competence->externaltask);
-        }
-        if ($files) {
-            $competenceTitle .= '<span class="exacomp-submission-example-files">'.block_exacomp_get_string('files').': '.$files.'</span>';
-        }
 
-        $links = '';
-        // external url
-        if ($competence->externalurl) {
-            $links .= ' '.$fileLink($competence->externalurl, 'globesearch.png', block_exacomp_get_string('preview').': '.$competence->externalurl);
-        }
-        /*// file task
-        if ($taskurl = $competenceObj->get_task_file_url()) {
-            $links .= ' '.$fileLink($taskurl, 'filesearch.png', block_exacomp_get_string('preview').': '.$taskurl);
-        }
-        // file solution: TODO: check permissions (block_exacomp_renderer.php)
-        $solutionurl = $competenceObj->get_solution_file_url();
-        if (($isTeacher || $visible_solution) && $solutionurl) {
-            $links .= ' '.$fileLink($solutionurl, 'fullpage.png', block_exacomp_get_string('solution').': '.$solutionurl);
-        }*/
-        if ($links) {
-            $competenceTitle .= '<span class="exacomp-submission-example-links">'.block_exacomp_get_string('links').': '.$links.'</span>';
-        }
-        //$mform->addElement('header', 'general', block_exacomp_get_string("example_submission_header", null, $competenceTitle));
-        //$mform->addElement('header', 'general', $competenceTitle);
         $mform->addElement('html', $competenceTitle);
 
         $mform->addElement('static', 'info', block_exacomp_get_string('description'),
@@ -90,7 +41,6 @@ class block_exacomp_competence_submission_form extends moodleform {
 
         $mform->addElement('text', 'name', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
         $mform->setType('name', PARAM_TEXT);
-//        $mform->setDefault('name', substr($competence->title,0,10));
         $mform->addRule('name', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
         $mform->addElement('text', 'intro', block_exacomp_get_string("moduleintro"), 'maxlength="255" size="60"');

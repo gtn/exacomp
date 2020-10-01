@@ -1052,6 +1052,15 @@ function block_exacomp_get_subject_by_descriptorid($descriptorid) {
     return $DB->get_record('block_exacompsubjects', array('id' => $subjectid->subjid));
 }
 
+/**
+
+ */
+function block_exacomp_get_subject_by_topicid($topicid) {
+    global $DB;
+    $subjectid = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid), "subjid");
+    return $DB->get_record('block_exacompsubjects', array('id' => $subjectid->subjid));
+}
+
 function block_exacomp_get_subject_by_example($exampleid) {
     global $DB;
     $resultSubject = null;
@@ -1209,6 +1218,19 @@ function block_exacomp_get_subjecttitle_by_descriptor($compid) {
     }
     return null;
 }
+
+/**
+ * returns the subject a topic belongs to
+ * @param int $compid
+ */
+function block_exacomp_get_subjecttitle_by_topic($compid) {
+    $subject = block_exacomp_get_subject_by_topicid($compid);
+    if ($subject) {
+        return $subject->title;
+    }
+    return null;
+}
+
 
 
 

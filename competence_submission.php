@@ -22,6 +22,7 @@ require_once __DIR__.'/competence_submission_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $compid = required_param('compid', PARAM_INT);
+$comptype = required_param('comptype', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_exacomp', $courseid);
@@ -54,13 +55,10 @@ echo $output->header($context, $courseid, '', false);
 require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 
 $isTeacher = block_exacomp_is_teacher();
-//$visible_solution = block_exacomp_is_example_solution_visible($courseid, $compid, $USER->id);
-$visible_solution = false;
 $form = new block_exacomp_competence_submission_form($_SERVER['REQUEST_URI'],
     array(  'compid' => $compid,
         'isTeacher' => $isTeacher,
-        'studentid' => $USER->id,
-        'visible_solution' => $visible_solution));
+        'studentid' => $USER->id));
 
 if ($formdata = $form->get_data()) {
 
@@ -73,7 +71,22 @@ if ($formdata = $form->get_data()) {
         $course_category = block_exaport_create_user_category($course->fullname, $USER->id,0, $course->id);
     }
 
-    $subjecttitle = block_exacomp_get_subjecttitle_by_descriptor($compid);
+
+    switch ($comptype) {
+        case BLOCK_EXACOMP_TYPE_TOPIC:
+            $subjecttitle = block_exacomp_get_subjecttitle_by_topic($compid);
+
+            //autogenerate a published view for the new item
+            $compTitle = $DB->get_field('block_exacomptopics','title',array("id"=>$compid));
+            break;
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+            $subjecttitle = block_exacomp_get_subjecttitle_by_descriptor($compid);
+
+            //autogenerate a published view for the new item
+            $compTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$compid));
+            break;
+    }
+
     $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
 
     if(!$subject_category) {
@@ -84,8 +97,7 @@ if ($formdata = $form->get_data()) {
         $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == TRUE) ? $formdata->url : "http://" . $formdata->url;
 
     $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id, 'courseid' => $courseid));
-    //autogenerate a published view for the new item
-    $compTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$compid));
+
 
     $dbView = new stdClass();
     $dbView->userid = $USER->id;
@@ -122,18 +134,13 @@ if ($formdata = $form->get_data()) {
 
     \block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
 
-//    // add "activity" relations to competences: TODO: is this ok?
-//    $competences = $DB->get_records('block_exacompdescrexamp_mm', ['exampid' => $compid]);
-//    foreach ($competences as $comp) {
-//        if ($comp->descrid) {
-//            $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
-//        }
-//    }
-
-    echo $output->popup_close_and_reload();
+    // add "activity" relations to competences: TODO: is this ok?
+    $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
+    
+    echo $output->popup_close();
     exit;
 } else if($form->is_cancelled()) {
-    echo $output->popup_close_and_reload();
+    echo $output->popup_close();
     exit;
 }
 
