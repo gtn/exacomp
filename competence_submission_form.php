@@ -26,13 +26,13 @@ class block_exacomp_competence_submission_form extends moodleform {
 
         $mform = & $this->_form;
 
-        $competenceid = $this->_customdata['competenceid'];
+        $compid = $this->_customdata['compid'];
         $isTeacher = $this->_customdata['isTeacher'];
         $studentid = $this->_customdata['studentid'];
 
         $isTeacher = block_exacomp_is_teacher();
-        $competence = $DB->get_record('block_exacompdescriptors', ['id' => $competenceid]);
-        $competenceObj = block_exacomp\descriptor::get($competenceid);
+        $competence = $DB->get_record('block_exacompdescriptors', ['id' => $compid]);
+        $competenceObj = block_exacomp\descriptor::get($compid);
         $output = block_exacomp_get_renderer();
 
         $fileLink = function($url, $img = null, $title = '') use ($output) {
@@ -101,9 +101,9 @@ class block_exacomp_competence_submission_form extends moodleform {
         $mform->addElement('text', 'url', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
         $mform->setType('url', PARAM_TEXT);
 
-        $mform->addElement('hidden','competenceid');
-        $mform->setType('competenceid', PARAM_INT);
-        $mform->setDefault('competenceid',$competenceid);
+        $mform->addElement('hidden','compid');
+        $mform->setType('compid', PARAM_INT);
+        $mform->setDefault('compid',$compid);
 
         $this->add_action_buttons(true, block_exacomp_get_string('submit_example'));
     }

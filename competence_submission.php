@@ -125,7 +125,7 @@ if ($formdata = $form->get_data()) {
         }
     }
     $timecreated = time();
-    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0));
+    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0, 'competencetype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
 
     block_exacomp_notify_all_teachers_about_submission($courseid, $compid, $timecreated);
 
