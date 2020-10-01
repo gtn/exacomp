@@ -47,7 +47,7 @@ $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_submission.php', array('courseid' => $courseid,'exampleid' => $exampleid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_heading(block_exacomp_get_string('submission'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation

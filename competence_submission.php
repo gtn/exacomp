@@ -39,7 +39,7 @@ $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_submission.php', array('courseid' => $courseid,'compid' => $compid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_heading(block_exacomp_get_string('submission'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
@@ -58,7 +58,8 @@ $isTeacher = block_exacomp_is_teacher();
 $form = new block_exacomp_competence_submission_form($_SERVER['REQUEST_URI'],
     array(  'compid' => $compid,
         'isTeacher' => $isTeacher,
-        'studentid' => $USER->id));
+        'studentid' => $USER->id,
+        'comptype' => $comptype));
 
 if ($formdata = $form->get_data()) {
 
@@ -136,7 +137,7 @@ if ($formdata = $form->get_data()) {
 
     // add "activity" relations to competences: TODO: is this ok?
     $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
-    
+
     echo $output->popup_close();
     exit;
 } else if($form->is_cancelled()) {

@@ -26,6 +26,7 @@ class block_exacomp_competence_submission_form extends moodleform {
 
         $mform = & $this->_form;
         $compid = $this->_customdata['compid'];
+        $comptype = $this->_customdata['comptype'];
         $competence = $DB->get_record('block_exacompdescriptors', ['id' => $compid]);
 
         $competenceTitle = '';
@@ -36,8 +37,18 @@ class block_exacomp_competence_submission_form extends moodleform {
 
         $mform->addElement('html', $competenceTitle);
 
-        $mform->addElement('static', 'info', block_exacomp_get_string('description'),
-            block_exacomp_get_string("example_submission_info", null, $competence->title));
+        switch($comptype){
+            case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+                $infotext = block_exacomp_get_string("descriptor_submission_info", null, $competence->title);
+                break;
+            case BLOCK_EXACOMP_TYPE_TOPIC:
+                $infotext = block_exacomp_get_string("topic_submission_info", null, $competence->title);
+                break;
+        }
+
+
+
+        $mform->addElement('static', 'info', block_exacomp_get_string('description'),$infotext);
 
         $mform->addElement('text', 'name', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
         $mform->setType('name', PARAM_TEXT);

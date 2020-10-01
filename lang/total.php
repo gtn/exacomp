@@ -1405,10 +1405,18 @@ return [
 		'Aufgabe {$a} bearbeiten',
 		'Edit example {$a}',
 	],
-	'example_submission_info' => [
-		'Du bist dabei die "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.',
-		'You are about to edit the "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.',
-	],
+    'example_submission_info' => [
+        'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.',
+        'You are about to edit the example "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.',
+    ],
+    'topic_submission_info' => [
+        'Du bist dabei eine Abgabe zum Kompetenzbereich "{$a}" zu machen. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.',
+        'You are to add a submission to the topic "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.',
+    ],
+     'descriptor_submission_info' => [
+        'Du bist dabei eine Abgabe zur Kompetenz "{$a}" zu machen. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.',
+        'You are about to add a submission to the descriptor "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.',
+    ],
 	'example_submission_subject' => [
 		'Neue Abgabe',
 		'New submission',
@@ -3211,6 +3219,7 @@ return [
         'Datei auswählen: ',
         'Choose file: ',
     ],
+
 
 
 

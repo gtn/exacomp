@@ -401,7 +401,9 @@ $string['competence_locked'] = 'Beurteilung vorhanden oder Lernmaterial in Verwe
 $string['save_changes_competence_evaluation'] = 'Änderungen wurden gespeichert!';
 // === Example Submission ===
 $string['example_submission_header'] = 'Aufgabe {$a} bearbeiten';
-$string['example_submission_info'] = 'Du bist dabei die "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
+$string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
+$string['topic_submission_info'] = 'Du bist dabei eine Abgabe zum Kompetenzbereich "{$a}" zu machen. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
+$string['descriptor_submission_info'] = 'Du bist dabei eine Abgabe zur Kompetenz "{$a}" zu machen. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
 $string['example_submission_subject'] = 'Neue Abgabe';
 $string['example_submission_message'] = 'Im Kurs {$a->course} wurde von Teilnehmer/in {$a->student} eine neue Abgabe eingereicht.';
 $string['submissionmissing'] = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
