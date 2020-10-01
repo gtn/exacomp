@@ -2300,8 +2300,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $outputname = str_repeat('&nbsp;', 9).$outputname;
                     }
                 }
-				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname.($title ? $this->pix_icon("i/info", $title) : '')), '');
-                $titleCell->text .= $this->submission_icon($data->courseid, $descriptor->id, $USER->id, false, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname.($title ? $this->pix_icon("i/info", $title) : '').$this->submission_icon($data->courseid, $descriptor->id, $USER->id, false, BLOCK_EXACOMP_TYPE_DESCRIPTOR)), '');
+//                $titleCell->text .= $this->submission_icon($data->courseid, $descriptor->id, $USER->id, false, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 
 				// EDIT MODE BUTTONS
 				if ($editmode) {
@@ -3916,18 +3916,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
             if (!$isTeacher) {
                 // if student, check for existing item
                 if ($studentid && $forSelf) {
-                    var_dump("forSelf");
                     if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $compid)) {
                         $result = html_writer::link($url,
                             $this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
                             array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                     } else {
-                        var_dump("nothing in url");
                         // goes here if as student and new example that has no submission
                         $result = ''; // empty!
                     }
                 } else {
-                    var_dump("itemExists");
                     //this creates the link to the submission (square)
                     $itemExists = block_exacomp_get_current_item_for_example($studentid, $compid);
                     $result = html_writer::link(
@@ -3948,10 +3945,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }elseif ($competencetype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
             // probably not differentiate here, but deeper. try out here for now
             if (!$isTeacher){
-                $itemExists = block_exacomp_get_current_item_for_competence($studentid, $compid);
+//                $itemExists = block_exacomp_get_current_item_for_competence($studentid, $compid);
                 $result = html_writer::link(
                     new moodle_url('/blocks/exacomp/competence_submission.php', array("courseid" => $courseid, "compid" => $compid)),
-                    $this->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", block_exacomp_get_string('submission')),
+                    $this->pix_icon("i/manual_item", block_exacomp_get_string('submission')),
                     array('exa-type' => 'iframe-popup'));
             } elseif ($studentid) {
                 //works only if exaport is installed

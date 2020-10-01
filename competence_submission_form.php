@@ -90,8 +90,8 @@ class block_exacomp_competence_submission_form extends moodleform {
 
         $mform->addElement('text', 'name', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
         $mform->setType('name', PARAM_TEXT);
-        $mform->setDefault('name', $competence->title);
-//        $mform->addRule('name', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+//        $mform->setDefault('name', substr($competence->title,0,10));
+        $mform->addRule('name', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
         $mform->addElement('text', 'intro', block_exacomp_get_string("moduleintro"), 'maxlength="255" size="60"');
         $mform->setType('intro', PARAM_TEXT);

@@ -34,15 +34,6 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 
 block_exacomp_require_login($course);
 
-$itemInformation = block_exacomp_get_current_item_for_competence($USER->id, $compid);
-if ($itemInformation && !optional_param('newsubmission', false, PARAM_BOOL)) {
-    // edit url
-    // $url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$itemInformation->id,"descriptorselection"=>false));
-    // view url + comments
-    $url = new moodle_url("/blocks/exaport/shared_item.php",array("courseid"=>$courseid,"access"=>"portfolio/id/".$itemInformation->userid,"itemid"=>$itemInformation->id));
-    redirect($url);
-}
-
 $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
@@ -82,9 +73,9 @@ if ($formdata = $form->get_data()) {
         $course_category = block_exaport_create_user_category($course->fullname, $USER->id,0, $course->id);
     }
 
-    $exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id'=>$compid));
     $subjecttitle = block_exacomp_get_subjecttitle_by_descriptor($compid);
     $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
+
     if(!$subject_category) {
         $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
     }
@@ -94,11 +85,11 @@ if ($formdata = $form->get_data()) {
 
     $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id, 'courseid' => $courseid));
     //autogenerate a published view for the new item
-    $exampleTitle = $DB->get_field('block_exacompexamples','title',array("id"=>$compid));
+    $compTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$compid));
 
     $dbView = new stdClass();
     $dbView->userid = $USER->id;
-    $dbView->name = $exampleTitle;
+    $dbView->name = $compTitle;
     $dbView->timemodified = time();
     $dbView->layout = 1;
     // generate view hash
@@ -125,19 +116,19 @@ if ($formdata = $form->get_data()) {
         }
     }
     $timecreated = time();
-    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0, 'competencetype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => $timecreated, 'status' => 0, 'competence_type' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
 
     block_exacomp_notify_all_teachers_about_submission($courseid, $compid, $timecreated);
 
     \block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
 
-    // add "activity" relations to competences: TODO: is this ok?
-    $competences = $DB->get_records('block_exacompdescrexamp_mm', ['exampid' => $compid]);
-    foreach ($competences as $comp) {
-        if ($comp->descrid) {
-            $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
-        }
-    }
+//    // add "activity" relations to competences: TODO: is this ok?
+//    $competences = $DB->get_records('block_exacompdescrexamp_mm', ['exampid' => $compid]);
+//    foreach ($competences as $comp) {
+//        if ($comp->descrid) {
+//            $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
+//        }
+//    }
 
     echo $output->popup_close_and_reload();
     exit;

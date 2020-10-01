@@ -88,7 +88,6 @@ if ($formdata = $form->get_data()) {
 		$course_category = block_exaport_create_user_category($course->fullname, $USER->id,0, $course->id);
 	}
 
-	$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id'=>$exampleid));
 	$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
 	$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
 	if(!$subject_category) {
@@ -101,7 +100,7 @@ if ($formdata = $form->get_data()) {
 
 	$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id, 'courseid' => $courseid));
 	//autogenerate a published view for the new item
-	$exampleTitle = $DB->get_field('block_exacompexamples','title',array("id"=>$exampleid));
+	$exampleTitle = $DB->get_field('block_exacompexamples','title', array('id'=>$exampleid));
 
 	$dbView = new stdClass();
 	$dbView->userid = $USER->id;
