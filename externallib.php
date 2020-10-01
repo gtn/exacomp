@@ -6315,30 +6315,26 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_submit_item_parameters() {
         return new external_function_parameters (array(
             'exampleid' => new external_value (PARAM_INT, 'exampleid'),
-            'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1),
+            'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1), // if example --> grading also possible
             'url' => new external_value (PARAM_URL, 'url'),
-//			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
             'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
             'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
-            //'value' => new external_value (PARAM_INT, 'value of the grading', VALUE_DEFAULT, -1),
             'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
             'courseid' => new external_value (PARAM_INT, 'courseid'),
-//			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
+//            'comptype' =>
         ));
     }
 
     /**
-     * submit example solution
-     * Add student submission to example.
-     *
+     * Add studentsubmission  (exaportitem) to topic, descriptor or example
      * @ws-type-write
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_example($exampleid, $studentvalue = null, $url, $filenames, $studentcomment, $itemid = 0, $courseid = 0, $fileitemids = '') {
+    public static function diggrplus_submit_item($exampleid, $studentvalue = null, $url, $filenames, $studentcomment, $itemid = 0, $courseid = 0, $fileitemids = '') {
         global $CFG, $DB, $USER;
-        static::validate_parameters(static::diggrplus_submit_example_parameters(), array('exampleid' => $exampleid, 'url' => $url, 'filenames' => $filenames, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemids' => $fileitemids));
+        static::validate_parameters(static::diggrplus_submit_item_parameters(), array('exampleid' => $exampleid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment, 'itemid' => $itemid, 'courseid' => $courseid));
 
         if (!isset($type)) {
             $type = ($filenames != '') ? 'file' : 'url';
@@ -6468,7 +6464,7 @@ class block_exacomp_external extends external_api {
      *
      * @return external_single_structure
      */
-    public static function diggrplus_submit_example_returns() {
+    public static function diggrplus_submit_item_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'status'),
             'itemid' => new external_value (PARAM_INT, 'itemid'),

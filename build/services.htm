@@ -2561,6 +2561,73 @@ Returns:<pre>{
     "success": "bool null (status)",
     "itemid": "int null (itemid)"
 }</pre>
+<h2>block_exacomp_diggrplus_submit_item</h2>
+<div>submit example solution
+Add student submission to example.</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>exampleid</td>
+<tr>
+<td>studentvalue</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>studentvalue for grading</td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>url</td>
+<tr>
+<td>filenames</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filenames, separated by comma, used to look up files and create a new ones in the exaport file area</td>
+<tr>
+<td>studentcomment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentcomment</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>itemid (0 for insert, >0 for update)</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemids separated by comma</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)",
+    "itemid": "int null (itemid)"
+}</pre>
 <h2>dakora_grade_example</h2>
 <div>grade example solution
 Add student submission to example.</div>
