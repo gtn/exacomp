@@ -1406,8 +1406,8 @@ return [
 		'Edit example {$a}',
 	],
 	'example_submission_info' => [
-		'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.',
-		'You are about to edit the example "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.',
+		'Du bist dabei die "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.',
+		'You are about to edit the "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.',
 	],
 	'example_submission_subject' => [
 		'Neue Abgabe',

@@ -135,7 +135,7 @@ class block_exacomp_example_submission_form extends moodleform {
 		$mform->addElement('text', 'name', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
 		$mform->setType('name', PARAM_TEXT);
 		$mform->setDefault('name', $example->title);
-		$mform->addRule('name', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+//		$mform->addRule('name', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
 		$mform->addElement('text', 'intro', block_exacomp_get_string("moduleintro"), 'maxlength="255" size="60"');
 		$mform->setType('intro', PARAM_TEXT);

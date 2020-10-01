@@ -1197,6 +1197,24 @@ function block_exacomp_get_subjecttitle_by_example($exampleid) {
     return null;
 }
 
+
+/**
+ * returns the subject a descriptor belongs to
+ * @param int $compid
+ */
+function block_exacomp_get_subjecttitle_by_descriptor($compid) {
+    $subject = block_exacomp_get_subject_by_descriptorid($compid);
+    if ($subject) {
+        return $subject->title;
+    }
+    return null;
+}
+
+
+
+
+
+
 /**
  * returns all topics from a course
  * @param int $courseid
@@ -7973,6 +7991,28 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 			  LIMIT 1';
 	return $DB->get_record_sql($sql, array($exampleid, $userid));
 }
+
+/**
+ * get current exaport item for example/topic/descriptor -> this is example submission
+ * @param unknown $userid
+ * @param unknown $competenceid
+ */
+function block_exacomp_get_current_item_for_competence($userid, $competenceid) {
+    global $DB;
+
+    $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue 
+          FROM {block_exacompdescriptors} d
+            JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = d.id
+            JOIN {block_exaportitem} i ON ie.itemid = i.id
+          WHERE d.id = ?
+              AND i.userid = ?
+          ORDER BY ie.timecreated DESC
+          LIMIT 1';
+
+    return $DB->get_record_sql($sql, array($competenceid, $userid));
+}
+
+
 
 /**
  * keeps selected studentid in the session
