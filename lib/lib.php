@@ -5015,8 +5015,7 @@ function block_exacomp_perform_auto_test() {
 //                var_dump($activity_assignment);
 //                die;
 
-
-                if (($activity_completion->completionstate == COMPLETION_COMPLETE ||  $activity_completion->completionstate == COMPLETION_COMPLETE_PASS)
+                if ($activity_completion && (@$activity_completion->completionstate == COMPLETION_COMPLETE || @$activity_completion->completionstate == COMPLETION_COMPLETE_PASS)
                     && (!$activity_assignment || $activity_assignment->timemodified < $activity_completion->timemodified)
                 ) {
                     $changedactivites[$activity->coursemoduleid] = $activity_completion->timemodified;
