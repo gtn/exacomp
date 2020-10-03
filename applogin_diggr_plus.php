@@ -23,27 +23,32 @@ function block_exacomp_load_service($serviceshortname) {
     return $token->token;
 }
 
-function block_exacomp_get_login_data() {
-	$exa_tokens = [];
-
-	$services = optional_param('services', '', PARAM_TEXT);
+function block_exacomp_get_service_tokens($services) {
+	$tokens = [];
 	$services = array_keys(
 		['moodle_mobile_app' => 1, 'exacompservices' => 1] // default services
 		+ ($services ? array_flip(explode(',', $services)) : []));
 
 	foreach ($services as $service) {
 		$token = block_exacomp_load_service($service);
-		$exa_tokens[] = [
+		$tokens[] = [
 			'service' => $service,
 			'token' => $token,
 		];
 	}
 
+	return $tokens;
+}
+
+function block_exacomp_get_login_data() {
+
+	$services = optional_param('services', '', PARAM_TEXT);
+	$tokens = block_exacomp_get_service_tokens($services);
 
 	// get login data
 	$data = block_exacomp_external::login();
 	// add tokens
-	$data['tokens'] = $exa_tokens;
+	$data['tokens'] = $tokens;
 
 	// clean output
 	$data = external_api::clean_returnvalue(block_exacomp_external::login_returns(), $data);
@@ -72,7 +77,7 @@ $PAGE->set_pagelayout('embedded');
 header('Access-Control-Allow-Origin: *');
 
 // always delete old login data
-$DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time()-60*60*30]);
+$DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time()-60*30]);
 
 $action = optional_param('action', '', PARAM_TEXT);
 
@@ -81,8 +86,8 @@ if ($action == 'get_login_url') {
 	required_param('app_version', PARAM_TEXT);
 
 	// TODO: besseren token
-	$moodle_redirect_token = 'mdl-'.mt_rand();
-	$moodle_data_token = 'mdl-'.mt_rand();
+	$moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
+	$moodle_data_token = 'data-'.block_exacomp_random_password(24);
 
 	$DB->insert_record('block_exacompapplogin', [
 		'app_token' => required_param('app_token', PARAM_TEXT),
@@ -90,7 +95,7 @@ if ($action == 'get_login_url') {
 		'moodle_data_token' => $moodle_data_token,
 		'created_at' => time(),
 		'request_data' => json_encode([
-				'return_url' => required_param('return_url', PARAM_TEXT),
+				'return_uri' => required_param('return_uri', PARAM_TEXT),
 				'services' => optional_param('services', '', PARAM_TEXT),
 		]),
 		'result_data' => '',
@@ -157,12 +162,13 @@ if ($action == 'logout') {
 }
 
 
-$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'];
-block_exacomp_require_login(0,false,null,false,false);
+$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'].'&from_login=1';
+
+require_login(0,false,null,false,false);
 
 if (isguestuser()) {
 	// is guest user
-	block_exacomp_require_login();
+	require_login();
 	$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'].'&withlogout=1';
 	redirect($CFG->wwwroot.'/login/index.php');
 	exit;
@@ -215,14 +221,16 @@ if (!$applogin) {
 	throw new Error('token not found');
 }
 
-$loginData = block_exacomp_get_login_data();
+$request_data = json_decode($applogin->request_data);
 
-$DB->update_record('block_exacompapplogin', [
+$DB->update_record('block_exacompapplogin', (object)[
 	'id' => $applogin->id,
-	'result_data' => json_encode($loginData),
+	'result_data' => json_encode([
+		'tokens' => block_exacomp_get_service_tokens($request_data->services)
+	]),
 ]);
 
-$return_url = json_decode($applogin->request_data)->return_url.'?moodle_token='.$applogin->moodle_data_token;
+$return_uri = $request_data->return_uri.'?moodle_token='.$applogin->moodle_data_token;
 
 if (optional_param('withlogout', '', PARAM_BOOL)) {
 
@@ -231,7 +239,7 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 
 	?>
 	<script>
-	    document.location.href = <?=json_encode($return_url)?>;
+	    document.location.href = <?=json_encode($return_uri)?>;
 	</script>
 	<?php
 
@@ -242,19 +250,23 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 	block_exacomp_logout();
 
 	exit;
+} elseif (optional_param('from_login', '', PARAM_BOOL)) {
+	// hat sich gerade eingeloggt, sofort weiterleiten
+	header("Location: ".$return_uri);
+	exit;
 } else {
 	// was already logged in, show info and continue button... always comes here?
 	echo $OUTPUT->header();
 
 	?>
 	<script>
-		function app_login_now() {
-		  	document.location.href = <?=json_encode($return_url)?>;
-		}
+      function app_login_now() {
+        document.location.href = <?=json_encode($return_uri)?>;
+      }
 
-		function app_relogin() {
-			document.location.href = document.location.href + '&action=logout';
-		}
+      function app_relogin() {
+        document.location.href = document.location.href + '&action=logout';
+      }
 	</script>
 	<?php
 

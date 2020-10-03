@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20160921" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20201003" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -395,7 +395,7 @@
     <TABLE NAME="block_exacompitem_mm" COMMENT="this table is used to connect exaportitems to exacomp topics, descriptors, examples">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="competence_type" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="4" COMMENT="4 is BLOCK_EXACOMP_TYPE_EXAMPLE, which was used before the rework, so it is set as default"/>
+        <FIELD NAME="competence_type" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="4" SEQUENCE="false" COMMENT="4 is BLOCK_EXACOMP_TYPE_EXAMPLE, which was used before the rework, so it is set as default"/>
         <FIELD NAME="exacomp_record_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -617,7 +617,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title of task"/>
-        <FIELD NAME="link" TYPE="text" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="link to the source"/>
+        <FIELD NAME="link" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="link to the source"/>
         <FIELD NAME="category_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
         <FIELD NAME="selected_grids" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="selected grids"/>
         <FIELD NAME="all_grids" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
@@ -687,7 +687,7 @@
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
       </KEYS>
     </TABLE>
-	    <TABLE NAME="block_exacompdescrquest_mm" COMMENT="This table stores connections between descripors and questions">
+    <TABLE NAME="block_exacompdescrquest_mm" COMMENT="This table stores connections between descripors and questions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="questid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
@@ -697,6 +697,20 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
         <KEY NAME="questid" TYPE="foreign" FIELDS="questid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_exacompapplogin" COMMENT="block_exacompapplogin table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="app_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="moodle_redirect_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="moodle_data_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="created_at" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="request_data" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="result_data" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

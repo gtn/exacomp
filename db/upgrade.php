@@ -3677,6 +3677,32 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020092901, 'exacomp');
     }
 
+    if ($oldversion < 2020100300) {
+
+        // Define table block_exacompapplogin to be created.
+        $table = new xmldb_table('block_exacompapplogin');
+
+        // Adding fields to table block_exacompapplogin.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('app_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('moodle_redirect_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('moodle_data_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('created_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('request_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('result_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_exacompapplogin.
+        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for block_exacompapplogin.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020100300, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
