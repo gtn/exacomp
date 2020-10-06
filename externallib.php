@@ -6346,8 +6346,8 @@ class block_exacomp_external extends external_api {
         //insert: if itemid == 0 OR status != 0
         $insert = true;
         if ($itemid > 0) {
-            $itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('itemid' => $itemid));
-            if ($itemexample && ($itemexample->teachervalue == null || $itemexample->status == 0)) {
+            $item_comp_mm = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('itemid' => $itemid));
+            if ($item_comp_mm && ($item_comp_mm->teachervalue == null || $item_comp_mm->status == 0)) {
                 $insert = false;
             }
         }
@@ -6459,9 +6459,9 @@ class block_exacomp_external extends external_api {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
             }
         } else {
-            $itemexample->timemodified = time();
-            $itemexample->studentvalue = $studentvalue;
-            $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $itemexample);
+            $item_comp_mm->timemodified = time();
+            $item_comp_mm->studentvalue = $studentvalue;
+            $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $item_comp_mm);
             //$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));   //DO NOT DELETE OLD COMMENTS, instead, only show newest
             if ($studentcomment != '') {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
@@ -6500,6 +6500,124 @@ class block_exacomp_external extends external_api {
 
 
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_get_item_parameters() {
+        return new external_function_parameters (array(
+            'userid' => new external_value (PARAM_INT, 'id of user'),
+            'itemid' => new external_value (PARAM_INT, 'id of item'),
+        ));
+    }
+
+    /**
+     * Get Item
+     * get subjects from one user for all his courses
+     *
+     * @ws-type-read
+     * @return array of user courses
+     */
+    public static function diggrplus_get_item($userid, $itemid) {
+        global $CFG, $DB, $USER;
+
+        if ($userid == 0) {
+            $userid = $USER->id;
+        }
+
+        static::validate_parameters(static::get_item_for_example_parameters(), array(
+            'userid' => $userid,
+            'itemid' => $itemid,
+        ));
+
+        static::require_can_access_user($userid);
+        // TODO: can access item? can user access all items of that user
+
+        $conditions = array(
+            "id" => $itemid,
+            "userid" => $userid,
+        );
+        $item = $DB->get_record("block_exaportitem", $conditions, 'id,userid,type,name,intro,url,courseid', MUST_EXIST);
+        $itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array(
+            "itemid" => $itemid,
+        ));
+
+        if (!$itemexample) {
+            throw new invalid_parameter_exception ('Item not found');
+        }
+
+        $courseid = static::find_courseid_for_example($itemexample->exacomp_record_id);
+        static::require_can_access_example($itemexample->exacomp_record_id, $courseid);
+
+        $item->file = "";
+        $item->isimage = false;
+        $item->filename = "";
+        $item->effort = strip_tags($item->intro);
+        $item->teachervalue = isset ($itemexample->teachervalue) ? $itemexample->teachervalue : 0;
+        $item->studentvalue = isset ($itemexample->studentvalue) ? $itemexample->studentvalue : 0;
+        $item->status = isset ($itemexample->status) ? $itemexample->status : 0;
+
+        if ($item->type == 'file') {
+            // TODO: move code into exaport\api
+            require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+
+            $item->userid = $userid;
+            if ($file = block_exaport_get_item_single_file($item)) {
+                $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$itemid."&wstoken=".static::wstoken());
+                $item->isimage = $file->is_valid_image();
+                $item->filename = $file->get_filename();
+            }
+        }
+
+        $item->studentcomment = '';
+        $item->teachercomment = '';
+
+        // TODO: change to exaport\api::get_item_comments()
+        $itemcomments = $DB->get_records('block_exaportitemcomm', array(
+            'itemid' => $itemid,
+        ), 'timemodified ASC', 'id, entry, userid');
+
+        // teacher comment: last comment from any teacher in the course the item was submited
+        foreach ($itemcomments as $itemcomment) {
+            if (!$item->studentcomment && $userid == $itemcomment->userid) {
+                $item->studentcomment = $itemcomment->entry;
+            } elseif (!$item->teachercomment) {
+                if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
+                    // dakora / exacomp teacher
+                    $item->teachercomment = $itemcomment->entry;
+                } elseif (block_exacomp_is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
+                    // elove teacher
+                    $item->teachercomment = $itemcomment->entry;
+                }
+            }
+        }
+
+        return $item;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_item_returns() {
+        return new external_single_structure (array(
+            'id' => new external_value (PARAM_INT, 'id of item'),
+            'name' => new external_value (PARAM_TEXT, 'title of item'),
+            'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)'),
+            'url' => new external_value (PARAM_TEXT, 'url'),
+            'effort' => new external_value (PARAM_RAW, 'description of the effort'),
+            'filename' => new external_value (PARAM_TEXT, 'title of item'),
+            'file' => new external_value (PARAM_URL, 'file url'),
+            'isimage' => new external_value (PARAM_BOOL, 'true if file is image'),
+            'status' => new external_value (PARAM_INT, 'status of the submission'),
+            'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
+            'studentvalue' => new external_value (PARAM_INT, 'student grading'),
+            'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
+            'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
+        ));
+    }
 
 
 
