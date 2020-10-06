@@ -2562,17 +2562,16 @@ Returns:<pre>{
     "itemid": "int null (itemid)"
 }</pre>
 <h2>block_exacomp_diggrplus_submit_item</h2>
-<div>submit example solution
-Add student submission to example.</div>
+<div>Add studentsubmission  (exaportitem) to topic, descriptor or example</div>
 <div>type: write</div>
 Params: <table>
 <tr>
-<td>exampleid</td>
+<td>compid</td>
 <td>int</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>exampleid</td>
+<td>compid</td>
 <tr>
 <td>studentvalue</td>
 <td>int</td>
@@ -2603,6 +2602,13 @@ Params: <table>
 <td></td>
 <td>studentcomment</td>
 <tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemids separated by comma</td>
+<tr>
 <td>itemid</td>
 <td>int</td>
 <td>null</td>
@@ -2617,12 +2623,19 @@ Params: <table>
 <td></td>
 <td>courseid</td>
 <tr>
-<td>fileitemids</td>
+<td>comptype</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comptype (example, topic, descriptor)</td>
+<tr>
+<td>itemtitle</td>
 <td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>fileitemids separated by comma</td>
+<td>name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",

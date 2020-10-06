@@ -591,8 +591,7 @@ Add student submission to example.',
     'classname' => 'block_exacomp_external',
     'methodname' => 'diggrplus_submit_item',
     'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => 'submit example solution
-Add student submission to example.',
+    'description' => 'Add studentsubmission  (exaportitem) to topic, descriptor or example',
     'type' => 'write',
   ),
   'dakora_grade_example' => 

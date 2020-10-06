@@ -6314,15 +6314,16 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_submit_item_parameters() {
         return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'exampleid'),
+            'compid' => new external_value (PARAM_INT, 'compid'),
             'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1), // if example --> grading also possible
             'url' => new external_value (PARAM_URL, 'url'),
             'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
             'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
             'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
             'courseid' => new external_value (PARAM_INT, 'courseid'),
-//            'comptype' =>
+            'comptype' =>new external_value (PARAM_INT, 'comptype (example, topic, descriptor)'),
+            'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_OPTIONAL),
         ));
     }
 
@@ -6332,9 +6333,9 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($exampleid, $studentvalue = null, $url, $filenames, $studentcomment, $itemid = 0, $courseid = 0, $fileitemids = '') {
+    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='') {
         global $CFG, $DB, $USER;
-        static::validate_parameters(static::diggrplus_submit_item_parameters(), array('exampleid' => $exampleid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment, 'itemid' => $itemid, 'courseid' => $courseid));
+        static::validate_parameters(static::diggrplus_submit_item_parameters(), array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment, 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle'=>$itemtitle));
 
         if (!isset($type)) {
             $type = ($filenames != '') ? 'file' : 'url';
@@ -6361,23 +6362,39 @@ class block_exacomp_external extends external_api {
                 $course_category = block_exaport_create_user_category($course->fullname, $USER->id); //create new category for portfoliofiles
             }
 
-            $example = $DB->get_record('block_exacompexamples', array('id' => $exampleid), 'title, blocking_event');
-            $exampletitle = $example->title;
-            if($example->blocking_event == 2){ //if freematerial, create the category with name "freematerials"
-                $subjecttitle = get_string('freematerials', 'block_exacomp');
-            }else{
-                $subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
+            switch($comptype) {
+                case BLOCK_EXACOMP_TYPE_TOPIC:
+                    $subjecttitle = block_exacomp_get_subjecttitle_by_topic($compid);
+
+                    $comptitle = $itemtitle ? $itemtitle : $DB->get_field('block_exacomptopics','title',array("id"=>$compid));
+
+                    break;
+                case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+                    $subjecttitle = block_exacomp_get_subjecttitle_by_descriptor($compid);
+
+                    $comptitle = $itemtitle ? $itemtitle : $DB->get_field('block_exacompdescriptors','title',array("id"=>$compid));
+                    break;
+                case BLOCK_EXACOMP_TYPE_EXAMPLE:
+                    $example = $DB->get_record('block_exacompexamples', array('id' => $compid), 'title, blocking_event');
+                    $comptitle = $itemtitle ? $itemtitle : $example->title;
+                    if($example->blocking_event == 2){ //if freematerial, create the category with name "freematerials"
+                        $subjecttitle = get_string('freematerials', 'block_exacomp');
+                    }else{
+                        $subjecttitle = block_exacomp_get_subjecttitle_by_example($comptitle);
+                    }
+                    break;
             }
+
             $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
             if (!$subject_category) {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
-            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $exampletitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
+            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
             //autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
-            $dbView->name = $exampletitle;
+            $dbView->name = $comptitle;
             $dbView->timemodified = time();
             $dbView->layout = 1;
             // generate view hash
@@ -6437,7 +6454,7 @@ class block_exacomp_external extends external_api {
 
 
         if ($insert) {
-            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
+            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
             if ($studentcomment != '') {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
             }
@@ -6451,12 +6468,17 @@ class block_exacomp_external extends external_api {
             }
         }
 
-        block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
-        block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(),$studentcomment);
-        \block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
+        // TODO: should something like this be done for topics or other competencetypes as well? RW
+        if($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE){
+            block_exacomp_set_user_example($USER->id, $compid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
+            block_exacomp_notify_all_teachers_about_submission($courseid, $compid, time(),$studentcomment);
+            \block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
+        }
+
+        // add "activity" relations to competences: TODO: is this ok?
+        $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
 
         return array("success" => true, "itemid" => $itemid);
-
     }
 
     /**

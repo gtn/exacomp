@@ -73,7 +73,7 @@ if ($formdata = $form->get_data()) {
     }
 
 
-    switch ($comptype) {
+    switch($comptype) {
         case BLOCK_EXACOMP_TYPE_TOPIC:
             $subjecttitle = block_exacomp_get_subjecttitle_by_topic($compid);
 
@@ -97,7 +97,7 @@ if ($formdata = $form->get_data()) {
     if(!empty($formdata->url))
         $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == TRUE) ? $formdata->url : "http://" . $formdata->url;
 
-    $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id, 'courseid' => $courseid));
+    $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
 
 
     $dbView = new stdClass();
