@@ -8014,23 +8014,51 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 }
 
 /**
- * get current exaport item for example/topic/descriptor -> this is example submission
+ * get exaport items for example/topic/descriptor
  * @param unknown $userid
- * @param unknown $competenceid
+ * @param unknown $compid
+ * @param unknown $comptype
  */
-function block_exacomp_get_current_item_for_competence($userid, $competenceid) {
+function block_exacomp_get_items_for_competence($userid, $compid, $comptype) {
     global $DB;
+//    switch($comptype){
+//        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+//            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
+//              FROM {block_exacompexamples} e
+//			    JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = e.id
+//			    JOIN {block_exaportitem} i ON ie.itemid = i.id
+//			  WHERE e.id = ?
+//			      AND i.userid = ?
+//			  ORDER BY ie.timecreated DESC
+//			  LIMIT 1';
+//            break;
+//        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+//            break;
+//        case BLOCK_EXACOMP_TYPE_TOPIC:
+//            break;
+//    }
+    switch($comptype){
+        case BLOCK_EXACOMP_TYPE_EXAMPLE:
+            $table = "block_exacompexamples";
+            break;
+        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+            $table = "block_exacompdescriptors";
+            break;
+        case BLOCK_EXACOMP_TYPE_TOPIC:
+            $table = "block_exacomptopics";
+            break;
+    }
 
-    $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue 
-          FROM {block_exacompdescriptors} d
+    $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
+          FROM {'.$table.'} d
             JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = d.id
             JOIN {block_exaportitem} i ON ie.itemid = i.id
           WHERE d.id = ?
               AND i.userid = ?
-          ORDER BY ie.timecreated DESC
-          LIMIT 1';
+              AND ie.competence_type = ?
+          ORDER BY ie.timecreated DESC';
 
-    return $DB->get_record_sql($sql, array($competenceid, $userid));
+    return $DB->get_records_sql($sql, array($compid, $userid, $comptype));
 }
 
 
@@ -8670,8 +8698,8 @@ function block_exacomp_create_background_event($courseid, $title, $creatorid, $s
  */
 function block_exacomp_get_courseids_by_descriptor($descriptorid) {
 	$sql = 'SELECT ct.courseid
-		FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct 
-		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid  
+		FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct
+		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid
 		WHERE dt.descrid = ?';
 
 	return g::$DB->get_fieldset_sql($sql, array($descriptorid));
@@ -8679,8 +8707,8 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid) {
 
 function block_exacomp_get_courseids_by_example($exampleid) {
 	$sql = 'SELECT ct.courseid
-		FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct 
-		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid  
+		FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct
+		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid
 		JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} dex ON dex.descrid = dt.descrid
 		WHERE dex.exampid=?';
 
@@ -9813,13 +9841,13 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
  */
 function block_exacomp_get_visible_own_and_child_examples_for_descriptor($courseid, $descriptorid, $userid) {
 	global $DB;
-	$sql = 'SELECT DISTINCT e.id, e.title, e.sorting FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e 
+	$sql = 'SELECT DISTINCT e.id, e.title, e.sorting FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
 		JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON de.exampid = e.id
 		JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON de.descrid = d.id
 		LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPVISIBILITY.'} ev ON e.id = ev.exampleid AND ev.courseid = ?
 		WHERE e.blocking_event = 0 AND d.id IN (
-				SELECT dsub.id FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} dsub 
-                LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dv ON dsub.id = dv.descrid AND dv.courseid = ? 
+				SELECT dsub.id FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} dsub
+                LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dv ON dsub.id = dv.descrid AND dv.courseid = ?
                 WHERE dsub.id = ? OR dsub.parentid = ?
                 AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS (
                 		SELECT * FROM {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvsub
@@ -9830,7 +9858,7 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
 		)
  		AND ((ev.visible = 1 AND ev.studentid = 0 AND NOT EXISTS (
               	SELECT * FROM {'.BLOCK_EXACOMP_DB_EXAMPVISIBILITY.'} evsub
-   				WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?)) 
+   				WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?))
    		OR (ev.visible = 1 AND ev.studentid = ? AND NOT EXISTS (
               	SELECT * FROM {'.BLOCK_EXACOMP_DB_EXAMPVISIBILITY.'} evsub
   				WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid =0)))';

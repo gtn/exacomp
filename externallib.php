@@ -6088,7 +6088,7 @@ class block_exacomp_external extends external_api {
             'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
 			'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
 		    //'value' => new external_value (PARAM_INT, 'value of the grading', VALUE_DEFAULT, -1),
-			'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
+			'itemid' => new external_value (PARAM_INT, 'itemid (<=0 for insert, >0 for update)'),
 			'courseid' => new external_value (PARAM_INT, 'courseid'),
 //			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
             'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
@@ -6454,7 +6454,7 @@ class block_exacomp_external extends external_api {
 
 
         if ($insert) {
-            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0));
+            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'competence_type' => $comptype));
             if ($studentcomment != '') {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
             }
@@ -6505,104 +6505,104 @@ class block_exacomp_external extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function diggrplus_get_item_parameters() {
+    public static function diggrplus_get_items_parameters() {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
-            'itemid' => new external_value (PARAM_INT, 'id of item'),
+            'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example'),
+            'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example'),
         ));
     }
 
     /**
-     * Get Item
-     * get subjects from one user for all his courses
+     * Get Items
+     * get all items for a competence
      *
      * @ws-type-read
-     * @return array of user courses
+     * @return array of items
      */
-    public static function diggrplus_get_item($userid, $itemid) {
+    public static function diggrplus_get_items($userid, $compid, $comptype) {
         global $CFG, $DB, $USER;
 
         if ($userid == 0) {
             $userid = $USER->id;
         }
 
-        static::validate_parameters(static::get_item_for_example_parameters(), array(
+        static::validate_parameters(static::diggrplus_get_items_parameters(), array(
             'userid' => $userid,
-            'itemid' => $itemid,
+            'compid' => $compid,
+            'comptype' => $comptype
         ));
 
         static::require_can_access_user($userid);
         // TODO: can access item? can user access all items of that user
 
-        $conditions = array(
-            "id" => $itemid,
-            "userid" => $userid,
-        );
-        $item = $DB->get_record("block_exaportitem", $conditions, 'id,userid,type,name,intro,url,courseid', MUST_EXIST);
-        $itemexample = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array(
-            "itemid" => $itemid,
-        ));
+        $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype);
 
-        if (!$itemexample) {
-            throw new invalid_parameter_exception ('Item not found');
-        }
+//        $courseid = static::find_courseid_for_example($itemexample->exacomp_record_id);
+//        static::require_can_access_example($itemexample->exacomp_record_id, $courseid);
+        //TODO: what should be checked? Only for examples, or also for topics etc? at least for examples it should be checked, so the get_items_for_example funcitonality is retained RW
 
-        $courseid = static::find_courseid_for_example($itemexample->exacomp_record_id);
-        static::require_can_access_example($itemexample->exacomp_record_id, $courseid);
+        foreach($items as $item){
+            $item->file = "";
+            $item->isimage = false;
+            $item->filename = "";
+            $item->effort = strip_tags($item->intro);
+            $item->teachervalue = isset ($item->teachervalue) ? $item->teachervalue : 0;
+            $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
+            $item->status = isset ($item->status) ? $item->status : 0;
 
-        $item->file = "";
-        $item->isimage = false;
-        $item->filename = "";
-        $item->effort = strip_tags($item->intro);
-        $item->teachervalue = isset ($itemexample->teachervalue) ? $itemexample->teachervalue : 0;
-        $item->studentvalue = isset ($itemexample->studentvalue) ? $itemexample->studentvalue : 0;
-        $item->status = isset ($itemexample->status) ? $itemexample->status : 0;
+            if ($item->type == 'file') {
+                // TODO: move code into exaport\api
+                require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
-        if ($item->type == 'file') {
-            // TODO: move code into exaport\api
-            require_once $CFG->dirroot.'/blocks/exaport/inc.php';
-
-            $item->userid = $userid;
-            if ($file = block_exaport_get_item_single_file($item)) {
-                $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$itemid."&wstoken=".static::wstoken());
-                $item->isimage = $file->is_valid_image();
-                $item->filename = $file->get_filename();
+                $item->userid = $userid;
+                if ($file = block_exaport_get_item_single_file($item)) {
+                    $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$itemid."&wstoken=".static::wstoken());
+                    $item->isimage = $file->is_valid_image();
+                    $item->filename = $file->get_filename();
+                }
             }
-        }
 
-        $item->studentcomment = '';
-        $item->teachercomment = '';
+            $item->studentcomment = '';
+            $item->teachercomment = '';
 
-        // TODO: change to exaport\api::get_item_comments()
-        $itemcomments = $DB->get_records('block_exaportitemcomm', array(
-            'itemid' => $itemid,
-        ), 'timemodified ASC', 'id, entry, userid');
+            // TODO: change to exaport\api::get_item_comments()
+            $itemcomments = $DB->get_records('block_exaportitemcomm', array(
+                'itemid' => $itemid,
+            ), 'timemodified ASC', 'id, entry, userid');
 
-        // teacher comment: last comment from any teacher in the course the item was submited
-        foreach ($itemcomments as $itemcomment) {
-            if (!$item->studentcomment && $userid == $itemcomment->userid) {
-                $item->studentcomment = $itemcomment->entry;
-            } elseif (!$item->teachercomment) {
-                if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
-                    // dakora / exacomp teacher
-                    $item->teachercomment = $itemcomment->entry;
-                } elseif (block_exacomp_is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
-                    // elove teacher
-                    $item->teachercomment = $itemcomment->entry;
+            // teacher comment: last comment from any teacher in the course the item was submited
+            foreach ($itemcomments as $itemcomment) {
+                if (!$item->studentcomment && $userid == $itemcomment->userid) {
+                    $item->studentcomment = $itemcomment->entry;
+                } elseif (!$item->teachercomment) {
+                    if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
+                        // dakora / exacomp teacher
+                        $item->teachercomment = $itemcomment->entry;
+                    } elseif (block_exacomp_is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
+                        // elove teacher
+                        $item->teachercomment = $itemcomment->entry;
+                    }
                 }
             }
         }
 
-        return $item;
+//        var_dump(array_pop($items));
+//        die;
+
+        return $items;
     }
+
+
+
 
     /**
      * Returns desription of method return values
      *
      * @return external_multiple_structure
      */
-    public static function diggrplus_get_item_returns() {
-        return new external_single_structure (array(
+    public static function diggrplus_get_items_returns() {
+        return new external_multiple_structure(new external_single_structure (array(
             'id' => new external_value (PARAM_INT, 'id of item'),
             'name' => new external_value (PARAM_TEXT, 'title of item'),
             'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)'),
@@ -6616,10 +6616,8 @@ class block_exacomp_external extends external_api {
             'studentvalue' => new external_value (PARAM_INT, 'student grading'),
             'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
             'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
-        ));
+        )));
     }
-
-
 
 
 
