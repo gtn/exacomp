@@ -3703,6 +3703,27 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020100300, 'exacomp');
     }
 
+    if ($oldversion < 2020101301) {
+
+        // Define table block_exacompitemcollab_mm to be created.
+        $table = new xmldb_table('block_exacompitemcollab_mm');
+
+        // Adding fields to table block_exacompitemcollab_mm.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_exacompitemcollab_mm.
+        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for block_exacompitemcollab_mm.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020101301, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

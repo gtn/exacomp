@@ -6442,69 +6442,6 @@ class block_exacomp_external extends external_api {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Returns description of method parameters
      *
@@ -6522,6 +6459,7 @@ class block_exacomp_external extends external_api {
             'courseid' => new external_value (PARAM_INT, 'courseid'),
             'comptype' =>new external_value (PARAM_INT, 'comptype (example, topic, descriptor)'),
             'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_OPTIONAL),
+            'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL)
         ));
     }
 
@@ -6531,9 +6469,9 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='') {
+    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='') {
         global $CFG, $DB, $USER;
-        static::validate_parameters(static::diggrplus_submit_item_parameters(), array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment, 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle'=>$itemtitle));
+        static::validate_parameters(static::diggrplus_submit_item_parameters(), array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment, 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle'=>$itemtitle, 'collabuserids'=>$collabuserids));
 
         if (!isset($type)) {
             $type = ($filenames != '') ? 'file' : 'url';
@@ -6676,6 +6614,17 @@ class block_exacomp_external extends external_api {
         // add "activity" relations to competences: TODO: is this ok?
         $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
 
+
+        // update collabuserids
+        // first delete all, then add again   //could check if anything changed first, but I am not sure if it would bring any benefit
+        $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR, array('itemid' => $itemid));
+        if($collabuserids!=''){
+            $collabuserids = explode(',', $collabuserids);
+            foreach($collabuserids as $collabuserid){
+                $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR, array('userid' => $collabuserid, 'itemid' => $itemid));
+            }
+        }
+
         return array("success" => true, "itemid" => $itemid);
     }
 
@@ -6690,11 +6639,6 @@ class block_exacomp_external extends external_api {
             'itemid' => new external_value (PARAM_INT, 'itemid'),
         ));
     }
-
-
-
-
-
 
 
 

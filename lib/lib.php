@@ -73,6 +73,7 @@ const BLOCK_EXACOMP_DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
 const BLOCK_EXACOMP_DB_IMPORTTASKS = 'block_exacompimporttasks';
 const BLOCK_EXACOMP_DB_GLOBALGRADINGS = 'block_exacompglobalgradings';
 const BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION = 'block_exacompdescrquest_mm';
+const BLOCK_EXACOMP_DB_ITEM_COLLABORATOR = 'block_exacompitemcollab_mm';
 
 /**
  * PLUGIN ROLES
