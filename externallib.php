@@ -6617,12 +6617,14 @@ class block_exacomp_external extends external_api {
 
         // update collabuserids
         // first delete all, then add again   //could check if anything changed first, but I am not sure if it would bring any benefit
-        $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR, array('itemid' => $itemid));
+        $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $itemid));
         if($collabuserids!=''){
             $collabuserids = explode(',', $collabuserids);
             foreach($collabuserids as $collabuserid){
-                $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR, array('userid' => $collabuserid, 'itemid' => $itemid));
+                $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('userid' => $collabuserid, 'itemid' => $itemid));
             }
+            // add yourself as well
+            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('userid' => $USER->id, 'itemid' => $itemid));
         }
 
         return array("success" => true, "itemid" => $itemid);
@@ -6751,6 +6753,9 @@ class block_exacomp_external extends external_api {
             'studentvalue' => new external_value (PARAM_INT, 'student grading'),
             'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
             'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
+            'collaborators' => new external_multiple_structure (new external_single_structure ( array(
+                'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
+            ), 'collaborators', VALUE_OPTIONAL)),
         )));
     }
 

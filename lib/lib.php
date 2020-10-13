@@ -73,7 +73,7 @@ const BLOCK_EXACOMP_DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
 const BLOCK_EXACOMP_DB_IMPORTTASKS = 'block_exacompimporttasks';
 const BLOCK_EXACOMP_DB_GLOBALGRADINGS = 'block_exacompglobalgradings';
 const BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION = 'block_exacompdescrquest_mm';
-const BLOCK_EXACOMP_DB_ITEM_COLLABORATOR = 'block_exacompitemcollab_mm';
+const BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM = 'block_exacompitemcollab_mm';
 
 /**
  * PLUGIN ROLES
@@ -8040,11 +8040,17 @@ function block_exacomp_get_items_for_competence($userid, $compid, $comptype) {
             JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = d.id
             JOIN {block_exaportitem} i ON ie.itemid = i.id
           WHERE d.id = ?
-              AND i.userid = ?
-              AND ie.competence_type = ?
+            AND i.userid = ?
+            AND ie.competence_type = ?
           ORDER BY ie.timecreated DESC';
 
-    return $DB->get_records_sql($sql, array($compid, $userid, $comptype));
+    $items = $DB->get_records_sql($sql, array($compid, $userid, $comptype));
+
+    foreach($items as $item){
+        $item->collaborators = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $item->id));
+    }
+
+    return $items;
 }
 
 
