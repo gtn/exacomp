@@ -1151,6 +1151,207 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return external_function_parameters
 	 */
+	public static function diggrplus_get_subjects_and_topics_for_user_parameters() {
+		return new external_function_parameters (array(
+			'userid' => new external_value (PARAM_INT, 'id of user'),
+		));
+	}
+	/**
+	 * Get Subjects
+	 * get subjects from one user for all his courses
+	 *
+	 * @ws-type-read
+	 * @return array of user courses
+	 */
+	public static function diggrplus_get_subjects_and_topics_for_user($userid) {
+		global $CFG, $USER, $DB;
+
+		static::validate_parameters(static::diggrplus_get_subjects_and_topics_for_user_parameters(), array(
+			'userid' => $userid,
+		));
+
+		if (!$userid) {
+			$userid = $USER->id;
+		}
+		static::require_can_access_user($userid);
+
+		$structure = array();
+
+		$courses = static::get_courses($userid);
+
+		$topicIdsWithExamples = $DB->get_records_sql_menu("SELECT DISTINCT dt.topicid, dt.topicid AS tmp
+			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid
+			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON dt.descrid=de.descrid
+			-- WHERE e.creatorid=X
+		", [
+			// TODO: auch auf user abfragen!
+			//$userid,
+		]);
+
+		foreach ($courses as $course) {
+			$tree = block_exacomp_get_competence_tree($course["courseid"]);
+
+			foreach ($tree as $subject) {
+				$elem_sub = new stdClass ();
+				$elem_sub->id = $subject->id;
+				$elem_sub->title = $subject->title;
+				$elem_sub->topics = array();
+				foreach ($subject->topics as $topic) {
+					if (!$topicIdsWithExamples[$topic->id]) {
+						continue;
+					}
+					$elem_topic = new stdClass ();
+					$elem_topic->id = $topic->id;
+					$elem_topic->title = $topic->title;
+					//$elem_topic->descriptors = array();
+					//foreach ($topic->descriptors as $descriptor) {
+					//	$elem_desc = new stdClass ();
+					//	$elem_desc->descriptorid = $descriptor->id;
+					//	$elem_desc->descriptortitle = $descriptor->title;
+					//	$elem_topic->descriptors[] = $elem_desc;
+					//}
+					$elem_sub->topics[] = $elem_topic;
+				}
+				$structure[] = $elem_sub;
+			}
+		}
+
+		return $structure;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function diggrplus_get_subjects_and_topics_for_user_returns() {
+		return new external_multiple_structure (new external_single_structure (array(
+			'id' => new external_value (PARAM_INT, 'id of subject'),
+			'title' => new external_value (PARAM_TEXT, 'title of subject'),
+			//'courseid' => new external_value (PARAM_INT, 'id of course'),
+			//'requireaction' => new external_value (PARAM_BOOL, 'whether example in this subject has been edited or not by the selected student'),
+			'topics' => new external_multiple_structure (new external_single_structure (array(
+				'id' => new external_value (PARAM_INT, 'id of example'),
+				'title' => new external_value (PARAM_TEXT, 'title of example'),
+				//'descriptors' => new external_multiple_structure (new external_single_structure (array(
+				//	'descriptorid' => new external_value (PARAM_INT, 'id of example'),
+				//	'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+				//))),
+			))),
+		)));
+	}
+
+	/*
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function diggrplus_get_examples_for_topic_for_user_parameters() {
+		return new external_function_parameters (array(
+			'topicid' => new external_value (PARAM_INT, 'id of subject'),
+			'userid' => new external_value (PARAM_INT, 'id of user'),
+		));
+	}
+
+	/**
+	 * Get examples for subtopic
+	 * Get examples
+	 *
+	 * @ws-type-read
+	 * @param $topicid
+	 * @param $userid
+	 * @return array of examples
+	 * @throws dml_exception
+	 * @throws invalid_parameter_exception
+	 */
+	public static function diggrplus_get_examples_for_topic_for_user($topicid, $userid) {
+		global $DB, $USER;
+
+		if (empty ($topicid)) {
+			throw new invalid_parameter_exception ('Parameter can not be empty');
+		}
+
+		static::validate_parameters(static::diggrplus_get_examples_for_topic_for_user_parameters(), array(
+			'topicid' => $topicid,
+			'userid' => $userid,
+		));
+
+		if ($userid == 0) {
+			$userid = $USER->id;
+		}
+
+		static::require_can_access_user($userid);
+
+		$structure = array();
+
+		$examples = $DB->get_records_sql("SELECT de.id as deid, e.id, e.title, e.externalurl,
+			e.externalsolution, e.externaltask, e.completefile, e.description, e.source, e.creatorid
+			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid
+			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON dt.descrid=de.descrid AND dt.topicid=?
+			-- WHERE e.creatorid=X
+			ORDER BY e.title
+		", [
+			$topicid,
+			// TODO: auch auf user abfragen!
+			//$userid,
+		]);
+
+		foreach ($examples as $example) {
+			$structure[$example->id] = new stdClass ();
+			$structure[$example->id]->id = $example->id;
+			$structure[$example->id]->title = static::custom_htmltrim($example->title);
+			$structure[$example->id]->creatorid = $example->creatorid;
+			$items_examp = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array(
+				'exacomp_record_id' => $example->id,
+			));
+			$items = array();
+			foreach ($items_examp as $item_examp) {
+				$item_db = $DB->get_record('block_exaportitem', array(
+					'id' => $item_examp->itemid,
+				));
+				if ($item_db->userid == $userid) {
+					$items[] = $item_examp;
+				}
+			}
+			if (!empty ($items)) {
+				// check for current
+				$current_timestamp = 0;
+				foreach ($items as $item) {
+					if ($item->timecreated > $current_timestamp) {
+						$structure[$example->id]->item = $item->itemid;
+						$structure[$example->id]->status = $item->status;
+					}
+				}
+			} else {
+				$structure[$example->id]->item = -1;
+				$structure[$example->id]->status = -1;
+			}
+		}
+
+		return $structure;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function diggrplus_get_examples_for_topic_for_user_returns() {
+		return new external_multiple_structure(new external_single_structure (array(
+			'id' => new external_value (PARAM_INT, 'id of example'),
+			'title' => new external_value (PARAM_TEXT, 'title of example'),
+			'creatorid' => new external_value (PARAM_INT, 'creator of example'),
+			'item' => new external_value (PARAM_INT, 'current item id'),
+			'status' => new external_value (PARAM_INT, 'status of current item'),
+		)));
+	}
+
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
 	public static function delete_item_parameters() {
 		return new external_function_parameters (array(
 			'itemid' => new external_value (PARAM_INT, 'id of item'),
