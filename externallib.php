@@ -1555,10 +1555,7 @@ class block_exacomp_external extends external_api {
 		$item->studentcomment = '';
 		$item->teachercomment = '';
 
-		// TODO: change to exaport\api::get_item_comments()
-		$itemcomments = $DB->get_records('block_exaportitemcomm', array(
-			'itemid' => $itemid,
-		), 'timemodified ASC', 'id, entry, userid');
+        $itemcomments = \block_exaport\api::get_item_comments($itemid);
 
 		// teacher comment: last comment from any teacher in the course the item was submited
 		foreach ($itemcomments as $itemcomment) {
@@ -6735,15 +6732,15 @@ class block_exacomp_external extends external_api {
         ));
 
         static::require_can_access_user($userid);
-        // TODO: can access item? can user access all items of that user
 
         $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype);
 
-//        $courseid = static::find_courseid_for_example($itemexample->exacomp_record_id);
-//        static::require_can_access_example($itemexample->exacomp_record_id, $courseid);
-        //TODO: what should be checked? Only for examples, or also for topics etc? at least for examples it should be checked, so the get_items_for_example funcitonality is retained RW
 
         foreach($items as $item){
+            static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
+            //TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
+            // ==> Then the access can be checked RW
+
             $item->file = "";
             $item->isimage = false;
             $item->filename = "";
@@ -6758,7 +6755,7 @@ class block_exacomp_external extends external_api {
 
                 $item->userid = $userid;
                 if ($file = block_exaport_get_item_single_file($item)) {
-                    $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$itemid."&wstoken=".static::wstoken());
+                    $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$item->id."&wstoken=".static::wstoken());
                     $item->isimage = $file->is_valid_image();
                     $item->filename = $file->get_filename();
                 }
@@ -6767,10 +6764,7 @@ class block_exacomp_external extends external_api {
             $item->studentcomment = '';
             $item->teachercomment = '';
 
-            // TODO: change to exaport\api::get_item_comments()
-            $itemcomments = $DB->get_records('block_exaportitemcomm', array(
-                'itemid' => $itemid,
-            ), 'timemodified ASC', 'id, entry, userid');
+            $itemcomments = \block_exaport\api::get_item_comments($item->id);
 
             // teacher comment: last comment from any teacher in the course the item was submited
             foreach ($itemcomments as $itemcomment) {
@@ -10608,6 +10602,48 @@ class block_exacomp_external extends external_api {
 		}
 	}
 
+
+
+//    private static function find_courseid_for_comp($compid, $comptype) {
+//        // go through all courses
+//        // and all subjects
+//        // and all examples
+//        // and try to find it
+//        $courses_ws = static::get_courses(g::$USER->id);
+//
+//        $courses = array();
+//        foreach ($courses_ws as $course) {
+//            $courses[$course['courseid']] = new stdClass();
+//            $courses[$course['courseid']]->id = $course['courseid'];
+//        }
+//
+//        //check if user is external trainer, if he is add courses where external_student is enrolled
+//        // check external trainers
+//        $external_trainer_entries = g::$DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array(
+//            'trainerid' => g::$USER->id,
+//        ));
+//
+//        foreach ($external_trainer_entries as $ext_tr_entry) {
+//            $courses_user = static::get_courses($ext_tr_entry->studentid);
+//
+//            foreach ($courses_user as $course) {
+//                if (!array_key_exists($course['courseid'], $courses)) {
+//                    $courses[$course['courseid']] = new stdClass();
+//                    $courses[$course['courseid']]->id = $course['courseid'];
+//                }
+//            }
+//        }
+//
+//        foreach ($courses as $course) {
+//            try {
+//                static::require_can_access_comp($compid, $course->id);
+//                return $course->id;
+//            } catch (block_exacomp_permission_exception $e) {
+//                // try other course
+//            }
+//        }
+//    }
+
 	/**
 	 * @param $exampleid
 	 * @param int $courseid if courseid=0, then we don't know the course and have to search all
@@ -10714,6 +10750,28 @@ class block_exacomp_external extends external_api {
 			throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
 		}
 	}
+
+
+    /**
+     * @param $compid
+     * @param int $courseid if courseid=0, then we don't know the course and have to search all
+     * @param int $comptype
+     * @return object the data of the found example
+     * @throws block_exacomp_permission_exception
+     */
+    private static function require_can_access_comp($compid, $courseid=0, $comptype) {
+        switch($comptype){
+            case BLOCK_EXACOMP_TYPE_TOPIC:
+                // TODO: What should be checked? RW
+                break;
+            case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+
+                break;
+            case BLOCK_EXACOMP_TYPE_EXAMPLE:
+                static::require_can_access_example($compid, $courseid);
+                break;
+        }
+    }
 
 
 	private static function wstoken() {

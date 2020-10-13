@@ -89,7 +89,7 @@ Get all students for an external trainer',
 get subjects from one user for all his courses',
     'type' => 'read',
   ),
-  'block_exacomp_diggrplus_get_subjects_and_topics_for_user' => 
+  'diggrplus_get_subjects_and_topics_for_user' => 
   array (
     'classname' => 'block_exacomp_external',
     'methodname' => 'diggrplus_get_subjects_and_topics_for_user',
@@ -98,7 +98,7 @@ get subjects from one user for all his courses',
 get subjects from one user for all his courses',
     'type' => 'read',
   ),
-  'block_exacomp_diggrplus_get_examples_for_topic_for_user' => 
+  'diggrplus_get_examples_for_topic_for_user' => 
   array (
     'classname' => 'block_exacomp_external',
     'methodname' => 'diggrplus_get_examples_for_topic_for_user',
@@ -604,7 +604,7 @@ used for \'undo\' button',
 Add student submission to example.',
     'type' => 'write',
   ),
-  'block_exacomp_diggrplus_submit_item' => 
+  'diggrplus_submit_item' => 
   array (
     'classname' => 'block_exacomp_external',
     'methodname' => 'diggrplus_submit_item',
@@ -612,7 +612,7 @@ Add student submission to example.',
     'description' => 'Add studentsubmission  (exaportitem) to topic, descriptor or example',
     'type' => 'write',
   ),
-  'block_exacomp_diggrplus_get_items' => 
+  'diggrplus_get_items' => 
   array (
     'classname' => 'block_exacomp_external',
     'methodname' => 'diggrplus_get_items',
@@ -957,8 +957,8 @@ $services = array (
       7 => 'block_exacomp_diggr_get_user_role',
       8 => 'block_exacomp_get_external_trainer_students',
       9 => 'block_exacomp_get_subjects_for_user',
-      10 => 'block_exacomp_diggrplus_get_subjects_and_topics_for_user',
-      11 => 'block_exacomp_diggrplus_get_examples_for_topic_for_user',
+      10 => 'diggrplus_get_subjects_and_topics_for_user',
+      11 => 'diggrplus_get_examples_for_topic_for_user',
       12 => 'block_exacomp_delete_item',
       13 => 'block_exacomp_set_competence',
       14 => 'block_exacomp_get_item_for_example',
@@ -1015,8 +1015,8 @@ $services = array (
       65 => 'dakora_delete_examples_from_schedule',
       66 => 'dakora_undo_examples_from_schedule',
       67 => 'dakora_submit_example',
-      68 => 'block_exacomp_diggrplus_submit_item',
-      69 => 'block_exacomp_diggrplus_get_items',
+      68 => 'diggrplus_submit_item',
+      69 => 'diggrplus_get_items',
       70 => 'dakora_grade_example',
       71 => 'dakora_get_descriptors_details',
       72 => 'dakora_get_descriptor_details',
