@@ -6787,10 +6787,6 @@ class block_exacomp_external extends external_api {
                 }
             }
         }
-
-//        var_dump(array_pop($items));
-//        die;
-
         return $items;
     }
 

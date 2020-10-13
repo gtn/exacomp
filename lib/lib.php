@@ -8021,22 +8021,7 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  */
 function block_exacomp_get_items_for_competence($userid, $compid, $comptype) {
     global $DB;
-//    switch($comptype){
-//        case BLOCK_EXACOMP_TYPE_EXAMPLE:
-//            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
-//              FROM {block_exacompexamples} e
-//			    JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = e.id
-//			    JOIN {block_exaportitem} i ON ie.itemid = i.id
-//			  WHERE e.id = ?
-//			      AND i.userid = ?
-//			  ORDER BY ie.timecreated DESC
-//			  LIMIT 1';
-//            break;
-//        case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
-//            break;
-//        case BLOCK_EXACOMP_TYPE_TOPIC:
-//            break;
-//    }
+
     switch($comptype){
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
             $table = "block_exacompexamples";
