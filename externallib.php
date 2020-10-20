@@ -1789,6 +1789,7 @@ class block_exacomp_external extends external_api {
 
 			//add the example competencies to the item, so that it is displayed in the exacomp moodle block
 			$comps = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid));
+
 			foreach ($comps as $comp) {
 				$DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
 			}
@@ -6612,7 +6613,12 @@ class block_exacomp_external extends external_api {
         }
 
         // add "activity" relations to competences: TODO: is this ok?
-        $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
+        // only do this if it is not done already for this activityid and compid
+        $activityRelations = $DB->get_records('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
+        if(!$activityRelations){
+            $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
+        }
+
 
 
         // update collabuserids
