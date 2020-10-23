@@ -623,10 +623,12 @@ class data_exporter extends data {
 	    self::export_assignments(null, $zip, $activityid);
 
 	    $zipfile = $zip->filename;
+	    
+	    $activitytitle = block_exacomp_get_activities_from_example($activityid);
 
 	    $zip->close();
 
-	    $filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').'.zip';
+	    $filename = $activitytitle . '-'.strftime('%Y-%m-%d %H%M').'.zip';
 	    header('Content-Type: application/zip');
 	    header('Content-Length: ' . filesize($zipfile));
 	    header('Content-Disposition: attachment; filename="'.$filename.'"');
