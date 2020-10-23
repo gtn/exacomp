@@ -4450,6 +4450,27 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
             );
             $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
         }
+
+        // Add visibility in course: this is needed for the planning storage and weekly schedule
+        // other courses
+        $otherCourseids = block_exacomp_get_courseids_by_example($exampleId);
+        // add myself (should be in there anyway)
+        if (!in_array($courseid, $otherCourseids)) {
+            $otherCourseids[] = $courseid;
+        }
+
+        foreach ($otherCourseids as $otherCourseid) {
+            //add visibility if not exists
+            if (!$DB->get_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0))) {
+                $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0, 'visible'=>1));
+            }
+            if (!$DB->get_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0))) {
+                $DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0, 'visible'=>1));
+            }
+        }
+
+
+
         // clean old relations to descriptors
         $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
         // insert new relations to descriptors
@@ -4460,6 +4481,8 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
             );
             $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
         }
+
+
     }
 
 };
