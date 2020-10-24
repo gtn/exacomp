@@ -4336,6 +4336,18 @@ function block_exacomp_get_activities_from_example($activityid) {
 }
 
 /**
+ * Get activityname from example
+ * @param unknown $courseid
+ */
+function block_exacomp_get_activitiy_by_id($activityid) {
+    global $DB;
+    
+    $module = $DB->get_record('course_modules', array('id' => $activityid));
+    $instance = $DB->get_field('modules', 'name', array('id' => $module->module));
+    return $DB->get_record($instance, array('id' => $module->instance));
+}
+
+/**
  * @param array $descriptorsData
  * @param array $topicsData // not used - needed descriptors will be selected via JS in the frontend
  * @param integer $courseid

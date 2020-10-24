@@ -624,7 +624,7 @@ class data_exporter extends data {
 
 	    $zipfile = $zip->filename;
 	    
-	    $activitytitle = clean_param(block_exacomp_get_activities_from_example($activityid), PARAM_ALPHANUM);
+	    $activitytitle = clean_param(block_exacomp_get_activitiy_by_id($activityid)->name, PARAM_ALPHANUM);
 
 	    $zip->close();
 
