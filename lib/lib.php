@@ -4380,7 +4380,7 @@ function block_exacomp_get_activities_by_course($courseid) {
 
 /**
  * Get activityname from example
- * @param unknown $courseid
+ * @param unknown $activityid
  */
 function block_exacomp_get_activities_from_example($activityid) {
     global $DB;
@@ -4389,8 +4389,9 @@ function block_exacomp_get_activities_from_example($activityid) {
 }
 
 /**
- * Get activityname from example
- * @param unknown $courseid
+ * Get activity by id
+ * This function returns all needed information about an activity
+ * @param unknown $activityid
  */
 function block_exacomp_get_activitiy_by_id($activityid) {
     global $DB;
