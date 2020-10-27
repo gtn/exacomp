@@ -2723,14 +2723,14 @@ Params: <table>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>id of topic/descriptor/example</td>
+<td>id of topic/descriptor/example   if <= 0 then show all items for user</td>
 <tr>
 <td>comptype</td>
 <td>int</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>Type of competence: topic/descriptor/example</td>
+<td>Type of competence: topic/descriptor/example      if <= 0 then show all items for user</td>
 </table>
 Returns:<pre>[
     {
@@ -2740,7 +2740,7 @@ Returns:<pre>[
         "url": "text null (url)",
         "effort": "raw null (description of the effort)",
         "filename": "text null (title of item)",
-        "file": "url null (file url)",
+        "file": "url null (file url of the studentfile)",
         "isimage": "bool null (true if file is image)",
         "status": "int null (status of the submission)",
         "teachervalue": "int null (teacher grading)",
@@ -2750,6 +2750,15 @@ Returns:<pre>[
         "collaborators": [
             {
                 "userid": "text null (userid of collaborator)"
+            },
+            "..."
+        ],
+        "studentfiles": [
+            {
+                "filename": "text null (title of item)",
+                "file": "url null (file url)",
+                "mimetype": "text null (mime type for file)",
+                "fileindex": "text null (mime type for file)"
             },
             "..."
         ]

@@ -6658,8 +6658,8 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_items_parameters() {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
-            'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example'),
-            'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example'),
+            'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
+            'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
         ));
     }
 
@@ -6702,6 +6702,9 @@ class block_exacomp_external extends external_api {
             $item->status = isset ($item->status) ? $item->status : 0;
 
             if ($item->type == 'file') {
+
+                // Stattdessen: block_exaport_get_item_files ??    Im Dakora webservice wird das verwendet.
+
                 // TODO: move code into exaport\api
                 require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
@@ -6752,7 +6755,7 @@ class block_exacomp_external extends external_api {
             'url' => new external_value (PARAM_TEXT, 'url'),
             'effort' => new external_value (PARAM_RAW, 'description of the effort'),
             'filename' => new external_value (PARAM_TEXT, 'title of item'),
-            'file' => new external_value (PARAM_URL, 'file url'),
+            'file' => new external_value (PARAM_URL, 'file url of the studentfile'),
             'isimage' => new external_value (PARAM_BOOL, 'true if file is image'),
             'status' => new external_value (PARAM_INT, 'status of the submission'),
             'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
