@@ -889,3 +889,4 @@ $string['hide_imports_checkbox_label'] = 'WebUntis Anzeigen: ';
 $string['import_ics'] = 'Kalender importieren';
 $string['delete_imports'] = 'Importierte Termine löschen';
 $string['upload_ics_file'] = 'Datei auswählen: ';
+$string['is_teacherexample'] = 'Lehrermaterial';

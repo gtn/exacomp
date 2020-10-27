@@ -82,6 +82,12 @@ class block_exacomp_example_upload_form extends moodleform {
     			$tselect->setMultiple(true);
     			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => @$this->_customdata['exampleid']),"","taxid")));
     		//}
+
+            $mform->addElement('checkbox', 'isTeacherexample', block_exacomp_get_string('is_teacherexample'));
+            $mform->setType('isTeacherexample', PARAM_INT);
+            if ($this->_customdata['isTeacherexample']) {
+                $mform->setDefault('isTeacherexample', true);
+            }
     
     		$mform->addElement('header', 'link', block_exacomp_get_string('link'));
     

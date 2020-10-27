@@ -882,6 +882,7 @@ class data_exporter extends data {
 			$xmlItem->addChildWithCDATAIfValue('externalsolution', $dbItem->externalsolution);
 			$xmlItem->addChildWithCDATAIfValue('tips', $dbItem->tips);
 			$xmlItem->addChildWithCDATAIfValue('author_origin', $dbItem->author_origin);
+			$xmlItem->is_teacherexample = intval($dbItem->is_teacherexample);
 
 
 			$descriptors = g::$DB->get_records_sql("
