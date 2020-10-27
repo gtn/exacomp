@@ -3219,7 +3219,10 @@ return [
         'Datei auswählen: ',
         'Choose file: ',
     ],
-
+    'is_teacherexample' => [
+        'Lehrermaterial',
+        'Is the teacher\'s example',
+    ],
 
 
 

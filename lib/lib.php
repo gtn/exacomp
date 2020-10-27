@@ -8067,7 +8067,7 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  * @param unknown $compid
  * @param unknown $comptype
  */
-function block_exacomp_get_items_for_competence($userid, $compid, $comptype) {
+function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1) {
     global $DB;
 
     switch($comptype){
@@ -8082,16 +8082,27 @@ function block_exacomp_get_items_for_competence($userid, $compid, $comptype) {
             break;
     }
 
-    $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
-          FROM {'.$table.'} d
-            JOIN {'.BLOCK_EXACOMP_DB_ITEM_MM.'} ie ON ie.exacomp_record_id = d.id
+
+    if ($compid <= 0 || $comptype <= 0) {
+        $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
+          FROM {' . $table . '} d
+            JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+            JOIN {block_exaportitem} i ON ie.itemid = i.id
+          WHERE i.userid = ?
+          ORDER BY ie.timecreated DESC';
+        $items = $DB->get_records_sql($sql, array($userid));
+    } else {
+        $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
+          FROM {' . $table . '} d
+            JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
             JOIN {block_exaportitem} i ON ie.itemid = i.id
           WHERE d.id = ?
             AND i.userid = ?
             AND ie.competence_type = ?
           ORDER BY ie.timecreated DESC';
+        $items = $DB->get_records_sql($sql, array($compid, $userid, $comptype));
+    }
 
-    $items = $DB->get_records_sql($sql, array($compid, $userid, $comptype));
 
     foreach($items as $item){
         $item->collaborators = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $item->id));

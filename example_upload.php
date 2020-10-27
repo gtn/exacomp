@@ -107,12 +107,14 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
                     "tree" => $tree,
                     "topicid" => $topicid,
                     "exampleid" => $exampleid,
+                    "isTeacherexample" => ($example ? $example->is_teacherexample : 0),
                     "uses_activities" => $csettings->uses_activities,
                     "activities" => $example_activities));
     } elseif ($crosssubjid != -1){
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
             array("crosssubjid" => $crosssubjid,
                     "exampleid" => $exampleid,
+                    "isTeacherexample" => ($example ? $example->is_teacherexample : 0),
                     "uses_activities" => $csettings->uses_activities,
                     "activities" => $example_activities));
     }
@@ -138,6 +140,11 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
             }
             if ($formdata->exampleid == 0) { // for new examples/ not for updated
                 $newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+            }
+            if ($formdata->isTeacherexample) {
+                $newExample->is_teacherexample = 1;
+            } else {
+                $newExample->is_teacherexample = 0;
             }
     
         	$newExample->externaltask = '';
