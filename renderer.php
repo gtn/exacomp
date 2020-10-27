@@ -2225,8 +2225,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					continue;
 				}
 			}
-			$descriptor_in_crosssubj = ($crosssubjid <= 0) || array_key_exists($descriptor->id, block_exacomp_get_descriptors_for_cross_subject($data->courseid, $crosssubjid));
 
+			//Why would that be needed?
+//			if($crosssubjid <= 0){ //if not on crosssubject page ==> set to true because $crosssubjid <=0
+//                $descriptor_in_crosssubj = true;
+//            }else{
+//                //Get all descriptors (and their children) that have been added to the crosssubject.
+//                $descriptorsAndChildrenOfCross = block_exacomp_get_descriptors_for_cross_subject($data->courseid, $crosssubjid);
+//                foreach ($descriptorsAndChildrenOfCross as $descr){
+//                    // Array merge does not work because it destroys association
+//                    $children = block_exacomp_get_child_descriptors($descr, $COURSE->id);
+//                    foreach($children as $child){
+//                        $descriptorsAndChildrenOfCross[$child->id] = $child;
+//                    }
+//                }
+//			    $descriptor_in_crosssubj = array_key_exists($descriptor->id, $descriptorsAndChildrenOfCross);
+//            }
 			//visibility
 			//visible if
 			//		- visible in whole course
@@ -2265,8 +2279,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 
 
+
 				$exampleuploadCell = new html_table_cell();
-				if ($this->is_edit_mode() && !$this->is_print_mode() && $data->role == BLOCK_EXACOMP_ROLE_TEACHER && !$profoundness && $descriptor_in_crosssubj) {
+				if ($this->is_edit_mode() && !$this->is_print_mode() && $data->role == BLOCK_EXACOMP_ROLE_TEACHER && !$profoundness ) { // && $descriptor_in_crosssubj
 					$exampleuploadCell->text = html_writer::link(
 						new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id, "topicid" => $descriptor->topicid)),
 						html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
@@ -2306,7 +2321,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id)),
-						$this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
+//						$this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
+                        $this->local_pix_icon("visibility_lock.png", block_exacomp_get_string('competence_locked'), array('height' => '18')),
 						array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 				}
 				//if hidden in course, cannot be shown to one student
@@ -3116,13 +3132,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$own_additionRow->cells[] = new html_table_cell();
 
-					if ($descriptor_in_crosssubj) {
+//					if ($descriptor_in_crosssubj) {
 						$cell = new html_table_cell();
 						$cell->attributes['class'] = 'rg2-indent';
 						$cell->text = html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'text', 'class' => 'addCompetence', 'placeholder' => block_exacomp_trans(['de:Neue Teilkompetenz', 'en:New child competence']), 'parentid' => $descriptor->id));
 						$cell->text .= html_writer::empty_tag('input', array('exa-type' => 'new-descriptor', 'type' => 'button', 'value' => block_exacomp_get_string('add')));
 						$own_additionRow->cells[] = $cell;
-					}
+//					}
 					$own_additionRow->cells[] = new html_table_cell();
 					$rows[] = $own_additionRow;
 				}
