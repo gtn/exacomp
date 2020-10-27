@@ -1550,12 +1550,12 @@ return [
 		'task done: ',
 	],
     'descriptor_categories' => [
-        'Kategorien: ',
-        'Categories: ',
+        'Niveaustufen: ',
+        'Difficulty level: ',
     ],
     'descriptor_add_category' => [
-        'Neue Kategorie hinzufügen: ',
-        'Add new category ',
+        'Neue Niveaustufe hinzufügen: ',
+        'Add new difficulty level: ',
     ],
 
 	// === metadata ===
