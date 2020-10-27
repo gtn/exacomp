@@ -173,7 +173,9 @@ if (optional_param('print', false, PARAM_BOOL)) {
     <?php
         $settings_subtree = array();
         $settings_subtree[] = new tabobject('tab_teacher_report_general', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType'=>'general')), block_exacomp_get_string("tab_teacher_report_general"), null, true);
-        $settings_subtree[] = new tabobject('tab_teacher_report_annex', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'annex')), block_exacomp_get_string("tab_teacher_report_annex"), null, true);
+        if (get_config('exacomp', 'assessment_preconfiguration') == 1) {
+            $settings_subtree[] = new tabobject('tab_teacher_report_annex', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'annex')), block_exacomp_get_string("tab_teacher_report_annex"), null, true);
+        }
         if ($useprofoundness) {
             $settings_subtree[] = new tabobject('tab_teacher_report_profoundness', new moodle_url('/blocks/exacomp/group_reports.php', array('courseid' => $courseid, 'reportType' => 'profoundness')),
                     block_exacomp_get_string("tab_teacher_report_profoundness"), null, true);

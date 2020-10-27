@@ -3862,8 +3862,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$ret = '<div>';
 		foreach ($sources as $source) {
 			$name = ($source->name ? $source->name : $source->source);
-			$ret .= $this->box("Importierte Daten von \"$name\" ".html_writer::link(new moodle_url('/blocks/exacomp/source_delete.php', array('courseid' => $courseid, 'action' => 'select', 'source' => $source->id)),
-					"löschen"));
+			$ret .= $this->box("Importierte Daten von <strong>\"$name\"</strong> ".html_writer::link(new moodle_url('/blocks/exacomp/source_delete.php',
+                                                                                        array('courseid' => $courseid, 'action' => 'select', 'source' => $source->id)),
+					                                                                    block_exacomp_get_string('delete...'),
+                                                                                        [/*'class' => 'btn btn-sm btn-link'*/]));
 		}
 		$ret .= '</div>';
 
@@ -7966,7 +7968,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $studentsAssociativeArray[$USER->id] = fullname($students[$USER->id]);
                         }
 
-            			echo $this->select($studentsAssociativeArray,'filter[selectedStudentOrGroup]',$filter["selectedStudentOrGroup"],true);
+            			echo $this->select($studentsAssociativeArray, 'filter[selectedStudentOrGroup]', @$filter["selectedStudentOrGroup"], true);
             			?>
 
 						<br><label><input type="radio" name="filter[type]" value="student_counts" <?php if (@$filter['type'] == 'student_counts') echo 'checked="checked"'; ?>/>

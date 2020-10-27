@@ -242,7 +242,7 @@ $string['import_max_execution_time'] = 'Wichtig: die aktuellen Servereinstellung
 $string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
 $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.';
 $string['doimport'] = 'Bildungsstandards importieren';
-$string['doimport_again'] = 'Weitere Bildungsstandards importieren';
+$string['doimport_again'] = 'Weitere Kompetenzraster importieren';
 $string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';
 $string['scheduler_import_settings'] = 'Settings for scheduler importing';
 $string['delete_own'] = 'Schulspezifische Bildungsstandards löschen';
@@ -254,8 +254,8 @@ $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 $string['noxmlfile'] = 'Ein Import ist derzeit nicht möglich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';
 $string['oldxmlfile'] = 'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
 $string['do_demo_import'] = 'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Kompetenzraster funktioniert.';
-$string['schedulerimport'] = 'Scheduler import tasks';
-$string['add_new_importtask'] = 'Add new import task';
+$string['schedulerimport'] = 'Import von geplanten Aufgaben';
+$string['add_new_importtask'] = 'Neue geplante Aufgabe hinzufügen';
 $string['importtask_title'] = 'Title';
 $string['importtask_link'] = 'Link to source';
 $string['importtask_disabled'] = 'Disabled';
@@ -740,8 +740,10 @@ $string['select_all'] = 'alle wählen';
 $string['deselect_all'] = 'alle abwählen';
 $string['new'] = 'neu';
 $string['import_used_preselected_from_previous'] = 'Falls eine XML-Datei bereits zuvor importiert worden ist, werden dieselben Voreinstellungen der Datenquelle verwendet';
-$string['import_from_related_komet'] = 'Bildungsstandards aus zugehörigem KOMET importieren/aktualisieren';
-$string['import_activate_scheduled_tasks'] = 'Activate these tasks';
+$string['import_from_related_komet'] = 'Kompetenzraster aus zugehörigem KOMET jetzt importieren/aktualisieren';
+$string['import_from_related_komet_help'] = 'Wenn die automatische Aktualisierung der Kompetenzraster über KOMET in den allgemeinen Einstellungen aktiviert ist, kann über diese Option diese Aktualisierung sofort durchgeführt werden.<br>
+        Die automatische Aktualisierung erfolgt über Website-Administration - Plugins - Blöcke - Exabis Kompetenzraster: Server-URL';
+$string['import_activate_scheduled_tasks'] = 'Aufgaben aktivieren';
 
 // === API ====
 $string['yes_no_No'] = 'Nein';
@@ -893,3 +895,5 @@ $string['import_ics'] = 'Kalender importieren';
 $string['delete_imports'] = 'Importierte Termine löschen';
 $string['upload_ics_file'] = 'Datei auswählen: ';
 $string['is_teacherexample'] = 'Lehrermaterial';
+$string['delete...'] = 'Löschen...';
+$string['data_imported_title'] = 'Daten jetzt importieren';

@@ -24,7 +24,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once __DIR__.'/../../inc.php';
 class import extends \core\task\scheduled_task {
 	public function get_name() {
-		return block_exacomp_trans(['en:Import Data', 'de:Daten Importieren']);
+//		return block_exacomp_trans(['en:Import Data', 'de:Daten Importieren']);
+		return block_exacomp_get_string('data_imported_title');
 	}
 
 	public function execute() {

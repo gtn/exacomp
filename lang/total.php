@@ -832,7 +832,7 @@ return [
 		'Import outcomes/standards',
 	],
 	'doimport_again' => [
-		'Weitere Bildungsstandards importieren',
+		'Weitere Kompetenzraster importieren',
 		'Import additional outcomes/standards',
 	],
 	'doimport_own' => [
@@ -880,11 +880,11 @@ return [
 		'import demo data to see how Exabis Competence Grid works.',
 	],
     'schedulerimport' => [
-        'Scheduler import tasks',
+        'Import von geplanten Aufgaben',
         'Scheduler import tasks',
     ],
     'add_new_importtask' => [
-        'Add new import task',
+        'Neue geplante Aufgabe hinzufügen',
         'Add new import task',
     ],
     'importtask_title' => [
@@ -2615,11 +2615,17 @@ return [
         'If an XML has been imported previously, these values are preselected'
     ],
     'import_from_related_komet' => [
-        'Bildungsstandards aus zugehörigem KOMET importieren/aktualisieren',
-        'Import/update grids from related KOMET'
+        'Kompetenzraster aus zugehörigem KOMET jetzt importieren/aktualisieren',
+        'Import/update grids from related KOMET immediately'
+    ],
+    'import_from_related_komet_help' => [
+        'Wenn die automatische Aktualisierung der Kompetenzraster über KOMET in den allgemeinen Einstellungen aktiviert ist, kann über diese Option diese Aktualisierung sofort durchgeführt werden.<br>
+        Die automatische Aktualisierung erfolgt über Website-Administration - Plugins - Blöcke - Exabis Kompetenzraster: Server-URL',
+        'If the automatic update of competence grids via KOMET is activated in the background via general settings, the update can be run immediately.<br>
+        Automatic update can be set via Site administration - Plugins - Blocks - Exabis Competence Grid: Server-URL',
     ],
     'import_activate_scheduled_tasks' => [
-        'Activate these tasks',
+        'Aufgaben aktivieren',
         'Activate these tasks'
     ],
 
@@ -3223,7 +3229,13 @@ return [
         'Lehrermaterial',
         'Is the teacher\'s example',
     ],
-
-
+    'delete...' => [
+        'Löschen...',
+        'Delete...',
+    ],
+    'data_imported_title' => [
+        'Daten jetzt importieren',
+        'Import data immediately'
+    ]
 
 ];

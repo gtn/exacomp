@@ -732,7 +732,9 @@ $string['select_all'] = 'select all';
 $string['deselect_all'] = 'deselect all';
 $string['new'] = 'new';
 $string['import_used_preselected_from_previous'] = 'If an XML has been imported previously, these values are preselected';
-$string['import_from_related_komet'] = 'Import/update grids from related KOMET';
+$string['import_from_related_komet'] = 'Import/update grids from related KOMET immediately';
+$string['import_from_related_komet_help'] = 'If the automatic update of competence grids via KOMET is activated in the background via general settings, the update can be run immediately.<br>
+        Automatic update can be set via Site administration - Plugins - Blocks - Exabis Competence Grid: Server-URL';
 $string['import_activate_scheduled_tasks'] = 'Activate these tasks';
 
 // === API ====
@@ -883,3 +885,5 @@ $string['import_ics'] = 'import calendar';
 $string['delete_imports'] = 'delete my imports';
 $string['upload_ics_file'] = 'Choose file: ';
 $string['is_teacherexample'] = 'Is the teacher\'s example';
+$string['delete...'] = 'Delete...';
+$string['data_imported_title'] = 'Import data immediately';

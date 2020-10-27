@@ -31,8 +31,7 @@ function moodle_backup($activityid, $user_doing_the_backup){
 
     global $CFG;
     $CFG->keeptempdirectoriesonbackup = true;
-    
-    
+
     $bc = new backup_controller(backup::TYPE_1ACTIVITY, $activityid, backup::FORMAT_MOODLE,
         backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user_doing_the_backup);
     
