@@ -12941,3 +12941,12 @@ function block_exacomp_get__descriptor_of_question($questionid) {
 function block_exacomp_disable_core_competency() {
     set_config('enabled', 0, 'core_competency');
 }
+
+function block_exacomp_help_icon($title, $text) {
+    global $OUTPUT;
+    $content = $OUTPUT->image_icon('help', $title);
+    $content = '<a class="btn btn-link p-0" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p>'.$text.'</p></div> " data-html="true" tabindex="0" data-trigger="click hover focus">'
+        .$content.
+        '</a>';
+    return $content;
+}
