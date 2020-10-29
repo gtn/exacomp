@@ -8609,6 +8609,28 @@ function block_exacomp_get_examples_by_course($courseid) {
 	return g::$DB->get_records_sql($sql, array($courseid));
 }
 
+
+
+/**
+ * get all examples associated with any topic or descriptor in any course for user
+ * @param int $userid
+ * @param bool $isTeacher
+ */
+function block_exacomp_get_examples_by_user($userid, $isTeacher) {
+    // Maybe better performance with join on user_enrolments table?
+    $courses = block_exacomp_get_courses_of_teacher();
+    $courses = block_exacomp_get_courses_of_student();
+
+    $examples = array();
+
+    foreach($courses as $course){
+        $examples = array_merge($examples,block_exacomp_get_examples_by_course($course->id)) // TODO: duplicates?
+    }
+    return $examples;
+}
+
+
+
 function block_exacomp_get_crosssubject_examples_by_course($courseid){
     $sql = "SELECT ex.*
 		FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
