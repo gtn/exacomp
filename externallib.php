@@ -1196,6 +1196,9 @@ class block_exacomp_external extends external_api {
 				$elem_sub = new stdClass ();
 				$elem_sub->id = $subject->id;
 				$elem_sub->title = $subject->title;
+				$elem_sub->courseid = $course['courseid'];
+				$elem_sub->courseshortname = $course['shortname'];
+				$elem_sub->coursefullname = $course['fullname'];
 				$elem_sub->topics = array();
 				foreach ($subject->topics as $topic) {
 					if (!$topicIdsWithExamples[$topic->id]) {
@@ -1213,7 +1216,10 @@ class block_exacomp_external extends external_api {
 					//}
 					$elem_sub->topics[] = $elem_topic;
 				}
-				$structure[] = $elem_sub;
+
+				if (!empty($elem_sub->topics)) {
+					$structure[] = $elem_sub;
+				}
 			}
 		}
 
@@ -1229,8 +1235,9 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure (new external_single_structure (array(
 			'id' => new external_value (PARAM_INT, 'id of subject'),
 			'title' => new external_value (PARAM_TEXT, 'title of subject'),
-			//'courseid' => new external_value (PARAM_INT, 'id of course'),
-			//'requireaction' => new external_value (PARAM_BOOL, 'whether example in this subject has been edited or not by the selected student'),
+			'courseid' => new external_value (PARAM_INT, 'id of course'),
+			'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
+			'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
 			'topics' => new external_multiple_structure (new external_single_structure (array(
 				'id' => new external_value (PARAM_INT, 'id of example'),
 				'title' => new external_value (PARAM_TEXT, 'title of example'),
