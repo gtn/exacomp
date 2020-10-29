@@ -2321,8 +2321,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id)),
-//						$this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
-                        $this->local_pix_icon("visibility_lock.png", block_exacomp_get_string('competence_locked'), array('height' => '18')),
+						$this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
 						array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 				}
 				//if hidden in course, cannot be shown to one student
