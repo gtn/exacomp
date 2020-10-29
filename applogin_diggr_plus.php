@@ -4,6 +4,10 @@ require __DIR__.'/inc.php';
 require_once($CFG->libdir . '/externallib.php');
 require_once __DIR__.'/externallib.php';
 
+// TODO: create a setting for this
+$additional_allowed_redirect_uris = [
+	'http://localhost:3000',
+];
 
 function block_exacomp_load_service($serviceshortname) {
 	global $DB;
@@ -85,7 +89,28 @@ if ($action == 'get_login_url') {
 	required_param('app', PARAM_TEXT);
 	required_param('app_version', PARAM_TEXT);
 
-	// TODO: besseren token
+	$return_uri = required_param('return_uri', PARAM_TEXT);
+	$allowed_redirect_uris = array_merge([$CFG->wwwroot], $additional_allowed_redirect_uris);
+
+	$return_uri_allowed = false;
+	foreach ($allowed_redirect_uris as $allowed_redirect_uri) {
+		$allowed_redirect_uri = preg_replace('!/$!', '', $allowed_redirect_uri).'/';
+		if (preg_match('!^'.preg_quote($allowed_redirect_uri, '!').'!', $return_uri)) {
+			$return_uri_allowed = true;
+			break;
+		}
+	}
+
+	if (!$return_uri_allowed) {
+		$data = [
+			'error' => block_exacomp_trans(['de:Zugriff für diese DiggrPlus Installation ist nicht erlaubt', 'en:Access form this DiggrPlus is not allowed'])
+		];
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+		exit;
+	}
+
 	$moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
 	$moodle_data_token = 'data-'.block_exacomp_random_password(24);
 
@@ -95,7 +120,7 @@ if ($action == 'get_login_url') {
 		'moodle_data_token' => $moodle_data_token,
 		'created_at' => time(),
 		'request_data' => json_encode([
-				'return_uri' => required_param('return_uri', PARAM_TEXT),
+				'return_uri' => $return_uri,
 				'services' => optional_param('services', '', PARAM_TEXT),
 		]),
 		'result_data' => '',
@@ -250,6 +275,12 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 	block_exacomp_logout();
 
 	exit;
+} else {
+	header("Location: ".$return_uri);
+	exit;
+}
+
+/*
 } elseif (optional_param('from_login', '', PARAM_BOOL)) {
 	// hat sich gerade eingeloggt, sofort weiterleiten
 	header("Location: ".$return_uri);
@@ -284,3 +315,4 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 	echo $OUTPUT->footer();
 	exit;
 }
+*/
