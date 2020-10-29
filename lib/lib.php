@@ -8624,7 +8624,7 @@ function block_exacomp_get_examples_by_user($userid, $isTeacher) {
     $examples = array();
 
     foreach($courses as $course){
-        $examples = array_merge($examples,block_exacomp_get_examples_by_course($course->id)) // TODO: duplicates?
+        $examples = array_merge($examples,block_exacomp_get_examples_by_course($course->id)); // TODO: duplicates?
     }
     return $examples;
 }

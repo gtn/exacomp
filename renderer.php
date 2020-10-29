@@ -2286,7 +2286,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if ($this->is_edit_mode() && !$this->is_print_mode() && $data->role == BLOCK_EXACOMP_ROLE_TEACHER && !$profoundness ) { // && $descriptor_in_crosssubj
 					$exampleuploadCell->text = html_writer::link(
 						new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id, "topicid" => $descriptor->topicid)),
-						html_writer::empty_tag('img', array('src' => 'pix/ec_download_bl.png', 'alt' => 'upload', 'height' => '18')),
+                        $this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
 						array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 				}
 
@@ -2324,7 +2324,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id)),
-//						$this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
                         $this->local_pix_icon("ec_themen_bl.png", block_exacomp_get_string('crosssubject'), array('height' => '18')),
 						array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 				}
@@ -4273,8 +4272,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		if ($teacher) {
 			$legend .= " - ";
-			$legend .= html_writer::tag("img", "", array("src" => "pix/ec_download_bl.png", "alt" => block_exacomp_get_string('legend_upload'), 'height' => '18'));
-			$legend .= ' '.block_exacomp_get_string('legend_upload');
+//            $this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
+			$legend .= html_writer::tag('img', $this->pix_icon('i/withsubcat', block_exacomp_get_string('legend_upload')), array('height' => '18'));
+			$legend .= block_exacomp_get_string('legend_upload');
 		}
 
 		return html_writer::div($legend, 'legend');
@@ -5273,7 +5273,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		    }
 		    $cell->attributes['module-type'] = $module->modname;
 
-		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>A</button>';
+//		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>A</button>';
+            $downloadTag = html_writer::tag("img", "", array("src" => "pix/ec_download_bl.png", "alt" => block_exacomp_get_string('download_activites'), 'height' => '18'));
+		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>'.$downloadTag.'</button>';
 		    $row->cells[] = $cell;
 		    $row2->cells[] = $cell2;
 		    $headArr[] = $cell;
