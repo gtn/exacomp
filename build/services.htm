@@ -2789,25 +2789,32 @@ Params: <table>
 </table>
 Returns:<pre>[
     {
-        "id": "int null (id of item or example)",
-        "title": "text null (title of item or example)",
-        "type": "text null (type of item (note,file,link))",
-        "url": "text null (url)",
-        "effort": "raw null (description of the effort)",
-        "filename": "text null (title of item)",
-        "file": "url null (file url of the studentfile)",
-        "isimage": "bool null (true if file is image)",
-        "status": "int null (status of the submission)",
-        "teachervalue": "int null (teacher grading)",
-        "studentvalue": "int null (student grading)",
-        "teachercomment": "text null (teacher comment)",
-        "studentcomment": "text null (student comment)",
-        "collaborators": [
-            {
-                "userid": "text null (userid of collaborator)"
-            },
-            "... collaborators ..."
-        ]
+        "example": {
+            "id": "int null (id of example)",
+            "title": "text null (title of example)"
+        },
+        "item": {
+            "id": "int null (id of item )",
+            "name": "text null (title of item)",
+            "intro": "text null (description of item)",
+            "type": "text null (type of item (note,file,link))",
+            "url": "text null (url)",
+            "effort": "raw null (description of the effort)",
+            "filename": "text null (title of item)",
+            "file": "url null (file url of the studentfile)",
+            "isimage": "bool null (true if file is image)",
+            "status": "int null (status of the submission)",
+            "teachervalue": "int null (teacher grading)",
+            "studentvalue": "int null (student grading)",
+            "teachercomment": "text null (teacher comment)",
+            "studentcomment": "text null (student comment)",
+            "collaborators": [
+                {
+                    "userid": "text null (userid of collaborator)"
+                },
+                "... collaborators ..."
+            ]
+        }
     },
     "..."
 ]</pre>

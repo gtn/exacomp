@@ -6843,7 +6843,6 @@ class block_exacomp_external extends external_api {
             $item->teachervalue = isset ($item->teachervalue) ? $item->teachervalue : 0;
             $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
             $item->status = isset ($item->status) ? $item->status : 0;
-            $item->title = $item->name; //this is done to have the same wording as example
 
             if ($item->type == 'file') {
 
@@ -6881,19 +6880,20 @@ class block_exacomp_external extends external_api {
             }
         }
 
-        $itemsAndExamples = $items;
+        $examplesAndItems = array_map(function ($item){
+            $objDeeper = new stdClass();
+            $objDeeper->item = $item;
+            return $objDeeper;
+        },$items);
 
-
-
-        // Now examples:
+        // Now examples. If the comptype is not an example itself
         if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
             // TODO: how do we check if the user is a teacher? It is not oriented on courses
-//        $isTeacher = false;
+//            $isTeacher = false;
             $examples = block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype);
-            $itemsAndExamples = array_merge($itemsAndExamples,$examples);
+            $examplesAndItems += $examples;
         }
-
-        return $itemsAndExamples;
+        return $examplesAndItems;
     }
 
 
@@ -6906,24 +6906,57 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_get_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of item or example'),
-            'title' => new external_value (PARAM_TEXT, 'title of item or example'),
-            'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
-            'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
-            'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-            'filename' => new external_value (PARAM_TEXT, 'title of item', VALUE_OPTIONAL),
-            'file' => new external_value (PARAM_URL, 'file url of the studentfile', VALUE_OPTIONAL),
-            'isimage' => new external_value (PARAM_BOOL, 'true if file is image', VALUE_OPTIONAL),
-            'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
-            'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
-            'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
-            'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
-            'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
-            'collaborators' => new external_multiple_structure (new external_single_structure ( array(
-                'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
-            )), 'collaborators', VALUE_OPTIONAL),
+            'example' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of example'),
+                'title' => new external_value (PARAM_TEXT, 'title of example'),
+            ), 'example information', VALUE_OPTIONAL),
+            'item' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of item '),
+                'name' => new external_value (PARAM_TEXT, 'title of item'),
+                'intro' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                'filename' => new external_value (PARAM_TEXT, 'title of item', VALUE_OPTIONAL),
+                'file' => new external_value (PARAM_URL, 'file url of the studentfile', VALUE_OPTIONAL),
+                'isimage' => new external_value (PARAM_BOOL, 'true if file is image', VALUE_OPTIONAL),
+                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                'collaborators' => new external_multiple_structure (new external_single_structure ( array(
+                    'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
+                )), 'collaborators', VALUE_OPTIONAL),
+            ), 'item information', VALUE_OPTIONAL),
         )));
     }
+
+//    /**
+//     * Returns desription of method return values
+//     *
+//     * @return external_multiple_structure
+//     */
+//    public static function diggrplus_get_examples_and_items_returns() {
+//        return new external_multiple_structure(new external_single_structure (array(
+//            'id' => new external_value (PARAM_INT, 'id of item or example'),
+//            'title' => new external_value (PARAM_TEXT, 'title of item or example'),
+//            'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
+//            'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
+//            'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+//            'filename' => new external_value (PARAM_TEXT, 'title of item', VALUE_OPTIONAL),
+//            'file' => new external_value (PARAM_URL, 'file url of the studentfile', VALUE_OPTIONAL),
+//            'isimage' => new external_value (PARAM_BOOL, 'true if file is image', VALUE_OPTIONAL),
+//            'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+//            'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+//            'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
+//            'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+//            'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+//            'collaborators' => new external_multiple_structure (new external_single_structure ( array(
+//                'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
+//            )), 'collaborators', VALUE_OPTIONAL),
+//        )));
+//    }
 
 
 

@@ -8658,7 +8658,19 @@ function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -
         $examples = $descriptorWithExamples->examples;
     }
 
-    return $examples;
+
+    // add one layer of depth to structure and add items to example
+    $examplesAndItems = array_map(function ($example) use ($userid) {
+        $objDeeper = new stdClass();
+        $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current();
+        if($item){
+            $objDeeper->item = $item;
+        }
+        $objDeeper->example = $example;
+        return $objDeeper;
+    },$examples);
+
+    return $examplesAndItems;
 }
 
 
