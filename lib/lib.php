@@ -8650,7 +8650,7 @@ function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -
         }
         foreach($descriptors as $descriptor){
             $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0]);
-            $examples = array_merge($examples, $descriptorWithExamples->examples); // TODO: duplicate objects !
+            $examples += $descriptorWithExamples->examples;
         }
     }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
         $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
