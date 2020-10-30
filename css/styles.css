@@ -1165,6 +1165,12 @@ not used anymore?
 	clear: both;
 	margin: 10px 0;
 }
+
+#block_exacomp .legend a.isDisabled {
+	cursor: default;
+	pointer-events: none;
+}
+
 #block_exacomp .niveaus_menu ul li a .subtitle {
 	display: block;
 	overflow: hidden;

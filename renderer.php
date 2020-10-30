@@ -4273,7 +4273,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($teacher) {
 			$legend .= " - ";
 //            $this->pix_icon("i/withsubcat", block_exacomp_get_string("crosssubject")),
-			$legend .= html_writer::tag('img', $this->pix_icon('i/withsubcat', block_exacomp_get_string('legend_upload')), array('height' => '18'));
+			$legend .= html_writer::link('', $this->pix_icon('i/withsubcat', block_exacomp_get_string('legend_upload')), array('height' => '18', 'class' => 'isDisabled'));
 			$legend .= block_exacomp_get_string('legend_upload');
 		}
 
