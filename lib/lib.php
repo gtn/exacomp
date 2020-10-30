@@ -332,6 +332,7 @@ function block_exacomp_get_courses_of_student($userid) {
     $courses = block_exacomp_get_courseids();
     $studentCourses = array();
 
+//    var_dump($courses);
 
     foreach ($courses as $course) {
         if (block_exacomp_is_student($course)) {
@@ -1945,6 +1946,12 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
  */
 function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false, $freeelementdescriptor = false) {
 	global $COURSE;
+
+    if(is_scalar($descriptor)){
+        $descriptorid = $descriptor;
+        $descriptor = new stdClass();
+        $descriptor->id = $descriptorid;
+    }
 
 	if ($courseid == null) {
 		$courseid = $COURSE->id;
@@ -8088,7 +8095,8 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
     }
 
 
-    if ($compid <= 0 || $comptype <= 0) {
+
+    if ($compid < 0 || $comptype < 0) {
         $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
           FROM {' . $table . '} d
             JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
@@ -8107,7 +8115,6 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
           ORDER BY ie.timecreated DESC';
         $items = $DB->get_records_sql($sql, array($compid, $userid, $comptype));
     }
-
 
     foreach($items as $item){
         $item->collaborators = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $item->id));
@@ -8613,19 +8620,44 @@ function block_exacomp_get_examples_by_course($courseid) {
 
 /**
  * get all examples associated with any topic or descriptor in any course for user
+ * if compid or comptype are -1, get all examples for all courses
  * @param int $userid
- * @param bool $isTeacher
+ * @param bool $compid
+ * @param bool $comptype
  */
-function block_exacomp_get_examples_by_user($userid, $isTeacher) {
+function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1){
     // Maybe better performance with join on user_enrolments table?
-    $courses = block_exacomp_get_courses_of_teacher();
-    $courses = block_exacomp_get_courses_of_student();
+//    if ($isTeacher) {
+//        $courses = block_exacomp_get_courses_of_teacher($userid);
+//    } else {
+//        $courses = block_exacomp_get_courses_of_student($userid);
+//    }
+
+        // TODO: To avoid code duplication i used many existing functions. But this is by far not optimal for performance. Should i change this to sql-queries?
 
     $examples = array();
-
-    foreach($courses as $course){
-        $examples = array_merge($examples,block_exacomp_get_examples_by_course($course->id)); // TODO: duplicates?
+    if($compid == -1 || $comptype == -1){
+        // TODO: checks so a student cannot hack this and view another student's items
+        $courses = enrol_get_users_courses($userid);
+        foreach($courses as $course){
+            $examples = array_merge($examples,block_exacomp_get_examples_by_course($course->id)); // TODO: duplicates?
+        }
+    }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
+        $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
+        $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // TODO: this only gets parents
+        foreach($descriptors as $descriptor){
+            $descriptors = array_merge(block_exacomp_get_child_descriptors($descriptor,$courseids[0]),$descriptors);
+        }
+        foreach($descriptors as $descriptor){
+            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0]);
+            $examples = array_merge($examples, $descriptorWithExamples->examples); // TODO: duplicate objects !
+        }
+    }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
+        $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
+        $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,null,$courseids[0]);
+        $examples = $descriptorWithExamples->examples;
     }
+
     return $examples;
 }
 
@@ -8781,6 +8813,20 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid) {
 
 	return g::$DB->get_fieldset_sql($sql, array($descriptorid));
 }
+
+/**
+ * needed to create example over webservice API
+ * @param unknown $topicid
+ */
+function block_exacomp_get_courseids_by_topic($topicid) {
+    $sql = 'SELECT ct.courseid
+		FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct
+		WHERE ct.topicid = ?';
+
+    return g::$DB->get_fieldset_sql($sql, array($topicid));
+}
+
+
 
 function block_exacomp_get_courseids_by_example($exampleid) {
 	$sql = 'SELECT ct.courseid
