@@ -6843,6 +6843,7 @@ class block_exacomp_external extends external_api {
             $item->teachervalue = isset ($item->teachervalue) ? $item->teachervalue : 0;
             $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
             $item->status = isset ($item->status) ? $item->status : 0;
+            $item->title = $item->name; //this is done to have the same wording as example
 
             if ($item->type == 'file') {
 
