@@ -8640,13 +8640,13 @@ function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -
         // TODO: checks so a student cannot hack this and view another student's items
         $courses = enrol_get_users_courses($userid);
         foreach($courses as $course){
-            $examples = array_merge($examples,block_exacomp_get_examples_by_course($course->id)); // TODO: duplicates?
+            $examples += block_exacomp_get_examples_by_course($course->id); // TODO: duplicates?
         }
     }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
         $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
         $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // TODO: this only gets parents
         foreach($descriptors as $descriptor){
-            $descriptors = array_merge(block_exacomp_get_child_descriptors($descriptor,$courseids[0]),$descriptors);
+            $descriptors += block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
         }
         foreach($descriptors as $descriptor){
             $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0]);
