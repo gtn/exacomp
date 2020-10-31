@@ -7,6 +7,11 @@ require_once __DIR__.'/externallib.php';
 // TODO: create a setting for this
 $additional_allowed_redirect_uris = [
 	'http://localhost:3000',
+	'https://localhost:3000',
+	'http://diggr-plus.at',
+	'https://diggr-plus.at',
+	'http://www.diggr-plus.at',
+	'https://www.diggr-plus.at',
 ];
 
 function block_exacomp_load_service($serviceshortname) {
