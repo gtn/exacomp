@@ -8092,6 +8092,12 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
         case BLOCK_EXACOMP_TYPE_TOPIC:
             $table = "block_exacomptopics";
             break;
+		case -1:
+			// keine einschränkung, alle examples für topics
+            $table = "block_exacomptopics";
+			break;
+		default:
+			throw new \Exception("comptype '${comptype}' not allowed");
     }
 
 

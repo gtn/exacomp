@@ -6828,6 +6828,12 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_user($userid);
 
+        // bei compid=0, haben wir keinen comptype
+        if ($compid <= 0) {
+        	$comptype = -1;
+        	$compid = -1;
+		}
+
         $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype);
 
 
