@@ -2631,7 +2631,7 @@ Params: <table>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>compid</td>
+<td>id of topic/example</td>
 <tr>
 <td>studentvalue</td>
 <td>int</td>
@@ -2786,9 +2786,20 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>Type of competence: topic/descriptor/example      if <= 0 then show all items for user</td>
+<tr>
+<td>search</td>
+<td>PARA_TEXT</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>search string</td>
 </table>
 Returns:<pre>[
     {
+        "subjectid": "int null (id of subject)",
+        "subjecttitle": "text null (title of subject)",
+        "topicid": "int null (id of topic)",
+        "topictitle": "text null (title of topic)",
         "example": {
             "id": "int null (id of example)",
             "title": "text null (title of example)"

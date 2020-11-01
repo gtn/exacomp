@@ -6457,7 +6457,7 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_submit_item_parameters() {
         return new external_function_parameters (array(
-            'compid' => new external_value (PARAM_INT, 'compid'),
+            'compid' => new external_value (PARAM_INT, 'id of topic/example'),
             'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1), // if example --> grading also possible
             'url' => new external_value (PARAM_URL, 'url'),
             'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
@@ -6803,6 +6803,7 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
+            'search' => new external_value( PARA_TEXT, 'search string', VALUE_OPTIONAL)
         ));
     }
 
@@ -6820,7 +6821,7 @@ class block_exacomp_external extends external_api {
             $userid = $USER->id;
         }
 
-        static::validate_parameters(static::diggrplus_get_items_parameters(), array(
+        static::validate_parameters(static::diggrplus_get_examples_and_items_parameters(), array(
             'userid' => $userid,
             'compid' => $compid,
             'comptype' => $comptype
@@ -6835,7 +6836,6 @@ class block_exacomp_external extends external_api {
 		}
 
         $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype);
-
 
         foreach($items as $item){
             static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
@@ -6889,6 +6889,10 @@ class block_exacomp_external extends external_api {
         $examplesAndItems = array_map(function ($item){
             $objDeeper = new stdClass();
             $objDeeper->item = $item;
+            $objDeeper->subjecttitle = $item->subjecttitle;
+            $objDeeper->subjectid = $item->subjectid;
+            $objDeeper->topictitle = $item->topictitle;
+            $objDeeper->topicid = $item->topicid;
             return $objDeeper;
         },$items);
 
@@ -6912,6 +6916,10 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_get_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
+            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
             'example' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),

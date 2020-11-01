@@ -8082,45 +8082,54 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1) {
     global $DB;
 
+    $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
     switch($comptype){
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
-            $table = "block_exacompexamples";
-            break;
+            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
+              FROM {block_exacompexamples} d
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+                JOIN {block_exaportitem} i ON ie.itemid = i.id
+                JOIN {block_exacompdescrexamp_mm} descexamp ON descexamp.exampid = d.id
+                JOIN {block_exacompdescrtopic_mm} desctop ON desctop.descrid = descexamp.descrid
+                JOIN {block_exacomptopics} topic ON topic.id = desctop.topicid
+                JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id 
+              WHERE i.userid = ?
+                '.$compidCondition.'
+                AND ie.competence_type = ?
+              ORDER BY ie.timecreated DESC';
+                break;
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
-            $table = "block_exacompdescriptors";
+            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
+              FROM {block_exacompdescriptors} d
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+                JOIN {block_exaportitem} i ON ie.itemid = i.id
+                JOIN {block_exacompdescrtopic_mm} desctop ON desctop.descrid = d.id
+                JOIN {block_exacomptopics} topic ON topic.id = desctop.topicid
+                JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id 
+              WHERE i.userid = ?
+                '.$compidCondition.'
+                AND ie.competence_type = ?
+              ORDER BY ie.timecreated DESC';
             break;
         case BLOCK_EXACOMP_TYPE_TOPIC:
-            $table = "block_exacomptopics";
+        case -1: // keine Einschränkung, alle items für topics
+            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, d.title as topictitle, subj.title as subjecttitle, d.id as topicid, subj.id as subjectid
+              FROM {block_exacomptopics} d
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+                JOIN {block_exaportitem} i ON ie.itemid = i.id
+                JOIN {block_exacompsubjects} subj ON d.subjid = subj.id 
+              WHERE i.userid = ?
+                '.$compidCondition.'
+                AND ie.competence_type = ?
+              ORDER BY ie.timecreated DESC';
             break;
-		case -1:
-			// keine einschränkung, alle examples für topics
-            $table = "block_exacomptopics";
-			break;
-		default:
-			throw new \Exception("comptype '${comptype}' not allowed");
+    }
+    if($compid == -1){
+        $items = $DB->get_records_sql($sql, array($userid, $comptype));
+    }else{
+        $items = $DB->get_records_sql($sql, array($userid, $compid, $comptype));
     }
 
-
-
-    if ($compid < 0 || $comptype < 0) {
-        $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
-          FROM {' . $table . '} d
-            JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
-            JOIN {block_exaportitem} i ON ie.itemid = i.id
-          WHERE i.userid = ?
-          ORDER BY ie.timecreated DESC';
-        $items = $DB->get_records_sql($sql, array($userid));
-    } else {
-        $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
-          FROM {' . $table . '} d
-            JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
-            JOIN {block_exaportitem} i ON ie.itemid = i.id
-          WHERE d.id = ?
-            AND i.userid = ?
-            AND ie.competence_type = ?
-          ORDER BY ie.timecreated DESC';
-        $items = $DB->get_records_sql($sql, array($compid, $userid, $comptype));
-    }
 
     foreach($items as $item){
         $item->collaborators = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $item->id));
@@ -8609,8 +8618,18 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
  * get all examples associated with any descriptors in this course
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_by_course($courseid) {
-	$sql = "SELECT ex.*
+function block_exacomp_get_examples_by_course($courseid, $withTopicAndSubjectInfo=false) {
+    if($withTopicAndSubjectInfo){
+        $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid
+            FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
+            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON dex.exampid = ex.id
+            JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid
+            JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
+            JOIN {".BLOCK_EXACOMP_DB_TOPICS."} topic ON ct.topicid = topic.id
+            JOIN {".BLOCK_EXACOMP_DB_SUBJECTS."} subj ON topic.subjid = subj.id
+            WHERE ct.courseid = ?";
+    }else{
+        $sql = "SELECT ex.*
 		FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
 		WHERE ex.id IN (
 			SELECT dex.exampid
@@ -8619,6 +8638,8 @@ function block_exacomp_get_examples_by_course($courseid) {
 			JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
 			WHERE ct.courseid = ?
 		)";
+    }
+
 	return g::$DB->get_records_sql($sql, array($courseid));
 }
 
@@ -8632,6 +8653,7 @@ function block_exacomp_get_examples_by_course($courseid) {
  * @param bool $comptype
  */
 function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1){
+    global $DB;
     // Maybe better performance with join on user_enrolments table?
 //    if ($isTeacher) {
 //        $courses = block_exacomp_get_courses_of_teacher($userid);
@@ -8639,14 +8661,13 @@ function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -
 //        $courses = block_exacomp_get_courses_of_student($userid);
 //    }
 
-        // TODO: To avoid code duplication i used many existing functions. But this is by far not optimal for performance. Should i change this to sql-queries?
-
+    // TODO: To avoid code duplication i used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
     $examples = array();
     if($compid == -1 || $comptype == -1){
         // TODO: checks so a student cannot hack this and view another student's items
         $courses = enrol_get_users_courses($userid);
         foreach($courses as $course){
-            $examples += block_exacomp_get_examples_by_course($course->id); // TODO: duplicates?
+            $examples += block_exacomp_get_examples_by_course($course->id,true); // TODO: duplicates?
         }
     }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
         $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
@@ -8658,10 +8679,39 @@ function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -
             $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0]);
             $examples += $descriptorWithExamples->examples;
         }
+
+        // get topic and subject information:
+        $sql = 'SELECT topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
+                  FROM {block_exacomptopics} topic
+                    JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
+                  WHERE topic.id = ?';
+        $information = $DB->get_record_sql($sql, array($compid));
+        foreach($examples as $example){
+            $example->subjecttitle = $information->subjecttitle;
+            $example->subjectid = $information->subjectid;
+            $example->topictitle = $information->topictitle;
+            $example->topicid = $information->topicid;
+        }
     }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
         $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
         $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,null,$courseids[0]);
         $examples = $descriptorWithExamples->examples;
+
+        // get topic and subject information:
+        $sql = 'SELECT topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
+                  FROM {block_exacompdescriptors} d
+                    JOIN {block_exacompdescrtopic_mm} desctop ON desctop.descrid = d.id
+                    JOIN {block_exacomptopics} topic ON topic.id = desctop.topicid
+                    JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
+                  WHERE d.id = ?';
+        $information = $DB->get_record_sql($sql, array($compid));
+        foreach($examples as $example){
+            $example->subjecttitle = $information->subjecttitle;
+            $example->subjectid = $information->subjectid;
+            $example->topictitle = $information->topictitle;
+            $example->topicid = $information->topicid;
+        }
+
     }
 
 
@@ -8673,6 +8723,10 @@ function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -
             $objDeeper->item = $item;
         }
         $objDeeper->example = $example;
+        $objDeeper->subjecttitle = $example->subjecttitle;
+        $objDeeper->subjectid = $example->subjectid;
+        $objDeeper->topictitle = $example->topictitle;
+        $objDeeper->topicid = $example->topicid;
         return $objDeeper;
     },$examples);
 
