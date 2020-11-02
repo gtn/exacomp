@@ -146,7 +146,7 @@ if ($formdata = $form->get_data()) {
 		
 		if(!$DB->record_exists(BLOCK_EXACOMP_DB_EDULEVELS, array('source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM))){
 		    $newEL = new stdClass();
-		    $newEL->title = "Mein Edulevel";
+		    $newEL->title = "ohne feste Zuordnung";
 		    $newEL->sourceid = 0;
 		    $newEL->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		    
@@ -155,7 +155,7 @@ if ($formdata = $form->get_data()) {
 
 		    $newST = new stdClass();
 		    $newST->elid = $id;
-		    $newST->title = "Mein Schultyp";
+		    $newST->title = "ohne feste Zuordnung";
 		    $newST->sourceid = 0;
 		    $newST->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		    
