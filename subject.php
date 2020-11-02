@@ -151,7 +151,6 @@ if ($formdata = $form->get_data()) {
 		    $newEL->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		    
 		    $id = $DB->insert_record(BLOCK_EXACOMP_DB_EDULEVELS, $newEL);
-		    $new->stid = $id;
 
 		    $newST = new stdClass();
 		    $newST->elid = $id;
@@ -159,7 +158,8 @@ if ($formdata = $form->get_data()) {
 		    $newST->sourceid = 0;
 		    $newST->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		    
-		    $DB->insert_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, $newST);
+		    $id=$DB->insert_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, $newST);
+		    $new->stid = $id;
 		}
 	
 		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_SUBJECTS, $new);
