@@ -1292,3 +1292,8 @@ input[type=checkbox].be-sure {
 #block_exacomp .centered .cell {
 	vertical-align: middle;
 }
+
+.move-into-sibling-link {
+	line-height: 1em;
+	z-index: 10000;
+}

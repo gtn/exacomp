@@ -1063,6 +1063,18 @@ var formunsaved = false;
         };
         window.setInterval(draw, 1000 / 30);
         return canvasid;
-    }
+    };
 
 }();
+
+$(function(){
+    $('.move-into-sibling-link').each(function () {
+        // some hack of Moodle templating - insert element into tab-link element
+		var targetLink = $(this).siblings('.nav-link');
+        targetLink.append("&nbsp;"); // &nbsp;
+        targetLink.append($(this));
+		$(this).on('click', function () {
+			return false;
+        });
+    });
+});

@@ -52,6 +52,9 @@ $string['tab_teacher_settings_activitiestodescriptors'] = 'Relate Moodle activit
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_teacher_settings_new_subject'] = 'Create new subject';
 $string['tab_teacher_settings_taxonomies'] = 'Taxonomies';
+$string['tab_teacher_settings_taxonomies_help'] = 'Taxonomies denote levels of difficulty here. See also: <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a></br>
+        Both learning materials and competencies can be provided with taxonomies (usually done in the KOMET competence grid recording tool).</br>
+        Learning materials can be filtered according to taxonomies (levels of difficulty). ';
 $string['tab_teacher_report_general'] = 'General report';
 $string['tab_teacher_report_annex'] = 'Annex';
 $string['tab_teacher_report_annex_title'] = 'Annex to the learning development report';

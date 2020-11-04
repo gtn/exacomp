@@ -2762,7 +2762,11 @@ function block_exacomp_build_navigation_tabs_admin_settings($courseid) {
 	}
     // Taxonomies submenu
     if (!block_exacomp_is_skillsmanagement()) {
-        $settings_subtree[] = new tabobject('tab_admin_taxonomies', new moodle_url('/blocks/exacomp/edit_taxonomies.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_taxonomies"), null, true);
+        $settings_subtree[] = new tabobject('tab_admin_taxonomies',
+                new moodle_url('/blocks/exacomp/edit_taxonomies.php', array('courseid' => $courseid)),
+                block_exacomp_get_string("tab_teacher_settings_taxonomies").'</a>'.block_exacomp_help_icon(block_exacomp_get_string('tab_teacher_settings_taxonomies'),  block_exacomp_get_string('tab_teacher_settings_taxonomies_help'), true, 'move-into-sibling-link').'<a>',
+                block_exacomp_get_string("tab_teacher_settings_taxonomies"),
+                true);
     }
     // Import submenu
 	$settings_subtree[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_admin_import"), null, true);
@@ -13082,11 +13086,15 @@ function block_exacomp_disable_core_competency() {
     set_config('enabled', 0, 'core_competency');
 }
 
-function block_exacomp_help_icon($title, $text) {
+function block_exacomp_help_icon($title, $text, $isSpan = false, $addClass = '') {
     global $OUTPUT;
     $content = $OUTPUT->image_icon('help', $title);
-    $content = '<a class="btn btn-link p-0" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p>'.$text.'</p></div> " data-html="true" tabindex="0" data-trigger="click hover focus">'
+    $tag = 'a';
+    if ($isSpan) {
+        $tag = 'span';
+    }
+    $content = '<'.$tag.' class="btn btn-link p-0 '.$addClass.'" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p>'.$text.'</p></div> " data-html="true" tabindex="0" data-trigger="click hover focus">'
         .$content.
-        '</a>';
+        '</'.$tag.'>';
     return $content;
 }

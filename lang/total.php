@@ -131,6 +131,14 @@ return [
 		'Taxonomien',
 		'Taxonomies',
 	],
+	'tab_teacher_settings_taxonomies_help' => [
+		'Taxonomien bezeichnen hier Schwierigkeitsstufen. Siehe auch: <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a> </br>
+        Lernmaterialien als auch Kompetenzen können mit Taxonomien versehen werden (üblicherweise im Kompetenzraster-Erfassungstool KOMET).</br>
+        Lernmaterialien können nach Taxonomien (Niveaustufen) gefiltert werden.',
+		'Taxonomies denote levels of difficulty here. See also: <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a></br>
+        Both learning materials and competencies can be provided with taxonomies (usually done in the KOMET competence grid recording tool).</br>
+        Learning materials can be filtered according to taxonomies (levels of difficulty). ',
+	],
 
     'tab_teacher_report_general' => [
             'Berichte',
@@ -1708,7 +1716,7 @@ return [
         'Delete niveau'
     ],
     'add_new_taxonomie' => [
-        'Add a new taxonomie',
+        'neue Taxonomie hinzufügen',
         'Add a new taxonomie',
     ],
     'taxonomy_was_deleted' => [
@@ -1724,7 +1732,7 @@ return [
         'Move down',
     ],
     'also_taxonomies_from_import' => [
-        'There are also taxonomies from import',
+        'Taxonomien aus Importen anzeigen',
         'There are also taxonomies from import',
     ],
 

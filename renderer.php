@@ -7448,6 +7448,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             if ($taxonomies && count($taxonomies) > 0) {
                 $currentsourse = '-.-.-';
                 $firstgroup = false;
+                $input_taxonomies  .= '<h3>'.block_exacomp_get_string('tab_teacher_settings_taxonomies').'</h3>';
                 $input_taxonomies .= '<select id="menufilteredtaxonomies" width="200" class="select custom-select menufilteredtaxonomies" multiple="multiple" name = "filteredtaxonomies[]">';
                 foreach ($taxonomies as $taxonomy) {
                     if ($currentsourse != $taxonomy->sourcename) {
@@ -7479,7 +7480,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             false,
                             array('multiple' => 'multiple'));*/
             $input_taxonomies = html_writer::div(html_writer::tag('form', $hidden.$input_taxonomies.$input_submit,
-                    array('action' => 'view_examples.php?courseid='.$courseSettings->courseid.'&style='.$style, 'method' => 'post')), 'block_exacomp_center');
+                    array('action' => 'view_examples.php?courseid='.(@$courseSettings->courseid ?: '1').'&style='.$style, 'method' => 'post')), 'block_exacomp_center');
         } else {
             $input_taxonomies = '';
         }
