@@ -108,7 +108,7 @@ if ($action == 'get_login_url') {
 
 	if (!$return_uri_allowed) {
 		$data = [
-			'error' => block_exacomp_trans(['de:Zugriff für diese DiggrPlus Installation ist nicht erlaubt', 'en:Access form this DiggrPlus is not allowed'])
+			'error' => block_exacomp_trans(['de:Zugriff für DiggrPlus unter {$a->url} ist nicht erlaubt', 'en:Access form DiggrPlus at {$a->url} is not allowed'], ['url' => $return_uri])
 		];
 
 		header('Content-Type: application/json');
