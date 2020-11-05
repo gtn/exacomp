@@ -26,3 +26,11 @@ select[name=lis_subjects] {
 	line-height: 1.2;
 }
 
+#block_exacomp .student-self-eval {
+	display: block;
+	float: left;
+}
+
+#block_exacomp .content .eval-footer {
+	display: block;
+}

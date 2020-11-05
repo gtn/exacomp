@@ -1635,4 +1635,17 @@ class comp_eval_merged {
 			return global_config::get_evalniveau_title_by_id($this->evalniveauid);
 		}
 	}
+
+	function get_student_value_pic_url() {
+	    // only for non Verbose self evalueation!
+	    if (!get_config('exacomp', 'assessment_SelfEval_useVerbose')) {
+            if (\block_exacomp\global_config::is_input_allowed($this->get_detailed_comptype(), BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION)) {
+                if ($this->studentevaluation > 0) {
+                    return '/blocks/exacomp/pix/compprof_rating_student_' . $this->studentevaluation . '.png';
+                }
+            }
+        }
+        return null;
+    }
+
 }

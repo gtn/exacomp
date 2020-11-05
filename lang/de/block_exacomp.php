@@ -74,7 +74,7 @@ $string['tab_student_all'] = 'Alle erworbenen Kompetenzen';
 
 
 // === Generic Tabs (used by Teacher and Students) ===
-$string['tab_competence_grid'] = 'Berichte';
+$string['tab_competence_gridoverview'] = 'Übersicht';
 $string['tab_competence_overview'] = 'Kompetenzraster';
 $string['tab_examples'] = 'Lernmaterialien';
 $string['tab_badges'] = 'Meine Auszeichnungen';

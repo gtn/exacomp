@@ -2834,8 +2834,7 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
 
 	if ($checkConfig && $has_data) {    //Modul wurde konfiguriert
 		if ($isTeacherOrStudent && block_exacomp_is_activated($courseid)) {
-			// moved into competence profile !
-			// $rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_competence_grid'), null, true);
+			 $rows[] = new tabobject('tab_competence_gridoverview', new moodle_url('/blocks/exacomp/competence_grid.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_gridoverview'), null, true);
 		}
 		if ($isTeacherOrStudent && $ready_for_use) {
 			//KompetenzÃ¼berblick
@@ -4517,7 +4516,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
 };
 
 /**
- * init data for competencegrid, shown in tab "Reports" or "Berichte"
+ * init data for competencegrid, shown in tab "Overview"
  * @param unknown $courseid
  * @param unknown $subjectid
  * @param unknown $studentid
@@ -4525,102 +4524,104 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
  * @param array $filteredtaxonomies
  * @return unknown[]|NULL[][]
  */
-/*function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
+function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
 	global $DB;
 
-	if($studentid) {
+	if ($studentid) {
 		$cm_mm = block_exacomp_get_course_module_association($courseid);
 		$course_mods = get_fast_modinfo($courseid)->get_cms();
 	}
 
 	$selection = array();
 
-		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);  careful: changed this function on 23.07.2020... probably doesnt matter because this commented code is dead
-		$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
-		$descriptors = block_exacomp_get_descriptors_by_subject($subjectid);
+    $niveaus = block_exacomp_get_niveaus_for_subject($subjectid); // careful: changed this function on 23.07.2020... probably doesnt matter because this commented code is dead
+    $niveaus = array_map(function($n) {return $n->title;}, $niveaus);
+    $skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
+    $descriptors = block_exacomp_get_descriptors_by_subject($subjectid);
 
-		$supported = block_exacomp_get_supported_modules();
+//		$supported = block_exacomp_get_supported_modules();
 
-		$data = array();
-		if($studentid)
-			$competencies = array("studentcomps"=>$DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES,array("role"=>BLOCK_EXACOMP_ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>BLOCK_EXACOMP_TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"),
-					"teachercomps"=>$DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES,array("role"=>BLOCK_EXACOMP_ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>BLOCK_EXACOMP_TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value,evalniveauid"));
+    $data = array();
+    if ($studentid > 0) {
+        $competencies = array(
+            "studentcomps" => $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES, array("role" => BLOCK_EXACOMP_ROLE_STUDENT, "courseid" => $courseid, "userid" => $studentid, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), "", "compid,userid,reviewerid,value"),
+            "teachercomps" => $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES, array("role" => BLOCK_EXACOMP_ROLE_TEACHER, "courseid" => $courseid, "userid" => $studentid, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), "", "compid,userid,reviewerid,value,evalniveauid"));
+    }
+    // Arrange data in associative array for easier use
+    $topics = array();
+    $data = array();
+    foreach ($descriptors as $descriptor) {
+        if ($descriptor->parentid > 0) {
+            continue;
+        }
 
-		// Arrange data in associative array for easier use
-		$topics = array();
-		$data = array();
-		foreach ($descriptors as $descriptor) {
-			if($descriptor->parentid > 0) {
-				continue;
-			}
+        /*$descriptor->children = $DB->get_records('block_exacompdescriptors', array('parentid' => $descriptor->id));
 
-			$descriptor->children = $DB->get_records('block_exacompdescriptors',array('parentid'=>$descriptor->id));
+        $examples = $DB->get_records_sql(
+                "SELECT de.id as deid, e.id, e.title, e.externalurl,
+                e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
+                FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
+                JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON e.id=de.exampid
+                WHERE de.descrid=?"
+                . ($showallexamples ? "" : " AND e.creatorid > 0")
+                , array($descriptor->id));
 
-			$examples = $DB->get_records_sql(
-					"SELECT de.id as deid, e.id, e.title, e.externalurl,
-					e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
-					FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
-					JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON e.id=de.exampid
-					WHERE de.descrid=?"
-					. ($showallexamples ? "" : " AND e.creatorid > 0")
-					, array($descriptor->id));
+        foreach ($examples as $example){
+            $example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
 
-			foreach($examples as $example){
-				$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
+            $taxtitle = "";
+            foreach($example->taxonomies as $taxonomy){
+                $taxtitle .= $taxonomy->title.", ";
+            }
 
-				$taxtitle = "";
-				foreach($example->taxonomies as $taxonomy){
-					$taxtitle .= $taxonomy->title.", ";
-				}
+            $taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
+            $example->tax = $taxtitle;
+        }
+        $filtered_examples = array();
+        if (!in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)){
+            $filtered_taxonomies = implode(",", $filteredtaxonomies);
 
-				$taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
-				$example->tax = $taxtitle;
-			}
-			$filtered_examples = array();
-			if(!in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)){
-				$filtered_taxonomies = implode(",", $filteredtaxonomies);
+            foreach($examples as $example){
+                foreach($example->taxonomies as $taxonomy){
+                    if(in_array($taxonomy->id, $filtered_taxonomies)){
+                        if(!array_key_exists($example->id, $filtered_examples))
+                            $filtered_examples[$example->id] = $example;
+                        continue;
+                    }
+                }
+            }
+        }else{
+            $filtered_examples = $examples;
+        }
 
-				foreach($examples as $example){
-					foreach($example->taxonomies as $taxonomy){
-						if(in_array($taxonomy->id, $filtered_taxonomies)){
-							if(!array_key_exists($example->id, $filtered_examples))
-								$filtered_examples[$example->id] = $example;
-							continue;
-						}
-					}
-				}
-			}else{
-				$filtered_examples = $examples;
-			}
+        $descriptor->examples = array();
+        foreach($filtered_examples as $example){
+            $descriptor->examples[$example->id] = $example;
+        }*/
 
-			$descriptor->examples = array();
-			foreach($filtered_examples as $example){
-				$descriptor->examples[$example->id] = $example;
-			}
+        if ($studentid > 0) {
+            $descriptor->studentcomp = (array_key_exists($descriptor->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$descriptor->id]->value : false;
+            $descriptor->teachercomp = (array_key_exists($descriptor->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$descriptor->id]->value : false;
+            // ICONS
+            if (isset($cm_mm->competencies[$descriptor->id])) {
+                //get CM instances
+                $cm_temp = array();
+                foreach ($cm_mm->competencies[$descriptor->id] as $cmid)
+                    $cm_temp[] = $course_mods[$cmid];
 
-			if($studentid) {
-				$descriptor->studentcomp = (array_key_exists($descriptor->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$descriptor->id]->value : false;
-				$descriptor->teachercomp = (array_key_exists($descriptor->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$descriptor->id]->value : false;
-				// ICONS
-				if(isset($cm_mm->competencies[$descriptor->id])) {
-					//get CM instances
-					$cm_temp = array();
-					foreach($cm_mm->competencies[$descriptor->id] as $cmid)
-						$cm_temp[] = $course_mods[$cmid];
+                $icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user",array("id"=>$studentid)), $supported);
+                $descriptor->icon = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+            }
+        }
+        $data[$descriptor->skillid][$descriptor->topicid][$descriptor->niveauid][] = $descriptor;
+        $topics[$descriptor->topicid] = $descriptor->topic_title;
+    }
 
-					$icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user",array("id"=>$studentid)), $supported);
-					$descriptor->icon = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
-				}
-			}
-			$data[$descriptor->skillid][$descriptor->topicid][$descriptor->niveauid][] = $descriptor;
-			$topics[$descriptor->topicid] = $descriptor->topic_title;
-		}
+    $selection = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('courseid'=>$courseid), '', 'topicid');
 
-		$selection = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
+    return array($niveaus, $skills, $topics, $data, $selection);
 
-		return array($niveaus, $skills, $topics, $data, $selection);
-
-}*/
+}
 
 /**
  * return all avaiable niveaus within one subject (LFS for LIS)
@@ -8920,14 +8921,17 @@ function block_exacomp_get_courseids_by_example($exampleid) {
  **/
 function block_exacomp_get_html_for_niveau_eval($evaluation) {
 	//$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
-	$evaluation_niveau_type = block_exacomp_get_assessment_diffLevel_options();
-	if ($evaluation_niveau_type == '') {
+	$evaluation_niveau_types = block_exacomp_get_assessment_diffLevel_options();
+	if (!$evaluation_niveau_types) {
 		return;
 	}
-
-	// TODO: this funciton is used inly in one place: competence_grid function
-    // and call of this function is commented.
-    // so, this function is deprecated?
+    $evaluation_niveau_types = explode(',', $evaluation_niveau_types);
+    $evaluation_niveau_type = 0; //default
+//    echo "<pre>debug:<strong>lib.php:8930</strong>\r\n"; print_r($evaluation); echo '</pre>'; // !!!!!!!!!! delete it
+//    echo "<pre>debug:<strong>lib.php:8930</strong>\r\n"; print_r($evaluation_niveau_types); echo '</pre>'; exit; // !!!!!!!!!! delete it
+	if (array_key_exists($evaluation, $evaluation_niveau_types)) {
+        $evaluation_niveau_type = $evaluation_niveau_types[$evaluation];
+    }
 
 	//predefined pictures
 	$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';

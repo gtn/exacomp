@@ -248,6 +248,16 @@ td.contentcell {
 	text-align: center;
 }
 
+#block_exacomp .competence_grid .header,
+#block_exacomp .competence_grid .tablecell.cell {
+	vertical-align: top;
+	text-align: left;
+}
+
+#block_exacomp .eval-table .cell {
+	border: none;
+}
+
 #block_exacomp #course-selection .header,
 #block_exacomp #course-selection .cell ,
 #block_exacomp .exabis_comp_comp .c0,

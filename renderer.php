@@ -488,9 +488,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0, $studentid = 0, $subjectid = 0) {
-		global $DB;
+		global $PAGE, $DB, $USER, $OUTPUT;
 		$headFlag = false;
-
 		$context = context_course::instance($courseid);
 		$role = block_exacomp_is_teacher($context) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT;
 		$editmode = (($studentid == 0) ? true : false);
@@ -499,15 +498,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->attributes['class'] = 'competence_grid';
 		$head = array();
 
-		$scheme = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
-		$scheme_values = \block_exacomp\global_config::get_teacher_eval_items($courseid);
+		$scheme = ($courseid == 0) ? 1 : block_exacomp_get_assessment_comp_scheme();
 
-		$satisfied = ceil($scheme / 2);
+		if ($studentid > 0) {
+            $student = $DB->get_record('user',array('id' => $studentid));
+            block_exacomp_get_user_information_by_course($student, $courseid);
+        } else {
+            $student = null;
+        }
+		
+		$scheme_values = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, $scheme);
+
+//		$satisfied = ceil($scheme / 2);
 
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 
 		$spanningNiveaus = $DB->get_records(BLOCK_EXACOMP_DB_NIVEAUS, array('span' => 1));
-		//calculate the col span for spanning niveaus
+		// Calculate the col span for spanning niveaus.
 		$spanningColspan = block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus);
 
 		$rows = array();
@@ -539,20 +546,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach ($skill as $topicid => $topic) {
 				$row = new html_table_row();
 
-				$cell2 = new html_table_cell();
+				$cellTopic = new html_table_cell();
 
-				$cell2->text = html_writer::tag("span", html_writer::tag("span", block_exacomp_get_topic_numbering(\block_exacomp\topic::get($topicid))." ".$topics[$topicid], array('class' => 'rotated-text__inner')), array('class' => 'rotated-text'));
-				$cell2->attributes['class'] = 'topic';
-				$cell2->rowspan = 2;
-				$row->cells[] = $cell2;
+                $cellTopic->text = html_writer::tag("span", html_writer::tag("span", block_exacomp_get_topic_numbering(\block_exacomp\topic::get($topicid))." ".$topics[$topicid], array('class' => 'rotated-text__inner')), array('class' => 'rotated-text'));
+                $cellTopic->attributes['class'] = 'topic';
+                $cellTopic->rowspan = 2;
+				$row->cells[] = $cellTopic;
 
 				// Check visibility
 				$topic_std = new stdClass();
 				$topic_std->id = $topicid;
 
 				$topic_visible = block_exacomp_is_topic_visible($courseid, $topic_std, $studentid);
-
-
+				
 				//make second row, spilt rows after topic title
 				$row2 = new html_table_row();
 				foreach ($niveaus as $niveauid => $niveau) {
@@ -563,9 +569,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$allTeachercomps = true;
 						$allStudentcomps = true;
 						foreach ($data[$skillid][$topicid][$niveauid] as $descriptor) {
+                            if ($descriptor->parentid > 0) {
+                                continue; // NO SUBDESCRIPTORS!
+                            }
 							$compString = "";
 
-							// Check visibility
+                            $reviewerid = null;
+                            if ($studentid > 0) {
+                                $reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, "reviewerid", array(
+                                    "userid" => $student->id,
+                                    "compid" => $descriptor->id,
+                                    "courseid" => $courseid,
+                                    "role" => BLOCK_EXACOMP_ROLE_TEACHER,
+                                    "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+                                if ($reviewerid == $USER->id || $reviewerid == 0) {
+                                    $reviewerid = null;
+                                }
+                            }
+
+                            // Check visibility
 							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
 							$visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 							$visible_css = block_exacomp_get_visible_css($visible, $role);
@@ -577,7 +599,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 										"topicid" => $topicid,
 										"subjectid" => $subjectid,
 										"niveauid" => $niveauid,
-										"studentid" => $studentid)), $text, array("id" => "competence-grid-link-".$descriptor->id, "class" => ($visible && $topic_visible) ? '' : 'deactivated'));
+										"studentid" => $studentid)),
+                                    $text,
+                                    array("id" => "competence-grid-link-".$descriptor->id, "class" => ($visible && $topic_visible) ? '' : 'deactivated'));
 							}
 
 							$compString .= $text;
@@ -587,17 +611,123 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$cssClass .= ' child';
 							}
 
-							if (isset($descriptor->teachercomp) && $descriptor->teachercomp) {
-								$evalniveau = $DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, array("compid" => $descriptor->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, 'courseid' => $courseid, 'userid' => $studentid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
-								if ($evalniveau->evalniveauid) {
-									$compString .= html_writer::tag("p", block_exacomp_get_html_for_niveau_eval($evalniveau->evalniveauid));
-								}
+							if ($studentid > 0) {
 
-								$cssClass = "contentok";
-							}
+                                $item = \block_exacomp\descriptor::get($descriptor->id);
+                                $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
+                                if (block_exacomp_get_assessment_SelfEval(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+                                    if ($iconPath = $eval->get_student_value_pic_url()) {
+                                        $studentTemp = $DB->get_record('user', ['id' => $eval->userid]);
+                                        $reviewDescr = fullname($studentTemp) . ': ' . date('d.m.Y H:m', $eval->timestampstudent);
+                                        $studentSelfEval = html_writer::span(
+                                            html_writer::empty_tag('img', array('src' => new moodle_url($iconPath), 'width' => '20', 'height' => '20', 'title' => $reviewDescr)),
+                                            '',
+                                            ['data-container' => 'body',
+                                                'data-toggle' => 'popover',
+                                                'data-content' => $reviewDescr,
+                                                'data-trigger' => 'hover'
+                                            ]);
+//                                    $studentSelfEval = html_writer::empty_tag('img', array('src' => new moodle_url($iconPath), 'width' => '20', 'height' => '20'));
+                                    } else {
+                                        $studentSelfEval = $eval->get_student_value_title($item::TYPE);
+                                    }
 
-							$compdiv .= html_writer::tag('div', $compString, array('class' => $cssClass));
-						}
+                                    $studentSelfEvalInput = $this->generate_select(
+                                        'datadescriptors',
+                                        $descriptor->id,
+                                        'competencies',
+                                        $student,
+                                        "student",
+                                        $scheme,
+                                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? true : false,
+                                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $profoundness : null,
+                                        ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+                                } else {
+                                    $studentSelfEval = '';
+                                    $studentSelfEvalInput = '';
+                                }
+                                $teacherEval = '';
+                                $teacherInput = '';
+                                switch ($scheme) {
+                                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                                        $teacherEval = block_exacomp_format_eval_value($eval->additionalinfo);
+                                        $teacherInput = $teacherEval; // no input for this assessment type
+                                        break;
+                                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                                        $teacherEval = block_exacomp_format_eval_value($eval->teacherevaluation);
+                                        $teacherInput = $teacherEval; // no input for this assessment type
+                                        break;
+                                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                                        $teacherEval = '';
+                                        $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+                                        $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, true, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+                                        if (isset($teacher_eval_items[$value])) {
+                                            $teacherEval = $teacher_eval_items[$value];
+                                        }
+                                        $teacherInput = $teacherEval; // no input for this assessment type
+                                        break;
+                                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                                        $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
+                                        if ($value > 0) {
+//                                        $teacherEval = 'V';
+                                            $reviewer = $DB->get_record('user', ['id' => $eval->teacherreviewerid]);
+                                            $reviewDescr = fullname($reviewer) . ': ' . date('d.m.Y H:m', $eval->timestampteacher);
+                                            $teacherEval = html_writer::span($OUTPUT->pix_icon('i/checked', $reviewDescr), '', [
+                                                'data-container' => 'body',
+                                                'data-toggle' => 'popover',
+                                                'data-content' => $reviewDescr,
+                                                'data-trigger' => 'hover'
+                                            ]);
+                                        }
+                                        $teacherInput = $this->generate_checkbox(
+                                            'datadescriptors',
+                                            $descriptor->id,
+                                            'competencies',
+                                            $student,
+                                            "teacher",
+                                            1,
+                                            ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
+                                            null,
+                                            ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+                                        break;
+                                }
+
+                                $addEvalTable = false;
+                                if ($studentid > 0) {
+                                    $evalTable = new html_table();
+                                    $evalTable->width = '100%';
+                                    $evalTable->attributes['class'] = 'eval-table';
+                                    $evalTable->align = array('left', 'right');
+                                    $evalTable->size = array('50%', '50%');
+                                    $evalRow = new html_table_row();
+                                    switch ($role) {
+                                        case BLOCK_EXACOMP_ROLE_TEACHER:
+                                            // add student self-evaluation
+                                            $evalRow->cells[] = $studentSelfEval;
+                                            $evalRow->cells[] = $teacherInput;
+                                            break;
+                                        case BLOCK_EXACOMP_ROLE_STUDENT:
+                                            $evalRow->cells[] = $studentSelfEvalInput;
+                                            $evalRow->cells[] = $teacherEval;
+                                            break;
+                                    }
+
+                                    if (isset($descriptor->teachercomp) && $descriptor->teachercomp) {
+                                        /*$evalniveau = $DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, array("compid" => $descriptor->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, 'courseid' => $courseid, 'userid' => $studentid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+                                        if ($evalniveau->evalniveauid) {
+                                            $evalFooter .= html_writer::tag("p", block_exacomp_get_html_for_niveau_eval($evalniveau->evalniveauid));
+                                        }*/
+
+                                        $cssClass = "contentok";
+                                    }
+                                    $evalTable->data[] = $evalRow;
+                                    $compString .= html_writer::table($evalTable);
+                                }
+                            }
+
+                            $compdiv .= html_writer::tag('div', $compString, array('class' => $cssClass));
+
+                        }
 
 						// apply colspan for spanning niveaus
 						if (array_key_exists($niveauid, $spanningNiveaus)) {
@@ -640,7 +770,37 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		$table->data = $rows;
 
-		return html_writer::tag("div", html_writer::table($table), array("id" => "exabis_competences_block"));
+        $url_params = array();
+        $url_params['subjectid'] = $subjectid;
+        if (isset($studentid)) {
+            $url_params['studentid'] = $studentid;
+        }
+        $url_params['courseid'] = $courseid;
+
+        if ($studentid > 0) {
+            $saveButton =
+                html_writer::div(
+                    html_writer::empty_tag('input',
+                        array(
+                            'id' => 'btn_submit',
+                            'type' => 'submit',
+                            'class' => 'btn btn-default',
+                            'value' => block_exacomp_get_string('save_selection'))),
+                    '',
+                    ['id' => 'exabis_save_button']
+                );
+            $url_params['action'] = 'save';
+        } else {
+            $saveButton = '';
+        }
+
+        $formurl = new moodle_url($PAGE->url, $url_params);
+
+		$formContent = html_writer::tag('form',
+            html_writer::tag("div", html_writer::table($table), array("id" => "exabis_competences_block")).$saveButton,
+            array('id' => 'competence_grid', "action" => $formurl, 'method' => 'post')
+        );
+		return $formContent;
 	}
 
 	public function competence_overview_form_start($selectedTopic = null, $selectedSubject = null, $studentid = null, $editmode = null) {

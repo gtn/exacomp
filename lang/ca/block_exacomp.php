@@ -39,7 +39,7 @@ $string['tab_teacher_settings_badges'] = 'edit badges';
 $string['tab_student_all'] = 'Totes les competències assolides';
 
 //Generic Tabs (used by Teacher and Students)
-$string['tab_competence_grid'] = 'graella de competències';
+$string['tab_competence_overview'] = 'graella de competències';
 $string['tab_competence_overview'] = 'Resum de les competències';
 //TODO $string['tab_competence_details'] = 'Detailed competence-view';
 $string['tab_examples'] = 'Exemples i tasques';

@@ -682,7 +682,7 @@
 	// global var hack
 	i_want_my_reload = true;
 
-	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button], #grade_example_related input[type=submit]', function(event) {
+	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button], #grade_example_related input[type=submit], #competence_grid input[type=submit]', function(event) {
 		if ($(this).is('.allow-submit')) return;
 		event.preventDefault();
 		var courseid = block_exacomp.get_param('courseid');

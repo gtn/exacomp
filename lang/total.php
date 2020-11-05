@@ -201,9 +201,9 @@ return [
 
 
 	// === Generic Tabs (used by Teacher and Students) ===
-	'tab_competence_grid' => [
-		'Berichte',
-		'Reports',
+	'tab_competence_gridoverview' => [
+		'Übersicht',
+		'Overview',
 	],
 	'tab_competence_overview' => [
 		'Kompetenzraster',

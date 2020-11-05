@@ -74,7 +74,7 @@ $string['tab_student_all'] = 'All gained competencies';
 
 
 // === Generic Tabs (used by Teacher and Students) ===
-$string['tab_competence_grid'] = 'Reports';
+$string['tab_competence_gridoverview'] = 'Overview';
 $string['tab_competence_overview'] = 'Competence grid';
 $string['tab_examples'] = 'Examples and tasks';
 $string['tab_badges'] = 'My badges';
