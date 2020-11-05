@@ -39,7 +39,7 @@ $string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_settings'] = 'Admin Settings';
 $string['tab_admin_configuration'] = 'Competence grids pre-selection';
 $string['admin_config_pending'] = 'Competence grids pre-selection needs to be performed by the Moodle administrator';
-$string['tab_admin_taxonomies'] = 'Taxonomies';
+$string['tab_admin_taxonomies'] = 'Difficulty levels';
 
 
 // === Teacher Tabs ===
@@ -51,10 +51,11 @@ $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
 $string['tab_teacher_settings_activitiestodescriptors'] = 'Relate Moodle activities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_teacher_settings_new_subject'] = 'Create new subject';
-$string['tab_teacher_settings_taxonomies'] = 'Taxonomies';
-$string['tab_teacher_settings_taxonomies_help'] = 'Taxonomies denote levels of difficulty here. See also: <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a></br>
-        Both learning materials and competencies can be provided with taxonomies (usually done in the KOMET competence grid recording tool).</br>
-        Learning materials can be filtered according to taxonomies (levels of difficulty). ';
+$string['tab_teacher_settings_taxonomies'] = 'Difficulty levels';
+$string['tab_teacher_settings_taxonomies_help'] = 'Both learning materials and competencies can be provided with difficulty levels (usually done in the KOMET competence grid recording tool).</br>
+         Learning materials can be filtered according to difficulty levels.</br>
+         Another term for difficulty levels is taxonomies - e.g. Bloom\'s taxonomy can be used to classify the learning level (see <a href=\'https://en.wikipedia.org/wiki/Bloom%27s_taxonomy\' target=\'_blank\'>https://en.wikipedia.org/wiki/Bloom%27s_taxonomy</a>)
+ ';
 $string['tab_teacher_report_general'] = 'General report';
 $string['tab_teacher_report_annex'] = 'Annex';
 $string['tab_teacher_report_annex_title'] = 'Annex to the learning development report';
@@ -487,11 +488,11 @@ $string['create_new_area'] = 'New area';
 $string['really_delete'] = 'Really to delete?';
 $string['add_niveau'] = 'Add niveau';
 $string['delete_niveau'] = 'Delete niveau';
-$string['add_new_taxonomie'] = 'Add a new taxonomie';
-$string['taxonomy_was_deleted'] = 'Taxonomy was deleted';
+$string['add_new_taxonomie'] = 'Add a new difficulty level';
+$string['taxonomy_was_deleted'] = 'Difficulty level was deleted';
 $string['move_up'] = 'Move up';
 $string['move_down'] = 'Move down';
-$string['also_taxonomies_from_import'] = 'There are also taxonomies from import';
+$string['also_taxonomies_from_import'] = 'There are also difficulty levels from import';
 
 // === Competence Profile ===
 $string['name'] = 'Name';

@@ -89,8 +89,8 @@ return [
 		'Competence grids pre-selection needs to be performed by the Moodle administrator',
 	],
     'tab_admin_taxonomies' => [
-            'Taxonomien',
-            'Taxonomies',
+            'Niveaustufen',
+            'Difficulty levels',
     ],
 
 
@@ -128,16 +128,18 @@ return [
 		'Create new subject',
 	],
 	'tab_teacher_settings_taxonomies' => [
-		'Taxonomien',
-		'Taxonomies',
+		'Niveaustufen',
+		'Difficulty levels',
 	],
 	'tab_teacher_settings_taxonomies_help' => [
-		'Taxonomien bezeichnen hier Schwierigkeitsstufen. Siehe auch: <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a> </br>
-        Lernmaterialien als auch Kompetenzen können mit Taxonomien versehen werden (üblicherweise im Kompetenzraster-Erfassungstool KOMET).</br>
-        Lernmaterialien können nach Taxonomien (Niveaustufen) gefiltert werden.',
-		'Taxonomies denote levels of difficulty here. See also: <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a></br>
-        Both learning materials and competencies can be provided with taxonomies (usually done in the KOMET competence grid recording tool).</br>
-        Learning materials can be filtered according to taxonomies (levels of difficulty). ',
+	    'Lernmaterialien als auch Kompetenzen können mit Niveaustufen versehen werden (üblicherweise im Kompetenzraster-Erfassungstool KOMET).</br>
+Lernmaterialien und Kompetenzen können nach Niveaustufen gefiltert werden.</br>
+Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche Taxonomie für die Einstufung des Lernniveaus herangezogen werden (siehe <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a>)
+',
+        'Both learning materials and competencies can be provided with difficulty levels (usually done in the KOMET competence grid recording tool).</br>
+         Learning materials can be filtered according to difficulty levels.</br>
+         Another term for difficulty levels is taxonomies - e.g. Bloom\'s taxonomy can be used to classify the learning level (see <a href=\'https://en.wikipedia.org/wiki/Bloom%27s_taxonomy\' target=\'_blank\'>https://en.wikipedia.org/wiki/Bloom%27s_taxonomy</a>)
+ ',
 	],
 
     'tab_teacher_report_general' => [
@@ -1723,12 +1725,12 @@ return [
         'Delete niveau'
     ],
     'add_new_taxonomie' => [
-        'neue Taxonomie hinzufügen',
-        'Add a new taxonomie',
+        'neue Niveaustufe hinzufügen',
+        'Add a new difficulty level',
     ],
     'taxonomy_was_deleted' => [
-        'Taxonomy was deleted',
-        'Taxonomy was deleted',
+        'Niveaustufe was deleted',
+        'Difficulty level was deleted',
     ],
     'move_up' => [
         'Move up',
@@ -1739,8 +1741,8 @@ return [
         'Move down',
     ],
     'also_taxonomies_from_import' => [
-        'Taxonomien aus Importen anzeigen',
-        'There are also taxonomies from import',
+        'Niveaustufen aus Importen anzeigen',
+        'There are also difficulty levels from import',
     ],
 
 	// === Competence Profile ===

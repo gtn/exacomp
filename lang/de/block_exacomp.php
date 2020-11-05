@@ -39,7 +39,7 @@ $string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_settings'] = 'Website-Einstellungen';
 $string['tab_admin_configuration'] = 'Vorauswahl der Kompetenzraster';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
-$string['tab_admin_taxonomies'] = 'Taxonomien';
+$string['tab_admin_taxonomies'] = 'Niveaustufen';
 
 
 // === Teacher Tabs ===
@@ -51,10 +51,11 @@ $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen
 $string['tab_teacher_settings_activitiestodescriptors'] = 'Moodle-Aktivitäten verknüpfen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neues Kompetenzraster anlegen';
-$string['tab_teacher_settings_taxonomies'] = 'Taxonomien';
-$string['tab_teacher_settings_taxonomies_help'] = 'Taxonomien bezeichnen hier Schwierigkeitsstufen. Siehe auch: <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a> </br>
-        Lernmaterialien als auch Kompetenzen können mit Taxonomien versehen werden (üblicherweise im Kompetenzraster-Erfassungstool KOMET).</br>
-        Lernmaterialien können nach Taxonomien (Niveaustufen) gefiltert werden.';
+$string['tab_teacher_settings_taxonomies'] = 'Niveaustufen';
+$string['tab_teacher_settings_taxonomies_help'] = 'Lernmaterialien als auch Kompetenzen können mit Niveaustufen versehen werden (üblicherweise im Kompetenzraster-Erfassungstool KOMET).</br>
+Lernmaterialien und Kompetenzen können nach Niveaustufen gefiltert werden.</br>
+Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche Taxonomie für die Einstufung des Lernniveaus herangezogen werden (siehe <a href=\'https://de.wikipedia.org/wiki/Lernziel#Taxonomien\' target=\'_blank\'>https://de.wikipedia.org/wiki/Lernziel#Taxonomien</a>)
+';
 $string['tab_teacher_report_general'] = 'Berichte';
 $string['tab_teacher_report_annex'] = 'Berichte ';
 $string['tab_teacher_report_annex_title'] = 'Anlage zum Lernentwicklungsbericht';
@@ -493,11 +494,11 @@ $string['create_new_area'] = 'Neuer Bereich';
 $string['really_delete'] = 'Wirklich löschen?';
 $string['add_niveau'] = 'Neuen Lernfortschritt hinzufügen';
 $string['delete_niveau'] = 'Löschen hinzufügen';
-$string['add_new_taxonomie'] = 'neue Taxonomie hinzufügen';
-$string['taxonomy_was_deleted'] = 'Taxonomy was deleted';
+$string['add_new_taxonomie'] = 'neue Niveaustufe hinzufügen';
+$string['taxonomy_was_deleted'] = 'Niveaustufe was deleted';
 $string['move_up'] = 'Move up';
 $string['move_down'] = 'Move down';
-$string['also_taxonomies_from_import'] = 'Taxonomien aus Importen anzeigen';
+$string['also_taxonomies_from_import'] = 'Niveaustufen aus Importen anzeigen';
 
 // === Competence Profile ===
 $string['name'] = 'Name';
