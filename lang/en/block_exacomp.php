@@ -37,8 +37,8 @@ $string['cachedef_visibility_cache'] = 'Cache to improve performance while check
 // === Admin Tabs ===
 $string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_settings'] = 'Admin Settings';
-$string['tab_admin_configuration'] = 'Standards pre-selection';
-$string['admin_config_pending'] = 'Standards pre-selection needs to be performed by the Moodle administrator';
+$string['tab_admin_configuration'] = 'Competence grids pre-selection';
+$string['admin_config_pending'] = 'Competence grids pre-selection needs to be performed by the Moodle administrator';
 $string['tab_admin_taxonomies'] = 'Taxonomies';
 
 
@@ -91,7 +91,7 @@ $string['tab_group_reports'] = 'Group Reports';
 $string['assign_descriptor_to_crosssubject'] = 'Assign the competence "{$a}" to the following interdisciplinary subjects:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'No interdisciplinary subjects are available.';
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competence Grid.';
-$string['second_configuration_step'] = 'In this configuration step you have to pre-select standards.';
+$string['second_configuration_step'] = 'In this configuration step you have to pre-select competence grids.';
 $string['next_step'] = 'This configuration step has been completed. Click here to continue configuration.';
 $string['next_step_teacher'] = 'The configuration that has to be done by the administrator is now completed. To continue with the course specific configuration click here.';
 $string['teacher_first_configuration_step'] = 'The first step of course configuration is to adjust general settings for your course.';
@@ -245,7 +245,7 @@ $string['import_max_execution_time'] = 'Important: The current Serversettings li
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data has been imported yet!';
 $string['doimport'] = 'Import outcomes/standards';
-$string['doimport_again'] = 'Import additional outcomes/standards';
+$string['doimport_again'] = 'Import additional outcomes/competence grids';
 $string['doimport_own'] = 'Import individual outcomes/standards';
 $string['scheduler_import_settings'] = 'Settings for scheduler importing';
 $string['delete_own'] = 'Delete individual outcomes/standards';
@@ -269,7 +269,7 @@ $string['download_activites'] = 'Download activities';
 
 
 // === Configuration ===
-$string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of the main standards you would like to use in this Moodle installation.';
+$string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of the main competence grids you would like to use in this Moodle installation.';
 $string['save_selection'] = 'Save selection';
 $string['save_success'] = 'changes were successful';
 
@@ -440,8 +440,9 @@ $string['competence_grid_additionalinfo'] = 'grade';
 $string['descriptor'] = 'competence';
 $string['descriptor_child'] = 'child competence';
 $string['assigndone'] = 'task done: ';
-$string['descriptor_categories'] = 'Difficulty level: ';
+$string['descriptor_categories'] = 'Edit difficulty level: ';
 $string['descriptor_add_category'] = 'Add new difficulty level: ';
+$string['descriptor_categories_description'] = 'Choose the difficulty level for this (sub)competency/learning material. You can also add a new difficulty level or choose to not select a difficulty level.';
 
 // === metadata ===
 $string['subject_singular'] = 'Field of competence';

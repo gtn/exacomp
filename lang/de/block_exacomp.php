@@ -37,7 +37,7 @@ $string['cachedef_visibility_cache'] = 'Cache zur Performanceerhöhung von Sicht
 // === Admin Tabs ===
 $string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_settings'] = 'Website-Einstellungen';
-$string['tab_admin_configuration'] = 'Vorauswahl der Standards';
+$string['tab_admin_configuration'] = 'Vorauswahl der Kompetenzraster';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 $string['tab_admin_taxonomies'] = 'Taxonomien';
 
@@ -91,10 +91,10 @@ $string['tab_group_reports'] = 'Gruppenberichte';
 $string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Kompetenzraster Modul zu importieren.';
-$string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt müssen Bildungsstandards ausgewählt werden.';
+$string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt müssen Kompetenzraster ausgewählt werden.';
 $string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum Nächsten zu gelangen.';
 $string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss, ist hiermit abgeschlossen. Um mit der kursspezifischen Konfiguration fortzufahren klicken Sie hier.';
-$string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt der Kurs-Standards müssen einige generelle Einstellungen getroffen werden.';
+$string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt der Kurs-Kompetenzraster müssen einige generelle Einstellungen getroffen werden.';
 $string['teacher_second_configuration_step'] = 'Im zweiten Konfigurationsschritt müssen Themenbereiche ausgewählt werden, mit denen Sie in diesem Kurs arbeiten möchten.';
 $string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivitäten mit Kompetenzen assoziiert. ';
 $string['teacher_third_configuration_step_link'] = '(Optional: Wenn Sie nicht mit Moodle-Aktivitäten arbeiten möchten, dann entfernen Sie das Häkchen "Ich möchte mit Moodle-Aktivitäten arbeiten" im Tab "Einstellungen".)';
@@ -242,7 +242,7 @@ $string['help_content'] = '<h1>Video zur Einführung</h1>
 $string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>';
 $string['importwebservice'] = 'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.';
 $string['import_max_execution_time'] = 'Wichtig: die aktuellen Servereinstellungen beschränken den Import auf {$a} Sekunden. Falls der Import-Vorgang länger dauert, wird dieser abgebrochen, es werden keine Daten importiert. Am Ausgabegerät wird in diesem Fall eine serverseitige Fehlermeldung ausgegeben (z.B. "500 Internal Server Error").';
-$string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
+$string['importdone'] = 'Die allgemeinen Kompetenzraster sind bereits importiert.';
 $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.';
 $string['doimport'] = 'Bildungsstandards importieren';
 $string['doimport_again'] = 'Weitere Kompetenzraster importieren';
@@ -269,7 +269,7 @@ $string['download_activites'] = 'Download activities';
 
 
 // === Configuration ===
-$string['explainconfig'] = 'Um das Modul exabis competences verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.';
+$string['explainconfig'] = 'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.';
 $string['save_selection'] = 'Auswahl speichern';
 $string['save_success'] = 'Änderungen erfolgreich übernommen';
 
@@ -440,8 +440,9 @@ $string['competence_grid_additionalinfo'] = 'Note';
 $string['descriptor'] = 'Kompetenz';
 $string['descriptor_child'] = 'Teilkompetenz';
 $string['assigndone'] = 'Aufgabe erledigt: ';
-$string['descriptor_categories'] = 'Niveaustufen: ';
+$string['descriptor_categories'] = 'Niveaustufen bearbeiten: ';
 $string['descriptor_add_category'] = 'Neue Niveaustufe hinzufügen: ';
+$string['descriptor_categories_description'] = 'Wählen Sie hier Niveaustufe(n) für diese Kompetenz/dieses Lernmaterial aus. Sie können auch eine neue Niveaustufe hinzufügen oder dieses Feld freilassen.';
 
 // === metadata ===
 $string['subject_singular'] = 'Fach';

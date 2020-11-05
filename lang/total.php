@@ -81,12 +81,12 @@ return [
 		'Admin Settings',
 	],
 	'tab_admin_configuration' => [
-		'Vorauswahl der Standards',
-		'Standards pre-selection',
+		'Vorauswahl der Kompetenzraster',
+		'Competence grids pre-selection',
 	],
 	'admin_config_pending' => [
 		'Vorauswahl der Kompetenzen durch den Administrator notwendig',
-		'Standards pre-selection needs to be performed by the Moodle administrator',
+		'Competence grids pre-selection needs to be performed by the Moodle administrator',
 	],
     'tab_admin_taxonomies' => [
             'Taxonomien',
@@ -270,8 +270,8 @@ return [
 		'The first step of the configuration is to import some data to Exabis Competence Grid.',
 	],
 	'second_configuration_step' => [
-		'Im zweiten Konfigurationsschritt müssen Bildungsstandards ausgewählt werden.',
-		'In this configuration step you have to pre-select standards.',
+		'Im zweiten Konfigurationsschritt müssen Kompetenzraster ausgewählt werden.',
+		'In this configuration step you have to pre-select competence grids.',
 	],
 	'next_step' => [
 		'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum Nächsten zu gelangen.',
@@ -282,7 +282,7 @@ return [
 		'The configuration that has to be done by the administrator is now completed. To continue with the course specific configuration click here.',
 	],
 	'teacher_first_configuration_step' => [
-		'Im ersten Konfigurationsschritt der Kurs-Standards müssen einige generelle Einstellungen getroffen werden.',
+		'Im ersten Konfigurationsschritt der Kurs-Kompetenzraster müssen einige generelle Einstellungen getroffen werden.',
 		'The first step of course configuration is to adjust general settings for your course.',
 	],
 	'teacher_second_configuration_step' => [
@@ -828,7 +828,7 @@ return [
 		'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".',
 	],
 	'importdone' => [
-		'Die allgemeinen Bildungsstandards sind bereits importiert.',
+		'Die allgemeinen Kompetenzraster sind bereits importiert.',
 		'data has already been imported from xml',
 	],
 	'importpending' => [
@@ -841,7 +841,7 @@ return [
 	],
 	'doimport_again' => [
 		'Weitere Kompetenzraster importieren',
-		'Import additional outcomes/standards',
+		'Import additional outcomes/competence grids',
 	],
 	'doimport_own' => [
 		'Schulspezifische Bildungsstandards importieren',
@@ -931,8 +931,8 @@ return [
 
 	// === Configuration ===
 	'explainconfig' => [
-		'Um das Modul exabis competences verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.',
-		'Your outcomes have already been imported. In this configuration you have to make the selection of the main standards you would like to use in this Moodle installation.',
+		'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.',
+		'Your outcomes have already been imported. In this configuration you have to make the selection of the main competence grids you would like to use in this Moodle installation.',
 	],
 	'save_selection' => [
 		'Auswahl speichern',
@@ -1561,12 +1561,16 @@ return [
 		'task done: ',
 	],
     'descriptor_categories' => [
-        'Niveaustufen: ',
-        'Difficulty level: ',
+        'Niveaustufen bearbeiten: ',
+        'Edit difficulty level: ',
     ],
     'descriptor_add_category' => [
         'Neue Niveaustufe hinzufügen: ',
         'Add new difficulty level: ',
+    ],
+    'descriptor_categories_description' => [
+        'Wählen Sie hier Niveaustufe(n) für diese Kompetenz/dieses Lernmaterial aus. Sie können auch eine neue Niveaustufe hinzufügen oder dieses Feld freilassen.',
+        'Choose the difficulty level for this (sub)competency/learning material. You can also add a new difficulty level or choose to not select a difficulty level.'
     ],
 
 	// === metadata ===

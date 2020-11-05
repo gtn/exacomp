@@ -1307,3 +1307,10 @@ input[type=checkbox].be-sure {
 	line-height: 1em;
 	z-index: 10000;
 }
+
+.exacomp_sublabel {
+	display: block;
+	font-size: 0.8em;
+	opacity: 0.75;
+}
+
