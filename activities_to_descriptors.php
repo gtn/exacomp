@@ -126,7 +126,7 @@ if ($action == "import") {
             FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
                 JOIN {course_modules} cm ON cm.id = e.activityid
                 LEFT JOIN {modules} m ON m.id = cm.module
-			WHERE m.course = '.$template.' AND m.deletioninprogress = 0
+			WHERE cm.course = '.intval($template).' AND cm.deletioninprogress = 0
     ');
     foreach ($records as $record) {
         $sourceModule = get_coursemodule_from_id(null, $record->activityid);

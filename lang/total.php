@@ -923,7 +923,10 @@ return [
         'Importieren Sie Aktivitäten vom Vorlagekurs in Ihren Kurs',
         'Import activities of a template course into your course'
     ],
-
+    'download_activites' => [
+        'Download activities',
+        'Download activities',
+    ],
 
 
 	// === Configuration ===
