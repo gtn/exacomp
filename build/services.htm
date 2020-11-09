@@ -2788,7 +2788,7 @@ Params: <table>
 <td>Type of competence: topic/descriptor/example      if <= 0 then show all items for user</td>
 <tr>
 <td>search</td>
-<td>PARA_TEXT</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
@@ -2796,6 +2796,7 @@ Params: <table>
 </table>
 Returns:<pre>[
     {
+        "courseid": "int null (id of course)",
         "subjectid": "int null (id of subject)",
         "subjecttitle": "text null (title of subject)",
         "topicid": "int null (id of topic)",

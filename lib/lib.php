@@ -2003,6 +2003,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
     }
 
     foreach ($examples as $example) {
+        $example->courseid = $courseid;
         $example->descriptor = $descriptor;
         $example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
 
@@ -8623,9 +8624,9 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
  * get all examples associated with any descriptors in this course
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_by_course($courseid, $withTopicAndSubjectInfo=false) {
-    if($withTopicAndSubjectInfo){
-        $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid
+function block_exacomp_get_examples_by_course($courseid, $withTopicSubjectCourseInfo=false) {
+    if($withTopicSubjectCourseInfo){
+        $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON dex.exampid = ex.id
             JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid

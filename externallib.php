@@ -6778,21 +6778,6 @@ class block_exacomp_external extends external_api {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Returns description of method parameters
      *
@@ -6846,6 +6831,7 @@ class block_exacomp_external extends external_api {
 
         $examplesAndItems = array_map(function ($item){
             $objDeeper = new stdClass();
+            $objDeeper->courseid = $item->courseid;
             $objDeeper->item = $item;
             $objDeeper->subjecttitle = $item->subjecttitle;
             $objDeeper->subjectid = $item->subjectid;
@@ -6862,8 +6848,6 @@ class block_exacomp_external extends external_api {
             $examplesAndItems += $examples;
         }
 
-//        var_dump($examples);
-//        die;
         return $examplesAndItems;
     }
 
@@ -6877,6 +6861,7 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_get_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
@@ -6900,15 +6885,12 @@ class block_exacomp_external extends external_api {
                 'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
                 'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
                 'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
-
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
                     'filename' => new external_value (PARAM_TEXT, 'title of item'),
                     'file' => new external_value (PARAM_URL, 'file url'),
                     'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
                     'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
-                ))),
-
-
+                )),"files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure (new external_single_structure ( array(
                     'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
                 )), 'collaborators', VALUE_OPTIONAL),
@@ -10082,6 +10064,7 @@ class block_exacomp_external extends external_api {
                 $item = static::block_exacomp_get_item_details($item, $userid, $wstoken);
                 $objDeeper->item = $item;
             }
+            $objDeeper->courseid = $example->courseid;
             $objDeeper->example = $example;
             $objDeeper->subjecttitle = $example->subjecttitle;
             $objDeeper->subjectid = $example->subjectid;
