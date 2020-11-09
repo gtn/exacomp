@@ -8117,8 +8117,9 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 AND ie.competence_type = ?
               ORDER BY ie.timecreated DESC';
             break;
+        case -1: // TODO: only for now: same as for topics, since descriptors are not used in diggrplus
+            $comptype = BLOCK_EXACOMP_TYPE_TOPIC;
         case BLOCK_EXACOMP_TYPE_TOPIC:
-        case -1: // keine Einschränkung, alle items für topics
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, d.title as topictitle, subj.title as subjecttitle, d.id as topicid, subj.id as subjectid
               FROM {block_exacomptopics} d
                 JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
