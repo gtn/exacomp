@@ -6803,7 +6803,7 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
-            'search' => new external_value( PARA_TEXT, 'search string', VALUE_OPTIONAL)
+            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL)
         ));
     }
 
