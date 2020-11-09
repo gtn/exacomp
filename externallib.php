@@ -6841,49 +6841,7 @@ class block_exacomp_external extends external_api {
             static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
             //TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
             // ==> Then the access can be checked RW
-
-            $item->file = "";
-            $item->isimage = false;
-            $item->filename = "";
-            $item->effort = strip_tags($item->intro);
-            $item->teachervalue = isset ($item->teachervalue) ? $item->teachervalue : 0;
-            $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
-            $item->status = isset ($item->status) ? $item->status : 0;
-
-            if ($item->type == 'file') {
-
-                // Stattdessen: block_exaport_get_item_files ??    Im Dakora webservice wird das verwendet.
-
-                // TODO: move code into exaport\api
-                require_once $CFG->dirroot.'/blocks/exaport/inc.php';
-
-                $item->userid = $userid;
-                if ($file = block_exaport_get_item_single_file($item)) {
-                    $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$item->id."&wstoken=".static::wstoken());
-                    $item->isimage = $file->is_valid_image();
-                    $item->filename = $file->get_filename();
-                }
-            }
-
-            $item->studentcomment = '';
-            $item->teachercomment = '';
-
-            $itemcomments = \block_exaport\api::get_item_comments($item->id);
-
-            // teacher comment: last comment from any teacher in the course the item was submited
-            foreach ($itemcomments as $itemcomment) {
-                if (!$item->studentcomment && $userid == $itemcomment->userid) {
-                    $item->studentcomment = $itemcomment->entry;
-                } elseif (!$item->teachercomment) {
-                    if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
-                        // dakora / exacomp teacher
-                        $item->teachercomment = $itemcomment->entry;
-                    } elseif (block_exacomp_is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
-                        // elove teacher
-                        $item->teachercomment = $itemcomment->entry;
-                    }
-                }
-            }
+            static::block_exacomp_get_item_details($item, $userid, static::wstoken());
         }
 
         $examplesAndItems = array_map(function ($item){
@@ -6900,9 +6858,12 @@ class block_exacomp_external extends external_api {
         if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
             // TODO: how do we check if the user is a teacher? It is not oriented on courses
 //            $isTeacher = false;
-            $examples = block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype);
+            $examples = block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken());
             $examplesAndItems += $examples;
         }
+
+//        var_dump($examples);
+//        die;
         return $examplesAndItems;
     }
 
@@ -10030,6 +9991,156 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status')
         ));
     }
+
+
+
+
+    /**
+     * get all examples associated with any topic or descriptor in any course for user
+     * if compid or comptype are -1, get all examples for all courses
+     * @param int $userid
+     * @param bool $compid
+     * @param bool $comptype
+     */
+    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken){
+        global $DB;
+        // Maybe better performance with join on user_enrolments table?
+//    if ($isTeacher) {
+//        $courses = block_exacomp_get_courses_of_teacher($userid);
+//    } else {
+//        $courses = block_exacomp_get_courses_of_student($userid);
+//    }
+
+        // TODO: To avoid code duplication i used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
+        $examples = array();
+        if($compid == -1 || $comptype == -1){
+            // TODO: checks so a student cannot hack this and view another student's items
+            $courses = enrol_get_users_courses($userid);
+            foreach($courses as $course){
+                $examples += block_exacomp_get_examples_by_course($course->id,true); // TODO: duplicates?
+            }
+        }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
+            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
+            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // TODO: this only gets parents
+            foreach($descriptors as $descriptor){
+                $descriptors += block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
+            }
+            foreach($descriptors as $descriptor){
+                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0]);
+                $examples += $descriptorWithExamples->examples;
+            }
+
+            // get topic and subject information:
+            $sql = 'SELECT topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
+                  FROM {block_exacomptopics} topic
+                    JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
+                  WHERE topic.id = ?';
+            $information = $DB->get_record_sql($sql, array($compid));
+            foreach($examples as $example){
+                $example->subjecttitle = $information->subjecttitle;
+                $example->subjectid = $information->subjectid;
+                $example->topictitle = $information->topictitle;
+                $example->topicid = $information->topicid;
+            }
+        }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
+            $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
+            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,null,$courseids[0]);
+            $examples = $descriptorWithExamples->examples;
+
+            // get topic and subject information:
+            $sql = 'SELECT topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
+                  FROM {block_exacompdescriptors} d
+                    JOIN {block_exacompdescrtopic_mm} desctop ON desctop.descrid = d.id
+                    JOIN {block_exacomptopics} topic ON topic.id = desctop.topicid
+                    JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
+                  WHERE d.id = ?';
+            $information = $DB->get_record_sql($sql, array($compid));
+            foreach($examples as $example){
+                $example->subjecttitle = $information->subjecttitle;
+                $example->subjectid = $information->subjectid;
+                $example->topictitle = $information->topictitle;
+                $example->topicid = $information->topicid;
+            }
+
+        }
+
+
+        // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
+        $examplesAndItems = array_map(function ($example) use ($userid, $wstoken) {
+            $objDeeper = new stdClass();
+            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current();
+            if($item){
+                $item = block_exacomp_get_item_details($item, $userid, $wstoken);
+                $objDeeper->item = $item;
+            }
+            $objDeeper->example = $example;
+            $objDeeper->subjecttitle = $example->subjecttitle;
+            $objDeeper->subjectid = $example->subjectid;
+            $objDeeper->topictitle = $example->topictitle;
+            $objDeeper->topicid = $example->topicid;
+            return $objDeeper;
+        },$examples);
+
+        return $examplesAndItems;
+    }
+
+
+    private static function block_exacomp_get_item_details($item, $userid, $wstoken){
+        global $CFG;
+
+        $item->file = "";
+        $item->isimage = false;
+        $item->filename = "";
+        $item->effort = strip_tags($item->intro);
+        $item->teachervalue = isset ($item->teachervalue) ? $item->teachervalue : 0;
+        $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
+        $item->status = isset ($item->status) ? $item->status : 0;
+
+        if ($item->type == 'file') {
+
+            // Stattdessen: block_exaport_get_item_files ??    Im Dakora webservice wird das verwendet.
+
+            // TODO: move code into exaport\api
+            require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+
+            $item->userid = $userid;
+            if ($file = block_exaport_get_item_single_file($item)) {
+                $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$item->id."&wstoken=".$wstoken);
+                $item->isimage = $file->is_valid_image();
+                $item->filename = $file->get_filename();
+            }
+        }
+
+        $item->studentcomment = '';
+        $item->teachercomment = '';
+
+        $itemcomments = \block_exaport\api::get_item_comments($item->id);
+
+        // teacher comment: last comment from any teacher in the course the item was submited
+        foreach ($itemcomments as $itemcomment) {
+            if (!$item->studentcomment && $userid == $itemcomment->userid) {
+                $item->studentcomment = $itemcomment->entry;
+            } elseif (!$item->teachercomment) {
+                if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
+                    // dakora / exacomp teacher
+                    $item->teachercomment = $itemcomment->entry;
+                } elseif (block_exacomp_is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
+                    // elove teacher
+                    $item->teachercomment = $itemcomment->entry;
+                }
+            }
+        }
+        return $item;
+    }
+
+
+
+
+
+
+
+
+
 
 
     /**
