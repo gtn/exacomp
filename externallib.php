@@ -6858,7 +6858,7 @@ class block_exacomp_external extends external_api {
         if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
             // TODO: how do we check if the user is a teacher? It is not oriented on courses
 //            $isTeacher = false;
-            $examples = block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken());
+            $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken());
             $examplesAndItems += $examples;
         }
 
@@ -6892,14 +6892,23 @@ class block_exacomp_external extends external_api {
                 'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
                 'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
                 'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-                'filename' => new external_value (PARAM_TEXT, 'title of item', VALUE_OPTIONAL),
-                'file' => new external_value (PARAM_URL, 'file url of the studentfile', VALUE_OPTIONAL),
-                'isimage' => new external_value (PARAM_BOOL, 'true if file is image', VALUE_OPTIONAL),
+//                'filename' => new external_value (PARAM_TEXT, 'title of item', VALUE_OPTIONAL),
+//                'file' => new external_value (PARAM_URL, 'file url of the studentfile', VALUE_OPTIONAL),
+//                'isimage' => new external_value (PARAM_BOOL, 'true if file is image', VALUE_OPTIONAL),
                 'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
                 'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
                 'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
                 'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
                 'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+
+                'studentfiles' => new external_multiple_structure(new external_single_structure(array(
+                    'filename' => new external_value (PARAM_TEXT, 'title of item'),
+                    'file' => new external_value (PARAM_URL, 'file url'),
+                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
+                ))),
+
+
                 'collaborators' => new external_multiple_structure (new external_single_structure ( array(
                     'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
                 )), 'collaborators', VALUE_OPTIONAL),
@@ -10070,7 +10079,7 @@ class block_exacomp_external extends external_api {
             $objDeeper = new stdClass();
             $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current();
             if($item){
-                $item = block_exacomp_get_item_details($item, $userid, $wstoken);
+                $item = static::block_exacomp_get_item_details($item, $userid, $wstoken);
                 $objDeeper->item = $item;
             }
             $objDeeper->example = $example;
@@ -10096,6 +10105,8 @@ class block_exacomp_external extends external_api {
         $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
         $item->status = isset ($item->status) ? $item->status : 0;
 
+
+
         if ($item->type == 'file') {
 
             // Stattdessen: block_exaport_get_item_files ??    Im Dakora webservice wird das verwendet.
@@ -10104,10 +10115,19 @@ class block_exacomp_external extends external_api {
             require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
             $item->userid = $userid;
-            if ($file = block_exaport_get_item_single_file($item)) {
-                $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$userid."&itemid=".$item->id."&wstoken=".$wstoken);
-                $item->isimage = $file->is_valid_image();
-                $item->filename = $file->get_filename();
+            if ($files = block_exaport_get_item_files($item)) {
+                foreach ($files as $fileindex => $file) {
+                    if($file != null) {
+                        $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken;
+                        $filedata['file'] = $fileurl;
+                        $filedata['mimetype'] = $file->get_mimetype();
+                        $filedata['filename'] = $file->get_filename();
+                        $filedata['isimage'] = $file->is_valid_image();
+                        $filedata['fileindex'] = $fileindex;
+                        $studentfiles[] = $filedata;
+                    }
+                }
+                $item->studentfiles = $studentfiles;
             }
         }
 
@@ -10115,8 +10135,11 @@ class block_exacomp_external extends external_api {
         $item->teachercomment = '';
 
         $itemcomments = \block_exaport\api::get_item_comments($item->id);
+        $timemodified_compare = 0; //used for finding the most recent comment to display it in Dakora
+        $timemodified_compareTeacher = 0;
 
         // teacher comment: last comment from any teacher in the course the item was submited
+        // TODO: maybe this is also deprecated, and the code from the Dakora Webservices would be better. E.g. submitting files as a teacher is possible in Dakora, not in Diggr and not in Diggrplus for now
         foreach ($itemcomments as $itemcomment) {
             if (!$item->studentcomment && $userid == $itemcomment->userid) {
                 $item->studentcomment = $itemcomment->entry;

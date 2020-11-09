@@ -2811,14 +2811,20 @@ Returns:<pre>[
             "type": "text null (type of item (note,file,link))",
             "url": "text null (url)",
             "effort": "raw null (description of the effort)",
-            "filename": "text null (title of item)",
-            "file": "url null (file url of the studentfile)",
-            "isimage": "bool null (true if file is image)",
             "status": "int null (status of the submission)",
             "teachervalue": "int null (teacher grading)",
             "studentvalue": "int null (student grading)",
             "teachercomment": "text null (teacher comment)",
             "studentcomment": "text null (student comment)",
+            "studentfiles": [
+                {
+                    "filename": "text null (title of item)",
+                    "file": "url null (file url)",
+                    "mimetype": "text null (mime type for file)",
+                    "fileindex": "text null (mime type for file)"
+                },
+                "..."
+            ],
             "collaborators": [
                 {
                     "userid": "text null (userid of collaborator)"
