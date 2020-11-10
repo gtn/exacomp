@@ -1972,7 +1972,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 //            , array($descriptor->id, $courseid, $courseid));
 //    }else{
         $examples = \block_exacomp\example::get_objects_sql(
-            "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid,
+            "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid, e.task,
             e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
             e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
             de.sorting, e.courseid, e.activityid, e.activitylink, e.author_origin
@@ -7326,7 +7326,6 @@ function block_exacomp_get_file($item, $type, $position=-1) {
 
 	$fs = get_file_storage();
 	$files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
-
 
     // return first file
     if ($position  == -1){

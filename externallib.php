@@ -544,88 +544,9 @@ class block_exacomp_external extends external_api {
 		));
 
 
-		//da jetzt pr�fen ob Quiz pr�fen
-		$quizDB = $DB->get_records_sql("SELECT q.id, q.name, q.grade
-							FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ca
-							JOIN {course_modules} cm ON ca.activityid = cm.id
-							JOIN {modules} m ON cm.module = m.id
-							JOIN {quiz} q ON cm.instance = q.id
-							WHERE m.name = 'quiz' AND  ca.id = ?
-							", array(
-							    $exampleid,
-							)
-		    );
+		$example = static::block_excomp_get_example_details($example, $courseid);
 
-		$example->quiz = new stdClass ();
-		foreach ($quizDB as $quiz) {
-		  $example->quiz->quizid = $quiz->id;
-		  $example->quiz->quiz_title = $quiz->name;
-		  $example->quiz->quiz_grade = $quiz->grade;
-		}
-		if($example->quiz->quizid == null){
-		    $example->quiz->quizid = -1;
-		    $example->quiz->quiz_title =  " ";
-		    $example->quiz->quiz_grade = 0.0;
-		}
 
-		$example->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $exampleid));
-
-        //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
-        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
-        $example->taskfilenames = "";
-        $example->taskfileurl = "";
-        for ($i=0; $i<$example->taskfilecount; $i++){
-            if ($file = block_exacomp_get_file($example, 'example_task', $i)) {
-                $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
-                $example->taskfilenames .= $file->get_filename().',';
-            } else {
-                $example->taskfileurl = "";
-                $example->taskfilenames = "";
-            }
-        }
-
-//		if ($file = block_exacomp_get_file($example, 'example_task')) {
-//			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
-//            $example->taskfilename = $file->get_filename();
-//		} else {
-//			$example->taskfileurl = null;
-//			$example->taskfilename = null;
-//		}
-
-		// fall back to old fields
-		// TODO: check if this can be deleted?!?
-		if (!$example->externalurl && $example->externaltask) {
-			$example->externalurl = $example->externaltask;
-		}
-		if (!$example->externalurl && $example->task) {
-			$example->externalurl = $example->task;
-		}
-
-		if ($example->externaltask) {
-			$example->externaltask = static::format_url($example->externaltask);
-		}
-
-		if ($example->externalurl) {
-			$example->externalurl = static::format_url($example->externalurl);
-		}
-
-		// TODO: task field still needed in exacomp?
-		if (!$example->task) {
-			$example->task = $example->taskfileurl;
-		}
-		if (!$example->task) {
-			$example->task = $example->externalurl;
-		}
-
-        $example->solutionfilename = "";
-		$solution = block_exacomp_get_file($example, 'example_solution');
-
-		if ($solution) {
-			$example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
-            $example->solutionfilename = $solution->get_filename();
-		} elseif ($example->externalsolution) {
-			$example->solution = $example->externalsolution;
-		}
 
 		return $example;
 	}
@@ -643,7 +564,7 @@ class block_exacomp_external extends external_api {
 			'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
-			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+			'solutionfileurl' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
 			//'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),
 			'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'), // like in Dakora?
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
@@ -3787,14 +3708,15 @@ class block_exacomp_external extends external_api {
 		$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
 		$example->solution_visible = $solution_visible;
 
-//		var_dump($example->solution);
-//		die();
+
 
 		// remove solution if not visible for student
 		if (!$isTeacher && !$solution_visible) {
-			$example->solution = "";
+			$example->solutionfileurl = "";
 		}
         $example->title = static::custom_htmltrim(strip_tags($example->title));
+
+
 
 //        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
 //        var_dump($example);
@@ -3809,12 +3731,12 @@ class block_exacomp_external extends external_api {
 			'description' => new external_value (PARAM_TEXT, 'description of example'),
 			'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
 			'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-            'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
+            'solutionfilename' => new external_value (PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
 			'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
             'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+			'solutionfileurl' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
 		    'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
 			'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
@@ -6788,6 +6710,7 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
+            'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL)
         ));
     }
@@ -6799,8 +6722,8 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of items
      */
-    public static function diggrplus_get_examples_and_items($userid, $compid, $comptype) {
-        global $CFG, $DB, $USER;
+    public static function diggrplus_get_examples_and_items($userid, $compid, $comptype, $type="", $search="") {
+        global $USER;
 
         if ($userid == 0) {
             $userid = $USER->id;
@@ -6809,7 +6732,9 @@ class block_exacomp_external extends external_api {
         static::validate_parameters(static::diggrplus_get_examples_and_items_parameters(), array(
             'userid' => $userid,
             'compid' => $compid,
-            'comptype' => $comptype
+            'comptype' => $comptype,
+            'type' => $type,
+            'search' => $search,
         ));
 
         static::require_can_access_user($userid);
@@ -6820,33 +6745,41 @@ class block_exacomp_external extends external_api {
         	$compid = -1;
 		}
 
-        $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype);
+        $examplesAndItems = array();
 
-        foreach($items as $item){
-            static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
-            //TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
-            // ==> Then the access can be checked RW
-            static::block_exacomp_get_item_details($item, $userid, static::wstoken());
+        if ($type == "own_items" || $type == "") {
+            $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype);
+
+            foreach($items as $item){
+                static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
+                //TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
+                // ==> Then the access can be checked RW
+                static::block_exacomp_get_item_details($item, $userid, static::wstoken());
+            }
+
+            $examplesAndItems = array_map(function ($item){
+                $objDeeper = new stdClass();
+                $objDeeper->courseid = $item->courseid;
+                $objDeeper->item = $item;
+                $objDeeper->subjecttitle = $item->subjecttitle;
+                $objDeeper->subjectid = $item->subjectid;
+                $objDeeper->topictitle = $item->topictitle;
+                $objDeeper->topicid = $item->topicid;
+                return $objDeeper;
+            },$items);
         }
 
-        $examplesAndItems = array_map(function ($item){
-            $objDeeper = new stdClass();
-            $objDeeper->courseid = $item->courseid;
-            $objDeeper->item = $item;
-            $objDeeper->subjecttitle = $item->subjecttitle;
-            $objDeeper->subjectid = $item->subjectid;
-            $objDeeper->topictitle = $item->topictitle;
-            $objDeeper->topicid = $item->topicid;
-            return $objDeeper;
-        },$items);
 
-        // Now examples. If the comptype is not an example itself
-        if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
-            // TODO: how do we check if the user is a teacher? It is not oriented on courses
+        if ($type == "examples" || $type == "") {
+            // Now examples. If the comptype is not an example itself
+            if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
+                // TODO: how do we check if the user is a teacher? It is not oriented on courses
 //            $isTeacher = false;
-            $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken());
-            $examplesAndItems += $examples;
+                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken());
+                $examplesAndItems += $examples;
+            }
         }
+
 
         return $examplesAndItems;
     }
@@ -6869,6 +6802,19 @@ class block_exacomp_external extends external_api {
             'example' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
+                'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
+                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
+                'solutionfileurl' => new external_value (PARAM_TEXT, 'solution(url/description) of example', VALUE_OPTIONAL),
+                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context', VALUE_OPTIONAL),
+                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of item '),
@@ -10008,8 +9954,13 @@ class block_exacomp_external extends external_api {
             // TODO: checks so a student cannot hack this and view another student's items
             $courses = enrol_get_users_courses($userid);
             foreach($courses as $course){
-                $examples += block_exacomp_get_examples_by_course($course->id,true); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course->id,true); // TODO: duplicates?
+                foreach($courseExamples as $example){
+                    $example = static::block_excomp_get_example_details($example, $course->id);
+                }
+                $examples += $courseExamples;
             }
+
         }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
             $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
             $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // TODO: this only gets parents
@@ -10028,6 +9979,7 @@ class block_exacomp_external extends external_api {
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
             foreach($examples as $example){
+                $example = static::block_excomp_get_example_details($example, $example->courseid);
                 $example->subjecttitle = $information->subjecttitle;
                 $example->subjectid = $information->subjectid;
                 $example->topictitle = $information->topictitle;
@@ -10046,7 +9998,9 @@ class block_exacomp_external extends external_api {
                     JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
                   WHERE d.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
+
             foreach($examples as $example){
+                $example = static::block_excomp_get_example_details($example, $example->courseid); // TODO: for now use this to avoid code duplication. But maybe for performace use custom function
                 $example->subjecttitle = $information->subjecttitle;
                 $example->subjectid = $information->subjectid;
                 $example->topictitle = $information->topictitle;
@@ -10074,6 +10028,105 @@ class block_exacomp_external extends external_api {
         },$examples);
 
         return $examplesAndItems;
+    }
+
+//    //TODO: _get_example_information better? or get_example_by_id()
+    private static function block_excomp_get_example_details($example, $courseid){
+        global $DB;
+
+        //da jetzt pr�fen ob Quiz pr�fen
+        $quizDB = $DB->get_records_sql("SELECT q.id, q.name, q.grade
+							FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ca
+							JOIN {course_modules} cm ON ca.activityid = cm.id
+							JOIN {modules} m ON cm.module = m.id
+							JOIN {quiz} q ON cm.instance = q.id
+							WHERE m.name = 'quiz' AND  ca.id = ?
+							", array(
+                $example->id,
+            )
+        );
+
+        $example->quiz = new stdClass ();
+        foreach ($quizDB as $quiz) {
+            $example->quiz->quizid = $quiz->id;
+            $example->quiz->quiz_title = $quiz->name;
+            $example->quiz->quiz_grade = $quiz->grade;
+        }
+        if($example->quiz->quizid == null){
+            $example->quiz->quizid = -1;
+            $example->quiz->quiz_title =  " ";
+            $example->quiz->quiz_grade = 0.0;
+        }
+
+        $example->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $example->id));
+
+
+        //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
+        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
+        $example->taskfilenames = "";
+        $example->taskfileurl = "";
+        for ($i=0; $i<$example->taskfilecount; $i++){
+            if ($file = block_exacomp_get_file($example, 'example_task', $i)) {
+                $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
+                $example->taskfilenames .= $file->get_filename().',';
+            } else {
+                $example->taskfileurl = "";
+                $example->taskfilenames = "";
+            }
+        }
+
+
+//		if ($file = block_exacomp_get_file($example, 'example_task')) {
+//			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
+//            $example->taskfilename = $file->get_filename();
+//		} else {
+//			$example->taskfileurl = null;
+//			$example->taskfilename = null;
+//		}
+
+        // fall back to old fields
+        // TODO: check if this can be deleted?!?
+        if (!$example->externalurl && $example->externaltask) {
+            $example->externalurl = $example->externaltask;
+        }
+
+        if (!$example->externalurl && $example->task) {
+            $example->externalurl = $example->task;
+        }
+
+
+
+        if ($example->externaltask) {
+            $example->externaltask = static::format_url($example->externaltask);
+        }
+
+
+        if ($example->externalurl) {
+            $example->externalurl = static::format_url($example->externalurl);
+        }
+
+        // TODO: task field still needed in exacomp?
+        if (!$example->task) {
+            $example->task = $example->taskfileurl;
+        }
+        if (!$example->task) {
+            $example->task = $example->externalurl;
+        }
+
+
+        $example->solutionfilename = "";
+        $solution = block_exacomp_get_file($example, 'example_solution');
+
+        if ($solution) {
+            $example->solutionfileurl = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
+            $example->solutionfilename = $solution->get_filename();
+        } elseif ($example->externalsolution) {
+            $example->solutionfileurl = $example->externalsolution;
+        }
+
+
+
+        return $example;
     }
 
 
