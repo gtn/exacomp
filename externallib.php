@@ -564,7 +564,7 @@ class block_exacomp_external extends external_api {
 			'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
 			'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
-			'solutionfileurl' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
 			//'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),
 			'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'), // like in Dakora?
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
@@ -3712,15 +3712,13 @@ class block_exacomp_external extends external_api {
 
 		// remove solution if not visible for student
 		if (!$isTeacher && !$solution_visible) {
-			$example->solutionfileurl = "";
+			$example->solution = "";
 		}
         $example->title = static::custom_htmltrim(strip_tags($example->title));
 
 
 
 //        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
-//        var_dump($example);
-//        die();
 
 		return $example;
 	}
@@ -3736,7 +3734,7 @@ class block_exacomp_external extends external_api {
 			'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
 			'task' => new external_value (PARAM_TEXT, '@deprecated'),
             'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-			'solutionfileurl' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+			'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
 		    'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
 			'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
 			'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
@@ -6809,7 +6807,7 @@ class block_exacomp_external extends external_api {
                 'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
                 'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
                 'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-                'solutionfileurl' => new external_value (PARAM_TEXT, 'solution(url/description) of example', VALUE_OPTIONAL),
+                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example', VALUE_OPTIONAL),
                 'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
                 'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
                 'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context', VALUE_OPTIONAL),
@@ -10118,13 +10116,11 @@ class block_exacomp_external extends external_api {
         $solution = block_exacomp_get_file($example, 'example_solution');
 
         if ($solution) {
-            $example->solutionfileurl = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
+            $example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
             $example->solutionfilename = $solution->get_filename();
         } elseif ($example->externalsolution) {
-            $example->solutionfileurl = $example->externalsolution;
+            $example->solution = $example->externalsolution;
         }
-
-
 
         return $example;
     }
