@@ -6388,7 +6388,7 @@ class block_exacomp_external extends external_api {
             'comptype' =>new external_value (PARAM_INT, 'comptype (example, topic, descriptor)'),
             'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_OPTIONAL),
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL),
-            'submit' => new external_value(PARAM_TEXT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
+            'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
             'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
         ));
     }
