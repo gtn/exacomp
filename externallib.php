@@ -6387,7 +6387,9 @@ class block_exacomp_external extends external_api {
             'courseid' => new external_value (PARAM_INT, 'courseid'),
             'comptype' =>new external_value (PARAM_INT, 'comptype (example, topic, descriptor)'),
             'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_OPTIONAL),
-            'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL)
+            'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL),
+            'submit' => new external_value(PARAM_TEXT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
+            'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
         ));
     }
 
@@ -6397,9 +6399,11 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='') {
+    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0) {
         global $CFG, $DB, $USER;
-        static::validate_parameters(static::diggrplus_submit_item_parameters(), array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment, 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle'=>$itemtitle, 'collabuserids'=>$collabuserids));
+        static::validate_parameters(static::diggrplus_submit_item_parameters(),
+            array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
+                'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit));
 
         if (!isset($type)) {
             $type = ($filenames != '') ? 'file' : 'url';
@@ -6518,13 +6522,14 @@ class block_exacomp_external extends external_api {
 
 
         if ($insert) {
-            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'competence_type' => $comptype));
+            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => $submit, 'competence_type' => $comptype));
             if ($studentcomment != '') {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
             }
         } else {
             $item_comp_mm->timemodified = time();
             $item_comp_mm->studentvalue = $studentvalue;
+            $item_comp_mm->status = $submit;
             $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $item_comp_mm);
             //$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));   //DO NOT DELETE OLD COMMENTS, instead, only show newest
             if ($studentcomment != '') {
@@ -6784,20 +6789,20 @@ class block_exacomp_external extends external_api {
             if($exampleItem->item){
                 switch($exampleItem->item->status){
                     case 0: //inprogress
-                        $exampleItem->state = "inprogress";
+                        $exampleItem->status = "inprogress";
                         break;
                     case 1: //submitted
                         if($exampleItem->example && $exampleItem->example->teacher_evaluation || $exampleItem->item->teachervalue){ //either example that has grade, or free item that has grade
-                            $exampleItem->state = "completed";
+                            $exampleItem->status = "completed";
                         }else{
-                            $exampleItem->state = "submitted";
+                            $exampleItem->status = "submitted";
                         }
                         break;
                     default:
-                        $exampleItem->state = "errornostate";
+                        $exampleItem->status = "errornostate";
                 }
             }else{ //no item but the object exists ==> there must be an example, no condition needed
-                $exampleItem->state = "new";
+                $exampleItem->status = "new";
             }
         }
 
@@ -6815,7 +6820,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'state' => new external_value(PARAM_TEXT,' '),
+            'status' => new external_value(PARAM_TEXT,'new, inprogress, submitted, completed'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
@@ -6830,12 +6835,12 @@ class block_exacomp_external extends external_api {
                 'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
                 'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
                 'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example', VALUE_OPTIONAL),
+                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
                 'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
                 'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context', VALUE_OPTIONAL),
-                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+//                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
+//                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
                 'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
                 'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
             ), 'example information', VALUE_OPTIONAL),
@@ -10146,7 +10151,9 @@ class block_exacomp_external extends external_api {
         }
 
 
+        $example->solution = "";
         $example->solutionfilename = "";
+        $example->solution_visible = 0;
         $solution = block_exacomp_get_file($example, 'example_solution');
 
         if ($solution) {
