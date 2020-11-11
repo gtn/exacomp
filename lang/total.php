@@ -1322,7 +1322,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'All difficulty levels',
 	],
 	'choosesubject' => [
-		'Kompetenzbereich auswählen',
+		'Kompetenzraster auswählen',
 		'Choose subject: ',
 	],
 	'choosetopic' => [
@@ -3253,6 +3253,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'data_imported_title' => [
         'Daten jetzt importieren',
         'Import data immediately'
-    ]
-
+    ],
+    'competence_overview_teacher_short' => [
+        'L:',
+        'T:',
+    ],
+    'competence_overview_student_short' => [
+        'S:',
+        'S:',
+    ],
+    
 ];

@@ -892,3 +892,5 @@ $string['upload_ics_file'] = 'Choose file: ';
 $string['is_teacherexample'] = 'Is the teacher\'s example';
 $string['delete...'] = 'Delete...';
 $string['data_imported_title'] = 'Import data immediately';
+$string['competence_overview_teacher_short'] = 'T:';
+$string['competence_overview_student_short'] = 'S:';

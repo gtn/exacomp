@@ -487,7 +487,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0, $studentid = 0, $subjectid = 0) {
+	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0, $studentid = 0, $subjectid = 0, $target = '') {
 		global $PAGE, $DB, $USER, $OUTPUT;
 		$headFlag = false;
 		$context = context_course::instance($courseid);
@@ -619,8 +619,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     if ($iconPath = $eval->get_student_value_pic_url()) {
                                         $studentTemp = $DB->get_record('user', ['id' => $eval->userid]);
                                         $reviewDescr = fullname($studentTemp) . ': ' . date('d.m.Y H:m', $eval->timestampstudent);
+                                        $icon = html_writer::empty_tag('img', array('src' => new moodle_url($iconPath), 'width' => '20', 'height' => '20', 'title' => $reviewDescr));
                                         $studentSelfEval = html_writer::span(
-                                            html_writer::empty_tag('img', array('src' => new moodle_url($iconPath), 'width' => '20', 'height' => '20', 'title' => $reviewDescr)),
+                                            $icon,
                                             '',
                                             ['data-container' => 'body',
                                                 'data-toggle' => 'popover',
@@ -672,7 +673,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //                                        $teacherEval = 'V';
                                             $reviewer = $DB->get_record('user', ['id' => $eval->teacherreviewerid]);
                                             $reviewDescr = fullname($reviewer) . ': ' . date('d.m.Y H:m', $eval->timestampteacher);
-                                            $teacherEval = html_writer::span($OUTPUT->pix_icon('i/checked', $reviewDescr), '', [
+                                            $icon = $OUTPUT->pix_icon('i/checked', $reviewDescr);
+                                            if ($target == 'dakora') {
+                                                $icon = 'V';
+                                            }
+                                            $teacherEval = html_writer::span($icon, '', [
                                                 'data-container' => 'body',
                                                 'data-toggle' => 'popover',
                                                 'data-content' => $reviewDescr,
@@ -703,12 +708,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     switch ($role) {
                                         case BLOCK_EXACOMP_ROLE_TEACHER:
                                             // add student self-evaluation
-                                            $evalRow->cells[] = $studentSelfEval;
-                                            $evalRow->cells[] = $teacherInput;
+                                            $evalRow->cells[] = block_exacomp_get_string('competence_overview_student_short').'&nbsp;'.$studentSelfEval;
+                                            $evalRow->cells[] = block_exacomp_get_string('competence_overview_teacher_short').'&nbsp;'.$teacherInput;
                                             break;
                                         case BLOCK_EXACOMP_ROLE_STUDENT:
-                                            $evalRow->cells[] = $studentSelfEvalInput;
-                                            $evalRow->cells[] = $teacherEval;
+                                            $evalRow->cells[] = block_exacomp_get_string('competence_overview_student_short').'&nbsp;'.$studentSelfEvalInput;
+                                            $evalRow->cells[] = block_exacomp_get_string('competence_overview_teacher_short').'&nbsp;'.$teacherEval;
                                             break;
                                     }
 

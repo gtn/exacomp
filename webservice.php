@@ -421,7 +421,39 @@ class block_exacomp_simple_service {
 
 	}
 
-	private static function require_courseid() {
+    static function competencegrid_overview() {
+	    global $authenticationinfo;
+        static::require_courseid();
+        $wstoken = required_param('wstoken', PARAM_ALPHANUM);
+        $subjectid = required_param('subjectid', PARAM_INT);
+        $studentid = optional_param('studentid', false, PARAM_INT);
+
+        $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
+
+        $wsDataHandler->setParam('gridoverview_subjectid', $subjectid);
+        $wsDataHandler->setParam('gridoverview_studentid', $studentid);
+
+        $courseid = required_param('courseid', PARAM_INT);
+
+        $isTeacher = block_exacomp_is_teacher($courseid, $authenticationinfo['user']->id);
+        if (!($studentid > 0) && !$isTeacher) {
+            // overview for student (self view)
+            $studentid = $authenticationinfo['user']->id;
+        }
+        $output = block_exacomp_get_renderer();
+
+        list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid,
+            $subjectid,
+            $studentid,
+            (@block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher),
+            block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
+
+        echo $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid, $studentid, $subjectid, 'dakora');
+
+    }
+
+
+    private static function require_courseid() {
 		$courseid = required_param('courseid', PARAM_INT);
 
 		if (!$course = g::$DB->get_record('course', array('id' => $courseid))) {
@@ -478,6 +510,9 @@ class block_exacomp_simple_service {
 
 		return $results;
 	}
+
+
+
 }
 
 if (is_callable(['block_exacomp_simple_service', $function])) {
