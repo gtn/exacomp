@@ -6779,6 +6779,28 @@ class block_exacomp_external extends external_api {
         }
 
 
+
+        foreach($examplesAndItems as $exampleItem){
+            if($exampleItem->item){
+                switch($exampleItem->item->status){
+                    case 0: //inprogress
+                        $exampleItem->state = "inprogress";
+                        break;
+                    case 1: //submitted
+                        if($exampleItem->example && $exampleItem->example->teacher_evaluation || $exampleItem->item->teachervalue){ //either example that has grade, or free item that has grade
+                            $exampleItem->state = "completed";
+                        }else{
+                            $exampleItem->state = "submitted";
+                        }
+                        break;
+                    default:
+                        $exampleItem->state = "errornostate";
+                }
+            }else{ //no item but the object exists ==> there must be an example, no condition needed
+                $exampleItem->state = "new";
+            }
+        }
+
         return $examplesAndItems;
     }
 
@@ -6793,6 +6815,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'state' => new external_value(PARAM_TEXT,' '),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
@@ -6813,6 +6836,8 @@ class block_exacomp_external extends external_api {
                 'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context', VALUE_OPTIONAL),
                 'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
                 'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
+                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of item '),
@@ -9954,7 +9979,7 @@ class block_exacomp_external extends external_api {
             foreach($courses as $course){
                 $courseExamples = block_exacomp_get_examples_by_course($course->id,true); // TODO: duplicates?
                 foreach($courseExamples as $example){
-                    $example = static::block_excomp_get_example_details($example, $course->id);
+                    static::block_excomp_get_example_details($example, $course->id);
                 }
                 $examples += $courseExamples;
             }
@@ -10009,13 +10034,19 @@ class block_exacomp_external extends external_api {
 
 
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
-        $examplesAndItems = array_map(function ($example) use ($userid, $wstoken) {
+        $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB) {
             $objDeeper = new stdClass();
             $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current();
             if($item){
                 $item = static::block_exacomp_get_item_details($item, $userid, $wstoken);
                 $objDeeper->item = $item;
             }
+
+            // Adding the evaluation information
+            $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
+            $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
+            $example->student_evaluation = $exampleEvaluation->student_evaluation;
+
             $objDeeper->courseid = $example->courseid;
             $objDeeper->example = $example;
             $objDeeper->subjecttitle = $example->subjecttitle;
@@ -10027,6 +10058,9 @@ class block_exacomp_external extends external_api {
 
         return $examplesAndItems;
     }
+
+
+
 
 //    //TODO: _get_example_information better? or get_example_by_id()
     private static function block_excomp_get_example_details($example, $courseid){

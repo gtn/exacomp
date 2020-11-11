@@ -2805,6 +2805,7 @@ Params: <table>
 Returns:<pre>[
     {
         "courseid": "int null (id of course)",
+        "state": "text null ( )",
         "subjectid": "int null (id of subject)",
         "subjecttitle": "text null (title of subject)",
         "topicid": "int null (id of topic)",
@@ -2824,7 +2825,9 @@ Returns:<pre>[
             "hassubmissions": "bool null (true if example has already submissions)",
             "solution_visible": "bool null (visibility for example solution in current context)",
             "exampletaxonomies": "text null (taxonomies seperated by comma)",
-            "exampletaxids": "text null (taxids seperated by comma)"
+            "exampletaxids": "text null (taxids seperated by comma)",
+            "teacher_evaluation": "int null (teacher_evaluation)",
+            "student_evaluation": "int null (student_evaluation)"
         },
         "item": {
             "id": "int null (id of item )",
