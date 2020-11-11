@@ -6389,7 +6389,7 @@ class block_exacomp_external extends external_api {
             'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_OPTIONAL),
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
-            'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
+//            'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
         ));
     }
 
@@ -6528,7 +6528,7 @@ class block_exacomp_external extends external_api {
             }
         } else {
             $item_comp_mm->timemodified = time();
-            $item_comp_mm->studentvalue = $studentvalue;
+//            $item_comp_mm->studentvalue = $studentvalue; // TODO: -1 is not good, solve it differently
             $item_comp_mm->status = $submit;
             $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $item_comp_mm);
             //$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));   //DO NOT DELETE OLD COMMENTS, instead, only show newest
@@ -6539,7 +6539,8 @@ class block_exacomp_external extends external_api {
 
         // TODO: should something like this be done for topics or other competencetypes as well? RW
         if($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE){
-            block_exacomp_set_user_example($USER->id, $compid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
+//            block_exacomp_set_user_example($USER->id, $compid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue); // TODO: fix studentvalue bug
+            block_exacomp_set_user_example($USER->id, $compid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT);
             block_exacomp_notify_all_teachers_about_submission($courseid, $compid, time(),$studentcomment);
             \block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
         }
