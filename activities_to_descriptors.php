@@ -131,7 +131,7 @@ if ($action == "import") {
     foreach ($records as $record) {
         $sourceModule = get_coursemodule_from_id(null, $record->activityid);
         // get ids immediatelly after moodle_restore
-        $newActivityid = data_importer::get_new_activity_id($sourceModule->name, $record->module, $COURSE->id);
+        $newActivityid = data_importer::get_new_activity_id($sourceModule->name, $record->module ?: $sourceModule->modname , $COURSE->id);
         // relate to new activity with using of old list of descriptors
         block_exacomp_relate_example_to_activity($COURSE->id, $newActivityid, $relatedDescriptors[$record->id]);
     }

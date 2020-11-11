@@ -2690,17 +2690,21 @@ class data_importer extends data {
 
 	public static function get_new_activity_id($activity_title, $activity_type, $course_template){
 	    global $DB;
-        $dbman = $DB->get_manager();
-	    if (!is_numeric($activity_type) && $dbman->table_exists($activity_type)) {
-            $type = $activity_type;
-            $activity_typeId = $DB->get_field('modules', 'id' , array('name' => $activity_type));
-        } else {
-            $type = $DB->get_field('modules', 'name' , array('id' => $activity_type));
-            $activity_typeId = $activity_type;
+	    // TODO: check $activity_type condition!
+	    if ($activity_type) {
+            $dbman = $DB->get_manager();
+            if (!is_numeric($activity_type) && $dbman->table_exists($activity_type)) {
+                $type = $activity_type;
+                $activity_typeId = $DB->get_field('modules', 'id', array('name' => $activity_type));
+            } else {
+                $type = $DB->get_field('modules', 'name', array('id' => $activity_type));
+                $activity_typeId = $activity_type;
+            }
+            $instance = $DB->get_field($type, 'MAX(id)', array('name' => $activity_title, 'course' => $course_template));
+            $id = $DB->get_field('course_modules', 'id', array('instance' => intval($instance), 'deletioninprogress' => 0, 'module' => $activity_typeId));
+            return $id;
         }
- 	    $instance = $DB->get_field($type, 'MAX(id)' , array('name' => $activity_title, 'course' => $course_template));
- 	    $id = $DB->get_field('course_modules', 'id', array('instance' => intval($instance), 'deletioninprogress' => 0, 'module' => $activity_typeId));
-	    return $id;
+        return null;
 	}
 
 
@@ -2872,10 +2876,10 @@ function rrmdir($source, $removeOnlyChildren = false)
 }
 
 function directory_copy($source, $destionation) {
-    $dir = opendir($source);
+    $dir = @opendir($source);
     @mkdir($destionation);
     // Loop through the files in source directory
-    while ($file = readdir($dir)) {
+    while ($file = @readdir($dir)) {
         if (($file != '.') && ($file != '..')) {
             if ( is_dir($source.'/'.$file)) {
                 directory_copy($source . '/' . $file, $destionation . '/' . $file);
@@ -2884,7 +2888,7 @@ function directory_copy($source, $destionation) {
             }
         }
     }
-    closedir($dir);
+    @closedir($dir);
 }
 
 class import_exception extends moodle_exception {

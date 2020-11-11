@@ -7601,6 +7601,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if (!block_exacomp_is_skillsmanagement() && $style == 0) { // TODO: only for $style==0 ?
             $hidden = html_writer::empty_tag('input', ['name' => 'action', 'value' => 'save_filtersettings', 'type' => 'hidden']);
             $input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filter'), 'class' => 'btn btn-default'));
+            $input_submit .= '&nbsp;'.html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filterClear'), 'class' => 'btn btn-default', 'name' => 'filterClear'));
 
             //$alltax = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES => block_exacomp_get_string('show_all_taxonomies'));
             //$taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id, title');

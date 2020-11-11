@@ -240,12 +240,12 @@ $string['help_content'] = '<h1>Video zur Einführung</h1>
 
 
 // === Import ===
-$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>';
+$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="http://www.edustandards.org">wwww.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Kompetenzraster besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>';
 $string['importwebservice'] = 'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.';
 $string['import_max_execution_time'] = 'Wichtig: die aktuellen Servereinstellungen beschränken den Import auf {$a} Sekunden. Falls der Import-Vorgang länger dauert, wird dieser abgebrochen, es werden keine Daten importiert. Am Ausgabegerät wird in diesem Fall eine serverseitige Fehlermeldung ausgegeben (z.B. "500 Internal Server Error").';
 $string['importdone'] = 'Die allgemeinen Kompetenzraster sind bereits importiert.';
 $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.';
-$string['doimport'] = 'Bildungsstandards importieren';
+$string['doimport'] = 'Kompetenzraster importieren';
 $string['doimport_again'] = 'Weitere Kompetenzraster importieren';
 $string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';
 $string['scheduler_import_settings'] = 'Settings for scheduler importing';
@@ -904,3 +904,4 @@ $string['delete...'] = 'Löschen...';
 $string['data_imported_title'] = 'Daten jetzt importieren';
 $string['competence_overview_teacher_short'] = 'L:';
 $string['competence_overview_student_short'] = 'S:';
+$string['filterClear'] = 'Filter löschen';

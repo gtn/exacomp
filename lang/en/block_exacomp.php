@@ -240,12 +240,12 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 
 
 // === Import ===
-$string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
+$string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">Server-URL</a>.';
 $string['import_max_execution_time'] = 'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data has been imported yet!';
-$string['doimport'] = 'Import outcomes/standards';
+$string['doimport'] = 'Import competence grid';
 $string['doimport_again'] = 'Import additional outcomes/competence grids';
 $string['doimport_own'] = 'Import individual outcomes/standards';
 $string['scheduler_import_settings'] = 'Settings for scheduler importing';
@@ -894,3 +894,4 @@ $string['delete...'] = 'Delete...';
 $string['data_imported_title'] = 'Import data immediately';
 $string['competence_overview_teacher_short'] = 'T:';
 $string['competence_overview_student_short'] = 'S:';
+$string['filterClear'] = 'Clear filter';
