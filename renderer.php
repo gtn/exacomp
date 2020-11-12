@@ -5568,11 +5568,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function badge($badge, $descriptors, $context) {
-		global $COURSE;
+		global $COURSE, $CFG;
 
 		$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
 		$content = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
 		$content .= html_writer::div($badge->name, '', array('style' => 'font-weight:bold;'));
+
+        $badgeaction = 'badge';
+        if ($CFG->version < 2019052000) { // for old moodles (before 3.7)
+            $badgeaction = 'details';
+        }
 
 		if ($badge->is_locked()) {
 			$content .= block_exacomp_get_string('statusmessage_'.$badge->status, 'badges');
@@ -5587,7 +5592,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$content .= html_writer::div($form);
 		} elseif (!$badge->has_manual_award_criteria()) {
-			$link = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => 'details')), block_exacomp_get_string('to_award_role'));
+			$link = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => $badgeaction)), block_exacomp_get_string('to_award_role'));
 			$content .= html_writer::div($link);
 		} else {
 			if (empty($descriptors)) {
@@ -5604,7 +5609,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$form = html_writer::tag('form', $content_form, array('method' => 'post', 'action' => new moodle_url('/badges/action.php')));
 				$content .= html_writer::div($form, '', array('style' => 'padding-bottom:20px;'));
 
-				$link1 = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => 'details')), block_exacomp_get_string('conf_badges'));
+				$link1 = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => $badgeaction)), block_exacomp_get_string('conf_badges'));
 				$link2 = html_writer::link(new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $COURSE->id, 'badgeid' => $badge->id)), block_exacomp_get_string('conf_comps'));
 
 				$content .= html_writer::div($link1.' / '.$link2);
@@ -5623,12 +5628,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function edit_badges($subjects, $badge) {
-		global $COURSE;
+		global $COURSE, $CFG;
 		$table = new html_table();
 		$table->attributes['id'] = 'comps';
 		$table->attributes['class'] = 'rg2 exabis_comp_comp';
 
 		$rows = array();
+
+        $badgeaction = 'badge';
+        if ($CFG->version < 2019052000) { // for old moodles (before 3.7)
+            $badgeaction = 'details';
+        }
 
 		//print tree
 		foreach ($subjects as $subject) {
@@ -5641,7 +5651,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$cell = new html_table_cell();
 			$cell->attributes['class'] = 'ec_tableheadwidth';
-			$cell->text = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => 'details')), $badge->name);
+			$cell->text = html_writer::link(new moodle_url('/badges/edit.php', array('id' => $badge->id, 'action' => $badgeaction)), $badge->name);
 			$row->cells[] = $cell;
 			$rows[] = $row;
 
