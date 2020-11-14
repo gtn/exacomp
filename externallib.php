@@ -10190,6 +10190,7 @@ class block_exacomp_external extends external_api {
 
             $item->userid = $userid;
             if ($files = block_exaport_get_item_files($item)) {
+            	$studentfiles = [];
                 foreach ($files as $fileindex => $file) {
                     if($file != null) {
                         $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken;
