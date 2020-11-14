@@ -6458,8 +6458,8 @@ class block_exacomp_external extends external_api {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
-            $itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
-            //autogenerate a published view for the new item
+			$itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
+			//autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
             $dbView->name = $comptitle;
@@ -6482,6 +6482,7 @@ class block_exacomp_external extends external_api {
         } else {
             $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
 
+            $item->name = $itemtitle;
             $item->url = $url;
             $item->timemodified = time();
 
@@ -6557,13 +6558,17 @@ class block_exacomp_external extends external_api {
         // update collabuserids
         // first delete all, then add again   //could check if anything changed first, but I am not sure if it would bring any benefit
         $DB->delete_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $itemid));
-        if($collabuserids!=''){
+        if($collabuserids){
             $collabuserids = explode(',', $collabuserids);
+            // disabled for now: why add yourself?
+            // if (!in_array($USER->id, $collabuserids)) {
+			// 	// add yourself as well
+			// 	$collabuserids[] = $USER->id;
+			// }
+
             foreach($collabuserids as $collabuserid){
                 $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('userid' => $collabuserid, 'itemid' => $itemid));
             }
-            // add yourself as well
-            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('userid' => $USER->id, 'itemid' => $itemid));
         }
 
         return array("success" => true, "itemid" => $itemid);
