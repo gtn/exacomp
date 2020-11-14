@@ -70,7 +70,8 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform = & $this->_form;
 
-		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="100"');
+		//$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="1000" size="100"');
+		$mform->addElement('textarea', 'title', block_exacomp_get_string('name'), 'rows="6" cols="100" size="60"');
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
@@ -78,7 +79,7 @@ class block_exacomp_local_item_form extends moodleform {
 			$mform->addElement('selectgroups', 'niveauid', block_exacomp_get_string('niveau'), block_exacomp_get_select_niveau_items(false));
 		}
 
-		$element = $mform->addElement('select', 'categories', block_exacomp_get_string('categories'), $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, 'title', 'id, title'));
+		$element = $mform->addElement('select', 'categories', block_exacomp_get_string('competence_grid_niveau'), $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, 'title', 'id, title'));
 		$element->setMultiple(true);
 		
 		$this->add_action_buttons(false);
