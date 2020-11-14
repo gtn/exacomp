@@ -165,6 +165,8 @@ if ($formdata = $form->get_data()) {
 		    $newActivateSchooltyp->stid = $new->stid;
 		    $newActivateSchooltyp->courseid = 0;
 		    $DB->insert_record(BLOCK_EXACOMP_DB_MDLTYPES, $newActivateSchooltyp);
+		}else{
+				$new->stid = $DB->get_field(BLOCK_EXACOMP_DB_SCHOOLTYPES, 'id', array("source" => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM));
 		}
 	
 		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_SUBJECTS, $new);
