@@ -1903,7 +1903,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
  * @return unknown
  */
 function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false, $freeelementdescriptor = false) {
-	global $COURSE;
+	global $COURSE, $USER;
 
 	if ($courseid == null) {
 		$courseid = $COURSE->id;
@@ -1927,13 +1927,13 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
             "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid,
             e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
             e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
-            de.sorting, e.courseid, e.activityid, e.activitylink, e.author_origin
+            de.sorting, e.courseid, e.activityid, e.activitylink, e.author_origin, e.is_teacherexample
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
             ." WHERE "
             ." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
             .($showallexamples ? " 1=1 " : " e.creatorid > 0")
-            .(!block_exacomp_is_teacher() ? ' AND e.is_teacherexample = 0 ' : '')
+            .(!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND e.is_teacherexample = 0 ' : '')
             ." ORDER BY de.sorting"
             , array($descriptor->id, $courseid, $courseid));
 //    }

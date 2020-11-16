@@ -604,6 +604,14 @@ Params: <table>
 <td>default: int(0)
 </td>
 <td>id of related activity</td>
+<tr>
+<td>is_teacherexample</td>
+<td>bool</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>is a teacher example?</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)"
@@ -1445,7 +1453,8 @@ Returns:<pre>{
     "hassubmissions": "bool null (true if example has already submissions)",
     "solution_visible": "bool null (visibility for example solution in current context)",
     "exampletaxonomies": "text null (taxonomies seperated by comma)",
-    "exampletaxids": "text null (taxids seperated by comma)"
+    "exampletaxids": "text null (taxids seperated by comma)",
+    "is_teacherexample": "bool null (is teacher example?)"
 }</pre>
 <h2>dakora_add_example_to_learning_calendar</h2>
 <div>add example to learning calendar for dakora
@@ -2748,7 +2757,8 @@ Returns:<pre>[
                         "exampletaxids": "text null (taxids seperated by comma)",
                         "examplecreatorid": "int null (id of the creator of this example)",
                         "additionalinfo": "float null (additional grading)",
-                        "resubmission": "bool null (resubmission is allowed\/not allowed)"
+                        "resubmission": "bool null (resubmission is allowed\/not allowed)",
+                        "is_teacherexample": "bool null (is a teacher example?)"
                     },
                     "..."
                 ],
@@ -2810,7 +2820,8 @@ Returns:<pre>[
                 "exampletaxids": "text null (taxids seperated by comma)",
                 "examplecreatorid": "int null (id of the creator of this example)",
                 "additionalinfo": "float null (additional grading)",
-                "resubmission": "bool null (resubmission is allowed\/not allowed)"
+                "resubmission": "bool null (resubmission is allowed\/not allowed)",
+                "is_teacherexample": "bool null (is a teacher example?)"
             },
             "..."
         ],
@@ -2931,7 +2942,8 @@ Returns:<pre>{
                     "exampletaxids": "text null (taxids seperated by comma)",
                     "examplecreatorid": "int null (id of the creator of this example)",
                     "additionalinfo": "float null (additional grading)",
-                    "resubmission": "bool null (resubmission is allowed\/not allowed)"
+                    "resubmission": "bool null (resubmission is allowed\/not allowed)",
+                    "is_teacherexample": "bool null (is a teacher example?)"
                 },
                 "..."
             ],
@@ -2993,7 +3005,8 @@ Returns:<pre>{
             "exampletaxids": "text null (taxids seperated by comma)",
             "examplecreatorid": "int null (id of the creator of this example)",
             "additionalinfo": "float null (additional grading)",
-            "resubmission": "bool null (resubmission is allowed\/not allowed)"
+            "resubmission": "bool null (resubmission is allowed\/not allowed)",
+            "is_teacherexample": "bool null (is a teacher example?)"
         },
         "..."
     ],
