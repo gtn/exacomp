@@ -1809,7 +1809,7 @@ class block_exacomp_external extends external_api {
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
 		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
 		    'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
-		    'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?' , VALUE_DEFAULT, 0),
+		    'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
 		));
 	}
 
