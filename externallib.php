@@ -1809,6 +1809,7 @@ class block_exacomp_external extends external_api {
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
 		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
 		    'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
+		    'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?' , VALUE_DEFAULT, 0),
 		));
 	}
 
@@ -1819,7 +1820,7 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return array
 	 */
-	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0) {
+	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0) {
 		global $DB, $USER, $CFG;
 
 		if (empty ($name)) {
@@ -1840,6 +1841,7 @@ class block_exacomp_external extends external_api {
 			'filename' => $filename,
 		    'crosssubjectid' => $crosssubjectid,
 		    'activityid' => $activityid,
+		    'is_teacherexample' => $is_teacherexample,
 		));
 
         //Update material that already exists
@@ -1917,6 +1919,8 @@ class block_exacomp_external extends external_api {
         } else {
             $example->example_icon = '';
         }
+
+        $example->is_teacherexample = $is_teacherexample;
 
 		if ($exampleid != -1){
             $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
@@ -3716,8 +3720,6 @@ class block_exacomp_external extends external_api {
 		}
         $example->title = static::custom_htmltrim(strip_tags($example->title));
 
-
-
 //        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
 
 		return $example;
@@ -3740,6 +3742,7 @@ class block_exacomp_external extends external_api {
 			'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 		    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
 		    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+		    'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
 		));
 	}
 
@@ -7214,6 +7217,7 @@ class block_exacomp_external extends external_api {
                     'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                     'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
                     'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
+                    'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?',VALUE_OPTIONAL),
 	            ))),
 	            'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	            'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -7259,6 +7263,7 @@ class block_exacomp_external extends external_api {
                 'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                 'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
                 'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
+                'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?',VALUE_OPTIONAL),
 	        ))),
 	        'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 	        'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -7369,6 +7374,7 @@ class block_exacomp_external extends external_api {
                     'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                     'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading',VALUE_OPTIONAL),
                     'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed',VALUE_OPTIONAL),
+                    'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?',VALUE_OPTIONAL),
 				))),
 				'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 				'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -7414,6 +7420,7 @@ class block_exacomp_external extends external_api {
                 'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
                 'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
                 'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
+                'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?',VALUE_OPTIONAL),
 			))),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -10250,7 +10257,7 @@ class block_exacomp_external extends external_api {
 	 * helper function to use same code for 2 ws
 	 */
 	private static function get_descriptor_details_private($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
-	    global $DB;
+	    global $DB, $USER;
 	    //copied from old get_descriptor_details so i can use it in get_descriptor_details and get_descriptors_details
 	    $descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 	    $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
@@ -10450,7 +10457,7 @@ class block_exacomp_external extends external_api {
 	 * helper function to use same code for 2 ws
 	 */
 	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {
-		global $DB;
+		global $DB, $USER;
 
 		if ($forall) {
 			static::require_can_access_course($courseid);
@@ -10500,7 +10507,6 @@ class block_exacomp_external extends external_api {
 
 		if ($crosssubjid == 0 || in_array($parent_descriptor->id, $crossdesc)) {
 			$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
-
 			$example_non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 			if (!$forall) {
 				$example_non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
