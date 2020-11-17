@@ -1944,7 +1944,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
  * @param string $showonlyvisible - return only visible
  * @return unknown
  */
-function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false, $freeelementdescriptor = false) {
+function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false, $freeelementdescriptor = false, $search="") {
 	global $COURSE, $USER;
 
     if(is_scalar($descriptor)){
@@ -1982,6 +1982,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
             ." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
             .($showallexamples ? " 1=1 " : " e.creatorid > 0")
             .(!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND e.is_teacherexample = 0 ' : '')
+            ." AND (e.title LIKE '%".$search."%' OR e.description LIKE '%".$search."%')"
             ." ORDER BY de.sorting"
             , array($descriptor->id, $courseid, $courseid));
 //    }
@@ -8084,8 +8085,9 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  * @param unknown $compid
  * @param unknown $comptype
  */
-function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1) {
+function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1, $search="") {
     global $DB;
+
 
     $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
     switch($comptype){
@@ -8101,8 +8103,9 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
               WHERE i.userid = ?
                 '.$compidCondition.'
                 AND ie.competence_type = ?
+                AND (d.title LIKE "%'.$search.'%" OR d.description LIKE "%'.$search.'%" OR i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
-                break;
+            break;
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
               FROM {block_exacompdescriptors} d
@@ -8114,6 +8117,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
               WHERE i.userid = ?
                 '.$compidCondition.'
                 AND ie.competence_type = ?
+                AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
             break;
         case -1: // TODO: only for now: same as for topics, since descriptors are not used in diggrplus
@@ -8127,6 +8131,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
               WHERE i.userid = ?
                 '.$compidCondition.'
                 AND ie.competence_type = ?
+                AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
             break;
     }
@@ -8624,7 +8629,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
  * get all examples associated with any descriptors in this course
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_by_course($courseid, $withTopicSubjectCourseInfo=false) {
+function block_exacomp_get_examples_by_course($courseid, $withTopicSubjectCourseInfo=false, $search="") {
     if($withTopicSubjectCourseInfo){
         $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
@@ -8633,7 +8638,8 @@ function block_exacomp_get_examples_by_course($courseid, $withTopicSubjectCourse
             JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
             JOIN {".BLOCK_EXACOMP_DB_TOPICS."} topic ON ct.topicid = topic.id
             JOIN {".BLOCK_EXACOMP_DB_SUBJECTS."} subj ON topic.subjid = subj.id
-            WHERE ct.courseid = ?";
+            WHERE ct.courseid = ?
+            AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')";
     }else{
         $sql = "SELECT ex.*
 		FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex

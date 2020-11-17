@@ -6781,7 +6781,7 @@ class block_exacomp_external extends external_api {
         $examplesAndItems = array();
 
         if ($type == "own_items" || $type == "") {
-            $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype);
+            $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search);
 
             foreach($items as $item){
                 static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
@@ -6808,7 +6808,7 @@ class block_exacomp_external extends external_api {
             if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
                 // TODO: how do we check if the user is a teacher? It is not oriented on courses
 //            $isTeacher = false;
-                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken());
+                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search);
                 $examplesAndItems += $examples;
             }
         }
@@ -10006,7 +10006,7 @@ class block_exacomp_external extends external_api {
      * @param bool $compid
      * @param bool $comptype
      */
-    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken){
+    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search=""){
         global $DB;
         // Maybe better performance with join on user_enrolments table?
 //    if ($isTeacher) {
@@ -10021,7 +10021,7 @@ class block_exacomp_external extends external_api {
             // TODO: checks so a student cannot hack this and view another student's items
             $courses = enrol_get_users_courses($userid);
             foreach($courses as $course){
-                $courseExamples = block_exacomp_get_examples_by_course($course->id,true); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course->id,true, $search); // TODO: duplicates?
                 foreach($courseExamples as $example){
                     static::block_excomp_get_example_details($example, $course->id);
                 }
@@ -10035,7 +10035,7 @@ class block_exacomp_external extends external_api {
                 $descriptors += block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
             }
             foreach($descriptors as $descriptor){
-                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0]);
+                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0], null, null, null, $search);
                 $examples += $descriptorWithExamples->examples;
             }
 
@@ -10054,7 +10054,7 @@ class block_exacomp_external extends external_api {
             }
         }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
             $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
-            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,null,$courseids[0]);
+            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,null,$courseids[0],null, null, null, $search);
             $examples = $descriptorWithExamples->examples;
 
             // get topic and subject information:
