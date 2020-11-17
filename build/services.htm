@@ -2720,6 +2720,13 @@ Params: <table>
 <td>default: int(0)
 </td>
 <td>1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)</td>
+<tr>
+<td>removefiles</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
@@ -2866,7 +2873,7 @@ Returns:<pre>[
                     "filename": "text null (title of item)",
                     "file": "url null (file url)",
                     "mimetype": "text null (mime type for file)",
-                    "fileindex": "text null (mime type for file)"
+                    "fileindex": "text null (fileindex, used for deleting this file)"
                 },
                 "... files of the student's submission ..."
             ],

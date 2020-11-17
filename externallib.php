@@ -6392,6 +6392,7 @@ class block_exacomp_external extends external_api {
             'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_OPTIONAL),
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
+            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
 //            'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
         ));
     }
@@ -6402,11 +6403,11 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0) {
+    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0, $removefiles='') {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
-                'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit));
+                'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles));
 
         if (!isset($type)) {
             $type = ($filenames != '') ? 'file' : 'url';
@@ -6573,6 +6574,22 @@ class block_exacomp_external extends external_api {
                 $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('userid' => $collabuserid, 'itemid' => $itemid));
             }
         }
+
+
+        // remove files specifically marked for deletion by user:
+        // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
+        // use get_file_by_hash() instead, for deleting already existing files.
+        // TODO: could this be used to remove files this user doesn't have access to? HACKABLE
+        // solution: get itemid -> get item -> check if this user is the creator of this item -> only then allow deletion
+        if($removefiles){
+            $fs = get_file_storage();
+            $removefiles = explode(',', $removefiles);
+            foreach($removefiles as $removefile){
+                $file = $fs->get_file_by_hash($removefile);
+                $file->delete();
+            }
+        }
+
 
         return array("success" => true, "itemid" => $itemid);
     }
@@ -6855,7 +6872,7 @@ class block_exacomp_external extends external_api {
                     'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
                     'url' => new external_value (PARAM_URL, 'file url'),
                     'type' => new external_value (PARAM_TEXT, 'mime type for file'),
-//                    'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
+//                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
                 'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
@@ -6877,7 +6894,7 @@ class block_exacomp_external extends external_api {
                     'filename' => new external_value (PARAM_TEXT, 'title of item'),
                     'file' => new external_value (PARAM_URL, 'file url'),
                     'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
+                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
                 )),"files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure (new external_single_structure ( array(
                     'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
