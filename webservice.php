@@ -421,7 +421,11 @@ class block_exacomp_simple_service {
 
 	}
 
-    static function competencegrid_overview() {
+    /**
+     * @throws coding_exception
+     * @deprecated ? - use dakora_competencegrid_overview from externallib.php
+     */
+    static function dakora_competencegrid_overview() {
 	    global $authenticationinfo;
         static::require_courseid();
         $wstoken = required_param('wstoken', PARAM_ALPHANUM);
