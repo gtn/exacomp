@@ -946,6 +946,14 @@ get admin evaluation configurations',
     'description' => 'gets title description and image of website',
     'type' => 'read',
   ),
+  'dakora_competencegrid_overview' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'dakora_competencegrid_overview',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'view competence overview',
+    'type' => 'read',
+  ),
 );
 
 $services = array (
@@ -1066,6 +1074,7 @@ $services = array (
       106 => 'dakora_send_message',
       107 => 'block_exacomp_update_descriptor_category',
       108 => 'block_exacomp_get_url_preview',
+      109 => 'dakora_competencegrid_overview',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,

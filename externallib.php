@@ -11615,4 +11615,83 @@ class block_exacomp_external extends external_api {
             "imageurl" => new external_value (PARAM_TEXT, 'true if successful')
         ));
     }
+
+    /**
+     * Returns competence overview
+     *
+     * @return external_function_parameters
+     *
+     */
+    public static function dakora_competencegrid_overview_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'subjectid' => new external_value(PARAM_INT, 'subject id'),
+            'forall' => new external_value(PARAM_INT, 'for all?', VALUE_OPTIONAL, 0),
+        ));
+    }
+
+    /**
+     * view competence overview
+     * @ws-type-read
+     * @param integer $courseid
+     * @param integer $userid
+     * @param integer $subjectid
+     * @param integer $forall
+     * @return array
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     */
+    public static function dakora_competencegrid_overview($courseid = 0, $userid = 0, $subjectid = 0, $forall = 0)
+    {
+        global $USER;
+
+        if (empty($courseid)) {
+            throw new invalid_parameter_exception ('Parameter courseid can not be empty');
+        }
+        if (empty($subjectid)) {
+            throw new invalid_parameter_exception ('Parameter subjectid can not be empty');
+        }
+
+        static::validate_parameters(static::dakora_competencegrid_overview_parameters(), array(
+            'courseid' => $courseid,
+            'subjectid' => $courseid,
+            'userid' => $courseid,
+            'forall' => $forall,
+        ));
+
+        $isTeacher = block_exacomp_is_teacher($courseid, $USER->id);
+        if (!($userid > 0) && !$isTeacher) {
+            // overview for student (self view)
+            $userid = $USER->id;
+        }
+        // if $forall - display overview for all users
+        if ($forall) {
+            $userid = 0;
+        }
+
+        $output = block_exacomp_get_renderer();
+
+        list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid,
+            $subjectid,
+            $userid,
+            (@block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher),
+            block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
+
+        $overview = $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid, $userid, $subjectid, 'dakora');
+
+        return ['overview' => $overview];
+    }
+
+    /**
+     * Returns html table with competence overview
+     *
+     * @return external_single_structure
+     */
+    public static function dakora_competencegrid_overview_returns() {
+        return new external_single_structure (array(
+            'overview' => new external_value (PARAM_RAW, 'result html'),
+        ));
+    }
+
 }

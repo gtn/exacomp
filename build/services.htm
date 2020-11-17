@@ -4885,3 +4885,39 @@ Returns:<pre>{
     "description": "text null (true if successful)",
     "imageurl": "text null (true if successful)"
 }</pre>
+<h2>dakora_competencegrid_overview</h2>
+<div>view competence overview</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>subject id</td>
+<tr>
+<td>forall</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all?</td>
+</table>
+Returns:<pre>{
+    "overview": "raw null (result html)"
+}</pre>
