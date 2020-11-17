@@ -6586,7 +6586,11 @@ class block_exacomp_external extends external_api {
             $removefiles = explode(',', $removefiles);
             foreach($removefiles as $removefile){
                 $file = $fs->get_file_by_hash($removefile);
-                $file->delete();
+                if($file){
+                    if($file->get_itemid() == $itemid){ // only delete file of current item. Protection if something goes really wrong or this webservice is used maliciously
+                        $file->delete();
+                    }
+                }
             }
         }
 
