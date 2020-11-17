@@ -6875,7 +6875,7 @@ class block_exacomp_external extends external_api {
                     'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
                 )),"files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure (new external_single_structure ( array(
-                    'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
+                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_OPTIONAL),
         )));
@@ -10226,20 +10226,63 @@ class block_exacomp_external extends external_api {
         $timemodified_compareTeacher = 0;
 
         // teacher comment: last comment from any teacher in the course the item was submited
-        // TODO: maybe this is also deprecated, and the code from the Dakora Webservices would be better. E.g. submitting files as a teacher is possible in Dakora, not in Diggr and not in Diggrplus for now
+        // TODO: maybe this is also deprecated, and the code from the Dakora Webservices (dakora_get_example_information)
+        // would be better. E.g. submitting files as a teacher is possible in Dakora, not in Diggr and not in Diggrplus for now
+
+//        foreach ($itemcomments as $itemcomment) {
+//            if ($userid == $itemcomment->userid && $itemcomment->timemodified > $timemodified_compare) { //Studentcomment
+//                $item->studentcomment = $itemcomment->entry;
+//                $timemodified_compare = $itemcomment->timemodified;
+//            } else { // teachercomment   // } elseif (true) { // TODO: check if is teacher? should not matter, everyone is allowed read teachercomment
+//                if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
+//                    // dakora / exacomp teacher
+//                    $item->teachercomment = $itemcomment->entry;
+//                } elseif (block_exacomp_is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
+//                    // elove teacher
+//                    $item->teachercomment = $itemcomment->entry;
+//                }
+//            }
+//        }
+
+        // TODO: there is no block_exacomp_is_external_trainer_for_student() check, but is this needed for diggrplus or did we get rid of this externalteacher mechanic?
         foreach ($itemcomments as $itemcomment) {
-            if (!$item->studentcomment && $userid == $itemcomment->userid) {
-                $item->studentcomment = $itemcomment->entry;
-            } elseif (!$item->teachercomment) {
-                if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
-                    // dakora / exacomp teacher
+            if ($userid == $itemcomment->userid) {
+                if($itemcomment->timemodified > $timemodified_compare){
+                    $item->studentcomment = $itemcomment->entry;
+                    $timemodified_compare = $itemcomment->timemodified;
+                }
+            } elseif (true) { // TODO: check if is teacher?
+                if($itemcomment->timemodified > $timemodified_compareTeacher){
                     $item->teachercomment = $itemcomment->entry;
-                } elseif (block_exacomp_is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
-                    // elove teacher
-                    $item->teachercomment = $itemcomment->entry;
+                    // TODO: files for teachercomment allowed in diggrplus?
+
+    //                    if ($itemcomment->file) { //the most recent file is being kept, so if there is a newer comment without a file, the last file is still shown
+    //                        $tFile = $itemcomment->file;
+    //                        $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+    //                            'userid' => $userid,
+    //                            'itemid' => $item->id,
+    //                            'commentid' => $itemcomment->id,
+    //                            'wstoken' => static::wstoken(),
+    //                        ]);
+    //                        $teacherfile = [
+    //                            'file' => $fileurl,
+    //                            'mimetype' => $tFile->get_mimetype(),
+    //                            'filename' => $tFile->get_filename(),
+    //                            'fileindex' => $tFile->get_contenthash(),
+    //                        ];
+    //                        $item->teacherfile = $teacherfile;
+    //                    }
+                    $timemodified_compareTeacher = $itemcomment->timemodified;
                 }
             }
         }
+
+
+
+
+
+
+
         return $item;
     }
 
