@@ -6838,18 +6838,26 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
-                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
+//                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
+//                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
                 'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
                 'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
+//                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
                 'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
                 'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
                 'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
                 'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
 //                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
 //                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+
+                'taskfiles' => new external_multiple_structure(new external_single_structure(array(
+                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value (PARAM_URL, 'file url'),
+                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
+//                    'fileindex' => new external_value (PARAM_TEXT, 'mime type for file')
+                )), 'taskfiles of the example', VALUE_OPTIONAL),
+
                 'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
                 'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
             ), 'example information', VALUE_OPTIONAL),
@@ -6860,9 +6868,6 @@ class block_exacomp_external extends external_api {
                 'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
                 'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
                 'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-//                'filename' => new external_value (PARAM_TEXT, 'title of item', VALUE_OPTIONAL),
-//                'file' => new external_value (PARAM_URL, 'file url of the studentfile', VALUE_OPTIONAL),
-//                'isimage' => new external_value (PARAM_BOOL, 'true if file is image', VALUE_OPTIONAL),
                 'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
                 'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
                 'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
@@ -10047,7 +10052,6 @@ class block_exacomp_external extends external_api {
                 $example->topictitle = $information->topictitle;
                 $example->topicid = $information->topicid;
             }
-
         }
 
 
@@ -10112,6 +10116,11 @@ class block_exacomp_external extends external_api {
 
 
         //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
+        // Newer solution: an array of "task" objects: taskfiles. These object contain all the information: the url is extended for the position value, so this does not have to be done in Dakora
+        // To not break Dakora, the old system of taskfileurl + taskfilenames + taskfilecount will be kept
+        $example->taskfiles = [];
+
+
         $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
         $example->taskfilenames = "";
         $example->taskfileurl = "";
@@ -10119,6 +10128,12 @@ class block_exacomp_external extends external_api {
             if ($file = block_exacomp_get_file($example, 'example_task', $i)) {
                 $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
                 $example->taskfilenames .= $file->get_filename().',';
+
+
+                //new solution for the taskfiles array
+                $example->taskfiles[$i]->url = $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid, $i)->out(false);
+                $example->taskfiles[$i]->name = $file->get_filename();
+                $example->taskfiles[$i]->type = $file->get_mimetype();
             } else {
                 $example->taskfileurl = "";
                 $example->taskfilenames = "";
@@ -11263,13 +11278,18 @@ class block_exacomp_external extends external_api {
 		return optional_param('wstoken', null, PARAM_ALPHANUM);
 	}
 
-	private static function get_webservice_url_for_file($file, $context = null) {
+	private static function get_webservice_url_for_file($file, $context = null, $position = -1) {
 		$context = block_exacomp_get_context_from_courseid($context);
 
 		$url = moodle_url::make_webservice_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
 			$file->get_itemid(), $file->get_filepath(), $file->get_filename());
 
 		$url->param('token', static::wstoken());
+
+		if($position != -1){
+            $url->param('position', $position);
+//            $url = $url."&position=".$position;
+        }
 
 		return $url;
 	}

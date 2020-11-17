@@ -2831,16 +2831,21 @@ Returns:<pre>[
             "id": "int null (id of example)",
             "title": "text null (title of example)",
             "description": "text null (description of example)",
-            "taskfileurl": "text null (task fileurl)",
-            "taskfilenames": "text null (task filename)",
             "solutionfilename": "text null (task filename)",
             "externalurl": "text null (externalurl of example)",
             "externaltask": "text null (url of associated module)",
-            "taskfilecount": "text null (number of files for the task)",
             "solution": "text null (solution(url\/description) of example)",
             "timeframe": "text null (timeframe as string)",
             "hassubmissions": "bool null (true if example has already submissions)",
             "solution_visible": "bool null (visibility for example solution in current context)",
+            "taskfiles": [
+                {
+                    "name": "text null (title of taskfile)",
+                    "url": "url null (file url)",
+                    "type": "text null (mime type for file)"
+                },
+                "... taskfiles of the example ..."
+            ],
             "teacher_evaluation": "int null (teacher_evaluation)",
             "student_evaluation": "int null (student_evaluation)"
         },
