@@ -6585,7 +6585,7 @@ class block_exacomp_external extends external_api {
             $fs = get_file_storage();
             $removefiles = explode(',', $removefiles);
             foreach($removefiles as $removefile){
-                $file = $fs->get_file_by_hash($removefile);
+                $file = $fs->get_file_by_id($removefile);
                 if($file){
                     if($file->get_itemid() == $itemid){ // only delete file of current item. Protection if something goes really wrong or this webservice is used maliciously
                         $file->delete();
@@ -6895,7 +6895,8 @@ class block_exacomp_external extends external_api {
                 'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
                 'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'filename' => new external_value (PARAM_TEXT, 'title of item'),
+                	'id' => new external_value (PARAM_INT, 'id'),
+                    'filename' => new external_value (PARAM_TEXT, 'filename'),
                     'file' => new external_value (PARAM_URL, 'file url'),
                     'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
                     'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
@@ -10237,18 +10238,18 @@ class block_exacomp_external extends external_api {
             require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
             $item->userid = $userid;
-            if ($files = block_exaport_get_item_files($item)) {
+            // dont' use block_exaport_get_item_files, because this can also return only one file!
+            if ($files = block_exaport_get_files($item, 'item_file')) {
             	$studentfiles = [];
                 foreach ($files as $fileindex => $file) {
-                    if($file != null) {
-                        $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken;
-                        $filedata['file'] = $fileurl;
-                        $filedata['mimetype'] = $file->get_mimetype();
-                        $filedata['filename'] = $file->get_filename();
-                        $filedata['isimage'] = $file->is_valid_image();
-                        $filedata['fileindex'] = $fileindex;
-                        $studentfiles[] = $filedata;
-                    }
+					$fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken;
+					$filedata['id'] = $file->get_id();
+					$filedata['file'] = $fileurl;
+					$filedata['mimetype'] = $file->get_mimetype();
+					$filedata['filename'] = $file->get_filename();
+					$filedata['isimage'] = $file->is_valid_image();
+					$filedata['fileindex'] = $fileindex; // TODO: not needed for diggr-plus, needed in other apps? -> remove
+					$studentfiles[] = $filedata;
                 }
                 $item->studentfiles = $studentfiles;
             }
