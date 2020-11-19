@@ -424,7 +424,7 @@ $string['eportitem_shared'] = ' (geteilt)';
 $string['eportitem_notshared'] = ' (nicht geteilt)';
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
-$string['overview'] = 'Hier haben Sie einen Überblick über die Teilkompetenzen der ausgewählten Lernwegeliste und die zugeordneten Aufgaben. Sie können das Erreichen der jeweiligen Teilkompetenz individuell bestätigen.';
+$string['overview'] = 'Hier haben Sie einen Überblick über die Teilkompetenzen der ausgewählten Kompetenzen und die zugeordneten Aufgaben. Sie können das Erreichen der jeweiligen Teilkompetenz individuell bestätigen.';
 $string['showevaluation'] = 'Um die Selbsteinschätzung einzusehen, klicken Sie <a href="{$a}">hier</a>';
 $string['hideevaluation'] = 'Um die Selbsteinschätzung auszublenden, klicken Sie <a href="{$a}">hier</a>';
 $string['showevaluation_student'] = 'Um die Einschätzung der TrainerInnen zu aktivieren, klicke <a href="{$a}">hier</a>.';
@@ -544,7 +544,7 @@ $string['block_exacomp_external_trainer_allstudents'] = 'Alle Kursteilnehmer/inn
 // === Crosssubjects ===
 $string['add_drafts_to_course'] = 'Ausgewählte Vorlagen im Kurs verwenden';
 $string['crosssubject'] = 'Thema';
-$string['help_crosssubject'] = 'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.';
+$string['help_crosssubject'] = 'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden.';
 $string['description'] = 'Beschreibung';
 $string['numb'] = 'Nummer';
 $string['no_student'] = '-- kein(e) Kursteilnehmer/in ausgewählt --';
