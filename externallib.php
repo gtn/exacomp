@@ -6385,7 +6385,7 @@ class block_exacomp_external extends external_api {
             'url' => new external_value (PARAM_URL, 'url'),
             'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
             'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
             'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
             'courseid' => new external_value (PARAM_INT, 'courseid'),
             'comptype' =>new external_value (PARAM_INT, 'comptype (example, topic, descriptor)'),
@@ -6490,9 +6490,10 @@ class block_exacomp_external extends external_api {
             $item->url = $url;
             $item->timemodified = time();
 
-            if ($type == 'file') {
-                block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
-            }
+            // This would overwrite, which we do not want in diggrplus
+//            if ($type == 'file') {
+//                block_exaport_file_remove($DB->get_record("block_exaportitem", array("id" => $itemid)));
+//            }
 
             $DB->update_record('block_exaportitem', $item);
         }
