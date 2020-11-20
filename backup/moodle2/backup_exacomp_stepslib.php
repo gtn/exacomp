@@ -163,7 +163,12 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 
 			array_walk($item->get_subs(), $walker);
 
-			if ($item->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+			if (in_array($item->source, [
+                    BLOCK_EXACOMP_DATA_SOURCE_CUSTOM,
+                    BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT,
+                    BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC,
+                ]
+            )) {
 				$source = get_config('exacomp', 'mysource');
 				$sourceid = $item->id;
 			} elseif (isset($dataSources[$item->source])) {
