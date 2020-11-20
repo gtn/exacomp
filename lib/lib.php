@@ -1547,6 +1547,7 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
 	$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $example->id));
 	$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $example->id));
 	$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('exampleid' => $example->id));
+	$DB->delete_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $example->id,'competence_type' => 4));
 
 	$fs = get_file_storage();
 	$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
