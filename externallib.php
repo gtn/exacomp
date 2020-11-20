@@ -6791,7 +6791,7 @@ class block_exacomp_external extends external_api {
                 static::block_exacomp_get_item_details($item, $userid, static::wstoken());
             }
 
-            $examplesAndItems = array_map(function ($item){
+            $examplesAndItems = array_merge($examplesAndItems, array_map(function ($item){
                 $objDeeper = new stdClass();
                 $objDeeper->courseid = $item->courseid;
                 $objDeeper->item = $item;
@@ -6800,7 +6800,7 @@ class block_exacomp_external extends external_api {
                 $objDeeper->topictitle = $item->topictitle;
                 $objDeeper->topicid = $item->topicid;
                 return $objDeeper;
-            },$items);
+            },$items));
         }
 
 
@@ -6810,7 +6810,7 @@ class block_exacomp_external extends external_api {
                 // TODO: how do we check if the user is a teacher? It is not oriented on courses
 //            $isTeacher = false;
                 $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search);
-                $examplesAndItems += $examples;
+				$examplesAndItems = array_merge($examplesAndItems, $examples);
             }
         }
 
@@ -6850,7 +6850,221 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_get_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'courseid' => new external_value (PARAM_INT, ''),
+            'status' => new external_value(PARAM_TEXT,'new, inprogress, submitted, completed'),
+            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+            'example' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of example'),
+                'title' => new external_value (PARAM_TEXT, 'title of example'),
+                'description' => new external_value (PARAM_TEXT, 'description of example'),
+//                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
+//                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+//                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
+                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+//                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
+//                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+
+                'taskfiles' => new external_multiple_structure(new external_single_structure(array(
+                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value (PARAM_URL, 'file url'),
+                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
+//                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                )), 'taskfiles of the example', VALUE_OPTIONAL),
+
+                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
+                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
+            ), 'example information', VALUE_OPTIONAL),
+            'item' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of item '),
+                'name' => new external_value (PARAM_TEXT, 'title of item'),
+                'intro' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                'studentfiles' => new external_multiple_structure(new external_single_structure(array(
+                	'id' => new external_value (PARAM_INT, 'id'),
+                    'filename' => new external_value (PARAM_TEXT, 'filename'),
+                    'file' => new external_value (PARAM_URL, 'file url'),
+                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                )),"files of the student's submission", VALUE_OPTIONAL),
+                'collaborators' => new external_multiple_structure (new external_single_structure ( array(
+                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
+                )), 'collaborators', VALUE_OPTIONAL),
+            ), 'item information', VALUE_OPTIONAL),
+        )));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_get_teacher_examples_and_items_parameters() {
+        return new external_function_parameters (array(
+        	'courseid' => new external_value (PARAM_INT, ''),
+            'studentid' => new external_value (PARAM_INT, ''),
+            'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
+            'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
+            'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
+            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL)
+        ));
+    }
+
+    /**
+     * Get Items
+     * get all items AND examples for a competence
+     * they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend
+     * @ws-type-read
+     * @return array of items
+     */
+    public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type="", $search="") {
+        global $USER;
+
+        static::validate_parameters(static::diggrplus_get_teacher_examples_and_items_parameters(), array(
+            'courseid' => $courseid,
+            'studentid' => $studentid,
+            'compid' => $compid,
+            'comptype' => $comptype,
+            'type' => $type,
+            'search' => $search,
+        ));
+
+        // TODO: check if is teacher
+
+        $teacherid = $USER->id;
+
+		// bei compid=0, haben wir keinen comptype
+		if ($compid <= 0) {
+			$comptype = -1;
+			$compid = -1;
+		}
+
+        if ($studentid) {
+        	die('todo studentid');
+        	static::require_can_access_user($studentid);
+		} elseif ($courseid) {
+        	die('todo courseid');
+		} else {
+	        $courses = static::get_courses();
+
+	        $students = [];
+	        foreach ($courses as $course) {
+	        	$course = (object)$course;
+				$courseStudents = block_exacomp_get_students_by_course($course->courseid);
+				foreach ($courseStudents as $student) {
+					$students[$student->id] = $student;
+				}
+			}
+		}
+
+		$examplesAndItems = array();
+
+		foreach ($students as $student) {
+			$userid = $student->id;
+			
+			$studentExamplesAndItems = [];
+
+			if ($type == "own_items" || $type == "") {
+				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search);
+
+				foreach($items as $item){
+					static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
+					//TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
+					// ==> Then the access can be checked RW
+					static::block_exacomp_get_item_details($item, $userid, static::wstoken());
+				}
+
+				$studentExamplesAndItems = array_merge($studentExamplesAndItems, array_map(function ($item){
+					$objDeeper = new stdClass();
+					$objDeeper->courseid = $item->courseid;
+					$objDeeper->item = $item;
+					$objDeeper->subjecttitle = $item->subjecttitle;
+					$objDeeper->subjectid = $item->subjectid;
+					$objDeeper->topictitle = $item->topictitle;
+					$objDeeper->topicid = $item->topicid;
+					return $objDeeper;
+				},$items));
+			}
+
+
+			if ($type == "examples" || $type == "") {
+				// Now examples. If the comptype is not an example itself
+				if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
+					// TODO: how do we check if the user is a teacher? It is not oriented on courses
+	//            $isTeacher = false;
+					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search);
+					$studentExamplesAndItems = array_merge($studentExamplesAndItems, $examples);
+				}
+			}
+
+			foreach ($studentExamplesAndItems as $studentExamplesAndItem) {
+				$studentExamplesAndItem->studentid = $student->id;
+				$studentExamplesAndItem->studentfullname = fullname($student);
+			}
+
+			$examplesAndItems = array_merge($examplesAndItems, $studentExamplesAndItems);
+		}
+
+		// TODO: sorting
+
+		foreach($examplesAndItems as $key => $exampleItem){
+			// TODO hack: only examples with submitted items
+			if (!$exampleItem->item || $exampleItem->item->status < 1) {
+				unset($examplesAndItems[$key]);
+				continue;
+			}
+
+			if($exampleItem->item){
+				switch($exampleItem->item->status){
+					case 0: //inprogress
+						$exampleItem->status = "inprogress";
+						break;
+					case 1: //submitted
+						if($exampleItem->example && $exampleItem->example->teacher_evaluation || $exampleItem->item->teachervalue){ //either example that has grade, or free item that has grade
+							$exampleItem->status = "completed";
+						}else{
+							$exampleItem->status = "submitted";
+						}
+						break;
+					default:
+						$exampleItem->status = "errornostate";
+				}
+			}else{ //no item but the object exists ==> there must be an example, no condition needed
+				$exampleItem->status = "new";
+			}
+		}
+
+        return $examplesAndItems;
+    }
+
+
+
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_teacher_examples_and_items_returns() {
+        return new external_multiple_structure(new external_single_structure (array(
+            'courseid' => new external_value (PARAM_INT, ''),
+            'studentid' => new external_value (PARAM_INT, ''),
+        	'studentfullname' => new external_value (PARAM_TEXT, ''),
             'status' => new external_value(PARAM_TEXT,'new, inprogress, submitted, completed'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),

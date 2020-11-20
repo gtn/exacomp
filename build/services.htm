@@ -2828,7 +2828,121 @@ Params: <table>
 </table>
 Returns:<pre>[
     {
-        "courseid": "int null (id of course)",
+        "courseid": "int null ()",
+        "status": "text null (new, inprogress, submitted, completed)",
+        "subjectid": "int null (id of subject)",
+        "subjecttitle": "text null (title of subject)",
+        "topicid": "int null (id of topic)",
+        "topictitle": "text null (title of topic)",
+        "example": {
+            "id": "int null (id of example)",
+            "title": "text null (title of example)",
+            "description": "text null (description of example)",
+            "solutionfilename": "text null (task filename)",
+            "externalurl": "text null (externalurl of example)",
+            "externaltask": "text null (url of associated module)",
+            "solution": "text null (solution(url\/description) of example)",
+            "timeframe": "text null (timeframe as string)",
+            "hassubmissions": "bool null (true if example has already submissions)",
+            "solution_visible": "bool null (visibility for example solution in current context)",
+            "taskfiles": [
+                {
+                    "name": "text null (title of taskfile)",
+                    "url": "url null (file url)",
+                    "type": "text null (mime type for file)"
+                },
+                "... taskfiles of the example ..."
+            ],
+            "teacher_evaluation": "int null (teacher_evaluation)",
+            "student_evaluation": "int null (student_evaluation)"
+        },
+        "item": {
+            "id": "int null (id of item )",
+            "name": "text null (title of item)",
+            "intro": "text null (description of item)",
+            "type": "text null (type of item (note,file,link))",
+            "url": "text null (url)",
+            "effort": "raw null (description of the effort)",
+            "status": "int null (status of the submission)",
+            "teachervalue": "int null (teacher grading)",
+            "studentvalue": "int null (student grading)",
+            "teachercomment": "text null (teacher comment)",
+            "studentcomment": "text null (student comment)",
+            "studentfiles": [
+                {
+                    "id": "int null (id)",
+                    "filename": "text null (filename)",
+                    "file": "url null (file url)",
+                    "mimetype": "text null (mime type for file)",
+                    "fileindex": "text null (fileindex, used for deleting this file)"
+                },
+                "... files of the student's submission ..."
+            ],
+            "collaborators": [
+                {
+                    "userid": "int null (userid of collaborator)"
+                },
+                "... collaborators ..."
+            ]
+        }
+    },
+    "..."
+]</pre>
+<h2>diggrplus_get_teacher_examples_and_items</h2>
+<div>Get Items
+get all items AND examples for a competence
+they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>studentid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>compid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic/descriptor/example   if <= 0 then show all items for user</td>
+<tr>
+<td>comptype</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>Type of competence: topic/descriptor/example      if <= 0 then show all items for user</td>
+<tr>
+<td>type</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>examples, own_items or empty</td>
+<tr>
+<td>search</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>search string</td>
+</table>
+Returns:<pre>[
+    {
+        "courseid": "int null ()",
+        "studentid": "int null ()",
+        "studentfullname": "text null ()",
         "status": "text null (new, inprogress, submitted, completed)",
         "subjectid": "int null (id of subject)",
         "subjecttitle": "text null (title of subject)",
