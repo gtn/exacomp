@@ -6835,6 +6835,20 @@ class block_exacomp_external extends external_api {
             }else{ //no item but the object exists ==> there must be an example, no condition needed
                 $exampleItem->status = "new";
             }
+
+			if ($exampleItem->item) {
+				$student = g::$DB->get_record('user', array(
+					'id' => $exampleItem->item->userid,
+				));
+				$userpicture = new user_picture($student);
+				$userpicture->size = 1; // Size f1.
+
+				$exampleItem->item->owner = (object)[
+					'userid' => $student->id,
+					'fullname' => fullname($student),
+					'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
+				];
+			}
         }
 
         return $examplesAndItems;
@@ -6895,6 +6909,11 @@ class block_exacomp_external extends external_api {
                 'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
                 'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
                 'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+	            'owner' => new external_single_structure(array(
+	                'userid' => new external_value (PARAM_INT, ''),
+	                'fullname' => new external_value (PARAM_TEXT, ''),
+	                'profileimageurl' => new external_value (PARAM_TEXT, ''),
+				)),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
                 	'id' => new external_value (PARAM_INT, 'id'),
                     'filename' => new external_value (PARAM_TEXT, 'filename'),
@@ -6904,6 +6923,8 @@ class block_exacomp_external extends external_api {
                 )),"files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure (new external_single_structure ( array(
                     'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
+	                'fullname' => new external_value (PARAM_TEXT, ''),
+	                'profileimageurl' => new external_value (PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_OPTIONAL),
         )));
@@ -7013,8 +7034,16 @@ class block_exacomp_external extends external_api {
 			}
 
 			foreach ($studentExamplesAndItems as $studentExamplesAndItem) {
-				$studentExamplesAndItem->studentid = $student->id;
-				$studentExamplesAndItem->studentfullname = fullname($student);
+				if ($studentExamplesAndItem->item) {
+					$userpicture = new user_picture($student);
+					$userpicture->size = 1; // Size f1.
+
+					$studentExamplesAndItem->item->owner = (object)[
+						'userid' => $student->id,
+						'fullname' => fullname($student),
+						'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
+					];
+				}
 			}
 
 			$examplesAndItems = array_merge($examplesAndItems, $studentExamplesAndItems);
@@ -7063,8 +7092,6 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_teacher_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
             'courseid' => new external_value (PARAM_INT, ''),
-            'studentid' => new external_value (PARAM_INT, ''),
-        	'studentfullname' => new external_value (PARAM_TEXT, ''),
             'status' => new external_value(PARAM_TEXT,'new, inprogress, submitted, completed'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
@@ -7109,6 +7136,11 @@ class block_exacomp_external extends external_api {
                 'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
                 'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
                 'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+	            'owner' => new external_single_structure(array(
+	                'userid' => new external_value (PARAM_INT, ''),
+	                'fullname' => new external_value (PARAM_TEXT, ''),
+	                'profileimageurl' => new external_value (PARAM_TEXT, ''),
+				)),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
                 	'id' => new external_value (PARAM_INT, 'id'),
                     'filename' => new external_value (PARAM_TEXT, 'filename'),
@@ -7118,6 +7150,8 @@ class block_exacomp_external extends external_api {
                 )),"files of the student's submission", VALUE_OPTIONAL),
                 'collaborators' => new external_multiple_structure (new external_single_structure ( array(
                     'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
+	                'fullname' => new external_value (PARAM_TEXT, ''),
+	                'profileimageurl' => new external_value (PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_OPTIONAL),
         )));

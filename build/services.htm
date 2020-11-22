@@ -2868,6 +2868,11 @@ Returns:<pre>[
             "studentvalue": "int null (student grading)",
             "teachercomment": "text null (teacher comment)",
             "studentcomment": "text null (student comment)",
+            "owner": {
+                "userid": "int null ()",
+                "fullname": "text null ()",
+                "profileimageurl": "text null ()"
+            },
             "studentfiles": [
                 {
                     "id": "int null (id)",
@@ -2880,7 +2885,9 @@ Returns:<pre>[
             ],
             "collaborators": [
                 {
-                    "userid": "int null (userid of collaborator)"
+                    "userid": "int null (userid of collaborator)",
+                    "fullname": "text null ()",
+                    "profileimageurl": "text null ()"
                 },
                 "... collaborators ..."
             ]
@@ -2941,8 +2948,6 @@ Params: <table>
 Returns:<pre>[
     {
         "courseid": "int null ()",
-        "studentid": "int null ()",
-        "studentfullname": "text null ()",
         "status": "text null (new, inprogress, submitted, completed)",
         "subjectid": "int null (id of subject)",
         "subjecttitle": "text null (title of subject)",
@@ -2982,6 +2987,11 @@ Returns:<pre>[
             "studentvalue": "int null (student grading)",
             "teachercomment": "text null (teacher comment)",
             "studentcomment": "text null (student comment)",
+            "owner": {
+                "userid": "int null ()",
+                "fullname": "text null ()",
+                "profileimageurl": "text null ()"
+            },
             "studentfiles": [
                 {
                     "id": "int null (id)",
@@ -2994,7 +3004,9 @@ Returns:<pre>[
             ],
             "collaborators": [
                 {
-                    "userid": "int null (userid of collaborator)"
+                    "userid": "int null (userid of collaborator)",
+                    "fullname": "text null ()",
+                    "profileimageurl": "text null ()"
                 },
                 "... collaborators ..."
             ]

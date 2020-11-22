@@ -8144,7 +8144,26 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
 
 
     foreach($items as $item){
-        $item->collaborators = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $item->id));
+    	$collaborators = $DB->get_records(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $item->id));
+        $item->collaborators = [];
+
+    	foreach ($collaborators as $collaborator) {
+			$student = g::$DB->get_record('user', array(
+				'id' => $collaborator->userid,
+			));
+			if (!$student) {
+				continue;
+			}
+			
+			$userpicture = new user_picture($student);
+			$userpicture->size = 1; // Size f1.
+
+			$item->collaborators[] = (object)[
+				'userid' => $student->id,
+				'fullname' => fullname($student),
+				'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
+			];
+		}
     }
 
     return $items;
