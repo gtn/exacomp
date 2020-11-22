@@ -2284,7 +2284,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if ($this->is_edit_mode() && !$this->is_print_mode() && $data->role == BLOCK_EXACOMP_ROLE_TEACHER && !$profoundness ) { // && $descriptor_in_crosssubj
 					$exampleuploadCell->text = html_writer::link(
 						new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id, "topicid" => $descriptor->topicid)),
-						html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
+                       $this->pix_icon("i/withsubcat", block_exacomp_get_string("example_upload_header")),
 						array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 				}
 
