@@ -10251,7 +10251,7 @@ class block_exacomp_external extends external_api {
                 $descriptors += block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
             }
             foreach($descriptors as $descriptor){
-                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,null,$courseids[0], null, null, null, $search);
+                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], null, null, null, $search);
                 $examples += $descriptorWithExamples->examples;
             }
 
@@ -10270,7 +10270,7 @@ class block_exacomp_external extends external_api {
             }
         }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
             $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
-            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,null,$courseids[0],null, null, null, $search);
+            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,true,$courseids[0],null, null, null, $search);
             $examples = $descriptorWithExamples->examples;
 
             // get topic and subject information:
