@@ -10481,6 +10481,7 @@ class block_exacomp_external extends external_api {
     }
 
 
+    // Used for diggrplus
     private static function block_exacomp_get_item_details($item, $userid, $wstoken){
         global $CFG;
 
@@ -10504,13 +10505,13 @@ class block_exacomp_external extends external_api {
             if ($files = block_exaport_get_files($item, 'item_file')) {
             	$studentfiles = [];
                 foreach ($files as $fileindex => $file) {
-					$fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken;
+                    $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken . "&inst=" . $fileindex;
 					$filedata['id'] = $file->get_id();
 					$filedata['file'] = $fileurl;
 					$filedata['mimetype'] = $file->get_mimetype();
 					$filedata['filename'] = $file->get_filename();
 					$filedata['isimage'] = $file->is_valid_image();
-					$filedata['fileindex'] = $fileindex; // TODO: not needed for diggr-plus, needed in other apps? -> remove
+					$filedata['fileindex'] = $fileindex;
 					$studentfiles[] = $filedata;
                 }
                 $item->studentfiles = $studentfiles;
