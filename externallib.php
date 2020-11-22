@@ -6409,9 +6409,11 @@ class block_exacomp_external extends external_api {
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
                 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles));
 
-        if (!isset($type)) {
-            $type = ($filenames != '') ? 'file' : 'url';
-        };
+        // TODO: is URL type needed in diggrplus? what exactly does it do?  For now: always set to "file"
+//        if (!isset($type)) {
+//            $type = ($filenames != '') ? 'file' : 'url';
+//        };
+        $type = 'file';
 
         static::require_can_access_course($courseid);
 
@@ -6489,6 +6491,7 @@ class block_exacomp_external extends external_api {
             $item->name = $itemtitle;
             $item->url = $url;
             $item->timemodified = time();
+            $item->type = $type;
 
             // This would overwrite, which we do not want in diggrplus
 //            if ($type == 'file') {
@@ -6813,8 +6816,6 @@ class block_exacomp_external extends external_api {
 				$examplesAndItems = array_merge($examplesAndItems, $examples);
             }
         }
-
-
 
         foreach($examplesAndItems as $exampleItem){
             if($exampleItem->item){
@@ -10490,8 +10491,6 @@ class block_exacomp_external extends external_api {
         $item->teachervalue = isset ($item->teachervalue) ? $item->teachervalue : 0;
         $item->studentvalue = isset ($item->studentvalue) ? $item->studentvalue : 0;
         $item->status = isset ($item->status) ? $item->status : 0;
-
-
 
         if ($item->type == 'file') {
 
