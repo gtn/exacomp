@@ -11962,4 +11962,54 @@ class block_exacomp_external extends external_api {
         ));
     }
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakora_delete_custom_example_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        ));
+    }
+
+    /**
+     * delete example
+     *
+     * @ws-type-write
+     * @param integer $exampleid
+     * @return
+     *
+     */
+    public static function dakora_delete_custom_example($exampleid) {
+        global $DB, $USER;
+
+        static::validate_parameters(static::delete_example_parameters(), array(
+            'exampleid' => $exampleid,
+        ));
+
+        // only self-created!
+        $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid, 'creatorid' => $USER->id));
+        if (!$example) {
+            throw new invalid_parameter_exception ('Can not delete this example!');
+        }
+
+        block_exacomp_delete_custom_example($exampleid);
+
+        return array(
+            "success" => true,
+        );
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakora_delete_custom_example_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'true if successful'),
+        ));
+    }
+
 }

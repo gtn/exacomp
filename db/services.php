@@ -964,6 +964,14 @@ get admin evaluation configurations',
     'description' => 'view competence overview',
     'type' => 'read',
   ),
+  'dakora_delete_custom_example' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'dakora_delete_custom_example',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'delete example',
+    'type' => 'write',
+  ),
 );
 
 $services = array (
@@ -1086,6 +1094,7 @@ $services = array (
       108 => 'block_exacomp_update_descriptor_category',
       109 => 'block_exacomp_get_url_preview',
       110 => 'dakora_competencegrid_overview',
+      111 => 'dakora_delete_custom_example',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,
