@@ -7706,7 +7706,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($crosssubj == null){
                     $crosssubj = array_shift($subject->cross_subject_drafts);
                 }
-                while($groupcategory->groupcategory == $crosssubj->groupcategory && $crosssubj->groupcategory != null){
+                while($groupcategory->groupcategory == $crosssubj->groupcategory && $crosssubj->id != null){
 //                    $crosssubj->creatorid = 3;
                     $title = clone $item_title_cell;
                     $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id)), $crosssubj->title);
