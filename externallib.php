@@ -10284,7 +10284,6 @@ class block_exacomp_external extends external_api {
                 }
                 $examples += $courseExamples;
             }
-
         }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
             // get topic and subject information:
             $sql = 'SELECT topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -10293,10 +10292,8 @@ class block_exacomp_external extends external_api {
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
 
-
             $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
             $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // this only gets parents
-
 
             foreach($descriptors as $descriptor){
                 $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
@@ -10307,8 +10304,6 @@ class block_exacomp_external extends external_api {
                 }
                 $descriptors += $childdescriptors;
             }
-
-
 
             foreach($descriptors as $descriptor){
                 $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], null, null, null, $search);
@@ -10392,6 +10387,7 @@ class block_exacomp_external extends external_api {
 
 
 
+    // for diggrplus webservices and get_example_by_id (used in diggr?)
 //    //TODO: _get_example_information better? or get_example_by_id()
     private static function block_excomp_get_example_details($example, $courseid){
         global $DB;

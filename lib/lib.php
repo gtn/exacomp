@@ -8649,15 +8649,19 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
  * get all examples associated with any descriptors in this course
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_by_course($courseid, $withTopicSubjectCourseInfo=false, $search="") {
-    if($withTopicSubjectCourseInfo){
-        $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid
+function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=false, $search="") {
+    if($withCompetenceInfo){
+        $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON dex.exampid = ex.id
             JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid
             JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
             JOIN {".BLOCK_EXACOMP_DB_TOPICS."} topic ON ct.topicid = topic.id
             JOIN {".BLOCK_EXACOMP_DB_SUBJECTS."} subj ON topic.subjid = subj.id
+            
+            JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON det.descrid=d.id
+            LEFT JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON n.id = d.niveauid
+
             WHERE ct.courseid = ?
             AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')";
     }else{
