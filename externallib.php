@@ -6745,8 +6745,8 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_examples_and_items_parameters() {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
-            'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
-            'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
+            'compid' => new external_value (PARAM_INT, 'id of subject(3)/topic(1)/descriptor(0)/example(4)   if <= 0 then show all items for user'),
+            'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL)
         ));
@@ -6800,10 +6800,10 @@ class block_exacomp_external extends external_api {
                 $objDeeper->item = $item;
                 $objDeeper->subjecttitle = $item->subjecttitle;
                 $objDeeper->subjectid = $item->subjectid;
-                $objDeeper->topictitle = $item->topictitle;
-                $objDeeper->topicid = $item->topicid;
-                $objDeeper->niveauid = -1;
+                $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
+                $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
                 $objDeeper->niveautitle = "";
+                $objDeeper->niveauid = 0;
                 return $objDeeper;
             },$items));
         }
@@ -10257,7 +10257,7 @@ class block_exacomp_external extends external_api {
 
 
     /**
-     * get all examples associated with any topic or descriptor in any course for user
+     * get all examples associated with any subject, topic or descriptor in any course for user
      * if compid or comptype are -1, get all examples for all courses
      * @param int $userid
      * @param bool $compid
@@ -10274,16 +10274,72 @@ class block_exacomp_external extends external_api {
 
         // TODO: To avoid code duplication i used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
         $examples = array();
-        if($compid == -1 || $comptype == -1){
+        if($compid == -1 || $comptype == -1) {
             // TODO: checks so a student cannot hack this and view another student's items
             $courses = enrol_get_users_courses($userid);
-            foreach($courses as $course){
-                $courseExamples = block_exacomp_get_examples_by_course($course->id,true, $search); // TODO: duplicates?
-                foreach($courseExamples as $example){
+            foreach ($courses as $course) {
+                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search); // TODO: duplicates?
+                foreach ($courseExamples as $example) {
                     static::block_excomp_get_example_details($example, $course->id);
                 }
                 $examples += $courseExamples;
             }
+        }else if($comptype == BLOCK_EXACOMP_TYPE_SUBJECT){
+            //Get ALL examples, then only use the ones of the correct subject.
+            $courses = enrol_get_users_courses($userid);
+            foreach ($courses as $course) {
+                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search); // TODO: duplicates?
+                foreach ($courseExamples as $key => $example) {
+                    $exampleSubjects = block_exacomp_get_subjects_by_example($example->id);
+                    if(!in_array($compid, $exampleSubjects)){ // TODO more than one subjectid ==> different check!
+//                    if($compid != $example->subjectid){ // more than one subjectid ==> different check!
+                        unset($courseExamples[$key]);
+                    }else{
+                        static::block_excomp_get_example_details($example, $course->id);
+                    }
+                }
+                $examples += $courseExamples;
+            }
+
+            //This is a solution that "works", but is very slow. Slower than finding ALL examples of a user
+//            //Get all topics in this subject, then get all information of topics
+//
+//            //get the course in order to be able to use next functions
+//            $courseids = block_exacomp_get_courseids_by_subject($compid); // subject can be in more than one, I just need any course for the next function --> room for optimization! TODO
+//            $subject = block_exacomp_get_subject_by_subjectid($compid);
+//
+//            $topics = block_exacomp_get_topics_by_subject($courseids[0],$compid);
+//
+//
+//            foreach($topics as $topic){
+//                $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $topic->id); // this only gets parents
+//
+//                foreach($descriptors as $descriptor){
+//                    $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
+//                    // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
+//                    foreach($childdescriptors as $child){
+//                        $child->niveauid = $descriptor->niveauid;
+//                        $child->cattitle = $descriptor->cattitle;
+//                    }
+//                    $descriptors += $childdescriptors;
+//                }
+//
+//                foreach($descriptors as $descriptor){
+//                    $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], null, null, null, $search);
+//                    // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
+//                    foreach($descriptorWithExamples->examples as $example){
+//                        $example = static::block_excomp_get_example_details($example, $example->courseid);
+//                        $example->subjecttitle = $subject->title;
+//                        $example->subjectid = $subject->id;
+//                        $example->topictitle = $topic->title;
+//                        $example->topicid = $topic->id;
+//                        $example->niveauid = $descriptor->niveauid;
+//                        $example->niveautitle = $descriptor->cattitle;
+//                    }
+//                    $examples += $descriptorWithExamples->examples;
+//                }
+//
+//            }
         }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
             // get topic and subject information:
             $sql = 'SELECT topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid

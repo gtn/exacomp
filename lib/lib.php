@@ -1090,6 +1090,8 @@ function block_exacomp_get_subject_by_example($exampleid) {
     return $resultSubject;
 }
 
+
+
 // if the example is related to a few subjects
 // @return array ids
 function block_exacomp_get_subjects_by_example($exampleid) {
@@ -8135,6 +8137,17 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
             break;
+        case BLOCK_EXACOMP_TYPE_SUBJECT: // TODO: Only of subject, or also of topics beneath?
+            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, d.title as subjecttitle, d.id as subjectid
+              FROM {block_exacompsubjects} d
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+                JOIN {block_exaportitem} i ON ie.itemid = i.id
+              WHERE i.userid = ?
+                '.$compidCondition.'
+                AND ie.competence_type = ?
+                AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
+              ORDER BY ie.timecreated DESC';
+            break;
     }
     if($compid == -1){
         $items = $DB->get_records_sql($sql, array($userid, $comptype));
@@ -8844,6 +8857,15 @@ function block_exacomp_get_courseids_by_topic($topicid) {
 		WHERE ct.topicid = ?';
 
     return g::$DB->get_fieldset_sql($sql, array($topicid));
+}
+
+function block_exacomp_get_courseids_by_subject($subjid) {
+    $sql = 'SELECT ct.courseid
+		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
+		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id
+		WHERE t.subjid = ?';
+
+    return g::$DB->get_fieldset_sql($sql, array($subjid));
 }
 
 
