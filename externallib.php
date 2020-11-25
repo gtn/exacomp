@@ -6802,6 +6802,8 @@ class block_exacomp_external extends external_api {
                 $objDeeper->subjectid = $item->subjectid;
                 $objDeeper->topictitle = $item->topictitle;
                 $objDeeper->topicid = $item->topicid;
+                $objDeeper->niveauid = -1;
+                $objDeeper->niveautitle = "";
                 return $objDeeper;
             },$items));
         }
@@ -6871,6 +6873,10 @@ class block_exacomp_external extends external_api {
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
             'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+
+            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+
             'example' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
@@ -10280,28 +10286,43 @@ class block_exacomp_external extends external_api {
             }
 
         }else if($comptype == BLOCK_EXACOMP_TYPE_TOPIC){
-            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
-            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // TODO: this only gets parents
-            foreach($descriptors as $descriptor){
-                $descriptors += block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
-            }
-            foreach($descriptors as $descriptor){
-                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], null, null, null, $search);
-                $examples += $descriptorWithExamples->examples;
-            }
-
             // get topic and subject information:
             $sql = 'SELECT topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
                   FROM {block_exacomptopics} topic
                     JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
-            foreach($examples as $example){
-                $example = static::block_excomp_get_example_details($example, $example->courseid);
-                $example->subjecttitle = $information->subjecttitle;
-                $example->subjectid = $information->subjectid;
-                $example->topictitle = $information->topictitle;
-                $example->topicid = $information->topicid;
+
+
+            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
+            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // this only gets parents
+
+
+            foreach($descriptors as $descriptor){
+                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
+                // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
+                foreach($childdescriptors as $child){
+                    $child->niveauid = $descriptor->niveauid;
+                    $child->cattitle = $descriptor->cattitle;
+                }
+                $descriptors += $childdescriptors;
+            }
+
+
+
+            foreach($descriptors as $descriptor){
+                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], null, null, null, $search);
+                // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
+                foreach($descriptorWithExamples->examples as $example){
+                    $example = static::block_excomp_get_example_details($example, $example->courseid);
+                    $example->subjecttitle = $information->subjecttitle;
+                    $example->subjectid = $information->subjectid;
+                    $example->topictitle = $information->topictitle;
+                    $example->topicid = $information->topicid;
+                    $example->niveauid = $descriptor->niveauid;
+                    $example->niveautitle = $descriptor->cattitle;
+                }
+                $examples += $descriptorWithExamples->examples;
             }
         }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
             $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
@@ -10349,13 +10370,14 @@ class block_exacomp_external extends external_api {
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
             $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
             $example->student_evaluation = $exampleEvaluation->student_evaluation;
-
             $objDeeper->courseid = $example->courseid;
             $objDeeper->example = $example;
             $objDeeper->subjecttitle = $example->subjecttitle;
             $objDeeper->subjectid = $example->subjectid;
             $objDeeper->topictitle = $example->topictitle;
             $objDeeper->topicid = $example->topicid;
+            $objDeeper->niveauid = $example->niveauid;
+            $objDeeper->niveautitle = $example->niveautitle;
             return $objDeeper;
         },$examples);
 
