@@ -806,10 +806,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $formurl = new moodle_url($PAGE->url, $url_params);
 
-		$formContent = html_writer::tag('form',
-            html_writer::tag("div", html_writer::table($table), array("id" => "exabis_competences_block")).$saveButton,
-            array('id' => 'competence_grid', "action" => $formurl, 'method' => 'post')
-        );
+        if ($target == 'dakora') {
+            // no form
+            $formContent = html_writer::tag("div", html_writer::table($table), array("id" => "exabis_competences_block"));
+        } else {
+            $formContent = html_writer::tag('form',
+                html_writer::tag("div", html_writer::table($table), array("id" => "exabis_competences_block")) . $saveButton,
+                array('id' => 'competence_grid', "action" => $formurl, 'method' => 'post')
+            );
+        }
 		return $formContent;
 	}
 
