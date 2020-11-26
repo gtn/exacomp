@@ -7209,7 +7209,7 @@ class block_exacomp_external extends external_api {
 	public static function diggrplus_grade_item_parameters() {
 		return new external_function_parameters (array(
 			'itemid' => new external_value (PARAM_INT, ''),
-			'solved' => new external_value (PARAM_INT, ''),
+			'completed' => new external_value (PARAM_INT, 'checkbox if this item is completed, or not'),
             'userid' => new external_value (PARAM_INT, 'id of student that should be graded'),
 			// 'value' => new external_value (PARAM_INT, 'value for grading'),
 			// 'status' => new external_value (PARAM_INT, 'status'),
@@ -7226,7 +7226,7 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-write
 	 *
 	 */
-	public static function diggrplus_grade_item($itemid, $solved, $userid) {
+	public static function diggrplus_grade_item($itemid, $completed, $userid) {
 		global $DB, $USER;
 
 		// if (empty ($userid) || empty ($value) || empty ($comment) || empty ($itemid) || empty ($courseid)) {
@@ -7235,7 +7235,7 @@ class block_exacomp_external extends external_api {
 
 		static::validate_parameters(static::diggrplus_grade_item_parameters(), array(
 			'itemid' => $itemid,
-			'solved' => $solved,
+			'completed' => $completed,
             'userid' => $userid,
 			// 'value' => $value,
 			// 'status' => $status,
@@ -7257,7 +7257,7 @@ class block_exacomp_external extends external_api {
 //		$exampleid = $update->exacomp_record_id;
 
 		$update->datemodified = time();
-		$update->teachervalue = $solved;
+		$update->teachervalue = $completed;
 
 
 		$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $update);
