@@ -331,6 +331,26 @@ Returns:<pre>[
     },
     "..."
 ]</pre>
+<h2>diggrplus_get_niveaus_for_subject</h2>
+<div>Get Subjects
+get subjects from one user for all his courses</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+</table>
+Returns:<pre>[
+    {
+        "niveauid": "int null (id of subject)",
+        "niveautitle": "text null (title of subject)"
+    },
+    "..."
+]</pre>
 <h2>diggrplus_get_examples_for_topic_for_user</h2>
 <div>Get examples for subtopic
 Get examples</div>
@@ -2865,7 +2885,6 @@ Returns:<pre>[
             "type": "text null (type of item (note,file,link))",
             "url": "text null (url)",
             "effort": "raw null (description of the effort)",
-            "status": "int null (status of the submission)",
             "teachervalue": "int null (teacher grading)",
             "studentvalue": "int null (student grading)",
             "teachercomment": "text null (teacher comment)",
@@ -3042,12 +3061,12 @@ Params: <table>
 <td></td>
 <td></td>
 <tr>
-<td>solved</td>
+<td>completed</td>
 <td>int</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td></td>
+<td>checkbox if this item is completed, or not</td>
 <tr>
 <td>userid</td>
 <td>int</td>

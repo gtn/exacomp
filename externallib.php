@@ -1170,6 +1170,72 @@ class block_exacomp_external extends external_api {
 		)));
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_get_niveaus_for_subject_parameters() {
+        return new external_function_parameters (array(
+            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+        ));
+    }
+    /**
+     * Get Subjects
+     * get subjects from one user for all his courses
+     *
+     * @ws-type-read
+     * @return array of user courses
+     */
+    public static function diggrplus_get_niveaus_for_subject($subjectid) {
+        global $DB;
+
+        static::validate_parameters(static::diggrplus_get_niveaus_for_subject_parameters(), array(
+            'subjectid' => $subjectid,
+        ));
+
+        $niveaus = $DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
+			FROM {".BLOCK_EXACOMP_DB_NIVEAUS."} n
+			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} desc ON desc.niveauid = n.id
+			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctop ON desctop.descrid = desc.id
+			JOIN {".BLOCK_EXACOMP_DB_TOPICS."} topic ON topic.id = desctop.topicid
+			JOIN {".BLOCK_EXACOMP_DB_SUBJECTS."} subj ON topic.subjid = subj.id
+			WHERE subj.id=?
+		", [
+            $subjectid,
+        ]);
+
+        return $niveaus;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_niveaus_for_subject_returns() {
+        return new external_multiple_structure (new external_single_structure (array(
+            'niveauid' => new external_value (PARAM_INT, 'id of subject'),
+            'niveautitle' => new external_value (PARAM_TEXT, 'title of subject'),
+        )));
+    }
+	
+	
+	
+
+
+
 	/*
 	 * Returns description of method parameters
 	 * @return external_function_parameters
