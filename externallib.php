@@ -6827,7 +6827,7 @@ class block_exacomp_external extends external_api {
                         $exampleItem->status = "inprogress";
                         break;
                     case 1: //submitted
-                        if($exampleItem->example && $exampleItem->example->teacher_evaluation || ($exampleItem->item->teachervalue && $exampleItem->item->teachervalue > 0)){ //either example that has grade, or free item that has grade
+                        if($exampleItem->example && $exampleItem->example->teacher_evaluation || $exampleItem->item->teachervalue){ //either example that has grade, or free item that has grade
                             $exampleItem->status = "completed";
                         }else{
                             $exampleItem->status = "submitted";
