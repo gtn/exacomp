@@ -3016,6 +3016,42 @@ Returns:<pre>[
     },
     "..."
 ]</pre>
+<h2>diggrplus_request_external_file</h2>
+<div>Load a file from an external Domain to prevent CORS when loading directly in the App</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>"file null ()"</pre>
+<h2>diggrplus_grade_item</h2>
+<div>Grade an item
+grade an item</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>solved</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "success": "bool null (true if grading was successful)"
+}</pre>
 <h2>dakora_grade_example</h2>
 <div>grade example solution
 Add student submission to example.</div>

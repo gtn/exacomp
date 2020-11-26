@@ -6982,21 +6982,26 @@ class block_exacomp_external extends external_api {
 			$compid = -1;
 		}
 
-        if ($studentid) {
-        	die('todo studentid');
-        	static::require_can_access_user($studentid);
-		} elseif ($courseid) {
-        	die('todo courseid');
+		if ($courseid) {
+			$courses = static::get_courses();
+			$courses = array_filter($courses, function($course) use ($courseid) {
+				return $course['courseid'] == $courseid;
+			});
 		} else {
 	        $courses = static::get_courses();
+		}
 
-	        $students = [];
-	        foreach ($courses as $course) {
-	        	$course = (object)$course;
-				$courseStudents = block_exacomp_get_students_by_course($course->courseid);
-				foreach ($courseStudents as $student) {
-					$students[$student->id] = $student;
+		$students = [];
+		foreach ($courses as $course) {
+			$course = (object)$course;
+			$courseStudents = block_exacomp_get_students_by_course($course->courseid);
+			foreach ($courseStudents as $student) {
+		        if ($studentid && $student->id != $studentid) {
+		        	// don't add to students array
+		        	continue;
 				}
+
+				$students[$student->id] = $student;
 			}
 		}
 
@@ -7164,33 +7169,204 @@ class block_exacomp_external extends external_api {
         )));
     }
 
-//    /**
-//     * Returns desription of method return values
-//     *
-//     * @return external_multiple_structure
-//     */
-//    public static function diggrplus_get_examples_and_items_returns() {
-//        return new external_multiple_structure(new external_single_structure (array(
-//            'id' => new external_value (PARAM_INT, 'id of item or example'),
-//            'title' => new external_value (PARAM_TEXT, 'title of item or example'),
-//            'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
-//            'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
-//            'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-//            'filename' => new external_value (PARAM_TEXT, 'title of item', VALUE_OPTIONAL),
-//            'file' => new external_value (PARAM_URL, 'file url of the studentfile', VALUE_OPTIONAL),
-//            'isimage' => new external_value (PARAM_BOOL, 'true if file is image', VALUE_OPTIONAL),
-//            'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
-//            'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
-//            'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
-//            'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
-//            'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
-//            'collaborators' => new external_multiple_structure (new external_single_structure ( array(
-//                'userid' => new external_value (PARAM_TEXT, 'userid of collaborator'),
-//            )), 'collaborators', VALUE_OPTIONAL),
-//        )));
-//    }
+    public static function diggrplus_request_external_file_parameters() {
+        return new external_function_parameters (array(
+        	'url' => new external_value (PARAM_URL, ''),
+        ));
+    }
 
+    /**
+     * Load a file from an external Domain to prevent CORS when loading directly in the App
+     * @ws-type-read
+     */
+    public static function diggrplus_request_external_file($url) {
+        global $USER;
 
+        static::validate_parameters(static::diggrplus_request_external_file_parameters(), array(
+            'url' => $url,
+        ));
+
+        header("Content-Type: image");
+        $content = file_get_contents($url);
+
+        if (!$content) {
+        	send_file_not_found();
+        	// throw new \Exception('clound\'t load content');
+		}
+
+        header('Access-Control-Allow-Origin: *');
+        send_file($content, basename($url), null, 0, true);
+        exit;
+    }
+
+    public static function diggrplus_request_external_file_returns() {
+        return new external_value(PARAM_FILE, '');
+    }
+
+	public static function diggrplus_grade_item_parameters() {
+		return new external_function_parameters (array(
+			'itemid' => new external_value (PARAM_INT, ''),
+			'solved' => new external_value (PARAM_INT, ''),
+			// 'value' => new external_value (PARAM_INT, 'value for grading'),
+			// 'status' => new external_value (PARAM_INT, 'status'),
+			// 'comment' => new external_value (PARAM_TEXT, 'comment of grading', VALUE_OPTIONAL),
+			// 'comps' => new external_value (PARAM_TEXT, 'comps for example - positive grading'),
+			// 'courseid' => new external_value (PARAM_INT, 'if of course'),
+		));
+	}
+
+	/**
+	 * Grade an item
+	 * grade an item
+	 *
+	 * @ws-type-write
+	 *
+	 */
+	public static function diggrplus_grade_item($itemid, $solved) {
+		global $DB, $USER;
+
+		// if (empty ($userid) || empty ($value) || empty ($comment) || empty ($itemid) || empty ($courseid)) {
+		// 	throw new invalid_parameter_exception ('Parameter can not be empty');
+		// }
+
+		static::validate_parameters(static::diggrplus_grade_item_parameters(), array(
+			'itemid' => $itemid,
+			'solved' => $solved,
+			// 'userid' => $userid,
+			// 'value' => $value,
+			// 'status' => $status,
+			// 'comment' => $comment,
+			// 'comps' => $comps,
+			// 'courseid' => $courseid,
+		));
+
+		die('todo');
+
+		if (!$userid) {
+			$userid = $USER->id;
+		}
+		static::require_can_access_user($userid);
+
+		// insert into block_exacompitem_mm
+		$update = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array(
+			'itemid' => $itemid,
+		));
+
+		$exampleid = $update->exacomp_record_id;
+
+		$update->itemid = $itemid;
+		$update->datemodified = time();
+		$update->teachervalue = $value;
+		$update->status = $status;
+
+		$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $update);
+		// if the grading is good, tick the example in exacomp
+		$exameval = $DB->get_record('block_exacompexameval', array(
+			'exampleid' => $exampleid,
+			'courseid' => $courseid,
+			'studentid' => $userid,
+		));
+		if ($exameval) {
+			$exameval->teacher_evaluation = 1;
+			$DB->update_record('block_exacompexameval', $exameval);
+		} else {
+			$DB->insert_record('block_exacompexameval', array(
+				'exampleid' => $exampleid,
+				'courseid' => $courseid,
+				'studentid' => $userid,
+				'teacher_evaluation' => 1,
+			));
+		}
+
+		$insert = new stdClass ();
+		$insert->itemid = $itemid;
+		$insert->userid = $USER->id;
+		$insert->entry = $comment;
+		$insert->timemodified = time();
+
+		$DB->delete_records('block_exaportitemcomm', array(
+			'itemid' => $itemid,
+			'userid' => $USER->id,
+		));
+		$DB->insert_record('block_exaportitemcomm', $insert);
+
+		// get all available descriptors and unset them who are not received via web service
+		$descriptors_exam_mm = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array(
+			'exampid' => $exampleid,
+		));
+
+		$descriptors = explode(',', $comps);
+
+		$unset_descriptors = array();
+		foreach ($descriptors_exam_mm as $descr_examp) {
+			if (!in_array($descr_examp->descrid, $descriptors)) {
+				$unset_descriptors[] = $descr_examp->descrid;
+			}
+		}
+
+		// set positive graded competencies
+		foreach ($descriptors as $descriptor) {
+			if ($descriptor != 0) {
+				$entry = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor);
+
+				if ($entry) {
+					$entry->reviewerid = $USER->id;
+					$entry->value = 1;
+					$entry->timestamp = time();
+					$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $entry);
+				} else {
+					$insert = new stdClass ();
+					$insert->userid = $userid;
+					$insert->compid = $descriptor;
+					$insert->reviewerid = $USER->id;
+					$insert->role = BLOCK_EXACOMP_ROLE_TEACHER;
+					$insert->courseid = $courseid;
+					$insert->value = 1;
+					$insert->timestamp = time();
+
+					$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
+				}
+			}
+		}
+
+		// set negative graded competencies
+		foreach ($unset_descriptors as $descriptor) {
+			$entry = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor);
+
+			if ($entry) {
+				$entry->reviewerid = $USER->id;
+				$entry->value = 0;
+				$entry->timestamp = time();
+				$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $entry);
+			} else {
+				$insert = new stdClass ();
+				$insert->userid = $userid;
+				$insert->compid = $descriptor;
+				$insert->reviewerid = $USER->id;
+				$insert->role = BLOCK_EXACOMP_ROLE_TEACHER;
+				$insert->courseid = $courseid;
+				$insert->value = 0;
+				$insert->timestamp = time();
+
+				$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
+			}
+		}
+
+		return array(
+			"success" => true,
+		);
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function diggrplus_grade_item_returns() {
+		return new external_single_structure (array(
+			'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+		));
+	}
 
 
 

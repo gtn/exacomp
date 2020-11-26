@@ -111,13 +111,18 @@ call_user_func(function() {
 					} elseif ($paramInfo instanceof external_multiple_structure || $paramInfo instanceof external_single_structure) {
 						$data[$paramName] = $recursor($paramInfo);
 					} else {
-						die('o');
+						die('error #fsjkjlerw234');
 					}
 				}
 
 				return $data;
+			} elseif ($o instanceof external_value) {
+				$paramInfo = $o;
+				return $paramInfo->type.
+					' '.($paramInfo->allownull ? 'null' : 'not null').
+					' ('.$paramInfo->desc.')';
 			} else {
-				die('x');
+				die('wrong value of type: '.var_export($o, true));
 				$doku .= get_class($o);
 			}
 		};
