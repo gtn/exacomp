@@ -1207,8 +1207,8 @@ class block_exacomp_external extends external_api {
 
         $niveaus = $DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
 			FROM {".BLOCK_EXACOMP_DB_NIVEAUS."} n
-			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} desc ON desc.niveauid = n.id
-			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctop ON desctop.descrid = desc.id
+			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} descr ON descr.niveauid = n.id
+			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctop ON desctop.descrid = descr.id
 			JOIN {".BLOCK_EXACOMP_DB_TOPICS."} topic ON topic.id = desctop.topicid
 			JOIN {".BLOCK_EXACOMP_DB_SUBJECTS."} subj ON topic.subjid = subj.id
 			WHERE subj.id=?
