@@ -1097,7 +1097,7 @@ function block_exacomp_get_subject_by_example($exampleid) {
 function block_exacomp_get_subjects_by_example($exampleid) {
     global $DB;
     $resultSubjects = [];
-    $descriptors = block_exacomp_get_descriptors_by_example($exampleid);
+//    $descriptors = block_exacomp_get_descriptors_by_example($exampleid);
     $sql = ' SELECT DISTINCT s.id, s.id as tmp 
                 FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
                     JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
@@ -1113,6 +1113,23 @@ function block_exacomp_get_subjects_by_example($exampleid) {
     }
     return $resultSubjects;
 }
+
+function block_exacomp_get_niveaus_by_example($exampleid) {
+    global $DB;
+    $niveaus = $DB->get_records_sql("
+		SELECT DISTINCT d.niveauid
+		FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d		
+		JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON de.descrid=d.id
+		WHERE de.exampid = ?
+	", [$exampleid]);
+    $niveauArray = [];
+    foreach($niveaus as $niveau){
+        $niveauArray[] = $niveau->niveauid;
+    }
+    return $niveauArray;
+}
+
+
 
 /**
  * Gets all available subjects

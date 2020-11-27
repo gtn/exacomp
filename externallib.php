@@ -10543,10 +10543,17 @@ class block_exacomp_external extends external_api {
                 $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search); // TODO: duplicates?
                 foreach ($courseExamples as $key => $example) {
                     $exampleSubjects = block_exacomp_get_subjects_by_example($example->id);
-                    if(!in_array($compid, $exampleSubjects)){ // TODO more than one subjectid ==> different check!
+                    if(!in_array($compid, $exampleSubjects)){
 //                    if($compid != $example->subjectid){ // more than one subjectid ==> different check!
                         unset($courseExamples[$key]);
                     }else{
+                        if($niveauid != -1){
+                            $exampleNiveaus = block_exacomp_get_niveaus_by_example($example->id);
+                            if(!in_array($niveauid, $exampleNiveaus)){
+                                unset($courseExamples[$key]);
+                                continue;
+                            }
+                        }
                         static::block_excomp_get_example_details($example, $course->id);
                     }
                 }
