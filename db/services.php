@@ -663,8 +663,7 @@ they will be returned in one array, even though their fields may vary, but it ma
     'classname' => 'block_exacomp_external',
     'methodname' => 'diggrplus_grade_item',
     'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => 'Grade an item
-grade an item',
+    'description' => '',
     'type' => 'write',
   ),
   'dakora_grade_example' => 
