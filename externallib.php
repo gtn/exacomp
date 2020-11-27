@@ -6814,7 +6814,8 @@ class block_exacomp_external extends external_api {
             'compid' => new external_value (PARAM_INT, 'id of subject(3)/topic(1)/descriptor(0)/example(4)   if <= 0 then show all items for user'),
             'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
-            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL)
+            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_DEFAULT, ""),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL)
         ));
     }
 
@@ -6825,7 +6826,7 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of items
      */
-    public static function diggrplus_get_examples_and_items($userid, $compid, $comptype, $type="", $search="") {
+    public static function diggrplus_get_examples_and_items($userid, $compid, $comptype, $type="", $search="", $niveauid = -1) {
         global $USER;
 
         if ($userid == 0) {
@@ -6838,6 +6839,7 @@ class block_exacomp_external extends external_api {
             'comptype' => $comptype,
             'type' => $type,
             'search' => $search,
+            'niveauid' => $niveauid,
         ));
 
         static::require_can_access_user($userid);
@@ -6848,10 +6850,14 @@ class block_exacomp_external extends external_api {
         	$compid = -1;
 		}
 
+        if($niveauid <= 0){
+            $niveauid = -1;
+        }
+
         $examplesAndItems = array();
 
         if ($type == "own_items" || $type == "") {
-            $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search);
+            $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid);
 
             foreach($items as $item){
                 static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);

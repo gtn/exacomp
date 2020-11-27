@@ -8088,11 +8088,15 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  * @param unknown $compid
  * @param unknown $comptype
  */
-function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1, $search="") {
+function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1, $search="", $niveauid=-1) {
     global $DB;
 
 
     $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
+//    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = ?";
+//    $niveauConditionD = $niveauid==-1 ? "" : "AND d.niveauid = ?";
+
+    // TODO: use niveaucondition.   For now it is irrelevant, because own_items will only be submitted to topics, which do not have niveauinformation (only descriptors have)
     switch($comptype){
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -8138,21 +8142,30 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
               ORDER BY ie.timecreated DESC';
             break;
         case BLOCK_EXACOMP_TYPE_SUBJECT: // TODO: Only of subject, or also of topics beneath?
-            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, d.title as subjecttitle, d.id as subjectid
+            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, d.title as subjecttitle, topic.id as topicid, d.id as subjectid
               FROM {block_exacompsubjects} d
-                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+                JOIN {block_exacomptopics} topic ON topic.subjid = d.id 
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON (ie.exacomp_record_id = d.id OR ie.exacomp_record_id = topic.id)
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = ?
-                '.$compidCondition.'
-                AND ie.competence_type = ?
+                '.$compidCondition.'                
+                AND (ie.competence_type = ? OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.')
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
             break;
     }
     if($compid == -1){
-        $items = $DB->get_records_sql($sql, array($userid, $comptype));
+//        if($niveauid == -1){
+            $items = $DB->get_records_sql($sql, array($userid, $comptype));
+//        }else{
+//            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
+//        }
     }else{
-        $items = $DB->get_records_sql($sql, array($userid, $compid, $comptype));
+//        if($niveauid == -1){
+            $items = $DB->get_records_sql($sql, array($userid, $compid, $comptype));
+//        }else{
+//            $items = $DB->get_records_sql($sql, array($userid, $compid, $niveauid, $comptype));
+//        }
     }
 
 
