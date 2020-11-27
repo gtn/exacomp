@@ -7276,7 +7276,7 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters (array(
 			'itemid' => new external_value (PARAM_INT, ''),
 			'completed' => new external_value (PARAM_INT, 'checkbox if this item is completed, or not'),
-            'userid' => new external_value (PARAM_INT, 'id of student that should be graded'),
+            // 'userid' => new external_value (PARAM_INT, 'id of student that should be graded'),
 			// 'value' => new external_value (PARAM_INT, 'value for grading'),
 			// 'status' => new external_value (PARAM_INT, 'status'),
 			// 'comment' => new external_value (PARAM_TEXT, 'comment of grading', VALUE_OPTIONAL),
@@ -7286,13 +7286,10 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
-	 * Grade an item
-	 * grade an item
 	 *
 	 * @ws-type-write
-	 *
 	 */
-	public static function diggrplus_grade_item($itemid, $completed, $userid) {
+	public static function diggrplus_grade_item($itemid, $completed) {
 		global $DB, $USER;
 
 		// if (empty ($userid) || empty ($value) || empty ($comment) || empty ($itemid) || empty ($courseid)) {
@@ -7302,7 +7299,7 @@ class block_exacomp_external extends external_api {
 		static::validate_parameters(static::diggrplus_grade_item_parameters(), array(
 			'itemid' => $itemid,
 			'completed' => $completed,
-            'userid' => $userid,
+            // 'userid' => $userid,
 			// 'value' => $value,
 			// 'status' => $status,
 			// 'comment' => $comment,
@@ -7313,7 +7310,9 @@ class block_exacomp_external extends external_api {
 //		if (!$userid) { would be useful, if a student could grade themselves, but for now it is only for teachers
 //			$userid = $USER->id;
 //		}
-		static::require_can_access_user($userid);
+
+		$item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
+		static::require_can_access_user($item->userid);
 
 		// insert into block_exacompitem_mm
 		$update = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array(
