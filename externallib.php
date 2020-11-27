@@ -6886,7 +6886,7 @@ class block_exacomp_external extends external_api {
             if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
                 // TODO: how do we check if the user is a teacher? It is not oriented on courses
 //            $isTeacher = false;
-                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search);
+                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid);
 				$examplesAndItems = array_merge($examplesAndItems, $examples);
             }
         }
@@ -10515,7 +10515,7 @@ class block_exacomp_external extends external_api {
      * @param bool $compid
      * @param bool $comptype
      */
-    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search=""){
+    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1){
         global $DB;
         // Maybe better performance with join on user_enrolments table?
 //    if ($isTeacher) {
@@ -10524,7 +10524,7 @@ class block_exacomp_external extends external_api {
 //        $courses = block_exacomp_get_courses_of_student($userid);
 //    }
 
-        // TODO: To avoid code duplication i used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
+        // TODO: To avoid code duplication I used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
         $examples = array();
         if($compid == -1 || $comptype == -1) {
             // TODO: checks so a student cannot hack this and view another student's items
@@ -10613,7 +10613,13 @@ class block_exacomp_external extends external_api {
                 $descriptors += $childdescriptors;
             }
 
-            foreach($descriptors as $descriptor){
+            foreach($descriptors as $key => $descriptor){
+                if($niveauid != -1){
+                    if($descriptor->niveauid != $niveauid){
+                        unset($descriptors,$key);
+                        continue;
+                    }
+                }
                 $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], null, null, null, $search);
                 // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
                 foreach($descriptorWithExamples->examples as $example){
