@@ -6493,6 +6493,28 @@ class block_exacomp_external extends external_api {
         }
         require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
+
+
+        // remove files specifically marked for deletion by user:
+        // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
+        // use get_file_by_hash() instead, for deleting already existing files.
+        // TODO: could this be used to remove files this user doesn't have access to? HACKABLE
+        // solution: get itemid -> get item -> check if this user is the creator of this item -> only then allow deletion
+        if($removefiles){
+            $fs = get_file_storage();
+            $removefiles = explode(',', $removefiles);
+            foreach($removefiles as $removefile){
+                $file = $fs->get_file_by_id($removefile);
+                if($file){
+                    if($file->get_itemid() == $itemid){ // only delete file of current item. Protection if something goes really wrong or this webservice is used maliciously
+                        $file->delete();
+                    }
+                }
+            }
+        }
+
+
+
         if ($insert) {
             //store item in the right portfolio category
             $course = get_course($courseid);
@@ -6646,23 +6668,7 @@ class block_exacomp_external extends external_api {
         }
 
 
-        // remove files specifically marked for deletion by user:
-        // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
-        // use get_file_by_hash() instead, for deleting already existing files.
-        // TODO: could this be used to remove files this user doesn't have access to? HACKABLE
-        // solution: get itemid -> get item -> check if this user is the creator of this item -> only then allow deletion
-        if($removefiles){
-            $fs = get_file_storage();
-            $removefiles = explode(',', $removefiles);
-            foreach($removefiles as $removefile){
-                $file = $fs->get_file_by_id($removefile);
-                if($file){
-                    if($file->get_itemid() == $itemid){ // only delete file of current item. Protection if something goes really wrong or this webservice is used maliciously
-                        $file->delete();
-                    }
-                }
-            }
-        }
+
 
 
         return array("success" => true, "itemid" => $itemid);
