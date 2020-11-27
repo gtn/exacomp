@@ -7024,7 +7024,8 @@ class block_exacomp_external extends external_api {
             'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
-            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL)
+            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL)
         ));
     }
 
@@ -7035,7 +7036,7 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of items
      */
-    public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type="", $search="") {
+    public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type="", $search="", $niveauid=-1) {
         global $USER;
 
         static::validate_parameters(static::diggrplus_get_teacher_examples_and_items_parameters(), array(
@@ -7045,6 +7046,7 @@ class block_exacomp_external extends external_api {
             'comptype' => $comptype,
             'type' => $type,
             'search' => $search,
+            'niveauid' => $niveauid,
         ));
 
         // TODO: check if is teacher
@@ -7056,6 +7058,10 @@ class block_exacomp_external extends external_api {
 			$comptype = -1;
 			$compid = -1;
 		}
+
+        if($niveauid <= 0){
+            $niveauid = -1;
+        }
 
 		if ($courseid) {
 			$courses = static::get_courses();
@@ -7088,7 +7094,7 @@ class block_exacomp_external extends external_api {
 			$studentExamplesAndItems = [];
 
 			if ($type == "own_items" || $type == "") {
-				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search);
+				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid);
 
 				foreach($items as $item){
 					static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
@@ -7115,7 +7121,7 @@ class block_exacomp_external extends external_api {
 				if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
 					// TODO: how do we check if the user is a teacher? It is not oriented on courses
 	//            $isTeacher = false;
-					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search);
+					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid);
 					$studentExamplesAndItems = array_merge($studentExamplesAndItems, $examples);
 				}
 			}
