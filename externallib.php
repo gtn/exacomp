@@ -7401,6 +7401,7 @@ class block_exacomp_external extends external_api {
             }
         }
 
+
         //get all examples:
         //first: get all courses, then for each course get example, then for each example, get item
         $examples = [];
@@ -7413,15 +7414,15 @@ class block_exacomp_external extends external_api {
             }
             $examples += $courseExamples;
         }
-
-        foreach($examples as $example){
-            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-            if($item){
-                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
-                    $completed_items++;
-                }
-            }
-        }
+////This is obsolete, since examples can only exist in descriptors, and descriptors are checked below
+//        foreach($examples as $example){
+//            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+//            if($item){
+//                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
+//                    $completed_items++;
+//                }
+//            }
+//        }
 
 
         // get all competencies
