@@ -7426,14 +7426,27 @@ class block_exacomp_external extends external_api {
 
         // get all competencies
         //get all subjects by courses, and then get all descriptors
-        $subjects = [];
+        $descriptors =[];
         foreach ($courses as $course) {
-            $subjects += block_exacomp_get_subjects_by_course($course->id);
+            $subjects = block_exacomp_get_subjects_by_course($course->id);
+            foreach($subjects as $subject){
+                $parentdescriptors = block_exacomp_get_descriptors_by_subject($subject->id);
+                foreach($parentdescriptors as $parent){
+                    $parent->courseid = $course->id; // needed later
+                }
+                $descriptors += $parentdescriptors;
+            }
         }
 
-        $descriptors =[];
-        foreach($subjects as $subject){
-            $descriptors += block_exacomp_get_descriptors_by_subject($subject->id);
+
+        foreach($descriptors as $descriptor){
+            $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$descriptors->courseid); //TODO: if the same descriptor is in two courses, then what happens? Duplicates?
+//            // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
+//            foreach($childdescriptors as $child){
+//                $child->niveauid = $descriptor->niveauid;
+//                $child->cattitle = $descriptor->cattitle;
+//            }
+            $descriptors += $childdescriptors;
         }
 
         $competencies_gained = 0;
