@@ -6828,10 +6828,10 @@ class block_exacomp_external extends external_api {
 				];
 			}
         }
-        
+
         usort($examplesAndItems, function($a, $b)
         {
-            return strcmp($a->timemodified, $b->timemodified);
+            return strcmp($b->timemodified, $a->timemodified);
         });
 
         return $examplesAndItems;
@@ -10769,7 +10769,7 @@ class block_exacomp_external extends external_api {
                 $objDeeper->item = $item;
                 $objDeeper->timemodified = $item->timemodified;
             }else{
-                $objDeeper->timemodified = "9999999999"; // timemodified set to a very long time ago, for sorting
+                $objDeeper->timemodified = "0"; // timemodified set to a very long time ago, for sorting
             }
 
             // Fixing HTML-Tag error in return value for webservices
