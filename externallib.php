@@ -7527,8 +7527,8 @@ class block_exacomp_external extends external_api {
         */
 
 		$statistics_return = [
-			'items_or_examples_total' => count($own_items)+count($examples),
-			'items_or_examples_completed' => $completed_items,
+			'items_and_examples_total' => count($own_items)+count($examples),
+			'items_and_examples_completed' => $completed_items,
 			'competencies_total' => $descriptorcount,
 			'competencies_gained' => $competencies_gained,
 		];
@@ -7538,8 +7538,8 @@ class block_exacomp_external extends external_api {
 
 	public static function diggrplus_get_competence_profile_statistic_returns() {
 		return new external_single_structure (array(
-			'items_or_examples_total' => new external_value(PARAM_INT, 'number of free items + examples'),
-			'items_or_examples_completed' => new external_value(PARAM_INT, 'number of solved items, those items can be free or related to an example'),
+			'items_and_examples_total' => new external_value(PARAM_INT, 'number of free items + examples'),
+			'items_and_examples_completed' => new external_value(PARAM_INT, 'number of solved items, those items can be free or related to an example'),
 			'competencies_total' => new external_value(PARAM_INT, ''),
 			'competencies_gained' => new external_value(PARAM_INT, ''),
 		));
