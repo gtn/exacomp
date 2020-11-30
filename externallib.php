@@ -7438,7 +7438,6 @@ class block_exacomp_external extends external_api {
         $descriptorcount = count($descriptors);
         // -----
 
-
         //get the descriptors of the examples
         //if the item of the example is gained, the descriptors are also gained ==> increase count of competencies_gained
         $competencies_gained = 0;
@@ -7449,8 +7448,13 @@ class block_exacomp_external extends external_api {
                     $completed_items++;
                     $descriptor_gained = true;
                     //only if the item of an example is gained, then the descriptors that should be marked positive have to be found
-                    $descriptors = block_exacomp_get_descriptors_by_example($example->id);
-                    $competencies_gained += count($descriptors);
+                    $exampledescriptors = block_exacomp_get_descriptors_by_example($example->id);
+                    foreach($exampledescriptors as $exampledescriptor){
+                        if($descriptors[$exampledescriptor->id]){ //if it has not been counted yet: remove and count
+                            unset($descriptors[$exampledescriptor->id]);
+                            $competencies_gained++;
+                        }
+                    }
                 }
             }
         }
