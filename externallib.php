@@ -1230,7 +1230,7 @@ class block_exacomp_external extends external_api {
             'niveautitle' => new external_value (PARAM_TEXT, 'title of subject'),
         )));
     }
-    
+
 
 	/**
 	 * Returns description of method parameters
@@ -6777,7 +6777,6 @@ class block_exacomp_external extends external_api {
             },$items));
         }
 
-
         if ($type == "examples" || $type == "") {
             // Now examples. If the comptype is not an example itself
             if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
@@ -6787,6 +6786,9 @@ class block_exacomp_external extends external_api {
 				$examplesAndItems = array_merge($examplesAndItems, $examples);
             }
         }
+
+
+
 
         // TODO: we can actually forget about examplegradings, right?
         foreach($examplesAndItems as $exampleItem){
@@ -10610,9 +10612,10 @@ class block_exacomp_external extends external_api {
 //        $courses = block_exacomp_get_courses_of_student($userid);
 //    }
 
+
         // TODO: To avoid code duplication I used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
         $examples = array();
-        if($compid == -1 || $comptype == -1) {
+        if($compid == -1 || $comptype == -1) { // return ALL examples.. no niveauid filter possible
             // TODO: checks so a student cannot hack this and view another student's items
             $courses = enrol_get_users_courses($userid);
             foreach ($courses as $course) {
@@ -10746,12 +10749,13 @@ class block_exacomp_external extends external_api {
                 $example->subjectid = $information->subjectid;
                 $example->topictitle = $information->topictitle;
                 $example->topicid = $information->topicid;
+//                $example->niveauid = $information->niveauid;
+//                $example->niveautitle = $information->niveautitle;
             }
         }
 
-
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
-        $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB) {
+        $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB, $comptype) {
             $objDeeper = new stdClass();
             $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current();
             if($item){
@@ -10759,14 +10763,11 @@ class block_exacomp_external extends external_api {
                 $objDeeper->item = $item;
             }
 
-
-
             // Fixing HTML-Tag error in return value for webservices
             // In some very olf Epop competence grids, there is HTML in the description. If this is the case --> just delete it
             if(static::startsWith($example->description,"<!doctype html>")){
                 $example->description = "";
             }
-
 
             // Adding the evaluation information
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
@@ -10778,8 +10779,13 @@ class block_exacomp_external extends external_api {
             $objDeeper->subjectid = $example->subjectid;
             $objDeeper->topictitle = $example->topictitle;
             $objDeeper->topicid = $example->topicid;
-            $objDeeper->niveauid = $example->niveauid;
-            $objDeeper->niveautitle = $example->niveautitle;
+            if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
+                $objDeeper->niveauid = -1;
+                $objDeeper->niveautitle = "";
+            }else{
+                $objDeeper->niveauid = $example->niveauid;
+                $objDeeper->niveautitle = $example->niveautitle;
+            }
             return $objDeeper;
         },$examples);
 

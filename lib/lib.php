@@ -8703,7 +8703,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             JOIN {".BLOCK_EXACOMP_DB_SUBJECTS."} subj ON topic.subjid = subj.id
             
             JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON det.descrid=d.id
-            LEFT JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON n.id = d.niveauid
+            JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON n.id = d.niveauid
 
             WHERE ct.courseid = ?
             AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')";
