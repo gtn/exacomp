@@ -6515,7 +6515,7 @@ class block_exacomp_external extends external_api {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
             }
         } else {
-            $item_comp_mm->timemodified = time();
+            $item_comp_mm->datemodified = time();
 //            $item_comp_mm->studentvalue = $studentvalue; // TODO: -1 is not good, solve it differently
             $item_comp_mm->status = $submit;
             $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $item_comp_mm);
@@ -6773,6 +6773,7 @@ class block_exacomp_external extends external_api {
                 $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
                 $objDeeper->niveautitle = "";
                 $objDeeper->niveauid = 0;
+                $objDeeper->timemodified = $item->timemodified;
                 return $objDeeper;
             },$items));
         }
@@ -6827,11 +6828,14 @@ class block_exacomp_external extends external_api {
 				];
 			}
         }
+        
+        usort($examplesAndItems, function($a, $b)
+        {
+            return strcmp($a->timemodified, $b->timemodified);
+        });
 
         return $examplesAndItems;
     }
-
-
 
 
     /**
@@ -6850,6 +6854,8 @@ class block_exacomp_external extends external_api {
 
             'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
             'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+
+            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
 
             'example' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of example'),
@@ -10761,6 +10767,9 @@ class block_exacomp_external extends external_api {
             if($item){
                 $item = static::block_exacomp_get_item_details($item, $userid, $wstoken);
                 $objDeeper->item = $item;
+                $objDeeper->timemodified = $item->timemodified;
+            }else{
+                $objDeeper->timemodified = "9999999999"; // timemodified set to a very long time ago, for sorting
             }
 
             // Fixing HTML-Tag error in return value for webservices
