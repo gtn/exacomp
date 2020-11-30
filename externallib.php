@@ -7456,6 +7456,189 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function diggrplus_get_competence_profile_statistic_parameters() {
+	    return new external_function_parameters (array(
+	        'courseid' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
+	        'userid' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
+	    ));
+	}
+
+	/**
+	 * Get competence statistic for profile
+	 *
+	 * @ws-type-read
+	 */
+	public static function diggrplus_get_competence_profile_statistic($courseid=0, $userid=0) {
+	    global $USER;
+
+		static::validate_parameters(static::diggrplus_get_competence_profile_statistic_parameters(), array(
+			'courseid' => $courseid,
+			'userid' => $userid,
+		));
+
+		if ($userid == 0) {
+			$userid = $USER->id;
+		}
+
+		static::require_can_access_course_user($courseid, $userid);
+
+		$statistics_return = [
+			'items_total' => 48,
+			'items_solved' => 32,
+			'competencies_total' => 35,
+			'competencies_gained' => 18,
+		];
+
+		return $statistics_return;
+	}
+
+	public static function diggrplus_get_competence_profile_statistic_returns() {
+		return new external_single_structure (array(
+			'items_total' => new external_value(PARAM_INT, ''),
+			'items_solved' => new external_value(PARAM_INT, ''),
+			'competencies_total' => new external_value(PARAM_INT, ''),
+			'competencies_gained' => new external_value(PARAM_INT, ''),
+		));
+	}
+
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function diggrplus_get_descriptors_for_example_parameters() {
+		return new external_function_parameters (array(
+			'exampleid' => new external_value (PARAM_INT, 'id of example'),
+			'courseid' => new external_value (PARAM_INT, 'id of course'),
+			'userid' => new external_value (PARAM_INT, 'id of user'),
+			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+		));
+	}
+
+	/**
+	 * get descriptors where example is associated
+	 * Get descriptors for example
+	 *
+	 * @ws-type-read
+	 * @return list of descriptors
+	 */
+	public static function diggrplus_get_descriptors_for_example($exampleid, $courseid, $userid, $forall) {
+		global $DB, $USER;
+
+		static::validate_parameters(static::diggrplus_get_descriptors_for_example_parameters(), array(
+			'exampleid' => $exampleid,
+			'courseid' => $courseid,
+			'userid' => $userid,
+			'forall' => $forall,
+		));
+
+		if ($userid == 0 && !$forall) {
+			$userid = $USER->id;
+		}
+
+		static::require_can_access_course_user($courseid, $userid);
+
+		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+
+		if (!$forall) {
+			$non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		}
+
+		$descriptors = static::_get_descriptors_for_example($exampleid, $courseid, $userid);
+
+		$final_descriptors = array();
+		foreach ($descriptors as $descriptor) {
+            //to make sure everything has a value
+            $descriptor->reviewername = null;
+            $descriptor->reviewerid = null;
+			$descriptor->id = $descriptor->descriptorid;
+            $descriptor->evalniveauid = null;
+			$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id), '*', IGNORE_MULTIPLE); // get only one topic relation
+			$descriptor->topicid = $descriptor_topic_mm->topicid;
+
+			$topic = \block_exacomp\topic::get($descriptor->topicid);
+			if (block_exacomp_is_topic_visible($courseid, $topic, $userid)) {
+				$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+				$descriptor->child = (($parentid = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS, 'parentid', array('id' => $descriptor->id))) > 0) ? 1 : 0;
+				$descriptor->parentid = $parentid;
+                //new 16.05.2019 rw:
+                //$descriptor->teacherevaluation = $descriptor->evaluation; //redundant? getting block_exacomp_get_comp_eval anyway
+                $descriptor->teacherevaluation = -1; // never graded / SZ 07.04.2020
+                $descriptor->studentevaluation = -1;
+                $descriptor->timestampstudent = 0;
+                if (!$forall) {
+                    if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id )) {
+                        $descriptor->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
+                        $descriptor->timestampstudent = $grading->timestamp;
+                    }
+                }
+
+                if (!$forall) {
+                    if ($grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id )) {
+                        $descriptor->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
+                        $descriptor->additionalinfo = $grading->additionalinfo;
+                        $descriptor->evalniveauid = $grading->evalniveauid;
+                        $descriptor->timestampteacher = $grading->timestamp;
+                        $descriptor->reviewerid = $grading->reviewerid;
+
+                        //Reviewername finden
+                        $reviewerid = $grading->reviewerid;
+                        $reviewerTeacherFirstname=$DB->get_field('user','firstname',array('id' => $reviewerid));
+                        $reviewerTeacherLastname=$DB->get_field('user','lastname',array('id' => $reviewerid));
+                        $reviewerTeacherUsername=$DB->get_field('user','username',array('id' => $reviewerid));
+                        if($reviewerTeacherFirstname!=NULL && $reviewerTeacherLastname!=NULL){
+                            $reviewername=$reviewerTeacherFirstname.' '.$reviewerTeacherLastname;
+                        }else {
+                            $reviewername=$reviewerTeacherUsername;
+                        }
+                        $descriptor->reviewername = $reviewername;
+                    }
+                }
+
+                if(!$forall){
+                    $descriptor->gradingisold = block_exacomp_is_descriptor_grading_old($descriptor->id,$userid);
+                }else{
+                    $descriptor->gradingisold = false;
+                }
+
+				if (!in_array($descriptor->descriptorid, $non_visibilities) && ((!$forall && !in_array($descriptor->descriptorid, $non_visibilities_student)) || $forall)) {
+					$final_descriptors[] = $descriptor;
+				}
+			}
+		}
+
+		return $final_descriptors;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function diggrplus_get_descriptors_for_example_returns() {
+		return new external_multiple_structure (new external_single_structure (array(
+			'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+			'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
+			'teacherevaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
+            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
+            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+//            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+		    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
+			'topicid' => new external_value (PARAM_INT, 'id of topic'),
+			'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
+			'child' => new external_value (PARAM_BOOL, 'true: child, false: parent'),
+			'parentid' => new external_value (PARAM_INT, 'parentid if child, 0 otherwise'),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
+            'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
+		)));
+	}
 
 
 

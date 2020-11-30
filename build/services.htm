@@ -3085,6 +3085,84 @@ Params: <table>
 Returns:<pre>{
     "success": "bool null (true if grading was successful)"
 }</pre>
+<h2>diggrplus_get_competence_profile_statistic</h2>
+<div>Get competence statistic for profile</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "items_total": "int null ()",
+    "items_solved": "int null ()",
+    "competencies_total": "int null ()",
+    "competencies_gained": "int null ()"
+}</pre>
+<h2>diggrplus_get_descriptors_for_example</h2>
+<div>get descriptors where example is associated
+Get descriptors for example</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+</table>
+Returns:<pre>[
+    {
+        "descriptorid": "int null (id of descriptor)",
+        "title": "text null (title of descriptor)",
+        "teacherevaluation": "int null (evaluation of descriptor)",
+        "studentevaluation": "int null (student evaluation of descriptor)",
+        "evalniveauid": "int null (evaluation niveau id)",
+        "niveauid": "int null (id of niveau)",
+        "additionalinfo": "float null (additional grading for descriptor)",
+        "topicid": "int null (id of topic)",
+        "numbering": "text null (descriptor numbering)",
+        "child": "bool null (true: child, false: parent)",
+        "parentid": "int null (parentid if child, 0 otherwise)",
+        "gradingisold": "bool null (true when there are newer gradings in the childcompetences)",
+        "reviewerid": "int null (id of reviewer)",
+        "reviewername": "text null (name of reviewer)"
+    },
+    "..."
+]</pre>
 <h2>dakora_grade_example</h2>
 <div>grade example solution
 Add student submission to example.</div>
