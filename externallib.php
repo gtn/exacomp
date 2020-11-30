@@ -7373,7 +7373,7 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 */
 	public static function diggrplus_get_competence_profile_statistic($courseid=0, $userid=0) {
-	    global $USER;
+	    global $USER, $DB;
 
 		static::validate_parameters(static::diggrplus_get_competence_profile_statistic_parameters(), array(
 			'courseid' => $courseid,
@@ -7384,13 +7384,84 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 		}
 
-		static::require_can_access_course_user($courseid, $userid);
+        //get all items: for now all items of topics, since other free_items do not exist in diggrplus
+        $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue
+              FROM {block_exacomptopics} d
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+                JOIN {block_exaportitem} i ON ie.itemid = i.id
+              WHERE i.userid = ?
+                AND ie.competence_type = '. BLOCK_EXACOMP_TYPE_TOPIC;
+        $own_items = $DB->get_records_sql($sql, array($userid));
+
+        $completed_items = 0;
+
+        foreach($own_items as $item){
+            if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
+                $completed_items++;
+            }
+        }
+
+        //get all examples:
+        //first: get all courses, then for each course get example, then for each example, get item
+        $examples = [];
+        $courses = enrol_get_users_courses($userid);
+        foreach ($courses as $course) {
+            //		static::require_can_access_course_user($courseid, $userid);  test this for every course?
+            $courseExamples = block_exacomp_get_examples_by_course($course->id); // TODO: duplicates? e.g. same example in multiple courses, but item in course one and NOT in course two
+            foreach ($courseExamples as $example) {
+                static::block_excomp_get_example_details($example, $course->id);
+            }
+            $examples += $courseExamples;
+        }
+
+        foreach($examples as $example){
+            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+            if($item){
+                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
+                    $completed_items++;
+                }
+            }
+        }
+
+
+        // get all competencies
+        //get all subjects by courses, and then get all descriptors
+        $subjects = [];
+        foreach ($courses as $course) {
+            $subjects += block_exacomp_get_subjects_by_course($course->id);
+        }
+
+        $descriptors =[];
+        foreach($subjects as $subject){
+            $descriptors += block_exacomp_get_descriptors_by_subject($subject->id);
+        }
+
+        $competencies_gained = 0;
+        $descriptor_gained = false;
+        foreach($descriptors as $descriptor){ // this takes a LOT of time... but adding up the times of the dakora competencegrid webservices results in similar loading times, to maybe this is just how it is
+            $descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+            if($descriptor->examples){
+                foreach($descriptor->examples as $example){
+                    $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+                    if($item){
+                        if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
+                            $completed_items++;
+                            $descriptor_gained = true;
+                        }
+                    }
+                }
+            }
+            if($descriptor_gained){
+                $competencies_gained++;
+            }
+            $descriptor_gained = false;
+        }
 
 		$statistics_return = [
-			'items_total' => 48,
-			'items_solved' => 32,
-			'competencies_total' => 35,
-			'competencies_gained' => 18,
+			'items_or_examples_total' => count($own_items)+count($examples),
+			'items_completed' => $completed_items,
+			'competencies_total' => count($descriptors),
+			'competencies_gained' => $competencies_gained,
 		];
 
 		return $statistics_return;
@@ -7398,8 +7469,8 @@ class block_exacomp_external extends external_api {
 
 	public static function diggrplus_get_competence_profile_statistic_returns() {
 		return new external_single_structure (array(
-			'items_total' => new external_value(PARAM_INT, ''),
-			'items_solved' => new external_value(PARAM_INT, ''),
+			'items_or_examples_total' => new external_value(PARAM_INT, 'number of free items + examples'),
+			'items_completed' => new external_value(PARAM_INT, 'number of solved items, those items can be free or related to an example'),
 			'competencies_total' => new external_value(PARAM_INT, ''),
 			'competencies_gained' => new external_value(PARAM_INT, ''),
 		));
@@ -10765,7 +10836,7 @@ class block_exacomp_external extends external_api {
             $objDeeper = new stdClass();
             $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current();
             if($item){
-                $item = static::block_exacomp_get_item_details($item, $userid, $wstoken);
+                $item = static::block_exacomp_get_item_details($item, $userid, $wstoken); // TODO: is this needed? much information is already there
                 $objDeeper->item = $item;
                 $objDeeper->timemodified = $item->timemodified;
             }else{

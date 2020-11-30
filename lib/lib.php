@@ -8158,7 +8158,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
             break;
-        case BLOCK_EXACOMP_TYPE_SUBJECT: // TODO: Only of subject, or also of topics beneath?
+        case BLOCK_EXACOMP_TYPE_SUBJECT: // TODO: Only of subject, or also of topics beneath?  for now: also of topics beneath
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, d.title as subjecttitle, topic.id as topicid, d.id as subjectid
               FROM {block_exacompsubjects} d
                 JOIN {block_exacomptopics} topic ON topic.subjid = d.id 
