@@ -7414,6 +7414,56 @@ class block_exacomp_external extends external_api {
             }
             $examples += $courseExamples;
         }
+        // -----
+
+
+        //Get all descriptors, to have the count
+        // get all competencies
+        //get all subjects by courses, and then get all descriptors TODO: find a more performant solution
+        $descriptors =[];
+        foreach ($courses as $course) {
+            $subjects = block_exacomp_get_subjects_by_course($course->id);
+            foreach($subjects as $subject){
+                $parentdescriptors = block_exacomp_get_descriptors_by_subject($subject->id);
+                foreach($parentdescriptors as $parent){
+                    $parent->courseid = $course->id; // needed later
+                }
+                $descriptors += $parentdescriptors;
+            }
+        }
+        foreach($descriptors as $descriptor){
+            $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$descriptors->courseid); //TODO: if the same descriptor is in two courses, then what happens? Duplicates?
+            $descriptors += $childdescriptors;
+        }
+        $descriptorcount = count($descriptors);
+        // -----
+
+
+        //get the descriptors of the examples
+        //if the item of the example is gained, the descriptors are also gained ==> increase count of competencies_gained
+        $competencies_gained = 0;
+        foreach($examples as $example){
+            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+            if($item){
+                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
+                    $completed_items++;
+                    $descriptor_gained = true;
+                    //only if the item of an example is gained, then the descriptors that should be marked positive have to be found
+                    $descriptors = block_exacomp_get_descriptors_by_example($example->id);
+                    $competencies_gained += count($descriptors);
+                }
+            }
+        }
+
+
+
+
+
+
+        /* THIS DOES NOT WORK
+//        Because an example can be in descriptor1 AND in descriptor2 ==> it will be counted twice
+//         *
+//         *
 ////This is obsolete, since examples can only exist in descriptors, and descriptors are checked below
 //        foreach($examples as $example){
 //            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
@@ -7470,11 +7520,12 @@ class block_exacomp_external extends external_api {
             }
             $descriptor_gained = false;
         }
+        */
 
 		$statistics_return = [
 			'items_or_examples_total' => count($own_items)+count($examples),
 			'items_or_examples_completed' => $completed_items,
-			'competencies_total' => count($descriptors),
+			'competencies_total' => $descriptorcount,
 			'competencies_gained' => $competencies_gained,
 		];
 
