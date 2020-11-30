@@ -7472,7 +7472,7 @@ class block_exacomp_external extends external_api {
 
 		$statistics_return = [
 			'items_or_examples_total' => count($own_items)+count($examples),
-			'items_completed' => $completed_items,
+			'items_or_examples_completed' => $completed_items,
 			'competencies_total' => count($descriptors),
 			'competencies_gained' => $competencies_gained,
 		];
