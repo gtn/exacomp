@@ -367,7 +367,7 @@ td.contentcell {
 #block_exacomp h4 {
 	font-size: 16px
 }
-
+/*
 #block_exacomp .rotated-text {
 	font-weight: normal;
 	font-size: 1.1rem;
@@ -425,6 +425,39 @@ td.contentcell {
 	float: left;
 	margin-top: 100%;
 }
+*/
+/* NEU rotate text */
+
+#block_exacomp .competence_grid td.topic,
+#block_exacomp .competence_grid td.skill {
+    text-align:center;
+    white-space:nowrap;
+    g-origin:50% 50%;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    max-width: 60px;
+    overflow: visible;
+    background-color: transparent !important;
+}
+
+#block_exacomp .rotated-text {
+    margin:0 -100% ;
+    display:inline-block;
+}
+
+#block_exacomp .rotated-text:before{
+    content:'';
+    width:0;
+    padding-top:110%;/* takes width as reference, + 10% for faking some extra padding */
+    display:inline-block;
+    vertical-align:middle;
+}
+
+
+/* / NEU rotate text */
 
 #block_exacomp #linkback {
 	font-family: Arial, Verdana, Helvetica, sans-serif
