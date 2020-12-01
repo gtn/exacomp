@@ -119,6 +119,7 @@ if (!$isTeacher) {
 		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
 		echo $output->footer();
+		exit;
 
 	} else {
 		//check permission for viewing students profile
