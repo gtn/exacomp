@@ -103,20 +103,27 @@ if ($action == "import") {
     $relatedDescriptors = array();
     // at first - backup+restore activities:
     $backuprecords = $DB->get_records_sql('
+            SELECT DISTINCT m.id as activityid
+            FROM {course_modules} m 
+			WHERE m.course = '.intval($template).' AND m.deletioninprogress = 0
+    ');/*
+    $backuprecords = $DB->get_records_sql('
             SELECT DISTINCT e.activityid
             FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
                 JOIN {course_modules} m ON m.id = e.activityid
 			WHERE m.course = '.$template.' AND m.deletioninprogress = 0
-    ');
+    ');*/
     foreach ($backuprecords as $record){
         $backupid = moodle_backup($record->activityid, $USER->id);
         moodle_restore($backupid, $COURSE->id, $USER->id);
         $relatedExample = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $record->activityid, 'courseid' => $template), '*', IGNORE_MULTIPLE);
-        $descrs = block_exacomp_get_descriptors_by_example($relatedExample->id);
-        if ($descrs) {
-            $relatedDescriptors[$relatedExample->id] = array_map(function($d) {return $d->id;}, $descrs);
-        } else {
-            $relatedDescriptors[$relatedExample->id] = array(); // no sence for this case?
+        if ($relatedExample) {
+            $descrs = block_exacomp_get_descriptors_by_example($relatedExample->id);
+            if ($descrs) {
+                $relatedDescriptors[$relatedExample->id] = array_map(function ($d) {return $d->id;}, $descrs);
+            } else {
+                $relatedDescriptors[$relatedExample->id] = array(); // no sence for this case?
+            }
         }
 
     }
