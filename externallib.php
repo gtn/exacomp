@@ -5194,7 +5194,7 @@ class block_exacomp_external extends external_api {
 				'description' => new external_value (PARAM_TEXT, 'description of cross subject'),
 				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
 				'visible' => new external_value (PARAM_INT, 'visibility of crosssubject for selected student'),
-
+                'groupcategory' => new external_value (PARAM_TEXT, 'name of groupcategory'),
 		        'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if crosssubject has material'),
 		        'examples' => new external_multiple_structure (new external_single_structure (array(
     		        'exampleid' => new external_value (PARAM_INT, 'id of example'),
@@ -10262,6 +10262,7 @@ class block_exacomp_external extends external_api {
 			'description' => new external_value (PARAM_TEXT, 'description of crosssubject'),
 			'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to'),
 			'draftid' => new external_value (PARAM_INT, 'id of draft', VALUE_DEFAULT, 0),
+            'groupcategory' => new external_value (PARAM_TEXT, 'name of groupcategory', VALUE_DEFAULT, ""),
 		));
 	}
 
@@ -10275,7 +10276,7 @@ class block_exacomp_external extends external_api {
 	 * @param $draftid
 	 * @return array
 	 */
-	public static function dakora_create_cross_subject($courseid, $title, $description, $subjectid, $draftid) {
+	public static function dakora_create_cross_subject($courseid, $title, $description, $subjectid, $draftid, $groupcategory) {
 		global $USER;
 		static::validate_parameters(static::dakora_create_cross_subject_parameters(), array(
 			'courseid' => $courseid,
@@ -10283,6 +10284,7 @@ class block_exacomp_external extends external_api {
 			'description' => $description,
 			'subjectid' => $subjectid,
 			'draftid' => $draftid,
+            'groupcategory' => $groupcategory,
 		));
 
 		$userid = $USER->id;
@@ -10293,9 +10295,9 @@ class block_exacomp_external extends external_api {
 
 		if ($draftid > 0) {
 			$crosssubjid = block_exacomp_save_drafts_to_course(array($draftid), $courseid);
-			block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid);
+			block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid, $groupcategory);
 		} else {
-			block_exacomp_create_crosssub($courseid, $title, $description, $userid, $subjectid);
+			block_exacomp_create_crosssub($courseid, $title, $description, $userid, $subjectid, $groupcategory);
 		}
 
 		return array('success' => true);
@@ -10352,6 +10354,7 @@ class block_exacomp_external extends external_api {
 			'title' => new external_value (PARAM_TEXT, 'title of crosssubject'),
 			'description' => new external_value (PARAM_TEXT, 'description of crosssubject'),
 			'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to'),
+            'groupcategory' => new external_value (PARAM_TEXT, 'name of groupcategory', VALUE_DEFAULT, ""),
 		));
 	}
 
@@ -10365,7 +10368,7 @@ class block_exacomp_external extends external_api {
 	 * @param $subjectid
 	 * @return array
 	 */
-	public static function dakora_edit_cross_subject($courseid, $crosssubjid, $title, $description, $subjectid) {
+	public static function dakora_edit_cross_subject($courseid, $crosssubjid, $title, $description, $subjectid, $groupcategory="") {
 		global $USER;
 		static::validate_parameters(static::dakora_edit_cross_subject_parameters(), array(
 			'courseid' => $courseid,
@@ -10373,6 +10376,7 @@ class block_exacomp_external extends external_api {
 			'title' => $title,
 			'description' => $description,
 			'subjectid' => $subjectid,
+            'groupcategory' => $groupcategory,
 		));
 
 		$userid = $USER->id;
@@ -10380,7 +10384,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course($courseid);
 		block_exacomp_require_teacher($courseid);
 
-		block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid);
+		block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid, $groupcategory);
 
 		return array('success' => true);
 	}

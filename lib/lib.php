@@ -5457,7 +5457,7 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid) {
  * @param unknown $creatorid
  * @param number $subjectid
  */
-function block_exacomp_create_crosssub($courseid, $title, $description, $creatorid, $subjectid = 0) {
+function block_exacomp_create_crosssub($courseid, $title, $description, $creatorid, $subjectid = 0, $groupcategory = "") {
 	global $DB;
 
 	$insert = new stdClass();
@@ -5468,6 +5468,7 @@ function block_exacomp_create_crosssub($courseid, $title, $description, $creator
 	$insert->subjectid = $subjectid;
 	$insert->sourceid = 0;
 	$insert->source = BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC;
+	$insert->groupcategory = $groupcategory;
 
 	return $DB->insert_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, $insert);
 }
@@ -5479,13 +5480,14 @@ function block_exacomp_create_crosssub($courseid, $title, $description, $creator
  * @param unknown $description
  * @param unknown $subjectid
  */
-function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid) {
+function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid, $groupcategory = "") {
 	global $DB;
 
 	$crosssubj = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
 	$crosssubj->title = $title;
 	$crosssubj->description = $description;
 	$crosssubj->subjectid = $subjectid;
+    $crosssubj->groupcategory = $groupcategory;
 
 	return $DB->update_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, $crosssubj);
 }
