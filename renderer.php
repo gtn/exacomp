@@ -7242,7 +7242,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $groupcategories = block_exacomp_get_crosssubject_groupcategories();
             $datalist  = html_writer::start_tag('datalist', array('id' => 'dlist', 'display' => 'none'));
             foreach($groupcategories as $groupcategory){
-                $datalist .= html_writer::empty_tag('option',  array('value'=>$groupcategory->groupcategory));
+                $datalist .= html_writer::empty_tag('option',  array('value'=>$groupcategory));
             }
             $datalist .= html_writer::end_tag('datalist');
             $cellText .= $datalist;
@@ -7951,7 +7951,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $crosssubj = null;
             foreach($groupcategories as $groupcategory){
                 $title = new html_table_cell;
-                $title->text = '<div>'.$groupcategory->groupcategory.'</div>';
+                $title->text = '<div>'.$groupcategory.'</div>';
                 $title->attributes['class'] = 'rg2-indent rg2-arrow';
                 $title->colspan = 2;
 
@@ -7963,7 +7963,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($crosssubj == null){
                     $crosssubj = array_shift($subject->cross_subject_drafts);
                 }
-                while($groupcategory->groupcategory == $crosssubj->groupcategory && $crosssubj->id != null){
+
+
+
+                while($crosssubj && $groupcategory == $crosssubj->groupcategory && $crosssubj->id != null){
+
 //                    $crosssubj->creatorid = 3;
                     $title = clone $item_title_cell;
                     $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id)), $crosssubj->title);
@@ -7981,7 +7985,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 //                $printeddraftscount = 0;
 //                foreach ($subject->cross_subject_drafts as $crosssub) {
-//                    if($groupcategory->groupcategory == $crosssub->groupcategory){
+//                    if($groupcategory == $crosssub->groupcategory){
 //                        echo "einmalRein  ";
 //                        $title = clone $item_title_cell;
 //                        $title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id)), $crosssub->title);
