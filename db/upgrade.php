@@ -3656,8 +3656,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020061200, 'exacomp');
     }
+     if ($oldversion < 2020110200) {
+        $DB->execute(' UPDATE {block_exacompedulevels} SET title = "ohne feste Zuordnung" 
+                                                    WHERE title like "Mein Edulevel" AND sourceid=0 AND source = 3');
+        $DB->execute(' UPDATE {block_exacompschooltypes} SET title = "ohne feste Zuordnung" 
+                                                    WHERE title like "Mein Schultyp" AND sourceid=0 AND source = 3');
+        
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2020110200, 'exacomp');
+    }
+/*  new related to version 4.6.4 02.12.2020*/
 
-    if ($oldversion < 2020092400) {
+    if ($oldversion < 2020120300) {
         $table = new xmldb_table('block_exacompitemexample');
         if ($dbman->table_exists($table)) { // if it has already been renamed, then this should not be executed, otherwise there are errors
             $exampleid_field = new xmldb_field('exampleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
@@ -3668,71 +3678,44 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
             $dbman->rename_table($table,'block_exacompitem_mm');
         }
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2020092400, 'exacomp');
-    }
-
-    if ($oldversion < 2020092901) {
+        
         block_exacomp_disable_core_competency();
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2020092901, 'exacomp');
-    }
-
-    if ($oldversion < 2020100300) {
-
-        // Define table block_exacompapplogin to be created.
+        
         $table = new xmldb_table('block_exacompapplogin');
-
-        // Adding fields to table block_exacompapplogin.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('app_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('moodle_redirect_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('moodle_data_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('created_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('request_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-        $table->add_field('result_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-
-        // Adding keys to table block_exacompapplogin.
-        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
-
-        // Conditionally launch create table for block_exacompapplogin.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
+				if (!$dbman->table_exists($table)) {
+	        // Adding fields to table block_exacompapplogin.
+	        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+	        $table->add_field('app_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
+	        $table->add_field('moodle_redirect_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
+	        $table->add_field('moodle_data_token', XMLDB_TYPE_CHAR, '120', null, XMLDB_NOTNULL, null, null);
+	        $table->add_field('created_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+	        $table->add_field('request_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+	        $table->add_field('result_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+	
+	        // Adding keys to table block_exacompapplogin.
+	        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+	
+	        // Conditionally launch create table for block_exacompapplogin.
+	        
+	        $dbman->create_table($table);
         }
-
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2020100300, 'exacomp');
-    }
-
-    if ($oldversion < 2020101301) {
-
         // Define table block_exacompitemcollab_mm to be created.
         $table = new xmldb_table('block_exacompitemcollab_mm');
-
-        // Adding fields to table block_exacompitemcollab_mm.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-
-        // Adding keys to table block_exacompitemcollab_mm.
-        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
-
-        // Conditionally launch create table for block_exacompitemcollab_mm.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
+				if (!$dbman->table_exists($table)) {
+	        // Adding fields to table block_exacompitemcollab_mm.
+	        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+	        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+	        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+	
+	        // Adding keys to table block_exacompitemcollab_mm.
+	        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+	
+	        // Conditionally launch create table for block_exacompitemcollab_mm.
+        
+          $dbman->create_table($table);
         }
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2020101301, 'exacomp');
-    }
-    
-    if ($oldversion < 2020110200) {
-        $DB->execute(' UPDATE {block_exacompedulevels} SET title = "ohne feste Zuordnung" 
-                                                    WHERE title like "Mein Edulevel" AND sourceid=0 AND source = 3');
-        $DB->execute(' UPDATE {block_exacompschooltypes} SET title = "ohne feste Zuordnung" 
-                                                    WHERE title like "Mein Schultyp" AND sourceid=0 AND source = 3');
-        
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2020110200, 'exacomp');
+        upgrade_block_savepoint(true, 2020120300, 'exacomp');
     }
 
     /*
