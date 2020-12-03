@@ -5500,7 +5500,7 @@ function block_exacomp_delete_crosssub($crosssubjid) {
 	global $DB;
 	//delete student association if crosssubject is deleted
 	$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid' => $crosssubjid));
-
+  $DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid));
 	return $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
 }
 
@@ -5511,6 +5511,7 @@ function block_exacomp_delete_crosssub($crosssubjid) {
 function block_exacomp_delete_crosssubject_drafts($drafts_to_delete) {
 	global $DB;
 	foreach ($drafts_to_delete as $draftid) {
+		$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $draftid));
 		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $draftid));
 	}
 }
