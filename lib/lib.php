@@ -8171,11 +8171,16 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
                 JOIN {block_exacompsubjects} subj ON d.subjid = subj.id 
+                
               WHERE i.userid = ?
                 '.$compidCondition.'
                 AND ie.competence_type = ?
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
+            //, comm.entry as studentcomment
+            //JOIN {block_exaportitemcomm} comm ON i.id = comm.itemid
+            // OR comm.entry LIKE "%'.$search.'%
+            // it will always take the newest comment, as intended. But the search condition checks the older comments as well --> problem --> check again afterwards, if the newest comment fulfills the search condition
             break;
         case BLOCK_EXACOMP_TYPE_SUBJECT: // TODO: Only of subject, or also of topics beneath?  for now: also of topics beneath
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, d.title as subjecttitle, topic.id as topicid, d.id as subjectid

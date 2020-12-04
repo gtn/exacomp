@@ -6350,6 +6350,7 @@ class block_exacomp_external extends external_api {
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
+            'intro' => new external_value (PARAM_TEXT, 'description of what the student has done'),
 //            'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
         ));
     }
@@ -6360,11 +6361,12 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0, $removefiles='') {
+    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0, $removefiles='', $intro='') {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
-                'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles));
+                'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles,
+                'intro' => $intro));
 
         // TODO: is URL type needed in diggrplus? what exactly does it do?  For now: always set to "file"
 //        if (!isset($type)) {
@@ -6443,7 +6445,7 @@ class block_exacomp_external extends external_api {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
-			$itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
+			$itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid, 'intro' => $intro));
 			//autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -6471,6 +6473,7 @@ class block_exacomp_external extends external_api {
             $item->url = $url;
             $item->timemodified = time();
             $item->type = $type;
+            $item->intro = $intro;
 
             // This would overwrite, which we do not want in diggrplus
 //            if ($type == 'file') {
@@ -6760,7 +6763,7 @@ class block_exacomp_external extends external_api {
                 static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
                 //TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
                 // ==> Then the access can be checked RW
-                static::block_exacomp_get_item_details($item, $userid, static::wstoken());
+                static::block_exacomp_get_item_details($item, $userid, static::wstoken()); //this adds file and commentinformation
             }
 
             $examplesAndItems = array_merge($examplesAndItems, array_map(function ($item){
