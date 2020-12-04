@@ -4136,15 +4136,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
             }
         }else{ //if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR || $comptype == BLOCK_EXACOMP_TYPE_TOPIC){
-            if (!$isTeacher){
-//                $itemExists = block_exacomp_get_current_item_for_competence($studentid, $compid);
-                $result = html_writer::link(
-                    new moodle_url('/blocks/exacomp/competence_submission.php', array("courseid" => $courseid, "compid" => $compid, "comptype" => $comptype)),
-                    $this->pix_icon("i/manual_item", block_exacomp_get_string('submission')),
-                    array('exa-type' => 'iframe-popup'));
-            }else{
-                $result = ''; //empty!
-            }
+		    //TODO: Removed for now, because this functionality is not needed. Student could uplaod items to descriptors or topics. This is only done viea webservices in diggrplus right now RW
+//            if (!$isTeacher){
+////                $itemExists = block_exacomp_get_current_item_for_competence($studentid, $compid);
+//                $result = html_writer::link(
+//                    new moodle_url('/blocks/exacomp/competence_submission.php', array("courseid" => $courseid, "compid" => $compid, "comptype" => $comptype)),
+//                    $this->pix_icon("i/manual_item", block_exacomp_get_string('submission')),
+//                    array('exa-type' => 'iframe-popup'));
+//            }else{
+//                $result = ''; //empty!
+//            }
         }
         return $result;
 	}
