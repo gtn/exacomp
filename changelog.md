@@ -1,6 +1,7 @@
 v4.6.4 (2020120300)
-- Neues Feld Lehrermaterial. Anzeige dieser Materialien nur für Lehrer
-- Neuer Tab Kompetenzrasterübersicht, gesamter Raster in Tabellendarstellung mit Bewertungsmöglichkeit (Schüler: Smilie, Lehrer: Ja/Nein)
+- New field teachermaterial. These materials are only shown for the teacher.
+- New tab "Overview". The complete grid/subject is displayed as a grid. teachergradings and studentgradings are displayed.
+
 v4.6.4 (2020091000)
 - crosssubject total grading added to competence profile
 - ICS-Files and links now can be used to import calendars into the exacomp weekly-schedule. The importet appointments act as a special kind of blocking-events and can be shown/hidden by a checkbox.
