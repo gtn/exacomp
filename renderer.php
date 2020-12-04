@@ -4102,8 +4102,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $isTeacher = block_exacomp_is_teacher($context);
         }
 
-
-
+        $result = '';
 
 		if($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE){
             if (!$isTeacher) {
@@ -5818,7 +5817,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	    global $CFG;
         static $allStats = null;
         $content = '';
-        if ($allStats === null || !array_key_exists($course->id, $allStats)) {
+
+        if ($allStats === null || ($course instanceof stdClass) && !array_key_exists($course->id, $allStats)) {
             // keys: course->id | subject->id ==> niveau->id (assessment_diffLevel_options)  | grade options
             $allStats[$course->id] = [];
         }
