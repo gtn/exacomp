@@ -955,7 +955,7 @@ function block_exacomp_get_translatable_parameter($parameter = '', $getforlangua
     } else {
         $language = current_language();
     }
-    if (isset($configdata[$language]) && $configdata[$language] != '') {
+    if ($language && array_key_exists($language, $configdata) && $configdata[$language] != '') {
         return $configdata[$language];
     } else {
         return $configdata['de'];
