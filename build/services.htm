@@ -2719,7 +2719,7 @@ Params: <table>
 <td></td>
 <td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
 <tr>
-<td>intro</td>
+<td>solutiondescription</td>
 <td>text</td>
 <td>null</td>
 <td>required</td>
@@ -2831,6 +2831,14 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>niveauid normally stands for "LFS1, LFS2 ect</td>
+<tr>
+<td>status</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new, inprogress, submitted, completed.  acts as a filter</td>
 </table>
 Returns:<pre>[
     {

@@ -6512,6 +6512,10 @@ class block_exacomp_external extends external_api {
         }
 
 
+
+        //calculate status of item: 0 means no submit, 1 means student has submitted, 2 means there exists a teachervalue and the item is completed
+        // status=submit since the teacher cannot have graded an item, that has not been submitted by a student before.
+        // after a teacher has graded an item, the item cannot be submitted by the student anymore
         if ($insert) {
             $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => $submit, 'competence_type' => $comptype));
             if ($studentcomment != '') {
@@ -6715,7 +6719,8 @@ class block_exacomp_external extends external_api {
             'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value( PARAM_TEXT, 'search string', VALUE_DEFAULT, ""),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL)
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL),
+            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
 
@@ -6726,7 +6731,7 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of items
      */
-    public static function diggrplus_get_examples_and_items($userid, $compid, $comptype, $type="", $search="", $niveauid = -1) {
+    public static function diggrplus_get_examples_and_items($userid, $compid, $comptype, $type="", $search="", $niveauid = -1, $status = "") {
         global $USER;
 
         if ($userid == 0) {
@@ -6740,6 +6745,7 @@ class block_exacomp_external extends external_api {
             'type' => $type,
             'search' => $search,
             'niveauid' => $niveauid,
+            'status' => $status
         ));
 
         static::require_can_access_user($userid);
@@ -6802,14 +6808,10 @@ class block_exacomp_external extends external_api {
                         $exampleItem->status = "inprogress";
                         break;
                     case 1: //submitted
-                        if($exampleItem->example && $exampleItem->example->teacher_evaluation || ($exampleItem->item->teachervalue && $exampleItem->item->teachervalue > 0)){ //either example that has grade, or free item that has grade
-                            $exampleItem->status = "completed";
-                        }else{
-                            $exampleItem->status = "submitted";
-                        }
+                        $exampleItem->status = "submitted";
                         break;
-//                    case 2: //completed
-//                        $exampleItem->status = "completed";
+                    case 2: //completed
+                        $exampleItem->status = "completed";
                     default:
                         $exampleItem->status = "errornostate";
                 }
@@ -7245,6 +7247,10 @@ class block_exacomp_external extends external_api {
 
 		$update->datemodified = time();
 		$update->teachervalue = $completed;
+
+		if($completed){
+		    $update->status = 2; //student has submitted, teacher has graded ==> the item is completed
+        }
 
 
 		$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $update);
