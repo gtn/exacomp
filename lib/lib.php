@@ -8124,13 +8124,29 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  * @param unknown $compid
  * @param unknown $comptype
  */
-function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1, $search="", $niveauid=-1) {
+function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1, $search="", $niveauid=-1, $status="") {
     global $DB;
 
 
     $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
 //    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = ?";
 //    $niveauConditionD = $niveauid==-1 ? "" : "AND d.niveauid = ?";
+
+
+    switch($status){
+        case "inprogress":
+            $statusCondition = "AND ie.status = 0";
+            break;
+        case "submitted":
+            $statusCondition = "AND ie.status = 1";
+            break;
+        case "completed":
+            $statusCondition = "AND ie.status = 2";
+            break;
+        default:
+            $statusCondition = "";
+            break;
+    }
 
     // TODO: use niveaucondition.   For now it is irrelevant, because own_items will only be submitted to topics, which do not have niveauinformation (only descriptors have)
     switch($comptype){
@@ -8145,6 +8161,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id 
               WHERE i.userid = ?
                 '.$compidCondition.'
+                '.$statusCondition.'
                 AND ie.competence_type = ?
                 AND (d.title LIKE "%'.$search.'%" OR d.description LIKE "%'.$search.'%" OR i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
@@ -8159,6 +8176,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id 
               WHERE i.userid = ?
                 '.$compidCondition.'
+                '.$statusCondition.'
                 AND ie.competence_type = ?
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
@@ -8173,6 +8191,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {block_exacompsubjects} subj ON d.subjid = subj.id 
               WHERE i.userid = ?
                 '.$compidCondition.'
+                '.$statusCondition.'
                 AND ie.competence_type = ?
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
@@ -8184,7 +8203,8 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON (ie.exacomp_record_id = d.id OR ie.exacomp_record_id = topic.id)
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = ?
-                '.$compidCondition.'                
+                '.$compidCondition.'    
+                '.$statusCondition.'            
                 AND (ie.competence_type = ? OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.')
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';

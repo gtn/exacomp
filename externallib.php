@@ -6762,8 +6762,8 @@ class block_exacomp_external extends external_api {
 
         $examplesAndItems = array();
 
-        if ($type == "own_items" || $type == "") {
-            $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid);
+        if (($type == "own_items" || $type == "") && $status != "new") { // own items can never be "new" since new means there is an example without an item
+            $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status);
 
             foreach($items as $item){
                 static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
@@ -6792,27 +6792,31 @@ class block_exacomp_external extends external_api {
             if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
                 // TODO: how do we check if the user is a teacher? It is not oriented on courses
 //            $isTeacher = false;
-                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid);
+                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status);
 				$examplesAndItems = array_merge($examplesAndItems, $examples);
             }
         }
 
-        
+
         // TODO: we can actually forget about examplegradings, right?
-        foreach($examplesAndItems as $exampleItem){
+        foreach($examplesAndItems as $key => $exampleItem){
             if($exampleItem->item){
-                switch($exampleItem->item->status){
-                    case 0: //inprogress
-                        $exampleItem->status = "inprogress";
-                        break;
-                    case 1: //submitted
-                        $exampleItem->status = "submitted";
-                        break;
-                    case 2: //completed
-                        $exampleItem->status = "completed";
-                        break;
-                    default:
-                        $exampleItem->status = "errornostate";
+                if($status == "new"){ // if filtered by "new" then only examples without items should be shown
+                    unset($examplesAndItems[$key]);
+                }else{
+                    switch($exampleItem->item->status){
+                        case 0: //inprogress
+                            $exampleItem->status = "inprogress";
+                            break;
+                        case 1: //submitted
+                            $exampleItem->status = "submitted";
+                            break;
+                        case 2: //completed
+                            $exampleItem->status = "completed";
+                            break;
+                        default:
+                            $exampleItem->status = "errornostate";
+                    }
                 }
             }else{ //no item but the object exists ==> there must be an example, no condition needed
                 $exampleItem->status = "new";
@@ -6834,11 +6838,22 @@ class block_exacomp_external extends external_api {
 				$exampleItem->item->solutiondescription = $exampleItem->item->intro;
 			}
         }
+        
 
-//        usort($examplesAndItems, function($a, $b)
-//        {
-//            return strcmp($b->timemodified, $a->timemodified);
-//        });
+
+        //Filter by status and use different sortings depending on status
+        if($status == "inprogress" || $status == "submitted" || $status == "completed"){
+            foreach($examplesAndItems as $key => $exampleItem){
+                if($exampleItem->status != $status){
+                    unset($examplesAndItems[$key]);
+                }
+            }
+            usort($examplesAndItems, function($a, $b) {
+                return strcmp($b->timemodified, $a->timemodified);
+            });
+        }
+        //if status is "new" it is already sorted correctly and has been filtered before
+        //if stauts is "" then it is already sorted correctly and no filters are applied
 
         return $examplesAndItems;
     }
@@ -10762,7 +10777,7 @@ class block_exacomp_external extends external_api {
      * @param bool $compid
      * @param bool $comptype
      */
-    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1){
+    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1, $status=""){
         global $DB;
         // Maybe better performance with join on user_enrolments table?
 //    if ($isTeacher) {
