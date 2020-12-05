@@ -6351,7 +6351,14 @@ class block_exacomp_external extends external_api {
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
             'solutiondescription' => new external_value (PARAM_TEXT, 'description of what the student has done'),
-//            'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
+            'descriptorgradings' => new external_multiple_structure(
+                new external_single_structure(
+                    array(
+                        'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+                        'studentvalue' => new external_value(PARAM_INT, 'studentvalue of descriptorgrading'),
+                    )
+                ), 'descriptors and gradingds', VALUE_OPTIONAL
+            )
         ));
     }
 
@@ -6361,12 +6368,12 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0, $removefiles='', $solutiondescription='') {
+    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0, $removefiles='', $solutiondescription='', $descriptorgradings=[]) {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
                 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles,
-                'solutiondescription' => $solutiondescription));
+                'solutiondescription' => $solutiondescription, 'descriptorgradings' => $descriptorgradings));
 
         // TODO: is URL type needed in diggrplus? what exactly does it do?  For now: always set to "file"
 //        if (!isset($type)) {
@@ -6386,7 +6393,9 @@ class block_exacomp_external extends external_api {
         }
         require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
-
+        foreach ($descriptorgradings as $descriptorgrading) {
+            block_exacomp_set_user_competence($USER->id, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $descriptorgrading["studentvalue"]);
+        }
 
         // remove files specifically marked for deletion by user:
         // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
@@ -6445,7 +6454,7 @@ class block_exacomp_external extends external_api {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
-			$itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
+			$itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'courseid' => $courseid));
 			//autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -6517,13 +6526,13 @@ class block_exacomp_external extends external_api {
         // status=submit since the teacher cannot have graded an item, that has not been submitted by a student before.
         // after a teacher has graded an item, the item cannot be submitted by the student anymore
         if ($insert) {
-            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => $submit, 'competence_type' => $comptype));
+            $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => $submit, 'competence_type' => $comptype, 'studentvalue' => $studentvalue));
             if ($studentcomment != '') {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
             }
         } else {
             $item_comp_mm->datemodified = time();
-//            $item_comp_mm->studentvalue = $studentvalue; // TODO: -1 is not good, solve it differently
+            $item_comp_mm->studentvalue = $studentvalue; // TODO: -1 is not good, solve it differently
             $item_comp_mm->status = $submit;
             $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $item_comp_mm);
             //$DB->delete_records('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id));   //DO NOT DELETE OLD COMMENTS, instead, only show newest
