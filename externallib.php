@@ -7101,13 +7101,20 @@ class block_exacomp_external extends external_api {
 	public static function diggrplus_grade_item_parameters() {
 		return new external_function_parameters (array(
 			'itemid' => new external_value (PARAM_INT, ''),
-			'completed' => new external_value (PARAM_INT, 'checkbox if this item is completed, or not'),
+			'teachervalue' => new external_value (PARAM_INT, 'teacher grading of the item'),
             // 'userid' => new external_value (PARAM_INT, 'id of student that should be graded'),
 			// 'value' => new external_value (PARAM_INT, 'value for grading'),
 			// 'status' => new external_value (PARAM_INT, 'status'),
 			// 'comment' => new external_value (PARAM_TEXT, 'comment of grading', VALUE_OPTIONAL),
 			// 'comps' => new external_value (PARAM_TEXT, 'comps for example - positive grading'),
-			// 'courseid' => new external_value (PARAM_INT, 'if of course'),
+            'descriptorgradings' => new external_multiple_structure(
+                new external_single_structure(
+                    array(
+                        'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+                        'teachervalue' => new external_value(PARAM_INT, 'teachervalue of descriptorgrading'),
+                    )
+                ), 'descriptors and gradingds', VALUE_OPTIONAL
+            )
 		));
 	}
 
@@ -7115,7 +7122,7 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-write
 	 */
-	public static function diggrplus_grade_item($itemid, $completed) {
+	public static function diggrplus_grade_item($itemid, $teachervalue, $descriptorgradings = []) {
 		global $DB, $USER;
 
 		// if (empty ($userid) || empty ($value) || empty ($comment) || empty ($itemid) || empty ($courseid)) {
@@ -7124,18 +7131,17 @@ class block_exacomp_external extends external_api {
 
 		static::validate_parameters(static::diggrplus_grade_item_parameters(), array(
 			'itemid' => $itemid,
-			'completed' => $completed,
+			'teachervalue' => $teachervalue,
             // 'userid' => $userid,
 			// 'value' => $value,
 			// 'status' => $status,
 			// 'comment' => $comment,
 			// 'comps' => $comps,
 			// 'courseid' => $courseid,
+            'descriptorgradings' => $descriptorgradings,
 		));
 
-//		if (!$userid) { would be useful, if a student could grade themselves, but for now it is only for teachers
-//			$userid = $USER->id;
-//		}
+
 
 		$item = $DB->get_record('block_exaportitem', ['id' => $itemid], '*', MUST_EXIST);
 		static::require_can_access_user($item->userid);
@@ -7148,14 +7154,20 @@ class block_exacomp_external extends external_api {
 //		$exampleid = $update->exacomp_record_id;
 
 		$update->datemodified = time();
-		$update->teachervalue = $completed;
+		$update->teachervalue = $teachervalue;
 
-		if($completed){
+		if($teachervalue){
 		    $update->status = 2; //student has submitted, teacher has graded ==> the item is completed
         }
 
 
 		$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $update);
+
+
+		// Descriptorgradings
+        foreach ($descriptorgradings as $descriptorgrading) {
+            block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"]);
+        }
 
 
 		// if the grading is good, tick the example in exacomp TODO: NOT FOR DIGGRPLUS, hopefully never.

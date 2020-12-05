@@ -2737,57 +2737,6 @@ Returns:<pre>{
     "success": "bool null (status)",
     "itemid": "int null (itemid)"
 }</pre>
-<h2>diggrplus_get_items</h2>
-<div>Get Items
-get all items for a competence</div>
-<div>type: read</div>
-Params: <table>
-<tr>
-<td>userid</td>
-<td>int</td>
-<td>null</td>
-<td>required</td>
-<td></td>
-<td>id of user</td>
-<tr>
-<td>compid</td>
-<td>int</td>
-<td>null</td>
-<td>required</td>
-<td></td>
-<td>id of topic/descriptor/example   if <= 0 then show all items for user</td>
-<tr>
-<td>comptype</td>
-<td>int</td>
-<td>null</td>
-<td>required</td>
-<td></td>
-<td>Type of competence: topic/descriptor/example      if <= 0 then show all items for user</td>
-</table>
-Returns:<pre>[
-    {
-        "id": "int null (id of item)",
-        "name": "text null (title of item)",
-        "type": "text null (type of item (note,file,link))",
-        "url": "text null (url)",
-        "effort": "raw null (description of the effort)",
-        "filename": "text null (title of item)",
-        "file": "url null (file url of the studentfile)",
-        "isimage": "bool null (true if file is image)",
-        "status": "int null (status of the submission)",
-        "teachervalue": "int null (teacher grading)",
-        "studentvalue": "int null (student grading)",
-        "teachercomment": "text null (teacher comment)",
-        "studentcomment": "text null (student comment)",
-        "collaborators": [
-            {
-                "userid": "text null (userid of collaborator)"
-            },
-            "..."
-        ]
-    },
-    "..."
-]</pre>
 <h2>diggrplus_get_examples_and_items</h2>
 <div>Get Items
 get all items AND examples for a competence
@@ -3069,12 +3018,19 @@ Params: <table>
 <td></td>
 <td></td>
 <tr>
-<td>completed</td>
+<td>teachervalue</td>
 <td>int</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>checkbox if this item is completed, or not</td>
+<td>teacher grading of the item</td>
+<tr>
+<td>descriptorgradings</td>
+<td></td>
+<td>not null</td>
+<td>required</td>
+<td></td>
+<td>descriptors and gradingds</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if grading was successful)"
