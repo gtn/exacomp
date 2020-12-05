@@ -6350,7 +6350,7 @@ class block_exacomp_external extends external_api {
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
-            'intro' => new external_value (PARAM_TEXT, 'description of what the student has done'),
+            'solutiondescription' => new external_value (PARAM_TEXT, 'description of what the student has done'),
 //            'studentvalue' => new external_value (PARAM_INT, 'grading for example or item, depending on if it is a free item or one associated with an example', VALUE_OPTIONAL)
         ));
     }
@@ -6361,12 +6361,12 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0, $removefiles='', $intro='') {
+    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle='', $collabuserids='', $submit=0, $removefiles='', $solutiondescription='') {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
                 'itemid' => $itemid, 'courseid' => $courseid, 'comptype' => $comptype, 'itemtitle' => $itemtitle, 'collabuserids' => $collabuserids, 'submit' => $submit, 'removefiles' => $removefiles,
-                'intro' => $intro));
+                'solutiondescription' => $solutiondescription));
 
         // TODO: is URL type needed in diggrplus? what exactly does it do?  For now: always set to "file"
 //        if (!isset($type)) {
@@ -6445,7 +6445,7 @@ class block_exacomp_external extends external_api {
                 $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
             }
 
-			$itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => '', 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid, 'intro' => $intro));
+			$itemid = $DB->insert_record("block_exaportitem", array('userid' => $USER->id, 'name' => $comptitle, 'intro' => $solutiondescription, 'url' => $url, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
 			//autogenerate a published view for the new item
             $dbView = new stdClass();
             $dbView->userid = $USER->id;
@@ -6473,7 +6473,7 @@ class block_exacomp_external extends external_api {
             $item->url = $url;
             $item->timemodified = time();
             $item->type = $type;
-            $item->intro = $intro;
+            $item->intro = $solutiondescription;
 
             // This would overwrite, which we do not want in diggrplus
 //            if ($type == 'file') {
@@ -6829,6 +6829,8 @@ class block_exacomp_external extends external_api {
 					'fullname' => fullname($student),
 					'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
 				];
+
+				$exampleItem->item->solutiondescription = $exampleItem->item->intro;
 			}
         }
 
@@ -6890,7 +6892,7 @@ class block_exacomp_external extends external_api {
             'item' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of item '),
                 'name' => new external_value (PARAM_TEXT, 'title of item'),
-                'intro' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
                 'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
                 'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
                 'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
@@ -10923,7 +10925,7 @@ class block_exacomp_external extends external_api {
             if(strpos($example->description, "<!doctype html>") !== false){
                 $example->description = "";
             }
-            
+
 
             // Adding the evaluation information
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
