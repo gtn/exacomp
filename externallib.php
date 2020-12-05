@@ -6832,10 +6832,10 @@ class block_exacomp_external extends external_api {
 			}
         }
 
-        usort($examplesAndItems, function($a, $b)
-        {
-            return strcmp($b->timemodified, $a->timemodified);
-        });
+//        usort($examplesAndItems, function($a, $b)
+//        {
+//            return strcmp($b->timemodified, $a->timemodified);
+//        });
 
         return $examplesAndItems;
     }
@@ -10920,9 +10920,10 @@ class block_exacomp_external extends external_api {
 
             // Fixing HTML-Tag error in return value for webservices
             // In some very olf Epop competence grids, there is HTML in the description. If this is the case --> just delete it
-            if(static::startsWith($example->description,"<!doctype html>")){
+            if(strpos($example->description, "<!doctype html>") !== false){
                 $example->description = "";
             }
+            
 
             // Adding the evaluation information
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
@@ -10951,7 +10952,6 @@ class block_exacomp_external extends external_api {
         $len = strlen($startString);
         return (substr($string, 0, $len) === $startString);
     }
-
 
 
 
