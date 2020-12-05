@@ -6797,9 +6797,7 @@ class block_exacomp_external extends external_api {
             }
         }
 
-
-
-
+        
         // TODO: we can actually forget about examplegradings, right?
         foreach($examplesAndItems as $exampleItem){
             if($exampleItem->item){
@@ -6812,6 +6810,7 @@ class block_exacomp_external extends external_api {
                         break;
                     case 2: //completed
                         $exampleItem->status = "completed";
+                        break;
                     default:
                         $exampleItem->status = "errornostate";
                 }
