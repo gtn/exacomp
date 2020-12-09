@@ -648,6 +648,8 @@ class block_exacomp_external extends external_api {
 				'id' => $descriptor_mm->descrid,
 			));
 
+            $descriptors[$descriptor_mm->descrid]->title = static::custom_htmltrim(strip_tags($descriptors[$descriptor_mm->descrid]->title));
+
 			$isTeacher = $DB->record_exists('block_exacompexternaltrainer', array('trainerid' => $USER->id, 'studentid' => $userid));
 			$grading = BLOCK_EXACOMP_ROLE_TEACHER;
 			if (block_exacomp_is_elove_student_self_assessment_enabled() && !$isTeacher) {
