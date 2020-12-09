@@ -13136,3 +13136,20 @@ function block_exacomp_help_icon($title, $text, $isSpan = false, $addClass = '')
         '</'.$tag.'>';
     return $content;
 }
+
+function block_exacomp_get_backup_temp_directory() {
+    global $CFG;
+    static $path = null;
+    if ($path === null) {
+        if (@$CFG->backuptempdir && $CFG->backuptempdir !== "$CFG->tempdir/backup" && is_dir($CFG->backuptempdir)) {
+            $tempdir = $CFG->backuptempdir;
+        } else if (@$CFG->tempdir && $CFG->tempdir !== "$CFG->dataroot/temp/backup" && is_dir($CFG->tempdir)) {
+            $tempdir = $CFG->tempdir.'/backup/';
+        } else {
+            $tempdir = $CFG->dataroot . '/temp/backup/';
+        }
+        $tempdir = rtrim($tempdir, '/') . '/';
+        $path = $tempdir;
+    }
+    return $path;
+}

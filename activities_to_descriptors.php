@@ -160,7 +160,7 @@ if ($action == "export-activity") {
     $zip = ZipArchive::create_temp_file();
     $backupid = moodle_backup(optional_param("activityid", PARAM_INT), $USER->id);
     
-    $source = $CFG->dataroot . '/temp/backup/'.$backupid;
+    $source = block_exacomp_get_backup_temp_directory().$backupid;
     $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
     
     foreach ($files as $name => $file) {

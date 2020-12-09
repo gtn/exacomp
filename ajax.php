@@ -76,6 +76,7 @@ switch($action){
 
 	    $activityid = required_param('activityid', PARAM_INT);
 	    \block_exacomp\data::prepare();
+//        echo block_exacomp_get_backup_temp_directory(); exit;
 	    block_exacomp\data_exporter::do_activity_export($activityid);
 	    break;
 	case('save_as_draft'):

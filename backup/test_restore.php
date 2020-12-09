@@ -27,7 +27,7 @@ if (!is_siteadmin()) {
 // Transaction.
 $transaction = $DB->start_delegated_transaction();
 
-$files = glob($CFG->dataroot . '/temp/backup/*');
+$files = glob(block_exacomp_get_backup_temp_directory().'*');
 $files = array_filter($files, 'is_dir');
 usort($files, function($a, $b) {
     return filemtime($a) < filemtime($b);
