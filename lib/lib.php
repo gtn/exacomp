@@ -13143,10 +13143,13 @@ function block_exacomp_get_backup_temp_directory() {
     if ($path === null) {
         if (@$CFG->backuptempdir && $CFG->backuptempdir !== "$CFG->tempdir/backup" && is_dir($CFG->backuptempdir)) {
             $tempdir = $CFG->backuptempdir;
-        } else if (@$CFG->tempdir && $CFG->tempdir !== "$CFG->dataroot/temp/backup" && is_dir($CFG->tempdir)) {
+        } else if (@$CFG->tempdir && $CFG->tempdir !== "$CFG->dataroot/temp" && is_dir($CFG->tempdir)) {
             $tempdir = $CFG->tempdir.'/backup/';
         } else {
             $tempdir = $CFG->dataroot . '/temp/backup/';
+        }
+        if (!is_dir($tempdir)) {
+            mkdir($tempdir);
         }
         $tempdir = rtrim($tempdir, '/') . '/';
         $path = $tempdir;
