@@ -6957,6 +6957,8 @@ class block_exacomp_external extends external_api {
 						'fullname' => fullname($student),
 						'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
 					];
+
+                    $studentExamplesAndItem->item->solutiondescription = $studentExamplesAndItem->item->intro;
 				}
 			}
 
@@ -6992,22 +6994,6 @@ class block_exacomp_external extends external_api {
                 }
             }else{ //no item but the object exists ==> there must be an example, no condition needed
                 $exampleItem->status = "new";
-            }
-
-            if ($exampleItem->item) {
-                $student = g::$DB->get_record('user', array(
-                    'id' => $exampleItem->item->userid,
-                ));
-                $userpicture = new user_picture($student);
-                $userpicture->size = 1; // Size f1.
-
-                $exampleItem->item->owner = (object)[
-                    'userid' => $student->id,
-                    'fullname' => fullname($student),
-                    'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
-                ];
-
-                $exampleItem->item->solutiondescription = $exampleItem->item->intro;
             }
 		}
 
