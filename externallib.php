@@ -6728,7 +6728,7 @@ class block_exacomp_external extends external_api {
 				$exampleItem->item->solutiondescription = $exampleItem->item->intro;
 			}
         }
-        
+
 
 
         //Filter by status and use different sortings depending on status
@@ -6841,7 +6841,8 @@ class block_exacomp_external extends external_api {
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL)
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL),
+            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
 
@@ -6852,7 +6853,7 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of items
      */
-    public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type="", $search="", $niveauid=-1) {
+    public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type="", $search="", $niveauid=-1, $status = "") {
         global $USER;
 
         static::validate_parameters(static::diggrplus_get_teacher_examples_and_items_parameters(), array(
@@ -6863,6 +6864,7 @@ class block_exacomp_external extends external_api {
             'type' => $type,
             'search' => $search,
             'niveauid' => $niveauid,
+            'status' => $status
         ));
 
         // TODO: check if is teacher
@@ -6909,8 +6911,8 @@ class block_exacomp_external extends external_api {
 			
 			$studentExamplesAndItems = [];
 
-			if ($type == "own_items" || $type == "") {
-				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid);
+			if (($type == "own_items" || $type == "") && $status != "new") {
+				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status);
 
 				foreach($items as $item){
 					static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
@@ -6937,7 +6939,7 @@ class block_exacomp_external extends external_api {
 				if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
 					// TODO: how do we check if the user is a teacher? It is not oriented on courses
 	//            $isTeacher = false;
-					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid);
+					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status);
 					$studentExamplesAndItems = array_merge($studentExamplesAndItems, $examples);
 				}
 			}
@@ -6967,24 +6969,43 @@ class block_exacomp_external extends external_api {
 				continue;
 			}
 
-			if($exampleItem->item){
-				switch($exampleItem->item->status){
-					case 0: //inprogress
-						$exampleItem->status = "inprogress";
-						break;
-					case 1: //submitted
-						if($exampleItem->example && $exampleItem->example->teacher_evaluation || $exampleItem->item->teachervalue){ //either example that has grade, or free item that has grade
-							$exampleItem->status = "completed";
-						}else{
-							$exampleItem->status = "submitted";
-						}
-						break;
-					default:
-						$exampleItem->status = "errornostate";
-				}
-			}else{ //no item but the object exists ==> there must be an example, no condition needed
-				$exampleItem->status = "new";
-			}
+            if($exampleItem->item){
+                if($status == "new"){ // if filtered by "new" then only examples without items should be shown
+                    unset($examplesAndItems[$key]);
+                }else{
+                    switch($exampleItem->item->status){
+                        case 0: //inprogress
+                            $exampleItem->status = "inprogress";
+                            break;
+                        case 1: //submitted
+                            $exampleItem->status = "submitted";
+                            break;
+                        case 2: //completed
+                            $exampleItem->status = "completed";
+                            break;
+                        default:
+                            $exampleItem->status = "errornostate";
+                    }
+                }
+            }else{ //no item but the object exists ==> there must be an example, no condition needed
+                $exampleItem->status = "new";
+            }
+
+            if ($exampleItem->item) {
+                $student = g::$DB->get_record('user', array(
+                    'id' => $exampleItem->item->userid,
+                ));
+                $userpicture = new user_picture($student);
+                $userpicture->size = 1; // Size f1.
+
+                $exampleItem->item->owner = (object)[
+                    'userid' => $student->id,
+                    'fullname' => fullname($student),
+                    'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
+                ];
+
+                $exampleItem->item->solutiondescription = $exampleItem->item->intro;
+            }
 		}
 
         return $examplesAndItems;
@@ -7006,6 +7027,12 @@ class block_exacomp_external extends external_api {
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
             'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+
+            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+
+            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
+
             'example' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
@@ -7036,11 +7063,11 @@ class block_exacomp_external extends external_api {
             'item' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of item '),
                 'name' => new external_value (PARAM_TEXT, 'title of item'),
-                'intro' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
                 'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
                 'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
                 'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+//                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
                 'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
                 'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
                 'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
