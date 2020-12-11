@@ -6922,14 +6922,17 @@ class block_exacomp_external extends external_api {
 				}
 
 				$studentExamplesAndItems = array_merge($studentExamplesAndItems, array_map(function ($item){
-					$objDeeper = new stdClass();
-					$objDeeper->courseid = $item->courseid;
-					$objDeeper->item = $item;
-					$objDeeper->subjecttitle = $item->subjecttitle;
-					$objDeeper->subjectid = $item->subjectid;
-					$objDeeper->topictitle = $item->topictitle;
-					$objDeeper->topicid = $item->topicid;
-					return $objDeeper;
+                    $objDeeper = new stdClass();
+                    $objDeeper->courseid = $item->courseid;
+                    $objDeeper->item = $item;
+                    $objDeeper->subjecttitle = $item->subjecttitle;
+                    $objDeeper->subjectid = $item->subjectid;
+                    $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
+                    $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
+                    $objDeeper->niveautitle = "";
+                    $objDeeper->niveauid = 0;
+                    $objDeeper->timemodified = $item->timemodified;
+                    return $objDeeper;
 				},$items));
 			}
 
