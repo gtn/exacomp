@@ -2619,10 +2619,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 
 							if ($shared) {
-								$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;')));
-							} //$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
+//								$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;')));
+                                $img = html_writer::link($link, html_writer::tag("img", $this->pix_icon("i/folder", null,  null, array('style' => 'margin: 0 0 0 5px;', 'class' => 'folder_views_shared'))));
+                            }
 							else {
-								$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;'));
+                                //$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png", "alt" => '', 'style' => 'margin: 0 0 0 5px;'));
+                                $img = html_writer::tag("img", $this->pix_icon("i/folder", null,  null, array('style' => 'margin: 0 0 0 5px;', 'class' => 'folder_views_not_shared')));
 							}
 
 							$text = block_exacomp_get_string('eportitems').html_writer::tag('ul', $li_items);
@@ -4108,9 +4110,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             if (!$isTeacher) {
                 // if student, check for existing item
                 if ($studentid && $forSelf) {
-                    if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $compid)) {
+                    if ($url = block_exacomp_get_viewurl_for_example($studentid, g::$USER->id, $compid)) { // folder icon for examples
                         $result = html_writer::link($url,
-                            $this->pix_icon("i/folder", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;')),
+                            $this->pix_icon("i/files", block_exacomp_get_string("submission"), null, array('style' => 'margin: 0 0 0 5px;', 'class' => 'view_item_link')),
                             array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                     } else {
                         // goes here if as student and new example that has no submission
@@ -5449,7 +5451,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		    $cell->attributes['module-type'] = $module->modname;
 
 //		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>A</button>';
-            $downloadTag = html_writer::tag("img", "", array("src" => "/blocks/exacomp/pix/ec_download_bl.png", "alt" => block_exacomp_get_string('download_activites'), 'height' => '18'));
+            $downloadTag = html_writer::tag("img", "", array("src" => "/blocks/exacomp/pix/ec_download_bl.png", "alt" => block_exacomp_get_string('download_activites'), 'height' => '12'));
 		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>'.$downloadTag.'</button>';
 		    $row->cells[] = $cell;
 		    $row2->cells[] = $cell2;

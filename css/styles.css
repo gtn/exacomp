@@ -1347,3 +1347,19 @@ input[type=checkbox].be-sure {
 	opacity: 0.75;
 }
 
+#block_exacomp .activity-export-btn {
+	background-color: transparent;
+	border: none;
+}
+
+#block_exacomp .folder_views_shared {
+	color: #006ccb;
+}
+
+#block_exacomp .folder_views_not_shared {
+	color: #5ca1de;
+}
+
+#block_exacomp .view_item_link {
+	color: #fcba5d;
+}
