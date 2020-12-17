@@ -6685,22 +6685,21 @@ class block_exacomp_external extends external_api {
      * @return array of course subjects
      */
     public static function diggrplus_get_item_comments($itemid) {
-        global $CFG;
+        global $CFG, $DB;
         static::validate_parameters(static::diggrplus_get_item_comments_parameters(),
             array(
                 'itemid' => $itemid
             ));
-
         require_once $CFG->dirroot.'/blocks/exaport/inc.php';
         $itemcomments = \block_exaport\api::get_item_comments($itemid);
-
-
-
+        $users = [];
         foreach($itemcomments as $comment){
-            $comment->fullname = "bla";
+            if($users[$comment->userid] == null){
+                $users[$comment->userid] = $DB->get_record('user', array('id' => $comment->userid));
+            }
+            $comment->fullname = $users[$comment->userid]->firstname.' '.$users[$comment->userid]->lastname;
             $comment->comment = $comment->entry;
         }
-
         return $itemcomments;
     }
 
