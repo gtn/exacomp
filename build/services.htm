@@ -623,6 +623,14 @@ Params: <table>
 </td>
 <td>list of taxonomies</td>
 <tr>
+<td>newtaxonomy</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new taxonomy to be created</td>
+<tr>
 <td>courseid</td>
 <td>int</td>
 <td>null</td>
@@ -664,7 +672,12 @@ Params: <table>
 <td>is a teacher example?</td>
 </table>
 Returns:<pre>{
-    "exampleid": "int null (id of created example)"
+    "exampleid": "int null (id of created example)",
+    "newtaxonomy": {
+        "id": "int null (amount of total competencies)",
+        "source": "int null (amount of reached competencies)",
+        "title": "text null (amount of reached competencies)"
+    }
 }</pre>
 <h2>block_exacomp_grade_item</h2>
 <div>Grade an item
@@ -2923,6 +2936,14 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>niveauid normally stands for "LFS1, LFS2 ect</td>
+<tr>
+<td>status</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new, inprogress, submitted, completed.  acts as a filter</td>
 </table>
 Returns:<pre>[
     {
@@ -2932,6 +2953,9 @@ Returns:<pre>[
         "subjecttitle": "text null (title of subject)",
         "topicid": "int null (id of topic)",
         "topictitle": "text null (title of topic)",
+        "niveautitle": "text null (title of niveau)",
+        "niveauid": "int null (id of niveau)",
+        "timemodified": "int null (time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators))",
         "example": {
             "id": "int null (id of example)",
             "title": "text null (title of example)",
@@ -2957,11 +2981,10 @@ Returns:<pre>[
         "item": {
             "id": "int null (id of item )",
             "name": "text null (title of item)",
-            "intro": "text null (description of item)",
+            "solutiondescription": "text null (description of item)",
             "type": "text null (type of item (note,file,link))",
             "url": "text null (url)",
             "effort": "raw null (description of the effort)",
-            "status": "int null (status of the submission)",
             "teachervalue": "int null (teacher grading)",
             "studentvalue": "int null (student grading)",
             "teachercomment": "text null (teacher comment)",

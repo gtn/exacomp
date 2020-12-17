@@ -1764,6 +1764,7 @@ class block_exacomp_external extends external_api {
 			'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
 			'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
 			'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
+            'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
 			'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
 			'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
 		    'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
@@ -1779,7 +1780,7 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return array
 	 */
-	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0) {
+	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0) {
 		global $DB, $USER, $CFG;
 
 		if (empty ($name)) {
@@ -1796,6 +1797,7 @@ class block_exacomp_external extends external_api {
 			'fileitemids' => $fileitemids,
 			'solutionfileitemid' => $solutionfileitemid,
 			'taxonomies' => $taxonomies,
+            'newtaxonomy' => $newtaxonomy,
 			'courseid' => $courseid,
 			'filename' => $filename,
 		    'crosssubjectid' => $crosssubjectid,
@@ -2038,10 +2040,31 @@ class block_exacomp_external extends external_api {
 			]);
 		}
 
+		//and create and add the new taxonomy if it exists
+        $newTax = $newtaxonomy;
+        if ($newTax != '') {
+            $newTaxonomy = new \stdClass();
+            $newTaxonomy->title = $newTax;
+            $newTaxonomy->parentid = 0;
+            $newTaxonomy->sorting = $DB->get_field(BLOCK_EXACOMP_DB_TAXONOMIES, 'MAX(sorting)', array()) + 1;
+            $newTaxonomy->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+            $newTaxonomy->sourceid = 0;
+            $newTaxonomy->id = $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, $newTaxonomy);
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
+                'exampleid' => $id,
+                'taxid' => $newTaxonomy->id
+            ]);
+        }
+
 
 
 		return array(
 			"exampleid" => $id,
+            "newtaxonomy" => array(
+                "id" => $newTaxonomy->id,
+                "source" => $newTaxonomy->source,
+                "title" => $newTaxonomy->title,
+            )
 		);
 	}
 
@@ -2053,6 +2076,11 @@ class block_exacomp_external extends external_api {
 	public static function create_or_update_example_returns() {
 		return new external_single_structure (array(
 			'exampleid' => new external_value (PARAM_INT, 'id of created example'),
+            'newtaxonomy' => new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, 'amount of total competencies'),
+                'source' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
+                'title' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
+            )),
 		));
 	}
 
