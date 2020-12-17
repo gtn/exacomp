@@ -6622,7 +6622,7 @@ class block_exacomp_external extends external_api {
             'itemid' => new external_value (PARAM_INT, 'itemid'),
         ));
     }
-    
+
     /**
      * Returns description of method parameters
      *
