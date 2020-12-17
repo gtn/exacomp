@@ -6622,10 +6622,105 @@ class block_exacomp_external extends external_api {
             'itemid' => new external_value (PARAM_INT, 'itemid'),
         ));
     }
+    
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_submit_item_comment_parameters() {
+        return new external_function_parameters (array(
+            'itemid' => new external_value (PARAM_INT, 'id of item'),
+            'comment' => new external_value (PARAM_TEXT, 'comment text')
+        ));
+    }
+
+    /**
+     * Add studentsubmission  (exaportitem) to topic, descriptor or example
+     * @ws-type-write
+     * @param int itemid (0 for new, >0 for existing)
+     * @return array of course subjects
+     */
+    public static function diggrplus_submit_item_comment($itemid, $comment) {
+        global $DB, $USER;
+        static::validate_parameters(static::diggrplus_submit_item_comment_parameters(),
+            array(
+                'itemid' => $itemid,
+                'comment' => $comment
+            ));
+
+        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
+
+        return array("success" => true, "itemid" => $itemid);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function diggrplus_submit_item_comment_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+            'itemid' => new external_value (PARAM_INT, 'itemid'),
+        ));
+    }
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_get_item_comments_parameters() {
+        return new external_function_parameters (array(
+            'itemid' => new external_value (PARAM_INT, 'id of item'),
+        ));
+    }
+
+    /**
+     * Add studentsubmission  (exaportitem) to topic, descriptor or example
+     * @ws-type-write
+     * @param int itemid (0 for new, >0 for existing)
+     * @return array of course subjects
+     */
+    public static function diggrplus_get_item_comments($itemid) {
+        global $CFG;
+        static::validate_parameters(static::diggrplus_get_item_comments_parameters(),
+            array(
+                'itemid' => $itemid
+            ));
+
+        require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+        $itemcomments = \block_exaport\api::get_item_comments($itemid);
 
 
 
-     /**
+        foreach($itemcomments as $comment){
+            $comment->fullname = "bla";
+            $comment->comment = $comment->entry;
+        }
+
+        return $itemcomments;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function diggrplus_get_item_comments_returns() {
+        return new external_multiple_structure(new external_single_structure (array(
+            'id' => new external_value (PARAM_INT, 'commentid'),
+            'userid' => new external_value (PARAM_INT, 'userid'),
+            'fullname' => new external_value (PARAM_TEXT, 'fullname of user'),
+            'comment' => new external_value (PARAM_TEXT, 'commenttext'),
+            'timemodified' => new external_value (PARAM_INT, 'timemodified'),
+        )));
+    }
+
+
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters

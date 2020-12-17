@@ -675,7 +675,7 @@ Returns:<pre>{
     "exampleid": "int null (id of created example)",
     "newtaxonomy": {
         "id": "int null (amount of total competencies)",
-        "source": "int null (amount of reached competencies)",
+        "source": "text null (amount of reached competencies)",
         "title": "text null (amount of reached competencies)"
     }
 }</pre>
@@ -2750,6 +2750,51 @@ Returns:<pre>{
     "success": "bool null (status)",
     "itemid": "int null (itemid)"
 }</pre>
+<h2>diggrplus_submit_item_comment</h2>
+<div>Add studentsubmission  (exaportitem) to topic, descriptor or example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
+<tr>
+<td>comment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comment text</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)",
+    "itemid": "int null (itemid)"
+}</pre>
+<h2>diggrplus_get_item_comments</h2>
+<div>Add studentsubmission  (exaportitem) to topic, descriptor or example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
+</table>
+Returns:<pre>[
+    {
+        "id": "int null (commentid)",
+        "userid": "int null (userid)",
+        "fullname": "text null (fullname of user)",
+        "comment": "text null (commenttext)",
+        "timemodified": "int null (timemodified)"
+    },
+    "..."
+]</pre>
 <h2>diggrplus_get_examples_and_items</h2>
 <div>Get Items
 get all items AND examples for a competence
