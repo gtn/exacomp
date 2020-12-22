@@ -7241,7 +7241,7 @@ class block_exacomp_external extends external_api {
 	public static function diggrplus_grade_item_parameters() {
 		return new external_function_parameters (array(
 			'itemid' => new external_value (PARAM_INT, ''),
-			'teachervalue' => new external_value (PARAM_INT, 'teacher grading of the item'),
+			'teachervalue' => new external_value (PARAM_INT, 'teacher grading of the item, -1 if none (leads to status "submitted" instead of "completed"', VALUE_DEFAULT, -1),
             // 'userid' => new external_value (PARAM_INT, 'id of student that should be graded'),
 			// 'value' => new external_value (PARAM_INT, 'value for grading'),
 			// 'status' => new external_value (PARAM_INT, 'status'),
@@ -7262,7 +7262,7 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-write
 	 */
-	public static function diggrplus_grade_item($itemid, $teachervalue, $descriptorgradings = []) {
+	public static function diggrplus_grade_item($itemid, $teachervalue = -1, $descriptorgradings = []) {
 		global $DB, $USER;
 
 		// if (empty ($userid) || empty ($value) || empty ($comment) || empty ($itemid) || empty ($courseid)) {
@@ -7296,8 +7296,10 @@ class block_exacomp_external extends external_api {
 		$update->datemodified = time();
 		$update->teachervalue = $teachervalue;
 
-		if($teachervalue){
-		    $update->status = 2; //student has submitted, teacher has graded ==> the item is completed
+		if($teachervalue != -1){
+            $update->status = 2; //student has submitted, teacher has graded ==> the item is completed
+        }else{
+            $update->status = 1; //change status back to "submitted"
         }
 
 
