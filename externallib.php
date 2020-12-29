@@ -6376,8 +6376,8 @@ class block_exacomp_external extends external_api {
             'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
             'courseid' => new external_value (PARAM_INT, 'courseid'),
             'comptype' =>new external_value (PARAM_INT, 'comptype (example, topic, descriptor)'),
-            'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_OPTIONAL),
-            'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_OPTIONAL),
+            'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_DEFAULT, ''),
+            'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_DEFAULT, ''),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
             'solutiondescription' => new external_value (PARAM_TEXT, 'description of what the student has done'),
@@ -6731,7 +6731,7 @@ class block_exacomp_external extends external_api {
             'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value( PARAM_TEXT, 'search string', VALUE_DEFAULT, ""),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
@@ -6962,8 +6962,8 @@ class block_exacomp_external extends external_api {
             'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
-            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_OPTIONAL),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_OPTIONAL),
+            'search' => new external_value( PARAM_TEXT, 'search string', VALUE_DEFAULT, ''),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
@@ -7429,8 +7429,8 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function diggrplus_get_competence_profile_statistic_parameters() {
 	    return new external_function_parameters (array(
-	        'courseid' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
-	        'userid' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
+	        'courseid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
+	        'userid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
 	    ));
 	}
 
@@ -12545,7 +12545,7 @@ class block_exacomp_external extends external_api {
             'courseid' => new external_value (PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'subjectid' => new external_value(PARAM_INT, 'subject id'),
-            'forall' => new external_value(PARAM_INT, 'for all?', VALUE_OPTIONAL, 0),
+            'forall' => new external_value(PARAM_INT, 'for all?', VALUE_DEFAULT, 0),
         ));
     }
 
