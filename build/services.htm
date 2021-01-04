@@ -2706,15 +2706,17 @@ Params: <table>
 <td>itemtitle</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful</td>
 <tr>
 <td>collabuserids</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>userids of collaborators separated by comma</td>
 <tr>
 <td>submit</td>
@@ -2842,8 +2844,9 @@ Params: <table>
 <td>niveauid</td>
 <td>int</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
 <td>niveauid normally stands for "LFS1, LFS2 ect</td>
 <tr>
 <td>status</td>
@@ -2971,15 +2974,17 @@ Params: <table>
 <td>search</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>search string</td>
 <tr>
 <td>niveauid</td>
 <td>int</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
 <td>niveauid normally stands for "LFS1, LFS2 ect</td>
 <tr>
 <td>status</td>
@@ -3089,9 +3094,10 @@ Params: <table>
 <td>teachervalue</td>
 <td>int</td>
 <td>null</td>
-<td>required</td>
-<td></td>
-<td>teacher grading of the item</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>teacher grading of the item, -1 if none (leads to status "submitted" instead of "completed"</td>
 <tr>
 <td>descriptorgradings</td>
 <td></td>
@@ -3111,15 +3117,17 @@ Params: <table>
 <td>courseid</td>
 <td>int</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: int(0)
+</td>
 <td></td>
 <tr>
 <td>userid</td>
 <td>int</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: int(0)
+</td>
 <td></td>
 </table>
 Returns:<pre>{
@@ -5224,8 +5232,9 @@ Params: <table>
 <td>forall</td>
 <td>int</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: int(0)
+</td>
 <td>for all?</td>
 </table>
 Returns:<pre>{

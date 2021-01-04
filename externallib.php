@@ -7983,14 +7983,9 @@ class block_exacomp_external extends external_api {
 	    $descriptors_return = array();
 	    $counter = 0;
         foreach ($descriptors as $descriptor) {
-            if($descriptors_return == null){
-                $descriptors_return[$counter] = static::get_descriptor_details_private($courseid, $descriptor, $userid, $forall, $crosssubjid);
-            }else{
-                $descriptors_return[$counter] = static::get_descriptor_details_private($courseid, $descriptor, $userid, $forall, $crosssubjid);
-            }
+            $descriptors_return[$counter] = static::get_descriptor_details_private($courseid, $descriptor, $userid, $forall, $crosssubjid);
             $counter++;
         }
-
 
 	    //$descriptors_return = static::get_descriptor_details_private($courseid, $descriptorids, $userid, $forall, $crosssubjid);
 	    return $descriptors_return;
@@ -10932,7 +10927,7 @@ class block_exacomp_external extends external_api {
                         continue;
                     }
                 }
-                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], null, null, null, $search);
+                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], true, null, null, $search);
                 // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
                 foreach($descriptorWithExamples->examples as $example){
                     $example = static::block_excomp_get_example_details($example, $example->courseid);
@@ -10970,6 +10965,13 @@ class block_exacomp_external extends external_api {
             }
         }
 
+        //remove examples that are not visible
+        foreach($examples as $key => $example){
+            if(!block_exacomp_is_example_visible($example->courseid, $example, $userid)){
+                unset($examples[$key]);
+            }
+        }
+        
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
         $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB, $comptype) {
             $objDeeper = new stdClass();

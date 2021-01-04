@@ -6953,6 +6953,34 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
     return true;
 }
 
+
+///**
+// * visibility for example for user in ANY course
+// * @param unknown $example or exampleid
+// * @param unknown $userid
+// * @return boolean
+// */
+//function block_exacomp_is_example_visible_in_any_course($example, $userid) {
+//    global $DB;
+//    $exampleid = is_scalar($example) ? $example : $example->id;
+//
+//    var_dump($userid);
+//
+//    $userid = 0;
+//
+//    $visibles = $DB->get_records_sql("
+//        SELECT DISTINCT ev.exampleid, ev.visible
+//        FROM {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} ev
+//        WHERE ev.studentid=?
+//    ", [$userid]);
+//
+//    var_dump($visibles);
+//    die;
+//
+//    return true;
+//}
+
+
 /**
  * visibility for example solution in course and user context
  * @param unknown $courseid
