@@ -10830,7 +10830,7 @@ class block_exacomp_external extends external_api {
             // TODO: checks so a student cannot hack this and view another student's items
             $courses = enrol_get_users_courses($userid);
             foreach ($courses as $course) {
-                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $example) {
                     static::block_excomp_get_example_details($example, $course->id);
                 }
@@ -10908,10 +10908,10 @@ class block_exacomp_external extends external_api {
             $information = $DB->get_record_sql($sql, array($compid));
 
             $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
-            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid); // this only gets parents
+            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true); // this only gets parents
 
             foreach($descriptors as $descriptor){
-                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0]);
+                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true);
                 // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
                 foreach($childdescriptors as $child){
                     $child->niveauid = $descriptor->niveauid;
