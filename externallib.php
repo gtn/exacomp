@@ -1113,7 +1113,7 @@ class block_exacomp_external extends external_api {
 		]);
 
 		foreach ($courses as $course) {
-			$tree = block_exacomp_get_competence_tree($course["courseid"]);
+			$tree = block_exacomp_get_competence_tree($course["courseid"],null,null,false,null, true, null, false ,false, true, false, true);
 
 			foreach ($tree as $subject) {
 				$elem_sub = new stdClass ();
@@ -10911,7 +10911,7 @@ class block_exacomp_external extends external_api {
             $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true); // this only gets parents
 
             foreach($descriptors as $descriptor){
-                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true);
+                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true, true, true);
                 // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
                 foreach($childdescriptors as $child){
                     $child->niveauid = $descriptor->niveauid;
