@@ -1189,6 +1189,10 @@ $settings->add(new admin_setting_configcheckbox('exacomp/export_password',
         block_exacomp_get_string('settings_export_password'),
         block_exacomp_get_string('settings_export_password_description'), 0, 1, 0));
 
+$settings->add(new admin_setting_configtextarea('exacomp/applogin_redirect_urls',
+        block_exacomp_get_string('settings_applogin_redirect_urls'),
+        block_exacomp_get_string('settings_applogin_redirect_urls_description'),''));
+
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
 //        block_exacomp_get_string('settings_admin_scheme'),

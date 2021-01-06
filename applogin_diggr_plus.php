@@ -4,16 +4,6 @@ require __DIR__.'/inc.php';
 require_once($CFG->libdir . '/externallib.php');
 require_once __DIR__.'/externallib.php';
 
-// TODO: create a setting for this
-$additional_allowed_redirect_uris = [
-	'http://localhost:3000',
-	'https://localhost:3000',
-	'http://diggr-plus.at',
-	'https://diggr-plus.at',
-	'http://www.diggr-plus.at',
-	'https://www.diggr-plus.at',
-];
-
 function block_exacomp_load_service($serviceshortname) {
 	global $DB;
 
@@ -95,12 +85,25 @@ if ($action == 'get_login_url') {
 	required_param('app_version', PARAM_TEXT);
 
 	$return_uri = required_param('return_uri', PARAM_TEXT);
-	$allowed_redirect_uris = array_merge([$CFG->wwwroot], $additional_allowed_redirect_uris);
+
+	$allowed_redirect_uris = [$CFG->wwwroot];
+	$additional_allowed_redirect_uris = trim(get_config('exacomp', 'applogin_redirect_urls'));
+	if ($additional_allowed_redirect_uris) {
+		$additional_allowed_redirect_uris = preg_split('![\s\r\n]+!', $additional_allowed_redirect_uris);
+		$allowed_redirect_uris = array_merge($allowed_redirect_uris, $additional_allowed_redirect_uris);
+	}
 
 	$return_uri_allowed = false;
 	foreach ($allowed_redirect_uris as $allowed_redirect_uri) {
-		$allowed_redirect_uri = preg_replace('!/$!', '', $allowed_redirect_uri).'/';
-		if (preg_match('!^'.preg_quote($allowed_redirect_uri, '!').'!', $return_uri)) {
+		// add protocol, if needed
+		if (strpos($allowed_redirect_uri, '://') === false) {
+			$allowed_redirect_uri = 'https://'.$allowed_redirect_uri;
+		}
+		// check url
+		$regexp = '!^'.preg_quote($allowed_redirect_uri, '!').'(/|$)!';
+		// allow * as wildcard
+		$regexp = str_replace('\\*', '.*', $regexp);
+		if (preg_match($regexp, $return_uri)) {
 			$return_uri_allowed = true;
 			break;
 		}
@@ -108,7 +111,7 @@ if ($action == 'get_login_url') {
 
 	if (!$return_uri_allowed) {
 		$data = [
-			'error' => block_exacomp_trans(['de:Zugriff für DiggrPlus unter {$a->url} ist nicht erlaubt', 'en:Access form DiggrPlus at {$a->url} is not allowed'], ['url' => $return_uri])
+			'error' => block_exacomp_trans(['de:Zugriff für DiggrPlus unter {$a->url} ist nicht erlaubt', 'en:Access from DiggrPlus at {$a->url} is not allowed'], ['url' => $return_uri])
 		];
 
 		header('Content-Type: application/json');

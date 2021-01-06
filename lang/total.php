@@ -432,6 +432,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Klicken Sie, um die Dakoralehrer festzulegen',
         'Click to assign the dakorateachers',
     ],
+	'settings_applogin_redirect_urls' => [
+		'Applogin Urls',
+		'Applogin Urls',
+	],
+	'settings_applogin_redirect_urls_description' => [
+		'',
+		'',
+	],
     'dakora_teachers' => [
         'Dakoralehrer',
         'Dakorateachers',
