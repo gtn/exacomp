@@ -13094,7 +13094,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
             break;
     }
     //$maxVal = block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
-    $negativeLimit = block_exacomp_get_assessment_negative_threshold(BLOCK_EXACOMP_TYPE_TOPIC);
+    $negativeLimit = block_exacomp_get_assessment_negative_threshold(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 
     $studentEvalItems = \block_exacomp\global_config::get_student_eval_items();
     $selfLimit = ceil(max(array_keys($studentEvalItems)) / 2);
@@ -13144,6 +13144,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
         }
         $topic->title = trim(html_entity_decode($topic->title));
     }
+//    echo "<pre>debug:<strong>lib.php:13147</strong>\r\n"; print_r($topics); echo '</pre>'; // !!!!!!!!!! delete it
     return $topics;
 }
 
