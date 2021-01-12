@@ -39,7 +39,6 @@ $studentid = block_exacomp_get_studentid() ;
 if ($studentid < 0) {
     $studentid = 0;
 }
-
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_profile_profile';
 
