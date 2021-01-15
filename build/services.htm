@@ -3066,6 +3066,57 @@ Returns:<pre>[
     },
     "..."
 ]</pre>
+<h2>diggrplus_get_all_subjects_for_course_as_tree</h2>
+<div>Get Subjects
+get subjects from one user for one course</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+</table>
+Returns:<pre>[
+    {
+        "id": "int null (id of subject)",
+        "title": "text null (title of subject)",
+        "courseid": "int null (id of course)",
+        "courseshortname": "text null (courseshortname)",
+        "coursefullname": "text null (coursefullname)",
+        "topics": [
+            {
+                "id": "int null (id of example)",
+                "title": "text null (title of example)",
+                "descriptors": [
+                    {
+                        "descriptorid": "int null (id of example)",
+                        "descriptortitle": "text null (title of example)",
+                        "childdescriptors": [
+                            {
+                                "descriptorid": "int null (id of example)",
+                                "descriptortitle": "text null (title of example)"
+                            },
+                            "..."
+                        ]
+                    },
+                    "..."
+                ]
+            },
+            "..."
+        ]
+    },
+    "..."
+]</pre>
 <h2>diggrplus_request_external_file</h2>
 <div>Load a file from an external Domain to prevent CORS when loading directly in the App</div>
 <div>type: read</div>

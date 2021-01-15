@@ -7204,6 +7204,368 @@ class block_exacomp_external extends external_api {
         )));
     }
 
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_get_all_subjects_for_course_as_tree_parameters() {
+        return new external_function_parameters (array(
+            'userid' => new external_value (PARAM_INT, 'id of user'),
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        ));
+    }
+    /**
+     * Get Subjects
+     * get subjects from one user for one course
+     *
+     * @ws-type-read
+     * @return array of user courses
+     */
+    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid) {
+        global $CFG, $USER, $DB;
+
+        static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
+            'userid' => $userid,
+            'courseid' => $courseid,
+        ));
+
+        if (!$userid) {
+            $userid = $USER->id;
+        }
+        static::require_can_access_user($userid);
+
+        $structure = array();
+
+        $course = get_course($courseid);
+
+        $tree = block_exacomp_get_competence_tree($courseid,null,null,true,null, true, null, false ,false, true, false, true);
+
+//        var_dump(count($tree));
+
+        foreach ($tree as $subject) {
+            $elem_sub = new stdClass ();
+            $elem_sub->id = $subject->id;
+            $elem_sub->title = $subject->title;
+            $elem_sub->courseid = $courseid;
+            $elem_sub->courseshortname = $course->shortname;
+            $elem_sub->coursefullname = $course->fullname;
+            $elem_sub->topics = array();
+            foreach ($subject->topics as $topic) {
+                $elem_topic = new stdClass ();
+                $elem_topic->id = $topic->id;
+                $elem_topic->title = $topic->title;
+                $elem_topic->descriptors = array();
+                foreach ($topic->descriptors as $descriptor) {
+                	$elem_desc = new stdClass ();
+                	$elem_desc->descriptorid = $descriptor->id;
+                	$elem_desc->descriptortitle = $descriptor->title;
+                    $elem_desc->childdescriptors = array();
+                    foreach ($descriptor->children as $child) {
+                        $elem_child = new stdClass ();
+                        $elem_child->descriptorid = $child->id;
+                        $elem_child->descriptortitle = $child->title;
+                        $elem_child->examples = array();
+                        foreach ($child->examples as $example) {
+                            $elem_example = new stdClass ();
+                            $elem_example->exampleid = $example->id;
+                            $elem_example->exampletitle = $example->title;
+                            $elem_child->examples[] = $elem_example;
+                        }
+                        $elem_desc->childdescriptors[] = $elem_child;
+                    }
+                    $elem_desc->examples = array();
+                    foreach ($descriptor->examples as $example) {
+                        $elem_example = new stdClass ();
+                        $elem_example->exampleid = $example->id;
+                        $elem_example->exampletitle = $example->title;
+                        $elem_desc->examples[] = $elem_example;
+                    }
+                	$elem_topic->descriptors[] = $elem_desc;
+                }
+                $elem_sub->topics[] = $elem_topic;
+            }
+            if (!empty($elem_sub->topics)) {
+                $structure[] = $elem_sub;
+            }
+        }
+
+        return $structure;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_all_subjects_for_course_as_tree_returns() {
+        return new external_multiple_structure (new external_single_structure (array(
+            'id' => new external_value (PARAM_INT, 'id of subject'),
+            'title' => new external_value (PARAM_TEXT, 'title of subject'),
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
+            'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
+            'topics' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, 'id of example'),
+                'title' => new external_value (PARAM_TEXT, 'title of example'),
+                'descriptors' => new external_multiple_structure (new external_single_structure (array(
+                	'descriptorid' => new external_value (PARAM_INT, 'id of example'),
+                	'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+                    'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
+                        'descriptorid' => new external_value (PARAM_INT, 'id of example'),
+                        'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+                        'examples' => new external_multiple_structure (new external_single_structure (array(
+                            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+                            'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+                        ))),
+                    ))),
+                    'examples' => new external_multiple_structure (new external_single_structure (array(
+                        'exampleid' => new external_value (PARAM_INT, 'id of example'),
+                        'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+                    ))),
+                ))),
+            ))),
+        )));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    /**
+//     * Returns description of method parameters
+//     *
+//     * @return external_function_parameters
+//     */
+//    public static function diggrplus_get_all_examples_for_course_parameters() {
+//        return new external_function_parameters (array(
+//            'courseid' => new external_value (PARAM_INT, ''),
+//            'userid' => new external_value (PARAM_INT, ''),
+//        ));
+//    }
+//
+//    /**
+//     * Get Items
+//     * get all items AND examples for a competence
+//     * they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend
+//     * @ws-type-read
+//     * @return array of items
+//     */
+//    public static function diggrplus_get_all_examples_for_course($courseid, $userid, $search="") {
+//        global $USER;
+//
+//        static::validate_parameters(static::diggrplus_get_all_examples_for_course_parameters(), array(
+//            'courseid' => $courseid,
+//            'userid' => $userid,
+//        ));
+//
+//        // TODO: check if is teacher
+//
+//        $examples = block_exacomp_get_examples_by_course($courseid, true);
+//        foreach($examples as $example){
+//            static::block_excomp_get_example_details($example, $courseid);
+//        }
+//
+//        //block_exacomp_get_examples_for_competence_and_user is not well suited for this
+////        //get all subjects of course
+////        $subjects = block_exacomp_get_subjects_by_course($courseid);
+////
+////        //get all examples of these subjects
+////        $examples = array();
+////        foreach($subjects as $subject){
+////            $courseExamples = static::block_exacomp_get_examples_for_competence_and_user($userid, $subject->id, BLOCK_EXACOMP_TYPE_SUBJECT, static::wstoken(), $search, -1, "", $courseid);
+////            $examples = array_merge($courseExamples, $examples);
+////        }
+//
+//        return $examples;
+//    }
+//
+//
+//
+//
+//    /**
+//     * Returns desription of method return values
+//     *
+//     * @return external_multiple_structure
+//     */
+//    public static function diggrplus_get_all_examples_for_course_returns() {
+//        return new external_multiple_structure(new external_single_structure (array(
+//
+//            'courseid' => new external_value (PARAM_INT, ''),
+//
+//            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+//            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
+//            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+//            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+//
+//            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+//            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+//
+//
+//            'id' => new external_value (PARAM_INT, 'id of example'),
+//                'title' => new external_value (PARAM_TEXT, 'title of example'),
+//                'description' => new external_value (PARAM_TEXT, 'description of example'),
+////                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
+////                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
+//                'solution' => new external_value (PARAM_TEXT, 'task filename'),
+//                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
+//                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+////                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
+//                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+//                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+//                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+////                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
+////                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+//
+//                'taskfiles' => new external_multiple_structure(new external_single_structure(array(
+//                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
+//                    'url' => new external_value (PARAM_URL, 'file url'),
+//                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
+////                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+//                )), 'taskfiles of the example', VALUE_OPTIONAL),
+//
+//            )));
+//    }
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public static function diggrplus_request_external_file_parameters() {
         return new external_function_parameters (array(
         	'url' => new external_value (PARAM_URL, ''),
@@ -10813,8 +11175,9 @@ class block_exacomp_external extends external_api {
      * @param int $userid
      * @param bool $compid
      * @param bool $comptype
+     * @param int $userid ---> use if you want to reduce the results to only one course. Otherwise, all courses are used.
      */
-    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1, $status=""){
+    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1, $status="", $courseid = -1){
         global $DB;
         // Maybe better performance with join on user_enrolments table?
 //    if ($isTeacher) {
@@ -10838,7 +11201,21 @@ class block_exacomp_external extends external_api {
             }
         }else if($comptype == BLOCK_EXACOMP_TYPE_SUBJECT){
             //Get ALL examples, then only use the ones of the correct subject.
+            /* Special Case: Same Subject is used in two courses
+             * one courses uses 3 topics, the other course 5 topics
+             * examples of all 5 topics will be returned, making this function unsuitable for getting examples of a course
+             * ==> use $courseid
+             */
             $courses = enrol_get_users_courses($userid);
+
+            if($courseid != -1){
+                $courses = array_filter($courses, function($course) use ($courseid) {
+                    return $course->id == $courseid;
+                });
+            }
+
+
+
             foreach ($courses as $course) {
                 $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search); // TODO: duplicates?
                 foreach ($courseExamples as $key => $example) {
@@ -10857,6 +11234,7 @@ class block_exacomp_external extends external_api {
                         static::block_excomp_get_example_details($example, $course->id);
                     }
                 }
+
                 $examples += $courseExamples;
             }
 
