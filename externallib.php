@@ -640,6 +640,17 @@ class block_exacomp_external extends external_api {
 		$descriptors_exam_mm = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array(
 			'exampid' => $exampleid,
 		));
+        //this would get all descriptors that are generally linked to that example, but would not take into account, that some topics may not be added to the competence grid for this course
+
+
+        $sql = "SELECT dex.*
+            FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex
+            JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid
+            JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
+            WHERE dex.exampid = ?
+            AND ct.courseid = ?";
+
+        $descriptors_exam_mm = $DB->get_records_sql($sql,[$exampleid, $courseid]);
 
 		$descriptors = array();
 		foreach ($descriptors_exam_mm as $descriptor_mm) {
