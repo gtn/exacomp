@@ -11377,8 +11377,10 @@ class block_exacomp_external extends external_api {
             // In some very olf Epop competence grids, there is HTML in the description. If this is the case --> just delete it
             if(strpos($example->description, "<!doctype html>") !== false){
                 $example->description = "";
+            }else{
+                $example->description = static::custom_htmltrim($example->description);
+                $example->description = strip_tags($example->description);
             }
-
 
             // Adding the evaluation information
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
