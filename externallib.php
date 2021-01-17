@@ -7102,7 +7102,7 @@ class block_exacomp_external extends external_api {
 
 		foreach($examplesAndItems as $key => $exampleItem){
 			// TODO hack: only examples with submitted items
-			if (!$exampleItem->item || $exampleItem->item->status < 1) {
+			if (!$exampleItem->item) {
 				unset($examplesAndItems[$key]);
 				continue;
 			}
@@ -7129,6 +7129,18 @@ class block_exacomp_external extends external_api {
                 $exampleItem->status = "new";
             }
 		}
+
+        //Filter by status and use different sortings depending on status
+        if($status == "inprogress" || $status == "submitted" || $status == "completed"){
+            foreach($examplesAndItems as $key => $exampleItem){
+                if($exampleItem->status != $status){
+                    unset($examplesAndItems[$key]);
+                }
+            }
+            usort($examplesAndItems, function($a, $b) {
+                return strcmp($b->timemodified, $a->timemodified);
+            });
+        }
 
         return $examplesAndItems;
     }
