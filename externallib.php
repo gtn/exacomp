@@ -7292,19 +7292,19 @@ class block_exacomp_external extends external_api {
                 $elem_topic->descriptors = array();
                 foreach ($topic->descriptors as $descriptor) {
                 	$elem_desc = new stdClass ();
-                	$elem_desc->descriptorid = $descriptor->id;
-                	$elem_desc->descriptortitle = $descriptor->title;
+                	$elem_desc->id = $descriptor->id;
+                	$elem_desc->title = $descriptor->title;
                     $elem_desc->childdescriptors = array();
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
-                        $elem_child->descriptorid = $child->id;
-                        $elem_child->descriptortitle = $child->title;
+                        $elem_child->id = $child->id;
+                        $elem_child->title = $child->title;
                         $elem_child->examples = array();
                         foreach ($child->examples as $example) {
                             $elem_example = new stdClass ();
-                            $elem_example->exampleid = $example->id;
-                            $elem_example->exampletitle = $example->title;
-                            $elem_example->examplecreatorid = $example->creatorid;
+                            $elem_example->id = $example->id;
+                            $elem_example->title = $example->title;
+                            $elem_example->creatorid = $example->creatorid;
                             $elem_example->visible = $example->visible;
                             $elem_child->examples[] = $elem_example;
                         }
@@ -7313,9 +7313,9 @@ class block_exacomp_external extends external_api {
                     $elem_desc->examples = array();
                     foreach ($descriptor->examples as $example) {
                         $elem_example = new stdClass ();
-                        $elem_example->exampleid = $example->id;
-                        $elem_example->exampletitle = $example->title;
-                        $elem_example->examplecreatorid = $example->creatorid;
+                        $elem_example->id = $example->id;
+                        $elem_example->title = $example->title;
+                        $elem_example->creatorid = $example->creatorid;
                         $elem_example->visible = $example->visible;
                         $elem_desc->examples[] = $elem_example;
                     }
@@ -7345,24 +7345,24 @@ class block_exacomp_external extends external_api {
             'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
             'topics' => new external_multiple_structure (new external_single_structure (array(
                 'id' => new external_value (PARAM_INT, 'id of example'),
-                'title' => new external_value (PARAM_TEXT, 'title of example'),
+                'title' => new external_value (PARAM_TEXT, 'title of topic'),
                 'descriptors' => new external_multiple_structure (new external_single_structure (array(
-                	'descriptorid' => new external_value (PARAM_INT, 'id of example'),
-                	'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+                	'id' => new external_value (PARAM_INT, 'id of example'),
+                	'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
                     'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
-                        'descriptorid' => new external_value (PARAM_INT, 'id of example'),
-                        'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+                        'id' => new external_value (PARAM_INT, 'id of example'),
+                        'title' => new external_value (PARAM_TEXT, 'title of example'),
                         'examples' => new external_multiple_structure (new external_single_structure (array(
-                            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                            'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                            'examplecreatorid' => new external_value (PARAM_INT, 'creator of this example'),
+                            'id' => new external_value (PARAM_INT, 'id of example'),
+                            'title' => new external_value (PARAM_TEXT, 'title of example'),
+                            'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                             'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
                         ))),
                     ))),
                     'examples' => new external_multiple_structure (new external_single_structure (array(
-                        'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                        'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                        'examplecreatorid' => new external_value (PARAM_INT, 'creator of this example'),
+                        'id' => new external_value (PARAM_INT, 'id of example'),
+                        'title' => new external_value (PARAM_TEXT, 'title of example'),
+                        'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                         'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
                     ))),
                 ))),
