@@ -7257,7 +7257,7 @@ class block_exacomp_external extends external_api {
      * @return array of user courses
      */
     public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid) {
-        global $CFG, $USER, $DB;
+        global $USER;
 
         static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
             'userid' => $userid,
@@ -7304,6 +7304,8 @@ class block_exacomp_external extends external_api {
                             $elem_example = new stdClass ();
                             $elem_example->exampleid = $example->id;
                             $elem_example->exampletitle = $example->title;
+                            $elem_example->examplecreatorid = $example->creatorid;
+                            $elem_example->visible = $example->visible;
                             $elem_child->examples[] = $elem_example;
                         }
                         $elem_desc->childdescriptors[] = $elem_child;
@@ -7313,6 +7315,8 @@ class block_exacomp_external extends external_api {
                         $elem_example = new stdClass ();
                         $elem_example->exampleid = $example->id;
                         $elem_example->exampletitle = $example->title;
+                        $elem_example->examplecreatorid = $example->creatorid;
+                        $elem_example->visible = $example->visible;
                         $elem_desc->examples[] = $elem_example;
                     }
                 	$elem_topic->descriptors[] = $elem_desc;
@@ -7351,11 +7355,15 @@ class block_exacomp_external extends external_api {
                         'examples' => new external_multiple_structure (new external_single_structure (array(
                             'exampleid' => new external_value (PARAM_INT, 'id of example'),
                             'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+                            'examplecreatorid' => new external_value (PARAM_INT, 'creator of this example'),
+                            'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
                         ))),
                     ))),
                     'examples' => new external_multiple_structure (new external_single_structure (array(
                         'exampleid' => new external_value (PARAM_INT, 'id of example'),
                         'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
+                        'examplecreatorid' => new external_value (PARAM_INT, 'creator of this example'),
+                        'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
                     ))),
                 ))),
             ))),
