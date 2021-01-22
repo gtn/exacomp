@@ -8781,7 +8781,9 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             AND dvis.visible = true
             AND tvis.visible = true
             AND evis.visible = true        
-            AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')";
+            AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')
+            GROUP BY ex.id
+            ";
         }else{
             $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
@@ -8795,7 +8797,9 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON n.id = d.niveauid
 
             WHERE ct.courseid = ?
-            AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')";
+            AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')
+            GROUP BY ex.id
+            ";
         }
     }else{
         $sql = "SELECT ex.*
