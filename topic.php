@@ -37,7 +37,7 @@ $item = $id ? \block_exacomp\topic::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_trans($item ? 'de:Kompetenzbereich bearbeiten' : 'de:Neuen Kompetenzbereich anlegen'));
+$PAGE->set_heading(block_exacomp_trans($item ? ['de:Kompetenzbereich bearbeiten','en:Edit competence area'] : ['de:Neuen Kompetenzbereich anlegen','en:Add competence area']));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
