@@ -2438,7 +2438,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 //	$niveaus = g::$DB->get_records_list(BLOCK_EXACOMP_DB_NIVEAUS, 'id', $niveau_ids, 'numb, sorting');
 //	$niveaus = \block_exacomp\niveau::create_objects($niveaus);
 
-    $niveaus = block_exacomp_get_niveaus_for_subject($selectedSubject->id);
+    $niveaus = block_exacomp_get_niveaus_for_subject(($selectedSubject ? $selectedSubject->id : null));
     $niveaus = \block_exacomp\niveau::create_objects($niveaus);
 
 
@@ -5669,11 +5669,13 @@ function block_exacomp_clear_topics_for_crosssubject($topics,$courseid,$crosssub
         $topicsOfCrosssubj[$descriptor->topicid] = $descriptor->topicid;
     }
 
-    foreach($topics as $key => $topic){
-        if(isset($topicsOfCrosssubj[$topic->id])){
-            //ok
-        }else{
-            unset($topics[$key]);
+    if (is_array($topics)) {
+        foreach ($topics as $key => $topic) {
+            if (isset($topicsOfCrosssubj[$topic->id])) {
+                //ok
+            } else {
+                unset($topics[$key]);
+            }
         }
     }
     return $topics;
@@ -9099,66 +9101,69 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
     }
 
 
-	foreach ($subject->topics as $topic) {
-		// auswertung pro lfs
-		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic, $crosssubj);
+    if (is_array($subject->topics)) {
+        foreach ($subject->topics as $topic) {
+            // auswertung pro lfs
+            $data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic, $crosssubj);
 
 
-		// gesamt for topic
-		$data->topic_evalniveauid =
-			(($use_evalniveau) ?
-				((isset($user->topics->niveau[$topic->id]))
-					? $user->topics->niveau[$topic->id] : -1)
-				: 0);
+            // gesamt for topic
+            $data->topic_evalniveauid =
+                (($use_evalniveau) ?
+                    ((isset($user->topics->niveau[$topic->id]))
+                        ? $user->topics->niveau[$topic->id] : -1)
+                    : 0);
 
-		$data->topic_evalniveau = @$evaluationniveau_items[$data->topic_evalniveauid] ?: '';
+            $data->topic_evalniveau = @$evaluationniveau_items[$data->topic_evalniveauid] ?: '';
 
-		//auswirkung auf total im kompetenzprofil
-// 		$data->topic_eval =
-// 			((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) ?
-// 				((isset($user->topics->teacher_additional_grading[$topic->id]))
-// 					? $user->topics->teacher_additional_grading[$topic->id] : '')
-// 				: ((isset($user->topics->teacher[$topic->id]))
-// 					? $scheme_items[$user->topics->teacher[$topic->id]] : '-1'));
-		$data->topic_eval =
-		((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
-		    ((isset($user->topics->teacher_additional_grading[$topic->id]))
-		        ? $user->topics->teacher_additional_grading[$topic->id] : '')
-		    : ((isset($user->topics->teacher[$topic->id]))
-		        ? $user->topics->teacher[$topic->id] : '-1')); // $scheme_items[$user->topics->teacher[$topic->id]] would deliver the text... float expected
-		//$data->topic_eval = 2;
+            //auswirkung auf total im kompetenzprofil
+            // 		$data->topic_eval =
+            // 			((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) ?
+            // 				((isset($user->topics->teacher_additional_grading[$topic->id]))
+            // 					? $user->topics->teacher_additional_grading[$topic->id] : '')
+            // 				: ((isset($user->topics->teacher[$topic->id]))
+            // 					? $scheme_items[$user->topics->teacher[$topic->id]] : '-1'));
+            $data->topic_eval =
+                ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
+                    ((isset($user->topics->teacher_additional_grading[$topic->id]))
+                        ? $user->topics->teacher_additional_grading[$topic->id] : '')
+                    : ((isset($user->topics->teacher[$topic->id]))
+                        ? $user->topics->teacher[$topic->id] : '-1')); // $scheme_items[$user->topics->teacher[$topic->id]] would deliver the text... float expected
+            //$data->topic_eval = 2;
 
-        $data->topic_selfeval = 123;
+            $data->topic_selfeval = 123;
 
-		$data->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
-		$data->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id])) ? $user->topics->timestamp_teacher[$topic->id] : 0);
-		$data->topic_id = $topic->id;
-	}
+            $data->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
+            $data->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id])) ? $user->topics->timestamp_teacher[$topic->id] : 0);
+            $data->topic_id = $topic->id;
+        }
+    }
 
 	$table_content->subject_evalniveau =
 		(($use_evalniveau) ?
-			((isset($user->subjects->niveau[$subject->id]))
+			(( property_exists($subject, 'id') && isset($user->subjects->niveau[$subject->id]))
 				? @$evaluationniveau_items[$user->subjects->niveau[$subject->id]].' ' : '')
 			: '');
 
 	$table_content->subject_evalniveauid = (($use_evalniveau) ?
-		((isset($user->subjects->niveau[$subject->id]))
+		(( property_exists($subject, 'id') && isset($user->subjects->niveau[$subject->id]))
 			? $user->subjects->niveau[$subject->id] : -1)
 		: 0);
 
 	$table_content->subject_eval = ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
-		((isset($user->subjects->teacher_additional_grading[$subject->id]))
+		(( property_exists($subject, 'id') && isset($user->subjects->teacher_additional_grading[$subject->id]))
 			? $user->subjects->teacher_additional_grading[$subject->id] : '')
 		: ((isset($user->subjects->teacher[$subject->id]))
 		    ? $user->subjects->teacher[$subject->id] : '')); //$scheme_items[$user->subjects->teacher[$subject->id]] wÃ¤re der String
 
-	$table_content->timestamp = (isset($user->subjects->timestamp_teacher[$subject->id]))
+	$table_content->timestamp = (property_exists($subject, 'id') && isset($user->subjects->timestamp_teacher[$subject->id]))
 		? $user->subjects->timestamp_teacher[$subject->id] : '';
 
-	$table_content->subject_title = $subject->title;
+	$table_content->subject_title = property_exists($subject, 'title') ? $subject->title : '';
 
-    foreach ($table_header as $key => $niveau) {
+	foreach ($table_header as $key => $niveau) {
         $niveaukey = /*$niveau->numb.'-'.$niveau->sorting.'-'.*/$niveau->title;
+//        $niveaukey = (property_exists($niveau, 'numb') ? $niveau->numb : 0).'-'.(property_exists($niveau, 'sorting') ? $niveau->sorting : 0).'-'.$niveau->title;
 		if (isset($niveau->span) && $niveau->span == 1) {
 			unset($table_header[$key]);
 		} elseif ($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
@@ -9180,9 +9185,13 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
     // niveaus sorting: numb, sorting
     // sorted in previous function. TODO: right?
-	/* foreach ($table_content->content as $row) {
-		ksort($row->niveaus);
-	} */
+    // sorting by table header
+    $headernames = array_map(function ($n) {return $n->title;}, $table_header);
+	unset($headernames[BLOCK_EXACOMP_SHOW_ALL_NIVEAUS]);
+	foreach ($table_content->content as $row) {
+        $row->niveaus = array_replace(array_flip($headernames), $row->niveaus);
+//		ksort($row->niveaus);
+	}
 
 
 	return array($course_subjects, $table_column, $table_header, $table_content);
@@ -13126,6 +13135,11 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
                         AND c.courseid = ?
                         AND d.parentid = 0'; // only parents?
 
+//        echo "<pre>debug:<strong>lib.php:13129</strong>\r\n"; print_r($sql); echo '</pre>'; // !!!!!!!!!! delete it
+//        echo "<pre>debug:<strong>lib.php:13130</strong>\r\n"; print_r($topic->id); echo '</pre>'; // !!!!!!!!!! delete it
+//        echo "<pre>debug:<strong>lib.php:13131</strong>\r\n"; print_r($studentid); echo '</pre>'; // !!!!!!!!!! delete it
+//        echo "<pre>debug:<strong>lib.php:13132</strong>\r\n"; print_r($negativeLimit); echo '</pre>'; // !!!!!!!!!! delete it
+//        echo "<pre>debug:<strong>lib.php:13133</strong>\r\n"; print_r($courseid); echo '</pre>'; // !!!!!!!!!! delete it
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $negativeLimit, $courseid));
         $topic->teacher = 0;
         if (count($totalDescr) > 0) {

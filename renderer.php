@@ -5936,28 +5936,36 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $competence_tree = $newArr + $isglobalArr;
             }
 
-
             if($crosssubj){
                 $grading = block_exacomp_get_comp_eval($crosssubj->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_CROSSSUB, $crosssubj->id);
-                switch (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB)) {
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-                        $addtext = block_exacomp_format_eval_value($grading->additionalinfo);
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                        $value = @$grading->value === null ? -1 : @$grading->value;
-                        $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
-                        if (isset($teacher_eval_items[$value])) {
-                            $addtext = $teacher_eval_items[$value];
-                        }
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-                        $addtext = block_exacomp_format_eval_value($grading->value);
-                        break;
-                    case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-                        if ($grading->value > 0) {
-                            $addtext = 'X';
-                        }
-                        break;
+                if ($grading) {
+                    $addtext = '';
+                    switch (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_CROSSSUB)) {
+                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
+                            if (property_exists($grading, 'additionalinfo')) {
+                                $addtext = block_exacomp_format_eval_value($grading->additionalinfo);
+                            } else {
+                                $addtext = block_exacomp_format_eval_value(null);
+                            }
+                            break;
+                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+                            $value = @$grading->value === null ? -1 : @$grading->value;
+                            $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+                            if (isset($teacher_eval_items[$value])) {
+                                $addtext = $teacher_eval_items[$value];
+                            }
+                            break;
+                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
+                            $addtext = block_exacomp_format_eval_value($grading->value);
+                            break;
+                        case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
+                            if ($grading->value > 0) {
+                                $addtext = 'X';
+                            }
+                            break;
+                    }
+                } else {
+                    $addtext = ''; // TODO: right?
                 }
                 $content .= html_writer::tag("h2", block_exacomp_get_string("topicgrading").$addtext, array("class" => "competence_profile_coursetitle"));
                 $content .= html_writer::tag("br","");
@@ -5982,7 +5990,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
                     $radar_graph_content = html_writer::tag('legend', block_exacomp_get_string('radargraphtitle'),
                             array('class' => 'competence_profile_insectitle'));
-                    $topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id, $subject->id);
+                    $topics = block_exacomp_get_topics_for_radar_graph($courseid, $student->id, property_exists($subject, 'id') ? $subject->id : 0);
                     if (count($topics) < 3 || count($topics) > 13) {
                         //print error
                         $img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
@@ -6626,7 +6634,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row = new html_table_row();
 			$row->attributes['class'] = 'comparison_topic';
 			$cell = new html_table_cell();
-			$cell->text = $topic->numbering;
+			$cell->text = property_exists($topic, 'numbering') ? $topic->numbering : '';
 			$cell->attributes['class'] = 'col-numbering';
 			$row->cells[] = $cell;
 
