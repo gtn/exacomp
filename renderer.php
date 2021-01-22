@@ -6180,7 +6180,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
              * $table_column are the parent-descriptors... so actually the rows
              *
              */
-
             // aggregate all data to next generation of global report
             if (@$subject->isglobal) { // only isglobal?
                 if (!array_key_exists($subject->id, $subjectGenericData)) {
@@ -8471,7 +8470,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
         static $canvasid_i = 0;
         $canvasid_i++;
         $canvasid = 'canvas_radar_graph_'.$canvasid_i;
-
         $content = html_writer::div(html_writer::tag('canvas', '', array("id" => $canvasid)), "radargraph", array("style" => "height:100%"));
         ob_start();
         ?>

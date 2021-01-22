@@ -13122,8 +13122,10 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
                         AND c.role = ?
                         AND c.userid = ?
                         AND c.value '.$direction.' ?
+                        AND c.value > -1 
                         AND c.courseid = ?
                         AND d.parentid = 0'; // only parents?
+
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $negativeLimit, $courseid));
         $topic->teacher = 0;
         if (count($totalDescr) > 0) {
