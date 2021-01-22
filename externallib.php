@@ -1224,7 +1224,7 @@ class block_exacomp_external extends external_api {
 			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctop ON desctop.descrid = descr.id
 			JOIN {".BLOCK_EXACOMP_DB_TOPICS."} topic ON topic.id = desctop.topicid
 			JOIN {".BLOCK_EXACOMP_DB_SUBJECTS."} subj ON topic.subjid = subj.id
-			WHERE subj.id=?
+			WHERE subj.id=? ORDER BY niveauid
 		", [
             $subjectid,
         ]);
