@@ -1728,6 +1728,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Neuen Lernfortschritt hinzufügen',
         'Add niveau'
     ],
+    'please_choose' => [
+        'Bitte wählen',
+        'Please select'
+    ],
     'delete_niveau' => [
         'Löschen hinzufügen',
         'Delete niveau'
@@ -2618,6 +2622,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'export_all_standards' => [
         'Alle Kompetenzraster dieser Moodle Instanz exportieren',
         'Export all competence grids of this Moodle installation',
+    ],
+    'exportieren' => [
+        'Exportieren',
+        'Export',
     ],
     'export_selective' => [
         'Selektiver Export',
