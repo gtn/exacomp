@@ -5073,6 +5073,7 @@ class block_exacomp_external extends external_api {
 			'title' => new external_value (PARAM_TEXT, 'title of example'),
 			'start' => new external_value (PARAM_INT, 'start of event'),
 			'end' => new external_value (PARAM_INT, 'end of event'),
+            'timeframe' => new external_value (PARAM_TEXT, 'timeframe'),
 			'student_evaluation' => new external_value (PARAM_INT, 'self evaluation of student'),
 			'teacher_evaluation' => new external_value(PARAM_INT, 'evaluation of teacher'),
 			'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
