@@ -1161,6 +1161,12 @@ $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/dakora_t
         block_exacomp_get_string('settings_dakora_timeout'),
         block_exacomp_get_string('settings_dakora_timeout_description'),
         900, PARAM_INT));
+$settings->add(new admin_setting_configcheckbox('exacomp/dakora_show_overview',
+        block_exacomp_get_string('settings_dakora_show_overview'),
+        block_exacomp_get_string('settings_dakora_show_overview_description'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/dakora_show_eportfolio',
+        block_exacomp_get_string('settings_dakora_show_eportfolio'),
+        block_exacomp_get_string('settings_dakora_show_eportfolio_description'), 1));
 $settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_assessment',
         block_exacomp_get_string('block_exacomp_elove_student_self_assessment_head'),
         block_exacomp_get_string('block_exacomp_elove_student_self_assessment_body'), 0));

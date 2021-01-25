@@ -12892,6 +12892,14 @@ function block_exacomp_get_config_dakora_timeout() {
     return get_config('exacomp', 'dakora_timeout');
 }
 
+function block_exacomp_get_config_dakora_show_overview() {
+    return get_config('exacomp', 'dakora_show_overview');
+}
+
+function block_exacomp_get_config_dakora_show_eportfolio() {
+    return get_config('exacomp', 'dakora_show_eportfolio');
+}
+
 function block_exacomp_random_password($length = 12) {
     $alphabet = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     $pass = array(); //remember to declare $pass as an array

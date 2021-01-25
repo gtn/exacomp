@@ -1870,6 +1870,22 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
             '',
             '',
     ],
+    'settings_dakora_show_overview' => [
+            'Überblick anzeigen',
+            'show overview',
+    ],
+    'settings_dakora_show_overview_description' => [
+            '',
+            '',
+    ],
+    'settings_dakora_show_eportfolio' => [
+            'ePortfolio anzeigen',
+            'show ePortfolio',
+    ],
+    'settings_dakora_show_eportfolio_description' => [
+            '',
+            '',
+    ],
 	'block_exacomp_elove_student_self_assessment_head' => [
 		'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben',
 		'Allow self-assessment for students in the elove app',

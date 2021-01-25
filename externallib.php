@@ -10319,8 +10319,10 @@ class block_exacomp_external extends external_api {
 		    'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
 			'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
             'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
-						'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
+            'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
             'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
+            'show_overview' => new external_value (PARAM_BOOL, 'flag if "show overview" is active'),
+            'show_eportfolio' => new external_value (PARAM_BOOL, 'flag if "show ePortfolio" is active'),
             'categories' => new external_multiple_structure (new external_single_structure ([
                 'id' => new external_value (PARAM_INT, 'id'),
                 'title' => new external_value (PARAM_TEXT, 'name'),
@@ -10391,6 +10393,8 @@ class block_exacomp_external extends external_api {
             'exaportactive' => $exaportactive,
             'customlanguagefile' => block_exacomp_get_config_dakora_language_file(true), // Returns JSON content.
             'timeout' => block_exacomp_get_config_dakora_timeout(),
+            'show_overview' => block_exacomp_get_config_dakora_show_overview(),
+            'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
             'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES,null,'source','id, title, source')
 		);
 	}
