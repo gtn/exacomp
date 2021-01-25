@@ -6582,13 +6582,29 @@ class block_exacomp_external extends external_api {
             }
         }
 
-        // TODO: should something like this be done for topics or other competencetypes as well? RW
-        if($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE){
-//            block_exacomp_set_user_example($USER->id, $compid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue); // TODO: fix studentvalue bug
-            block_exacomp_set_user_example($USER->id, $compid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT);
-            block_exacomp_notify_all_teachers_about_submission($courseid, $compid, time(),$studentcomment);
-            \block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
-        }
+        if ($submit) {
+			\block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
+
+			$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'submit_item', 'courseid' => $courseid, 'itemid' => $itemid];
+			if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+				$customdata['exampleid'] = $compid;
+				$example = $DB->get_record('block_exacompexamples', array('id' => $compid), 'title, blocking_event');
+				$subject = block_exacomp_get_string('notification_submission_subject_noSiteName', null, ['student' => fullname($USER), 'example' => $example->title]);
+				// $subject .= "\n\r".$studentcomment;
+			} else {
+	            $item = $DB->get_record('block_exaportitem', array('id' => $itemid));
+				$subject = block_exacomp_trans([
+					'de:{$a->student} hat ein freies Lernmaterial "{$a->example}" eingereicht',
+					'en:{$a->student} submitted a solution for "{$a->example}"',
+				], ['student' => fullname($USER), 'example' => $item->name]);
+			}
+			$notificationContext = block_exacomp_get_string('notification_submission_context');
+
+			$teachers = block_exacomp_get_teachers_by_course($courseid);
+			foreach ($teachers as $teacher) {
+				block_exacomp_send_notification("submission", $USER, $teacher, $subject, '', $notificationContext, '', false, 0, $customdata);
+			}
+		}
 
         // add "activity" relations to competences: TODO: is this ok?
         // only do this if it is not done already for this activityid and compid
@@ -6660,7 +6676,27 @@ class block_exacomp_external extends external_api {
                 'comment' => $comment
             ));
 
+        // TODO: prüfen, ob schüler/lehrer auch auf diesen item kommentieren darf!
+
         $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
+
+        // TODO: $courseid
+		// $courseid = 0;
+		// $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'courseid' => $courseid, 'itemid' => $itemid];
+		// $subject = block_exacomp_trans([
+		// 	'de:{$a->student} hat eine Lösung zum freien Lernmaterial {$a->example} eingereicht',
+		// 	'en:{$a->student} submitted a solution for {$a->example}',
+		// ], ['student' => fullname($USER), 'example' => $item->name]);
+		//
+		// $context = block_exacomp_get_string('notification_submission_context');
+		//
+		// // wenn von schüler, dann an lehrer senden
+		// $teachers = block_exacomp_get_teachers_by_course($courseid);
+		// foreach ($teachers as $teacher) {
+		// 	block_exacomp_send_notification("submission", $USER, $teacher, $subject, '', $context, '', false, 0, $customdata);
+		// }
+		//
+		// // wenn von lehrer, dann an schüler senden
 
         return array("success" => true, "itemid" => $itemid);
     }
@@ -7703,6 +7739,16 @@ class block_exacomp_external extends external_api {
         foreach ($descriptorgradings as $descriptorgrading) {
             block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"]);
         }
+
+	
+        // notification
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'itemid' => $itemid];
+		$subject = block_exacomp_trans([
+			'de:{$a->teacher} hat dein Beispiel "{$a->example}" als erledigt markiert',
+			'en:{$a->teacher} has checked your solution "{$a->example}" as completed',
+		], ['teacher' => fullname($USER), 'example' => $item->name]);
+		$notificationContext = block_exacomp_get_string('notification_submission_context');
+		block_exacomp_send_notification("submission", $USER, $item->userid, $subject, '', $notificationContext, '', false, 0, $customdata);
 
 
 		// if the grading is good, tick the example in exacomp TODO: NOT FOR DIGGRPLUS, hopefully never.

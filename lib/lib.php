@@ -8370,7 +8370,7 @@ function block_exacomp_get_message_icon($userid) {
  * @param bool $dakoramessage if true this comes from a webservice from dakora and should ignore the setting "exacomp | notifications" that allowes/dissalowes notifications
  * @param int $courseid required for message_sent
  */
-function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl = null, $dakoramessage = false, $courseid = 0) {
+function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl = null, $dakoramessage = false, $courseid = 0, $customdata = null) {
 	global $CFG, $DB;
 
 	if (!get_config('exacomp', 'notifications') && !$dakoramessage) {
@@ -8419,6 +8419,9 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
         $eventdata->contexturl = $contexturl;
         $eventdata->contexturlname = $context;
         $eventdata->courseid = $courseid;
+        if ($customdata) {
+        	$eventdata->customdata = $customdata;
+		}
     }
 
     @message_send($eventdata);
@@ -8460,7 +8463,9 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 	$message = block_exacomp_get_string('notification_submission_body_noSiteName', null, array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver' => fullname($userto)));
 	$context = block_exacomp_get_string('notification_submission_context');
 
-	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl);
+	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */, [
+		'exampleid' => $example->id,
+	]);
 }
 
 /**
