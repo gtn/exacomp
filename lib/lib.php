@@ -3464,13 +3464,25 @@ function block_exacomp_get_course_module_association($courseid) {
 		return null;
 	}
 
-	global $DB;
+
+    global $DB;
 	$records = $DB->get_records_sql('
 			SELECT mm.id, compid, comptype, activityid
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {course_modules} m ON m.id = mm.activityid
 			WHERE m.course = ? AND mm.eportfolioitem = 0
 			ORDER BY comptype, compid', array($courseid));
+
+	// records by new method relation
+    $sql = 'SELECT DISTINCT t.id, demm.descrid as compid, '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.' as comptype, t.activityid as activityid
+                FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} t 
+                    JOIN {course_modules} cm ON cm.id = t.activityid 
+                    JOIN {modules} m ON m.id = cm.module
+                    JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} demm ON demm.exampid = t.id                                  
+                WHERE cm.course = ? ';
+    $records_new = $DB->get_records_sql($sql, [$courseid]);
+
+    $records += $records_new; // old method + new method
 
 	$mm = new stdClass();
 	$mm->competencies = array();
