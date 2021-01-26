@@ -1402,7 +1402,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
                                     $titleCell->text .= $this->schedule_icon($example->id, $USER->id, $courseid);
 
-                                    $titleCell->text .= $this->submission_icon($courseid, $example->id, $USER->id);
+                                    if($example->activityid == 0){
+                                        $titleCell->text .= $this->submission_icon($courseid, $example->id, $USER->id);
+                                    }
+
 
                                     $titleCell->text .= $this->competence_association_icon($example->id, $courseid, false);
 
@@ -3049,7 +3052,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 if ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) {
                                     $titleCell->text .= $this->schedule_icon($example->id, $USER->id, $data->courseid);
 
-                                    $titleCell->text .= $this->submission_icon($data->courseid, $example->id, $USER->id);
+                                    if($example->activityid == 0){
+                                        $titleCell->text .= $this->submission_icon($data->courseid, $example->id, $USER->id);
+                                    }
 
                                     $titleCell->text .= $this->competence_association_icon($example->id, $data->courseid, false);
 

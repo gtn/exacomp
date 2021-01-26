@@ -4127,11 +4127,12 @@ function block_exacomp_get_active_activities_by_course($courseid) {
           JOIN {modules} m ON m.id = cm.module
         WHERE NOT m.name = \'quiz\' AND cm.course = ? ';
     $activitiesForExamples = $DB->get_records_sql($sql, array($courseid));
+    
+
 
     foreach ($activitiesForExamples as $activity) {
         $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->activityid, 'courseid' => $courseid), '', 'id');
     }
-
 
     if (block_exacomp_use_old_activities_method()) { //if not, use ONLY new method. but if old method is active, use BOTH
         $sql = "SELECT cm.instance as id, cm.id as activityid 
@@ -4153,8 +4154,6 @@ function block_exacomp_get_active_activities_by_course($courseid) {
         $activities = $activitiesForExamples;
     }
 
-//    var_dump($activities);
-//    die;
     return $activities;
 }
 
@@ -5036,12 +5035,11 @@ function block_exacomp_perform_auto_test() {
 
 
 	foreach ($courses as $courseid) {
-
-	    //also get all other activites, not only quizzes/tests
+	    //also get all other activites, that are NOT tests/quizes ... assigned and related (if settings allow both)
         $otherActivities = block_exacomp_get_active_activities_by_course($courseid);
-
+        
 		// tests associated with competences
-		// get all tests that are associated with competences
+		// get all tests/quizes that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
         $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
@@ -5049,8 +5047,6 @@ function block_exacomp_perform_auto_test() {
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 		// get student grading for each test
 
-//        var_dump("ENDE");
-//        die;
 
 		foreach ($students as $student) {
             $changedquizes = array();
@@ -5082,6 +5078,7 @@ function block_exacomp_perform_auto_test() {
 //                    } else {
 //                        block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
 //                    }
+
 
                     if ($test->descriptors) { // descriptors are associated and should be graded ... "old method"
                         block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
