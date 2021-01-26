@@ -4074,6 +4074,9 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids, $deleteOn
 function block_exacomp_get_active_tests_by_course($courseid) {
 	global $DB;
 
+    $testsForExamples = array();
+    $testsForDescriptors = array();
+
     $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade 
             FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e 
               JOIN {course_modules} cm ON cm.id = e.activityid 
@@ -4102,13 +4105,23 @@ function block_exacomp_get_active_tests_by_course($courseid) {
             $test->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                     array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
         }
+
+        //Before merging: find any activities which have been related as well as assigned
+        //if both has happended: combine examples and descriptors into one, and remove the other. Otheriwse problems will occur later on (overwriting of timestamps)
+        foreach($testsForExamples as $testEx){
+            foreach($testsForDescriptors as $key => $testDescr){
+                if($testEx->activityid == $testDescr->activityid){
+                    $testEx->descriptors = $testDescr->descriptors;
+                    $testEx->topics = $testDescr->topics;
+                    unset($testsForDescriptors[$key]);
+                }
+            }
+        }
+
         $tests = array_merge($testsForExamples,$testsForDescriptors);
     } else {
         $tests = $testsForExamples;
     }
-
-//    var_dump($tests);
-//    die;
 
 	return $tests;
 }
@@ -4120,6 +4133,9 @@ function block_exacomp_get_active_tests_by_course($courseid) {
  */
 function block_exacomp_get_active_activities_by_course($courseid) {
     global $DB;
+
+    $activitiesForExamples = array();
+    $activitiesForDescriptors = array();
 
     $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid
         FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
@@ -4149,6 +4165,19 @@ function block_exacomp_get_active_activities_by_course($courseid) {
             $activity->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                 array('activityid' => $activity->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
         }
+
+        //Before merging: find any activities which have been related as well as assigned
+        //if both has happended: combine examples and descriptors into one, and remove the other. Otheriwse problems will occur later on (overwriting of timestamps)
+        foreach($activitiesForExamples as $actEx){
+            foreach($activitiesForDescriptors as $key => $actDescr){
+                if($actEx->activityid == $actDescr->activityid){
+                    $actEx->descriptors = $actDescr->descriptors;
+                    $actEx->topics = $actDescr->topics;
+                    unset($activitiesForDescriptors[$key]);
+                }
+            }
+        }
+
         $activities = array_merge($activitiesForDescriptors,$activitiesForExamples);
     } else{
         $activities = $activitiesForExamples;
@@ -5082,7 +5111,9 @@ function block_exacomp_perform_auto_test() {
 
                     if ($test->descriptors) { // descriptors are associated and should be graded ... "old method"
                         block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
-                    } else if($test->examples){ // examples are associated and should be graded ... "new method"
+                    }
+                    //no "else if" because a test can be assigned or related OR BOTH
+                    if($test->examples){ // examples are associated and should be graded ... "new method"
                         block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
                     }
 
@@ -5125,7 +5156,9 @@ function block_exacomp_perform_auto_test() {
 //                    }
                     if ($activity->descriptors) { // descriptors are associated and should be graded ... "old method"
                         block_exacomp_assign_competences($courseid, $student->id, $activity->topics, $activity->descriptors, null, false);
-                    } else if($activity->examples){ // examples are associated and should be graded ... "new method"
+                    }
+                    //no "else if" because a test can be assigned or related OR BOTH
+                    if($activity->examples){ // examples are associated and should be graded ... "new method"
                         block_exacomp_assign_competences($courseid, $student->id, null, null, $activity->examples, false);
                     }
 
