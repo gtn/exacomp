@@ -5039,7 +5039,7 @@ function block_exacomp_perform_auto_test() {
         $otherActivities = block_exacomp_get_active_activities_by_course($courseid);
         
 		// tests associated with competences
-		// get all tests/quizzes that are associated with competences
+		// get all tests/quizes that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
         $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
@@ -5068,7 +5068,7 @@ function block_exacomp_perform_auto_test() {
 				if (isset($quiz->grade) && floatval($test->grade) > 0
                         //&& (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade
                         && ((floatval($quiz->grade) * 100) / floatval($test->grade)) >= $testlimit
-                        && (!$quiz_assignment || $quiz_assignment->timemodified <= $quiz->timemodified)
+                        && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)
                 ) {
 				    $changedquizes[$quiz->quiz] = $quiz->timemodified;
 
@@ -5112,7 +5112,7 @@ function block_exacomp_perform_auto_test() {
 //                die;
 
                 if ($activity_completion && (@$activity_completion->completionstate == COMPLETION_COMPLETE || @$activity_completion->completionstate == COMPLETION_COMPLETE_PASS)
-                    && (!$activity_assignment || $activity_assignment->timemodified <= $activity_completion->timemodified)
+                    && (!$activity_assignment || $activity_assignment->timemodified < $activity_completion->timemodified)
                 ) {
                     $changedactivites[$activity->coursemoduleid] = $activity_completion->timemodified;
 
