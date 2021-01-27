@@ -7526,7 +7526,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker
+				e.schedule_marker, e.activityid
 			FROM {block_exacompschedule} s
 			  JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
@@ -7544,7 +7544,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker
+				e.schedule_marker, e.activityid
 			FROM {block_exacompschedule} s
 			  JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
@@ -7796,7 +7796,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 		$example_array['exampleid'] = $example->exampleid;
 		$example_array['niveau'] = isset($example->niveau) ? $example->niveau : null;
 		$example_array['description'] = isset($example->description) ? $example->description : "";
-
+        $example_array['activityid'] = $example->activityid;
 
 		if ($mind_eval) {
 			$example_array['student_evaluation'] = $example->student_evaluation;

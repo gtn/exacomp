@@ -274,7 +274,6 @@
 
 		$eventDiv.empty();
 		$eventDiv.append(title);
-		// debugger
 		block_exacomp_get_configuration(function(configuration) {
 			$.extend(exacomp_calcendar_config, configuration);
 			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
@@ -296,7 +295,8 @@
         } else if (data.externaltask != null) {
             el.append('<div class="event-task">' + data.externaltask + '</div>');
         }
-		if (data.submission_url != null) {
+		
+		if (data.submission_url != null && data.activityid == 0) {
             el.append('<div class="event-submission">' + data.submission_url + '</div>');
         }
         if (data.schedule_marker != null && data.schedule_marker != '') {
@@ -534,7 +534,7 @@
 					((event.externalurl != null) ? '	<div class="event-task">'+event.externalurl+'</div>' : '' )+
 					((event.externaltask != null) ? '	<div class="event-task">'+event.externaltask+'</div>' : '' )+
 					((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
-					((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
+					((event.submission_url != null && event.activityid == 0) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
 					((event.courseid == courseid && event.state != 10)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
                     ((event.schedule_marker != null && event.schedule_marker != '') ? '	<div class="event-schedulermarker marker_'+event.schedule_marker+'">' + event.schedule_marker_short + '</div>' : '' )+
 					'</div>');
