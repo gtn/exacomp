@@ -679,6 +679,138 @@ Returns:<pre>{
         "title": "text null (amount of reached competencies)"
     }
 }</pre>
+<h2>diggrplus_create_or_update_example</h2>
+<div>Create an example or update it
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the example that is to be updated</td>
+<tr>
+<td>name</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of example</td>
+<tr>
+<td>timeframe</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>description of example</td>
+<tr>
+<td>externalurl</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(4) "wwww"
+</td>
+<td></td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(1) "0"
+</td>
+<td>list of competencies, seperated by comma, or "freemat" if freematerial should be created</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemids separated by comma</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemid</td>
+<tr>
+<td>taxonomies</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>list of taxonomies</td>
+<tr>
+<td>newtaxonomy</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new taxonomy to be created</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>courseid</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>crosssubjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the crosssubject if it is a crosssubjectfile</td>
+<tr>
+<td>activityid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of related activity</td>
+<tr>
+<td>is_teacherexample</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>is a teacher example?</td>
+</table>
+Returns:<pre>{
+    "exampleid": "int null (id of created example)",
+    "newtaxonomy": {
+        "id": "int null (amount of total competencies)",
+        "source": "text null (amount of reached competencies)",
+        "title": "text null (amount of reached competencies)"
+    }
+}</pre>
 <h2>block_exacomp_grade_item</h2>
 <div>Grade an item
 grade an item</div>
@@ -1511,6 +1643,47 @@ Returns:<pre>{
     "externaltask": "text null (url of associated module)",
     "task": "text null (@deprecated)",
     "taskfilecount": "text null (number of files for the task)",
+    "solution": "text null (solution(url\/description) of example)",
+    "timeframe": "text null (timeframe as string)",
+    "hassubmissions": "bool null (true if example has already submissions)",
+    "solution_visible": "bool null (visibility for example solution in current context)",
+    "exampletaxonomies": "text null (taxonomies seperated by comma)",
+    "exampletaxids": "text null (taxids seperated by comma)",
+    "is_teacherexample": "bool null (is teacher example?)"
+}</pre>
+<h2>diggrplus_get_example_overview</h2>
+<div>get example overview for dakora app</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+</table>
+Returns:<pre>{
+    "title": "text null (title of example)",
+    "description": "text null (description of example)",
+    "solutionfilename": "text null (task filename)",
+    "externalurl": "text null (externalurl of example)",
+    "externaltask": "text null (url of associated module)",
+    "task": "text null (@deprecated)",
     "solution": "text null (solution(url\/description) of example)",
     "timeframe": "text null (timeframe as string)",
     "hassubmissions": "bool null (true if example has already submissions)",
@@ -4884,6 +5057,143 @@ Params: <table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
+<h2>diggrplus_set_descriptor_visibility</h2>
+<div>set visibility for descriptor</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for descriptor in current context</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
+<h2>diggrplus_set_example_visibility</h2>
+<div>set visibility for example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for example in current context</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
+<h2>diggrplus_set_topic_visibility</h2>
+<div>set visibility for topic</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for topic in current context</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of group</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status of success, either true (1) or false (0))"
+}</pre>
 <h2>dakora_create_cross_subject</h2>
 <div>create new crosssubject</div>
 <div>type: write</div>
@@ -5315,6 +5625,21 @@ Returns:<pre>{
     "overview": "raw null (result html)"
 }</pre>
 <h2>dakora_delete_custom_example</h2>
+<div>delete example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (true if successful)"
+}</pre>
+<h2>diggrplus_delete_custom_example</h2>
 <div>delete example</div>
 <div>type: write</div>
 Params: <table>

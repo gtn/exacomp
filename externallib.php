@@ -546,8 +546,6 @@ class block_exacomp_external extends external_api {
 
 		$example = static::block_excomp_get_example_details($example, $courseid);
 
-
-
 		return $example;
 	}
 
@@ -1759,6 +1757,11 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+
+
+
+
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -1792,8 +1795,6 @@ class block_exacomp_external extends external_api {
 	 * @return array
 	 */
 	public static function create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0) {
-		global $DB, $USER, $CFG;
-
 		if (empty ($name)) {
 			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
@@ -1816,267 +1817,7 @@ class block_exacomp_external extends external_api {
 		    'is_teacherexample' => $is_teacherexample,
 		));
 
-        //Update material that already exists
-		if($exampleid != -1){
-            $example = block_exacomp\example::get($exampleid);
-            block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
-        }else{
-            //new material
-            $example = new stdClass ();
-        }
-
-		$example->title = $name;
-		$example->description = $description;
-        $example->timeframe = $timeframe;
-		$example->externalurl = $externalurl;
-		$example->creatorid = $USER->id;
-		$example->timestamp = time();
-		if ($courseid) {
-			// dakora ab 2017-09-19 übergibt auch die courseid
-			$example->source = block_exacomp_is_teacher($courseid)
-				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
-				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
-		} else {
-			// bei elove wird keine courseid übergeben
-			// elove logik: dakora_get_user_role() kann nicht verwendet werden
-			$example->source = static::get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
-				? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
-				: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
-		}
-
-
-        //add blockingevent tag, since it is a free_element that should be handled as a blocking event in many instances. Maybe add filed "free element" or check in a different way in the require_can_access_example
-        //the require_can_access_example checks if a student has access, and they have access to their blocking and free elements ==> set blocking_event flag
-        if($comps == "freemat" && $crosssubjectid == -1) {
-            $example->blocking_event = 2;
-            $example->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_USER_FREE_ELEMENT;
-        }
-        $example->activityid = $activityid;
-        $example_icons = array();
-        if ($exampleid != -1) {
-            $ex = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, ['id' => $exampleid]);
-            if ($ex->example_icon) {
-                $example_icons = unserialize($ex->example_icon);
-            }
-        }
-        if ($activityid) {
-            if ($module = get_coursemodule_from_id(null, $activityid)) {
-                // externaltask
-                $example->externaltask = block_exacomp_get_activityurl($module)->out(false);
-                // get icon path for activity and save it to database
-                $mod_info = get_fast_modinfo($courseid);
-                if (array_key_exists($module->id, $mod_info->cms)) {
-                    $cm = $mod_info->cms[$module->id];
-                    $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
-                }
-                // activitylink
-                $activitylink = block_exacomp_get_activityurl($module)->out(false);
-                $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
-                $example->activitylink = $activitylink;
-            }
-            $example->activitylink = '';
-            $example->activitytitle = '';
-            $example->courseid = $courseid;
-        } else {
-            $example->activitylink = '';
-            $example->activitytitle = '';
-            $example->courseid = 0;
-            if (array_key_exists('externaltask', $example_icons)) {
-                unset($example_icons['externaltask']);
-            }
-        }
-
-        if (count($example_icons)) {
-            $example->example_icon = serialize($example_icons);
-        } else {
-            $example->example_icon = '';
-        }
-
-        $example->is_teacherexample = $is_teacherexample;
-
-		if ($exampleid != -1){
-            $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
-            $id = $exampleid;
-        } else {
-            $example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
-        }
-
-        //in order for the free material to be accessible: code is mainly the same as block_exacomp_create_blocking_event
-        if($comps == "freemat" && $crosssubjectid == -1){
-                $schedule = new stdClass();
-            $schedule->studentid = $USER->id;
-            $schedule->exampleid = $example->id;
-            $schedule->creatorid = $USER->id;
-            $schedule->courseid = $courseid;
-            $scheduleid = $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, $schedule);
-
-            $record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => 0, 'visible' => 1));
-            if (!$record) {
-                $visibility = new stdClass();
-                $visibility->courseid = $courseid;
-                $visibility->exampleid = $exampleid;
-                $visibility->studentid = 0;
-                $visibility->visible = 1;
-                $visibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
-            }
-        }
-
-        if ($fileitemids != '') {
-            if($exampleid != -1){
-                //Delete old files
-                $context = context_user::instance($USER->id);
-                $fs = get_file_storage();
-                $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
-            }
-
-            $fileitemids = explode(',', $fileitemids);
-            foreach ($fileitemids as $fileitemid){
-                $context = context_user::instance($USER->id);
-                $fs = get_file_storage();
-
-                if ($filename) {
-                    // TODO: filename sollte nicht mehr notwendig sein, das ist alter code?
-                    $file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename);
-                } else {
-                    $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
-                }
-                if (!$file) {
-                    throw new moodle_exception('file not found');
-                }
-
-                $fs->create_file_from_storedfile(array(
-                    'contextid' => context_system::instance()->id,
-                    'component' => 'block_exacomp',
-                    'filearea' => 'example_task',
-                    'itemid' => $example->id,
-                ), $file);
-                $file->delete();
-            }
-        }
-
-		if ($solutionfileitemid != '') {
-			$context = context_user::instance($USER->id);
-			$fs = get_file_storage();
-
-            if($exampleid != -1){
-                $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $example->id);
-            }
-
-			$file = reset($fs->get_area_files($context->id, 'user', 'draft', $solutionfileitemid, null, false));
-			if (!$file) {
-				throw new moodle_exception('solution file not found');
-			}
-
-			$fs->create_file_from_storedfile([
-				'contextid' => context_system::instance()->id,
-				'component' => 'block_exacomp',
-				'filearea' => 'example_solution',
-				'itemid' => $example->id,
-			], $file);
-
-			$file->delete();
-		}
-
-		if($crosssubjectid != -1){
-		    $insert = new stdClass ();
-		    $insert->exampid = $id;
-		    $insert->id_foreign = $crosssubjectid;
-		    $insert->table_foreign = 'cross';
-		    $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-
-		    //vorerst notlösung:
-	        $insert = new stdClass();
-	        $insert->courseid = $courseid;
-	        $insert->exampleid = $id;
-	        $insert->studentid = 0;
-	        $insert->visible = 1;
-	        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-// 		    //visibility entries for this example in course where descriptors are associated
-// 		    $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
-// 		    foreach ($courseids as $courseid) {
-// 		        $insert = new stdClass();
-// 		        $insert->courseid = $courseid;
-// 		        $insert->exampleid = $id;
-// 		        $insert->studentid = 0;
-// 		        $insert->visible = 1;
-// 		        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-// 		    }
-		}else if ($comps != "freemat" && $comps != '0'){ //descriptors of course, and NOT edit but create
-		    $descriptors = explode(',', $comps);
-		    foreach ($descriptors as $descriptor) {
-		        $insert = new stdClass ();
-		        $insert->exampid = $id;
-		        $insert->descrid = $descriptor;
-		        $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-
-		        //visibility entries for this example in course where descriptors are associated
-		        $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
-		        foreach ($courseids as $courseid) {
-		            $insert = new stdClass();
-		            $insert->courseid = $courseid;
-		            $insert->exampleid = $id;
-		            $insert->studentid = 0;
-		            $insert->visible = 1;
-		            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-		        }
-		    }
-		}else if($comps == "freemat"){
-		    //Free material, not linked to a "real" competence
-            $insert = new stdClass ();
-            $insert->exampid = $id;
-            $insert->table_foreign = 'free_material';
-            $insert->descrid = '-1';
-            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
-
-            $insert = new stdClass();
-            $insert->courseid = $courseid;
-            $insert->exampleid = $id;
-            $insert->studentid = 0;
-            $insert->visible = 1;
-            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
-        }
-		//if not crosssubjectid, not comps, and not freemat then don't update the associations... comps should be ="0"
-
-        //clear the taxonomies
-		if($exampleid != -1){
-            $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, [
-                'exampleid' => $id,
-            ]);
-        }
-		$taxonomies = trim($taxonomies) ? explode(',', trim($taxonomies)) : [];
-		foreach ($taxonomies as $taxid) {
-			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
-				'exampleid' => $id,
-				'taxid' => $taxid,
-			]);
-		}
-
-		//and create and add the new taxonomy if it exists
-        $newTax = $newtaxonomy;
-        if ($newTax != '') {
-            $newTaxonomy = new \stdClass();
-            $newTaxonomy->title = $newTax;
-            $newTaxonomy->parentid = 0;
-            $newTaxonomy->sorting = $DB->get_field(BLOCK_EXACOMP_DB_TAXONOMIES, 'MAX(sorting)', array()) + 1;
-            $newTaxonomy->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
-            $newTaxonomy->sourceid = 0;
-            $newTaxonomy->id = $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, $newTaxonomy);
-            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
-                'exampleid' => $id,
-                'taxid' => $newTaxonomy->id
-            ]);
-        }
-
-
-
-		return array(
-			"exampleid" => $id,
-            "newtaxonomy" => array(
-                "id" => $newTaxonomy->id,
-                "source" => $newTaxonomy->source,
-                "title" => $newTaxonomy->title,
-            )
-		);
+		return self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, $filename, $crosssubjectid, $activityid, $is_teacherexample);
 	}
 
 	/**
@@ -2095,6 +1836,85 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_create_or_update_example_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
+            'name' => new external_value (PARAM_TEXT, 'title of example'),
+            'description' => new external_value (PARAM_TEXT, 'description of example'),
+            'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
+            'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
+            'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
+            'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
+            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
+            'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
+            'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
+            'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
+            'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
+            'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
+            'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0) {
+        if (empty ($name)) {
+            throw new invalid_parameter_exception ('Parameter can not be empty');
+        }
+
+        static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
+            'exampleid' => $exampleid,
+            'name' => $name,
+            'description' => $description,
+            'timeframe' => $timeframe,
+            'externalurl' => $externalurl,
+            'comps' => $comps,
+            'fileitemids' => $fileitemids,
+            'solutionfileitemid' => $solutionfileitemid,
+            'taxonomies' => $taxonomies,
+            'newtaxonomy' => $newtaxonomy,
+            'courseid' => $courseid,
+            'filename' => $filename,
+            'crosssubjectid' => $crosssubjectid,
+            'activityid' => $activityid,
+            'is_teacherexample' => $is_teacherexample,
+        ));
+
+        return self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, $filename, $crosssubjectid, $activityid, $is_teacherexample);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_create_or_update_example_returns() {
+        return new external_single_structure (array(
+            'exampleid' => new external_value (PARAM_INT, 'id of created example'),
+            'newtaxonomy' => new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, 'amount of total competencies'),
+                'source' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
+                'title' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
+            )),
+        ));
+    }
 
 
 
@@ -3743,6 +3563,137 @@ class block_exacomp_external extends external_api {
 		    'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
 		));
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static function diggrplus_get_example_overview_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+        ));
+    }
+
+    /**
+     * get example overview for dakora app
+     * @ws-type-read
+     * @param $courseid
+     * @param $exampleid
+     * @param $userid
+     * @return example
+     */
+    public static function diggrplus_get_example_overview($courseid, $exampleid, $userid) {
+        static::validate_parameters(static::diggrplus_get_example_overview_parameters(), array(
+            'courseid' => $courseid,
+            'exampleid' => $exampleid,
+            'userid' => $userid,
+        ));
+
+        $isTeacher = block_exacomp_is_teacher($courseid);
+        if (!$isTeacher) {
+            $userid = g::$USER->id;
+        }
+
+
+
+        $example = static::get_example_by_id($exampleid);
+
+        //Taxonomies:
+        $taxonomies='';
+        $taxids='';
+        foreach (block_exacomp_get_taxonomies_by_example($example->id) as $tax) {
+            if($taxonomies==''){ //first run, no ","
+                $taxonomies .= static::custom_htmltrim($tax->title);
+                $taxids .= $tax->id;
+            }else{
+                $taxonomies .= ','.static::custom_htmltrim($tax->title);
+                $taxids .= ','.$tax->id;
+            }
+        }
+        $example->exampletaxonomies = $taxonomies;
+        $example->exampletaxids = $taxids;
+
+        $solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+        $example->solution_visible = $solution_visible;
+
+
+
+        // remove solution if not visible for student
+        if (!$isTeacher && !$solution_visible) {
+            $example->solution = "";
+        }
+        $example->title = static::custom_htmltrim(strip_tags($example->title));
+
+//        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
+
+        return $example;
+    }
+
+    public static function diggrplus_get_example_overview_returns() {
+        return new external_single_structure (array(
+            'title' => new external_value (PARAM_TEXT, 'title of example'),
+            'description' => new external_value (PARAM_TEXT, 'description of example'),
+            'solutionfilename' => new external_value (PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
+            'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
+            'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+            'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+            'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+            'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
+            'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
+            'taskfiles' => new external_multiple_structure(new external_single_structure(array(
+                'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
+                'url' => new external_value (PARAM_URL, 'file url'),
+                'type' => new external_value (PARAM_TEXT, 'mime type for file'),
+//                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+            )), 'taskfiles of the example', VALUE_OPTIONAL),
+        ));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Returns description of method parameters
@@ -10604,25 +10555,7 @@ class block_exacomp_external extends external_api {
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
 		));
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
     public static function dakora_set_niveau_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
@@ -10678,38 +10611,6 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -10771,7 +10672,235 @@ class block_exacomp_external extends external_api {
 		));
 	}
 
-	/**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static function diggrplus_set_descriptor_visibility_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value (PARAM_BOOL, 'visibility for descriptor in current context'),
+        ));
+    }
+
+    /**
+     * set visibility for descriptor
+     * @ws-type-write
+     * @param $courseid
+     * @param $descriptorid
+     * @param $userid
+     * @param $forall
+     * @param $visible
+     * @return array
+     */
+    public static function diggrplus_set_descriptor_visibility($courseid, $descriptorid, $userid, $forall, $visible) {
+        global $USER;
+        static::validate_parameters(static::diggrplus_set_descriptor_visibility_parameters(), array(
+            'courseid' => $courseid,
+            'descriptorid' => $descriptorid,
+            'userid' => $userid,
+            'forall' => $forall,
+            'visible' => $visible,
+        ));
+
+        if ($userid == 0 && !$forall) {
+            $userid = $USER->id;
+        }
+
+        static::require_can_access_course_user($courseid, $userid);
+
+        block_exacomp_set_descriptor_visibility($descriptorid, $courseid, $visible, $userid);
+
+        return array('success' => true);
+    }
+
+    public static function diggrplus_set_descriptor_visibility_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        ));
+    }
+
+    public static function diggrplus_set_example_visibility_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context'),
+        ));
+    }
+
+    /**
+     * set visibility for example
+     * @ws-type-write
+     * @param $courseid
+     * @param $exampleid
+     * @param $userid
+     * @param $forall
+     * @param $visible
+     * @return array
+     */
+    public static function diggrplus_set_example_visibility($courseid, $exampleid, $userid, $forall, $visible) {
+        global $USER;
+        static::validate_parameters(static::diggrplus_set_example_visibility_parameters(), array(
+            'courseid' => $courseid,
+            'exampleid' => $exampleid,
+            'userid' => $userid,
+            'forall' => $forall,
+            'visible' => $visible,
+        ));
+
+        if ($userid == 0 && !$forall) {
+            $userid = $USER->id;
+        }
+
+        static::require_can_access_course_user($courseid, $userid);
+
+        block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $userid);
+
+        return array('success' => true);
+    }
+
+    public static function diggrplus_set_example_visibility_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        ));
+    }
+
+    public static function diggrplus_set_topic_visibility_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
+            //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
+            'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
+        ));
+    }
+
+    /**
+     * set visibility for topic
+     * @ws-type-write
+     * @param $courseid
+     * @param $topicid
+     * @param $userid
+     * @param $forall
+     * @param $visible
+     * @return array
+     */
+    public static function diggrplus_set_topic_visibility($courseid, $topicid, $userid, $forall, $visible, $groupid=-1) {
+        global $USER;
+        static::validate_parameters(static::diggrplus_set_topic_visibility_parameters(), array(
+            'courseid' => $courseid,
+            'topicid' => $topicid,
+            'userid' => $userid,
+            'forall' => $forall,
+            'visible' => $visible,
+            'groupid' => $groupid,
+        ));
+
+        if ($userid == 0 && !$forall) {
+            $userid = $USER->id;
+        }
+
+        static::require_can_access_course_user($courseid, $userid);
+
+        if($groupid != -1){
+            block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
+        }else{
+            block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $userid);
+        }
+
+        return array('success' => true);
+    }
+
+    public static function diggrplus_set_topic_visibility_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        ));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
 	 * create new crosssubject
 	 * @ws-type-write
 	 * @param $courseid
@@ -12327,6 +12456,274 @@ class block_exacomp_external extends external_api {
 		return $examples_return;
 	}
 
+
+	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0){
+        global $DB, $USER, $CFG;
+
+        //Update material that already exists
+        if($exampleid != -1){
+            $example = block_exacomp\example::get($exampleid);
+            block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
+        }else{
+            //new material
+            $example = new stdClass ();
+        }
+
+        $example->title = $name;
+        $example->description = $description;
+        $example->timeframe = $timeframe;
+        $example->externalurl = $externalurl;
+        $example->creatorid = $USER->id;
+        $example->timestamp = time();
+        if ($courseid) {
+            // dakora ab 2017-09-19 übergibt auch die courseid
+            $example->source = block_exacomp_is_teacher($courseid)
+                ? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
+                : BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
+        } else {
+            // bei elove wird keine courseid übergeben
+            // elove logik: dakora_get_user_role() kann nicht verwendet werden
+            $example->source = static::get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
+                ? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
+                : BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
+        }
+
+
+        //add blockingevent tag, since it is a free_element that should be handled as a blocking event in many instances. Maybe add filed "free element" or check in a different way in the require_can_access_example
+        //the require_can_access_example checks if a student has access, and they have access to their blocking and free elements ==> set blocking_event flag
+        if($comps == "freemat" && $crosssubjectid == -1) {
+            $example->blocking_event = 2;
+            $example->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_USER_FREE_ELEMENT;
+        }
+        $example->activityid = $activityid;
+        $example_icons = array();
+        if ($exampleid != -1) {
+            $ex = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, ['id' => $exampleid]);
+            if ($ex->example_icon) {
+                $example_icons = unserialize($ex->example_icon);
+            }
+        }
+        if ($activityid) {
+            if ($module = get_coursemodule_from_id(null, $activityid)) {
+                // externaltask
+                $example->externaltask = block_exacomp_get_activityurl($module)->out(false);
+                // get icon path for activity and save it to database
+                $mod_info = get_fast_modinfo($courseid);
+                if (array_key_exists($module->id, $mod_info->cms)) {
+                    $cm = $mod_info->cms[$module->id];
+                    $example_icons['externaltask'] = $cm->get_icon_url()->out(false);
+                }
+                // activitylink
+                $activitylink = block_exacomp_get_activityurl($module)->out(false);
+                $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+                $example->activitylink = $activitylink;
+            }
+            $example->activitylink = '';
+            $example->activitytitle = '';
+            $example->courseid = $courseid;
+        } else {
+            $example->activitylink = '';
+            $example->activitytitle = '';
+            $example->courseid = 0;
+            if (array_key_exists('externaltask', $example_icons)) {
+                unset($example_icons['externaltask']);
+            }
+        }
+
+        if (count($example_icons)) {
+            $example->example_icon = serialize($example_icons);
+        } else {
+            $example->example_icon = '';
+        }
+
+        $example->is_teacherexample = $is_teacherexample;
+
+        if ($exampleid != -1){
+            $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
+            $id = $exampleid;
+        } else {
+            $example->id = $id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $example);
+        }
+
+        //in order for the free material to be accessible: code is mainly the same as block_exacomp_create_blocking_event
+        if($comps == "freemat" && $crosssubjectid == -1){
+            $schedule = new stdClass();
+            $schedule->studentid = $USER->id;
+            $schedule->exampleid = $example->id;
+            $schedule->creatorid = $USER->id;
+            $schedule->courseid = $courseid;
+            $scheduleid = $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, $schedule);
+
+            $record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => 0, 'visible' => 1));
+            if (!$record) {
+                $visibility = new stdClass();
+                $visibility->courseid = $courseid;
+                $visibility->exampleid = $exampleid;
+                $visibility->studentid = 0;
+                $visibility->visible = 1;
+                $visibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
+            }
+        }
+
+        if ($fileitemids != '') {
+            if($exampleid != -1){
+                //Delete old files
+                $context = context_user::instance($USER->id);
+                $fs = get_file_storage();
+                $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
+            }
+
+            $fileitemids = explode(',', $fileitemids);
+            foreach ($fileitemids as $fileitemid){
+                $context = context_user::instance($USER->id);
+                $fs = get_file_storage();
+
+                if ($filename) {
+                    // TODO: filename sollte nicht mehr notwendig sein, das ist alter code?
+                    $file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename);
+                } else {
+                    $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
+                }
+                if (!$file) {
+                    throw new moodle_exception('file not found');
+                }
+
+                $fs->create_file_from_storedfile(array(
+                    'contextid' => context_system::instance()->id,
+                    'component' => 'block_exacomp',
+                    'filearea' => 'example_task',
+                    'itemid' => $example->id,
+                ), $file);
+                $file->delete();
+            }
+        }
+
+        if ($solutionfileitemid != '') {
+            $context = context_user::instance($USER->id);
+            $fs = get_file_storage();
+
+            if($exampleid != -1){
+                $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $example->id);
+            }
+
+            $file = reset($fs->get_area_files($context->id, 'user', 'draft', $solutionfileitemid, null, false));
+            if (!$file) {
+                throw new moodle_exception('solution file not found');
+            }
+
+            $fs->create_file_from_storedfile([
+                'contextid' => context_system::instance()->id,
+                'component' => 'block_exacomp',
+                'filearea' => 'example_solution',
+                'itemid' => $example->id,
+            ], $file);
+
+            $file->delete();
+        }
+
+        if($crosssubjectid != -1){
+            $insert = new stdClass ();
+            $insert->exampid = $id;
+            $insert->id_foreign = $crosssubjectid;
+            $insert->table_foreign = 'cross';
+            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+
+            //vorerst notlösung:
+            $insert = new stdClass();
+            $insert->courseid = $courseid;
+            $insert->exampleid = $id;
+            $insert->studentid = 0;
+            $insert->visible = 1;
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+// 		    //visibility entries for this example in course where descriptors are associated
+// 		    $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
+// 		    foreach ($courseids as $courseid) {
+// 		        $insert = new stdClass();
+// 		        $insert->courseid = $courseid;
+// 		        $insert->exampleid = $id;
+// 		        $insert->studentid = 0;
+// 		        $insert->visible = 1;
+// 		        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+// 		    }
+        }else if ($comps != "freemat" && $comps != '0'){ //descriptors of course, and NOT edit but create
+            $descriptors = explode(',', $comps);
+            foreach ($descriptors as $descriptor) {
+                $insert = new stdClass ();
+                $insert->exampid = $id;
+                $insert->descrid = $descriptor;
+                $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+
+                //visibility entries for this example in course where descriptors are associated
+                $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
+                foreach ($courseids as $courseid) {
+                    $insert = new stdClass();
+                    $insert->courseid = $courseid;
+                    $insert->exampleid = $id;
+                    $insert->studentid = 0;
+                    $insert->visible = 1;
+                    $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+                }
+            }
+        }else if($comps == "freemat"){
+            //Free material, not linked to a "real" competence
+            $insert = new stdClass ();
+            $insert->exampid = $id;
+            $insert->table_foreign = 'free_material';
+            $insert->descrid = '-1';
+            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
+
+            $insert = new stdClass();
+            $insert->courseid = $courseid;
+            $insert->exampleid = $id;
+            $insert->studentid = 0;
+            $insert->visible = 1;
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+        }
+        //if not crosssubjectid, not comps, and not freemat then don't update the associations... comps should be ="0"
+
+        //clear the taxonomies
+        if($exampleid != -1){
+            $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, [
+                'exampleid' => $id,
+            ]);
+        }
+        $taxonomies = trim($taxonomies) ? explode(',', trim($taxonomies)) : [];
+        foreach ($taxonomies as $taxid) {
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
+                'exampleid' => $id,
+                'taxid' => $taxid,
+            ]);
+        }
+
+        //and create and add the new taxonomy if it exists
+        $newTax = $newtaxonomy;
+        if ($newTax != '') {
+            $newTaxonomy = new \stdClass();
+            $newTaxonomy->title = $newTax;
+            $newTaxonomy->parentid = 0;
+            $newTaxonomy->sorting = $DB->get_field(BLOCK_EXACOMP_DB_TAXONOMIES, 'MAX(sorting)', array()) + 1;
+            $newTaxonomy->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
+            $newTaxonomy->sourceid = 0;
+            $newTaxonomy->id = $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, $newTaxonomy);
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
+                'exampleid' => $id,
+                'taxid' => $newTaxonomy->id
+            ]);
+        }
+
+
+
+        return array(
+            "exampleid" => $id,
+            "newtaxonomy" => array(
+                "id" => $newTaxonomy->id,
+                "source" => $newTaxonomy->source,
+                "title" => $newTaxonomy->title,
+            )
+        );
+    }
+
+
 	//TODO this is not true for newest version
 	private static function get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid) {
 		$return = new stdClass();
@@ -13098,7 +13495,7 @@ class block_exacomp_external extends external_api {
     public static function dakora_delete_custom_example($exampleid) {
         global $DB, $USER;
 
-        static::validate_parameters(static::delete_example_parameters(), array(
+        static::validate_parameters(static::dakora_delete_custom_example_parameters(), array(
             'exampleid' => $exampleid,
         ));
 
@@ -13121,6 +13518,64 @@ class block_exacomp_external extends external_api {
      * @return external_multiple_structure
      */
     public static function dakora_delete_custom_example_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'true if successful'),
+        ));
+    }
+
+
+
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_delete_custom_example_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        ));
+    }
+
+    /**
+     * delete example
+     *
+     * @ws-type-write
+     * @param integer $exampleid
+     * @return
+     *
+     */
+    public static function diggrplus_delete_custom_example($exampleid) {
+        global $DB, $USER;
+
+        static::validate_parameters(static::diggrplus_delete_custom_example_parameters(), array(
+            'exampleid' => $exampleid,
+        ));
+
+        // only self-created!
+        $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid, 'creatorid' => $USER->id));
+        if (!$example) {
+            throw new invalid_parameter_exception ('Can not delete this example!');
+        }
+
+        block_exacomp_delete_custom_example($exampleid);
+
+        return array(
+            "success" => true,
+        );
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_delete_custom_example_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'true if successful'),
         ));
