@@ -12735,7 +12735,7 @@ class block_exacomp_external extends external_api {
 		$return = [];
 
 		foreach ($values as $key => $value) {
-			$return[] = [$nameKey => $key, $nameValue => $value];
+			$return[] = [$nameKey => (int)$key, $nameValue => $value];
 		}
 
 		return $return;
