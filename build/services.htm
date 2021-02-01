@@ -1683,14 +1683,21 @@ Returns:<pre>{
     "solutionfilename": "text null (task filename)",
     "externalurl": "text null (externalurl of example)",
     "externaltask": "text null (url of associated module)",
-    "task": "text null (@deprecated)",
     "solution": "text null (solution(url\/description) of example)",
     "timeframe": "text null (timeframe as string)",
     "hassubmissions": "bool null (true if example has already submissions)",
     "solution_visible": "bool null (visibility for example solution in current context)",
     "exampletaxonomies": "text null (taxonomies seperated by comma)",
     "exampletaxids": "text null (taxids seperated by comma)",
-    "is_teacherexample": "bool null (is teacher example?)"
+    "is_teacherexample": "bool null (is teacher example?)",
+    "taskfiles": [
+        {
+            "name": "text null (title of taskfile)",
+            "url": "url null (file url)",
+            "type": "text null (mime type for file)"
+        },
+        "... taskfiles of the example ..."
+    ]
 }</pre>
 <h2>dakora_add_example_to_learning_calendar</h2>
 <div>add example to learning calendar for dakora
@@ -3271,14 +3278,18 @@ Returns:<pre>[
             {
                 "id": "int null (id of example)",
                 "title": "text null (title of topic)",
+                "visible": "bool null (visibility of topic in current context )",
+                "used": "bool null (if topic is used)",
                 "descriptors": [
                     {
                         "id": "int null (id of example)",
                         "title": "text null (title of descriptor)",
+                        "visible": "bool null (visibility of descriptor in current context )",
                         "childdescriptors": [
                             {
                                 "id": "int null (id of example)",
                                 "title": "text null (title of example)",
+                                "visible": "bool null (visibility of descriptor in current context )",
                                 "examples": [
                                     {
                                         "id": "int null (id of example)",
@@ -5069,7 +5080,7 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>descriptorid</td>
+<td>id</td>
 <td>int</td>
 <td>null</td>
 <td>required</td>
@@ -5112,7 +5123,7 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>exampleid</td>
+<td>id</td>
 <td>int</td>
 <td>null</td>
 <td>required</td>
@@ -5155,7 +5166,7 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>topicid</td>
+<td>id</td>
 <td>int</td>
 <td>null</td>
 <td>required</td>

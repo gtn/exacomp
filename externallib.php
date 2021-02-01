@@ -7261,7 +7261,7 @@ class block_exacomp_external extends external_api {
 
         $course = get_course($courseid);
 
-        $tree = block_exacomp_get_competence_tree($courseid,null,null,true,null, true, null, false ,false, true, false, true);
+        $tree = block_exacomp_get_competence_tree($courseid,null,null,true,null, true, null, false ,false, false, false, false);
 
 //        var_dump(count($tree));
 
@@ -7278,22 +7278,29 @@ class block_exacomp_external extends external_api {
                 $elem_topic->id = $topic->id;
                 $elem_topic->title = $topic->title;
                 $elem_topic->descriptors = array();
+                $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
+                $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                 foreach ($topic->descriptors as $descriptor) {
                 	$elem_desc = new stdClass ();
                 	$elem_desc->id = $descriptor->id;
                 	$elem_desc->title = $descriptor->title;
                     $elem_desc->childdescriptors = array();
+                    $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid);
+                    $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
                         $elem_child->title = $child->title;
                         $elem_child->examples = array();
+                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid);
+                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
                         foreach ($child->examples as $example) {
                             $elem_example = new stdClass ();
                             $elem_example->id = $example->id;
                             $elem_example->title = $example->title;
                             $elem_example->creatorid = $example->creatorid;
                             $elem_example->visible = $example->visible;
+//                            $elem_example->used = $example->used;
                             $elem_child->examples[] = $elem_example;
                         }
                         $elem_desc->childdescriptors[] = $elem_child;
@@ -7305,6 +7312,7 @@ class block_exacomp_external extends external_api {
                         $elem_example->title = $example->title;
                         $elem_example->creatorid = $example->creatorid;
                         $elem_example->visible = $example->visible;
+//                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
                     }
                 	$elem_topic->descriptors[] = $elem_desc;
@@ -7334,12 +7342,18 @@ class block_exacomp_external extends external_api {
             'topics' => new external_multiple_structure (new external_single_structure (array(
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of topic'),
+                'visible' => new external_value (PARAM_BOOL, 'visibility of topic in current context '),
+                'used' => new external_value (PARAM_BOOL, 'if topic is used'),
                 'descriptors' => new external_multiple_structure (new external_single_structure (array(
                 	'id' => new external_value (PARAM_INT, 'id of example'),
                 	'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
+                    'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
+                    'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
                     'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
                         'id' => new external_value (PARAM_INT, 'id of example'),
                         'title' => new external_value (PARAM_TEXT, 'title of example'),
+                        'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
+                        'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
                         'examples' => new external_multiple_structure (new external_single_structure (array(
                             'id' => new external_value (PARAM_INT, 'id of example'),
                             'title' => new external_value (PARAM_TEXT, 'title of example'),
