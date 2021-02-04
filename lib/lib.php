@@ -8506,9 +8506,7 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 	$message = block_exacomp_get_string('notification_submission_body_noSiteName', null, array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver' => fullname($userto)));
 	$context = block_exacomp_get_string('notification_submission_context');
 
-	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */, [
-		'exampleid' => $example->id,
-	]);
+	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */);
 }
 
 /**
