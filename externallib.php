@@ -3638,6 +3638,7 @@ class block_exacomp_external extends external_api {
         }
         $example->title = static::custom_htmltrim(strip_tags($example->title));
 
+        $example->visible = block_exacomp_is_example_visible($courseid, $exampleid, $userid);
 //        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
 
         return $example;
@@ -3645,6 +3646,8 @@ class block_exacomp_external extends external_api {
 
     public static function diggrplus_get_example_overview_returns() {
         return new external_single_structure (array(
+            'id' => new external_value (PARAM_TEXT, 'id of example'),
+            'visible' => new external_value (PARAM_BOOL, 'visibility of example'),
             'title' => new external_value (PARAM_TEXT, 'title of example'),
             'description' => new external_value (PARAM_TEXT, 'description of example'),
             'solutionfilename' => new external_value (PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
