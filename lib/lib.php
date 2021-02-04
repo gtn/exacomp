@@ -6898,7 +6898,7 @@ function block_exacomp_is_niveau_visible($courseid, $topicid, $studentid, $nivea
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid) {
+function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid, $mindTopicVisibility=true) {
 	//global $DB;
     static $visibleDescriptors;
 
@@ -6915,7 +6915,8 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
         $studentid = 0;
     }
 
-    if (($topic = \block_exacomp\topic::get($descriptor->topicid)) &&
+    if ($mindTopicVisibility &&
+            ($topic = \block_exacomp\topic::get($descriptor->topicid)) &&
             !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
         $visibleDescriptors[$courseid][$descriptor->id][$studentid] = false;
         return false;
