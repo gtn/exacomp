@@ -4143,7 +4143,7 @@ function block_exacomp_get_active_activities_by_course($courseid) {
           JOIN {modules} m ON m.id = cm.module
         WHERE NOT m.name = \'quiz\' AND cm.course = ? ';
     $activitiesForExamples = $DB->get_records_sql($sql, array($courseid));
-    
+
 
 
     foreach ($activitiesForExamples as $activity) {
@@ -4461,7 +4461,7 @@ function block_exacomp_get_activities_by_course($courseid) {
  */
 function block_exacomp_get_activities_from_example($activityid) {
     global $DB;
-    
+
     return $DB->get_field('block_exacompexamples', 'activitytitle', array('activityid' => $activityid));
 }
 
@@ -4472,7 +4472,7 @@ function block_exacomp_get_activities_from_example($activityid) {
  */
 function block_exacomp_get_activitiy_by_id($activityid) {
     global $DB;
-    
+
     $module = $DB->get_record('course_modules', array('id' => $activityid));
     $instance = $DB->get_field('modules', 'name', array('id' => $module->module));
     return $DB->get_record($instance, array('id' => $module->instance));
@@ -5066,7 +5066,7 @@ function block_exacomp_perform_auto_test() {
 	foreach ($courses as $courseid) {
 	    //also get all other activites, that are NOT tests/quizes ... assigned and related (if settings allow both)
         $otherActivities = block_exacomp_get_active_activities_by_course($courseid);
-        
+
 		// tests associated with competences
 		// get all tests/quizes that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
@@ -8309,7 +8309,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
 			if (!$student) {
 				continue;
 			}
-			
+
 			$userpicture = new user_picture($student);
 			$userpicture->size = 1; // Size f1.
 
@@ -8506,7 +8506,14 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 	$message = block_exacomp_get_string('notification_submission_body_noSiteName', null, array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver' => fullname($userto)));
 	$context = block_exacomp_get_string('notification_submission_context');
 
-	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */);
+    if($CFG->version >= 2019052000){ //This is the version Number for Moodle 3.7.0
+        block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */, [
+            'exampleid' => $example->id,
+        ]);
+    }else{
+        block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */);
+    }
+
 }
 
 /**
