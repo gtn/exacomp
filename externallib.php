@@ -1854,16 +1854,17 @@ class block_exacomp_external extends external_api {
             'description' => new external_value (PARAM_TEXT, 'description of example'),
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
-            'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
-            'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
+            'descriptorids' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
             'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
             'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
-            'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
             'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
             'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
             'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
+
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
+            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, 0),
+            'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -1874,7 +1875,7 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0) {
+    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $descriptorids , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '') {
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -1885,19 +1886,21 @@ class block_exacomp_external extends external_api {
             'description' => $description,
             'timeframe' => $timeframe,
             'externalurl' => $externalurl,
-            'comps' => $comps,
-            'fileitemids' => $fileitemids,
+            'descriptorids' => $descriptorids,
             'solutionfileitemid' => $solutionfileitemid,
             'taxonomies' => $taxonomies,
             'newtaxonomy' => $newtaxonomy,
             'courseid' => $courseid,
-            'filename' => $filename,
             'crosssubjectid' => $crosssubjectid,
             'activityid' => $activityid,
             'is_teacherexample' => $is_teacherexample,
+            'fileitemids' => $fileitemids,
+            'removefiles' => $removefiles,
+            'solutionfileitemid' => $solutionfileitemid,
         ));
 
-        return self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, $filename, $crosssubjectid, $activityid, $is_teacherexample);
+        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $descriptorids, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles);
+        return array("success" => true, "exampleid" => $example->exampleid);
     }
 
     /**
@@ -1908,11 +1911,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_create_or_update_example_returns() {
         return new external_single_structure (array(
             'exampleid' => new external_value (PARAM_INT, 'id of created example'),
-            'newtaxonomy' => new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'amount of total competencies'),
-                'source' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
-                'title' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
-            )),
+            'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
 
@@ -12471,7 +12470,7 @@ class block_exacomp_external extends external_api {
 	}
 
 
-	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0){
+	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0){
         global $DB, $USER, $CFG;
 
         //Update material that already exists
@@ -12581,10 +12580,31 @@ class block_exacomp_external extends external_api {
 
         if ($fileitemids != '') {
             if($exampleid != -1){
-                //Delete old files
-                $context = context_user::instance($USER->id);
-                $fs = get_file_storage();
-                $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
+                //if there already exists an example: remove either all files or only the ones explicitly stated (dakora uses "remove all" right now 20210204, diggprlus uses explizit remove
+                if($removefiles){
+                    // remove files specifically marked for deletion by user:
+                    // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
+                    // use get_file_by_hash() instead, for deleting already existing files.
+                    // could this be used to remove files this user doesn't have access to? HACKABLE
+                    // solution: get itemid. this itemid is the exampleid in this case
+                    if($removefiles){
+                        $fs = get_file_storage();
+                        $removefiles = explode(',', $removefiles);
+                        foreach($removefiles as $removefile){
+                            $file = $fs->get_file_by_id($removefile);
+                            if($file){
+                                if($file->get_itemid() == $exampleid){ // only delete file of current example. Protection if something goes really wrong or this webservice is used maliciously
+                                    $file->delete();
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    //Delete old files
+                    $context = context_user::instance($USER->id);
+                    $fs = get_file_storage();
+                    $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
+                }
             }
 
             $fileitemids = explode(',', $fileitemids);

@@ -723,29 +723,13 @@ Params: <table>
 </td>
 <td></td>
 <tr>
-<td>comps</td>
+<td>descriptorids</td>
 <td>text</td>
 <td>null</td>
 <td>optional</td>
 <td>default: string(1) "0"
 </td>
-<td>list of competencies, seperated by comma, or "freemat" if freematerial should be created</td>
-<tr>
-<td>fileitemids</td>
-<td>text</td>
-<td>null</td>
-<td>optional</td>
-<td>default: string(0) ""
-</td>
-<td>fileitemids separated by comma</td>
-<tr>
-<td>solutionfileitemid</td>
-<td>text</td>
-<td>null</td>
-<td>optional</td>
-<td>default: string(0) ""
-</td>
-<td>fileitemid</td>
+<td>list of descriptorids, seperated by comma, or "freemat" if freematerial should be created</td>
 <tr>
 <td>taxonomies</td>
 <td>text</td>
@@ -771,14 +755,6 @@ Params: <table>
 </td>
 <td>courseid</td>
 <tr>
-<td>filename</td>
-<td>text</td>
-<td>null</td>
-<td>optional</td>
-<td>default: string(0) ""
-</td>
-<td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area</td>
-<tr>
 <td>crosssubjectid</td>
 <td>int</td>
 <td>null</td>
@@ -802,14 +778,39 @@ Params: <table>
 <td>default: int(0)
 </td>
 <td>is a teacher example?</td>
+<tr>
+<td>filenames</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filenames, separated by comma, used to look up files and create a new ones in the exaport file area</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>removefiles</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemid for the solutionfile</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)",
-    "newtaxonomy": {
-        "id": "int null (amount of total competencies)",
-        "source": "text null (amount of reached competencies)",
-        "title": "text null (amount of reached competencies)"
-    }
+    "success": "bool null (status)"
 }</pre>
 <h2>block_exacomp_grade_item</h2>
 <div>Grade an item
@@ -3285,11 +3286,13 @@ Returns:<pre>[
                         "id": "int null (id of example)",
                         "title": "text null (title of descriptor)",
                         "visible": "bool null (visibility of descriptor in current context )",
+                        "used": "bool null (if descriptor is used)",
                         "childdescriptors": [
                             {
                                 "id": "int null (id of example)",
                                 "title": "text null (title of example)",
                                 "visible": "bool null (visibility of descriptor in current context )",
+                                "used": "bool null (if descriptor is used)",
                                 "examples": [
                                     {
                                         "id": "int null (id of example)",
