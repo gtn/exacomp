@@ -1865,6 +1865,7 @@ class block_exacomp_external extends external_api {
             'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, 0),
             'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
+            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?', VALUE_OPTIONAL),
         ));
     }
 
@@ -1875,7 +1876,7 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $descriptorids , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '') {
+    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $descriptorids , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '', $visible) {
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -1897,9 +1898,10 @@ class block_exacomp_external extends external_api {
             'fileitemids' => $fileitemids,
             'removefiles' => $removefiles,
             'solutionfileitemid' => $solutionfileitemid,
+            'visible' => $visible,
         ));
 
-        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $descriptorids, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles);
+        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $descriptorids, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles, $visible);
         return array("success" => true, "exampleid" => $example->exampleid);
     }
 
@@ -7031,7 +7033,7 @@ class block_exacomp_external extends external_api {
 
 		foreach ($students as $student) {
 			$userid = $student->id;
-			
+
 			$studentExamplesAndItems = [];
 
 			if (($type == "own_items" || $type == "") && $status != "new") {
@@ -7708,7 +7710,7 @@ class block_exacomp_external extends external_api {
             block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"]);
         }
 
-	
+
         // notification
 		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'itemid' => $itemid];
 		$subject = block_exacomp_trans([
@@ -10571,7 +10573,7 @@ class block_exacomp_external extends external_api {
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
 		));
 	}
-	
+
     public static function dakora_set_niveau_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
@@ -11576,7 +11578,7 @@ class block_exacomp_external extends external_api {
                 unset($examples[$key]);
             }
         }
-        
+
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
         $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB, $comptype) {
             $objDeeper = new stdClass();
@@ -12473,7 +12475,7 @@ class block_exacomp_external extends external_api {
 	}
 
 
-	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0){
+	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0, $visible=true){
         global $DB, $USER, $CFG;
 
         //Update material that already exists
@@ -12748,7 +12750,7 @@ class block_exacomp_external extends external_api {
             ]);
         }
 
-
+        block_exacomp_set_example_visibility($id,$courseid,true, BLOCK_EXACOMP_SHOW_ALL_STUDENTS);
 
         return array(
             "exampleid" => $id,
