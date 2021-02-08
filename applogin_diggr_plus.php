@@ -68,6 +68,38 @@ function block_exacomp_logout() {
 	require_logout();
 }
 
+function block_exacomp_turn_notifications_on() {
+	global $USER, $CFG;
+
+    require_once($CFG->dirroot . '/user/editlib.php');
+
+	// require __DIR__.'/db/messages.php';
+	$providers = get_message_providers();
+	foreach ($providers as $provider) {
+		if ($provider->component != 'block_exacomp') {
+			continue;
+		}
+
+		foreach (['loggedin', 'loggedoff'] as $type) {
+			$preference_name = 'message_provider_'.$provider->component.'_'.$provider->name.'_'.$type;
+			$value = @$USER->preference[$preference_name];
+			if (strpos($value, 'popup') === false) {
+				// only change, if popup isn't turned on
+				if (!$value || $value == 'none') {
+					$newValue = 'popup';
+				} else {
+					$newValue = 'popup,'.$value;
+				}
+
+				// echo $preference_name." ".$value." ".$newValue."\n";
+	            $userpref = ['id' => $USER->id];
+                $userpref['preference_' . $preference_name] = $newValue;
+	            useredit_update_user_preference($userpref);
+			}
+		}
+	}
+}
+
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
 $PAGE->set_pagelayout('embedded');
@@ -161,6 +193,9 @@ if ($action == 'login_result') {
 
 	// can only be used once
 	$DB->delete_records('block_exacompapplogin', ['id' => $applogin->id]);
+
+	// actions after login:
+	block_exacomp_turn_notifications_on();
 
 	$result_data = json_decode($applogin->result_data);
 	header('Content-Type: application/json');
