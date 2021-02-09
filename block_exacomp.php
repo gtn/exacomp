@@ -128,7 +128,13 @@ class block_exacomp extends block_list {
 								    ' href="'.$CFG->wwwroot.'/blocks/exacomp/weekly_schedule.php?courseid='.$courseid.'">'.
 								    $icon.block_exacomp_get_string('tab_weekly_schedule').'</a>';
 				}
-
+				//Gruppenbericht
+				$icon = '<img src="'.$CFG->wwwroot.'/blocks/exacomp/pix/groupreports.svg'.'" class="icon" alt="" />';
+			    $this->content->items[] = '<a title="'.block_exacomp_get_string('reports').'" '.
+			 			    ' href="'.$CFG->wwwroot.'/blocks/exacomp/group_reports.php?courseid='.$courseid.'">'.
+			 			    $icon.block_exacomp_get_string('reports').'</a>';
+			 			    
+			 
 				if ($isTeacher && !$courseSettings->nostudents) {
 					if ($courseSettings->useprofoundness) {
 					    $icon = '<img src="'.$CFG->wwwroot.'/blocks/exacomp/pix/basicextendedskills.svg'.'" class="icon" alt="" />';
