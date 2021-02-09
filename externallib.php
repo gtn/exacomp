@@ -7527,81 +7527,32 @@ class block_exacomp_external extends external_api {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	public static function diggrplus_get_user_info_parameters() {
+		return new external_function_parameters (array());
+	}
+
+	/**
+	 * @ws-type-read
+	 *
+	 * @return array
+	 */
+	public static function diggrplus_get_user_info() {
+		global $DB, $USER;
+
+		static::validate_parameters(static::diggrplus_get_user_info_parameters(), array());
+
+		$role = block_exacomp_is_teacher_in_any_course() ? 'teacher' : 'student';
+
+		return (object)[
+			"role" => $role,
+		];
+	}
+
+	public static function diggrplus_get_user_info_returns() {
+		return new external_function_parameters (array(
+			'role' => new external_value (PARAM_TEXT),
+		));
+	}
 
     public static function diggrplus_request_external_file_parameters() {
         return new external_function_parameters (array(

@@ -801,6 +801,13 @@ Params: <table>
 <td>default: string(0) ""
 </td>
 <td>fileitemid for the solutionfile</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>is the example visible for all or not?</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)",
@@ -3319,6 +3326,14 @@ Returns:<pre>[
     },
     "..."
 ]</pre>
+<h2>diggrplus_get_user_info</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "role": "text null ()"
+}</pre>
 <h2>diggrplus_request_external_file</h2>
 <div>Load a file from an external Domain to prevent CORS when loading directly in the App</div>
 <div>type: read</div>
