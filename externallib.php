@@ -7918,78 +7918,72 @@ class block_exacomp_external extends external_api {
             }
         }
 
-
-
-
-
-
-        /* THIS DOES NOT WORK
-//        Because an example can be in descriptor1 AND in descriptor2 ==> it will be counted twice
-//         *
-//         *
-////This is obsolete, since examples can only exist in descriptors, and descriptors are checked below
-//        foreach($examples as $example){
-//            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-//            if($item){
-//                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
-//                    $completed_items++;
-//                }
-//            }
+        // Until here: completed examples and competencies
+        // From here: tree with gradings
+        // get all subjects
+//        $subjects = block_exacomp_get_subjects_by_course($courseid);
+//        foreach($subjects as $subject){
+//            $gridgradings = array(block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subject->id, BLOCK_EXACOMP_ROLE_TEACHER));
 //        }
 
-
-        // get all competencies
-        //get all subjects by courses, and then get all descriptors
-        $descriptors =[];
-        foreach ($courses as $course) {
-            $subjects = block_exacomp_get_subjects_by_course($course->id);
-            foreach($subjects as $subject){
-                $parentdescriptors = block_exacomp_get_descriptors_by_subject($subject->id);
-                foreach($parentdescriptors as $parent){
-                    $parent->courseid = $course->id; // needed later
-                }
-                $descriptors += $parentdescriptors;
-            }
-        }
-
-
-        foreach($descriptors as $descriptor){
-            $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$descriptors->courseid); //TODO: if the same descriptor is in two courses, then what happens? Duplicates?
-//            // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
-//            foreach($childdescriptors as $child){
-//                $child->niveauid = $descriptor->niveauid;
-//                $child->cattitle = $descriptor->cattitle;
-//            }
-            $descriptors += $childdescriptors;
-        }
-
-        $competencies_gained = 0;
-        $descriptor_gained = false;
-        foreach($descriptors as $descriptor){ // this takes a LOT of time... but adding up the times of the dakora competencegrid webservices results in similar loading times, to maybe this is just how it is
-            $descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
-            if($descriptor->examples){
-                foreach($descriptor->examples as $example){
-                    $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-                    if($item){
-                        if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
-                            $completed_items++;
-                            $descriptor_gained = true;
-                        }
+        $structure = array();
+        $tree = block_exacomp_get_competence_tree($courseid,null,null,false,null, false, null, false ,false, true, false, true);
+        $students = block_exacomp_get_students_by_course($courseid);
+        $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
+        block_exacomp_get_user_information_by_course($student, $courseid);
+        foreach ($tree as $subject) {
+            $elem_sub = new stdClass ();
+            $elem_sub->id = $subject->id;
+            $elem_sub->title = $subject->title;
+            $elem_sub->courseid = $courseid;
+            $elem_sub->courseshortname = $course->shortname;
+            $elem_sub->coursefullname = $course->fullname;
+            $elem_sub->teacherevaluation = $student->subjects->teacher[$subject->id];
+            $elem_sub->studentevaluation = $student->subjects->student[$subject->id];
+            $elem_sub->topics = array();
+            foreach ($subject->topics as $topic) {
+                $elem_topic = new stdClass ();
+                $elem_topic->id = $topic->id;
+                $elem_topic->title = $topic->title;
+                $elem_topic->descriptors = array();
+                $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
+                $elem_topic->studentevaluation = $student->topics->student[$topic->id];
+//                $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
+//                $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
+                foreach ($topic->descriptors as $descriptor) {
+                    $elem_desc = new stdClass ();
+                    $elem_desc->id = $descriptor->id;
+                    $elem_desc->title = $descriptor->title;
+                    $elem_desc->childdescriptors = array();
+                    $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
+                    $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
+//                    $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
+//                    $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
+                    foreach ($descriptor->children as $child) {
+                        $elem_child = new stdClass ();
+                        $elem_child->id = $child->id;
+                        $elem_child->title = $child->title;
+                        $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
+                        $elem_child->studentevaluation = $student->competencies->student[$child->id];
+//                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
+//                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
+                        $elem_desc->childdescriptors[] = $elem_child;
                     }
+                    $elem_topic->descriptors[] = $elem_desc;
                 }
+                $elem_sub->topics[] = $elem_topic;
             }
-            if($descriptor_gained){
-                $competencies_gained++;
+            if (!empty($elem_sub->topics)) {
+                $structure[] = $elem_sub;
             }
-            $descriptor_gained = false;
         }
-        */
 
 		$statistics_return = [
 			'items_and_examples_total' => count($own_items)+count($examples),
 			'items_and_examples_completed' => $completed_items,
 			'competencies_total' => $descriptorcount,
 			'competencies_gained' => $competencies_gained,
+            'competencetree' => $structure
 		];
 
 		return $statistics_return;
@@ -8001,6 +7995,33 @@ class block_exacomp_external extends external_api {
 			'items_and_examples_completed' => new external_value(PARAM_INT, 'number of solved items, those items can be free or related to an example'),
 			'competencies_total' => new external_value(PARAM_INT, ''),
 			'competencies_gained' => new external_value(PARAM_INT, ''),
+            'competencetree' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, 'id of subject'),
+                'title' => new external_value (PARAM_TEXT, 'title of subject'),
+                'courseid' => new external_value (PARAM_INT, 'id of course'),
+                'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
+                'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
+                'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of subject'),
+                'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of subject'),
+                'topics' => new external_multiple_structure (new external_single_structure (array(
+                    'id' => new external_value (PARAM_INT, 'id of example'),
+                    'title' => new external_value (PARAM_TEXT, 'title of topic'),
+                    'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of topic'),
+                    'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of topic'),
+                    'descriptors' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value (PARAM_INT, 'id of example'),
+                        'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
+                        'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
+                        'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
+                        'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
+                            'id' => new external_value (PARAM_INT, 'id of example'),
+                            'title' => new external_value (PARAM_TEXT, 'title of example'),
+                            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of childdescriptor'),
+                            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of childdescriptor'),
+                        ))),
+                    ))),
+                ))),
+            ))),
 		));
 	}
 
