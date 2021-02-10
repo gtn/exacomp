@@ -118,7 +118,7 @@ if ($action == 'get_login_url') {
 
 	$return_uri = required_param('return_uri', PARAM_TEXT);
 
-	$allowed_redirect_uris = [$CFG->wwwroot];
+	$allowed_redirect_uris = [$CFG->wwwroot, 'diggr-plus.at', 'www.diggr-plus.at'];
 	$additional_allowed_redirect_uris = trim(get_config('exacomp', 'applogin_redirect_urls'));
 	if ($additional_allowed_redirect_uris) {
 		$additional_allowed_redirect_uris = preg_split('![\s\r\n]+!', $additional_allowed_redirect_uris);
