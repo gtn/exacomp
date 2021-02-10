@@ -6541,7 +6541,7 @@ class block_exacomp_external extends external_api {
         if ($submit) {
 			\block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
 
-			$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'submit_item', 'courseid' => $courseid, 'itemid' => $itemid];
+			$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'submit_item', 'courseid' => $courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
 			if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
 				$customdata['exampleid'] = $compid;
 				$example = $DB->get_record('block_exacompexamples', array('id' => $compid), 'title, blocking_event');
@@ -6632,27 +6632,41 @@ class block_exacomp_external extends external_api {
                 'comment' => $comment
             ));
 
-        // TODO: prüfen, ob schüler/lehrer auch auf diesen item kommentieren darf!
+		$item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
+
+        // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
+		$teachers = block_exacomp_get_teachers_by_course($item->courseid);
+		$teacherIds = array_map(function($teacher) { return $teacher->id; }, $teachers);
+
+		$collaboratorIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $itemid), '', 'id, userid');
+
+		$allowed_users = array_unique(array_merge(
+			[ $item->userid ], // owner
+			$teacherIds,
+			$collaboratorIds
+		));
+
+		if (!in_array($USER->id, $allowed_users)) {
+			throw new invalid_parameter_exception('not allowed to comment on item');
+		}
 
         $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
 
-        // TODO: $courseid
-		// $courseid = 0;
-		// $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'courseid' => $courseid, 'itemid' => $itemid];
-		// $subject = block_exacomp_trans([
-		// 	'de:{$a->student} hat eine Lösung zum freien Lernmaterial {$a->example} eingereicht',
-		// 	'en:{$a->student} submitted a solution for {$a->example}',
-		// ], ['student' => fullname($USER), 'example' => $item->name]);
-		//
-		// $context = block_exacomp_get_string('notification_submission_context');
-		//
-		// // wenn von schüler, dann an lehrer senden
-		// $teachers = block_exacomp_get_teachers_by_course($courseid);
-		// foreach ($teachers as $teacher) {
-		// 	block_exacomp_send_notification("submission", $USER, $teacher, $subject, '', $context, '', false, 0, $customdata);
-		// }
-		//
-		// // wenn von lehrer, dann an schüler senden
+		// send notification to all other users about comment
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'item_comment', 'itemid' => $itemid, 'itemuserid' => $item->userid, 'comment' => $comment];
+		$subject = block_exacomp_trans([
+			'de:{$a->fullname} hat einen Kommentar bei "{$a->example}" erfasst',
+			'en:{$a->fullname} has commented on "{$a->example}"',
+		], ['fullname' => fullname($USER), 'example' => $item->name]);
+		$notificationContext = block_exacomp_get_string('notification_submission_context');
+
+		foreach ($allowed_users as $user_id) {
+			if ($user_id == $USER->id) {
+				// don't send to myself
+				continue;
+			}
+			block_exacomp_send_notification("comment", $USER, $user_id, $subject, '', $notificationContext, '', false, 0, $customdata);
+		}
 
         return array("success" => true, "itemid" => $itemid);
     }
@@ -6688,11 +6702,30 @@ class block_exacomp_external extends external_api {
      * @return array of course subjects
      */
     public static function diggrplus_get_item_comments($itemid) {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_get_item_comments_parameters(),
             array(
                 'itemid' => $itemid
             ));
+
+		$item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
+
+        // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
+		$teachers = block_exacomp_get_teachers_by_course($item->courseid);
+		$teacherIds = array_map(function($teacher) { return $teacher->id; }, $teachers);
+
+		$collaboratorIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $itemid), '', 'id, userid');
+
+		$allowed_users = array_unique(array_merge(
+			[ $item->userid ], // owner
+			$teacherIds,
+			$collaboratorIds
+		));
+
+		if (!in_array($USER->id, $allowed_users)) {
+			throw new invalid_parameter_exception('not allowed to comment on item');
+		}
+
         require_once $CFG->dirroot.'/blocks/exaport/inc.php';
         $itemcomments = \block_exaport\api::get_item_comments($itemid);
         $users = [];
@@ -7663,13 +7696,13 @@ class block_exacomp_external extends external_api {
 
 
         // notification
-		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'itemid' => $itemid];
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'itemid' => $itemid, 'itemuserid' => $item->userid];
 		$subject = block_exacomp_trans([
 			'de:{$a->teacher} hat dein Beispiel "{$a->example}" als erledigt markiert',
 			'en:{$a->teacher} has checked your solution "{$a->example}" as completed',
 		], ['teacher' => fullname($USER), 'example' => $item->name]);
 		$notificationContext = block_exacomp_get_string('notification_submission_context');
-		block_exacomp_send_notification("submission", $USER, $item->userid, $subject, '', $notificationContext, '', false, 0, $customdata);
+		block_exacomp_send_notification("grading", $USER, $item->userid, $subject, '', $notificationContext, '', false, 0, $customdata);
 
 
 		// if the grading is good, tick the example in exacomp TODO: NOT FOR DIGGRPLUS, hopefully never.

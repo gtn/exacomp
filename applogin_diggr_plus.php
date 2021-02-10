@@ -194,9 +194,6 @@ if ($action == 'login_result') {
 	// can only be used once
 	$DB->delete_records('block_exacompapplogin', ['id' => $applogin->id]);
 
-	// actions after login:
-	block_exacomp_turn_notifications_on();
-
 	$result_data = json_decode($applogin->result_data);
 	header('Content-Type: application/json');
 	echo json_encode([
@@ -297,6 +294,9 @@ $DB->update_record('block_exacompapplogin', (object)[
 		'tokens' => block_exacomp_get_service_tokens($request_data->services)
 	]),
 ]);
+
+// actions after login:
+block_exacomp_turn_notifications_on();
 
 $return_uri = $request_data->return_uri.'?moodle_token='.$applogin->moodle_data_token;
 
