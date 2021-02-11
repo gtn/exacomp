@@ -7822,7 +7822,6 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function diggrplus_get_competence_profile_statistic_parameters() {
 	    return new external_function_parameters (array(
-	        'courseid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
 	        'userid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
 	    ));
 	}
@@ -7832,11 +7831,10 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-read
 	 */
-	public static function diggrplus_get_competence_profile_statistic($courseid=0, $userid=0) {
+	public static function diggrplus_get_competence_profile_statistic($userid=0) {
 	    global $USER, $DB;
 
 		static::validate_parameters(static::diggrplus_get_competence_profile_statistic_parameters(), array(
-			'courseid' => $courseid,
 			'userid' => $userid,
 		));
 
@@ -7920,61 +7918,58 @@ class block_exacomp_external extends external_api {
 
         // Until here: completed examples and competencies
         // From here: tree with gradings
-        // get all subjects
-//        $subjects = block_exacomp_get_subjects_by_course($courseid);
-//        foreach($subjects as $subject){
-//            $gridgradings = array(block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subject->id, BLOCK_EXACOMP_ROLE_TEACHER));
-//        }
 
         $structure = array();
-        $tree = block_exacomp_get_competence_tree($courseid,null,null,false,null, false, null, false ,false, true, false, true);
-        $students = block_exacomp_get_students_by_course($courseid);
-        $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
-        block_exacomp_get_user_information_by_course($student, $courseid);
-        foreach ($tree as $subject) {
-            $elem_sub = new stdClass ();
-            $elem_sub->id = $subject->id;
-            $elem_sub->title = $subject->title;
-            $elem_sub->courseid = $courseid;
-            $elem_sub->courseshortname = $course->shortname;
-            $elem_sub->coursefullname = $course->fullname;
-            $elem_sub->teacherevaluation = $student->subjects->teacher[$subject->id];
-            $elem_sub->studentevaluation = $student->subjects->student[$subject->id];
-            $elem_sub->topics = array();
-            foreach ($subject->topics as $topic) {
-                $elem_topic = new stdClass ();
-                $elem_topic->id = $topic->id;
-                $elem_topic->title = $topic->title;
-                $elem_topic->descriptors = array();
-                $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
-                $elem_topic->studentevaluation = $student->topics->student[$topic->id];
+        foreach ($courses as $course) {
+            $tree = block_exacomp_get_competence_tree($course->id,null,null,false,null, false, null, false ,false, true, false, true);
+            $students = block_exacomp_get_students_by_course($course->id);
+            $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
+            block_exacomp_get_user_information_by_course($student, $course->id);
+            foreach ($tree as $subject) {
+                $elem_sub = new stdClass ();
+                $elem_sub->id = $subject->id;
+                $elem_sub->title = $subject->title;
+                $elem_sub->courseid = $courseid;
+                $elem_sub->courseshortname = $course->shortname;
+                $elem_sub->coursefullname = $course->fullname;
+                $elem_sub->teacherevaluation = $student->subjects->teacher[$subject->id];
+                $elem_sub->studentevaluation = $student->subjects->student[$subject->id];
+                $elem_sub->topics = array();
+                foreach ($subject->topics as $topic) {
+                    $elem_topic = new stdClass ();
+                    $elem_topic->id = $topic->id;
+                    $elem_topic->title = $topic->title;
+                    $elem_topic->descriptors = array();
+                    $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
+                    $elem_topic->studentevaluation = $student->topics->student[$topic->id];
 //                $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
 //                $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
-                foreach ($topic->descriptors as $descriptor) {
-                    $elem_desc = new stdClass ();
-                    $elem_desc->id = $descriptor->id;
-                    $elem_desc->title = $descriptor->title;
-                    $elem_desc->childdescriptors = array();
-                    $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
-                    $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
+                    foreach ($topic->descriptors as $descriptor) {
+                        $elem_desc = new stdClass ();
+                        $elem_desc->id = $descriptor->id;
+                        $elem_desc->title = $descriptor->title;
+                        $elem_desc->childdescriptors = array();
+                        $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
+                        $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
 //                    $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
 //                    $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
-                    foreach ($descriptor->children as $child) {
-                        $elem_child = new stdClass ();
-                        $elem_child->id = $child->id;
-                        $elem_child->title = $child->title;
-                        $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
-                        $elem_child->studentevaluation = $student->competencies->student[$child->id];
+                        foreach ($descriptor->children as $child) {
+                            $elem_child = new stdClass ();
+                            $elem_child->id = $child->id;
+                            $elem_child->title = $child->title;
+                            $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
+                            $elem_child->studentevaluation = $student->competencies->student[$child->id];
 //                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
 //                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
-                        $elem_desc->childdescriptors[] = $elem_child;
+                            $elem_desc->childdescriptors[] = $elem_child;
+                        }
+                        $elem_topic->descriptors[] = $elem_desc;
                     }
-                    $elem_topic->descriptors[] = $elem_desc;
+                    $elem_sub->topics[] = $elem_topic;
                 }
-                $elem_sub->topics[] = $elem_topic;
-            }
-            if (!empty($elem_sub->topics)) {
-                $structure[] = $elem_sub;
+                if (!empty($elem_sub->topics)) {
+                    $structure[] = $elem_sub;
+                }
             }
         }
 
