@@ -8817,6 +8817,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=false, $search="", $mindvisibility = true) {
     if($withCompetenceInfo){
         if($mindvisibility){
+            // Visibility of Niveaus is NOT minded. But cannot be changed in diggrplus anyways, for which this function is made
             $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON dex.exampid = ex.id
@@ -8829,7 +8830,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON n.id = d.niveauid
             
             JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvis ON d.id=dvis.descrid
-            JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvis ON topic.id=tvis.topicid
+            JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvis ON topic.id=tvis.topicid AND tvis.niveauid IS NULL
             JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON ex.id=evis.exampleid
 
             WHERE ct.courseid = ?
