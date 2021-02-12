@@ -8818,6 +8818,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
     if($withCompetenceInfo){
         if($mindvisibility){
             // Visibility of Niveaus is NOT minded. But cannot be changed in diggrplus anyways, for which this function is made
+            // Student specific visibility is also NOT minded, only global
             $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON dex.exampid = ex.id
@@ -8839,7 +8840,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             AND evis.visible = true        
             AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')
             GROUP BY ex.id
-            ";
+            ";;
         }else{
             $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex

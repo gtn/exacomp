@@ -4700,6 +4700,7 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 		}
 
+
 		static::require_can_access_course_user($courseid, $userid);
 
 		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
@@ -6489,6 +6490,7 @@ class block_exacomp_external extends external_api {
             $DB->update_record('block_exaportitem', $item);
         }
 
+
         //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
         if ($type == "file") {
             $context = context_user::instance($USER->id);
@@ -7305,7 +7307,7 @@ class block_exacomp_external extends external_api {
         foreach ($tree as $subject) {
             $elem_sub = new stdClass ();
             $elem_sub->id = $subject->id;
-            $elem_sub->title = $subject->title;
+            $elem_sub->title = static::custom_htmltrim(strip_tags($subject->title));
             $elem_sub->courseid = $courseid;
             $elem_sub->courseshortname = $course->shortname;
             $elem_sub->coursefullname = $course->fullname;
@@ -7313,7 +7315,7 @@ class block_exacomp_external extends external_api {
             foreach ($subject->topics as $topic) {
                 $elem_topic = new stdClass ();
                 $elem_topic->id = $topic->id;
-                $elem_topic->title = $topic->title;
+                $elem_topic->title = static::custom_htmltrim(strip_tags($topic->title));
                 $elem_topic->descriptors = array();
                 $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
                 $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
@@ -11446,7 +11448,7 @@ class block_exacomp_external extends external_api {
 
 
             foreach ($courses as $course) {
-                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $key => $example) {
                     $exampleSubjects = block_exacomp_get_subjects_by_example($example->id);
                     if(!in_array($compid, $exampleSubjects)){
