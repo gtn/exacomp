@@ -1127,7 +1127,7 @@ class block_exacomp_external extends external_api {
 			foreach ($tree as $subject) {
 				$elem_sub = new stdClass ();
 				$elem_sub->id = $subject->id;
-				$elem_sub->title = $subject->title;
+				$elem_sub->title = static::custom_htmltrim(strip_tags($subject->title));
 				$elem_sub->courseid = $course['courseid'];
 				$elem_sub->courseshortname = $course['shortname'];
 				$elem_sub->coursefullname = $course['fullname'];
@@ -1138,7 +1138,7 @@ class block_exacomp_external extends external_api {
 					}
 					$elem_topic = new stdClass ();
 					$elem_topic->id = $topic->id;
-					$elem_topic->title = $topic->title;
+                    $elem_topic->title = static::custom_htmltrim(strip_tags($topic->title));
 					//$elem_topic->descriptors = array();
 					//foreach ($topic->descriptors as $descriptor) {
 					//	$elem_desc = new stdClass ();
