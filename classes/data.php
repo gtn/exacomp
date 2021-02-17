@@ -1279,6 +1279,210 @@ class data_exporter extends data {
 //             $i++;
 //         }
     }
+
+    // Below here: Export/Import moodle competencies to exacomp competencies
+
+    public static function do_moodle_competencies_export($secret) {
+        global $SITE, $CFG;
+
+        \core_php_time_limit::raise();
+        raise_memory_limit(MEMORY_HUGE);
+
+        if (!self::get_my_source()) {
+            // this can't happen anymore, because a source is automatically generated
+            throw new moodle_exception('source not configured, go to block settings');
+            // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
+        }
+
+        $xml = new SimpleXMLElement(
+            '<?xml version="1.0" encoding="UTF-8"?>'.
+            '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
+        );
+
+        $xml['version'] = '2015081400';
+        $xml['date'] = date('c');
+        $xml['source'] = self::get_my_source();
+        $xml['sourcename'] = $SITE->fullname;
+
+
+
+        $zip = ZipArchive::create_temp_file();
+        $zip->addEmptyDir('files');
+
+        self::$xml = $xml;
+        self::$zip = $zip;
+
+
+//        self::export_skills($xml);
+//        self::export_niveaus($xml);
+//        self::export_taxonomies($xml);
+//
+//
+//        // TODO: export categoriesn
+//        self::export_examples($xml);
+        self::export_descriptors($xml);
+
+//        self::export_crosssubjects($xml);
+        self::export_edulevels($xml);
+//        self::export_sources($xml);
+//        self::export_assignments($xml, $zip);
+
+        $zipfile = $zip->filename;
+
+        if (optional_param('as_text', false, PARAM_INT)) {
+            echo 'zip file size: '.filesize($zipfile)."\n\n\n";
+            $zip->close();
+            unlink($zipfile);
+
+            echo $xml->asPrettyXML();
+
+            exit;
+        }
+
+        $zip->addFromString('data.xml', $xml->asPrettyXML());
+
+        if ($secret) {
+            // encrypt all files in zip file
+            for ($i = 0; $i < $zip->count(); $i++) {
+                $zip->setEncryptionIndex($i, ZipArchive::EM_AES_256, $secret);
+            }
+        }
+
+
+        $plugininfo = \core_plugin_manager::instance()->get_plugin_info('block_exacomp');;
+
+        // nicht passwortgeschützte info dateien:
+        $data = (object)[];
+        $data->datatype = 'block_exacomp_class_export';
+        $data->dataversion = '0.1';
+        $data->exporttime = time();
+        $data->pluginversion = $plugininfo->versiondisk;
+        $data->pluginrelease = $plugininfo->release;
+        $data->moodleversion = $CFG->version;
+        $data->moodlerelease = $CFG->release;
+        $data->is_encrypted = !!$secret;
+
+        $info_text = "";
+        $info_text .= "release: {$plugininfo->release}\n";
+        $info_text .= "version: {$plugininfo->versiondisk}\n";
+        $info_text .= "moodle-release: {$CFG->release}\n";
+        $info_text .= "moodle-version: {$CFG->version}\n";
+        $info_text .= "export time: ".\userdate(time(), '%Y-%m-%d %H:%M')."\n";
+        $info_text .= "encryption: ".($secret ? "yes" : "no")."\n";
+
+        $zip->addFromString('info.json', json_encode($data, JSON_PRETTY_PRINT));
+        $zip->addFromString('info.txt', $info_text);
+
+
+        $zip->close();
+
+
+
+        $extra = ($secret?'-'.block_exacomp_trans(['de:passwortgeschuetzt', 'en:passwordprotected']):'');
+        $filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').$extra.'.zip';
+        header('Content-Type: application/zip');
+        header('Content-Length: ' . filesize($zipfile));
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        readfile($zipfile);
+
+        die;
+        unlink($zipfile);
+
+        exit;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    public static function do_moodle_competencies_export($secret) {
+//        global $SITE, $CFG;
+//
+//        \core_php_time_limit::raise();
+//        raise_memory_limit(MEMORY_HUGE);
+//
+//        if (!self::get_my_source()) {
+//            // this can't happen anymore, because a source is automatically generated
+//            throw new moodle_exception('source not configured, go to block settings');
+//            // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
+//        }
+//
+//        $xml = new SimpleXMLElement(
+/*            '<?xml version="1.0" encoding="UTF-8"?>'.*/
+//            '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
+//        );
+//
+//        $xml['version'] = '2015081400';
+//        $xml['date'] = date('c');
+//        $xml['source'] = self::get_my_source(); //TODO: different source generation? Include information that it's from moodle-competencies
+//        $xml['sourcename'] = $SITE->fullname;
+//
+//
+//        self::$xml = $xml;
+//
+//        self::export_moodle_competencies_to_topics($xml);
+//
+//        return $xml;
+//    }
+//
+//    private static function export_moodle_competencies_to_topics(SimpleXMLElement $xmlParent = null) {
+//        $dbItems = g::$DB->get_records('competency',  array('descriptionformat'=>1));
+//
+//        if (!$dbItems) return;
+//
+//        $xmlItems = $xmlParent->addChild('topics');
+//
+//        foreach ($dbItems as $dbItem) {
+//            $xmlItem = $xmlItems->addChild('topic');
+//            self::assign_source($xmlItem, $dbItem);
+//
+//
+////            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->shortname);
+//            $xmlItem->title = $dbItem->shortname; //TODO: why not just like this?
+//
+//            // children
+//            self::export_moodle_competencies_to_descriptors($xmlItem);
+//        }
+//    }
+//
+//    private static function export_moodle_competencies_to_descriptors(SimpleXMLElement $xmlParent = null, $parentid = 0) {
+//        $dbItems = g::$DB->get_records('competency',  array('parentid'=>$parentid));
+//
+//        if (!$dbItems) return;
+//
+//        $xmlItems = $xmlParent->addChild('children');
+//
+//        foreach ($dbItems as $dbItem) {
+//            $xmlItem = $xmlItems->addChild('descriptor');
+//            self::assign_source($xmlItem, $dbItem);
+//
+//
+////            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->shortname);
+//            $xmlItem->title = $dbItem->shortname;
+//
+//            // children
+////            self::export_moodle_competencies_to_descriptors($xmlItem, $dbItem->id);
+//        }
+//    }
+
+
+
+
+
+
+
+
 }
 
 class data_course_backup extends data {
