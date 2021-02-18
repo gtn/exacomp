@@ -3382,14 +3382,6 @@ Returns:<pre>{
 <div>type: read</div>
 Params: <table>
 <tr>
-<td>courseid</td>
-<td>int</td>
-<td>null</td>
-<td>optional</td>
-<td>default: int(0)
-</td>
-<td></td>
-<tr>
 <td>userid</td>
 <td>int</td>
 <td>null</td>
@@ -3402,7 +3394,46 @@ Returns:<pre>{
     "items_and_examples_total": "int null (number of free items + examples)",
     "items_and_examples_completed": "int null (number of solved items, those items can be free or related to an example)",
     "competencies_total": "int null ()",
-    "competencies_gained": "int null ()"
+    "competencies_gained": "int null ()",
+    "competencetree": [
+        {
+            "id": "int null (id of subject)",
+            "title": "text null (title of subject)",
+            "courseid": "int null (id of course)",
+            "courseshortname": "text null (courseshortname)",
+            "coursefullname": "text null (coursefullname)",
+            "teacherevaluation": "int null (teacher evaluation of subject)",
+            "studentevaluation": "int null (student evaluation of subject)",
+            "topics": [
+                {
+                    "id": "int null (id of example)",
+                    "title": "text null (title of topic)",
+                    "teacherevaluation": "int null (teacher evaluation of topic)",
+                    "studentevaluation": "int null (student evaluation of topic)",
+                    "descriptors": [
+                        {
+                            "id": "int null (id of example)",
+                            "title": "text null (title of descriptor)",
+                            "teacherevaluation": "int null (teacher evaluation of descriptor)",
+                            "studentevaluation": "int null (student evaluation of descriptor)",
+                            "childdescriptors": [
+                                {
+                                    "id": "int null (id of example)",
+                                    "title": "text null (title of example)",
+                                    "teacherevaluation": "int null (teacher evaluation of childdescriptor)",
+                                    "studentevaluation": "int null (student evaluation of childdescriptor)"
+                                },
+                                "..."
+                            ]
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
 }</pre>
 <h2>diggrplus_get_descriptors_for_example</h2>
 <div>get descriptors where example is associated

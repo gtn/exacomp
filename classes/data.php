@@ -1301,10 +1301,8 @@ class data_exporter extends data {
 
         $xml['version'] = '2015081400';
         $xml['date'] = date('c');
-        $xml['source'] = self::get_my_source();
+        $xml['source'] = 'moodle-competencies'; //  TODO: what source? self is a problem because then it won't import self::get_my_source();
         $xml['sourcename'] = $SITE->fullname;
-
-
 
         $zip = ZipArchive::create_temp_file();
         $zip->addEmptyDir('files');
@@ -1320,14 +1318,18 @@ class data_exporter extends data {
 //
 //        // TODO: export categoriesn
 //        self::export_examples($xml);
-        self::export_descriptors($xml);
+//        self::export_descriptors($xml);
 
 //        self::export_crosssubjects($xml);
-        self::export_edulevels($xml);
+//        self::export_edulevels($xml);
 //        self::export_sources($xml);
 //        self::export_assignments($xml, $zip);
 
+        self::export_moodlecomp_frameworks($xml);
+
+
         $zipfile = $zip->filename;
+
 
         if (optional_param('as_text', false, PARAM_INT)) {
             echo 'zip file size: '.filesize($zipfile)."\n\n\n";
@@ -1340,6 +1342,7 @@ class data_exporter extends data {
         }
 
         $zip->addFromString('data.xml', $xml->asPrettyXML());
+
 
         if ($secret) {
             // encrypt all files in zip file
@@ -1383,14 +1386,107 @@ class data_exporter extends data {
         header('Content-Type: application/zip');
         header('Content-Length: ' . filesize($zipfile));
         header('Content-Disposition: attachment; filename="'.$filename.'"');
-        readfile($zipfile);
+        readfile($zipfile); //downloads the file
 
-        die;
         unlink($zipfile);
 
+        die;
         exit;
     }
 
+
+    private static function export_moodlecomp_frameworks(SimpleXMLElement $xmlParent, $parentid = 0) {
+	    global $DB;
+
+        $xmlEdulevels = SimpleXMLElement::create('edulevels');
+        $xmlEdulevel = $xmlEdulevels->addChild('edulevel');
+        self::assign_moodlecomp_source($xmlEdulevel, null);
+        $xmlEdulevel->addChildWithCDATAIfValue('title', 'edulevel-dummytitle');
+
+
+        $xmlSchooltypes = SimpleXMLElement::create('schooltypes');
+        $xmlSchooltype = $xmlSchooltypes->addChild('schooltype');
+        self::assign_moodlecomp_source($xmlSchooltype, null);
+        $xmlSchooltype->addChildWithCDATAIfValue('title', 'schooltype-dummytitle');
+
+
+
+        $xmlSubjects = SimpleXMLElement::create('subjects');
+
+        //competency frameworks will be converted to subjects in the XML structure
+        $dbFrameworks = $DB->get_records('competency_framework', null);
+
+        foreach($dbFrameworks as $dbSubject) {
+            $xmlTopics = self::export_moodlecomp_as_topics($dbSubject);
+            $xmlSubject = $xmlSubjects->addChild('subject');
+            self::assign_moodlecomp_source($xmlSubject, $dbSubject);
+            $xmlSubject->addChildWithCDATAIfValue('title', $dbSubject->shortname);
+            $xmlSubject->addChild($xmlTopics);
+        }
+
+        if($xmlSubjects){
+            $xmlSchooltype->addChild($xmlSubjects);
+        }
+        if($xmlSchooltypes){
+            $xmlEdulevel->addChild($xmlSchooltypes);
+        }
+        if ($xmlEdulevels) {
+            $xmlParent->addChild($xmlEdulevels);
+        }
+    }
+
+    private static function export_moodlecomp_as_topics($dbSubject) {
+        $xmlTopics = SimpleXMLElement::create('topics');
+
+        $dbTopics = g::$DB->get_records('competency', array('parentid' => 0, 'competencyframeworkid' => $dbSubject->id));
+
+        foreach($dbTopics as $dbTopic){
+            $xmlTopic = $xmlTopics->addChild('topic');
+            self::assign_moodlecomp_source($xmlTopic, $dbTopic);
+            $xmlTopic->addChildWithCDATAIfValue('title', $dbTopic->shortname);
+
+
+//            $descriptors = g::$DB->get_records_sql("
+//				SELECT DISTINCT d.id, d.source, d.sourceid
+//				FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
+//				JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON d.id = dt.descrid
+//				WHERE dt.topicid = ?
+//					$filter
+//			", array($dbTopic->id));
+//
+//            if ($descriptors) {
+//                $xmlDescripors = $xmlTopic->addChild('descriptors');
+//                foreach ($descriptors as $descriptor) {
+//                    $xmlDescripor = $xmlDescripors->addChild('descriptorid');
+//                    self::assign_source($xmlDescripor, $descriptor);
+//                }
+//            }
+        }
+
+        return $xmlTopics;
+    }
+
+
+
+
+
+    /**
+     * @param SimpleXMLElement $xmlItem
+     * @param $dbItem
+     * @throws moodle_exception
+     */
+    private static function assign_moodlecomp_source($xmlItem, $dbItem) {
+        // TODO: get source of the framework
+        // local source -> set new id
+//        $xmlItem['source'] = self::get_my_source();
+        $xmlItem['source'] = 'moodle-competencies';
+        if($dbItem){
+            $xmlItem['id'] = $dbItem->id;
+        }else{
+            $xmlItem['id'] = 1; //TODO: since this is a dummy => 1 is ok
+        }
+
+    }
 
 
 
