@@ -7931,7 +7931,7 @@ class block_exacomp_external extends external_api {
                 $elem_sub = new stdClass ();
                 $elem_sub->id = $subject->id;
                 $elem_sub->title = $subject->title;
-                $elem_sub->courseid = $courseid;
+                $elem_sub->courseid = $course->id;
                 $elem_sub->courseshortname = $course->shortname;
                 $elem_sub->coursefullname = $course->fullname;
                 $elem_sub->teacherevaluation = $student->subjects->teacher[$subject->id];
