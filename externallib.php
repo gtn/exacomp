@@ -11424,7 +11424,7 @@ class block_exacomp_external extends external_api {
             // TODO: checks so a student cannot hack this and view another student's items
 
             // Only use the course the teacher is interested in (e.g. a student could be in 5 courses, but the teacher only wants to see the results of the student in his course
-            if ($courseid) {
+            if ($courseid != -1) {
                 $courses = enrol_get_users_courses($userid);
                 $courses = array_filter($courses, function($course) use ($courseid) {
                     return $course->id == $courseid;
