@@ -7073,7 +7073,7 @@ class block_exacomp_external extends external_api {
 			$studentExamplesAndItems = [];
 
 			if (($type == "own_items" || $type == "") && $status != "new") {
-				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status);
+				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status, $courseid);
 
 				foreach($items as $item){
 					static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
@@ -11407,7 +11407,7 @@ class block_exacomp_external extends external_api {
      * @param int $userid
      * @param bool $compid
      * @param bool $comptype
-     * @param int $courses ---> use if you want to reduce the results to only the selected course. Otherwise, all courses are used.
+     * @param int $courseid ---> use if you want to reduce the results to only the selected course. Otherwise, all courses are used.
      */
     private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1, $status="", $courseid = -1){
         global $DB;
