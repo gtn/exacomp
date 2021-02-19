@@ -7059,13 +7059,12 @@ class block_exacomp_external extends external_api {
 		        	// don't add to students array
 		        	continue;
 				}
+
 				$students[$student->id] = $student;
 			}
 		}
 
 		$examplesAndItems = array();
-
-
 
 		foreach ($students as $student) {
 			$userid = $student->id;
@@ -7103,7 +7102,7 @@ class block_exacomp_external extends external_api {
 				if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
 					// TODO: how do we check if the user is a teacher? It is not oriented on courses
 	//            $isTeacher = false;
-					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status, $courseid);
+					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status);
 					$studentExamplesAndItems = array_merge($studentExamplesAndItems, $examples);
 				}
 			}
@@ -11407,7 +11406,7 @@ class block_exacomp_external extends external_api {
      * @param int $userid
      * @param bool $compid
      * @param bool $comptype
-     * @param int $courses ---> use if you want to reduce the results to only the selected course. Otherwise, all courses are used.
+     * @param int $userid ---> use if you want to reduce the results to only one course. Otherwise, all courses are used.
      */
     private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1, $status="", $courseid = -1){
         global $DB;
@@ -11418,21 +11417,12 @@ class block_exacomp_external extends external_api {
 //        $courses = block_exacomp_get_courses_of_student($userid);
 //    }
 
+
         // TODO: To avoid code duplication I used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
         $examples = array();
         if($compid == -1 || $comptype == -1) { // return ALL examples.. no niveauid filter possible
             // TODO: checks so a student cannot hack this and view another student's items
-
-            // Only use the course the teacher is interested in (e.g. a student could be in 5 courses, but the teacher only wants to see the results of the student in his course
-            if ($courseid) {
-                $courses = enrol_get_users_courses($userid);
-                $courses = array_filter($courses, function($course) use ($courseid) {
-                    return $course->id == $courseid;
-                });
-            } else {
-                $courses = enrol_get_users_courses($userid);
-            }
-
+            $courses = enrol_get_users_courses($userid);
             foreach ($courses as $course) {
                 $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $example) {
