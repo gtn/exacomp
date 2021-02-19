@@ -8197,10 +8197,9 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  * @param unknown $compid
  * @param unknown $comptype
  */
-function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1, $search="", $niveauid=-1, $status="", $courseid = -1) {
+function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-1, $search="", $niveauid=-1, $status="") {
     global $DB;
 
-    $courseidCondition = $courseid==-1 ? "" : "AND i.courseid = ".$courseid;
 
     $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
 //    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = ?";
@@ -8236,7 +8235,6 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
               WHERE i.userid = ?
                 '.$compidCondition.'
                 '.$statusCondition.'
-                '.$courseidCondition.'
                 AND ie.competence_type = ?
                 AND (d.title LIKE "%'.$search.'%" OR d.description LIKE "%'.$search.'%" OR i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
@@ -8252,7 +8250,6 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
               WHERE i.userid = ?
                 '.$compidCondition.'
                 '.$statusCondition.'
-                '.$courseidCondition.'
                 AND ie.competence_type = ?
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
@@ -8268,7 +8265,6 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
               WHERE i.userid = ?
                 '.$compidCondition.'
                 '.$statusCondition.'
-                '.$courseidCondition.'
                 AND ie.competence_type = ?
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
@@ -8281,8 +8277,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = ?
                 '.$compidCondition.'    
-                '.$statusCondition.'
-                '.$courseidCondition.'            
+                '.$statusCondition.'            
                 AND (ie.competence_type = ? OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.')
                 AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
