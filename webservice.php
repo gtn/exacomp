@@ -514,6 +514,123 @@ class block_exacomp_simple_service {
 
 		return $results;
 	}
+	
+	
+	/**
+	 * used own webservice, because moodle does not support returning files from webservices
+	 */
+	static function diggr_set_cert_params() {
+	    $wstoken = required_param('wstoken', PARAM_ALPHANUM);
+	    $gradings = $_POST['gradings'];
+	    $username = $_POST['username'];
+	    
+// 	    $gradings = $gradings['gradings'];
+	    
+	    $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
+	    $wsDataHandler->setParam('gradings', $gradings);
+	    $wsDataHandler->setParam('username', $username);
+	}
+	
+	
+	static function diggr_create_certificate() {
+	     	    
+	    global $CFG;
+	    $wstoken = required_param('wstoken', PARAM_ALPHANUM);
+	    
+	    $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
+	    $gradings = $wsDataHandler->getParam('gradings');
+	    $username = $wsDataHandler->getParam('username');
+	    
+	    // Include the main TCPDF library (search for installation path).
+	    require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
+	    
+	    // create new PDF document
+	    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	    
+	    
+	    // set document information
+	    $pdf->SetCreator(PDF_CREATOR);
+	    $pdf->SetAuthor('Nicola Asuni');
+	    $pdf->SetTitle('TCPDF Example 002');
+	    $pdf->SetSubject('TCPDF Tutorial');
+	    $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+	    
+	    // remove default header/footer
+	    $pdf->setPrintHeader(false);
+	    $pdf->setPrintFooter(false);
+	    
+	    // set default monospaced font
+	    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	    
+	    // set margins
+	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP + 60, PDF_MARGIN_RIGHT);
+	    
+	    // set auto page breaks
+	    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	    
+	    // set image scale factor
+	    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	    
+	    // set some language-dependent strings (optional)
+	    if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+	        require_once(dirname(__FILE__).'/lang/eng.php');
+	        $pdf->setLanguageArray($l);
+	    }
+	    
+	    // ---------------------------------------------------------
+	    
+	    // set font
+	    $pdf->SetFont('helvetica ', '', 30);
+	    $pdf->SetTextColor(180,0,0);
+	    
+	    // add a page
+	    $pdf->AddPage();
+	    
+	    
+	    $pdf->Write(0, "Zertifikat", '', 0, 'C', true, 0, false, false, 0);
+	    
+	    
+	    $pdf->SetFont('helvetica ', '', 15);
+	    $pdf->SetTextColor(0,0,0);
+	    $pdf->Ln();
+	    $pdf->Write(0, "Digitale Grundbildung", '', 0, 'C', true, 0, false, false, 0);
+	    $pdf->Ln();
+	    $pdf->Ln();
+	    $pdf->Ln();
+	    $pdf->SetFont('helvetica ', '', 20);
+	    $pdf->Write(0, $username, '', 0, 'C', true, 0, false, false, 0);
+	    $pdf->Ln();
+	    $pdf->Ln();
+	    $pdf->SetMargins(PDF_MARGIN_LEFT + 20, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+	    $pdf->Ln();
+	    
+	    $pdf->SetFont('helvetica ', '', 12);
+	    
+	    $pdf->Write(0, "Sie haben den Anwendungscheck erfolgreich bestanden.", '', 0, 'L', true, 0, false, false, 0);
+	    $pdf->Ln();
+	    
+	    $pdf->Write(0, $gradings[0]['name'] . "                                    " . $gradings[0]['score'], '', 0, 'L', true, 0, false, false, 0);
+	    array_shift($gradings);
+	    $pdf->Ln();
+	    $pdf->Write(0, "Darüber hinaus bescheinigen wir Ihnen Ihre Kompetenzen in fogenden Bereichen:", '', 0, 'L', true, 0, false, false, 0);
+	    
+	    
+	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT + 10);
+	    $pdf->Ln();
+	    
+	    foreach($gradings as $grading){
+	        $pdf->Write(0, $grading['name'] . "            " . $grading['score'], '', 0, 'R', true, 0, false, false, 0);
+	        $pdf->Ln();
+	    }
+	    
+	    // ---------------------------------------------------------
+	    
+	    //Close and output PDF document
+	    $pdf->Output('diwiPass.pdf', 'D');
+	    
+	    
+
+	}
 
 
 
