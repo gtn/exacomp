@@ -147,6 +147,11 @@ const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
 
 const BLOCK_EXACOMP_IS_GLOBAL = 'isglobal';
 
+const BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS = 0;
+const BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED = 1;
+const BLOCK_EXACOMP_ITEM_STATUS_COMPLETED = 2;
+
+
 // data for multiple using
 $block_exacomp_topic_used_values = array();
 $block_exacomp_descriptor_used_values = array();

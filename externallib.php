@@ -6858,13 +6858,13 @@ class block_exacomp_external extends external_api {
                     unset($examplesAndItems[$key]);
                 }else{
                     switch($exampleItem->item->status){
-                        case 0: //inprogress
+                        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
                             $exampleItem->status = "inprogress";
                             break;
-                        case 1: //submitted
+                        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
                             $exampleItem->status = "submitted";
                             break;
-                        case 2: //completed
+                        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
                             $exampleItem->status = "completed";
                             break;
                         default:
@@ -7884,6 +7884,8 @@ class block_exacomp_external extends external_api {
         // -----
 
 
+
+
         //Get all descriptors, to have the count
         // get all competencies
         //get all subjects by courses, and then get all descriptors TODO: find a more performant solution
@@ -7911,7 +7913,7 @@ class block_exacomp_external extends external_api {
         foreach($examples as $example){
             $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
             if($item){
-                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // item that is submitted and has grade
+                if($item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){ // item that is submitted and has grade -> is completed
                     $completed_items++;
                     //only if the item of an example is gained, then the descriptors that should be marked positive have to be found
                     $exampledescriptors = block_exacomp_get_descriptors_by_example($example->id);
