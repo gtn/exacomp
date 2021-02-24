@@ -544,32 +544,28 @@ class block_exacomp_simple_service {
 	    // Include the main TCPDF library (search for installation path).
 	    require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
 	    
+	    
 	    // create new PDF document
 	    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	    
 	    
-	    // set document information
-	    $pdf->SetCreator(PDF_CREATOR);
-	    $pdf->SetAuthor('Nicola Asuni');
-	    $pdf->SetTitle('TCPDF Example 002');
-	    $pdf->SetSubject('TCPDF Tutorial');
-	    $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
-	    
-	    // remove default header/footer
-	    $pdf->setPrintHeader(false);
-	    $pdf->setPrintFooter(false);
+
 	    
 	    // set default monospaced font
 	    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 	    
 	    // set margins
-	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP + 60, PDF_MARGIN_RIGHT);
+	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP + 75, PDF_MARGIN_RIGHT);
+	    $pdf->SetHeaderMargin(0);
+	    $pdf->SetFooterMargin(0);
 	    
-	    // set auto page breaks
-	    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	    // remove default footer
+	    $pdf->setPrintFooter(false);
+	    
 	    
 	    // set image scale factor
 	    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	    
 	    
 	    // set some language-dependent strings (optional)
 	    if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
@@ -580,19 +576,41 @@ class block_exacomp_simple_service {
 	    // ---------------------------------------------------------
 	    
 	    // set font
-	    $pdf->SetFont('helvetica ', '', 30);
-	    $pdf->SetTextColor(180,0,0);
+	    $pdf->SetFont('helvetica ', 'B', 30);
+	    $pdf->SetTextColor(160,0,0);
 	    
 	    // add a page
 	    $pdf->AddPage();
 	    
 	    
-	    $pdf->Write(0, "Zertifikat", '', 0, 'C', true, 0, false, false, 0);
+	    // -- set new background ---
 	    
+	    // get the current page break margin
+	    $bMargin = $pdf->getBreakMargin();
+	    // get current auto-page-break mode
+	    $auto_page_break = $pdf->getAutoPageBreak();
+	    // disable auto-page-break
+	    $pdf->SetAutoPageBreak(false, 0);
+	    // set bacground image
+
+
+	    $img_file = $CFG->dirroot.'/blocks/exacomp/pix/background-red.png';
+	    $pdf->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+	    $logo = $CFG->dirroot.'/blocks/exacomp/pix/frauenstiftung-steyr-logo.jpg';
+	    $pdf->Image($logo, 0, 0, 210, 27, '', '', '', false, 300, '', false, false, 0);
+	    // restore auto-page-break status
+	    $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
+	    // set the starting point for the page content
+	    $pdf->setPageMark();
+	    
+
+	    
+	    $pdf->Write(0, "Zertifikat", '', 0, 'C', true, 0, false, false, 0);
 	    
 	    $pdf->SetFont('helvetica ', '', 15);
 	    $pdf->SetTextColor(0,0,0);
-	    $pdf->Ln();
+	    
+	    
 	    $pdf->Write(0, "Digitale Grundbildung", '', 0, 'C', true, 0, false, false, 0);
 	    $pdf->Ln();
 	    $pdf->Ln();
@@ -601,10 +619,11 @@ class block_exacomp_simple_service {
 	    $pdf->Write(0, $username, '', 0, 'C', true, 0, false, false, 0);
 	    $pdf->Ln();
 	    $pdf->Ln();
-	    $pdf->SetMargins(PDF_MARGIN_LEFT + 20, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+	    $pdf->Ln();
+	    $pdf->SetMargins(PDF_MARGIN_LEFT + 30, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 	    $pdf->Ln();
 	    
-	    $pdf->SetFont('helvetica ', '', 12);
+	    $pdf->SetFont('helvetica ', '', 11);
 	    
 	    $pdf->Write(0, "Sie haben den Anwendungscheck erfolgreich bestanden.", '', 0, 'L', true, 0, false, false, 0);
 	    $pdf->Ln();
@@ -617,9 +636,11 @@ class block_exacomp_simple_service {
 	    
 	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT + 10);
 	    $pdf->Ln();
+	    $pdf->Ln();
 	    
 	    foreach($gradings as $grading){
-	        $pdf->Write(0, $grading['name'] . "            " . $grading['score'], '', 0, 'R', true, 0, false, false, 0);
+	        $pdf->MultiCell(80, 0, $grading['name'], 0, 'L', 0, 0, 90, '', true);
+	        $pdf->MultiCell(20, 0, $grading['score'], 0, 'R', 0, 1, '', '', true);
 	        $pdf->Ln();
 	    }
 	    
