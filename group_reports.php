@@ -227,8 +227,6 @@ if (optional_param('print', false, PARAM_BOOL)) {
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD,$filter,$filterlogictext);
         }
 
-//        var_dump($filter);
-//        die;
         if($filter[BLOCK_EXACOMP_TYPE_EXAMPLE]["visible"]){
             $filterlogictext .= "<br>".block_exacomp_get_string('report all descriptor examples');
             $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_EXAMPLE,$filter,$filterlogictext);

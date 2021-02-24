@@ -11248,7 +11248,7 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
 	array_shift($args);
 
 	foreach ($items as $key => $item) {
-		$walk_subs = function() use ($item, $data, $callback) {
+		$walk_subs = function() use ($item, $data, $callback) { // does not enter this if timespan is set
 			$filter = $data['filter'];
 
 			$args = func_get_args();
@@ -11318,7 +11318,9 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
 
 			$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
-			block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
+
+//            $filter['time'] = null;
+            block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $courseid, $filter) {
 				$eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 				$item_type = $item::TYPE;
 
@@ -11337,18 +11339,28 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
 					return false;
 				}
 
+
+
                 $filter_result = block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval);
+
+//                var_dump($filter_result);
+//                var_dump(@$filter['time']);
+//                die;
+
                 if (!$filter_result) {
 				    return false;
                 }
 
 
-				/*if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+
+
+
+				if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
 					$item->visible = false;
 				}
 				if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
 					$item->visible = false;
-				}*/
+				}
 
 				$walk_subs($level + 1);
 
@@ -11634,6 +11646,8 @@ function block_exacomp_group_reports_annex_result_filter_rules($item_type, $item
             return false;
         }
     }
+
+//    var_dump( $eval);
 
     if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
         return false;
