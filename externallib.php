@@ -6391,8 +6391,11 @@ class block_exacomp_external extends external_api {
         }
         require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
         foreach ($descriptorgradings as $descriptorgrading) {
-            block_exacomp_set_user_competence($USER->id, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $descriptorgrading["studentvalue"]);
+            block_exacomp_set_user_competence($USER->id, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $descriptorgrading["studentvalue"], null, -1, true, [
+            	'notification_customdata' => $customdata,
+			]);
         }
 
         // remove files specifically marked for deletion by user:
@@ -7693,8 +7696,11 @@ class block_exacomp_external extends external_api {
 
 
 		// Descriptorgradings
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $item->courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
         foreach ($descriptorgradings as $descriptorgrading) {
-            block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"]);
+            block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"], null, -1, true, [
+            	'notification_customdata' => $customdata,
+			]);
         }
 
 

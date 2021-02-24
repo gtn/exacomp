@@ -1584,7 +1584,7 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
  * @param int $value
  * @param int $evalniveauid
  */
-function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null, $subjectid = -1, $savegradinghistory = true) {
+function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null, $subjectid = -1, $savegradinghistory = true, $options = []) {
 	global $DB, $USER;
 
 	if ($evalniveauid !== null && $evalniveauid < 1) {
@@ -1619,7 +1619,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
         }
 //        block_exacomp_update_gradinghistory_text($compid,$userid,$courseid,$comptype);
 	} else {
-		block_exacomp_notify_all_teachers_about_self_assessment($courseid,$compid, $comptype);
+		block_exacomp_notify_all_teachers_about_self_assessment($courseid,$compid, $comptype, $options['notification_customdata']);
 	}
     $objecttable = '';
 	switch ($comptype) {
@@ -8544,8 +8544,8 @@ function block_exacomp_notify_all_teachers_about_submission($courseid, $examplei
  * @param unknown $userto
  * @param unknown $courseid
  */
-function block_exacomp_send_self_assessment_notification($userfrom, $userto, $courseid, $compid, $comptype) {
-	global $SITE, $DB;
+function block_exacomp_send_self_assessment_notification($userfrom, $userto, $courseid, $compid, $comptype, $customdata) {
+	global $SITE, $DB, $USER;
 
 	$course = get_course($courseid);
 	$subject = block_exacomp_get_string('notification_self_assessment_subject_noSiteName', null, array('course' => $course->shortname));
@@ -8562,8 +8562,7 @@ function block_exacomp_send_self_assessment_notification($userfrom, $userto, $co
         $viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'topicid' => $compid));
     }
 
-
-    block_exacomp_send_notification("self_assessment", $userfrom, $userto, $subject, $message, $context, $viewurl);
+    block_exacomp_send_notification("self_assessment", $userfrom, $userto, $subject, $message, $context, $viewurl, false, 0, $customdata);
 }
 
 /**
@@ -8572,13 +8571,13 @@ function block_exacomp_send_self_assessment_notification($userfrom, $userto, $co
  * @param $compid
  * @param $comptype
  */
-function block_exacomp_notify_all_teachers_about_self_assessment($courseid,$compid, $comptype) {
+function block_exacomp_notify_all_teachers_about_self_assessment($courseid,$compid, $comptype, $customdata) {
 	global $USER, $DB;
 
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
 	if ($teachers) {
 		foreach ($teachers as $teacher) {
-			block_exacomp_send_self_assessment_notification($USER, $teacher, $courseid,$compid, $comptype);
+			block_exacomp_send_self_assessment_notification($USER, $teacher, $courseid,$compid, $comptype, $customdata);
 		}
 	}
 }
