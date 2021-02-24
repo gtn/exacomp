@@ -11656,10 +11656,10 @@ function block_exacomp_group_reports_annex_result_filter_rules($item_type, $item
 
 //    var_dump( $eval);
 
-    if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher < @$filter['time']['from']) {
+    if (@$filter['time']['active'] && @$filter['time']['from'] && $eval->timestampteacher != null && $eval->timestampteacher < @$filter['time']['from']) {
         return false;
     }
-    if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher > @$filter['time']['to']) {
+    if (@$filter['time']['active'] && @$filter['time']['to'] && $eval->timestampteacher != null && $eval->timestampteacher > @$filter['time']['to']) {
         return false;
     }
 
