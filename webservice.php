@@ -594,9 +594,9 @@ class block_exacomp_simple_service {
 	    // set bacground image
 
 
-	    $img_file = $CFG->dirroot.'/blocks/exacomp/pix/background-red.png';
+	    $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background-red.png';
 	    $pdf->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-	    $logo = $CFG->dirroot.'/blocks/exacomp/pix/frauenstiftung-steyr-logo.jpg';
+	    $logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/frauenstiftung-steyr-logo.jpg';
 	    $pdf->Image($logo, 0, 0, 210, 27, '', '', '', false, 300, '', false, false, 0);
 	    // restore auto-page-break status
 	    $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
@@ -631,7 +631,7 @@ class block_exacomp_simple_service {
 	    $pdf->Write(0, $gradings[0]['name'] . "                                    " . $gradings[0]['score'], '', 0, 'L', true, 0, false, false, 0);
 	    array_shift($gradings);
 	    $pdf->Ln();
-	    $pdf->Write(0, "Darüber hinaus bescheinigen wir Ihnen Ihre Kompetenzen in fogenden Bereichen:", '', 0, 'L', true, 0, false, false, 0);
+	    $pdf->Write(0, "Darüber hinaus bescheinigen wir Ihnen Ihre Kompetenzen in folgenden Bereichen:", '', 0, 'L', true, 0, false, false, 0);
 	    
 	    
 	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT + 10);
