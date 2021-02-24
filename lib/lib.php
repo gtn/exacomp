@@ -11268,6 +11268,8 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
 		};
 
 		$ret = call_user_func_array($callback, array_merge([$walk_subs, $item], $args));
+		//something goes wrong here. The only difference is in the $callback
+        //but if timespan is set, it just will not enter the function
 
 		if ($ret === false) {
 			unset($items[$key]);
