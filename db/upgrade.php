@@ -3657,11 +3657,11 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2020061200, 'exacomp');
     }
      if ($oldversion < 2020110200) {
-        $DB->execute(' UPDATE {block_exacompedulevels} SET title = "ohne feste Zuordnung" 
-                                                    WHERE title like "Mein Edulevel" AND sourceid=0 AND source = 3');
-        $DB->execute(' UPDATE {block_exacompschooltypes} SET title = "ohne feste Zuordnung" 
-                                                    WHERE title like "Mein Schultyp" AND sourceid=0 AND source = 3');
-        
+         $DB->execute(" UPDATE {block_exacompedulevels} SET title = 'ohne feste Zuordnung'
+                                                    WHERE title like 'Mein Edulevel' AND sourceid=0 AND source = 3");
+         $DB->execute(" UPDATE {block_exacompschooltypes} SET title = 'ohne feste Zuordnung'
+                                                    WHERE title like 'Mein Schultyp' AND sourceid=0 AND source = 3");
+
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020110200, 'exacomp');
     }
