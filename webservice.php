@@ -576,7 +576,7 @@ class block_exacomp_simple_service {
 	    // ---------------------------------------------------------
 	    
 	    // set font
-	    $pdf->SetFont('helvetica ', 'B', 30);
+	    $pdf->SetFont('helvetica', 'B', 30);
 	    $pdf->SetTextColor(160,0,0);
 	    
 	    // add a page
@@ -594,12 +594,12 @@ class block_exacomp_simple_service {
 	    // set bacground image
 
 
-	    $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background-red.png';
-	    $pdf->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+	    $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background-red.jpg';
+	    $pdf->Image($img_file, 0, 0, 210, 297, 'JPG', '', '', false, 300, '', false, false, 0);
 	    $logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/frauenstiftung-steyr-logo.jpg';
-	    $pdf->Image($logo, 0, 0, 210, 27, '', '', '', false, 300, '', false, false, 0);
-	    $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/DiWi-Logo-RGB.png';
-	    $pdf->Image($diwilogo, 155, 278, 46, 14, '', '', '', false, 300, '', false, false, 0);
+	    $pdf->Image($logo, 0, 0, 210, 27, 'JPG', '', '', false, 300, '', false, false, 0);
+	    $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/DiWi-Logo-RGB.jpg';
+	    $pdf->Image($diwilogo, 155, 278, 46, 14, 'JPG', '', '', false, 300, '', false, false, 0);
 	    // restore auto-page-break status
 	    $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
 	    // set the starting point for the page content
@@ -609,7 +609,7 @@ class block_exacomp_simple_service {
 	    
 	    $pdf->Write(0, "Zertifikat", '', 0, 'C', true, 0, false, false, 0);
 	    
-	    $pdf->SetFont('helvetica ', '', 15);
+	    $pdf->SetFont('helvetica', '', 15);
 	    $pdf->SetTextColor(0,0,0);
 	    
 	    
@@ -617,7 +617,7 @@ class block_exacomp_simple_service {
 	    $pdf->Ln();
 	    $pdf->Ln();
 	    $pdf->Ln();
-	    $pdf->SetFont('helvetica ', '', 20);
+	    $pdf->SetFont('helvetica', '', 20);
 	    $pdf->Write(0, $username, '', 0, 'C', true, 0, false, false, 0);
 	    $pdf->Ln();
 	    $pdf->Ln();
@@ -625,7 +625,7 @@ class block_exacomp_simple_service {
 	    $pdf->SetMargins(PDF_MARGIN_LEFT + 30, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 	    $pdf->Ln();
 	    
-	    $pdf->SetFont('helvetica ', '', 11);
+	    $pdf->SetFont('helvetica', '', 11);
 	    
 	    $pdf->Write(0, "Sie haben den Anwendungscheck erfolgreich bestanden.", '', 0, 'L', true, 0, false, false, 0);
 	    $pdf->Ln();
