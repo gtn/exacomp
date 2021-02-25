@@ -598,6 +598,8 @@ class block_exacomp_simple_service {
 	    $pdf->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
 	    $logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/frauenstiftung-steyr-logo.jpg';
 	    $pdf->Image($logo, 0, 0, 210, 27, '', '', '', false, 300, '', false, false, 0);
+	    $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/DiWi-Logo-RGB.png';
+	    $pdf->Image($diwilogo, 155, 278, 46, 14, '', '', '', false, 300, '', false, false, 0);
 	    // restore auto-page-break status
 	    $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
 	    // set the starting point for the page content
