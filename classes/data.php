@@ -1434,6 +1434,24 @@ class data_exporter extends data {
             $xmlTopic->addChildWithCDATAIfValue('title', $dbTopic->shortname);
 
 
+            // TODO: check out how the sources work and find some similar way for the moodle_competencies
+            //maybe mdl_block_exacompdatasources has the competencyframeworks as well... but the competencies themselves don't store a source
+//            $descriptors = g::$DB->get_records_sql("
+//				SELECT DISTINCT d.id, d.source, d.sourceid
+//				FROM {competency} d
+//				WHERE dt.topicid = ?
+//			", array($dbTopic->id));
+//
+//            if ($descriptors) {
+//                $xmlDescripors = $xmlTopic->addChild('descriptors');
+//                foreach ($descriptors as $descriptor) {
+//                    $xmlDescripor = $xmlDescripors->addChild('descriptorid');
+//                    self::assign_source($xmlDescripor, $descriptor);
+//                }
+//            }
+
+
+
 //            $descriptors = g::$DB->get_records_sql("
 //				SELECT DISTINCT d.id, d.source, d.sourceid
 //				FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
