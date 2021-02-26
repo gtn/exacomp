@@ -623,7 +623,7 @@ class data_exporter extends data {
 	    self::export_assignments(null, $zip, $activityid);
 
 	    $zipfile = $zip->filename;
-	    
+
 	    $activitytitle = clean_param(block_exacomp_get_activitiy_by_id($activityid)->name, PARAM_ALPHANUM);
 
 	    $zip->close();
@@ -1311,20 +1311,7 @@ class data_exporter extends data {
         self::$zip = $zip;
 
 
-//        self::export_skills($xml);
-//        self::export_niveaus($xml);
-//        self::export_taxonomies($xml);
-//
-//
-//        // TODO: export categoriesn
-//        self::export_examples($xml);
-//        self::export_descriptors($xml);
-
-//        self::export_crosssubjects($xml);
-//        self::export_edulevels($xml);
-//        self::export_sources($xml);
-//        self::export_assignments($xml, $zip);
-
+        self::export_moodlecomp_descriptors($xml);
         self::export_moodlecomp_frameworks($xml);
 
 
@@ -1393,6 +1380,7 @@ class data_exporter extends data {
         die;
         exit;
     }
+
 
 
     private static function export_moodlecomp_frameworks(SimpleXMLElement $xmlParent, $parentid = 0) {
@@ -1465,6 +1453,37 @@ class data_exporter extends data {
 
         return $xmlTopics;
     }
+
+    private static function export_moodlecomp_descriptors(SimpleXMLElement $xmlParent, $parentid = 0) {
+        //differentiate between descriptors and childdescriptors by looking at the pathstructure. If it is "/number/number/" then it is a parent, anything else: child
+//        if (!$parentid) {
+//            $dbItems = g::$DB->get_records_sql("
+//				SELECT d.*
+//				FROM {'competency'} d
+//				WHERE parentid IS NOT NULL)
+//			");
+//        } else {
+        //For now, act as if every descriptor was NOT a child
+            $dbItems = g::$DB->get_records_sql("
+				SELECT d.*
+				FROM {competency} d
+				WHERE parentid != 0
+			");
+//        }
+
+//        $xmlItems = $xmlParent->addChild($parentid ? 'children' : 'descriptors');
+        $xmlItems = $xmlParent->addChild('descriptors');
+
+        foreach ($dbItems as $dbItem) {
+            $xmlItem = $xmlItems->addChild('descriptor');
+            self::assign_moodlecomp_source($xmlItem, $dbItem);
+            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->shortname);
+
+            // children
+//            self::export_descriptors($xmlItem, $dbItem->id);
+        }
+    }
+
 
 
 
