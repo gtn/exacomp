@@ -593,12 +593,22 @@ class block_exacomp_simple_service {
 	    $pdf->SetAutoPageBreak(false, 0);
 	    // set bacground image
 
-
-	    $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background-red.jpg';
+			}else{
+				$img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background.jpg';
+			}	   
 	    $pdf->Image($img_file, 0, 0, 210, 297, 'JPG', '', '', false, 300, '', false, false, 0);
-	    $logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/frauenstiftung-steyr-logo.jpg';
+	    
+	    if (file_exists($CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_top_custom.jpg')) {
+				$logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_top_custom.jpg';
+			}else{
+				$logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_top.jpg';
+			}	   
 	    $pdf->Image($logo, 0, 0, 210, 27, 'JPG', '', '', false, 300, '', false, false, 0);
-	    $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/DiWi-Logo-RGB.jpg';
+	    if (file_exists($CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_footer_custom.jpg')) {
+				$diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_footer_custom.jpg';
+			}else{
+				$diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_footer.jpg';
+			}	   
 	    $pdf->Image($diwilogo, 155, 278, 46, 14, 'JPG', '', '', false, 300, '', false, false, 0);
 	    // restore auto-page-break status
 	    $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
