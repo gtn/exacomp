@@ -368,6 +368,13 @@ class block_exacomp_simple_service {
 	}
 
 	static function group_reports_form() {
+	    // Dakora has language settings, moodle has language settings.
+        // To ensure that the reports are shown in the Dakora-language, the language this moodle user is temporarily force set
+        $lang = required_param('lang', PARAM_TEXT);
+        if(current_language() != $lang){
+            force_current_language($lang);
+        }
+
 		$course = static::require_courseid();
 
 		$output = block_exacomp_get_renderer();
