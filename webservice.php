@@ -592,7 +592,8 @@ class block_exacomp_simple_service {
 	    // disable auto-page-break
 	    $pdf->SetAutoPageBreak(false, 0);
 	    // set bacground image
-
+			if (file_exists($CFG->dirroot.'/blocks/exacomp/pix/certificate/background_custom.jpg')) {
+				$img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background_custom.jpg';
 			}else{
 				$img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background.jpg';
 			}	   
