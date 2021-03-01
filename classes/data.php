@@ -1434,63 +1434,73 @@ class data_exporter extends data {
             $xmlTopic->addChildWithCDATAIfValue('title', $dbTopic->shortname);
 
 
-            // TODO: check out how the sources work and find some similar way for the moodle_competencies
-            //maybe mdl_block_exacompdatasources has the competencyframeworks as well... but the competencies themselves don't store a source
-//            $descriptors = g::$DB->get_records_sql("
-//				SELECT DISTINCT d.id, d.source, d.sourceid
-//				FROM {competency} d
-//				WHERE dt.topicid = ?
-//			", array($dbTopic->id));
-//
-//            if ($descriptors) {
-//                $xmlDescripors = $xmlTopic->addChild('descriptors');
-//                foreach ($descriptors as $descriptor) {
-//                    $xmlDescripor = $xmlDescripors->addChild('descriptorid');
-//                    self::assign_source($xmlDescripor, $descriptor);
-//                }
-//            }
-
-
-
-//            $descriptors = g::$DB->get_records_sql("
-//				SELECT DISTINCT d.id, d.source, d.sourceid
-//				FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
-//				JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON d.id = dt.descrid
-//				WHERE dt.topicid = ?
-//					$filter
-//			", array($dbTopic->id));
-//
-//            if ($descriptors) {
-//                $xmlDescripors = $xmlTopic->addChild('descriptors');
-//                foreach ($descriptors as $descriptor) {
-//                    $xmlDescripor = $xmlDescripors->addChild('descriptorid');
-//                    self::assign_source($xmlDescripor, $descriptor);
-//                }
-//            }
+            // link the descriptors
+            self::add_moodlecomp_descriptors_to_topics($xmlTopic, $dbTopic);
         }
 
         return $xmlTopics;
     }
 
+    private static function add_moodlecomp_descriptors_to_topics($xmlTopic, $dbTopic) {
+        // TODO: check out how the sources work and find some similar way for the moodle_competencies
+        //maybe mdl_block_exacompdatasources has the competencyframeworks as well... but the competencies themselves don't store a source
+        $descriptors = g::$DB->get_records_sql("
+				SELECT DISTINCT d.id
+				FROM {competency} d
+				WHERE d.parentid = ?
+			", array($dbTopic->id));
+
+        if ($descriptors) {
+            $xmlDescriptors = $xmlTopic->addChild('descriptors');
+            foreach ($descriptors as $descriptor) {
+                self::add_moodlecomp_descriptors_recrusion($xmlDescriptors, $descriptor);
+//                $xmlDescriptor = $xmlDescriptors->addChild('descriptorid');
+//                self::assign_moodlecomp_source($xmlDescriptor, $descriptor);
+            }
+        }
+    }
+
+    // Needed in order to add the childdescriptors to the topics as well. Not only the parentdescriptors.
+    private static function add_moodlecomp_descriptors_recrusion($xmlDescriptors, $dbDescriptor){
+        $xmlDescriptor = $xmlDescriptors->addChild('descriptorid');
+        self::assign_moodlecomp_source($xmlDescriptor, $dbDescriptor);
+
+        $childdescriptors = g::$DB->get_records_sql("
+				SELECT DISTINCT d.id
+				FROM {competency} d
+				WHERE d.parentid = ?
+			", array($dbDescriptor->id));
+
+        if (!$childdescriptors) return; // exit condition
+
+        foreach ($childdescriptors as $descriptor) {
+            self::add_moodlecomp_descriptors_recrusion($xmlDescriptors, $descriptor);
+        }
+    }
+
+
     private static function export_moodlecomp_descriptors(SimpleXMLElement $xmlParent, $parentid = 0) {
         //differentiate between descriptors and childdescriptors by looking at the pathstructure. If it is "/number/number/" then it is a parent, anything else: child
-//        if (!$parentid) {
-//            $dbItems = g::$DB->get_records_sql("
-//				SELECT d.*
-//				FROM {'competency'} d
-//				WHERE parentid IS NOT NULL)
-//			");
-//        } else {
-        //For now, act as if every descriptor was NOT a child
+        // --> problem:  LIKE /%/%/ also includes other "/" so also /%/%/%/%/%/% ==> solution does not work
+        // ==> count the number of "/"  LENGTH(path) - LENGTH(REPLACE(d.path,"/","")) = amount of "/"   If length id 3, then it is a parentdescriptor /0/topicid/
+        if (!$parentid) { //get parentdescriptors
             $dbItems = g::$DB->get_records_sql("
 				SELECT d.*
 				FROM {competency} d
-				WHERE parentid != 0
+                WHERE LENGTH(d.path) - LENGTH(REPLACE(d.path,'/','')) = 3
 			");
-//        }
+        } else { //get children
+            // TODO: children of children should also be found and added to the parent. For now, the recursion adds them as children of children, which is not possible in exacomp to import
+            $dbItems = g::$DB->get_records_sql("
+				SELECT d.*
+				FROM {competency} d
+				WHERE parentid = ?
+			", array($parentid));
+        }
 
-//        $xmlItems = $xmlParent->addChild($parentid ? 'children' : 'descriptors');
-        $xmlItems = $xmlParent->addChild('descriptors');
+        if (!$dbItems) return;
+
+        $xmlItems = $xmlParent->addChild($parentid ? 'children' : 'descriptors');
 
         foreach ($dbItems as $dbItem) {
             $xmlItem = $xmlItems->addChild('descriptor');
@@ -1498,7 +1508,7 @@ class data_exporter extends data {
             $xmlItem->addChildWithCDATAIfValue('title', $dbItem->shortname);
 
             // children
-//            self::export_descriptors($xmlItem, $dbItem->id);
+            self::export_moodlecomp_descriptors($xmlItem, $dbItem->id);
         }
     }
 
