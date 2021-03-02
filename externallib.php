@@ -7031,6 +7031,7 @@ class block_exacomp_external extends external_api {
         ));
 
         // TODO: check if is teacher
+        block_exacomp_require_teacher($courseid);
 
         $teacherid = $USER->id;
 
@@ -7691,11 +7692,9 @@ class block_exacomp_external extends external_api {
             $update->status = 1; //change status back to "submitted"
         }
 
-
 		$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $update);
 
-
-		// Descriptorgradings
+		// Descriptorgradings TODO takes a long time
 		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $item->courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
         foreach ($descriptorgradings as $descriptorgrading) {
             block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"], null, -1, true, [
@@ -7703,8 +7702,7 @@ class block_exacomp_external extends external_api {
 			]);
         }
 
-
-        // notification
+        // notification TODO takes a long time
 		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'itemid' => $itemid, 'itemuserid' => $item->userid];
 		$subject = block_exacomp_trans([
 			'de:{$a->teacher} hat dein Beispiel "{$a->example}" als erledigt markiert',
@@ -7712,7 +7710,6 @@ class block_exacomp_external extends external_api {
 		], ['teacher' => fullname($USER), 'example' => $item->name]);
 		$notificationContext = block_exacomp_get_string('notification_submission_context');
 		block_exacomp_send_notification("grading", $USER, $item->userid, $subject, '', $notificationContext, '', false, 0, $customdata);
-
 
 		// if the grading is good, tick the example in exacomp TODO: NOT FOR DIGGRPLUS, hopefully never.
 //		$exameval = $DB->get_record('block_exacompexameval', array(
@@ -7851,13 +7848,29 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 		}
 
+        $courses = enrol_get_users_courses($userid);
+        //for each course check if I have access to the course, but don't use "require_can_access_course_user" since it should just skip, and not throw exeption
+        foreach($courses as $key => $course){
+            if(!static::can_access_course_user($course->id, $userid)){
+                unset($courses[$key]);
+            }
+        }
+
+        $courseCondition = "(";
+        foreach($courses as $course){
+            $courseCondition .= $course->id.", ";
+        }
+        $courseCondition = substr($courseCondition, 0, -2); //remove last ", "
+        $courseCondition .= " )";
+        
         //get all items: for now all items of topics, since other free_items do not exist in diggrplus
-        $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue
+        $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue, i.courseid
               FROM {block_exacomptopics} d
                 JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = ?
-                AND ie.competence_type = '. BLOCK_EXACOMP_TYPE_TOPIC;
+                AND ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.'
+                AND i.courseid IN '.$courseCondition;
         $own_items = $DB->get_records_sql($sql, array($userid));
 
         $completed_items = 0;
@@ -7874,8 +7887,10 @@ class block_exacomp_external extends external_api {
         $descriptorcount = 0;
         $examples = []; // if an example is in more than one descriptor, it will get overwritten => this is why a simple count++ would not work.
         $structure = array();
-        $courses = enrol_get_users_courses($userid);
+
         foreach ($courses as $course) {
+
+
             $tree = block_exacomp_get_competence_tree($course->id,null,null,false,null, false, null, false ,false, true, false, true);
             $students = block_exacomp_get_students_by_course($course->id);
             $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
@@ -12907,6 +12922,47 @@ class block_exacomp_external extends external_api {
 
 		throw new block_exacomp_permission_exception('Not allowed to view other user');
 	}
+
+
+
+    /**
+     * Used to check if current user is allowed to view the user(student) $userid but RETURNS TRUE-FALSE INSTEAD OF EXCEPTION
+     *
+     * @param int $courseid
+     * @param int|object $userid
+     */
+    private static function can_access_course_user($courseid, $userid) {
+        if ($courseid) {
+            // because in webservice block_exacomp_get_descriptors_for_example $courseid = 0
+
+            $course = g::$DB->get_record('course', ['id' => $courseid]);
+            if (!$course) {
+                throw new invalid_parameter_exception ('Course not found');
+            }
+
+            if (!can_access_course($course)) {
+                return false;
+            }
+        }
+
+        // can view myself
+        if ($userid == g::$USER->id) {
+            return true;
+        }
+
+        // teacher can view other users
+        if (block_exacomp_is_teacher($courseid)) {
+            if ($userid == 0) {
+                return true;
+            }
+            $users = get_enrolled_users(block_exacomp_get_context_from_courseid($courseid));
+            if (isset($users[$userid])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 	private static function find_courseid_for_example($exampleid) {
 		// go through all courses
