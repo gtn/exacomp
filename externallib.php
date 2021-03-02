@@ -7868,69 +7868,13 @@ class block_exacomp_external extends external_api {
             }
         }
 
-
-        //get all examples:
-        //first: get all courses, then for each course get example, then for each example, get item
-        $examples = [];
-        $courses = enrol_get_users_courses($userid);
-        foreach ($courses as $course) {
-            //		static::require_can_access_course_user($courseid, $userid);  test this for every course?
-            $courseExamples = block_exacomp_get_examples_by_course($course->id); // TODO: duplicates? e.g. same example in multiple courses, but item in course one and NOT in course two
-            foreach ($courseExamples as $example) {
-                static::block_excomp_get_example_details($example, $course->id);
-            }
-            $examples += $courseExamples;
-        }
-        // -----
-
-
-
-
-        //Get all descriptors, to have the count
-        // get all competencies
-        //get all subjects by courses, and then get all descriptors TODO: find a more performant solution
-        $descriptors =[];
-        foreach ($courses as $course) {
-            $subjects = block_exacomp_get_subjects_by_course($course->id);
-            foreach($subjects as $subject){
-                $parentdescriptors = block_exacomp_get_descriptors_by_subject($subject->id);
-                foreach($parentdescriptors as $parent){
-                    $parent->courseid = $course->id; // needed later
-                }
-                $descriptors += $parentdescriptors;
-            }
-        }
-        foreach($descriptors as $descriptor){
-            $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$descriptors->courseid); //TODO: if the same descriptor is in two courses, then what happens? Duplicates?
-            $descriptors += $childdescriptors;
-        }
-        $descriptorcount = count($descriptors);
-        // -----
-
-        //get the descriptors of the examples
-        //if the item of the example is gained, the descriptors are also gained ==> increase count of competencies_gained
+        // Until here: completed free items
+        // From here: tree with gradings and finding out which and how many competencies are gained
         $competencies_gained = 0;
-        foreach($examples as $example){
-            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-            if($item){
-                if($item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){ // item that is submitted and has grade -> is completed
-                    $completed_items++;
-                    //only if the item of an example is gained, then the descriptors that should be marked positive have to be found
-                    $exampledescriptors = block_exacomp_get_descriptors_by_example($example->id);
-                    foreach($exampledescriptors as $exampledescriptor){
-                        if($descriptors[$exampledescriptor->id]){ //if it has not been counted yet: remove and count
-                            unset($descriptors[$exampledescriptor->id]);
-                            $competencies_gained++;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Until here: completed examples and competencies
-        // From here: tree with gradings
-
+        $descriptorcount = 0;
+        $examples = []; // if an example is in more than one descriptor, it will get overwritten => this is why a simple count++ would not work.
         $structure = array();
+        $courses = enrol_get_users_courses($userid);
         foreach ($courses as $course) {
             $tree = block_exacomp_get_competence_tree($course->id,null,null,false,null, false, null, false ,false, true, false, true);
             $students = block_exacomp_get_students_by_course($course->id);
@@ -7956,6 +7900,7 @@ class block_exacomp_external extends external_api {
 //                $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
 //                $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                     foreach ($topic->descriptors as $descriptor) {
+                        $descriptorcount++;
                         $elem_desc = new stdClass ();
                         $elem_desc->id = $descriptor->id;
                         $elem_desc->title = $descriptor->title;
@@ -7965,6 +7910,7 @@ class block_exacomp_external extends external_api {
 //                    $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
 //                    $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                         foreach ($descriptor->children as $child) {
+                            $descriptorcount++;
                             $elem_child = new stdClass ();
                             $elem_child->id = $child->id;
                             $elem_child->title = $child->title;
@@ -7973,14 +7919,64 @@ class block_exacomp_external extends external_api {
 //                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
 //                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
                             $elem_desc->childdescriptors[] = $elem_child;
+
+                            //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
+                            if($elem_child->teacherevaluation){
+                                if(!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)){
+                                    $competencies_gained++;
+                                }
+                            }else if($child->examples){
+                                $gained = true;
+                                foreach ($child->examples as $example) {
+                                    $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+                                    if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
+                                        continue;
+                                    }else{
+                                        $gained = false;
+                                    }
+                                }
+                                if($gained){
+                                    $competencies_gained++;
+                                }
+                            }
+                            $examples += $child->examples;
                         }
                         $elem_topic->descriptors[] = $elem_desc;
+
+                        //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
+                        if($elem_desc->teacherevaluation){
+                            if(!block_exacomp_value_is_negative_by_assessment($elem_desc->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT)){
+                                $competencies_gained++;
+                            }
+                        }else if($descriptor->examples){
+                            $gained = true;
+                            foreach ($descriptor->examples as $example) {
+                                $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+                                if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
+                                    continue;
+                                }else{
+                                    $gained = false;
+                                }
+                            }
+                            if($gained){
+                                $competencies_gained++;
+                            }
+                        }
+                        $examples += $descriptor->examples;
                     }
                     $elem_sub->topics[] = $elem_topic;
                 }
                 if (!empty($elem_sub->topics)) {
                     $structure[] = $elem_sub;
                 }
+            }
+        }
+
+        // TODO: maybe I can do this while going through the tree already
+        foreach($examples as $example){
+            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+            if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
+                $completed_items++;
             }
         }
 
