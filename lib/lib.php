@@ -1576,6 +1576,7 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
 	$fs = get_file_storage();
 	$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
 	$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $example->id);
+	$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_completefile', $example->id);
 }
 
 /**
@@ -12507,6 +12508,7 @@ function block_exacomp_get_date_of_birth($userid) {
                      $fs = get_file_storage();
                      $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid);
                      $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid);
+                     $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_completefile', $exampleid);
                      $exampleObj->delete();
                  }
              }

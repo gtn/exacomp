@@ -1206,6 +1206,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Musterlösung',
 		'Solution',
 	],
+	'completefle' => [
+		'Gesamtbeispiel',
+		'Complete file',
+	],
 	'hide_solution' => [
 		'Musterlösung verbergen',
 		'Hide solution',
