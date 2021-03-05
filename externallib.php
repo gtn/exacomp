@@ -7325,16 +7325,16 @@ class block_exacomp_external extends external_api {
                 $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
                 $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                 foreach ($topic->descriptors as $descriptor) {
-                	$elem_desc = new stdClass ();
-                	$elem_desc->id = $descriptor->id;
-                	$elem_desc->title = $descriptor->title;
+                    $elem_desc = new stdClass ();
+                    $elem_desc->id = $descriptor->id;
+                    $elem_desc->title = static::custom_htmltrim(strip_tags($descriptor->title));
                     $elem_desc->childdescriptors = array();
                     $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
-                        $elem_child->title = $child->title;
+                        $elem_child->title = static::custom_htmltrim(strip_tags($child->title));
                         $elem_child->examples = array();
                         $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
                         $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
@@ -7359,7 +7359,7 @@ class block_exacomp_external extends external_api {
 //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
                     }
-                	$elem_topic->descriptors[] = $elem_desc;
+                    $elem_topic->descriptors[] = $elem_desc;
                 }
                 $elem_sub->topics[] = $elem_topic;
             }
