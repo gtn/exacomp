@@ -11635,11 +11635,12 @@ class block_exacomp_external extends external_api {
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
             $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
             $example->student_evaluation = $exampleEvaluation->student_evaluation;
+
             $objDeeper->courseid = $example->courseid;
             $objDeeper->example = $example;
             $objDeeper->subjecttitle = $example->subjecttitle;
             $objDeeper->subjectid = $example->subjectid;
-            $objDeeper->topictitle = $example->topictitle;
+            $objDeeper->topictitle = static::custom_htmltrim($example->topictitle);
             $objDeeper->topicid = $example->topicid;
             if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
                 $objDeeper->niveauid = -1;
