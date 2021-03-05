@@ -6831,7 +6831,7 @@ class block_exacomp_external extends external_api {
                 $objDeeper->item = $item;
                 $objDeeper->subjecttitle = $item->subjecttitle;
                 $objDeeper->subjectid = $item->subjectid;
-                $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
+                $objDeeper->topictitle = $item->topictitle ? static::custom_htmltrim($item->topictitle) : "";
                 $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
                 $objDeeper->niveautitle = "";
                 $objDeeper->niveauid = 0;
@@ -7862,7 +7862,7 @@ class block_exacomp_external extends external_api {
         }
         $courseCondition = substr($courseCondition, 0, -2); //remove last ", "
         $courseCondition .= " )";
-        
+
         //get all items: for now all items of topics, since other free_items do not exist in diggrplus
         $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue, i.courseid
               FROM {block_exacomptopics} d
