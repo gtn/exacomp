@@ -673,7 +673,7 @@ class block_exacomp_external extends external_api {
 
             $selected_categories = $DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $descriptor_mm->descrid), "", "catid");
             if ($selected_categories) {
-                $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp 
+                $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp
 	                                                        FROM {'.BLOCK_EXACOMP_DB_CATEGORIES.'} c
 	                                                        WHERE c.id IN ('.implode(',', array_keys($selected_categories)).')');
                 $descCategories = '. '.get_string('dakora_niveau_after_descriptor_title', 'block_exacomp').': '.implode(', ', array_keys($categoryTitlesRes));
@@ -6117,8 +6117,8 @@ class block_exacomp_external extends external_api {
         ));
 
         // get schedules for deleting
-        $toDelete = $DB->get_records_sql('SELECT * 
-                FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'} 
+        $toDelete = $DB->get_records_sql('SELECT *
+                FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'}
                 WHERE creatorid = ?
                       AND studentid > 0
                       AND distributionid = ?',
@@ -11910,7 +11910,7 @@ class block_exacomp_external extends external_api {
             $descriptor_return->categories = '';
         }
 	    if ($selected_categories) {
-	        $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp 
+	        $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp
 	                                                        FROM {'.BLOCK_EXACOMP_DB_CATEGORIES.'} c
 	                                                        WHERE c.id IN ('.implode(',', array_keys($selected_categories)).')');
             $descCategories = '. '.get_string('dakora_niveau_after_descriptor_title', 'block_exacomp').': '.implode(', ', array_keys($categoryTitlesRes));
@@ -13694,4 +13694,82 @@ class block_exacomp_external extends external_api {
         ));
     }
 
+	public static function diggrplus_get_course_schooltype_tree_parameters() {
+		return new external_function_parameters (array(
+			'courseid' => new external_value (PARAM_INT),
+		));
+	}
+
+	/**
+	 * @ws-type-read
+	 */
+	public static function diggrplus_get_course_schooltype_tree($courseid) {
+		static::validate_parameters(static::diggrplus_get_course_schooltype_tree_parameters(), array(
+			'courseid' => $courseid,
+		));
+
+		block_exacomp_require_teacher($courseid);
+
+		$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection(0);
+		$active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
+
+		foreach ($schooltypes as $schooltype) {
+			foreach ($schooltype->subjects as $subject) {
+				foreach ($subject->topics as $topic) {
+					$topic->active = !empty($active_topics[$topic->id]);
+				}
+			}
+		}
+
+		return ['schooltypes' => $schooltypes];
+	}
+
+	public static function diggrplus_get_course_schooltype_tree_returns() {
+		return new external_single_structure (array(
+			'schooltypes' => new external_multiple_structure (new external_single_structure (array(
+				'id' => new external_value (PARAM_INT),
+				'title' => new external_value (PARAM_TEXT, 'schooltype title'),
+				'subjects' => new external_multiple_structure (new external_single_structure (array(
+					'id' => new external_value (PARAM_INT),
+					'title' => new external_value (PARAM_TEXT, 'subject title'),
+					'topics' => new external_multiple_structure (new external_single_structure (array(
+						'id' => new external_value (PARAM_INT),
+						'title' => new external_value (PARAM_TEXT, 'topic title'),
+						'active' => new external_value (PARAM_BOOL),
+					))),
+				))),
+			))),
+		));
+	}
+
+	public static function diggrplus_set_active_course_topics_parameters() {
+		return new external_function_parameters (array(
+			'courseid' => new external_value (PARAM_INT),
+			'topicids' => new external_multiple_structure(
+				new external_value (PARAM_INT)
+			),
+		));
+	}
+
+	/**
+	 * @ws-type-write
+	 */
+	public static function diggrplus_set_active_course_topics($courseid, $topicids) {
+		static::validate_parameters(static::diggrplus_set_active_course_topics_parameters(), array(
+			'courseid' => $courseid,
+			'topicids' => $topicids,
+		));
+
+		block_exacomp_require_teacher($courseid);
+
+		block_exacomp_set_coursetopics($courseid, $topicids, true);
+
+		return array("success" => true);
+	}
+
+	public static function diggrplus_set_active_course_topics_returns() {
+		return new external_single_structure (array(
+			'success' => new external_value (PARAM_BOOL, 'status'),
+		));
+	}
 }

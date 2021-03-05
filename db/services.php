@@ -1078,6 +1078,22 @@ get admin evaluation configurations',
     'description' => 'delete example',
     'type' => 'write',
   ),
+  'diggrplus_get_course_schooltype_tree' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_get_course_schooltype_tree',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => '',
+    'type' => 'read',
+  ),
+  'diggrplus_set_active_course_topics' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_set_active_course_topics',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => '',
+    'type' => 'write',
+  ),
 );
 
 $services = array (
@@ -1214,6 +1230,8 @@ $services = array (
       122 => 'dakora_competencegrid_overview',
       123 => 'dakora_delete_custom_example',
       124 => 'diggrplus_delete_custom_example',
+      125 => 'diggrplus_get_course_schooltype_tree',
+      126 => 'diggrplus_set_active_course_topics',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,

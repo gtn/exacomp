@@ -723,7 +723,7 @@ Params: <table>
 </td>
 <td></td>
 <tr>
-<td>descriptorids</td>
+<td>comps</td>
 <td>text</td>
 <td>null</td>
 <td>optional</td>
@@ -5709,4 +5709,62 @@ Params: <table>
 </table>
 Returns:<pre>{
     "success": "bool null (true if successful)"
+}</pre>
+<h2>diggrplus_get_course_schooltype_tree</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "schooltypes": [
+        {
+            "id": "int null ()",
+            "title": "text null (schooltype title)",
+            "subjects": [
+                {
+                    "id": "int null ()",
+                    "title": "text null (subject title)",
+                    "topics": [
+                        {
+                            "id": "int null ()",
+                            "title": "text null (topic title)",
+                            "active": "bool null ()"
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
+}</pre>
+<h2>diggrplus_set_active_course_topics</h2>
+<div></div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>topicids</td>
+<td></td>
+<td>not null</td>
+<td>required</td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)"
 }</pre>
