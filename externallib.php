@@ -1854,7 +1854,7 @@ class block_exacomp_external extends external_api {
             'description' => new external_value (PARAM_TEXT, 'description of example'),
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
-            'descriptorids' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
+            'comps' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
             'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
             'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
@@ -1876,7 +1876,7 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $descriptorids , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '', $visible) {
+    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '', $visible) {
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -1887,7 +1887,7 @@ class block_exacomp_external extends external_api {
             'description' => $description,
             'timeframe' => $timeframe,
             'externalurl' => $externalurl,
-            'descriptorids' => $descriptorids,
+            'comps' => $comps,
             'solutionfileitemid' => $solutionfileitemid,
             'taxonomies' => $taxonomies,
             'newtaxonomy' => $newtaxonomy,
@@ -1901,7 +1901,7 @@ class block_exacomp_external extends external_api {
             'visible' => $visible,
         ));
 
-        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $descriptorids, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles, $visible);
+        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles, $visible);
         return array("success" => true, "exampleid" => $example->exampleid);
     }
 
