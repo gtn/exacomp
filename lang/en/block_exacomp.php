@@ -349,6 +349,7 @@ $string['descriptors'] = 'Competencies';
 $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';
 $string['solution'] = 'Solution';
+$string['completefile'] = 'Complete file';
 $string['hide_solution'] = 'Hide solution';
 $string['show_solution'] = 'Show solution';
 $string['hide_solution_disabled'] = 'The solution is already hidden for all students';

@@ -1390,6 +1390,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $titleCell->text .= $this->example_solution_icon($solution_url);
                             }
 
+                            if ($url = $example->get_completefile_file_url()) {
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_completefile_file_url($i);
+                                    $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                }
+                            }
+
                             if ($this->is_print_mode()) {
                                 // no icons in print mode
                             } else {
@@ -3038,6 +3046,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $titleCell->text .= $this->example_solution_icon($solution_url);
                             }
 
+                            if ($url = $example->get_completefile_file_url()) {
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_completefile_file_url($i);
+                                    $titleCell->text .= html_writer::link($url,
+                                        $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')),
+                                        array("target" => "_blank"));
+                                }
+                            }
+
                             if ($this->is_print_mode()) {
                                 // no icons in print mode
                             } else {
@@ -3770,6 +3788,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                             if (($role == BLOCK_EXACOMP_ROLE_TEACHER || $visible_solution) && $solution_url) {
                                 $titleCell->text .= $this->example_solution_icon($solution_url);
+                            }
+
+                            if ($url = $example->get_completefile_file_url()) {
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_completefile_file_url($i);
+                                    $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                }
                             }
 
                             if ($this->is_print_mode()) {
@@ -7475,6 +7501,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							);
 						}
 					}
+                    if ($url = $example->get_completefile_file_url()) {
+                        $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                        for ($i = 0; $i < $numberOfFiles; $i++) {
+                            $url = $example->get_completefile_file_url($i);
+                            $exampleIcons .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                        }
+                    }
 
 					$html_tree .= html_writer::tag("li", $example->title.$exampleIcons, array('class' => ($example->associated == 1) ? "associated" : ""));
 				}
@@ -7727,6 +7760,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					));
 				}
 			}
+
+            if ($url = $example->get_completefile_file_url()) {
+                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                for ($i = 0; $i < $numberOfFiles; $i++) {
+                    $url = $example->get_completefile_file_url($i);
+                    $exampleIcons->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                }
+            }
 
 			$content .= '<tr><td>';
 

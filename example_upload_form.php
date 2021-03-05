@@ -98,6 +98,7 @@ class block_exacomp_example_upload_form extends moodleform {
     
     		$mform->addElement('filemanager', 'files', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 2));
     		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
+            $mform->addElement('filemanager', 'completefile', block_exacomp_get_string('completefile'), null, array('subdirs' => false, 'maxfiles' => 1));
     
     		if( @$this->_customdata['uses_activities'] ) {
     

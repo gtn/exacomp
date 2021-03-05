@@ -265,6 +265,8 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
         			$newExample->id, array('subdirs' => 0, 'maxfiles' => 2));
         	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
         			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
+        	file_save_draft_area_files($formdata->completefile, context_system::instance()->id, 'block_exacomp', 'example_completefile',
+        			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
         } else {
             
             //add descriptor association
@@ -312,6 +314,11 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
     	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid,
     			array('subdirs' => 0, 'maxfiles' => 1));
     	$example->solution = $draftitemid;
+
+    	$draftitemid = file_get_submitted_draft_itemid('completefile');
+    	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_completefile', $exampleid,
+    			array('subdirs' => 0, 'maxfiles' => 1));
+    	$example->completefile = $draftitemid;
 
     	// currently externaltask can only hold a module url
     	// read the id from the url and assign it to the form

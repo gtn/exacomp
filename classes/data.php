@@ -867,10 +867,12 @@ class data_exporter extends data {
 			} else {
 				$xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);
 			}
+            if ($file = block_exacomp_get_file($dbItem, 'example_completefile')) {
+                self::export_file($xmlItem->addChild('completefile'), $file);
+            } else {
+                $xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
+            }
 
-			// get solution file
-
-			$xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
 			$xmlItem->epop = $dbItem->epop;
 
 			$xmlItem->addChildWithCDATAIfValue('metalink', $dbItem->metalink);
@@ -2508,8 +2510,7 @@ class data_importer extends data {
 		if (!self::$zip) {
 			return;
 		}
-
-		$filepathOrig = $xmlItem->filepath->__toString();
+		$filepathOrig = (string)$xmlItem->filepath->__toString();
 		$filecontent = self::$zip->getFromName($filepathOrig);
 		// different servers (and zip) can have different options, so:
         // usually it is different slashes in zips
@@ -2668,6 +2669,9 @@ class data_importer extends data {
 		}
 		if ($xmlItem->filetask) {
 			self::insert_file('example_task', $xmlItem->filetask, $item);
+		}
+		if ($xmlItem->filecompletefile) {
+			self::insert_file('example_completefile', $xmlItem->filecompletefile, $item);
 		}
 		if($xmlItem->activitytype){
 

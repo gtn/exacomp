@@ -1132,6 +1132,22 @@ class example extends db_record {
 		return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
 			$file->get_itemid(), $file->get_filepath(), $filename);
 	}
+
+	function get_completefile_file_url() {
+		// get from filestorage
+		$file = block_exacomp_get_file($this, 'example_completefile');
+		if (!$file) {
+			return null;
+		}
+
+		$filename = (($numbering = $this->get_numbering()) ? $numbering.'_' : '').
+			$this->title.
+			'_'.trans(['de:Gesamtbeispiel', 'en:Complete file']).
+			'.'.preg_replace('!^.*\.!', '', $file->get_filename());
+
+		return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
+			$file->get_itemid(), $file->get_filepath(), $filename);
+	}
 }
 
 class niveau extends db_record {
