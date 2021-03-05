@@ -7908,7 +7908,7 @@ class block_exacomp_external extends external_api {
                 foreach ($subject->topics as $topic) {
                     $elem_topic = new stdClass ();
                     $elem_topic->id = $topic->id;
-                    $elem_topic->title = $topic->title;
+                    $elem_topic->title = static::custom_htmltrim($topic->title);
                     $elem_topic->descriptors = array();
                     $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
                     $elem_topic->studentevaluation = $student->topics->student[$topic->id];
