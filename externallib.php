@@ -1861,7 +1861,6 @@ class block_exacomp_external extends external_api {
             'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
             'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
             'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
-
             'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, 0),
             'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
@@ -11770,6 +11769,8 @@ class block_exacomp_external extends external_api {
             $example->solution = $example->externalsolution;
         }
 
+        $example->description = static::custom_htmltrim($example->description);
+
         return $example;
     }
 
@@ -12622,7 +12623,7 @@ class block_exacomp_external extends external_api {
                     // remove files specifically marked for deletion by user:
                     // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
                     // use get_file_by_hash() instead, for deleting already existing files.
-                    // could this be used to remove files this user doesn't have access to? HACKABLE
+                    // could this be used to remove files this user doesn't have access to? HACKABLE TODO
                     // solution: get itemid. this itemid is the exampleid in this case
                     if($removefiles){
                         $fs = get_file_storage();
