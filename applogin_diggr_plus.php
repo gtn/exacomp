@@ -112,11 +112,8 @@ $DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time()-6
 
 $action = optional_param('action', '', PARAM_TEXT);
 
-if ($action == 'get_login_url') {
-	required_param('app', PARAM_TEXT);
-	required_param('app_version', PARAM_TEXT);
-
-	$return_uri = required_param('return_uri', PARAM_TEXT);
+function block_exacomp_is_return_uri_allowed($return_uri) {
+    global $CFG;
 
 	$allowed_redirect_uris = [$CFG->wwwroot, 'diggr-plus.at', 'www.diggr-plus.at'];
 	$additional_allowed_redirect_uris = trim(get_config('exacomp', 'applogin_redirect_urls'));
@@ -131,8 +128,8 @@ if ($action == 'get_login_url') {
 		if (strpos($allowed_redirect_uri, '://') === false) {
 			$allowed_redirect_uri = 'https://'.$allowed_redirect_uri;
 		}
-		// check url
-		$regexp = '!^'.preg_quote($allowed_redirect_uri, '!').'(/|$)!';
+		// check url, also allow "www." prefix
+		$regexp = '!^(www\\.)?'.preg_quote($allowed_redirect_uri, '!').'(/|$)!';
 		// allow * as wildcard
 		$regexp = str_replace('\\*', '.*', $regexp);
 		if (preg_match($regexp, $return_uri)) {
@@ -141,9 +138,18 @@ if ($action == 'get_login_url') {
 		}
 	}
 
-	if (!$return_uri_allowed) {
+	return $return_uri_allowed;
+}
+
+if ($action == 'get_login_url') {
+	required_param('app', PARAM_TEXT);
+	required_param('app_version', PARAM_TEXT);
+
+	$return_uri = required_param('return_uri', PARAM_TEXT);
+
+	if (!block_exacomp_is_return_uri_allowed($return_uri)) {
 		$data = [
-			'error' => block_exacomp_trans(['de:Zugriff für DiggrPlus unter {$a->url} ist nicht erlaubt', 'en:Access from DiggrPlus at {$a->url} is not allowed'], ['url' => $return_uri])
+			'error' => block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri])
 		];
 
 		header('Content-Type: application/json');
@@ -223,7 +229,19 @@ if ($action == 'info') {
 if ($action == 'logout') {
 	block_exacomp_logout();
 
+	$return_uri = optional_param('return_uri', '', PARAM_TEXT);
+	if ($return_uri) {
+    	if (!block_exacomp_is_return_uri_allowed($return_uri)) {
+            header('Location: '.$CFG->wwwroot);
+            exit;
+        } else {
+            header('Location: '.$return_uri);
+            exit;
+        }
+	}
+
 	redirect(str_replace('action=logout', '', $_SERVER['REQUEST_URI']));
+	exit;
 }
 
 
