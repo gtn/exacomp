@@ -13716,6 +13716,9 @@ class block_exacomp_external extends external_api {
 		foreach ($schooltypes as $schooltype) {
 			foreach ($schooltype->subjects as $subject) {
 				foreach ($subject->topics as $topic) {
+					// some topics have html in the title, and moodle does not allow this?!?
+					$topic->title = strip_tags($topic->title);
+
 					$topic->active = !empty($active_topics[$topic->id]);
 				}
 			}
