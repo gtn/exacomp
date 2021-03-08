@@ -7897,7 +7897,7 @@ class block_exacomp_external extends external_api {
             foreach ($tree as $subject) {
                 $elem_sub = new stdClass ();
                 $elem_sub->id = $subject->id;
-                $elem_sub->title = $subject->title;
+                $elem_sub->title = static::custom_htmltrim($subject->title);
                 $elem_sub->courseid = $course->id;
                 $elem_sub->courseshortname = $course->shortname;
                 $elem_sub->coursefullname = $course->fullname;
@@ -7917,7 +7917,7 @@ class block_exacomp_external extends external_api {
                         $descriptorcount++;
                         $elem_desc = new stdClass ();
                         $elem_desc->id = $descriptor->id;
-                        $elem_desc->title = $descriptor->title;
+                        $elem_desc->title = static::custom_htmltrim($descriptor->title);
                         $elem_desc->childdescriptors = array();
                         $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
                         $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
@@ -7927,7 +7927,7 @@ class block_exacomp_external extends external_api {
                             $descriptorcount++;
                             $elem_child = new stdClass ();
                             $elem_child->id = $child->id;
-                            $elem_child->title = $child->title;
+                            $elem_child->title = static::custom_htmltrim($child->title);
                             $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
                             $elem_child->studentevaluation = $student->competencies->student[$child->id];
 //                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
