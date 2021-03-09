@@ -521,8 +521,8 @@ class block_exacomp_simple_service {
 
 		return $results;
 	}
-	
-	
+
+
 	/**
 	 * used own webservice, because moodle does not support returning files from webservices
 	 */
@@ -530,148 +530,139 @@ class block_exacomp_simple_service {
 	    $wstoken = required_param('wstoken', PARAM_ALPHANUM);
 	    $gradings = $_POST['gradings'];
 	    $username = $_POST['username'];
-	    
+
 // 	    $gradings = $gradings['gradings'];
-	    
+
 	    $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
 	    $wsDataHandler->setParam('gradings', $gradings);
 	    $wsDataHandler->setParam('username', $username);
 	}
-	
-	
-	static function diggr_create_certificate() {
-	     	    
-	    global $CFG;
-	    $wstoken = required_param('wstoken', PARAM_ALPHANUM);
-	    
-	    $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
-	    $gradings = $wsDataHandler->getParam('gradings');
-	    $username = $wsDataHandler->getParam('username');
-	    
-	    // Include the main TCPDF library (search for installation path).
-	    require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
-	    
-	    
-	    // create new PDF document
-	    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-	    
-	    
 
-	    
-	    // set default monospaced font
-	    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-	    
-	    // set margins
-	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP + 75, PDF_MARGIN_RIGHT);
-	    $pdf->SetHeaderMargin(0);
-	    $pdf->SetFooterMargin(0);
-	    
-	    // remove default footer
-	    $pdf->setPrintFooter(false);
-	    
-	    
-	    // set image scale factor
-	    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-	    
-	    
-	    // set some language-dependent strings (optional)
-	    if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-	        require_once(dirname(__FILE__).'/lang/eng.php');
-	        $pdf->setLanguageArray($l);
-	    }
-	    
-	    // ---------------------------------------------------------
-	    
-	    // set font
-	    $pdf->SetFont('helvetica', 'B', 30);
-	    $pdf->SetTextColor(160,0,0);
-	    
-	    // add a page
-	    $pdf->AddPage();
-	    
-	    
-	    // -- set new background ---
-	    
-	    // get the current page break margin
-	    $bMargin = $pdf->getBreakMargin();
-	    // get current auto-page-break mode
-	    $auto_page_break = $pdf->getAutoPageBreak();
-	    // disable auto-page-break
-	    $pdf->SetAutoPageBreak(false, 0);
-	    // set bacground image
-			if (file_exists($CFG->dirroot.'/blocks/exacomp/pix/certificate/background_custom.jpg')) {
-				$img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background_custom.jpg';
-			}else{
-				$img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background.jpg';
-			}	   
-	    $pdf->Image($img_file, 0, 0, 210, 297, 'JPG', '', '', false, 300, '', false, false, 0);
-	    
-	    if (file_exists($CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_top_custom.jpg')) {
-				$logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_top_custom.jpg';
-			}else{
-				$logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_top.jpg';
-			}	   
-	    $pdf->Image($logo, 0, 0, 210, 27, 'JPG', '', '', false, 300, '', false, false, 0);
-	    if (file_exists($CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_footer_custom.jpg')) {
-				$diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_footer_custom.jpg';
-			}else{
-				$diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/logo_footer.jpg';
-			}	   
-	    $pdf->Image($diwilogo, 155, 278, 46, 14, 'JPG', '', '', false, 300, '', false, false, 0);
-	    // restore auto-page-break status
-	    $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
-	    // set the starting point for the page content
-	    $pdf->setPageMark();
-	    
 
-	    
-	    $pdf->Write(0, "Zertifikat", '', 0, 'C', true, 0, false, false, 0);
-	    
-	    $pdf->SetFont('helvetica', '', 15);
-	    $pdf->SetTextColor(0,0,0);
-	    
-	    
-	    $pdf->Write(0, "Digitale Grundbildung", '', 0, 'C', true, 0, false, false, 0);
-	    $pdf->Ln();
-	    $pdf->Ln();
-	    $pdf->Ln();
-	    $pdf->SetFont('helvetica', '', 20);
-	    $pdf->Write(0, $username, '', 0, 'C', true, 0, false, false, 0);
-	    $pdf->Ln();
-	    $pdf->Ln();
-	    $pdf->Ln();
-	    $pdf->SetMargins(PDF_MARGIN_LEFT + 30, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-	    $pdf->Ln();
-	    
-	    $pdf->SetFont('helvetica', '', 11);
-	    
-	    $pdf->Write(0, "Sie haben den Anwendungscheck erfolgreich bestanden.", '', 0, 'L', true, 0, false, false, 0);
-	    $pdf->Ln();
-	    
-	    $pdf->Write(0, $gradings[0]['name'] . "                                    " . $gradings[0]['score'], '', 0, 'L', true, 0, false, false, 0);
-	    array_shift($gradings);
-	    $pdf->Ln();
-	    $pdf->Write(0, "Darüber hinaus bescheinigen wir Ihnen Ihre Kompetenzen in folgenden Bereichen:", '', 0, 'L', true, 0, false, false, 0);
-	    
-	    
-	    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT + 10);
-	    $pdf->Ln();
-	    $pdf->Ln();
-	    
-	    foreach($gradings as $grading){
-	        $pdf->MultiCell(80, 0, $grading['name'], 0, 'L', 0, 0, 90, '', true);
-	        $pdf->MultiCell(20, 0, $grading['score'], 0, 'R', 0, 1, '', '', true);
-	        $pdf->Ln();
-	    }
-	    
-	    // ---------------------------------------------------------
-	    
-	    //Close and output PDF document
-	    $pdf->Output('diwiPass.pdf', 'D');
-	    
-	    
+    static function diggr_create_certificate() {
 
-	}
+        global $CFG;
+        $wstoken = required_param('wstoken', PARAM_ALPHANUM);
+
+        $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
+        $gradings = $wsDataHandler->getParam('gradings');
+        $username = $wsDataHandler->getParam('username');
+
+        // Include the main TCPDF library (search for installation path).
+        require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
+
+
+        // create new PDF document
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+
+
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP + 75, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        // remove default footer
+        $pdf->setPrintFooter(false);
+
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+
+        // ---------------------------------------------------------
+
+        // set font
+        $pdf->SetFont('helvetica', 'B', 30);
+        $pdf->SetTextColor(160,0,0);
+
+        // add a page
+        $pdf->AddPage();
+
+
+        // -- set new background ---
+
+        // get the current page break margin
+        $bMargin = $pdf->getBreakMargin();
+        // get current auto-page-break mode
+        $auto_page_break = $pdf->getAutoPageBreak();
+        // disable auto-page-break
+        $pdf->SetAutoPageBreak(false, 0);
+        // set bacground image
+
+
+        $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background-red.jpg';
+        $pdf->Image($img_file, 0, 0, 210, 297, 'JPG', '', '', false, 300, '', false, false, 0);
+        $logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/frauenstiftung-steyr-logo.jpg';
+        $pdf->Image($logo, 0, 0, 118, 15, 'JPG', '', '', false, 300, '', false, false, 0);
+        $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/DiWi-Logo-RGB.jpg';
+        $pdf->Image($diwilogo, 145, 268, 56, 17, 'JPG', '', '', false, 300, '', false, false, 0);
+        // restore auto-page-break status
+        $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
+        // set the starting point for the page content
+        $pdf->setPageMark();
+
+
+
+        $pdf->Write(0, "Zertifikat", '', 0, 'C', true, 0, false, false, 0);
+
+        $pdf->SetFont('helvetica', '', 15);
+        $pdf->SetTextColor(0,0,0);
+
+
+        $pdf->Write(0, "Digitale Grundbildung", '', 0, 'C', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->SetFont('helvetica', '', 20);
+        $pdf->Write(0, $username, '', 0, 'C', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->SetMargins(PDF_MARGIN_LEFT + 30, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->Ln();
+
+        $pdf->SetFont('helvetica', '', 11);
+
+        $pdf->Write(0, "Sie haben den Anwendungscheck erfolgreich bestanden.", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+
+        $pdf->Write(0, $gradings[0]['name'] . "                                    " . $gradings[0]['score'], '', 0, 'L', true, 0, false, false, 0);
+        array_shift($gradings);
+        $pdf->Ln();
+        $pdf->Write(0, "Sie haben den Wissenscheck erfolgreich bestanden.
+Der Wissenscheck umfasst Fragen zu folgenden Kompetenzbereichen:
+Grundlagen und Zugang, Umgang mit Informationen und Daten, Kommunikation
+und Zusammenarbeit, Kreation digitaler Inhalte und Sicherheit.", '', 0, 'L', true, 0, false, false, 0);
+
+
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT + 10);
+        $pdf->Ln();
+        $pdf->Ln();
+
+        foreach($gradings as $grading){
+            $pdf->MultiCell(80, 0, $grading['name'], 0, 'L', 0, 0, 90, '', true);
+            $pdf->MultiCell(20, 0, $grading['score'], 0, 'R', 0, 1, '', '', true);
+            $pdf->Ln();
+        }
+
+        // ---------------------------------------------------------
+
+        //Close and output PDF document
+        $pdf->Output('diwiPass.pdf', 'D');
+
+
+
+    }
 
 
 
