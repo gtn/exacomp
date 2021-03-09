@@ -11769,6 +11769,7 @@ class block_exacomp_external extends external_api {
             $example->solution = $example->externalsolution;
         }
 
+        $example->description = strip_tags($example->description);
         $example->description = static::custom_htmltrim($example->description);
 
         return $example;
