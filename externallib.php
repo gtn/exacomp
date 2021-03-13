@@ -13752,21 +13752,41 @@ class block_exacomp_external extends external_api {
 			'topicids' => new external_multiple_structure(
 				new external_value (PARAM_INT)
 			),
+            'hide_new_examples' => new external_value (PARAM_BOOL),
 		));
 	}
 
 	/**
 	 * @ws-type-write
 	 */
-	public static function diggrplus_set_active_course_topics($courseid, $topicids) {
+	public static function diggrplus_set_active_course_topics($courseid, $topicids, $hide_new_examples) {
 		static::validate_parameters(static::diggrplus_set_active_course_topics_parameters(), array(
 			'courseid' => $courseid,
 			'topicids' => $topicids,
+            'hide_new_examples' => $hide_new_examples,
 		));
+
+		global $DB;
 
 		block_exacomp_require_teacher($courseid);
 
+        $oldTopicIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid), '', 'id, topicid');
+
 		block_exacomp_set_coursetopics($courseid, $topicids, true);
+
+		if ($hide_new_examples) {
+            $newTopicIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid), '', 'id, topicid');
+            $addedTopicIds = array_diff($newTopicIds, $oldTopicIds);
+
+            $examples = block_exacomp_get_examples_by_course($courseid, true, '', false);
+            foreach ($examples as $example) {
+                if (in_array($example->topicid, $addedTopicIds)) {
+                    // is an example from a newly activated topic
+                    var_dump($example);
+                    block_exacomp_set_example_visibility($example->id, $courseid, false, 0);
+                }
+            }
+        }
 
 		return array("success" => true);
 	}
