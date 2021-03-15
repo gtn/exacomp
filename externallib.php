@@ -6306,7 +6306,8 @@ class block_exacomp_external extends external_api {
 		}
 
 		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
-		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(),$studentcomment);
+        $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'submit_example', 'itemid' => $itemid, 'itemuserid' => $item->userid];
+		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(),$studentcomment, $customdata);
 		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
 		return array("success" => true, "itemid" => $itemid);
@@ -8339,7 +8340,9 @@ class block_exacomp_external extends external_api {
                 $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
 // 	            }
 
-	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment);
+
+                $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'grade_example', 'itemid' => $itemid, 'itemuserid' => $insert->userid];
+	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment,$customdata);
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
 	            if($filename != ''){

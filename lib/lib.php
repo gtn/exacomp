@@ -8506,7 +8506,7 @@ function block_exacomp_send_message($userfrom, $userto, $messagetext, $date, $ti
  * @param unknown $time
  * @param unknown $courseid
  */
-function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time, $courseid, $studentcomment) {
+function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time, $courseid, $studentcomment, $customdata) {
 	global $CFG, $USER, $SITE;
 
 	$subject = block_exacomp_get_string('notification_submission_subject_noSiteName', null, array('student' => fullname($userfrom), 'example' => $example->title));
@@ -8519,10 +8519,10 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 
     if($CFG->version >= 2019052000){ //This is the version Number for Moodle 3.7.0
         block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */, [
-            'exampleid' => $example->id,
+            'exampleid' => $example->id
         ]);
     }else{
-        block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */);
+        block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0, $customdata /* kA wieso hier keine courseid --danielp */);
     }
 
 }
@@ -8533,13 +8533,14 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
  * @param unknown $exampleid
  * @param unknown $timecreated
  */
-function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated, $studentcomment = ' ') {
+function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated, $studentcomment = ' ', $customdata) {
 	global $USER, $DB;
 
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
 	if ($teachers) {
 		foreach ($teachers as $teacher) {
-		    block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid)), date("D, d.m.Y", $timecreated), date("H:s", $timecreated), $courseid, $studentcomment);
+		    block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid)),
+                date("D, d.m.Y", $timecreated), date("H:s", $timecreated), $courseid, $studentcomment, $customdata);
 		}
 	}
 }
@@ -8667,7 +8668,7 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
  * @param unknown $courseid
  * @param unknown $exampleid
  */
-function block_exacomp_send_example_comment_notification($userfrom, $userto, $courseid, $exampleid, $comment) {
+function block_exacomp_send_example_comment_notification($userfrom, $userto, $courseid, $exampleid, $comment, $customdata) {
 	global $CFG, $USER, $DB, $SITE;
 
 	$course = get_course($courseid);
@@ -8681,7 +8682,7 @@ function block_exacomp_send_example_comment_notification($userfrom, $userto, $co
 
 	$viewurl = block_exacomp_get_viewurl_for_example($userto->id, $userto->id, $example->id, $courseid);
 
-	block_exacomp_send_notification("comment", $userfrom, $userto, $subject, $message, $context, $viewurl);
+	block_exacomp_send_notification("comment", $userfrom, $userto, $subject, $message, $context, $viewurl, null, null, $customdata);
 }
 
 /**
