@@ -25,6 +25,8 @@ require_capability('block/exacomp:admin', context_system::instance());
 
 //$output = block_exacomp_get_renderer();
 
+$courseid = required_param('courseid', PARAM_INT);
+
 
 //TODO: require secret? what for?
 
@@ -32,7 +34,7 @@ require_capability('block/exacomp:admin', context_system::instance());
 
 
 
-block_exacomp\data_exporter::do_moodle_competencies_export(null);
+block_exacomp\data_exporter::do_moodle_competencies_export(null,$courseid);
 die;
 
 //$xml = block_exacomp\data_exporter::do_moodle_competencies_export(null);

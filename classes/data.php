@@ -1284,7 +1284,7 @@ class data_exporter extends data {
 
     // Below here: Export/Import moodle competencies to exacomp competencies
 
-    public static function do_moodle_competencies_export($secret) {
+    public static function do_moodle_competencies_export($secret,$courseid) {
         global $SITE, $CFG;
 
         \core_php_time_limit::raise();
@@ -1313,6 +1313,7 @@ class data_exporter extends data {
         self::$zip = $zip;
 
 
+        self::export_moodlecomp_examples($xml,null,$courseid);
         self::export_moodlecomp_descriptors($xml);
         self::export_moodlecomp_frameworks($xml);
 
@@ -1384,7 +1385,136 @@ class data_exporter extends data {
     }
 
 
+    //Competencies can be linked to activities. These activities are added to the xml as examples (they first have to be created), and the activities are also added to the zip.
+    //and on activities_to_descriptors
+    //based on export_examples and export_assignments
+    private static function export_moodlecomp_examples(SimpleXMLElement $xmlParent, $parentid = 0,$courseid) {
+	    global $DB;
 
+	    //first: create the examples like when relating acitivities to competencies
+
+        $dbItems = $DB->get_records_sql('
+            SELECT modcomp.*, comp.*, cmod.*
+			FROM {competency_modulecomp} modcomp
+            JOIN {competency} comp ON comp.id = modcomp.competencyid
+            JOIN {course_modules} cmod ON cmod.id = modcomp.cmid
+			');
+
+        //problem: there are no descriptors to link it to --> just create the examples
+
+        if (!$dbItems) return;
+        $xmlItems = $xmlParent->addChild('examples');
+
+
+        foreach($dbItems as $dbItem){
+            $exampleData = static::create_exampledata_from_activity($courseid, $dbItem->cmid);
+            //With this exampledata I can now add the information to the xml
+
+            $xmlItem = $xmlItems->addChild('example');
+
+            //TODO:
+
+            self::assign_moodlecomp_source($xmlItem, $exampleData);
+            $xmlItem->addChildWithCDATAIfValue('title', $exampleData->title);
+//            $xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
+//            $xmlItem->addChildWithCDATAIfValue('description', $dbItem->description);
+//            $xmlItem->addChildWithCDATAIfValue('author', $dbItem->get_author());
+//            $xmlItem->addChildWithCDATAIfValue('activitytitle', $dbItem->activitytitle);
+//            $xmlItem->addChildWithCDATAIfValue('activityid', $dbItem->activityid);
+////            $xmlItem->addChildWithCDATAIfValue('activitytype', $activitytype);
+//            $xmlItem->addChildWithCDATAIfValue('activitylink', $dbItem->activitylink);
+//            $xmlItem->addChildWithCDATAIfValue('courseid', $dbItem->courseid);
+//            $xmlItem->sorting = $dbItem->sorting;
+//            $xmlItem->timeframe = $dbItem->timeframe;
+//
+//            if ($file = block_exacomp_get_file($dbItem, 'example_task')) {
+//                self::export_file($xmlItem->addChild('filetask'), $file);
+//            } else {
+//                $xmlItem->addChildWithCDATAIfValue('task', $dbItem->task);
+//            }
+//            if ($file = block_exacomp_get_file($dbItem, 'example_solution')) {
+//                self::export_file($xmlItem->addChild('filesolution'), $file);
+//            } else {
+//                $xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);
+//            }
+//            if ($file = block_exacomp_get_file($dbItem, 'example_completefile')) {
+//                self::export_file($xmlItem->addChild('completefile'), $file);
+//            } else {
+//                $xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
+//            }
+//
+//            $xmlItem->epop = $dbItem->epop;
+//
+//            $xmlItem->addChildWithCDATAIfValue('metalink', $dbItem->metalink);
+//            $xmlItem->addChildWithCDATAIfValue('packagelink', $dbItem->packagelink);
+//            $xmlItem->addChildWithCDATAIfValue('restorelink', $dbItem->restorelink);
+//
+//            $xmlItem->addChildWithCDATAIfValue('externalurl', $dbItem->externalurl);
+//            $xmlItem->addChildWithCDATAIfValue('externaltask', $dbItem->externaltask);
+//            $xmlItem->addChildWithCDATAIfValue('externalsolution', $dbItem->externalsolution);
+//            $xmlItem->addChildWithCDATAIfValue('tips', $dbItem->tips);
+//            $xmlItem->addChildWithCDATAIfValue('author_origin', $dbItem->author_origin);
+//            $xmlItem->is_teacherexample = intval($dbItem->is_teacherexample);
+
+
+//            $descriptors = g::$DB->get_records_sql("
+//            SELECT DISTINCT d.id, d.source, d.sourceid
+//            FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
+//            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON d.id = de.descrid
+//            WHERE de.exampid = ?
+//        ", array($dbItem->id));
+//
+//            if ($descriptors) {
+//                $xmlItem->addChild('descriptors');
+//                foreach ($descriptors as $descriptor) {
+//                    $xmlDescripor = $xmlItem->descriptors->addChild('descriptorid');
+//                    self::assign_source($xmlDescripor, $descriptor);
+//                }
+//            }
+
+        }
+    }
+
+    private static function create_exampledata_from_activity($courseid, $activityid){
+        global $DB, $CFG, $USER;
+        static $mod_info = null;
+        if ($mod_info === null) {
+            $mod_info = get_fast_modinfo($courseid);
+        }
+
+        $module = get_coursemodule_from_id(null, $activityid);
+        $activitylink = block_exacomp_get_activityurl($module)->out(false);
+        $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+        $externaltask = block_exacomp_get_activityurl($module)->out(false);
+        $cm = $mod_info->cms[$activityid];
+//        $example_icons = $cm->get_icon_url()->out(false);
+//        if ($example_icons) {
+//            $example_icons = serialize(array('externaltask' => $example_icons));
+//        } else {
+//            $example_icons = null;
+//        }
+        $newExample = (object) array(
+            'title' => $module->name,
+            'courseid' => $courseid,
+            'activityid' => $activityid,
+            'activitylink' => $activitylink,
+            'activitytitle' => $module->name,
+            'externaltask' => $externaltask,
+            'creatorid' => $USER->id,
+            'parentid' => 0,
+//            'example_icon' => $example_icons
+        );
+        $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample); //insert to get an ID
+        $newExample->id = $exampleId;
+        return $newExample;
+    }
+
+
+
+
+    //Adds a dummy schooltype and edulevel and for every competencyframework a subjects is added
+    //for every outermost competence a topic is added
+    //the topics are linked to oter competencies, which are treated as descriptors
     private static function export_moodlecomp_frameworks(SimpleXMLElement $xmlParent, $parentid = 0) {
 	    global $DB;
 
@@ -1481,6 +1611,7 @@ class data_exporter extends data {
     }
 
 
+    //goes through the moodle competencies and saves them to the xml, treating them like descriptors (parent and childdescriptors)
     private static function export_moodlecomp_descriptors(SimpleXMLElement $xmlParent, $parentid = 0) {
         //differentiate between descriptors and childdescriptors by looking at the pathstructure. If it is "/number/number/" then it is a parent, anything else: child
         // --> problem:  LIKE /%/%/ also includes other "/" so also /%/%/%/%/%/% ==> solution does not work
