@@ -1876,6 +1876,7 @@ class block_exacomp_external extends external_api {
      * @return array
      */
     public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '', $visible) {
+        global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -12515,7 +12516,9 @@ class block_exacomp_external extends external_api {
 
 
 	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0, $visible=true){
-        global $DB, $USER, $CFG;
+        global $DB, $USER, $CFG, $COURSE;
+
+        $COURSE->id = $courseid; // TODO: copied this from  update_descriptor_category.. why is the CONTEXT wrong?
 
         //Update material that already exists
         if($exampleid != -1){
