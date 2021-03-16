@@ -11803,7 +11803,9 @@ class block_exacomp_external extends external_api {
             if ($files = block_exaport_get_files($item, 'item_file')) {
             	$studentfiles = [];
                 foreach ($files as $fileindex => $file) {
-                    $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken . "&inst=" . $fileindex;
+                    $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken . "&inst=" . $fileindex.
+                        // used only that file links are unique
+                        '&contenthash='.$file->get_contenthash();
 					$filedata['id'] = $file->get_id();
 					$filedata['file'] = $fileurl;
 					$filedata['mimetype'] = $file->get_mimetype();
