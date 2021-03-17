@@ -6671,7 +6671,7 @@ class block_exacomp_external extends external_api {
 				// don't send to myself
 				continue;
 			}
-			block_exacomp_send_notification("comment", $USER, $user_id, $subject, '', $notificationContext, '', false, 0, $customdata);
+			block_exacomp_send_notification("comment", $USER, $user_id, $subject, '', $notificationContext, '', false, $item->courseid, $customdata);
 		}
 
         return array("success" => true, "itemid" => $itemid);
