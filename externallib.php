@@ -12742,7 +12742,7 @@ class block_exacomp_external extends external_api {
                     $insert->exampleid = $id;
                     $insert->studentid = 0;
                     $insert->visible = 1;
-                    $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
                 }
             }
         }else if($comps == "freemat"){
