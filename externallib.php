@@ -1926,47 +1926,6 @@ class block_exacomp_external extends external_api {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Returns description of method parameters
      *
@@ -1975,22 +1934,29 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_grade_descriptor_parameters() {
         return new external_function_parameters (array(
             'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'grading' => new external_value (PARAM_INT, 'grade for this descriptor')
+            'grading' => new external_value (PARAM_INT, 'grade for this descriptor'),
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+			'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+			'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+            'subjectid' => new external_value(PARAM_INT, 'subjectid',VALUE_DEFAULT, -1)
         ));
     }
 
     /**
-     * Grade an item
-     * grade an item
+     * Grade a descriptor
      *
      * @ws-type-write
      * @param $descriptorid
      * @param $grading
+     * @param $courseid
+     * @param $userid
+     * @param $role
+     * @param $subjectid
      * @return array
      * @throws invalid_parameter_exception
      *
      */
-    public static function diggrplus_grade_descriptor($descriptorid, $grading) {
+    public static function diggrplus_grade_descriptor($descriptorid, $grading, $courseid, $userid, $role, $subjectid) {
         global $DB, $USER;
 
         if (empty ($descriptorid) || empty ($grading)) {
@@ -2000,21 +1966,26 @@ class block_exacomp_external extends external_api {
         static::validate_parameters(static::grade_item_parameters(), array(
             'descriptorid' => $descriptorid,
             'grading' => $grading,
+            'courseid' => $courseid,
+            'userid' => $userid,
+            'role' => $role,
+            'subjectid' => $subjectid,
         ));
 
-        $userid = $USER->id;
+        if ($userid == 0 && $role == BLOCK_EXACOMP_ROLE_STUDENT) {
+            $userid = $USER->id;
+        } else {
+            if ($userid == 0) {
+                throw new invalid_parameter_exception ('Userid can not be 0 for teacher grading');
+            }
+        }
 
-        static::require_can_access_user($userid);
+        static::require_can_access_course_user($courseid, $userid);
 
-//        block_exacomp_set_user_competence($userid, $descriptorid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, $role, $value, $evalniveauid, $subjectid, false)
-
-//        block_exacomp_set_comp_eval
-//        block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $compid, [
-//            'value' => $value,
-//            'evalniveauid' => $evalniveauid,
-//            'reviewerid' => $USER->id,
-//        ], $savegradinghistory);
-
+        $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $USER->id];
+        block_exacomp_set_user_competence($userid, $descriptorid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, $role, $grading, null, $subjectid, true, [
+            'notification_customdata' => $customdata
+        ]);
 
         return array(
             "success" => true,
@@ -2031,15 +2002,6 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
         ));
     }
-
-
-
-
-
-
-
-
-
 
 
 
