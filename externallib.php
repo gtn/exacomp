@@ -7979,6 +7979,9 @@ class block_exacomp_external extends external_api {
 //                $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
 //                $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                     foreach ($topic->descriptors as $descriptor) {
+                        if(!$descriptor->visible){
+                            continue;
+                        }
                         $descriptorcount++;
                         $elem_desc = new stdClass ();
                         $elem_desc->id = $descriptor->id;
@@ -7989,6 +7992,9 @@ class block_exacomp_external extends external_api {
 //                    $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
 //                    $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                         foreach ($descriptor->children as $child) {
+                            if(!$child->visible){
+                                continue;
+                            }
                             $descriptorcount++;
                             $elem_child = new stdClass ();
                             $elem_child->id = $child->id;
