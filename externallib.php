@@ -7995,7 +7995,7 @@ class block_exacomp_external extends external_api {
                             if(!$child->visible){
                                 continue;
                             }
-                            $descriptorcount++;
+                            //$descriptorcount++; //TODO: show the child descriptors in the frontend!
                             $elem_child = new stdClass ();
                             $elem_child->id = $child->id;
                             $elem_child->title = static::custom_htmltrim($child->title);
