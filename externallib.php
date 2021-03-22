@@ -1967,7 +1967,70 @@ class block_exacomp_external extends external_api {
 
 
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_grade_descriptor_parameters() {
+        return new external_function_parameters (array(
+            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+            'grading' => new external_value (PARAM_INT, 'grade for this descriptor')
+        ));
+    }
 
+    /**
+     * Grade an item
+     * grade an item
+     *
+     * @ws-type-write
+     * @param $descriptorid
+     * @param $grading
+     * @return array
+     * @throws invalid_parameter_exception
+     *
+     */
+    public static function diggrplus_grade_descriptor($descriptorid, $grading) {
+        global $DB, $USER;
+
+        if (empty ($descriptorid) || empty ($grading)) {
+            throw new invalid_parameter_exception ('Parameter can not be empty');
+        }
+
+        static::validate_parameters(static::grade_item_parameters(), array(
+            'descriptorid' => $descriptorid,
+            'grading' => $grading,
+        ));
+
+        $userid = $USER->id;
+
+        static::require_can_access_user($userid);
+
+//        block_exacomp_set_user_competence($userid, $descriptorid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, $role, $value, $evalniveauid, $subjectid, false)
+
+//        block_exacomp_set_comp_eval
+//        block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $compid, [
+//            'value' => $value,
+//            'evalniveauid' => $evalniveauid,
+//            'reviewerid' => $USER->id,
+//        ], $savegradinghistory);
+
+
+        return array(
+            "success" => true,
+        );
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_grade_descriptor_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+        ));
+    }
 
 
 
@@ -7892,7 +7955,7 @@ class block_exacomp_external extends external_api {
         foreach ($courses as $course) {
 
 
-            $tree = block_exacomp_get_competence_tree($course->id,null,null,false,null, false, null, false ,false, true, false, true);
+            $tree = block_exacomp_get_competence_tree($course->id,null,null,false,null, true, null, false ,false, true, false, true);
             $students = block_exacomp_get_students_by_course($course->id);
             $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
             block_exacomp_get_user_information_by_course($student, $course->id);
@@ -7955,7 +8018,12 @@ class block_exacomp_external extends external_api {
                                     $competencies_gained++;
                                 }
                             }
-                            $examples += $child->examples;
+                            foreach ($child->examples as $ex){
+                                if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
+                                    $examples[$ex->id] = $ex;
+                                }
+                            }
+//                            $examples += $child->examples; VISIBILITY is not minded
                         }
                         $elem_topic->descriptors[] = $elem_desc;
 
@@ -7978,7 +8046,12 @@ class block_exacomp_external extends external_api {
                                 $competencies_gained++;
                             }
                         }
-                        $examples += $descriptor->examples;
+                        foreach ($descriptor->examples as $ex){
+                            if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
+                                $examples[$ex->id] = $ex;
+                            }
+                        }
+//                        $examples += $descriptor->examples; //VISIBILITY!!!
                     }
                     $elem_sub->topics[] = $elem_topic;
                 }
