@@ -1,24 +1,24 @@
 <style>
-    table {
-        border-collapse: collapse;
-    }
-    td {
-        border: 1px solid black;
-        padding: 2px 5px;
-    }
-</style><h2>block_exacomp_get_courses</h2>
+		table {
+			border-collapse: collapse;
+		}
+		td {
+			border: 1px solid black;
+			padding: 2px 5px;
+		}
+	</style><h2>block_exacomp_get_courses</h2>
 <div>Get courses with exacomp block instances.
-    get courses</div>
+get courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: NULL
-        </td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -32,30 +32,30 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_get_examples_for_subject</h2>
 <div>Get examples for subtopic
-    Get examples</div>
+Get examples</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -85,30 +85,30 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_get_examples_for_subject_with_lfs_infos</h2>
 <div>Get examples for subtopic
-    Get examples</div>
+Get examples</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -140,16 +140,16 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_get_example_by_id</h2>
 <div>Get example
-    Get example</div>
+Get example</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
 </table>
 Returns:<pre>{
     "title": "text null (title of example)",
@@ -169,30 +169,30 @@ Returns:<pre>{
 }</pre>
 <h2>block_exacomp_get_descriptors_for_example</h2>
 <div>Get desciptors for example
-    Get descriptors for example</div>
+Get descriptors for example</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -204,30 +204,30 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_get_descriptors_for_quiz</h2>
 <div>Get desciptors for quiz
-    Get descriptors for quiz</div>
+Get descriptors for quiz</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>quizid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of quiz</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>quizid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of quiz</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -255,7 +255,7 @@ Returns:<pre>{
 }</pre>
 <h2>block_exacomp_get_external_trainer_students</h2>
 <div>Get external trainer's students
-    Get all students for an external trainer</div>
+Get all students for an external trainer</div>
 <div>type: read</div>
 Params: <table>
 </table>
@@ -281,16 +281,16 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_get_subjects_for_user</h2>
 <div>Get Subjects
-    get subjects from one user for all his courses</div>
+get subjects from one user for all his courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -303,16 +303,16 @@ Returns:<pre>[
 ]</pre>
 <h2>diggrplus_get_subjects_and_topics_for_user</h2>
 <div>Get Subjects
-    get subjects from one user for all his courses</div>
+get subjects from one user for all his courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -333,16 +333,16 @@ Returns:<pre>[
 ]</pre>
 <h2>diggrplus_get_niveaus_for_subject</h2>
 <div>Get Subjects
-    get subjects from one user for all his courses</div>
+get subjects from one user for all his courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
 </table>
 Returns:<pre>[
     {
@@ -353,69 +353,69 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_delete_item</h2>
 <div>delete a submitted and wrong item
-    Deletes one user item if it is not graded already</div>
+Deletes one user item if it is not graded already</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of item</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)"
 }</pre>
 <h2>block_exacomp_set_competence</h2>
 <div>Set a student evaluation for a particular competence
-    Set student evaluation</div>
+Set student evaluation</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of descriptor</td>
-    <tr>
-        <td>value</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>evaluation value</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>evaluation value</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>block_exacomp_get_item_for_example</h2>
 <div>Get Item
-    get subjects from one user for all his courses</div>
+get subjects from one user for all his courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of item</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
 </table>
 Returns:<pre>{
     "id": "int null (id of item)",
@@ -434,16 +434,16 @@ Returns:<pre>{
 }</pre>
 <h2>block_exacomp_get_competencies_for_upload</h2>
 <div>Get competencetree
-    Get all available competencies</div>
+Get all available competencies</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -468,80 +468,80 @@ Returns:<pre>[
 ]</pre>
 <h2>block_exacomp_submit_example</h2>
 <div>Submit example
-    submit example for elove and diggr
-    Add item</div>
+submit example for elove and diggr
+Add item</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>exampleid</td>
-    <tr>
-        <td>studentvalue</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>studentvalue</td>
-    <tr>
-        <td>url</td>
-        <td>url</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>url</td>
-    <tr>
-        <td>effort</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>effort</td>
-    <tr>
-        <td>filename</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>filename, used to look up file and create a new one in the exaport file area</td>
-    <tr>
-        <td>fileitemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>fileitemid, used to look up file and create a new one in the exaport file area</td>
-    <tr>
-        <td>studentcomment</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>studentcomment</td>
-    <tr>
-        <td>title</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title</td>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>itemid</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>courseid</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>exampleid</td>
+<tr>
+<td>studentvalue</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentvalue</td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>url</td>
+<tr>
+<td>effort</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>effort</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>fileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemid, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>studentcomment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentcomment</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>itemid</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
@@ -549,127 +549,127 @@ Returns:<pre>{
 }</pre>
 <h2>block_exacomp_create_or_update_example</h2>
 <div>Create an example or update it
-    create example</div>
+create example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of the example that is to be updated</td>
-    <tr>
-        <td>name</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of example</td>
-    <tr>
-        <td>description</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>description of example</td>
-    <tr>
-        <td>timeframe</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>description of example</td>
-    <tr>
-        <td>externalurl</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(4) "wwww"
-        </td>
-        <td></td>
-    <tr>
-        <td>comps</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(1) "0"
-        </td>
-        <td>list of competencies, seperated by comma, or "freemat" if freematerial should be created</td>
-    <tr>
-        <td>fileitemids</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>fileitemids separated by comma</td>
-    <tr>
-        <td>solutionfileitemid</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>fileitemid</td>
-    <tr>
-        <td>taxonomies</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>list of taxonomies</td>
-    <tr>
-        <td>newtaxonomy</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>new taxonomy to be created</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>courseid</td>
-    <tr>
-        <td>filename</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area</td>
-    <tr>
-        <td>crosssubjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of the crosssubject if it is a crosssubjectfile</td>
-    <tr>
-        <td>activityid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>id of related activity</td>
-    <tr>
-        <td>is_teacherexample</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>is a teacher example?</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the example that is to be updated</td>
+<tr>
+<td>name</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of example</td>
+<tr>
+<td>timeframe</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>description of example</td>
+<tr>
+<td>externalurl</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(4) "wwww"
+</td>
+<td></td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(1) "0"
+</td>
+<td>list of competencies, seperated by comma, or "freemat" if freematerial should be created</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemids separated by comma</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemid</td>
+<tr>
+<td>taxonomies</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>list of taxonomies</td>
+<tr>
+<td>newtaxonomy</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new taxonomy to be created</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>courseid</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>crosssubjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the crosssubject if it is a crosssubjectfile</td>
+<tr>
+<td>activityid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of related activity</td>
+<tr>
+<td>is_teacherexample</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>is a teacher example?</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)",
@@ -681,199 +681,250 @@ Returns:<pre>{
 }</pre>
 <h2>diggrplus_create_or_update_example</h2>
 <div>Create an example or update it
-    create example</div>
+create example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of the example that is to be updated</td>
-    <tr>
-        <td>name</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of example</td>
-    <tr>
-        <td>description</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>description of example</td>
-    <tr>
-        <td>timeframe</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>description of example</td>
-    <tr>
-        <td>externalurl</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(4) "wwww"
-        </td>
-        <td></td>
-    <tr>
-        <td>comps</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(1) "0"
-        </td>
-        <td>list of descriptorids, seperated by comma, or "freemat" if freematerial should be created</td>
-    <tr>
-        <td>taxonomies</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>list of taxonomies</td>
-    <tr>
-        <td>newtaxonomy</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>new taxonomy to be created</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>courseid</td>
-    <tr>
-        <td>crosssubjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of the crosssubject if it is a crosssubjectfile</td>
-    <tr>
-        <td>activityid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>id of related activity</td>
-    <tr>
-        <td>is_teacherexample</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>is a teacher example?</td>
-    <tr>
-        <td>fileitemids</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
-    <tr>
-        <td>removefiles</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
-    <tr>
-        <td>solutionfileitemid</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>fileitemid for the solutionfile</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>is the example visible for all or not?</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the example that is to be updated</td>
+<tr>
+<td>name</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of example</td>
+<tr>
+<td>timeframe</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>description of example</td>
+<tr>
+<td>externalurl</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(4) "wwww"
+</td>
+<td></td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(1) "0"
+</td>
+<td>list of descriptorids, seperated by comma, or "freemat" if freematerial should be created</td>
+<tr>
+<td>taxonomies</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>list of taxonomies</td>
+<tr>
+<td>newtaxonomy</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new taxonomy to be created</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>courseid</td>
+<tr>
+<td>crosssubjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the crosssubject if it is a crosssubjectfile</td>
+<tr>
+<td>activityid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of related activity</td>
+<tr>
+<td>is_teacherexample</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>is a teacher example?</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>removefiles</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemid for the solutionfile</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>is the example visible for all or not?</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)",
     "success": "bool null (status)"
 }</pre>
-<h2>block_exacomp_grade_item</h2>
-<div>Grade an item
-    grade an item</div>
+<h2>diggrplus_grade_descriptor</h2>
+<div>Grade a descriptor</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>value</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>value for grading</td>
-    <tr>
-        <td>status</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>status</td>
-    <tr>
-        <td>comment</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>comment of grading</td>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of item</td>
-    <tr>
-        <td>comps</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>comps for example - positive grading</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>if of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>grading</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>grade for this descriptor</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>role</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>user role (0 == student, 1 == teacher)</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>subjectid</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (true if grading was successful)"
+}</pre>
+<h2>block_exacomp_grade_item</h2>
+<div>Grade an item
+grade an item</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value for grading</td>
+<tr>
+<td>status</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>status</td>
+<tr>
+<td>comment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comment of grading</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comps for example - positive grading</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if of course</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if grading was successful)"
 }</pre>
 <h2>block_exacomp_get_user_examples</h2>
 <div>get examples created by a specific user
-    grade an item</div>
+grade an item</div>
 <div>type: read</div>
 Params: <table>
 </table>
@@ -890,13 +941,13 @@ Returns:<pre>[
 <div>get a list of courses with their competencies</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>{
     "user": {
@@ -946,94 +997,94 @@ Returns:<pre>{
 <div>update an example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>name</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of example</td>
-    <tr>
-        <td>description</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>description of example</td>
-    <tr>
-        <td>externalurl</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
-    <tr>
-        <td>comps</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>list of competencies, seperated by comma</td>
-    <tr>
-        <td>filename</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>filename, used to look up file and create a new one in the exaport file area</td>
-    <tr>
-        <td>fileitemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>fileitemid</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>name</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of example</td>
+<tr>
+<td>externalurl</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>comps</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>list of competencies, seperated by comma</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filename, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>fileitemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemid</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if successful)"
 }</pre>
 <h2>block_exacomp_delete_example</h2>
 <div>delete a custom item
-    delete example</div>
+delete example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if successful)"
 }</pre>
 <h2>block_exacomp_get_competencies_by_topic</h2>
 <div>get competencies for a specific topic
-    Get all available competencies</div>
+Get all available competencies</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
 </table>
 Returns:<pre>[
     {
@@ -1044,90 +1095,90 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_set_competence</h2>
 <div>set competence for student
-    Set a competence for a user</div>
+Set a competence for a user</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>compid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>competence id</td>
-    <tr>
-        <td>comptype</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>type of competence: descriptor, topic, subject</td>
-    <tr>
-        <td>role</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>user role (0 == student, 1 == teacher)</td>
-    <tr>
-        <td>value</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>evaluation value, only set for TK (0 to 3)</td>
-    <tr>
-        <td>additionalinfo</td>
-        <td>float</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>decimal between 1 and 6</td>
-    <tr>
-        <td>evalniveauid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>evaluation niveau (-1, 1, 2, 3)</td>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>subjectid</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>compid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>competence id</td>
+<tr>
+<td>comptype</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>type of competence: descriptor, topic, subject</td>
+<tr>
+<td>role</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>user role (0 == student, 1 == teacher)</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>evaluation value, only set for TK (0 to 3)</td>
+<tr>
+<td>additionalinfo</td>
+<td>float</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>decimal between 1 and 6</td>
+<tr>
+<td>evalniveauid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>evaluation niveau (-1, 1, 2, 3)</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>subjectid</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_get_courses</h2>
 <div>get courses for user for dakora app
-    get courses</div>
+get courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: NULL
-        </td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -1141,32 +1192,32 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_topics_by_course</h2>
 <div>get topics for course for dakora app associated with examples
-    get courses</div>
+get courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -1182,40 +1233,40 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_all_topics_by_course</h2>
 <div>get topics for course for dakora app
-    get courses</div>
+get courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>groupid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: NULL
-        </td>
-        <td>id of user, 0 for current user</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>id of user, 0 for current user</td>
 </table>
 Returns:<pre>{
     "topics": [
@@ -1241,37 +1292,37 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_descriptors</h2>
 <div>get descriptors for topic for dakora app associated with examples
-    get descriptors for one topic, considering the visibility</div>
+get descriptors for one topic, considering the visibility</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -1290,45 +1341,45 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_all_descriptors</h2>
 <div>get descriptors for topic for dakora app
-    get courses</div>
+get courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>editmode</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>when editmode is active, descriptors fo hidden niveaus should be loaded</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>editmode</td>
+<td>bool</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>when editmode is active, descriptors fo hidden niveaus should be loaded</td>
 </table>
 Returns:<pre>[
     {
@@ -1348,37 +1399,37 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_descriptor_children</h2>
 <div>get children (childdescriptor and examples) for descriptor for dakora app (only childs associated with examples)
-    get courses</div>
+get courses</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of parent descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>{
     "children": [
@@ -1417,34 +1468,34 @@ Returns:<pre>{
 <div>get examples for descriptor for dakora app</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of parent descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>if all users = true, only one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -1460,34 +1511,34 @@ Returns:<pre>[
 <div>get examples for descriptor with additional grading information</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of parent descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>if all users = true, only one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -1508,41 +1559,41 @@ Returns:<pre>[
 <div>get examples for descriptor for dakora app</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of parent descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>if all users = true, only one user = false</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of crosssubject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
 </table>
 Returns:<pre>[
     {
@@ -1558,41 +1609,41 @@ Returns:<pre>[
 <div>get examples for descriptor with additional grading information</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of parent descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>if all users = true, only one user = false</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of crosssubject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if all users = true, only one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
 </table>
 Returns:<pre>[
     {
@@ -1613,27 +1664,27 @@ Returns:<pre>[
 <div>get example overview for dakora app</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
 </table>
 Returns:<pre>{
     "title": "text null (title of example)",
@@ -1657,27 +1708,27 @@ Returns:<pre>{
 <div>get example overview for dakora app</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
 </table>
 Returns:<pre>{
     "id": "text null (id of example)",
@@ -1705,89 +1756,89 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_add_example_to_learning_calendar</h2>
 <div>add example to learning calendar for dakora
-    get courses</div>
+get courses</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>creatorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of creator</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>groupid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: NULL
-        </td>
-        <td>id of group</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>creatorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of creator</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>id of group</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_get_descriptors_for_example</h2>
 <div>get descriptors where example is associated
-    Get descriptors for example</div>
+Get descriptors for example</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -1810,30 +1861,30 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_example_grading</h2>
 <div>get student and teacher evaluation for example
-    Get example grading for user</div>
+Get example grading for user</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
 </table>
 Returns:<pre>{
     "teacherevaluation": "int null (teacher evaluation for student and example)",
@@ -1842,30 +1893,30 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_topic_grading</h2>
 <div>get student and teacher evaluation for topic
-    Get topic grading for user</div>
+Get topic grading for user</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
 </table>
 Returns:<pre>{
     "teacherevaluation": "int null (teacher evaluation for student and topic)",
@@ -1877,30 +1928,30 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_subject_grading</h2>
 <div>get student and teacher evaluation for subject
-    Get subject grading for user</div>
+Get subject grading for user</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
 </table>
 Returns:<pre>{
     "teacherevaluation": "int null (teacher evaluation for student and subject)",
@@ -1912,9 +1963,9 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_user_role</h2>
 <div>get user role 1= trainer, 2= student
-    return 1 for trainer
-    2 for student
-    0 if false</div>
+return 1 for trainer
+2 for student
+0 if false</div>
 <div>type: read</div>
 Params: <table>
 </table>
@@ -1925,13 +1976,13 @@ Returns:<pre>{
 <div>get list of students for course</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>{
     "students": [
@@ -1956,13 +2007,13 @@ Returns:<pre>{
 <div>get list of students that are enrolled in any course of a teacher</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -1976,13 +2027,13 @@ Returns:<pre>[
 <div>get list of teachers in any course of the student</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
 </table>
 Returns:<pre>[
     {
@@ -1994,23 +2045,23 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_examples_pool</h2>
 <div>get list of examples for weekly schedule pool
-    Get examples for pool</div>
+Get examples for pool</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
 </table>
 Returns:<pre>[
     {
@@ -2033,23 +2084,23 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_examples_trash</h2>
 <div>get examples for trash bin
-    Get examples for trash</div>
+Get examples for trash</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
 </table>
 Returns:<pre>[
     {
@@ -2069,37 +2120,37 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_set_example_time_slot</h2>
 <div>set start and end time for example
-    set example time slot</div>
+set example time slot</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>scheduleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id in schedule context</td>
-    <tr>
-        <td>start</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>start timestamp</td>
-    <tr>
-        <td>end</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>end timestamp</td>
-    <tr>
-        <td>deleted</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>delete item</td>
+<tr>
+<td>scheduleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id in schedule context</td>
+<tr>
+<td>start</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp</td>
+<tr>
+<td>end</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp</td>
+<tr>
+<td>deleted</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>delete item</td>
 </table>
 Returns:<pre>{
     "timeremaining": "text null (time planned minus timeframe = timeremaining)",
@@ -2109,62 +2160,62 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_remove_example_from_schedule</h2>
 <div>remove example from weekly schedule
-    remove example from time slot</div>
+remove example from time slot</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>scheduleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of schedule entry</td>
+<tr>
+<td>scheduleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of schedule entry</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_add_examples_to_schedule_for_all</h2>
 <div>add examples to the schedules of all course students
-    remove example from time slot</div>
+remove example from time slot</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_get_examples_for_time_slot</h2>
 <div>get examples for a special start to end period (e.g. day)
-    Get examples for time slot</div>
+Get examples for time slot</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>start</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>start timestamp</td>
-    <tr>
-        <td>end</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>end timestamp</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>start</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp</td>
+<tr>
+<td>end</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp</td>
 </table>
 Returns:<pre>[
     {
@@ -2191,30 +2242,30 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_cross_subjects_by_course</h2>
 <div>get cross subjects for an user in course context (allways all crosssubjs, even if not associated)
-    Get cross subjects</div>
+Get cross subjects</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -2252,37 +2303,37 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_descriptors_by_cross_subject</h2>
 <div>get descriptors for a cross subject associated with examples
-    Get cross subjects</div>
+Get cross subjects</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of cross subject</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -2298,37 +2349,37 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_all_descriptors_by_cross_subject</h2>
 <div>get descriptors for a cross subject
-    Get cross subjects</div>
+Get cross subjects</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of cross subject</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -2344,44 +2395,44 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_descriptor_children_for_cross_subject</h2>
 <div>get children in context of cross subject, associated with examples
-    get children for descriptor in cross subject context</div>
+get children for descriptor in cross subject context</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of parent descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of cross subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
 </table>
 Returns:<pre>{
     "children": [
@@ -2418,44 +2469,44 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_all_descriptor_children_for_cross_subject</h2>
 <div>get children in context of cross subject
-    get children for descriptor in cross subject context</div>
+get children for descriptor in cross subject context</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of parent descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of cross subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of parent descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of cross subject</td>
 </table>
 Returns:<pre>{
     "children": [
@@ -2493,7 +2544,7 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_schedule_config</h2>
 <div>get configuration options for schedule units
-    get children for descriptor in cross subject context</div>
+get children for descriptor in cross subject context</div>
 <div>type: read</div>
 Params: <table>
 </table>
@@ -2510,16 +2561,16 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_pre_planning_storage_examples</h2>
 <div>get examples for pre planning storage
-    get pre planning storage examples for current teacher</div>
+get pre planning storage examples for current teacher</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>[
     {
@@ -2533,16 +2584,16 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_pre_planning_storage_students</h2>
 <div>get students for pre planning storage
-    get pre planning storage students for current teacher</div>
+get pre planning storage students for current teacher</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>[
     {
@@ -2555,16 +2606,16 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_get_pre_planning_storage_groups</h2>
 <div>get students for pre planning storage
-    get pre planning storage students for current teacher</div>
+get pre planning storage students for current teacher</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>[
     {
@@ -2576,244 +2627,244 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_has_items_in_pre_planning_storage</h2>
 <div>return 0 if no items, 1 otherwise
-    get pre planning storage students for current teacher</div>
+get pre planning storage students for current teacher</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_empty_pre_planning_storage</h2>
 <div>delte all items from current pre planning storage
-    empty pre planning storage for current teacher</div>
+empty pre planning storage for current teacher</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_add_example_to_pre_planning_storage</h2>
 <div>add example to current pre planning storage
-    add example to current pre planning storage</div>
+add example to current pre planning storage</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success)"
 }</pre>
 <h2>dakora_add_examples_to_students_schedule</h2>
 <div>add examples from current pre planning storage to students weekly schedule
-    add example to current pre planning storage</div>
+add example to current pre planning storage</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>examples</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>json array of examples</td>
-    <tr>
-        <td>students</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>json array of students</td>
-    <tr>
-        <td>groups</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>json array of groups</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>examples</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>json array of examples</td>
+<tr>
+<td>students</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>json array of students</td>
+<tr>
+<td>groups</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>json array of groups</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_add_examples_to_selected_students_schedule</h2>
 <div>add examples from current pre planning storage to students weekly schedule
-    add example to current pre planning storage</div>
+add example to current pre planning storage</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>students</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>json array of students</td>
-    <tr>
-        <td>groups</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>json array of groups</td>
-    <tr>
-        <td>distributionid</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: NULL
-        </td>
-        <td>distribution id. used for undo button</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>students</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>json array of students</td>
+<tr>
+<td>groups</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>json array of groups</td>
+<tr>
+<td>distributionid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: NULL
+</td>
+<td>distribution id. used for undo button</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_delete_examples_from_schedule</h2>
 <div>remove example from weekly schedule by teacherid and distribution id
-    used for 'undo' button</div>
+used for 'undo' button</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>teacherid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of teacher</td>
-    <tr>
-        <td>distributionid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>distribution id</td>
+<tr>
+<td>teacherid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of teacher</td>
+<tr>
+<td>distributionid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>distribution id</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_undo_examples_from_schedule</h2>
 <div>remove example from weekly schedule by teacherid and distribution id
-    used for 'undo' button</div>
+used for 'undo' button</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>teacherid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of teacher</td>
-    <tr>
-        <td>distributionid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>distribution id</td>
+<tr>
+<td>teacherid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of teacher</td>
+<tr>
+<td>distributionid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>distribution id</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_submit_example</h2>
 <div>submit example solution
-    Add student submission to example.</div>
+Add student submission to example.</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>exampleid</td>
-    <tr>
-        <td>studentvalue</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>studentvalue for grading</td>
-    <tr>
-        <td>url</td>
-        <td>url</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>url</td>
-    <tr>
-        <td>filenames</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>filenames, separated by comma, used to look up files and create a new ones in the exaport file area</td>
-    <tr>
-        <td>studentcomment</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>studentcomment</td>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>itemid (<=0 for insert, >0 for update)</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>courseid</td>
-    <tr>
-        <td>fileitemids</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>fileitemids separated by comma</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>exampleid</td>
+<tr>
+<td>studentvalue</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>studentvalue for grading</td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>url</td>
+<tr>
+<td>filenames</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filenames, separated by comma, used to look up files and create a new ones in the exaport file area</td>
+<tr>
+<td>studentcomment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentcomment</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>itemid (<=0 for insert, >0 for update)</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemids separated by comma</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
@@ -2823,115 +2874,115 @@ Returns:<pre>{
 <div>Add studentsubmission  (exaportitem) to topic, descriptor or example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>compid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic/example</td>
-    <tr>
-        <td>studentvalue</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>studentvalue for grading</td>
-    <tr>
-        <td>url</td>
-        <td>url</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>url</td>
-    <tr>
-        <td>filenames</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>filenames, separated by comma, used to look up files and create a new ones in the exaport file area</td>
-    <tr>
-        <td>studentcomment</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>studentcomment</td>
-    <tr>
-        <td>fileitemids</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>itemid (0 for insert, >0 for update)</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>courseid</td>
-    <tr>
-        <td>comptype</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>comptype (example, topic, descriptor)</td>
-    <tr>
-        <td>itemtitle</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful</td>
-    <tr>
-        <td>collabuserids</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>userids of collaborators separated by comma</td>
-    <tr>
-        <td>submit</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)</td>
-    <tr>
-        <td>removefiles</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
-    <tr>
-        <td>solutiondescription</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>description of what the student has done</td>
-    <tr>
-        <td>descriptorgradings</td>
-        <td></td>
-        <td>not null</td>
-        <td>required</td>
-        <td></td>
-        <td>descriptors and gradingds</td>
+<tr>
+<td>compid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic/example</td>
+<tr>
+<td>studentvalue</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>studentvalue for grading</td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>url</td>
+<tr>
+<td>filenames</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>filenames, separated by comma, used to look up files and create a new ones in the exaport file area</td>
+<tr>
+<td>studentcomment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>studentcomment</td>
+<tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>itemid (0 for insert, >0 for update)</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>comptype</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comptype (example, topic, descriptor)</td>
+<tr>
+<td>itemtitle</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful</td>
+<tr>
+<td>collabuserids</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>userids of collaborators separated by comma</td>
+<tr>
+<td>submit</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)</td>
+<tr>
+<td>removefiles</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
+<tr>
+<td>solutiondescription</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of what the student has done</td>
+<tr>
+<td>descriptorgradings</td>
+<td></td>
+<td>not null</td>
+<td>required</td>
+<td></td>
+<td>descriptors and gradingds</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
@@ -2941,20 +2992,20 @@ Returns:<pre>{
 <div>Add studentsubmission  (exaportitem) to topic, descriptor or example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of item</td>
-    <tr>
-        <td>comment</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>comment text</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
+<tr>
+<td>comment</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>comment text</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
@@ -2964,13 +3015,13 @@ Returns:<pre>{
 <div>Add studentsubmission  (exaportitem) to topic, descriptor or example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of item</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of item</td>
 </table>
 Returns:<pre>[
     {
@@ -2984,63 +3035,63 @@ Returns:<pre>[
 ]</pre>
 <h2>diggrplus_get_examples_and_items</h2>
 <div>Get Items
-    get all items AND examples for a competence
-    they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend</div>
+get all items AND examples for a competence
+they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>compid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject(3)/topic(1)/descriptor(0)/example(4)   if <= 0 then show all items for user</td>
-    <tr>
-        <td>comptype</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user</td>
-    <tr>
-        <td>type</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>examples, own_items or empty</td>
-    <tr>
-        <td>search</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>search string</td>
-    <tr>
-        <td>niveauid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>niveauid normally stands for "LFS1, LFS2 ect</td>
-    <tr>
-        <td>status</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>new, inprogress, submitted, completed.  acts as a filter</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>compid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject(3)/topic(1)/descriptor(0)/example(4)   if <= 0 then show all items for user</td>
+<tr>
+<td>comptype</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user</td>
+<tr>
+<td>type</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>examples, own_items or empty</td>
+<tr>
+<td>search</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>search string</td>
+<tr>
+<td>niveauid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>niveauid normally stands for "LFS1, LFS2 ect</td>
+<tr>
+<td>status</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new, inprogress, submitted, completed.  acts as a filter</td>
 </table>
 Returns:<pre>[
     {
@@ -3115,70 +3166,70 @@ Returns:<pre>[
 ]</pre>
 <h2>diggrplus_get_teacher_examples_and_items</h2>
 <div>Get Items
-    get all items AND examples for a competence
-    they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend</div>
+get all items AND examples for a competence
+they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
-    <tr>
-        <td>studentid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
-    <tr>
-        <td>compid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic/descriptor/example   if <= 0 then show all items for user</td>
-    <tr>
-        <td>comptype</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>Type of competence: topic/descriptor/example      if <= 0 then show all items for user</td>
-    <tr>
-        <td>type</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>examples, own_items or empty</td>
-    <tr>
-        <td>search</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>search string</td>
-    <tr>
-        <td>niveauid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>niveauid normally stands for "LFS1, LFS2 ect</td>
-    <tr>
-        <td>status</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>new, inprogress, submitted, completed.  acts as a filter</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>studentid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>compid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic/descriptor/example   if <= 0 then show all items for user</td>
+<tr>
+<td>comptype</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>Type of competence: topic/descriptor/example      if <= 0 then show all items for user</td>
+<tr>
+<td>type</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>examples, own_items or empty</td>
+<tr>
+<td>search</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>search string</td>
+<tr>
+<td>niveauid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>niveauid normally stands for "LFS1, LFS2 ect</td>
+<tr>
+<td>status</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new, inprogress, submitted, completed.  acts as a filter</td>
 </table>
 Returns:<pre>[
     {
@@ -3253,23 +3304,23 @@ Returns:<pre>[
 ]</pre>
 <h2>diggrplus_get_all_subjects_for_course_as_tree</h2>
 <div>Get Subjects
-    get subjects from one user for one course</div>
+get subjects from one user for one course</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>[
     {
@@ -3338,41 +3389,41 @@ Returns:<pre>{
 <div>Load a file from an external Domain to prevent CORS when loading directly in the App</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>url</td>
-        <td>url</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
 </table>
 Returns:<pre>"file null ()"</pre>
 <h2>diggrplus_grade_item</h2>
 <div></div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
-    <tr>
-        <td>teachervalue</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>teacher grading of the item, -1 if none (leads to status "submitted" instead of "completed"</td>
-    <tr>
-        <td>descriptorgradings</td>
-        <td></td>
-        <td>not null</td>
-        <td>required</td>
-        <td></td>
-        <td>descriptors and gradingds</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>teachervalue</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>teacher grading of the item, -1 if none (leads to status "submitted" instead of "completed"</td>
+<tr>
+<td>descriptorgradings</td>
+<td></td>
+<td>not null</td>
+<td>required</td>
+<td></td>
+<td>descriptors and gradingds</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if grading was successful)"
@@ -3381,14 +3432,14 @@ Returns:<pre>{
 <div>Get competence statistic for profile</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td></td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td></td>
 </table>
 Returns:<pre>{
     "items_and_examples_total": "int null (number of free items + examples)",
@@ -3437,37 +3488,37 @@ Returns:<pre>{
 }</pre>
 <h2>diggrplus_get_descriptors_for_example</h2>
 <div>get descriptors where example is associated
-    Get descriptors for example</div>
+Get descriptors for example</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
 </table>
 Returns:<pre>[
     {
@@ -3490,91 +3541,91 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_grade_example</h2>
 <div>grade example solution
-    Add student submission to example.</div>
+Add student submission to example.</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>userid</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>courseid</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>exampleid</td>
-    <tr>
-        <td>examplevalue</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>examplevalue</td>
-    <tr>
-        <td>additionalinfo</td>
-        <td>float</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>additionalInfo</td>
-    <tr>
-        <td>exampleevalniveauid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>example evaluation niveau id</td>
-    <tr>
-        <td>itemid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>itemid</td>
-    <tr>
-        <td>comment</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>comment</td>
-    <tr>
-        <td>url</td>
-        <td>url</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>url</td>
-    <tr>
-        <td>filename</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>filename, used to look up file and create a new one in the exaport comment file area</td>
-    <tr>
-        <td>fileitemid</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>fileitemid</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>exampleid</td>
+<tr>
+<td>examplevalue</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>examplevalue</td>
+<tr>
+<td>additionalinfo</td>
+<td>float</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>additionalInfo</td>
+<tr>
+<td>exampleevalniveauid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>example evaluation niveau id</td>
+<tr>
+<td>itemid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>itemid</td>
+<tr>
+<td>comment</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>comment</td>
+<tr>
+<td>url</td>
+<td>url</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>url</td>
+<tr>
+<td>filename</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>filename, used to look up file and create a new one in the exaport comment file area</td>
+<tr>
+<td>fileitemid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemid</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)",
@@ -3584,41 +3635,41 @@ Returns:<pre>{
 <div>get descriptor details incl. grading and children for many descriptors</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>courseid</td>
-    <tr>
-        <td>descriptorids</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>list of descriptors, seperated by comma</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>userid</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>forall</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>crosssubjid</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>descriptorids</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>list of descriptors, seperated by comma</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>forall</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>crosssubjid</td>
 </table>
 Returns:<pre>[
     {
@@ -3772,41 +3823,41 @@ Returns:<pre>[
 <div>get descriptor details incl. grading and children</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>courseid</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>descriptorid</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>userid</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>forall</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>crosssubjid</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>descriptorid</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>forall</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>crosssubjid</td>
 </table>
 Returns:<pre>{
     "reviewerid": "int null (id of reviewer)",
@@ -3955,30 +4006,30 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_example_information</h2>
 <div>get information and submission for example
-    get example with all submission details and gradings</div>
+get example with all submission details and gradings</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
 </table>
 Returns:<pre>{
     "itemid": "int null (id of item)",
@@ -4018,7 +4069,7 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_user_information</h2>
 <div>get information about current user
-    get example with all submission details and gradings</div>
+get example with all submission details and gradings</div>
 <div>type: read</div>
 Params: <table>
 </table>
@@ -4043,13 +4094,13 @@ Returns:<pre>{
 <div>Returns lang information from exacomp</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>lang</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>language</td>
+<tr>
+<td>lang</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>language</td>
 </table>
 Returns:<pre>[
     {
@@ -4060,95 +4111,95 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_create_blocking_event</h2>
 <div>create a blocking event
-    Create a new blocking event</div>
+Create a new blocking event</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>title</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of new blocking event</td>
-    <tr>
-        <td>description</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>description of new blocking event</td>
-    <tr>
-        <td>timeframe</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>timeframe</td>
-    <tr>
-        <td>externalurl</td>
-        <td>url</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>external url</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>preplanningstorage</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>in pre planning storage or for specific student</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of new blocking event</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of new blocking event</td>
+<tr>
+<td>timeframe</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>timeframe</td>
+<tr>
+<td>externalurl</td>
+<td>url</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>external url</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>preplanningstorage</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>in pre planning storage or for specific student</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)"
 }</pre>
 <h2>dakora_get_examples_by_descriptor_and_grading</h2>
 <div>returns examples for given descriptor and grading
-    Create a new blocking event</div>
+Create a new blocking event</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of descriptor</td>
-    <tr>
-        <td>grading</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>grading value</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>descriptorid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>grading</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>grading value</td>
 </table>
 Returns:<pre>[
     {
@@ -4159,69 +4210,69 @@ Returns:<pre>[
 ]</pre>
 <h2>dakora_allow_example_resubmission</h2>
 <div>allow student to resubmit example
-    Create a new blocking event</div>
+Create a new blocking event</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
 }</pre>
 <h2>dakora_get_competence_grid_for_profile</h2>
 <div>get grid for profile
-    Get competence grid for profile</div>
+Get competence grid for profile</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of subject</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of crosssubject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of subject</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of crosssubject</td>
 </table>
 Returns:<pre>{
     "teacher": {
@@ -4322,44 +4373,44 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_competence_profile_statistic</h2>
 <div>get statistic in user and subject context
-    Get competence statistic for profile</div>
+Get competence statistic for profile</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject</td>
-    <tr>
-        <td>start_timestamp</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>start timestamp for evaluation range</td>
-    <tr>
-        <td>end_timestamp</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>end timestamp for evaluation range</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>start_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp for evaluation range</td>
+<tr>
+<td>end_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp for evaluation range</td>
 </table>
 Returns:<pre>{
     "descriptor_evaluations": {
@@ -4381,30 +4432,30 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_competence_profile_comparison</h2>
 <div>get list for student and teacher comparison
-    Get competence comparison for profile</div>
+Get competence comparison for profile</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
 </table>
 Returns:<pre>{
     "descriptors": [
@@ -4438,44 +4489,44 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_competence_profile_topic_statistic</h2>
 <div>get data for 3D graph
-    Get competence statistic for topic in profile for 3D graph</div>
+Get competence statistic for topic in profile for 3D graph</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user</td>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject</td>
-    <tr>
-        <td>start_timestamp</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>start timestamp for evaluation range</td>
-    <tr>
-        <td>end_timestamp</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>end timestamp for evaluation range</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject</td>
+<tr>
+<td>start_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>start timestamp for evaluation range</td>
+<tr>
+<td>end_timestamp</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>end timestamp for evaluation range</td>
 </table>
 Returns:<pre>{
     "descriptor_evaluation": {
@@ -4515,20 +4566,20 @@ Returns:<pre>[
 <div>Create one or more cohorts</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>name</td>
-        <td>raw</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>cohort name</td>
-    <tr>
-        <td>skz</td>
-        <td>raw</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>school number</td>
+<tr>
+<td>name</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>cohort name</td>
+<tr>
+<td>skz</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>school number</td>
 </table>
 Returns:<pre>{
     "cohortcode": "raw null (cohortcode)"
@@ -4537,13 +4588,13 @@ Returns:<pre>{
 <div>Create one or more cohorts</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>cohortid</td>
-        <td>raw</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>cohort id</td>
+<tr>
+<td>cohortid</td>
+<td>raw</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>cohort id</td>
 </table>
 Returns:<pre>{
     "cohortid": "int null (id of cohort)",
@@ -4573,7 +4624,7 @@ Returns:<pre>{
 }</pre>
 <h2>dakora_get_evaluation_config</h2>
 <div>get evaluation configuration
-    get admin evaluation configurations</div>
+get admin evaluation configurations</div>
 <div>type: read</div>
 Params: <table>
 </table>
@@ -4708,28 +4759,28 @@ Returns:<pre>{
 <div>webservice called through token.php</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>app</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>app accessing this service (eg. dakora)</td>
-    <tr>
-        <td>app_version</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>version of the app (eg. 4.6.0)</td>
-    <tr>
-        <td>services</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(33) "moodle_mobile_app,exacompservices"
-        </td>
-        <td>wanted webservice tokens (eg. exacomp,exaport)</td>
+<tr>
+<td>app</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>app accessing this service (eg. dakora)</td>
+<tr>
+<td>app_version</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>version of the app (eg. 4.6.0)</td>
+<tr>
+<td>services</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(33) "moodle_mobile_app,exacompservices"
+</td>
+<td>wanted webservice tokens (eg. exacomp,exaport)</td>
 </table>
 Returns:<pre>{
     "user": {
@@ -4879,41 +4930,41 @@ Returns:<pre>{
 <div>set visibility for descriptor</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for descriptor in current context</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for descriptor in current context</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -4922,41 +4973,41 @@ Returns:<pre>{
 <div>set visibility for example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for example in current context</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for example in current context</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -4965,49 +5016,49 @@ Returns:<pre>{
 <div>set visibility for topic</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for topic in current context</td>
-    <tr>
-        <td>groupid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of group</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for topic in current context</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of group</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5016,56 +5067,56 @@ Returns:<pre>{
 <div>set visibility for topic</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>topicid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for topic in current context</td>
-    <tr>
-        <td>groupid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of group</td>
-    <tr>
-        <td>niveauid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of the descriptorniveau</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>topicid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for topic in current context</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of group</td>
+<tr>
+<td>niveauid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of the descriptorniveau</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5074,41 +5125,41 @@ Returns:<pre>{
 <div>set visibility for example solutions</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for example in current context</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for example in current context</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5117,41 +5168,41 @@ Returns:<pre>{
 <div>set visibility for descriptor</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>id</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of descriptor</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for descriptor in current context</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>id</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for descriptor in current context</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5160,41 +5211,41 @@ Returns:<pre>{
 <div>set visibility for example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>id</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for example in current context</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>id</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for example in current context</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5203,49 +5254,49 @@ Returns:<pre>{
 <div>set visibility for topic</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>id</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of topic</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, 0 for current user</td>
-    <tr>
-        <td>forall</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>for all users = true, for one user = false</td>
-    <tr>
-        <td>visible</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>visibility for topic in current context</td>
-    <tr>
-        <td>groupid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(-1)
-        </td>
-        <td>id of group</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>id</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of topic</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, 0 for current user</td>
+<tr>
+<td>forall</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all users = true, for one user = false</td>
+<tr>
+<td>visible</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>visibility for topic in current context</td>
+<tr>
+<td>groupid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of group</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5254,50 +5305,50 @@ Returns:<pre>{
 <div>create new crosssubject</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>title</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of crosssubject</td>
-    <tr>
-        <td>description</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>description of crosssubject</td>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject crosssubject is assigned to</td>
-    <tr>
-        <td>draftid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>id of draft</td>
-    <tr>
-        <td>groupcategory</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>name of groupcategory</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of crosssubject</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject crosssubject is assigned to</td>
+<tr>
+<td>draftid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of draft</td>
+<tr>
+<td>groupcategory</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>name of groupcategory</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5306,20 +5357,20 @@ Returns:<pre>{
 <div>delete cross subject</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of crosssubject</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5328,49 +5379,49 @@ Returns:<pre>{
 <div>edit existing crosssubject</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of crosssubject</td>
-    <tr>
-        <td>title</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of crosssubject</td>
-    <tr>
-        <td>description</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>description of crosssubject</td>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of subject crosssubject is assigned to</td>
-    <tr>
-        <td>groupcategory</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>name of groupcategory</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>description</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>description of crosssubject</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of subject crosssubject is assigned to</td>
+<tr>
+<td>groupcategory</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>name of groupcategory</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5379,13 +5430,13 @@ Returns:<pre>{
 <div>get available drafts</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>[
     {
@@ -5399,13 +5450,13 @@ Returns:<pre>[
 <div>get subjects</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
 </table>
 Returns:<pre>[
     {
@@ -5418,20 +5469,20 @@ Returns:<pre>[
 <div>get_students_for_crosssubject</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of crossssubj</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crossssubj</td>
 </table>
 Returns:<pre>{
     "students": [
@@ -5449,41 +5500,41 @@ Returns:<pre>{
 <div>set visibility for crosssubject and student</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of crosssubject</td>
-    <tr>
-        <td>userid</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of crosssubject</td>
-    <tr>
-        <td>forall</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>0 or 1</td>
-    <tr>
-        <td>value</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>value 0 or 1</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>userid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>forall</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>0 or 1</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value 0 or 1</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5492,34 +5543,34 @@ Returns:<pre>{
 <div>set descriptor crosssubject association</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>crosssubjid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of crosssubject</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>title of crosssubject</td>
-    <tr>
-        <td>value</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>value 0 or 1</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>crosssubjid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of crosssubject</td>
+<tr>
+<td>descriptorid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of crosssubject</td>
+<tr>
+<td>value</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>value 0 or 1</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5528,27 +5579,27 @@ Returns:<pre>{
 <div>set descriptor crosssubject association</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of descriptor</td>
-    <tr>
-        <td>studentid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of student</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>studentid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of student</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status of success, either true (1) or false (0))"
@@ -5557,27 +5608,27 @@ Returns:<pre>{
 <div>send message</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>messagetext</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>text of message</td>
-    <tr>
-        <td>userfrom</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user that sends the message</td>
-    <tr>
-        <td>userto</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user message is sent to</td>
+<tr>
+<td>messagetext</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>text of message</td>
+<tr>
+<td>userfrom</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user that sends the message</td>
+<tr>
+<td>userto</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user message is sent to</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)"
@@ -5586,37 +5637,37 @@ Returns:<pre>{
 <div>update an descriptor category</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>descriptorid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of descriptor</td>
-    <tr>
-        <td>categories</td>
-        <td>text</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>list of categories</td>
-    <tr>
-        <td>newcategory</td>
-        <td>raw</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: string(0) ""
-        </td>
-        <td>new category title</td>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>courseid</td>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>categories</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>list of categories</td>
+<tr>
+<td>newcategory</td>
+<td>raw</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>new category title</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>courseid</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if successful)",
@@ -5630,13 +5681,13 @@ Returns:<pre>{
 <div>gets title description and image of website</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>url</td>
-        <td>text</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>url to fetch preview</td>
+<tr>
+<td>url</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>url to fetch preview</td>
 </table>
 Returns:<pre>{
     "title": "text null (true if successful)",
@@ -5647,35 +5698,35 @@ Returns:<pre>{
 <div>view competence overview</div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of course</td>
-    <tr>
-        <td>userid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of user, if 0 current user</td>
-    <tr>
-        <td>subjectid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>subject id</td>
-    <tr>
-        <td>forall</td>
-        <td>int</td>
-        <td>null</td>
-        <td>optional</td>
-        <td>default: int(0)
-        </td>
-        <td>for all?</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>subject id</td>
+<tr>
+<td>forall</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>for all?</td>
 </table>
 Returns:<pre>{
     "overview": "raw null (result html)"
@@ -5684,13 +5735,13 @@ Returns:<pre>{
 <div>delete example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if successful)"
@@ -5699,13 +5750,13 @@ Returns:<pre>{
 <div>delete example</div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>exampleid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td>id of example</td>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of example</td>
 </table>
 Returns:<pre>{
     "success": "bool null (true if successful)"
@@ -5714,13 +5765,13 @@ Returns:<pre>{
 <div></div>
 <div>type: read</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
 </table>
 Returns:<pre>{
     "schooltypes": [
@@ -5750,27 +5801,27 @@ Returns:<pre>{
 <div></div>
 <div>type: write</div>
 Params: <table>
-    <tr>
-        <td>courseid</td>
-        <td>int</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
-    <tr>
-        <td>topicids</td>
-        <td></td>
-        <td>not null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
-    <tr>
-        <td>hide_new_examples</td>
-        <td>bool</td>
-        <td>null</td>
-        <td>required</td>
-        <td></td>
-        <td></td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>topicids</td>
+<td></td>
+<td>not null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>hide_new_examples</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)"
