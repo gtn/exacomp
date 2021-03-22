@@ -8001,7 +8001,11 @@ class block_exacomp_external extends external_api {
 
                             //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
                             if($elem_child->teacherevaluation){
-                                if(!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)){
+//                                if(!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)){
+//                                    $competencies_gained++;
+//                                }
+                                //TODO: this is only a quickfix because grading is not generic yet
+                                if($elem_child->teacherevaluation > 0){
                                     $competencies_gained++;
                                 }
                             }else if($child->examples){
@@ -8029,7 +8033,11 @@ class block_exacomp_external extends external_api {
 
                         //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
                         if($elem_desc->teacherevaluation){
-                            if(!block_exacomp_value_is_negative_by_assessment($elem_desc->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT)){
+//                            if(!block_exacomp_value_is_negative_by_assessment($elem_desc->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT)){
+//                                $competencies_gained++;
+//                            }
+                            //TODO: this is only a quickfix, since grading is not yet generic
+                            if($elem_desc->teacherevaluation > 0){
                                 $competencies_gained++;
                             }
                         }else if($descriptor->examples){
