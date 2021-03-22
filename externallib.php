@@ -1963,7 +1963,7 @@ class block_exacomp_external extends external_api {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
 
-        static::validate_parameters(static::grade_item_parameters(), array(
+        static::validate_parameters(static::diggrplus_grade_descriptor_parameters(), array(
             'descriptorid' => $descriptorid,
             'grading' => $grading,
             'courseid' => $courseid,
