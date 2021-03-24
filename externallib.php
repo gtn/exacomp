@@ -7952,50 +7952,51 @@ class block_exacomp_external extends external_api {
                         $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
 //                    $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
 //                    $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
-                        foreach ($descriptor->children as $child) {
-                            if(!$child->visible){
-                                continue;
-                            }
-                            //$descriptorcount++; //TODO: show the child descriptors in the frontend!
-                            $elem_child = new stdClass ();
-                            $elem_child->id = $child->id;
-                            $elem_child->title = static::custom_htmltrim($child->title);
-                            $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
-                            $elem_child->studentevaluation = $student->competencies->student[$child->id];
-//                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
-//                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
-                            $elem_desc->childdescriptors[] = $elem_child;
-
-                            //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
-                            if($elem_child->teacherevaluation){
-//                                if(!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)){
+                        // Childdescriptors are ignored in Diggplus
+//                        foreach ($descriptor->children as $child) {
+//                            if(!$child->visible){
+//                                continue;
+//                            }
+//                            $descriptorcount++; //TODO: show the child descriptors in the frontend!
+//                            $elem_child = new stdClass ();
+//                            $elem_child->id = $child->id;
+//                            $elem_child->title = static::custom_htmltrim($child->title);
+//                            $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
+//                            $elem_child->studentevaluation = $student->competencies->student[$child->id];
+////                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
+////                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
+//                            $elem_desc->childdescriptors[] = $elem_child;
+//
+//                            //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
+//                            if($elem_child->teacherevaluation){
+////                                if(!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)){
+////                                    $competencies_gained++;
+////                                }
+//                                //TODO: this is only a quickfix because grading is not generic yet
+//                                if($elem_child->teacherevaluation > 0){
 //                                    $competencies_gained++;
 //                                }
-                                //TODO: this is only a quickfix because grading is not generic yet
-                                if($elem_child->teacherevaluation > 0){
-                                    $competencies_gained++;
-                                }
-                            }else if($child->examples){
-                                $gained = true;
-                                foreach ($child->examples as $example) {
-                                    $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-                                    if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
-                                        continue;
-                                    }else{
-                                        $gained = false;
-                                    }
-                                }
-                                if($gained){
-                                    $competencies_gained++;
-                                }
-                            }
-//                            foreach ($child->examples as $ex){  //that was a fix because the visibility did not work in the tree function
-//                                if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
-//                                    $examples[$ex->id] = $ex;
+//                            }else if($child->examples){
+//                                $gained = true;
+//                                foreach ($child->examples as $example) {
+//                                    $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+//                                    if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
+//                                        continue;
+//                                    }else{
+//                                        $gained = false;
+//                                    }
+//                                }
+//                                if($gained){
+//                                    $competencies_gained++;
 //                                }
 //                            }
-                            $examples += $child->examples;
-                        }
+////                            foreach ($child->examples as $ex){  //that was a fix because the visibility did not work in the tree function
+////                                if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
+////                                    $examples[$ex->id] = $ex;
+////                                }
+////                            }
+//                            $examples += $child->examples;
+//                        }
                         $elem_topic->descriptors[] = $elem_desc;
 
                         //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
@@ -11599,15 +11600,16 @@ class block_exacomp_external extends external_api {
             $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
             $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true); // this only gets parents
 
-            foreach($descriptors as $descriptor){
-                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true, true, true);
-                // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
-                foreach($childdescriptors as $child){
-                    $child->niveauid = $descriptor->niveauid;
-                    $child->cattitle = $descriptor->cattitle;
-                }
-                $descriptors += $childdescriptors;
-            }
+            //Ignore childdescriptors for diggrplus
+//            foreach($descriptors as $descriptor){
+//                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true, true, true);
+//                // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
+//                foreach($childdescriptors as $child){
+//                    $child->niveauid = $descriptor->niveauid;
+//                    $child->cattitle = $descriptor->cattitle;
+//                }
+//                $descriptors += $childdescriptors;
+//            }
 
             foreach($descriptors as $key => $descriptor){
                 if($niveauid != -1){
