@@ -3440,6 +3440,14 @@ Params: <table>
 <td>default: int(0)
 </td>
 <td></td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td></td>
 </table>
 Returns:<pre>{
     "items_and_examples_total": "int null (number of free items + examples)",
@@ -5176,12 +5184,12 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>id</td>
-<td>int</td>
+<td>ids</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>id of descriptor</td>
+<td>list of descriptorids, seperated by comma</td>
 <tr>
 <td>userid</td>
 <td>int</td>
@@ -5219,12 +5227,12 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>id</td>
-<td>int</td>
+<td>ids</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>id of example</td>
+<td>list of exampleids, seperated by comma</td>
 <tr>
 <td>userid</td>
 <td>int</td>
@@ -5262,12 +5270,12 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>id</td>
-<td>int</td>
+<td>ids</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>id of topic</td>
+<td>list of topicids, seperated by comma</td>
 <tr>
 <td>userid</td>
 <td>int</td>

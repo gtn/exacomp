@@ -7855,6 +7855,7 @@ class block_exacomp_external extends external_api {
 	public static function diggrplus_get_competence_profile_statistic_parameters() {
 	    return new external_function_parameters (array(
 	        'userid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
+            'courseid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
 	    ));
 	}
 
@@ -7863,11 +7864,12 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-read
 	 */
-	public static function diggrplus_get_competence_profile_statistic($userid=0) {
+	public static function diggrplus_get_competence_profile_statistic($userid=0, $courseid=0) {
 	    global $USER, $DB;
 
 		static::validate_parameters(static::diggrplus_get_competence_profile_statistic_parameters(), array(
 			'userid' => $userid,
+            'courseid' => $courseid,
 		));
 
 		if ($userid == 0) {
@@ -7875,12 +7877,17 @@ class block_exacomp_external extends external_api {
 		}
 
         $courses = enrol_get_users_courses($userid);
-        //for each course check if I have access to the course, but don't use "require_can_access_course_user" since it should just skip, and not throw exeption
-        foreach($courses as $key => $course){
-            if(!static::can_access_course_user($course->id, $userid)){
-                unset($courses[$key]);
+		if($courseid==0){ //get all courses of the user
+            //for each course check if I have access to the course, but don't use "require_can_access_course_user" since it should just skip, and not throw exeption
+            foreach($courses as $key => $course){
+                if(!static::can_access_course_user($course->id, $userid)){
+                    unset($courses[$key]);
+                }
             }
+        }else{//get only this specific course
+		    $courses = array($courses[$courseid]); //make array, so the rest of the code continues to work the same way as for multiple courses
         }
+
 
         $courseCondition = "(";
         foreach($courses as $course){
