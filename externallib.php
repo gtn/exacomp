@@ -7915,8 +7915,7 @@ class block_exacomp_external extends external_api {
         $structure = array();
 
         foreach ($courses as $course) {
-
-
+            //showallexamples filters out those, who have not creatorid => those who were imported
             $tree = block_exacomp_get_competence_tree($course->id,null,null,false,null, true, null, false ,false, true, false, true);
             $students = block_exacomp_get_students_by_course($course->id);
             $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
@@ -7990,12 +7989,12 @@ class block_exacomp_external extends external_api {
                                     $competencies_gained++;
                                 }
                             }
-                            foreach ($child->examples as $ex){
-                                if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
-                                    $examples[$ex->id] = $ex;
-                                }
-                            }
-//                            $examples += $child->examples; VISIBILITY is not minded
+//                            foreach ($child->examples as $ex){  //that was a fix because the visibility did not work in the tree function
+//                                if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
+//                                    $examples[$ex->id] = $ex;
+//                                }
+//                            }
+                            $examples += $child->examples;
                         }
                         $elem_topic->descriptors[] = $elem_desc;
 
@@ -8022,12 +8021,12 @@ class block_exacomp_external extends external_api {
                                 $competencies_gained++;
                             }
                         }
-                        foreach ($descriptor->examples as $ex){
-                            if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
-                                $examples[$ex->id] = $ex;
-                            }
-                        }
-//                        $examples += $descriptor->examples; //VISIBILITY!!!
+//                        foreach ($descriptor->examples as $ex){  // that was a fix because the visibility did not work in the tree function
+//                            if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
+//                                $examples[$ex->id] = $ex;
+//                            }
+//                        }
+                        $examples += $descriptor->examples;
                     }
                     $elem_sub->topics[] = $elem_topic;
                 }

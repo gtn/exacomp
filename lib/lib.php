@@ -1851,7 +1851,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
     //here a lot of time is lost rw
 	foreach ($descriptors as $descriptor) {
 		if ($include_childs) {
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid, true, $showonlyvisible);
             $descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 			$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 		}
