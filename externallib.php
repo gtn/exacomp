@@ -10788,7 +10788,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_set_descriptor_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'id' => new external_value (PARAM_INT, 'id of descriptor'),
+            'ids' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma'),
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for descriptor in current context'),
@@ -10805,11 +10805,11 @@ class block_exacomp_external extends external_api {
      * @param $visible
      * @return array
      */
-    public static function diggrplus_set_descriptor_visibility($courseid, $id, $userid, $forall, $visible) {
+    public static function diggrplus_set_descriptor_visibility($courseid, $ids, $userid, $forall, $visible) {
         global $USER;
         static::validate_parameters(static::diggrplus_set_descriptor_visibility_parameters(), array(
             'courseid' => $courseid,
-            'id' => $id,
+            'ids' => $ids,
             'userid' => $userid,
             'forall' => $forall,
             'visible' => $visible,
@@ -10821,7 +10821,11 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        block_exacomp_set_descriptor_visibility($id, $courseid, $visible, $userid);
+        $descriptorids = explode(',', $ids);
+
+        foreach ($descriptorids as $descriptorid){
+            block_exacomp_set_descriptor_visibility($descriptorid, $courseid, $visible, $userid);
+        }
 
         return array('success' => true);
     }
@@ -10835,7 +10839,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_set_example_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'id' => new external_value (PARAM_INT, 'id of example'),
+            'ids' => new external_value (PARAM_TEXT, 'list of exampleids, seperated by comma'),
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context'),
@@ -10852,11 +10856,11 @@ class block_exacomp_external extends external_api {
      * @param $visible
      * @return array
      */
-    public static function diggrplus_set_example_visibility($courseid, $id, $userid, $forall, $visible) {
+    public static function diggrplus_set_example_visibility($courseid, $ids, $userid, $forall, $visible) {
         global $USER;
         static::validate_parameters(static::diggrplus_set_example_visibility_parameters(), array(
             'courseid' => $courseid,
-            'id' => $id,
+            'ids' => $ids,
             'userid' => $userid,
             'forall' => $forall,
             'visible' => $visible,
@@ -10868,7 +10872,11 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        block_exacomp_set_example_visibility($id, $courseid, $visible, $userid);
+        $exampleids = explode(',', $ids);
+
+        foreach ($exampleids as $exampleid){
+            block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $userid);
+        }
 
         return array('success' => true);
     }
@@ -10882,7 +10890,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_set_topic_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'id' => new external_value (PARAM_INT, 'id of topic'),
+            'ids' => new external_value (PARAM_TEXT, 'list of topicids, seperated by comma'),
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
@@ -10901,11 +10909,11 @@ class block_exacomp_external extends external_api {
      * @param $visible
      * @return array
      */
-    public static function diggrplus_set_topic_visibility($courseid, $id, $userid, $forall, $visible, $groupid=-1) {
+    public static function diggrplus_set_topic_visibility($courseid, $ids, $userid, $forall, $visible, $groupid=-1) {
         global $USER;
         static::validate_parameters(static::diggrplus_set_topic_visibility_parameters(), array(
             'courseid' => $courseid,
-            'id' => $id,
+            'ids' => $ids,
             'userid' => $userid,
             'forall' => $forall,
             'visible' => $visible,
@@ -10918,12 +10926,17 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        if($groupid != -1){
-            block_exacomp_set_topic_visibility_for_group($id, $courseid, $visible, $groupid);
-        }else{
-            block_exacomp_set_topic_visibility($id, $courseid, $visible, $userid);
-        }
+        $topicids = explode(',', $ids);
 
+        if($groupid != -1){
+            foreach ($topicids as $topicid){
+                block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
+            }
+        }else{
+            foreach ($topicids as $topicid){
+                block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $userid);
+            }
+        }
         return array('success' => true);
     }
 
