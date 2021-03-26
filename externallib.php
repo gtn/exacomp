@@ -1850,8 +1850,8 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_create_or_update_example_parameters() {
         return new external_function_parameters (array(
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
-            'name' => new external_value (PARAM_TEXT, 'title of example'),
-            'description' => new external_value (PARAM_TEXT, 'description of example'),
+            'name' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL),
+            'description' => new external_value (PARAM_TEXT, 'description of example', VALUE_OPTIONAL),
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
             'comps' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
@@ -1877,9 +1877,6 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '', $visible) {
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
-        if (empty ($name)) {
-            throw new invalid_parameter_exception ('Parameter can not be empty');
-        }
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
             'exampleid' => $exampleid,
@@ -3687,6 +3684,7 @@ class block_exacomp_external extends external_api {
             'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
             'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
+            'creatorid' => new external_value (PARAM_INT, 'creatorid'),
             'taskfiles' => new external_multiple_structure(new external_single_structure(array(
                 'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
                 'url' => new external_value (PARAM_URL, 'file url'),
@@ -12599,8 +12597,12 @@ class block_exacomp_external extends external_api {
             $example = new stdClass ();
         }
 
-        $example->title = $name;
-        $example->description = $description;
+        if($name){
+            $example->title = $name;
+        }
+        if($description){
+            $example->description = $description;
+        }
         $example->timeframe = $timeframe;
         $example->externalurl = $externalurl;
         $example->creatorid = $USER->id;
