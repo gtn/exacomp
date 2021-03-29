@@ -1861,8 +1861,8 @@ class block_exacomp_external extends external_api {
             'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
             'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
             'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
-            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, 0),
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
+            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, ''),
             'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
             'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?', VALUE_OPTIONAL),
         ));
@@ -1875,7 +1875,7 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '', $visible) {
+    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles='', $solutionfileitemid = '', $visible) {
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
@@ -12700,21 +12700,19 @@ class block_exacomp_external extends external_api {
         if ($fileitemids != '') {
             if($exampleid != -1){
                 //if there already exists an example: remove either all files or only the ones explicitly stated (dakora uses "remove all" right now 20210204, diggprlus uses explizit remove
-                if($removefiles){
+                if($removefiles!=''){
                     // remove files specifically marked for deletion by user:
                     // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
                     // use get_file_by_hash() instead, for deleting already existing files.
                     // could this be used to remove files this user doesn't have access to? HACKABLE TODO
                     // solution: get itemid. this itemid is the exampleid in this case
-                    if($removefiles){
-                        $fs = get_file_storage();
-                        $removefiles = explode(',', $removefiles);
-                        foreach($removefiles as $removefile){
-                            $file = $fs->get_file_by_id($removefile);
-                            if($file){
-                                if($file->get_itemid() == $exampleid){ // only delete file of current example. Protection if something goes really wrong or this webservice is used maliciously
-                                    $file->delete();
-                                }
+                    $fs = get_file_storage();
+                    $removefiles = explode(',', $removefiles);
+                    foreach($removefiles as $removefile){
+                        $file = $fs->get_file_by_id($removefile);
+                        if($file){
+                            if($file->get_itemid() == $exampleid){ // only delete file of current example. Protection if something goes really wrong or this webservice is used maliciously
+                                $file->delete();
                             }
                         }
                     }
