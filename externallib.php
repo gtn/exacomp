@@ -13940,17 +13940,19 @@ class block_exacomp_external extends external_api {
             'courseid' => $courseid,
             'annotationtext' => $annotationtext
         ));
-
+        global $DB;
         block_exacomp_require_teacher($courseid);
-
-        $insert = new stdClass();
-        $insert->courseid = $courseid;
-        $insert->exampleid = $exampleid;
-        $insert->annotationtext = $annotationtext;
-
-        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $insert);
-
-
+        $exampleannotation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, array('exampleid' => $exampleid, 'courseid' => $courseid));
+        if($exampleannotation){
+            $exampleannotation->annotationtext = $annotationtext;
+            $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $exampleannotation);
+        }else{
+            $exampleannotation = new stdClass();
+            $exampleannotation->courseid = $courseid;
+            $exampleannotation->exampleid = $exampleid;
+            $exampleannotation->annotationtext = $annotationtext;
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $exampleannotation);
+        }
         return array("success" => true);
     }
 
