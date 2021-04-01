@@ -3625,6 +3625,8 @@ class block_exacomp_external extends external_api {
             'userid' => $userid,
         ));
 
+        global $DB;
+
         $isTeacher = block_exacomp_is_teacher($courseid);
         if (!$isTeacher) {
             $userid = g::$USER->id;
@@ -3663,6 +3665,8 @@ class block_exacomp_external extends external_api {
         $example->visible = block_exacomp_is_example_visible($courseid, $exampleid, $userid);
 //        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
 
+        $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $exampleid, 'courseid' => $courseid));
+
         return $example;
     }
 
@@ -3683,6 +3687,7 @@ class block_exacomp_external extends external_api {
             'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
             'creatorid' => new external_value (PARAM_INT, 'creatorid'),
+            'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
             'taskfiles' => new external_multiple_structure(new external_single_structure(array(
                 'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
                 'url' => new external_value (PARAM_URL, 'file url'),
