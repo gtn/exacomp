@@ -3590,8 +3590,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020022001) {
-        $updateFreeDescriptor = $DB->execute(' UPDATE {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} 
-                                                    SET source = '.BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR.' 
+        $updateFreeDescriptor = $DB->execute(' UPDATE {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'}
+                                                    SET source = '.BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR.'
                                                     WHERE id = -1 ');
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020022001, 'exacomp');
@@ -3678,9 +3678,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
             $dbman->rename_table($table,'block_exacompitem_mm');
         }
-        
+
         block_exacomp_disable_core_competency();
-        
+
         $table = new xmldb_table('block_exacompapplogin');
 				if (!$dbman->table_exists($table)) {
 	        // Adding fields to table block_exacompapplogin.
@@ -3691,12 +3691,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	        $table->add_field('created_at', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 	        $table->add_field('request_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
 	        $table->add_field('result_data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-	
+
 	        // Adding keys to table block_exacompapplogin.
 	        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
-	
+
 	        // Conditionally launch create table for block_exacompapplogin.
-	        
+
 	        $dbman->create_table($table);
         }
         // Define table block_exacompitemcollab_mm to be created.
@@ -3706,16 +3706,41 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
 	        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 	        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-	
+
 	        // Adding keys to table block_exacompitemcollab_mm.
 	        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
-	
+
 	        // Conditionally launch create table for block_exacompitemcollab_mm.
-        
+
           $dbman->create_table($table);
         }
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2020120300, 'exacomp');
+    }
+
+
+    if ($oldversion < 2021040101) {
+        // Define table block_exacompexampannotation to be created.
+        $table = new xmldb_table('block_exacompexampannotation');
+        if (!$dbman->table_exists($table)) {
+            // Adding fields to table block_exacompexampannotation.
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+            $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+            $table->add_field('exampleid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+            $table->add_field('annotationtext', XMLDB_TYPE_TEXT);
+
+            // Adding keys to table block_exacompexampannotation.
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+            $table->add_key('exampleid', XMLDB_KEY_FOREIGN, array('exampleid'), 'block_exacompexamples', array('id'));
+
+            // Conditionally launch create table for block_exacompexampannotation.
+            if (!$dbman->table_exists($table)) {
+                $dbman->create_table($table);
+            }
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021040101, 'exacomp');
     }
 
     /*
