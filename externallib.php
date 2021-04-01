@@ -1921,8 +1921,6 @@ class block_exacomp_external extends external_api {
 
 
 
-
-
     /**
      * Returns description of method parameters
      *
@@ -13910,4 +13908,65 @@ class block_exacomp_external extends external_api {
             'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
         ));
     }
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_annotate_example_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
+            'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
+            'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL)
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_annotate_example($exampleid, $courseid, $annotationtext) {
+        static::validate_parameters(static::diggrplus_annotate_example_parameters(), array(
+            'exampleid' => $exampleid,
+            'courseid' => $courseid,
+            'annotationtext' => $annotationtext
+        ));
+
+        block_exacomp_require_teacher($courseid);
+
+        $insert = new stdClass();
+        $insert->courseid = $courseid;
+        $insert->exampleid = $exampleid;
+        $insert->annotationtext = $annotationtext;
+
+        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $insert);
+
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_annotate_example_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+
+
+
+
 }

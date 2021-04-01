@@ -74,6 +74,7 @@ const BLOCK_EXACOMP_DB_IMPORTTASKS = 'block_exacompimporttasks';
 const BLOCK_EXACOMP_DB_GLOBALGRADINGS = 'block_exacompglobalgradings';
 const BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION = 'block_exacompdescrquest_mm';
 const BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM = 'block_exacompitemcollab_mm';
+const BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION = 'block_exacompexampannotation';
 
 /**
  * PLUGIN ROLES

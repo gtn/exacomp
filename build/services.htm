@@ -5845,3 +5845,35 @@ Returns:<pre>{
     "exacompversion": "float null (exacomp version number in YYYYMMDDXX format)",
     "moodleversion": "float null (moodle version number in YYYYMMDDXX format)"
 }</pre>
+<h2>diggrplus_annotate_example</h2>
+<div>Create an example or update it
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the example that is to be updated</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>courseid</td>
+<tr>
+<td>annotationtext</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)"
+}</pre>
