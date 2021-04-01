@@ -1102,6 +1102,14 @@ get admin evaluation configurations',
     'description' => '',
     'type' => 'write',
   ),
+  'diggrplus_get_config' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_get_config',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => '',
+    'type' => 'read',
+  ),
 );
 
 $services = array (
@@ -1241,6 +1249,7 @@ $services = array (
       125 => 'diggrplus_delete_custom_example',
       126 => 'diggrplus_get_course_schooltype_tree',
       127 => 'diggrplus_set_active_course_topics',
+      128 => 'diggrplus_get_config',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,

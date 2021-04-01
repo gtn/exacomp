@@ -782,15 +782,16 @@ Params: <table>
 <td>fileitemids</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
 <tr>
 <td>removefiles</td>
 <td>text</td>
 <td>null</td>
 <td>optional</td>
-<td>default: int(0)
+<td>default: string(0) ""
 </td>
 <td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
 <tr>
@@ -5834,4 +5835,13 @@ Params: <table>
 </table>
 Returns:<pre>{
     "success": "bool null (status)"
+}</pre>
+<h2>diggrplus_get_config</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "exacompversion": "float null (exacomp version number in YYYYMMDDXX format)",
+    "moodleversion": "float null (moodle version number in YYYYMMDDXX format)"
 }</pre>

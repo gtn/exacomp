@@ -13874,4 +13874,40 @@ class block_exacomp_external extends external_api {
 			'success' => new external_value (PARAM_BOOL, 'status'),
 		));
 	}
+
+
+    public static function diggrplus_get_config_parameters() {
+        return new external_function_parameters(array());
+    }
+
+
+
+    /**
+     *
+     * @ws-type-read
+     * @return array
+     */
+    public static function diggrplus_get_config() {
+        global $CFG;
+        static::validate_parameters(static::diggrplus_get_config_parameters(), array());
+
+        $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+
+        return array(
+            'exacompversion' => $info->versiondb,
+            'moodleversion' => $CFG->version,
+        );
+    }
+
+    /**
+     * Returns description of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_config_returns() {
+        return new external_single_structure (array(
+            'exacompversion' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
+            'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
+        ));
+    }
 }
