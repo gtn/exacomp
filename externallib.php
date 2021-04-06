@@ -8109,6 +8109,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'mindvisibility' => new external_value (PARAM_BOOL, 'if a teacher wants to see the descriptors of an example in a hidden descriptor: set this to FALSE'),
 		));
 	}
 
@@ -8119,7 +8120,7 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return list of descriptors
 	 */
-	public static function diggrplus_get_descriptors_for_example($exampleid, $courseid, $userid, $forall) {
+	public static function diggrplus_get_descriptors_for_example($exampleid, $courseid, $userid, $forall, $mindvisibility) {
 		global $DB, $USER;
 
 		static::validate_parameters(static::diggrplus_get_descriptors_for_example_parameters(), array(
@@ -8127,6 +8128,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => $courseid,
 			'userid' => $userid,
 			'forall' => $forall,
+            'mindvisibility' => $mindvisibility,
 		));
 
 		if ($userid == 0 && !$forall) {
@@ -8135,7 +8137,9 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 
-		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		if($mindvisibility){
+            $non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+        }
 
 		if (!$forall) {
 			$non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
@@ -8154,7 +8158,7 @@ class block_exacomp_external extends external_api {
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 
 			$topic = \block_exacomp\topic::get($descriptor->topicid);
-			if (block_exacomp_is_topic_visible($courseid, $topic, $userid)) {
+			if (block_exacomp_is_topic_visible($courseid, $topic, $userid) || !$mindvisibility) {
 				$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 				$descriptor->child = (($parentid = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS, 'parentid', array('id' => $descriptor->id))) > 0) ? 1 : 0;
 				$descriptor->parentid = $parentid;
