@@ -1850,8 +1850,8 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_create_or_update_example_parameters() {
         return new external_function_parameters (array(
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
-            'name' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL),
-            'description' => new external_value (PARAM_TEXT, 'description of example', VALUE_OPTIONAL),
+            'name' => new external_value (PARAM_TEXT, 'title of example', VALUE_DEFAULT, ''),
+            'description' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
             'comps' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
@@ -1859,11 +1859,11 @@ class block_exacomp_external extends external_api {
             'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
             'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
-            'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
-            'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
             'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, ''),
             'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
+            'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
+            'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
         ));
     }
 
@@ -1874,7 +1874,7 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles='', $solutionfileitemid = '') {
+    public static function diggrplus_create_or_update_example($exampleid=-1, $name, $description, $timeframe='', $externalurl='www', $comps='0' , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1,  $fileitemids = '', $removefiles='', $solutionfileitemid = '', $activityid = 0, $is_teacherexample=0) {
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
@@ -1889,11 +1889,11 @@ class block_exacomp_external extends external_api {
             'newtaxonomy' => $newtaxonomy,
             'courseid' => $courseid,
             'crosssubjectid' => $crosssubjectid,
-            'activityid' => $activityid,
-            'is_teacherexample' => $is_teacherexample,
             'fileitemids' => $fileitemids,
             'removefiles' => $removefiles,
             'solutionfileitemid' => $solutionfileitemid,
+            'activityid' => $activityid,
+            'is_teacherexample' => $is_teacherexample,
         ));
 
         $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles, null, true);

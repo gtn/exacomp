@@ -696,15 +696,17 @@ Params: <table>
 <td>name</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>title of example</td>
 <tr>
 <td>description</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>description of example</td>
 <tr>
 <td>timeframe</td>
@@ -763,22 +765,6 @@ Params: <table>
 </td>
 <td>id of the crosssubject if it is a crosssubjectfile</td>
 <tr>
-<td>activityid</td>
-<td>int</td>
-<td>null</td>
-<td>optional</td>
-<td>default: int(0)
-</td>
-<td>id of related activity</td>
-<tr>
-<td>is_teacherexample</td>
-<td>int</td>
-<td>null</td>
-<td>optional</td>
-<td>default: int(0)
-</td>
-<td>is a teacher example?</td>
-<tr>
 <td>fileitemids</td>
 <td>text</td>
 <td>null</td>
@@ -802,6 +788,22 @@ Params: <table>
 <td>default: string(0) ""
 </td>
 <td>fileitemid for the solutionfile</td>
+<tr>
+<td>activityid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>id of related activity</td>
+<tr>
+<td>is_teacherexample</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>is a teacher example?</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)",
