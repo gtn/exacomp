@@ -1864,7 +1864,6 @@ class block_exacomp_external extends external_api {
             'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
             'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, ''),
             'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
-            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?', VALUE_OPTIONAL),
         ));
     }
 
@@ -1875,7 +1874,7 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles='', $solutionfileitemid = '', $visible) {
+    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $comps , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles='', $solutionfileitemid = '') {
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
@@ -1895,11 +1894,10 @@ class block_exacomp_external extends external_api {
             'fileitemids' => $fileitemids,
             'removefiles' => $removefiles,
             'solutionfileitemid' => $solutionfileitemid,
-            'visible' => $visible,
         ));
 
-        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles, $visible);
-        return array("success" => true, "exampleid" => $example->exampleid);
+        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles);
+        return array("success" => true, "exampleid" => $example[exampleid]);
     }
 
     /**
@@ -6472,7 +6470,7 @@ class block_exacomp_external extends external_api {
                     if($example->blocking_event == 2){ //if freematerial, create the category with name "freematerials"
                         $subjecttitle = get_string('freematerials', 'block_exacomp');
                     }else{
-                        $subjecttitle = block_exacomp_get_subjecttitle_by_example($comptitle);
+                        $subjecttitle = block_exacomp_get_subjecttitle_by_example($compid);
                     }
                     break;
             }
@@ -12808,6 +12806,7 @@ class block_exacomp_external extends external_api {
                 $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
 
                 //visibility entries for this example in course where descriptors are associated
+                // TODO: do we want this? or should it only change in the current course? --> Solved in diggrplus by using diggrplus_annotate_example
                 $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
                 foreach ($courseids as $courseid) {
                     $insert = new stdClass();
@@ -13928,7 +13927,8 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
-            'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL)
+            'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL),
+            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?'),
         ));
     }
 
@@ -13939,15 +13939,16 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_annotate_example($exampleid, $courseid, $annotationtext) {
+    public static function diggrplus_annotate_example($exampleid, $courseid, $annotationtext, $visible) {
         static::validate_parameters(static::diggrplus_annotate_example_parameters(), array(
             'exampleid' => $exampleid,
             'courseid' => $courseid,
-            'annotationtext' => $annotationtext
+            'annotationtext' => $annotationtext,
+            'visible' => $visible
         ));
         global $DB;
         block_exacomp_require_teacher($courseid);
-        $exampleannotation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, array('exampleid' => $exampleid, 'courseid' => $courseid));
+        $exampleannotation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, array('exampleid' => $exampleid, 'courseid' => $courseid, 'visible' => $visible));
         if($exampleannotation){
             $exampleannotation->annotationtext = $annotationtext;
             $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $exampleannotation);
@@ -13958,6 +13959,15 @@ class block_exacomp_external extends external_api {
             $exampleannotation->annotationtext = $annotationtext;
             $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $exampleannotation);
         }
+
+        // Set Visibility in this course
+        $insert = new stdClass();
+        $insert->courseid = $courseid;
+        $insert->exampleid = $exampleid;
+        $insert->studentid = 0; // forall
+        $insert->visible = $visible;
+        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+
         return array("success" => true);
     }
 

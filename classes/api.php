@@ -26,13 +26,13 @@ require_once __DIR__.'/../inc.php';
 use block_exacomp\globals as g;
 
 class api {
-    
+
     const BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE = 0;
     const BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE = 1;
     const BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE = 2;
     const BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS = 3;
     const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
-    
+
 	static function active() {
 		// check if block is active
 		if (!g::$DB->get_record('block', array('name' => 'exacomp', 'visible' => 1))) {
@@ -42,14 +42,68 @@ class api {
 		return true;
 	}
 
-	static function get_active_comps_for_exaport_item($itemid) {
-		return g::$DB->get_records_sql("
-			SELECT DISTINCT d.*
-			-- distinct, because a descriptor can be in multiple courseids
-			FROM {block_exacompdescriptors} d
-			JOIN {block_exacompcompactiv_mm} compactiv ON compactiv.compid = d.id
+	static function get_active_comps_for_exaport_item($itemid, $userid=-1, $courseid=-1) {
+	    // First: get the entry in block_exacompcompactiv_mm for the itemid
+        $entries = g::$DB->get_records_sql("
+			SELECT DISTINCT compactiv.*
+			FROM {block_exacompcompactiv_mm} compactiv
 			WHERE compactiv.eportfolioitem = 1 AND compactiv.activityid = ?
 		", [$itemid]);
+
+        // Second: get the descriptor directly, or via the example, if the linked compid is for an example or the topic directly
+        $comps = array(
+            "descriptors" => [],
+            "topics" => []
+        );
+        foreach ($entries as $entry){
+            if($entry->comptype == BLOCK_EXACOMP_TYPE_EXAMPLE){
+                $exampleDescriptors = g::$DB->get_records_sql("
+                    SELECT DISTINCT d.*, descrtopic.topicid
+                    -- distinct, because a descriptor can be in multiple courseids
+                    FROM {block_exacompdescriptors} d
+                    JOIN {block_exacompdescrexamp_mm} descrexamp ON descrexamp.descrid = d.id
+                    JOIN {block_exacompdescrtopic_mm} descrtopic ON d.id = descrtopic.descrid
+                    WHERE descrexamp.exampid = ?
+                ", [$entry->compid]);
+                $comps["descriptors"] = array_replace($comps["descriptors"] ,$exampleDescriptors); //replace instead of merge ==> same key(descriptorid) will not be written twice
+            }else if($entry->comptype == BLOCK_EXACOMP_TYPE_TOPIC){
+                $topics = g::$DB->get_record("block_exacomptopics", array("id" => $entry->compid));
+                $comps["topics"] = array_replace($comps["topics"],$topics);
+            }else if($entry->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
+                $descriptors = g::$DB->get_records_sql("
+                    SELECT DISTINCT d.*, descrtopic.topicid
+                    -- distinct, because a descriptor can be in multiple courseids
+                    FROM {block_exacompdescriptors} d
+                    JOIN {block_exacompdescrtopic_mm} descrtopic ON d.id = descrtopic.descrid
+                    WHERE d.id = ?
+                ", [$entry->compid]);
+                $comps["descriptors"] = array_replace($comps["descriptors"],$descriptors);
+            }
+        }
+
+        // check visibility if this function is called for a specific user
+        if($userid != -1 && $courseid != -1){
+            foreach ($comps["descriptors"] as $key => $descr){
+                if(!block_exacomp_is_descriptor_visible($courseid, $descr, $userid, true)){
+                    unset($comps["descriptors"][$key]);
+                }
+            }
+            foreach ($comps["topics"] as $key => $topic){
+                if(!block_exacomp_is_topic_visible($courseid, $topic, $userid)){
+                    unset($comps["topics"][$key]);
+                }
+            }
+        }
+
+        //OLD since 2021.04.06:
+//		return g::$DB->get_records_sql("
+//			SELECT DISTINCT d.*
+//			-- distinct, because a descriptor can be in multiple courseids
+//			FROM {block_exacompdescriptors} d
+//			JOIN {block_exacompcompactiv_mm} compactiv ON compactiv.compid = d.id
+//			WHERE compactiv.eportfolioitem = 1 AND compactiv.activityid = ?
+//		", [$itemid]);
+        return $comps;
 	}
 
 	static function get_comp_tree_for_exaport($userid) {
@@ -152,8 +206,8 @@ class api {
 	}
 
 	static function get_comp_tree_for_exastud($studentid) {
-	    
-	    
+
+
 		$subjects = db_layer_all_user_courses::create($studentid)->get_subjects();
 
         $niveau_titles = block_exacomp_get_assessment_diffLevel_options_splitted();
@@ -172,7 +226,7 @@ class api {
 		$teacher_additional_grading_competencies = [];
 		$teacher_additional_grading_topics_real = [];
 		$teacher_additional_grading_competencies_real = [];
-		
+
 		$topic_scheme = block_exacomp_get_assessment_topic_scheme();
 		$dicriptor_scheme = block_exacomp_get_assessment_comp_scheme();
 		$short = false;
