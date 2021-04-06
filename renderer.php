@@ -2482,7 +2482,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$titleCell = new html_table_cell();
 
 				$titleCell->attributes['class'] = ' rg2-indent';
-				if (($descriptor->examples || $descriptor->children || ($parent && $editmode)) && ($data->rg2_level >= 0)) {
+				if (($descriptor->examples || $descriptor->children || ($parent && $editmode)) && ($data->rg2_level >= 0)) { // HERE the examples are added??
 					$titleCell->attributes['class'] .= ' rg2-arrow';
 				}
 
@@ -4297,7 +4297,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         } else {
             $icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
         }
-        
+
         return html_writer::link('', $icon, array('class' => 'hide-niveau', 'name' => 'hide-niveau', 'topicid' => $topicid, 'niveauid' => $niveauid, 'id' => 'hide-niveau', 'state' => ($visible) ? '-' : '+',
             'showurl' => $this->image_url("i/hide"), 'hideurl' => $this->image_url("i/show"),
         ));

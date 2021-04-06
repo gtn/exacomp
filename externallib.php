@@ -1896,7 +1896,7 @@ class block_exacomp_external extends external_api {
             'solutionfileitemid' => $solutionfileitemid,
         ));
 
-        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles);
+        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles, null, true);
         return array("success" => true, "exampleid" => $example[exampleid]);
     }
 
@@ -11546,7 +11546,6 @@ class block_exacomp_external extends external_api {
             }
 
 
-
             foreach ($courses as $course) {
                 $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $key => $example) {
@@ -11616,7 +11615,7 @@ class block_exacomp_external extends external_api {
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
 
-            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
+            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one course, use one of those courses, since it does not matter for the descriptors
             $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true); // this only gets parents
 
             //Ignore childdescriptors for diggrplus
@@ -11629,6 +11628,15 @@ class block_exacomp_external extends external_api {
 //                }
 //                $descriptors += $childdescriptors;
 //            }
+
+            // only use courseids where this user is enrolled, since it DOES matter for the examples
+            //there can be examples in one course, but not in the other, even though it is the same subject
+            $usercourses = array_keys(enrol_get_all_users_courses($userid));
+            $courseids = array_filter($courseids, function($courseid) use ($usercourses) {
+                return in_array($courseid, $usercourses);
+            });
+            // TODO: $courseids should now only contain ONE course. Otherwise, this means, that 1 student is in 2 courses that have the SAME Subject ---> Problem, but should never occur
+
 
             foreach($descriptors as $key => $descriptor){
                 if($niveauid != -1){
@@ -12584,7 +12592,7 @@ class block_exacomp_external extends external_api {
 	}
 
 
-	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0, $visible=true){
+	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0, $visible=true, $onlyForThisCourse=false){
         global $DB, $USER, $CFG, $COURSE;
 
         $COURSE->id = $courseid; // TODO: copied this from  update_descriptor_category.. why is the CONTEXT wrong?
@@ -12657,7 +12665,11 @@ class block_exacomp_external extends external_api {
         } else {
             $example->activitylink = '';
             $example->activitytitle = '';
-            $example->courseid = 0;
+            if($onlyForThisCourse){ // the example will only exist in this course. This functionality is needed in diggrplus
+                $example->courseid = $courseid;
+            }else{
+                $example->courseid = 0;
+            }
             if (array_key_exists('externaltask', $example_icons)) {
                 unset($example_icons['externaltask']);
             }

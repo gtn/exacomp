@@ -8850,6 +8850,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             AND dvis.visible = true
             AND tvis.visible = true
             AND evis.visible = true
+            AND (ex.courseid = 0 OR ex.courseid = ?)
             AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')
             GROUP BY ex.id
             ";;
@@ -8882,7 +8883,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
 		)";
     }
 
-	return g::$DB->get_records_sql($sql, array($courseid));
+	return g::$DB->get_records_sql($sql, array($courseid, $courseid));
 }
 
 
