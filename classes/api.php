@@ -67,7 +67,7 @@ class api {
                 ", [$entry->compid]);
                 $comps["descriptors"] = array_replace($comps["descriptors"] ,$exampleDescriptors); //replace instead of merge ==> same key(descriptorid) will not be written twice
             }else if($entry->comptype == BLOCK_EXACOMP_TYPE_TOPIC){
-                $topics = g::$DB->get_record("block_exacomptopics", array("id" => $entry->compid));
+                $topics = g::$DB->get_records("block_exacomptopics", array("id" => $entry->compid));
                 $comps["topics"] = array_replace($comps["topics"],$topics);
             }else if($entry->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
                 $descriptors = g::$DB->get_records_sql("
