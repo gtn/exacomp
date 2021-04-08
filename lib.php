@@ -78,6 +78,18 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
         //		$options['filename'] = $filename;
         $options['filename'] = $file->get_filename(); //overwrite the filename that has been sent in the URL with the actual filename
+	} elseif ($filearea == 'example_completefile') {
+		// actually all users are allowed to see the completefile
+		$example = block_exacomp\example::get($itemid);
+		if (!$example) {
+			throw new block_exacomp_permission_exception('file not found');
+		}
+		$example->require_capability(BLOCK_EXACOMP_CAP_VIEW);
+		$file = block_exacomp_get_file($example, $filearea);
+		if (!$file) {
+			return false;
+		}
+        $options['filename'] = $file->get_filename(); //overwrite the filename that has been sent in the URL with the actual filename
 	} else {
 		// wrong filearea
 		return false;

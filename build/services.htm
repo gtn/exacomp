@@ -696,15 +696,17 @@ Params: <table>
 <td>name</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>title of example</td>
 <tr>
 <td>description</td>
 <td>text</td>
 <td>null</td>
-<td>required</td>
-<td></td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
 <td>description of example</td>
 <tr>
 <td>timeframe</td>
@@ -723,7 +725,7 @@ Params: <table>
 </td>
 <td></td>
 <tr>
-<td>descriptorids</td>
+<td>comps</td>
 <td>text</td>
 <td>null</td>
 <td>optional</td>
@@ -763,6 +765,30 @@ Params: <table>
 </td>
 <td>id of the crosssubject if it is a crosssubjectfile</td>
 <tr>
+<td>fileitemids</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
+<tr>
+<td>removefiles</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
+<tr>
+<td>solutionfileitemid</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(0) ""
+</td>
+<td>fileitemid for the solutionfile</td>
+<tr>
 <td>activityid</td>
 <td>int</td>
 <td>null</td>
@@ -778,33 +804,61 @@ Params: <table>
 <td>default: int(0)
 </td>
 <td>is a teacher example?</td>
-<tr>
-<td>fileitemids</td>
-<td>text</td>
-<td>null</td>
-<td>required</td>
-<td></td>
-<td>fileitemids separated by comma, used to look up file and create a new one in the exaport file area</td>
-<tr>
-<td>removefiles</td>
-<td>text</td>
-<td>null</td>
-<td>optional</td>
-<td>default: int(0)
-</td>
-<td>fileindizes/pathnamehashes of the files that should be removed, separated by comma</td>
-<tr>
-<td>solutionfileitemid</td>
-<td>text</td>
-<td>null</td>
-<td>optional</td>
-<td>default: string(0) ""
-</td>
-<td>fileitemid for the solutionfile</td>
 </table>
 Returns:<pre>{
     "exampleid": "int null (id of created example)",
     "success": "bool null (status)"
+}</pre>
+<h2>diggrplus_grade_descriptor</h2>
+<div>Grade a descriptor</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>descriptorid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of descriptor</td>
+<tr>
+<td>grading</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>grade for this descriptor</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of course</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>id of user, if 0 current user</td>
+<tr>
+<td>role</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>user role (0 == student, 1 == teacher)</td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>subjectid</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (true if grading was successful)"
 }</pre>
 <h2>block_exacomp_grade_item</h2>
 <div>Grade an item
@@ -1687,6 +1741,8 @@ Returns:<pre>{
     "exampletaxonomies": "text null (taxonomies seperated by comma)",
     "exampletaxids": "text null (taxids seperated by comma)",
     "is_teacherexample": "bool null (is teacher example?)",
+    "creatorid": "int null (creatorid)",
+    "annotation": "text null (annotation by the teacher for this example in this course)",
     "taskfiles": [
         {
             "name": "text null (title of taskfile)",
@@ -3050,6 +3106,7 @@ Returns:<pre>[
             "id": "int null (id of example)",
             "title": "text null (title of example)",
             "description": "text null (description of example)",
+            "annotation": "text null (annotation by the teacher for this example in this course)",
             "solutionfilename": "text null (task filename)",
             "externalurl": "text null (externalurl of example)",
             "externaltask": "text null (url of associated module)",
@@ -3188,6 +3245,7 @@ Returns:<pre>[
             "id": "int null (id of example)",
             "title": "text null (title of example)",
             "description": "text null (description of example)",
+            "annotation": "text null (annotation by the teacher for this example in this course)",
             "solutionfilename": "text null (task filename)",
             "externalurl": "text null (externalurl of example)",
             "externaltask": "text null (url of associated module)",
@@ -3319,6 +3377,14 @@ Returns:<pre>[
     },
     "..."
 ]</pre>
+<h2>diggrplus_get_user_info</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "role": "text null ()"
+}</pre>
 <h2>diggrplus_request_external_file</h2>
 <div>Load a file from an external Domain to prevent CORS when loading directly in the App</div>
 <div>type: read</div>
@@ -3367,7 +3433,7 @@ Returns:<pre>{
 <div>type: read</div>
 Params: <table>
 <tr>
-<td>courseid</td>
+<td>userid</td>
 <td>int</td>
 <td>null</td>
 <td>optional</td>
@@ -3375,7 +3441,7 @@ Params: <table>
 </td>
 <td></td>
 <tr>
-<td>userid</td>
+<td>courseid</td>
 <td>int</td>
 <td>null</td>
 <td>optional</td>
@@ -3387,7 +3453,46 @@ Returns:<pre>{
     "items_and_examples_total": "int null (number of free items + examples)",
     "items_and_examples_completed": "int null (number of solved items, those items can be free or related to an example)",
     "competencies_total": "int null ()",
-    "competencies_gained": "int null ()"
+    "competencies_gained": "int null ()",
+    "competencetree": [
+        {
+            "id": "int null (id of subject)",
+            "title": "text null (title of subject)",
+            "courseid": "int null (id of course)",
+            "courseshortname": "text null (courseshortname)",
+            "coursefullname": "text null (coursefullname)",
+            "teacherevaluation": "int null (teacher evaluation of subject)",
+            "studentevaluation": "int null (student evaluation of subject)",
+            "topics": [
+                {
+                    "id": "int null (id of example)",
+                    "title": "text null (title of topic)",
+                    "teacherevaluation": "int null (teacher evaluation of topic)",
+                    "studentevaluation": "int null (student evaluation of topic)",
+                    "descriptors": [
+                        {
+                            "id": "int null (id of example)",
+                            "title": "text null (title of descriptor)",
+                            "teacherevaluation": "int null (teacher evaluation of descriptor)",
+                            "studentevaluation": "int null (student evaluation of descriptor)",
+                            "childdescriptors": [
+                                {
+                                    "id": "int null (id of example)",
+                                    "title": "text null (title of example)",
+                                    "teacherevaluation": "int null (teacher evaluation of childdescriptor)",
+                                    "studentevaluation": "int null (student evaluation of childdescriptor)"
+                                },
+                                "..."
+                            ]
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
 }</pre>
 <h2>diggrplus_get_descriptors_for_example</h2>
 <div>get descriptors where example is associated
@@ -3422,6 +3527,13 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>for all users = true, for one user = false</td>
+<tr>
+<td>mindvisibility</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>if a teacher wants to see the descriptors of an example in a hidden descriptor: set this to FALSE</td>
 </table>
 Returns:<pre>[
     {
@@ -5079,12 +5191,12 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>id</td>
-<td>int</td>
+<td>ids</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>id of descriptor</td>
+<td>list of descriptorids, seperated by comma</td>
 <tr>
 <td>userid</td>
 <td>int</td>
@@ -5122,12 +5234,12 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>id</td>
-<td>int</td>
+<td>ids</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>id of example</td>
+<td>list of exampleids, seperated by comma</td>
 <tr>
 <td>userid</td>
 <td>int</td>
@@ -5165,12 +5277,12 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <tr>
-<td>id</td>
-<td>int</td>
+<td>ids</td>
+<td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>id of topic</td>
+<td>list of topicids, seperated by comma</td>
 <tr>
 <td>userid</td>
 <td>int</td>
@@ -5663,4 +5775,110 @@ Params: <table>
 </table>
 Returns:<pre>{
     "success": "bool null (true if successful)"
+}</pre>
+<h2>diggrplus_get_course_schooltype_tree</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "schooltypes": [
+        {
+            "id": "int null ()",
+            "title": "text null (schooltype title)",
+            "subjects": [
+                {
+                    "id": "int null ()",
+                    "title": "text null (subject title)",
+                    "topics": [
+                        {
+                            "id": "int null ()",
+                            "title": "text null (topic title)",
+                            "active": "bool null ()"
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
+}</pre>
+<h2>diggrplus_set_active_course_topics</h2>
+<div></div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>topicids</td>
+<td></td>
+<td>not null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>hide_new_examples</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)"
+}</pre>
+<h2>diggrplus_get_config</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "exacompversion": "float null (exacomp version number in YYYYMMDDXX format)",
+    "moodleversion": "float null (moodle version number in YYYYMMDDXX format)"
+}</pre>
+<h2>diggrplus_annotate_example</h2>
+<div>Create an example or update it
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of the example that is to be updated</td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>courseid</td>
+<tr>
+<td>annotationtext</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>title of example</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)"
 }</pre>

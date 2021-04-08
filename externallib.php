@@ -673,7 +673,7 @@ class block_exacomp_external extends external_api {
 
             $selected_categories = $DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $descriptor_mm->descrid), "", "catid");
             if ($selected_categories) {
-                $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp 
+                $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp
 	                                                        FROM {'.BLOCK_EXACOMP_DB_CATEGORIES.'} c
 	                                                        WHERE c.id IN ('.implode(',', array_keys($selected_categories)).')');
                 $descCategories = '. '.get_string('dakora_niveau_after_descriptor_title', 'block_exacomp').': '.implode(', ', array_keys($categoryTitlesRes));
@@ -1127,7 +1127,7 @@ class block_exacomp_external extends external_api {
 			foreach ($tree as $subject) {
 				$elem_sub = new stdClass ();
 				$elem_sub->id = $subject->id;
-				$elem_sub->title = $subject->title;
+				$elem_sub->title = static::custom_htmltrim(strip_tags($subject->title));
 				$elem_sub->courseid = $course['courseid'];
 				$elem_sub->courseshortname = $course['shortname'];
 				$elem_sub->coursefullname = $course['fullname'];
@@ -1138,7 +1138,7 @@ class block_exacomp_external extends external_api {
 					}
 					$elem_topic = new stdClass ();
 					$elem_topic->id = $topic->id;
-					$elem_topic->title = $topic->title;
+                    $elem_topic->title = static::custom_htmltrim(strip_tags($topic->title));
 					//$elem_topic->descriptors = array();
 					//foreach ($topic->descriptors as $descriptor) {
 					//	$elem_desc = new stdClass ();
@@ -1850,21 +1850,20 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_create_or_update_example_parameters() {
         return new external_function_parameters (array(
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
-            'name' => new external_value (PARAM_TEXT, 'title of example'),
-            'description' => new external_value (PARAM_TEXT, 'description of example'),
+            'name' => new external_value (PARAM_TEXT, 'title of example', VALUE_DEFAULT, ''),
+            'description' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
-            'descriptorids' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
+            'comps' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
             'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
             'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
             'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile' , VALUE_DEFAULT, -1),
+            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
+            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, ''),
+            'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
             'activityid' => new external_value (PARAM_INT, 'id of related activity' , VALUE_DEFAULT, 0),
             'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?' , VALUE_DEFAULT, 0),
-
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
-            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, 0),
-            'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -1875,10 +1874,8 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid, $name, $description, $timeframe='', $externalurl, $descriptorids , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $fileitemids = '', $removefiles, $solutionfileitemid = '') {
-        if (empty ($name)) {
-            throw new invalid_parameter_exception ('Parameter can not be empty');
-        }
+    public static function diggrplus_create_or_update_example($exampleid=-1, $name, $description, $timeframe='', $externalurl='www', $comps='0' , $taxonomies = '', $newtaxonomy = '', $courseid=0, $crosssubjectid=-1,  $fileitemids = '', $removefiles='', $solutionfileitemid = '', $activityid = 0, $is_teacherexample=0) {
+        global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
             'exampleid' => $exampleid,
@@ -1886,21 +1883,21 @@ class block_exacomp_external extends external_api {
             'description' => $description,
             'timeframe' => $timeframe,
             'externalurl' => $externalurl,
-            'descriptorids' => $descriptorids,
+            'comps' => $comps,
             'solutionfileitemid' => $solutionfileitemid,
             'taxonomies' => $taxonomies,
             'newtaxonomy' => $newtaxonomy,
             'courseid' => $courseid,
             'crosssubjectid' => $crosssubjectid,
-            'activityid' => $activityid,
-            'is_teacherexample' => $is_teacherexample,
             'fileitemids' => $fileitemids,
             'removefiles' => $removefiles,
             'solutionfileitemid' => $solutionfileitemid,
+            'activityid' => $activityid,
+            'is_teacherexample' => $is_teacherexample,
         ));
 
-        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $descriptorids, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles);
-        return array("success" => true, "exampleid" => $example->exampleid);
+        $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid, $is_teacherexample, $removefiles, null, true);
+        return array("success" => true, "exampleid" => $example[exampleid]);
     }
 
     /**
@@ -1922,59 +1919,82 @@ class block_exacomp_external extends external_api {
 
 
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_grade_descriptor_parameters() {
+        return new external_function_parameters (array(
+            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+            'grading' => new external_value (PARAM_INT, 'grade for this descriptor'),
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+			'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+			'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+            'subjectid' => new external_value(PARAM_INT, 'subjectid',VALUE_DEFAULT, -1)
+        ));
+    }
 
+    /**
+     * Grade a descriptor
+     *
+     * @ws-type-write
+     * @param $descriptorid
+     * @param $grading
+     * @param $courseid
+     * @param $userid
+     * @param $role
+     * @param $subjectid
+     * @return array
+     * @throws invalid_parameter_exception
+     *
+     */
+    public static function diggrplus_grade_descriptor($descriptorid, $grading, $courseid, $userid, $role, $subjectid) {
+        global $DB, $USER;
 
+        if (empty ($descriptorid) || empty ($grading)) {
+            throw new invalid_parameter_exception ('Parameter can not be empty');
+        }
 
+        static::validate_parameters(static::diggrplus_grade_descriptor_parameters(), array(
+            'descriptorid' => $descriptorid,
+            'grading' => $grading,
+            'courseid' => $courseid,
+            'userid' => $userid,
+            'role' => $role,
+            'subjectid' => $subjectid,
+        ));
 
+        if ($userid == 0 && $role == BLOCK_EXACOMP_ROLE_STUDENT) {
+            $userid = $USER->id;
+        } else {
+            if ($userid == 0) {
+                throw new invalid_parameter_exception ('Userid can not be 0 for teacher grading');
+            }
+        }
 
+        static::require_can_access_course_user($courseid, $userid);
 
+        $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'descriptorid' => $descriptorid, 'userid' => $USER->id];
+        block_exacomp_set_user_competence($userid, $descriptorid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, $role, $grading, null, $subjectid, true, [
+            'notification_customdata' => $customdata
+        ]);
 
+        return array(
+            "success" => true,
+        );
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_grade_descriptor_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+        ));
+    }
 
 
 
@@ -3603,6 +3623,8 @@ class block_exacomp_external extends external_api {
             'userid' => $userid,
         ));
 
+        global $DB;
+
         $isTeacher = block_exacomp_is_teacher($courseid);
         if (!$isTeacher) {
             $userid = g::$USER->id;
@@ -3641,6 +3663,8 @@ class block_exacomp_external extends external_api {
         $example->visible = block_exacomp_is_example_visible($courseid, $exampleid, $userid);
 //        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
 
+        $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $exampleid, 'courseid' => $courseid));
+
         return $example;
     }
 
@@ -3660,6 +3684,8 @@ class block_exacomp_external extends external_api {
             'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
             'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
+            'creatorid' => new external_value (PARAM_INT, 'creatorid'),
+            'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
             'taskfiles' => new external_multiple_structure(new external_single_structure(array(
                 'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
                 'url' => new external_value (PARAM_URL, 'file url'),
@@ -4697,6 +4723,7 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0 && !block_exacomp_is_teacher($courseid)) {
 			$userid = $USER->id;
 		}
+
 
 		static::require_can_access_course_user($courseid, $userid);
 
@@ -6115,8 +6142,8 @@ class block_exacomp_external extends external_api {
         ));
 
         // get schedules for deleting
-        $toDelete = $DB->get_records_sql('SELECT * 
-                FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'} 
+        $toDelete = $DB->get_records_sql('SELECT *
+                FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'}
                 WHERE creatorid = ?
                       AND studentid > 0
                       AND distributionid = ?',
@@ -6304,7 +6331,8 @@ class block_exacomp_external extends external_api {
 		}
 
 		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
-		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(),$studentcomment);
+        $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'submit_example', 'itemid' => $itemid, 'itemuserid' => $item->userid];
+		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(),$studentcomment, $customdata);
 		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
 		return array("success" => true, "itemid" => $itemid);
@@ -6388,8 +6416,11 @@ class block_exacomp_external extends external_api {
         }
         require_once $CFG->dirroot.'/blocks/exaport/inc.php';
 
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
         foreach ($descriptorgradings as $descriptorgrading) {
-            block_exacomp_set_user_competence($USER->id, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $descriptorgrading["studentvalue"]);
+            block_exacomp_set_user_competence($USER->id, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $descriptorgrading["studentvalue"], null, -1, true, [
+            	'notification_customdata' => $customdata,
+			]);
         }
 
         // remove files specifically marked for deletion by user:
@@ -6439,7 +6470,7 @@ class block_exacomp_external extends external_api {
                     if($example->blocking_event == 2){ //if freematerial, create the category with name "freematerials"
                         $subjecttitle = get_string('freematerials', 'block_exacomp');
                     }else{
-                        $subjecttitle = block_exacomp_get_subjecttitle_by_example($comptitle);
+                        $subjecttitle = block_exacomp_get_subjecttitle_by_example($compid);
                     }
                     break;
             }
@@ -6486,6 +6517,7 @@ class block_exacomp_external extends external_api {
 
             $DB->update_record('block_exaportitem', $item);
         }
+
 
         //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
         if ($type == "file") {
@@ -6539,7 +6571,7 @@ class block_exacomp_external extends external_api {
         if ($submit) {
 			\block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
 
-			$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'submit_item', 'courseid' => $courseid, 'itemid' => $itemid];
+			$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'submit_item', 'courseid' => $courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
 			if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
 				$customdata['exampleid'] = $compid;
 				$example = $DB->get_record('block_exacompexamples', array('id' => $compid), 'title, blocking_event');
@@ -6630,27 +6662,41 @@ class block_exacomp_external extends external_api {
                 'comment' => $comment
             ));
 
-        // TODO: prüfen, ob schüler/lehrer auch auf diesen item kommentieren darf!
+		$item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
+
+        // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
+		$teachers = block_exacomp_get_teachers_by_course($item->courseid);
+		$teacherIds = array_map(function($teacher) { return $teacher->id; }, $teachers);
+
+		$collaboratorIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $itemid), '', 'id, userid');
+
+		$allowed_users = array_unique(array_merge(
+			[ $item->userid ], // owner
+			$teacherIds,
+			$collaboratorIds
+		));
+
+		if (!in_array($USER->id, $allowed_users)) {
+			throw new invalid_parameter_exception('not allowed to comment on item');
+		}
 
         $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
 
-        // TODO: $courseid
-		// $courseid = 0;
-		// $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'courseid' => $courseid, 'itemid' => $itemid];
-		// $subject = block_exacomp_trans([
-		// 	'de:{$a->student} hat eine Lösung zum freien Lernmaterial {$a->example} eingereicht',
-		// 	'en:{$a->student} submitted a solution for {$a->example}',
-		// ], ['student' => fullname($USER), 'example' => $item->name]);
-		//
-		// $context = block_exacomp_get_string('notification_submission_context');
-		//
-		// // wenn von schüler, dann an lehrer senden
-		// $teachers = block_exacomp_get_teachers_by_course($courseid);
-		// foreach ($teachers as $teacher) {
-		// 	block_exacomp_send_notification("submission", $USER, $teacher, $subject, '', $context, '', false, 0, $customdata);
-		// }
-		//
-		// // wenn von lehrer, dann an schüler senden
+		// send notification to all other users about comment
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'item_comment', 'itemid' => $itemid, 'itemuserid' => $item->userid, 'comment' => $comment];
+		$subject = block_exacomp_trans([
+			'de:{$a->fullname} hat einen Kommentar bei "{$a->example}" erfasst',
+			'en:{$a->fullname} has commented on "{$a->example}"',
+		], ['fullname' => fullname($USER), 'example' => $item->name]);
+		$notificationContext = block_exacomp_get_string('notification_submission_context');
+
+		foreach ($allowed_users as $user_id) {
+			if ($user_id == $USER->id) {
+				// don't send to myself
+				continue;
+			}
+			block_exacomp_send_notification("comment", $USER, $user_id, $subject, '', $notificationContext, '', false, $item->courseid, $customdata);
+		}
 
         return array("success" => true, "itemid" => $itemid);
     }
@@ -6686,11 +6732,30 @@ class block_exacomp_external extends external_api {
      * @return array of course subjects
      */
     public static function diggrplus_get_item_comments($itemid) {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_get_item_comments_parameters(),
             array(
                 'itemid' => $itemid
             ));
+
+		$item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
+
+        // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
+		$teachers = block_exacomp_get_teachers_by_course($item->courseid);
+		$teacherIds = array_map(function($teacher) { return $teacher->id; }, $teachers);
+
+		$collaboratorIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM, array('itemid' => $itemid), '', 'id, userid');
+
+		$allowed_users = array_unique(array_merge(
+			[ $item->userid ], // owner
+			$teacherIds,
+			$collaboratorIds
+		));
+
+		if (!in_array($USER->id, $allowed_users)) {
+			throw new invalid_parameter_exception('not allowed to comment on item');
+		}
+
         require_once $CFG->dirroot.'/blocks/exaport/inc.php';
         $itemcomments = \block_exaport\api::get_item_comments($itemid);
         $users = [];
@@ -6791,7 +6856,7 @@ class block_exacomp_external extends external_api {
                 $objDeeper->item = $item;
                 $objDeeper->subjecttitle = $item->subjecttitle;
                 $objDeeper->subjectid = $item->subjectid;
-                $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
+                $objDeeper->topictitle = $item->topictitle ? static::custom_htmltrim($item->topictitle) : "";
                 $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
                 $objDeeper->niveautitle = "";
                 $objDeeper->niveauid = 0;
@@ -6818,13 +6883,13 @@ class block_exacomp_external extends external_api {
                     unset($examplesAndItems[$key]);
                 }else{
                     switch($exampleItem->item->status){
-                        case 0: //inprogress
+                        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
                             $exampleItem->status = "inprogress";
                             break;
-                        case 1: //submitted
+                        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
                             $exampleItem->status = "submitted";
                             break;
-                        case 2: //completed
+                        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
                             $exampleItem->status = "completed";
                             break;
                         default:
@@ -6868,6 +6933,7 @@ class block_exacomp_external extends external_api {
         //if status is "new" it is already sorted correctly and has been filtered before
         //if stauts is "" then it is already sorted correctly and no filters are applied
 
+
         return $examplesAndItems;
     }
 
@@ -6895,6 +6961,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
@@ -6991,6 +7058,7 @@ class block_exacomp_external extends external_api {
         ));
 
         // TODO: check if is teacher
+        block_exacomp_require_teacher($courseid);
 
         $teacherid = $USER->id;
 
@@ -7022,20 +7090,21 @@ class block_exacomp_external extends external_api {
 		        	// don't add to students array
 		        	continue;
 				}
-
 				$students[$student->id] = $student;
 			}
 		}
 
 		$examplesAndItems = array();
 
+
+
 		foreach ($students as $student) {
 			$userid = $student->id;
-			
+
 			$studentExamplesAndItems = [];
 
 			if (($type == "own_items" || $type == "") && $status != "new") {
-				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status);
+				$items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status, $courseid);
 
 				foreach($items as $item){
 					static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
@@ -7065,7 +7134,7 @@ class block_exacomp_external extends external_api {
 				if($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE){
 					// TODO: how do we check if the user is a teacher? It is not oriented on courses
 	//            $isTeacher = false;
-					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status);
+					$examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status, $courseid);
 					$studentExamplesAndItems = array_merge($studentExamplesAndItems, $examples);
 				}
 			}
@@ -7161,6 +7230,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
@@ -7270,7 +7340,7 @@ class block_exacomp_external extends external_api {
         foreach ($tree as $subject) {
             $elem_sub = new stdClass ();
             $elem_sub->id = $subject->id;
-            $elem_sub->title = $subject->title;
+            $elem_sub->title = static::custom_htmltrim(strip_tags($subject->title));
             $elem_sub->courseid = $courseid;
             $elem_sub->courseshortname = $course->shortname;
             $elem_sub->coursefullname = $course->fullname;
@@ -7278,21 +7348,21 @@ class block_exacomp_external extends external_api {
             foreach ($subject->topics as $topic) {
                 $elem_topic = new stdClass ();
                 $elem_topic->id = $topic->id;
-                $elem_topic->title = $topic->title;
+                $elem_topic->title = static::custom_htmltrim(strip_tags($topic->title));
                 $elem_topic->descriptors = array();
                 $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
                 $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                 foreach ($topic->descriptors as $descriptor) {
-                	$elem_desc = new stdClass ();
-                	$elem_desc->id = $descriptor->id;
-                	$elem_desc->title = $descriptor->title;
+                    $elem_desc = new stdClass ();
+                    $elem_desc->id = $descriptor->id;
+                    $elem_desc->title = static::custom_htmltrim(strip_tags($descriptor->title));
                     $elem_desc->childdescriptors = array();
                     $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
-                        $elem_child->title = $child->title;
+                        $elem_child->title = static::custom_htmltrim(strip_tags($child->title));
                         $elem_child->examples = array();
                         $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
                         $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
@@ -7317,7 +7387,7 @@ class block_exacomp_external extends external_api {
 //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
                     }
-                	$elem_topic->descriptors[] = $elem_desc;
+                    $elem_topic->descriptors[] = $elem_desc;
                 }
                 $elem_sub->topics[] = $elem_topic;
             }
@@ -7525,81 +7595,32 @@ class block_exacomp_external extends external_api {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	public static function diggrplus_get_user_info_parameters() {
+		return new external_function_parameters (array());
+	}
+
+	/**
+	 * @ws-type-read
+	 *
+	 * @return array
+	 */
+	public static function diggrplus_get_user_info() {
+		global $DB, $USER;
+
+		static::validate_parameters(static::diggrplus_get_user_info_parameters(), array());
+
+		$role = block_exacomp_is_teacher_in_any_course() ? 'teacher' : 'student';
+
+		return (object)[
+			"role" => $role,
+		];
+	}
+
+	public static function diggrplus_get_user_info_returns() {
+		return new external_function_parameters (array(
+			'role' => new external_value (PARAM_TEXT),
+		));
+	}
 
     public static function diggrplus_request_external_file_parameters() {
         return new external_function_parameters (array(
@@ -7699,25 +7720,24 @@ class block_exacomp_external extends external_api {
             $update->status = 1; //change status back to "submitted"
         }
 
-
 		$DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $update);
 
-
-		// Descriptorgradings
+		// Descriptorgradings TODO takes a long time
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $item->courseid, 'itemid' => $itemid, 'itemuserid' => $USER->id];
         foreach ($descriptorgradings as $descriptorgrading) {
-            block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"]);
+            block_exacomp_set_user_competence($item->userid, $descriptorgrading["descriptorid"], BLOCK_EXACOMP_TYPE_DESCRIPTOR, $item->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $descriptorgrading["teachervalue"], null, -1, true, [
+            	'notification_customdata' => $customdata,
+			]);
         }
 
-	
-        // notification
-		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'itemid' => $itemid];
+        // notification TODO takes a long time
+		$customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'grade_item', 'itemid' => $itemid, 'itemuserid' => $item->userid];
 		$subject = block_exacomp_trans([
 			'de:{$a->teacher} hat dein Beispiel "{$a->example}" als erledigt markiert',
 			'en:{$a->teacher} has checked your solution "{$a->example}" as completed',
 		], ['teacher' => fullname($USER), 'example' => $item->name]);
 		$notificationContext = block_exacomp_get_string('notification_submission_context');
-		block_exacomp_send_notification("submission", $USER, $item->userid, $subject, '', $notificationContext, '', false, 0, $customdata);
-
+		block_exacomp_send_notification("grading", $USER, $item->userid, $subject, '', $notificationContext, '', false, 0, $customdata);
 
 		// if the grading is good, tick the example in exacomp TODO: NOT FOR DIGGRPLUS, hopefully never.
 //		$exameval = $DB->get_record('block_exacompexameval', array(
@@ -7836,8 +7856,8 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function diggrplus_get_competence_profile_statistic_parameters() {
 	    return new external_function_parameters (array(
-	        'courseid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
 	        'userid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
+            'courseid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
 	    ));
 	}
 
@@ -7846,25 +7866,46 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @ws-type-read
 	 */
-	public static function diggrplus_get_competence_profile_statistic($courseid=0, $userid=0) {
+	public static function diggrplus_get_competence_profile_statistic($userid=0, $courseid=0) {
 	    global $USER, $DB;
 
 		static::validate_parameters(static::diggrplus_get_competence_profile_statistic_parameters(), array(
-			'courseid' => $courseid,
 			'userid' => $userid,
+            'courseid' => $courseid,
 		));
 
 		if ($userid == 0) {
 			$userid = $USER->id;
 		}
 
+        $courses = enrol_get_users_courses($userid);
+		if($courseid==0){ //get all courses of the user
+            //for each course check if I have access to the course, but don't use "require_can_access_course_user" since it should just skip, and not throw exeption
+            foreach($courses as $key => $course){
+                if(!static::can_access_course_user($course->id, $userid)){
+                    unset($courses[$key]);
+                }
+            }
+        }else{//get only this specific course
+		    $courses = array($courses[$courseid]); //make array, so the rest of the code continues to work the same way as for multiple courses
+        }
+
+
+        $courseCondition = "(";
+        foreach($courses as $course){
+            $courseCondition .= $course->id.", ";
+        }
+        $courseCondition = substr($courseCondition, 0, -2); //remove last ", "
+        $courseCondition .= " )";
+
         //get all items: for now all items of topics, since other free_items do not exist in diggrplus
-        $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue
+        $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue, i.courseid
               FROM {block_exacomptopics} d
                 JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = ?
-                AND ie.competence_type = '. BLOCK_EXACOMP_TYPE_TOPIC;
+                AND ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.'
+                AND i.courseid IN '.$courseCondition;
         $own_items = $DB->get_records_sql($sql, array($userid));
 
         $completed_items = 0;
@@ -7875,135 +7916,150 @@ class block_exacomp_external extends external_api {
             }
         }
 
-
-        //get all examples:
-        //first: get all courses, then for each course get example, then for each example, get item
-        $examples = [];
-        $courses = enrol_get_users_courses($userid);
-        foreach ($courses as $course) {
-            //		static::require_can_access_course_user($courseid, $userid);  test this for every course?
-            $courseExamples = block_exacomp_get_examples_by_course($course->id); // TODO: duplicates? e.g. same example in multiple courses, but item in course one and NOT in course two
-            foreach ($courseExamples as $example) {
-                static::block_excomp_get_example_details($example, $course->id);
-            }
-            $examples += $courseExamples;
-        }
-        // -----
-
-
-        //Get all descriptors, to have the count
-        // get all competencies
-        //get all subjects by courses, and then get all descriptors TODO: find a more performant solution
-        $descriptors =[];
-        foreach ($courses as $course) {
-            $subjects = block_exacomp_get_subjects_by_course($course->id);
-            foreach($subjects as $subject){
-                $parentdescriptors = block_exacomp_get_descriptors_by_subject($subject->id);
-                foreach($parentdescriptors as $parent){
-                    $parent->courseid = $course->id; // needed later
-                }
-                $descriptors += $parentdescriptors;
-            }
-        }
-        foreach($descriptors as $descriptor){
-            $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$descriptors->courseid); //TODO: if the same descriptor is in two courses, then what happens? Duplicates?
-            $descriptors += $childdescriptors;
-        }
-        $descriptorcount = count($descriptors);
-        // -----
-
-        //get the descriptors of the examples
-        //if the item of the example is gained, the descriptors are also gained ==> increase count of competencies_gained
+        // Until here: completed free items
+        // From here: tree with gradings and finding out which and how many competencies are gained
         $competencies_gained = 0;
+        $descriptorcount = 0;
+        $examples = []; // if an example is in more than one descriptor, it will get overwritten => this is why a simple count++ would not work.
+        $structure = array();
+
+        foreach ($courses as $course) {
+            //showallexamples filters out those, who have not creatorid => those who were imported
+            $tree = block_exacomp_get_competence_tree($course->id,null,null,false,null, true, null, false ,false, true, false, true);
+            $students = block_exacomp_get_students_by_course($course->id);
+            $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
+            block_exacomp_get_user_information_by_course($student, $course->id);
+            foreach ($tree as $subject) {
+                $elem_sub = new stdClass ();
+                $elem_sub->id = $subject->id;
+                $elem_sub->title = static::custom_htmltrim($subject->title);
+                $elem_sub->courseid = $course->id;
+                $elem_sub->courseshortname = $course->shortname;
+                $elem_sub->coursefullname = $course->fullname;
+                $elem_sub->teacherevaluation = $student->subjects->teacher[$subject->id];
+                $elem_sub->studentevaluation = $student->subjects->student[$subject->id];
+                $elem_sub->topics = array();
+                foreach ($subject->topics as $topic) {
+                    $elem_topic = new stdClass ();
+                    $elem_topic->id = $topic->id;
+                    $elem_topic->title = static::custom_htmltrim($topic->title);
+                    $elem_topic->descriptors = array();
+                    $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
+                    $elem_topic->studentevaluation = $student->topics->student[$topic->id];
+//                $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
+//                $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
+                    foreach ($topic->descriptors as $descriptor) {
+                        if(!$descriptor->visible){
+                            continue;
+                        }
+                        $descriptorcount++;
+                        $elem_desc = new stdClass ();
+                        $elem_desc->id = $descriptor->id;
+                        $elem_desc->title = static::custom_htmltrim($descriptor->title);
+                        $elem_desc->childdescriptors = array();
+                        $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
+                        $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
+//                    $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
+//                    $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
+                        // Childdescriptors are ignored in Diggplus
+//                        foreach ($descriptor->children as $child) {
+//                            if(!$child->visible){
+//                                continue;
+//                            }
+//                            $descriptorcount++; //TODO: show the child descriptors in the frontend!
+//                            $elem_child = new stdClass ();
+//                            $elem_child->id = $child->id;
+//                            $elem_child->title = static::custom_htmltrim($child->title);
+//                            $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
+//                            $elem_child->studentevaluation = $student->competencies->student[$child->id];
+////                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
+////                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
+//                            $elem_desc->childdescriptors[] = $elem_child;
+//
+//                            //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
+//                            if($elem_child->teacherevaluation){
+////                                if(!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)){
+////                                    $competencies_gained++;
+////                                }
+//                                //TODO: this is only a quickfix because grading is not generic yet
+//                                if($elem_child->teacherevaluation > 0){
+//                                    $competencies_gained++;
+//                                }
+//                            }else if($child->examples){
+//                                $gained = true;
+//                                foreach ($child->examples as $example) {
+//                                    $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+//                                    if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
+//                                        continue;
+//                                    }else{
+//                                        $gained = false;
+//                                    }
+//                                }
+//                                if($gained){
+//                                    $competencies_gained++;
+//                                }
+//                            }
+////                            foreach ($child->examples as $ex){  //that was a fix because the visibility did not work in the tree function
+////                                if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
+////                                    $examples[$ex->id] = $ex;
+////                                }
+////                            }
+//                            $examples += $child->examples;
+//                        }
+                        $elem_topic->descriptors[] = $elem_desc;
+
+                        //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
+                        if($elem_desc->teacherevaluation){
+//                            if(!block_exacomp_value_is_negative_by_assessment($elem_desc->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT)){
+//                                $competencies_gained++;
+//                            }
+                            //TODO: this is only a quickfix, since grading is not yet generic
+                            if($elem_desc->teacherevaluation > 0){
+                                $competencies_gained++;
+                            }
+                        }else if($descriptor->examples){
+                            $gained = true;
+                            foreach ($descriptor->examples as $example) {
+                                $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
+                                if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
+                                    continue;
+                                }else{
+                                    $gained = false;
+                                }
+                            }
+                            if($gained){
+                                $competencies_gained++;
+                            }
+                        }
+//                        foreach ($descriptor->examples as $ex){  // that was a fix because the visibility did not work in the tree function
+//                            if(block_exacomp_is_example_visible($ex->courseid, $ex, $userid)){
+//                                $examples[$ex->id] = $ex;
+//                            }
+//                        }
+                        $examples += $descriptor->examples;
+                    }
+                    $elem_sub->topics[] = $elem_topic;
+                }
+                if (!empty($elem_sub->topics)) {
+                    $structure[] = $elem_sub;
+                }
+            }
+        }
+
+        // TODO: maybe I can do this while going through the tree already
         foreach($examples as $example){
             $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-            if($item){
-                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // item that is submitted and has grade
-                    $completed_items++;
-                    //only if the item of an example is gained, then the descriptors that should be marked positive have to be found
-                    $exampledescriptors = block_exacomp_get_descriptors_by_example($example->id);
-                    foreach($exampledescriptors as $exampledescriptor){
-                        if($descriptors[$exampledescriptor->id]){ //if it has not been counted yet: remove and count
-                            unset($descriptors[$exampledescriptor->id]);
-                            $competencies_gained++;
-                        }
-                    }
-                }
+            if($item && $item->status == BLOCK_EXACOMP_ITEM_STATUS_COMPLETED && $item->teachervalue && $item->teachervalue > 0){
+                $completed_items++;
             }
         }
-
-
-
-
-
-
-        /* THIS DOES NOT WORK
-//        Because an example can be in descriptor1 AND in descriptor2 ==> it will be counted twice
-//         *
-//         *
-////This is obsolete, since examples can only exist in descriptors, and descriptors are checked below
-//        foreach($examples as $example){
-//            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-//            if($item){
-//                if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
-//                    $completed_items++;
-//                }
-//            }
-//        }
-
-
-        // get all competencies
-        //get all subjects by courses, and then get all descriptors
-        $descriptors =[];
-        foreach ($courses as $course) {
-            $subjects = block_exacomp_get_subjects_by_course($course->id);
-            foreach($subjects as $subject){
-                $parentdescriptors = block_exacomp_get_descriptors_by_subject($subject->id);
-                foreach($parentdescriptors as $parent){
-                    $parent->courseid = $course->id; // needed later
-                }
-                $descriptors += $parentdescriptors;
-            }
-        }
-
-
-        foreach($descriptors as $descriptor){
-            $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$descriptors->courseid); //TODO: if the same descriptor is in two courses, then what happens? Duplicates?
-//            // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
-//            foreach($childdescriptors as $child){
-//                $child->niveauid = $descriptor->niveauid;
-//                $child->cattitle = $descriptor->cattitle;
-//            }
-            $descriptors += $childdescriptors;
-        }
-
-        $competencies_gained = 0;
-        $descriptor_gained = false;
-        foreach($descriptors as $descriptor){ // this takes a LOT of time... but adding up the times of the dakora competencegrid webservices results in similar loading times, to maybe this is just how it is
-            $descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
-            if($descriptor->examples){
-                foreach($descriptor->examples as $example){
-                    $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE));
-                    if($item){
-                        if($item->status == 1 && $item->teachervalue && $item->teachervalue > 0){ // free item that is submitted and has grade
-                            $completed_items++;
-                            $descriptor_gained = true;
-                        }
-                    }
-                }
-            }
-            if($descriptor_gained){
-                $competencies_gained++;
-            }
-            $descriptor_gained = false;
-        }
-        */
 
 		$statistics_return = [
 			'items_and_examples_total' => count($own_items)+count($examples),
 			'items_and_examples_completed' => $completed_items,
 			'competencies_total' => $descriptorcount,
 			'competencies_gained' => $competencies_gained,
+            'competencetree' => $structure
 		];
 
 		return $statistics_return;
@@ -8015,6 +8071,33 @@ class block_exacomp_external extends external_api {
 			'items_and_examples_completed' => new external_value(PARAM_INT, 'number of solved items, those items can be free or related to an example'),
 			'competencies_total' => new external_value(PARAM_INT, ''),
 			'competencies_gained' => new external_value(PARAM_INT, ''),
+            'competencetree' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, 'id of subject'),
+                'title' => new external_value (PARAM_TEXT, 'title of subject'),
+                'courseid' => new external_value (PARAM_INT, 'id of course'),
+                'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
+                'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
+                'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of subject'),
+                'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of subject'),
+                'topics' => new external_multiple_structure (new external_single_structure (array(
+                    'id' => new external_value (PARAM_INT, 'id of example'),
+                    'title' => new external_value (PARAM_TEXT, 'title of topic'),
+                    'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of topic'),
+                    'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of topic'),
+                    'descriptors' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value (PARAM_INT, 'id of example'),
+                        'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
+                        'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
+                        'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
+                        'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
+                            'id' => new external_value (PARAM_INT, 'id of example'),
+                            'title' => new external_value (PARAM_TEXT, 'title of example'),
+                            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of childdescriptor'),
+                            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of childdescriptor'),
+                        ))),
+                    ))),
+                ))),
+            ))),
 		));
 	}
 
@@ -8029,6 +8112,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'mindvisibility' => new external_value (PARAM_BOOL, 'if a teacher wants to see the descriptors of an example in a hidden descriptor: set this to FALSE'),
 		));
 	}
 
@@ -8039,7 +8123,7 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return list of descriptors
 	 */
-	public static function diggrplus_get_descriptors_for_example($exampleid, $courseid, $userid, $forall) {
+	public static function diggrplus_get_descriptors_for_example($exampleid, $courseid, $userid, $forall, $mindvisibility) {
 		global $DB, $USER;
 
 		static::validate_parameters(static::diggrplus_get_descriptors_for_example_parameters(), array(
@@ -8047,6 +8131,7 @@ class block_exacomp_external extends external_api {
 			'courseid' => $courseid,
 			'userid' => $userid,
 			'forall' => $forall,
+            'mindvisibility' => $mindvisibility,
 		));
 
 		if ($userid == 0 && !$forall) {
@@ -8055,7 +8140,9 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 
-		$non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		if($mindvisibility){
+            $non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+        }
 
 		if (!$forall) {
 			$non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
@@ -8074,7 +8161,7 @@ class block_exacomp_external extends external_api {
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 
 			$topic = \block_exacomp\topic::get($descriptor->topicid);
-			if (block_exacomp_is_topic_visible($courseid, $topic, $userid)) {
+			if (block_exacomp_is_topic_visible($courseid, $topic, $userid) || !$mindvisibility) {
 				$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 				$descriptor->child = (($parentid = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS, 'parentid', array('id' => $descriptor->id))) > 0) ? 1 : 0;
 				$descriptor->parentid = $parentid;
@@ -8316,7 +8403,9 @@ class block_exacomp_external extends external_api {
                 $commentid = $DB->insert_record('block_exaportitemcomm', $insert,true);
 // 	            }
 
-	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment);
+
+                $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'grade_example', 'itemid' => $itemid, 'itemuserid' => $insert->userid];
+	            block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid,$comment,$customdata);
 	            \block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
 	            if($filename != ''){
@@ -10571,7 +10660,7 @@ class block_exacomp_external extends external_api {
 			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
 		));
 	}
-	
+
     public static function dakora_set_niveau_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
@@ -10712,7 +10801,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_set_descriptor_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'id' => new external_value (PARAM_INT, 'id of descriptor'),
+            'ids' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma'),
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for descriptor in current context'),
@@ -10729,11 +10818,11 @@ class block_exacomp_external extends external_api {
      * @param $visible
      * @return array
      */
-    public static function diggrplus_set_descriptor_visibility($courseid, $id, $userid, $forall, $visible) {
+    public static function diggrplus_set_descriptor_visibility($courseid, $ids, $userid, $forall, $visible) {
         global $USER;
         static::validate_parameters(static::diggrplus_set_descriptor_visibility_parameters(), array(
             'courseid' => $courseid,
-            'id' => $id,
+            'ids' => $ids,
             'userid' => $userid,
             'forall' => $forall,
             'visible' => $visible,
@@ -10745,7 +10834,11 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        block_exacomp_set_descriptor_visibility($id, $courseid, $visible, $userid);
+        $descriptorids = explode(',', $ids);
+
+        foreach ($descriptorids as $descriptorid){
+            block_exacomp_set_descriptor_visibility($descriptorid, $courseid, $visible, $userid);
+        }
 
         return array('success' => true);
     }
@@ -10759,7 +10852,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_set_example_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'id' => new external_value (PARAM_INT, 'id of example'),
+            'ids' => new external_value (PARAM_TEXT, 'list of exampleids, seperated by comma'),
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context'),
@@ -10776,11 +10869,11 @@ class block_exacomp_external extends external_api {
      * @param $visible
      * @return array
      */
-    public static function diggrplus_set_example_visibility($courseid, $id, $userid, $forall, $visible) {
+    public static function diggrplus_set_example_visibility($courseid, $ids, $userid, $forall, $visible) {
         global $USER;
         static::validate_parameters(static::diggrplus_set_example_visibility_parameters(), array(
             'courseid' => $courseid,
-            'id' => $id,
+            'ids' => $ids,
             'userid' => $userid,
             'forall' => $forall,
             'visible' => $visible,
@@ -10792,7 +10885,11 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        block_exacomp_set_example_visibility($id, $courseid, $visible, $userid);
+        $exampleids = explode(',', $ids);
+
+        foreach ($exampleids as $exampleid){
+            block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $userid);
+        }
 
         return array('success' => true);
     }
@@ -10806,7 +10903,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_set_topic_visibility_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'id' => new external_value (PARAM_INT, 'id of topic'),
+            'ids' => new external_value (PARAM_TEXT, 'list of topicids, seperated by comma'),
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
@@ -10825,11 +10922,11 @@ class block_exacomp_external extends external_api {
      * @param $visible
      * @return array
      */
-    public static function diggrplus_set_topic_visibility($courseid, $id, $userid, $forall, $visible, $groupid=-1) {
+    public static function diggrplus_set_topic_visibility($courseid, $ids, $userid, $forall, $visible, $groupid=-1) {
         global $USER;
         static::validate_parameters(static::diggrplus_set_topic_visibility_parameters(), array(
             'courseid' => $courseid,
-            'id' => $id,
+            'ids' => $ids,
             'userid' => $userid,
             'forall' => $forall,
             'visible' => $visible,
@@ -10842,12 +10939,17 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        if($groupid != -1){
-            block_exacomp_set_topic_visibility_for_group($id, $courseid, $visible, $groupid);
-        }else{
-            block_exacomp_set_topic_visibility($id, $courseid, $visible, $userid);
-        }
+        $topicids = explode(',', $ids);
 
+        if($groupid != -1){
+            foreach ($topicids as $topicid){
+                block_exacomp_set_topic_visibility_for_group($topicid, $courseid, $visible, $groupid);
+            }
+        }else{
+            foreach ($topicids as $topicid){
+                block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $userid);
+            }
+        }
         return array('success' => true);
     }
 
@@ -11402,7 +11504,7 @@ class block_exacomp_external extends external_api {
      * @param int $userid
      * @param bool $compid
      * @param bool $comptype
-     * @param int $userid ---> use if you want to reduce the results to only one course. Otherwise, all courses are used.
+     * @param int $courseid ---> use if you want to reduce the results to only the selected course. Otherwise, all courses are used.
      */
     private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search="", $niveauid=-1, $status="", $courseid = -1){
         global $DB;
@@ -11413,12 +11515,21 @@ class block_exacomp_external extends external_api {
 //        $courses = block_exacomp_get_courses_of_student($userid);
 //    }
 
-
         // TODO: To avoid code duplication I used many existing functions. But this is by far not optimal for performance. Should I change this to sql-queries?
         $examples = array();
         if($compid == -1 || $comptype == -1) { // return ALL examples.. no niveauid filter possible
             // TODO: checks so a student cannot hack this and view another student's items
-            $courses = enrol_get_users_courses($userid);
+
+            // Only use the course the teacher is interested in (e.g. a student could be in 5 courses, but the teacher only wants to see the results of the student in his course
+            if ($courseid != -1) {
+                $courses = enrol_get_users_courses($userid);
+                $courses = array_filter($courses, function($course) use ($courseid) {
+                    return $course->id == $courseid;
+                });
+            } else {
+                $courses = enrol_get_users_courses($userid);
+            }
+
             foreach ($courses as $course) {
                 $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $example) {
@@ -11442,9 +11553,8 @@ class block_exacomp_external extends external_api {
             }
 
 
-
             foreach ($courses as $course) {
-                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $key => $example) {
                     $exampleSubjects = block_exacomp_get_subjects_by_example($example->id);
                     if(!in_array($compid, $exampleSubjects)){
@@ -11512,18 +11622,28 @@ class block_exacomp_external extends external_api {
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
 
-            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one, I just need any course for the next function --> room for optimization!
+            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one course, use one of those courses, since it does not matter for the descriptors
             $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true); // this only gets parents
 
-            foreach($descriptors as $descriptor){
-                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true, true, true);
-                // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
-                foreach($childdescriptors as $child){
-                    $child->niveauid = $descriptor->niveauid;
-                    $child->cattitle = $descriptor->cattitle;
-                }
-                $descriptors += $childdescriptors;
-            }
+            //Ignore childdescriptors for diggrplus
+//            foreach($descriptors as $descriptor){
+//                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true, true, true);
+//                // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
+//                foreach($childdescriptors as $child){
+//                    $child->niveauid = $descriptor->niveauid;
+//                    $child->cattitle = $descriptor->cattitle;
+//                }
+//                $descriptors += $childdescriptors;
+//            }
+
+            // only use courseids where this user is enrolled, since it DOES matter for the examples
+            //there can be examples in one course, but not in the other, even though it is the same subject
+            $usercourses = array_keys(enrol_get_all_users_courses($userid));
+            $courseids = array_filter($courseids, function($courseid) use ($usercourses) {
+                return in_array($courseid, $usercourses);
+            });
+            // TODO: $courseids should now only contain ONE course. Otherwise, this means, that 1 student is in 2 courses that have the SAME Subject ---> Problem, but should never occur
+
 
             foreach($descriptors as $key => $descriptor){
                 if($niveauid != -1){
@@ -11576,7 +11696,7 @@ class block_exacomp_external extends external_api {
                 unset($examples[$key]);
             }
         }
-        
+
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
         $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB, $comptype) {
             $objDeeper = new stdClass();
@@ -11598,15 +11718,19 @@ class block_exacomp_external extends external_api {
                 $example->description = strip_tags($example->description);
             }
 
+            // Adding annotationinformation    TODO: Again: What IF the user has the same subject in two different courses.. which courseid to take?
+            $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+
             // Adding the evaluation information
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
             $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
             $example->student_evaluation = $exampleEvaluation->student_evaluation;
+
             $objDeeper->courseid = $example->courseid;
             $objDeeper->example = $example;
             $objDeeper->subjecttitle = $example->subjecttitle;
             $objDeeper->subjectid = $example->subjectid;
-            $objDeeper->topictitle = $example->topictitle;
+            $objDeeper->topictitle = static::custom_htmltrim($example->topictitle);
             $objDeeper->topicid = $example->topicid;
             if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
                 $objDeeper->niveauid = -1;
@@ -11736,6 +11860,9 @@ class block_exacomp_external extends external_api {
             $example->solution = $example->externalsolution;
         }
 
+        $example->description = strip_tags($example->description);
+        $example->description = static::custom_htmltrim($example->description);
+
         return $example;
     }
 
@@ -11764,7 +11891,9 @@ class block_exacomp_external extends external_api {
             if ($files = block_exaport_get_files($item, 'item_file')) {
             	$studentfiles = [];
                 foreach ($files as $fileindex => $file) {
-                    $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken . "&inst=" . $fileindex;
+                    $fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $item->id . "&wstoken=" . $wstoken . "&inst=" . $fileindex.
+                        // used only that file links are unique
+                        '&contenthash='.$file->get_contenthash();
 					$filedata['id'] = $file->get_id();
 					$filedata['file'] = $fileurl;
 					$filedata['mimetype'] = $file->get_mimetype();
@@ -11875,7 +12004,7 @@ class block_exacomp_external extends external_api {
             $descriptor_return->categories = '';
         }
 	    if ($selected_categories) {
-	        $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp 
+	        $categoryTitlesRes = $DB->get_records_sql('SELECT c.title, c.title as tmp
 	                                                        FROM {'.BLOCK_EXACOMP_DB_CATEGORIES.'} c
 	                                                        WHERE c.id IN ('.implode(',', array_keys($selected_categories)).')');
             $descCategories = '. '.get_string('dakora_niveau_after_descriptor_title', 'block_exacomp').': '.implode(', ', array_keys($categoryTitlesRes));
@@ -12473,8 +12602,10 @@ class block_exacomp_external extends external_api {
 	}
 
 
-	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0){
-        global $DB, $USER, $CFG;
+	private static function create_or_update_example_common($exampleid, $name, $description, $timeframe='', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid=0, $filename, $crosssubjectid=-1, $activityid = 0, $is_teacherexample = 0, $removefiles=0, $visible=true, $onlyForThisCourse=false){
+        global $DB, $USER, $CFG, $COURSE;
+
+        $COURSE->id = $courseid; // TODO: copied this from  update_descriptor_category.. why is the CONTEXT wrong?
 
         //Update material that already exists
         if($exampleid != -1){
@@ -12485,8 +12616,12 @@ class block_exacomp_external extends external_api {
             $example = new stdClass ();
         }
 
-        $example->title = $name;
-        $example->description = $description;
+        if($name){
+            $example->title = $name;
+        }
+        if($description){
+            $example->description = $description;
+        }
         $example->timeframe = $timeframe;
         $example->externalurl = $externalurl;
         $example->creatorid = $USER->id;
@@ -12540,7 +12675,11 @@ class block_exacomp_external extends external_api {
         } else {
             $example->activitylink = '';
             $example->activitytitle = '';
-            $example->courseid = 0;
+            if($onlyForThisCourse){ // the example will only exist in this course. This functionality is needed in diggrplus
+                $example->courseid = $courseid;
+            }else{
+                $example->courseid = 0;
+            }
             if (array_key_exists('externaltask', $example_icons)) {
                 unset($example_icons['externaltask']);
             }
@@ -12584,21 +12723,19 @@ class block_exacomp_external extends external_api {
         if ($fileitemids != '') {
             if($exampleid != -1){
                 //if there already exists an example: remove either all files or only the ones explicitly stated (dakora uses "remove all" right now 20210204, diggprlus uses explizit remove
-                if($removefiles){
+                if($removefiles!=''){
                     // remove files specifically marked for deletion by user:
                     // for deleting a file that already exists, itemid cannot be used, but pathnamehash. "get_file()" actually gets the pathnamehash and uses this to get the file
                     // use get_file_by_hash() instead, for deleting already existing files.
-                    // could this be used to remove files this user doesn't have access to? HACKABLE
+                    // could this be used to remove files this user doesn't have access to? HACKABLE TODO
                     // solution: get itemid. this itemid is the exampleid in this case
-                    if($removefiles){
-                        $fs = get_file_storage();
-                        $removefiles = explode(',', $removefiles);
-                        foreach($removefiles as $removefile){
-                            $file = $fs->get_file_by_id($removefile);
-                            if($file){
-                                if($file->get_itemid() == $exampleid){ // only delete file of current example. Protection if something goes really wrong or this webservice is used maliciously
-                                    $file->delete();
-                                }
+                    $fs = get_file_storage();
+                    $removefiles = explode(',', $removefiles);
+                    foreach($removefiles as $removefile){
+                        $file = $fs->get_file_by_id($removefile);
+                        if($file){
+                            if($file->get_itemid() == $exampleid){ // only delete file of current example. Protection if something goes really wrong or this webservice is used maliciously
+                                $file->delete();
                             }
                         }
                     }
@@ -12691,6 +12828,7 @@ class block_exacomp_external extends external_api {
                 $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
 
                 //visibility entries for this example in course where descriptors are associated
+                // TODO: do we want this? or should it only change in the current course? --> Solved in diggrplus by using diggrplus_annotate_example
                 $courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
                 foreach ($courseids as $courseid) {
                     $insert = new stdClass();
@@ -12698,7 +12836,7 @@ class block_exacomp_external extends external_api {
                     $insert->exampleid = $id;
                     $insert->studentid = 0;
                     $insert->visible = 1;
-                    $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
                 }
             }
         }else if($comps == "freemat"){
@@ -12748,7 +12886,7 @@ class block_exacomp_external extends external_api {
             ]);
         }
 
-
+        block_exacomp_set_example_visibility($id,$courseid,true, BLOCK_EXACOMP_SHOW_ALL_STUDENTS);
 
         return array(
             "exampleid" => $id,
@@ -12889,6 +13027,47 @@ class block_exacomp_external extends external_api {
 
 		throw new block_exacomp_permission_exception('Not allowed to view other user');
 	}
+
+
+
+    /**
+     * Used to check if current user is allowed to view the user(student) $userid but RETURNS TRUE-FALSE INSTEAD OF EXCEPTION
+     *
+     * @param int $courseid
+     * @param int|object $userid
+     */
+    private static function can_access_course_user($courseid, $userid) {
+        if ($courseid) {
+            // because in webservice block_exacomp_get_descriptors_for_example $courseid = 0
+
+            $course = g::$DB->get_record('course', ['id' => $courseid]);
+            if (!$course) {
+                throw new invalid_parameter_exception ('Course not found');
+            }
+
+            if (!can_access_course($course)) {
+                return false;
+            }
+        }
+
+        // can view myself
+        if ($userid == g::$USER->id) {
+            return true;
+        }
+
+        // teacher can view other users
+        if (block_exacomp_is_teacher($courseid)) {
+            if ($userid == 0) {
+                return true;
+            }
+            $users = get_enrolled_users(block_exacomp_get_context_from_courseid($courseid));
+            if (isset($users[$userid])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 	private static function find_courseid_for_example($exampleid) {
 		// go through all courses
@@ -13617,5 +13796,216 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'true if successful'),
         ));
     }
+
+	public static function diggrplus_get_course_schooltype_tree_parameters() {
+		return new external_function_parameters (array(
+			'courseid' => new external_value (PARAM_INT),
+		));
+	}
+
+	/**
+	 * @ws-type-read
+	 */
+	public static function diggrplus_get_course_schooltype_tree($courseid) {
+		static::validate_parameters(static::diggrplus_get_course_schooltype_tree_parameters(), array(
+			'courseid' => $courseid,
+		));
+
+		block_exacomp_require_teacher($courseid);
+
+		$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection(0);
+		$active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
+
+		foreach ($schooltypes as $schooltype) {
+			foreach ($schooltype->subjects as $subject) {
+				foreach ($subject->topics as $topic) {
+					// some topics have html in the title, and moodle does not allow this?!?
+					$topic->title = strip_tags($topic->title);
+
+					$topic->active = !empty($active_topics[$topic->id]);
+				}
+			}
+		}
+
+		return ['schooltypes' => $schooltypes];
+	}
+
+	public static function diggrplus_get_course_schooltype_tree_returns() {
+		return new external_single_structure (array(
+			'schooltypes' => new external_multiple_structure (new external_single_structure (array(
+				'id' => new external_value (PARAM_INT),
+				'title' => new external_value (PARAM_TEXT, 'schooltype title'),
+				'subjects' => new external_multiple_structure (new external_single_structure (array(
+					'id' => new external_value (PARAM_INT),
+					'title' => new external_value (PARAM_TEXT, 'subject title'),
+					'topics' => new external_multiple_structure (new external_single_structure (array(
+						'id' => new external_value (PARAM_INT),
+						'title' => new external_value (PARAM_TEXT, 'topic title'),
+						'active' => new external_value (PARAM_BOOL),
+					))),
+				))),
+			))),
+		));
+	}
+
+	public static function diggrplus_set_active_course_topics_parameters() {
+		return new external_function_parameters (array(
+			'courseid' => new external_value (PARAM_INT),
+			'topicids' => new external_multiple_structure(
+				new external_value (PARAM_INT)
+			),
+            'hide_new_examples' => new external_value (PARAM_BOOL),
+		));
+	}
+
+	/**
+	 * @ws-type-write
+	 */
+	public static function diggrplus_set_active_course_topics($courseid, $topicids, $hide_new_examples) {
+		static::validate_parameters(static::diggrplus_set_active_course_topics_parameters(), array(
+			'courseid' => $courseid,
+			'topicids' => $topicids,
+            'hide_new_examples' => $hide_new_examples,
+		));
+
+		global $DB;
+
+		block_exacomp_require_teacher($courseid);
+
+        $oldTopicIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid), '', 'id, topicid');
+
+		block_exacomp_set_coursetopics($courseid, $topicids, true);
+
+		if ($hide_new_examples) {
+            $newTopicIds = $DB->get_records_menu(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid), '', 'id, topicid');
+            $addedTopicIds = array_diff($newTopicIds, $oldTopicIds);
+
+            $examples = block_exacomp_get_examples_by_course($courseid, true, '', false);
+            foreach ($examples as $example) {
+                if (in_array($example->topicid, $addedTopicIds)) {
+                    // is an example from a newly activated topic
+                    var_dump($example);
+                    block_exacomp_set_example_visibility($example->id, $courseid, false, 0);
+                }
+            }
+        }
+
+		return array("success" => true);
+	}
+
+	public static function diggrplus_set_active_course_topics_returns() {
+		return new external_single_structure (array(
+			'success' => new external_value (PARAM_BOOL, 'status'),
+		));
+	}
+
+
+    public static function diggrplus_get_config_parameters() {
+        return new external_function_parameters(array());
+    }
+
+
+
+    /**
+     *
+     * @ws-type-read
+     * @return array
+     */
+    public static function diggrplus_get_config() {
+        global $CFG;
+        static::validate_parameters(static::diggrplus_get_config_parameters(), array());
+
+        $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+
+        return array(
+            'exacompversion' => $info->versiondb,
+            'moodleversion' => $CFG->version,
+        );
+    }
+
+    /**
+     * Returns description of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_config_returns() {
+        return new external_single_structure (array(
+            'exacompversion' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
+            'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
+        ));
+    }
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_annotate_example_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
+            'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
+            'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL),
+//            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?'),
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_annotate_example($exampleid, $courseid, $annotationtext) {
+        static::validate_parameters(static::diggrplus_annotate_example_parameters(), array(
+            'exampleid' => $exampleid,
+            'courseid' => $courseid,
+            'annotationtext' => $annotationtext,
+//            'visible' => $visible
+        ));
+        global $DB;
+        block_exacomp_require_teacher($courseid);
+        $exampleannotation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, array('exampleid' => $exampleid, 'courseid' => $courseid));
+        if($exampleannotation){
+            $exampleannotation->annotationtext = $annotationtext;
+            $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $exampleannotation);
+        }else{
+            $exampleannotation = new stdClass();
+            $exampleannotation->courseid = $courseid;
+            $exampleannotation->exampleid = $exampleid;
+            $exampleannotation->annotationtext = $annotationtext;
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $exampleannotation);
+        }
+
+        // Set Visibility in this course
+//        $insert = new stdClass();
+//        $insert->courseid = $courseid;
+//        $insert->exampleid = $exampleid;
+//        $insert->studentid = 0; // forall
+//        $insert->visible = $visible;
+//        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_annotate_example_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+
+
+
 
 }

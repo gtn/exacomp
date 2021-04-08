@@ -68,6 +68,38 @@ function block_exacomp_logout() {
 	require_logout();
 }
 
+function block_exacomp_turn_notifications_on() {
+	global $USER, $CFG;
+
+    require_once($CFG->dirroot . '/user/editlib.php');
+
+	// require __DIR__.'/db/messages.php';
+	$providers = get_message_providers();
+	foreach ($providers as $provider) {
+		if ($provider->component != 'block_exacomp') {
+			continue;
+		}
+
+		foreach (['loggedin', 'loggedoff'] as $type) {
+			$preference_name = 'message_provider_'.$provider->component.'_'.$provider->name.'_'.$type;
+			$value = @$USER->preference[$preference_name];
+			if (strpos($value, 'popup') === false) {
+				// only change, if popup isn't turned on
+				if (!$value || $value == 'none') {
+					$newValue = 'popup';
+				} else {
+					$newValue = 'popup,'.$value;
+				}
+
+				// echo $preference_name." ".$value." ".$newValue."\n";
+	            $userpref = ['id' => $USER->id];
+                $userpref['preference_' . $preference_name] = $newValue;
+	            useredit_update_user_preference($userpref);
+			}
+		}
+	}
+}
+
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
 $PAGE->set_pagelayout('embedded');
@@ -80,13 +112,10 @@ $DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time()-6
 
 $action = optional_param('action', '', PARAM_TEXT);
 
-if ($action == 'get_login_url') {
-	required_param('app', PARAM_TEXT);
-	required_param('app_version', PARAM_TEXT);
+function block_exacomp_is_return_uri_allowed($return_uri) {
+    global $CFG;
 
-	$return_uri = required_param('return_uri', PARAM_TEXT);
-
-	$allowed_redirect_uris = [$CFG->wwwroot];
+	$allowed_redirect_uris = [$CFG->wwwroot, 'diggr-plus.at', 'www.diggr-plus.at'];
 	$additional_allowed_redirect_uris = trim(get_config('exacomp', 'applogin_redirect_urls'));
 	if ($additional_allowed_redirect_uris) {
 		$additional_allowed_redirect_uris = preg_split('![\s\r\n]+!', $additional_allowed_redirect_uris);
@@ -99,8 +128,8 @@ if ($action == 'get_login_url') {
 		if (strpos($allowed_redirect_uri, '://') === false) {
 			$allowed_redirect_uri = 'https://'.$allowed_redirect_uri;
 		}
-		// check url
-		$regexp = '!^'.preg_quote($allowed_redirect_uri, '!').'(/|$)!';
+		// check url, also allow "www." prefix
+		$regexp = '!^(www\\.)?'.preg_quote($allowed_redirect_uri, '!').'(/|$)!';
 		// allow * as wildcard
 		$regexp = str_replace('\\*', '.*', $regexp);
 		if (preg_match($regexp, $return_uri)) {
@@ -109,9 +138,18 @@ if ($action == 'get_login_url') {
 		}
 	}
 
-	if (!$return_uri_allowed) {
+	return $return_uri_allowed;
+}
+
+if ($action == 'get_login_url') {
+	required_param('app', PARAM_TEXT);
+	required_param('app_version', PARAM_TEXT);
+
+	$return_uri = required_param('return_uri', PARAM_TEXT);
+
+	if (!block_exacomp_is_return_uri_allowed($return_uri)) {
 		$data = [
-			'error' => block_exacomp_trans(['de:Zugriff für DiggrPlus unter {$a->url} ist nicht erlaubt', 'en:Access from DiggrPlus at {$a->url} is not allowed'], ['url' => $return_uri])
+			'error' => block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri])
 		];
 
 		header('Content-Type: application/json');
@@ -191,7 +229,19 @@ if ($action == 'info') {
 if ($action == 'logout') {
 	block_exacomp_logout();
 
+	$return_uri = optional_param('return_uri', '', PARAM_TEXT);
+	if ($return_uri) {
+    	if (!block_exacomp_is_return_uri_allowed($return_uri)) {
+            header('Location: '.$CFG->wwwroot);
+            exit;
+        } else {
+            header('Location: '.$return_uri);
+            exit;
+        }
+	}
+
 	redirect(str_replace('action=logout', '', $_SERVER['REQUEST_URI']));
+	exit;
 }
 
 
@@ -262,6 +312,9 @@ $DB->update_record('block_exacompapplogin', (object)[
 		'tokens' => block_exacomp_get_service_tokens($request_data->services)
 	]),
 ]);
+
+// actions after login:
+block_exacomp_turn_notifications_on();
 
 $return_uri = $request_data->return_uri.'?moodle_token='.$applogin->moodle_data_token;
 

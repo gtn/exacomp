@@ -246,7 +246,7 @@ $string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzraster auf <a targe
 $string['importwebservice'] = 'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.';
 $string['import_max_execution_time'] = 'Wichtig: die aktuellen Servereinstellungen beschränken den Import auf {$a} Sekunden. Falls der Import-Vorgang länger dauert, wird dieser abgebrochen, es werden keine Daten importiert. Am Ausgabegerät wird in diesem Fall eine serverseitige Fehlermeldung ausgegeben (z.B. "500 Internal Server Error").';
 $string['importdone'] = 'Die allgemeinen Kompetenzraster sind bereits importiert.';
-$string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.';
+$string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Kompetenzbereiche aus.';
 $string['doimport'] = 'Kompetenzraster importieren';
 $string['doimport_again'] = 'Weitere Kompetenzraster importieren';
 $string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';
@@ -281,7 +281,7 @@ $string['save_success'] = 'Änderungen erfolgreich übernommen';
 $string['grading_scheme'] = 'Bewertungsschema';
 $string['points_limit_forcourse'] = 'Höchste Punkteanzahl';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
-$string['show_all_descriptors'] = 'Alle Lernlisten im Überblick anzeigen';
+$string['show_all_descriptors'] = 'Alle Kompetenzen im Überblick anzeigen';
 $string['useprofoundness'] = 'Grund- und Erweiterungskompetenzen verwenden';
 $string['assessment_SelfEval_useVerbose'] = 'verbalisiertes Schüler/innen-Feedback';
 $string['selfEvalVerbose.defaultValue_long'] = 'trifft nicht zu; trifft eher nicht zu; trifft eher zu; trifft zu';
@@ -349,6 +349,7 @@ $string['descriptors'] = 'Kompetenzen';
 $string['filerequired'] = 'Es muss eine Datei ausgewählt sein.';
 $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 $string['solution'] = 'Musterlösung';
+$string['completefle'] = 'Gesamtbeispiel';
 $string['hide_solution'] = 'Musterlösung verbergen';
 $string['show_solution'] = 'Musterlösung anzeigen';
 $string['hide_solution_disabled'] = 'Musterlösung ist bereits für alle Schüler/innen versteckt';
@@ -467,7 +468,7 @@ $string['instruction_content'] = 'Hier können Sie für Ihre Lerngruppen / Klass
 
 
 // === Activities ===
-$string['explaineditactivities_subjects'] = 'Hier können Sie den erstellten Aufgaben Lernlisten zuordnen.';
+$string['explaineditactivities_subjects'] = 'Hier können Sie den erstellten Aufgaben Kompetenzen zuordnen.';
 $string['niveau_filter'] = 'Niveaus filtern';
 $string['module_filter'] = 'Aktivitäten filtern';
 $string['apply_filter'] = 'Filter anwenden';

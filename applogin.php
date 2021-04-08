@@ -30,7 +30,7 @@ function block_exacomp_get_login_data() {
 
 	$services = optional_param('services', '', PARAM_TEXT);
 	$services = array_keys(
-		['moodle_mobile_app' => 1, 'exacompservices' => 1] // default services
+		['moodle_mobile_app' => 1, 'exacompservices' => 1, 'exaportservices' => 1] // default services
 		+ ($services ? array_flip(explode(',', $services)) : []));
 
 	foreach ($services as $service) {

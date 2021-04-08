@@ -623,7 +623,7 @@ class data_exporter extends data {
 	    self::export_assignments(null, $zip, $activityid);
 
 	    $zipfile = $zip->filename;
-	    
+
 	    $activitytitle = clean_param(block_exacomp_get_activitiy_by_id($activityid)->name, PARAM_ALPHANUM);
 
 	    $zip->close();
@@ -867,10 +867,12 @@ class data_exporter extends data {
 			} else {
 				$xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);
 			}
+            if ($file = block_exacomp_get_file($dbItem, 'example_completefile')) {
+                self::export_file($xmlItem->addChild('completefile'), $file);
+            } else {
+                $xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
+            }
 
-			// get solution file
-
-			$xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
 			$xmlItem->epop = $dbItem->epop;
 
 			$xmlItem->addChildWithCDATAIfValue('metalink', $dbItem->metalink);
@@ -1279,6 +1281,484 @@ class data_exporter extends data {
 //             $i++;
 //         }
     }
+
+    // Below here: Export/Import moodle competencies to exacomp competencies
+
+    public static function do_moodle_competencies_export($secret,$courseid) {
+        global $SITE, $CFG;
+
+        \core_php_time_limit::raise();
+        raise_memory_limit(MEMORY_HUGE);
+
+        if (!self::get_my_source()) {
+            // this can't happen anymore, because a source is automatically generated
+            throw new moodle_exception('source not configured, go to block settings');
+            // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
+        }
+
+        $xml = new SimpleXMLElement(
+            '<?xml version="1.0" encoding="UTF-8"?>'.
+            '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
+        );
+
+        $xml['version'] = '2015081400';
+        $xml['date'] = date('c');
+        $xml['source'] = 'moodle-competencies'; //  TODO: what source? self is a problem because then it won't import self::get_my_source();
+        $xml['sourcename'] = $SITE->fullname;
+
+        $zip = ZipArchive::create_temp_file();
+        $zip->addEmptyDir('files');
+
+        self::$xml = $xml;
+        self::$zip = $zip;
+
+
+        self::export_moodlecomp_examples($xml,null,$courseid);
+        self::export_moodlecomp_descriptors($xml);
+        self::export_moodlecomp_frameworks($xml);
+
+
+        $zipfile = $zip->filename;
+
+
+        if (optional_param('as_text', false, PARAM_INT)) {
+            echo 'zip file size: '.filesize($zipfile)."\n\n\n";
+            $zip->close();
+            unlink($zipfile);
+
+            echo $xml->asPrettyXML();
+
+            exit;
+        }
+
+        $zip->addFromString('data.xml', $xml->asPrettyXML());
+
+
+        if ($secret) {
+            // encrypt all files in zip file
+            for ($i = 0; $i < $zip->count(); $i++) {
+                $zip->setEncryptionIndex($i, ZipArchive::EM_AES_256, $secret);
+            }
+        }
+
+
+        $plugininfo = \core_plugin_manager::instance()->get_plugin_info('block_exacomp');;
+
+        // nicht passwortgeschützte info dateien:
+        $data = (object)[];
+        $data->datatype = 'block_exacomp_class_export';
+        $data->dataversion = '0.1';
+        $data->exporttime = time();
+        $data->pluginversion = $plugininfo->versiondisk;
+        $data->pluginrelease = $plugininfo->release;
+        $data->moodleversion = $CFG->version;
+        $data->moodlerelease = $CFG->release;
+        $data->is_encrypted = !!$secret;
+
+        $info_text = "";
+        $info_text .= "release: {$plugininfo->release}\n";
+        $info_text .= "version: {$plugininfo->versiondisk}\n";
+        $info_text .= "moodle-release: {$CFG->release}\n";
+        $info_text .= "moodle-version: {$CFG->version}\n";
+        $info_text .= "export time: ".\userdate(time(), '%Y-%m-%d %H:%M')."\n";
+        $info_text .= "encryption: ".($secret ? "yes" : "no")."\n";
+
+        $zip->addFromString('info.json', json_encode($data, JSON_PRETTY_PRINT));
+        $zip->addFromString('info.txt', $info_text);
+
+
+        $zip->close();
+
+
+
+        $extra = ($secret?'-'.block_exacomp_trans(['de:passwortgeschuetzt', 'en:passwordprotected']):'');
+        $filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').$extra.'.zip';
+        header('Content-Type: application/zip');
+        header('Content-Length: ' . filesize($zipfile));
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        readfile($zipfile); //downloads the file
+
+        unlink($zipfile);
+
+        die;
+        exit;
+    }
+
+
+    //Competencies can be linked to activities. These activities are added to the xml as examples (they first have to be created), and the activities are also added to the zip.
+    //and on activities_to_descriptors
+    //based on export_examples and export_assignments
+    private static function export_moodlecomp_examples(SimpleXMLElement $xmlParent, $parentid = 0,$courseid) {
+	    global $DB;
+
+	    //first: create the examples like when relating acitivities to competencies
+
+        $dbItems = $DB->get_records_sql('
+            SELECT modcomp.*, comp.*, cmod.*
+			FROM {competency_modulecomp} modcomp
+            JOIN {competency} comp ON comp.id = modcomp.competencyid
+            JOIN {course_modules} cmod ON cmod.id = modcomp.cmid
+			');
+
+        //problem: there are no descriptors to link it to --> just create the examples
+
+        if (!$dbItems) return;
+        $xmlItems = $xmlParent->addChild('examples');
+
+
+        foreach($dbItems as $dbItem){
+            $exampleData = static::create_exampledata_from_activity($courseid, $dbItem->cmid);
+            //With this exampledata I can now add the information to the xml
+
+            $xmlItem = $xmlItems->addChild('example');
+
+            //TODO:
+
+            self::assign_moodlecomp_source($xmlItem, $exampleData);
+            $xmlItem->addChildWithCDATAIfValue('title', $exampleData->title);
+//            $xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
+//            $xmlItem->addChildWithCDATAIfValue('description', $dbItem->description);
+//            $xmlItem->addChildWithCDATAIfValue('author', $dbItem->get_author());
+//            $xmlItem->addChildWithCDATAIfValue('activitytitle', $dbItem->activitytitle);
+//            $xmlItem->addChildWithCDATAIfValue('activityid', $dbItem->activityid);
+////            $xmlItem->addChildWithCDATAIfValue('activitytype', $activitytype);
+//            $xmlItem->addChildWithCDATAIfValue('activitylink', $dbItem->activitylink);
+//            $xmlItem->addChildWithCDATAIfValue('courseid', $dbItem->courseid);
+//            $xmlItem->sorting = $dbItem->sorting;
+//            $xmlItem->timeframe = $dbItem->timeframe;
+//
+//            if ($file = block_exacomp_get_file($dbItem, 'example_task')) {
+//                self::export_file($xmlItem->addChild('filetask'), $file);
+//            } else {
+//                $xmlItem->addChildWithCDATAIfValue('task', $dbItem->task);
+//            }
+//            if ($file = block_exacomp_get_file($dbItem, 'example_solution')) {
+//                self::export_file($xmlItem->addChild('filesolution'), $file);
+//            } else {
+//                $xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);
+//            }
+//            if ($file = block_exacomp_get_file($dbItem, 'example_completefile')) {
+//                self::export_file($xmlItem->addChild('completefile'), $file);
+//            } else {
+//                $xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
+//            }
+//
+//            $xmlItem->epop = $dbItem->epop;
+//
+//            $xmlItem->addChildWithCDATAIfValue('metalink', $dbItem->metalink);
+//            $xmlItem->addChildWithCDATAIfValue('packagelink', $dbItem->packagelink);
+//            $xmlItem->addChildWithCDATAIfValue('restorelink', $dbItem->restorelink);
+//
+//            $xmlItem->addChildWithCDATAIfValue('externalurl', $dbItem->externalurl);
+//            $xmlItem->addChildWithCDATAIfValue('externaltask', $dbItem->externaltask);
+//            $xmlItem->addChildWithCDATAIfValue('externalsolution', $dbItem->externalsolution);
+//            $xmlItem->addChildWithCDATAIfValue('tips', $dbItem->tips);
+//            $xmlItem->addChildWithCDATAIfValue('author_origin', $dbItem->author_origin);
+//            $xmlItem->is_teacherexample = intval($dbItem->is_teacherexample);
+
+
+//            $descriptors = g::$DB->get_records_sql("
+//            SELECT DISTINCT d.id, d.source, d.sourceid
+//            FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
+//            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON d.id = de.descrid
+//            WHERE de.exampid = ?
+//        ", array($dbItem->id));
+//
+//            if ($descriptors) {
+//                $xmlItem->addChild('descriptors');
+//                foreach ($descriptors as $descriptor) {
+//                    $xmlDescripor = $xmlItem->descriptors->addChild('descriptorid');
+//                    self::assign_source($xmlDescripor, $descriptor);
+//                }
+//            }
+
+        }
+    }
+
+    private static function create_exampledata_from_activity($courseid, $activityid){
+        global $DB, $CFG, $USER;
+        static $mod_info = null;
+        if ($mod_info === null) {
+            $mod_info = get_fast_modinfo($courseid);
+        }
+
+        $module = get_coursemodule_from_id(null, $activityid);
+        $activitylink = block_exacomp_get_activityurl($module)->out(false);
+        $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+        $externaltask = block_exacomp_get_activityurl($module)->out(false);
+        $cm = $mod_info->cms[$activityid];
+//        $example_icons = $cm->get_icon_url()->out(false);
+//        if ($example_icons) {
+//            $example_icons = serialize(array('externaltask' => $example_icons));
+//        } else {
+//            $example_icons = null;
+//        }
+        $newExample = (object) array(
+            'title' => $module->name,
+            'courseid' => $courseid,
+            'activityid' => $activityid,
+            'activitylink' => $activitylink,
+            'activitytitle' => $module->name,
+            'externaltask' => $externaltask,
+            'creatorid' => $USER->id,
+            'parentid' => 0,
+//            'example_icon' => $example_icons
+        );
+        $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample); //insert to get an ID
+        $newExample->id = $exampleId;
+        return $newExample;
+    }
+
+
+
+
+    //Adds a dummy schooltype and edulevel and for every competencyframework a subjects is added
+    //for every outermost competence a topic is added
+    //the topics are linked to oter competencies, which are treated as descriptors
+    private static function export_moodlecomp_frameworks(SimpleXMLElement $xmlParent, $parentid = 0) {
+	    global $DB;
+
+        $xmlEdulevels = SimpleXMLElement::create('edulevels');
+        $xmlEdulevel = $xmlEdulevels->addChild('edulevel');
+        self::assign_moodlecomp_source($xmlEdulevel, null);
+        $xmlEdulevel->addChildWithCDATAIfValue('title', 'edulevel-dummytitle');
+
+
+        $xmlSchooltypes = SimpleXMLElement::create('schooltypes');
+        $xmlSchooltype = $xmlSchooltypes->addChild('schooltype');
+        self::assign_moodlecomp_source($xmlSchooltype, null);
+        $xmlSchooltype->addChildWithCDATAIfValue('title', 'schooltype-dummytitle');
+
+
+
+        $xmlSubjects = SimpleXMLElement::create('subjects');
+
+        //competency frameworks will be converted to subjects in the XML structure
+        $dbFrameworks = $DB->get_records('competency_framework', null);
+
+        foreach($dbFrameworks as $dbSubject) {
+            $xmlTopics = self::export_moodlecomp_as_topics($dbSubject);
+            $xmlSubject = $xmlSubjects->addChild('subject');
+            self::assign_moodlecomp_source($xmlSubject, $dbSubject);
+            $xmlSubject->addChildWithCDATAIfValue('title', $dbSubject->shortname);
+            $xmlSubject->addChild($xmlTopics);
+        }
+
+        if($xmlSubjects){
+            $xmlSchooltype->addChild($xmlSubjects);
+        }
+        if($xmlSchooltypes){
+            $xmlEdulevel->addChild($xmlSchooltypes);
+        }
+        if ($xmlEdulevels) {
+            $xmlParent->addChild($xmlEdulevels);
+        }
+    }
+
+    private static function export_moodlecomp_as_topics($dbSubject) {
+        $xmlTopics = SimpleXMLElement::create('topics');
+
+        $dbTopics = g::$DB->get_records('competency', array('parentid' => 0, 'competencyframeworkid' => $dbSubject->id));
+
+        foreach($dbTopics as $dbTopic){
+            $xmlTopic = $xmlTopics->addChild('topic');
+            self::assign_moodlecomp_source($xmlTopic, $dbTopic);
+            $xmlTopic->addChildWithCDATAIfValue('title', $dbTopic->shortname);
+
+
+            // link the descriptors
+            self::add_moodlecomp_descriptors_to_topics($xmlTopic, $dbTopic);
+        }
+
+        return $xmlTopics;
+    }
+
+    private static function add_moodlecomp_descriptors_to_topics($xmlTopic, $dbTopic) {
+        // TODO: check out how the sources work and find some similar way for the moodle_competencies
+        //maybe mdl_block_exacompdatasources has the competencyframeworks as well... but the competencies themselves don't store a source
+        $descriptors = g::$DB->get_records_sql("
+				SELECT DISTINCT d.id
+				FROM {competency} d
+				WHERE d.parentid = ?
+			", array($dbTopic->id));
+
+        if ($descriptors) {
+            $xmlDescriptors = $xmlTopic->addChild('descriptors');
+            foreach ($descriptors as $descriptor) {
+                self::add_moodlecomp_descriptors_recrusion($xmlDescriptors, $descriptor);
+//                $xmlDescriptor = $xmlDescriptors->addChild('descriptorid');
+//                self::assign_moodlecomp_source($xmlDescriptor, $descriptor);
+            }
+        }
+    }
+
+    // Needed in order to add the childdescriptors to the topics as well. Not only the parentdescriptors.
+    private static function add_moodlecomp_descriptors_recrusion($xmlDescriptors, $dbDescriptor){
+        $xmlDescriptor = $xmlDescriptors->addChild('descriptorid');
+        self::assign_moodlecomp_source($xmlDescriptor, $dbDescriptor);
+
+        $childdescriptors = g::$DB->get_records_sql("
+				SELECT DISTINCT d.id
+				FROM {competency} d
+				WHERE d.parentid = ?
+			", array($dbDescriptor->id));
+
+        if (!$childdescriptors) return; // exit condition
+
+        foreach ($childdescriptors as $descriptor) {
+            self::add_moodlecomp_descriptors_recrusion($xmlDescriptors, $descriptor);
+        }
+    }
+
+
+    //goes through the moodle competencies and saves them to the xml, treating them like descriptors (parent and childdescriptors)
+    private static function export_moodlecomp_descriptors(SimpleXMLElement $xmlParent, $parentid = 0) {
+        //differentiate between descriptors and childdescriptors by looking at the pathstructure. If it is "/number/number/" then it is a parent, anything else: child
+        // --> problem:  LIKE /%/%/ also includes other "/" so also /%/%/%/%/%/% ==> solution does not work
+        // ==> count the number of "/"  LENGTH(path) - LENGTH(REPLACE(d.path,"/","")) = amount of "/"   If length id 3, then it is a parentdescriptor /0/topicid/
+        if (!$parentid) { //get parentdescriptors
+            $dbItems = g::$DB->get_records_sql("
+				SELECT d.*
+				FROM {competency} d
+                WHERE LENGTH(d.path) - LENGTH(REPLACE(d.path,'/','')) = 3
+			");
+        } else { //get children
+            // TODO: children of children should also be found and added to the parent. For now, the recursion adds them as children of children, which is not possible in exacomp to import
+            $dbItems = g::$DB->get_records_sql("
+				SELECT d.*
+				FROM {competency} d
+				WHERE parentid = ?
+			", array($parentid));
+        }
+
+        if (!$dbItems) return;
+
+        $xmlItems = $xmlParent->addChild($parentid ? 'children' : 'descriptors');
+
+        foreach ($dbItems as $dbItem) {
+            $xmlItem = $xmlItems->addChild('descriptor');
+            self::assign_moodlecomp_source($xmlItem, $dbItem);
+            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->shortname);
+
+            // children
+            self::export_moodlecomp_descriptors($xmlItem, $dbItem->id);
+        }
+    }
+
+
+
+
+
+
+    /**
+     * @param SimpleXMLElement $xmlItem
+     * @param $dbItem
+     * @throws moodle_exception
+     */
+    private static function assign_moodlecomp_source($xmlItem, $dbItem) {
+        // TODO: get source of the framework
+        // local source -> set new id
+//        $xmlItem['source'] = self::get_my_source();
+        $xmlItem['source'] = 'moodle-competencies';
+        if($dbItem){
+            $xmlItem['id'] = $dbItem->id;
+        }else{
+            $xmlItem['id'] = 1; //TODO: since this is a dummy => 1 is ok
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    public static function do_moodle_competencies_export($secret) {
+//        global $SITE, $CFG;
+//
+//        \core_php_time_limit::raise();
+//        raise_memory_limit(MEMORY_HUGE);
+//
+//        if (!self::get_my_source()) {
+//            // this can't happen anymore, because a source is automatically generated
+//            throw new moodle_exception('source not configured, go to block settings');
+//            // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
+//        }
+//
+//        $xml = new SimpleXMLElement(
+/*            '<?xml version="1.0" encoding="UTF-8"?>'.*/
+//            '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
+//        );
+//
+//        $xml['version'] = '2015081400';
+//        $xml['date'] = date('c');
+//        $xml['source'] = self::get_my_source(); //TODO: different source generation? Include information that it's from moodle-competencies
+//        $xml['sourcename'] = $SITE->fullname;
+//
+//
+//        self::$xml = $xml;
+//
+//        self::export_moodle_competencies_to_topics($xml);
+//
+//        return $xml;
+//    }
+//
+//    private static function export_moodle_competencies_to_topics(SimpleXMLElement $xmlParent = null) {
+//        $dbItems = g::$DB->get_records('competency',  array('descriptionformat'=>1));
+//
+//        if (!$dbItems) return;
+//
+//        $xmlItems = $xmlParent->addChild('topics');
+//
+//        foreach ($dbItems as $dbItem) {
+//            $xmlItem = $xmlItems->addChild('topic');
+//            self::assign_source($xmlItem, $dbItem);
+//
+//
+////            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->shortname);
+//            $xmlItem->title = $dbItem->shortname; //TODO: why not just like this?
+//
+//            // children
+//            self::export_moodle_competencies_to_descriptors($xmlItem);
+//        }
+//    }
+//
+//    private static function export_moodle_competencies_to_descriptors(SimpleXMLElement $xmlParent = null, $parentid = 0) {
+//        $dbItems = g::$DB->get_records('competency',  array('parentid'=>$parentid));
+//
+//        if (!$dbItems) return;
+//
+//        $xmlItems = $xmlParent->addChild('children');
+//
+//        foreach ($dbItems as $dbItem) {
+//            $xmlItem = $xmlItems->addChild('descriptor');
+//            self::assign_source($xmlItem, $dbItem);
+//
+//
+////            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->shortname);
+//            $xmlItem->title = $dbItem->shortname;
+//
+//            // children
+////            self::export_moodle_competencies_to_descriptors($xmlItem, $dbItem->id);
+//        }
+//    }
+
+
+
+
+
+
+
+
 }
 
 class data_course_backup extends data {
@@ -2161,8 +2641,7 @@ class data_importer extends data {
 		if (!self::$zip) {
 			return;
 		}
-
-		$filepathOrig = $xmlItem->filepath->__toString();
+		$filepathOrig = (string)$xmlItem->filepath->__toString();
 		$filecontent = self::$zip->getFromName($filepathOrig);
 		// different servers (and zip) can have different options, so:
         // usually it is different slashes in zips
@@ -2321,6 +2800,9 @@ class data_importer extends data {
 		}
 		if ($xmlItem->filetask) {
 			self::insert_file('example_task', $xmlItem->filetask, $item);
+		}
+		if ($xmlItem->filecompletefile) {
+			self::insert_file('example_completefile', $xmlItem->filecompletefile, $item);
 		}
 		if($xmlItem->activitytype){
 

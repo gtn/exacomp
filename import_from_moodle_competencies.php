@@ -12,14 +12,29 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+//
 // You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-
+//
 // This copyright notice MUST APPEAR in all copies of the script!
 
-defined('MOODLE_INTERNAL') || die();
+require __DIR__.'/inc.php';
 
-$plugin->component = 'block_exacomp';
-$plugin->release = '4.6.5';
-$plugin->version   = 2021040801;
-$plugin->requires  = 2015051100;
-$plugin->maturity = MATURITY_STABLE;
+require_capability('block/exacomp:admin', context_system::instance());
+
+//$action = required_param('action', PARAM_ALPHANUMEXT);
+
+//$output = block_exacomp_get_renderer();
+
+$courseid = required_param('courseid', PARAM_INT);
+
+
+//TODO: require secret? what for?
+
+\block_exacomp\data::prepare();
+
+
+
+block_exacomp\data_exporter::do_moodle_competencies_export(null,$courseid);
+die;
+
+//$xml = block_exacomp\data_exporter::do_moodle_competencies_export(null);

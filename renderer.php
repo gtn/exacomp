@@ -366,7 +366,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 'exa-url' => 'niveau.php?courseid='.$COURSE->id.'&id='.$niveau->id.'&backurl='.$PAGE->url
                             ]);
                 }
-                if($this->is_edit_mode() && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $selectedTopic != null){
+                if($this->is_edit_mode() && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $selectedTopic != null && $this->page->url->get_param("topicid") != 0){
                     $title .= $this->visibility_icon_niveau($niveau->visible, $selectedTopic->id, $niveau->id);
                 }
                 $titleForTitle = $title;
@@ -506,7 +506,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
         } else {
             $student = null;
         }
-		
 		$scheme_values = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, $scheme);
 
 //		$satisfied = ceil($scheme / 2);
@@ -558,7 +557,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topic_std->id = $topicid;
 
 				$topic_visible = block_exacomp_is_topic_visible($courseid, $topic_std, $studentid);
-				
 				//make second row, spilt rows after topic title
 				$row2 = new html_table_row();
 				foreach ($niveaus as $niveauid => $niveau) {
@@ -1390,6 +1388,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                             if (($role == BLOCK_EXACOMP_ROLE_TEACHER || $visible_solution) && $solution_url) {
                                 $titleCell->text .= $this->example_solution_icon($solution_url);
+                            }
+
+                            if ($url = $example->get_completefile_file_url()) {
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_completefile_file_url($i);
+                                    $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                }
                             }
 
                             if ($this->is_print_mode()) {
@@ -2476,7 +2482,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$titleCell = new html_table_cell();
 
 				$titleCell->attributes['class'] = ' rg2-indent';
-				if (($descriptor->examples || $descriptor->children || ($parent && $editmode)) && ($data->rg2_level >= 0)) {
+				if (($descriptor->examples || $descriptor->children || ($parent && $editmode)) && ($data->rg2_level >= 0)) { // HERE the examples are added??
 					$titleCell->attributes['class'] .= ' rg2-arrow';
 				}
 
@@ -3038,6 +3044,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                             if (($data->role == BLOCK_EXACOMP_ROLE_TEACHER || $visible_solution) && $solution_url) {
                                 $titleCell->text .= $this->example_solution_icon($solution_url);
+                            }
+
+                            if ($url = $example->get_completefile_file_url()) {
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_completefile_file_url($i);
+                                    $titleCell->text .= html_writer::link($url,
+                                        $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')),
+                                        array("target" => "_blank"));
+                                }
                             }
 
                             if ($this->is_print_mode()) {
@@ -3774,6 +3790,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 $titleCell->text .= $this->example_solution_icon($solution_url);
                             }
 
+                            if ($url = $example->get_completefile_file_url()) {
+                                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                                for ($i = 0; $i < $numberOfFiles; $i++) {
+                                    $url = $example->get_completefile_file_url($i);
+                                    $titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                                }
+                            }
+
                             if ($this->is_print_mode()) {
                                 // no icons in print mode
                             } else {
@@ -4274,7 +4298,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
         }
 
-        return html_writer::link("", $icon, array('class' => 'hide-niveau', 'name' => 'hide-niveau', 'topicid' => $topicid, 'niveauid' => $niveauid, 'id' => 'hide-niveau', 'state' => ($visible) ? '-' : '+',
+        return html_writer::link('', $icon, array('class' => 'hide-niveau', 'name' => 'hide-niveau', 'topicid' => $topicid, 'niveauid' => $niveauid, 'id' => 'hide-niveau', 'state' => ($visible) ? '-' : '+',
             'showurl' => $this->image_url("i/hide"), 'hideurl' => $this->image_url("i/show"),
         ));
 
@@ -7477,6 +7501,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							);
 						}
 					}
+                    if ($url = $example->get_completefile_file_url()) {
+                        $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                        for ($i = 0; $i < $numberOfFiles; $i++) {
+                            $url = $example->get_completefile_file_url($i);
+                            $exampleIcons .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                        }
+                    }
 
 					$html_tree .= html_writer::tag("li", $example->title.$exampleIcons, array('class' => ($example->associated == 1) ? "associated" : ""));
 				}
@@ -7729,6 +7760,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					));
 				}
 			}
+
+            if ($url = $example->get_completefile_file_url()) {
+                $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_completefile');
+                for ($i = 0; $i < $numberOfFiles; $i++) {
+                    $url = $example->get_completefile_file_url($i);
+                    $exampleIcons->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                }
+            }
 
 			$content .= '<tr><td>';
 

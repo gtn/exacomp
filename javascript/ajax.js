@@ -937,6 +937,9 @@
 
 			$(this).trigger('rg2.lock');
 
+			$(this).find("i").addClass('fa-eye-slash');
+			$(this).find("i").removeClass('fa-eye');
+
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0){
 				$('input[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
@@ -966,6 +969,10 @@
 			$(this).attr('state','-');
 			visible = 1;
 			$(this).trigger('rg2.unlock');
+
+
+			$(this).find("i").addClass('fa-eye');
+			$(this).find("i").removeClass('fa-eye-slash');
 
 			//enable checkbox for teacher, when showing descriptor for student
 
@@ -1039,6 +1046,8 @@
 
 			var val = $(this).attr('state');
 
+			debugger
+
 			if(val=='-'){
 				$(this).attr('state','+');
 				visible = 0;
@@ -1046,6 +1055,12 @@
 				exabis_rg2.get_row(this)
 					.trigger('rg2.close')
 					.addClass('rg2-locked');
+
+
+
+				$(this).find("i").addClass('fa-eye-slash');
+				$(this).find("i").removeClass('fa-eye');
+
 
 				//disable checkbox for teacher, when hiding descriptor for student
 				if(studentid > 0)
@@ -1073,6 +1088,9 @@
 				$(this).attr('state','-');
 				visible = 1;
 				tr.removeClass('rg2-locked');
+
+				$(this).find("i").addClass('fa-eye');
+				$(this).find("i").removeClass('fa-eye-slash');
 
 				//enable checkbox for teacher, when showing descriptor for student
 				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
@@ -1127,6 +1145,9 @@
 
 			$(this).trigger('rg2.lock');
 
+			$(this).find("i").addClass('fa-eye-slash');
+			$(this).find("i").removeClass('fa-eye');
+
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0){
 				$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
@@ -1144,6 +1165,9 @@
 			$(this).attr('state','-');
 			visible = 1;
 			$(this).trigger('rg2.unlock');
+
+			$(this).find("i").addClass('fa-eye');
+			$(this).find("i").removeClass('fa-eye-slash');
 
 			//enable checkbox for teacher, when showing descriptor for student
 			$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
@@ -1188,6 +1212,9 @@
 
 			$(this).trigger('rg2.lock');
 
+			$(this).find("i").addClass('fa-eye-slash');
+			$(this).find("i").removeClass('fa-eye');
+
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0){
 				$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
@@ -1205,6 +1232,9 @@
 			$(this).attr('state','-');
 			visible = 1;
 			$(this).trigger('rg2.unlock');
+
+			$(this).find("i").addClass('fa-eye');
+			$(this).find("i").removeClass('fa-eye-slash');
 
 			//enable checkbox for teacher, when showing descriptor for student
 			$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
