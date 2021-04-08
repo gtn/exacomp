@@ -842,7 +842,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'data has already been imported from xml',
 	],
 	'importpending' => [
-		'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.',
+		'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Kompetenzbereiche aus.',
 		'no data has been imported yet!',
 	],
 	'doimport' => [
@@ -968,7 +968,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'I work with Moodle activites',
 	],
 	'show_all_descriptors' => [
-		'Alle Lernlisten im Überblick anzeigen',
+		'Alle Kompetenzen im Überblick anzeigen',
 		'Show all outcomes in overview',
 	],
 	'useprofoundness' => [
@@ -1630,7 +1630,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 
 	// === Activities ===
 	'explaineditactivities_subjects' => [
-		'Hier können Sie den erstellten Aufgaben Lernlisten zuordnen.',
+		'Hier können Sie den erstellten Aufgaben Kompetenzen zuordnen.',
 		'',
 	],
 	'niveau_filter' => [
