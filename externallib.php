@@ -6933,6 +6933,7 @@ class block_exacomp_external extends external_api {
         //if status is "new" it is already sorted correctly and has been filtered before
         //if stauts is "" then it is already sorted correctly and no filters are applied
 
+
         return $examplesAndItems;
     }
 
@@ -6960,6 +6961,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
@@ -11715,6 +11717,9 @@ class block_exacomp_external extends external_api {
                 $example->description = strip_tags($example->description);
             }
 
+            // Adding annotationinformation    TODO: Again: What IF the user has the same subject in two different courses.. which courseid to take?
+            $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+
             // Adding the evaluation information
             $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
             $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
@@ -13944,7 +13949,7 @@ class block_exacomp_external extends external_api {
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
             'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL),
-            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?'),
+//            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?'),
         ));
     }
 
@@ -13955,16 +13960,16 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_annotate_example($exampleid, $courseid, $annotationtext, $visible) {
+    public static function diggrplus_annotate_example($exampleid, $courseid, $annotationtext) {
         static::validate_parameters(static::diggrplus_annotate_example_parameters(), array(
             'exampleid' => $exampleid,
             'courseid' => $courseid,
             'annotationtext' => $annotationtext,
-            'visible' => $visible
+//            'visible' => $visible
         ));
         global $DB;
         block_exacomp_require_teacher($courseid);
-        $exampleannotation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, array('exampleid' => $exampleid, 'courseid' => $courseid, 'visible' => $visible));
+        $exampleannotation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, array('exampleid' => $exampleid, 'courseid' => $courseid));
         if($exampleannotation){
             $exampleannotation->annotationtext = $annotationtext;
             $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, $exampleannotation);
@@ -13977,12 +13982,12 @@ class block_exacomp_external extends external_api {
         }
 
         // Set Visibility in this course
-        $insert = new stdClass();
-        $insert->courseid = $courseid;
-        $insert->exampleid = $exampleid;
-        $insert->studentid = 0; // forall
-        $insert->visible = $visible;
-        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
+//        $insert = new stdClass();
+//        $insert->courseid = $courseid;
+//        $insert->exampleid = $exampleid;
+//        $insert->studentid = 0; // forall
+//        $insert->visible = $visible;
+//        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $insert);
 
         return array("success" => true);
     }
