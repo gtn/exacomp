@@ -7230,6 +7230,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
