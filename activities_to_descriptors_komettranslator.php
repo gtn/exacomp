@@ -75,15 +75,12 @@ function create_related_examples(){
 
 //TODO: safe the time of the last update somewhere. I can then only walk through the NEW gradings and NEW relations => better performance
 
+//TODO: what about topics... actually, there are no examples for topics in eacomp. Grading will still be used
+
 
 //competency_usercomp contains the gradings. or competency_usercompcourse
 function block_exacomp_grade_descriptors_by_related_moodlecomp(){
-    // Source of ideas: block_exacomp_perform_auto_test(). But this gets the related EXAMPLES and then grades them.. Here I get the related competencies.
     global $DB;
-
-
-    block_exacomp_perform_auto_test();
-
 
     //get all graded competencies that are graded and exist in local_komettranslator and are thereby relevant
     $competencies = $DB->get_records_sql('
@@ -93,10 +90,9 @@ function block_exacomp_grade_descriptors_by_related_moodlecomp(){
             WHERE usercompcourse.proficiency IS NOT NULL
 			');
 
-
     foreach ($competencies as $competency){
         //JOIN {course_modules} cmod ON cmod.id = modcomp.cmid could be used to find the course => but there is a table competency_usercompCOURSE which solves this already
-        $gradings = $DB->get_records_sql('
+        $descriptorGradings = $DB->get_records_sql('
             SELECT descr.id as descrid, usercompcourse.courseid as courseid, usercompcourse.userid as userid, usercompcourse.proficiency as proficiency
 			FROM {local_komettranslator} komet
             JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} descr ON descr.sourceid = komet.itemid
@@ -105,10 +101,23 @@ function block_exacomp_grade_descriptors_by_related_moodlecomp(){
             WHERE komet.internalid = ?
 			', array($competency->compid));
 
-        //normally there will be only one descriptor
-        foreach ($gradings as $grading){
+        $topicGradings = $DB->get_records_sql('
+            SELECT topic.id as topicid, usercompcourse.courseid as courseid, usercompcourse.userid as userid, usercompcourse.proficiency as proficiency
+			FROM {local_komettranslator} komet
+            JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} topic ON topic.sourceid = komet.itemid
+            JOIN {' . BLOCK_EXACOMP_DB_DATASOURCES . '} datasrc ON (datasrc.id = topic.source AND datasrc.source = komet.sourceid)
+            JOIN {competency_usercompcourse} usercompcourse ON usercompcourse.competencyid = komet.internalid
+            WHERE komet.internalid = ?
+			', array($competency->compid));
+
+        //most of the time there will be only one descriptor/topic per id. But if there are different datasources there can be more than one time the same "itemid" in the local_komettranslator table
+        foreach ($descriptorGradings as $grading){
 //            block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult) --> FOR NOW: use Dichotom hardcoded => proficiency
             block_exacomp_set_user_competence($grading->userid, $grading->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $grading->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading->proficiency);
+        }
+
+        foreach ($topicGradings as $grading){
+            block_exacomp_set_user_competence($grading->userid, $grading->topicid, BLOCK_EXACOMP_TYPE_TOPIC, $grading->courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading->proficiency);
         }
     }
 }
