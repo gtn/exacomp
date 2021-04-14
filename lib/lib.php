@@ -8534,7 +8534,7 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
  * @param unknown $exampleid
  * @param unknown $timecreated
  */
-function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated, $studentcomment = ' ', $customdata) {
+function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated, $studentcomment = ' ', $customdata = '') {
 	global $USER, $DB;
 
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
@@ -8850,7 +8850,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             AND dvis.visible = true
             AND tvis.visible = true
             AND evis.visible = true
-            AND (ex.courseid = 0 OR ex.courseid = ?)
+            AND (ex.courseid = 0 OR ex.courseid = ? OR ex.courseid IS NULL)
             AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')
             GROUP BY ex.id
             ";;
