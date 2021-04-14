@@ -152,16 +152,17 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
             $avacondintionsElementInd = $allelements['availabilityconditionsjson'];
             // go insert
             array_splice($mform->_elements, $avacondintionsElementInd, 0, array($exacompElement)); // splice in at position 3
+
             // reformat indexes
             foreach ($mform->_elements as $key => $el) {
                 if ($el->_attributes && $el->_attributes['name']) {
                     $mform->_elementIndex[$el->_attributes['name']] = $key;
+                }else if($el->_name){
+                    $mform->_elementIndex[$el->_name] = $key;
                 }
             }
         }
-
     }
-
     return;
 }
 
