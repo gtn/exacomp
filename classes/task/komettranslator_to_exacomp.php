@@ -17,6 +17,18 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require __DIR__ . '/inc.php';
+namespace block_exacomp\task;
 
-block_exacomp_relate_komettranslator_to_exacomp();
+defined('MOODLE_INTERNAL') || die();
+
+require_once __DIR__.'/../../inc.php';
+
+class komettranslator_to_exacomp extends \core\task\scheduled_task {
+    public function get_name() {
+        return block_exacomp_trans(['en:Komettranslator to Exacomp']);
+    }
+
+    public function execute() {
+        block_exacomp_relate_komettranslator_to_exacomp();
+    }
+}
