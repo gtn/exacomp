@@ -24,6 +24,8 @@
         <FIELD NAME="knowledgecheck" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
         <FIELD NAME="catid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="category id foreign key"/>
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom descriptor"/>
+        <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -47,6 +49,8 @@
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="span" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom topic"/>
+        <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -67,6 +71,7 @@
         <FIELD NAME="infolink" TYPE="char" LENGTH="400" NOTNULL="false" SEQUENCE="false" COMMENT="link to external description for comp grid"/>
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="is the subject a global subject"/>
         <FIELD NAME="version" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="grid version"/>
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom subject"/>
@@ -147,6 +152,7 @@
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="blocking_event" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="ethema_ismain" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Haupaufgabe"/>
         <FIELD NAME="ethema_issubcategory" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Hauptaufgabe Unterkategorie"/>
         <FIELD NAME="ethema_parent" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa zugeordnete Hauptaufgabe"/>

@@ -90,7 +90,7 @@ class db_layer {
 
 		$sql = "
 			SELECT DISTINCT d.id, d.title, d.source, d.sourceid, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
-				n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
+				n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting, d.author, d.editor
 			FROM {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctopmm
 			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON desctopmm.descrid=d.id AND d.parentid=0
 			-- left join, because courseid=0 has no descvisibility!
@@ -134,7 +134,7 @@ class db_layer {
 		}
 
 		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, d.sourceid, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
-			($this->mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting
+			($this->mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting, d.author, d.editor
 			FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d '
 			.($this->mindvisibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
 				.($this->showonlyvisible ? 'AND dvis.visible=1 ' : '') : '');
@@ -231,7 +231,6 @@ class db_layer {
 	 */
 	function create_objects($class, array $records, $data = array()) {
 		$objects = array();
-
 		array_walk($records, function($record) use ($class, &$objects, $data) {
 			if ($data) {
 				foreach ($data as $key => $value) {
@@ -873,11 +872,15 @@ class subject extends db_record {
 	}
 
 	/**
-	 * maybe htere is a special implementation
+	 * maybe there is a special implementation
 	 * @return string
 	 */
 	function get_author() {
 		return $this->author;
+	}
+
+	function get_editor() {
+		return $this->editor;
 	}
 
 	function get_numbering() {
@@ -930,6 +933,14 @@ class topic extends db_record {
 			return \block_exacomp\subject::get($this->subjid);
 		}
 	}
+
+    function get_author() {
+        return $this->author;
+    }
+
+    function get_editor() {
+        return $this->editor;
+    }
 }
 
 /**
@@ -1067,6 +1078,14 @@ class descriptor extends db_record {
 	protected function fill_categories() {
 		return block_exacomp_get_categories_for_descriptor($this);
 	}
+
+    function get_author() {
+        return $this->author;
+    }
+
+    function get_editor() {
+        return $this->editor;
+    }
 }
 
 class example extends db_record {
@@ -1093,6 +1112,10 @@ class example extends db_record {
             return $this->author;
 		}
 	}
+
+    function get_editor() {
+        return $this->editor;
+    }
 
     function get_author_origin() {
         return $this->author_origin;

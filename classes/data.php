@@ -2889,6 +2889,9 @@ class data_importer extends data {
 		if (!isset($descriptor->profoundness)) {
             $descriptor->profoundness = 0;
         }
+        if ($xmlItem->creator) {
+            $descriptor->author = $xmlItem->creator->__toString();
+        }
 
 		self::insert_or_update_item(BLOCK_EXACOMP_DB_DESCRIPTORS, $descriptor);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_DESCRIPTORS, $descriptor);
@@ -2984,6 +2987,9 @@ class data_importer extends data {
 	private static function insert_topic($xmlItem, $parent = 0) {
 		$topic = self::parse_xml_item($xmlItem);
 		$topic->parentid = $parent;
+        if ($xmlItem->creator) {
+            $topic->author = $xmlItem->creator->__toString();
+        }
 		self::insert_or_update_item(BLOCK_EXACOMP_DB_TOPICS, $topic);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_TOPICS, $topic);
 

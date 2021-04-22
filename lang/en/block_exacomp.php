@@ -904,3 +904,4 @@ $string['data_imported_title'] = 'Import data immediately';
 $string['competence_overview_teacher_short'] = 'T:';
 $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Clear filter';
+$string['editor'] = 'Edited by';

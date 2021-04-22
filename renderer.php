@@ -1289,6 +1289,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if ($author = $example->get_author()) {
                             $title[] = block_exacomp_get_string('author', 'repository').": ".$author;
                         }
+                        if ($editor = $example->get_editor()) {
+                            $title[] = block_exacomp_get_string('editor').": ".$editor;
+                        }
                         if (trim(strip_tags($example->description))) {
                             $title[] = $example->description;
                         }
@@ -2488,9 +2491,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$title = [];
 				$title[] = block_exacomp_get_string('import_source', null, $this->source_info($descriptor->source));
-				if (isset($data->subject) && $author = $data->subject->get_author()) {
+                if ($author = $descriptor->get_author()) {
 					$title[] = block_exacomp_get_string('author', 'repository').": ".$author."\n";
 				}
+                if ($editor = $descriptor->get_editor()) {
+                    $title[] = block_exacomp_get_string('editor').": ".$editor."\n";
+                }
 
 				$title = join('<br />', $title);
                 if ($this->is_print_mode()) {
@@ -2924,6 +2930,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if ($author = $example->get_author()) {
                             $title[] = block_exacomp_get_string('author', 'repository').": ".$author;
                         }
+                        if ($editor = $example->get_editor()) {
+                            $title[] = block_exacomp_get_string('editor').": ".$editor;
+                        }
                         if (trim(strip_tags($example->description))) {
                             $title[] = $example->description;
                         }
@@ -2933,6 +2942,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if (trim($example->tips)) {
                             $title[] = $example->tips;
                         }
+
 
                         $title = join('<br />', $title);
 
@@ -3689,6 +3699,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                         if ($author = $example->get_author()) {
                             $title[] = block_exacomp_get_string('author', 'repository').": ".$author;
+                        }
+                        if ($editor = $example->get_editor()) {
+                            $title[] = block_exacomp_get_string('editor').": ".$editor;
                         }
                         if (trim(strip_tags($example->description))) {
                             $title[] = $example->description;

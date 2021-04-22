@@ -1830,7 +1830,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 
 	$sql = '
-		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
+		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting, d.author, d.editor
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
 		'.(($courseid > 0) ? ' JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') : '').'
 		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
@@ -1937,7 +1937,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
 	}
 
 	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
-		($mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting
+		($mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting, d.author, d.editor
 			FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d '
 		.($mindvisibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
 			.($showonlyvisible ? 'AND dvis.visible=1 ' : '') : '');
@@ -2000,7 +2000,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 //    }else{
         $examples = \block_exacomp\example::get_objects_sql(
             "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid, e.task,
-            e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author,
+            e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author, e.editor,
             e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
             de.sorting, e.courseid, e.activityid, e.activitylink, e.author_origin, e.is_teacherexample
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e

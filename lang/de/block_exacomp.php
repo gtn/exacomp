@@ -914,3 +914,4 @@ $string['data_imported_title'] = 'Daten jetzt importieren';
 $string['competence_overview_teacher_short'] = 'L:';
 $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Filter löschen';
+$string['editor'] = 'Überarbeitung durch';

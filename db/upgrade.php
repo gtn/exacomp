@@ -3743,6 +3743,41 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021040101, 'exacomp');
     }
 
+    if ($oldversion < 2021042200) {
+        // Add text info about author/editor
+        $table = new xmldb_table('block_exacompsubjects');
+        $field = new xmldb_field('editor', XMLDB_TYPE_TEXT, null, null, null, null, null, 'author');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $table = new xmldb_table('block_exacomptopics');
+        $field = new xmldb_field('author', XMLDB_TYPE_TEXT, null, null, null, null, null, 'creatorid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('editor', XMLDB_TYPE_TEXT, null, null, null, null, null, 'author');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $table = new xmldb_table('block_exacompdescriptors');
+        $field = new xmldb_field('author', XMLDB_TYPE_TEXT, null, null, null, null, null, 'creatorid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('editor', XMLDB_TYPE_TEXT, null, null, null, null, null, 'author');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $table = new xmldb_table('block_exacompexamples');
+        $field = new xmldb_field('editor', XMLDB_TYPE_TEXT, null, null, null, null, null, 'author');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_block_savepoint(true, 2021042200, 'exacomp');
+
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

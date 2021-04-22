@@ -3302,5 +3302,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Filter löschen',
         'Clear filter',
     ],
+    'editor' => [
+        'Überarbeitung durch',
+        'Edited by',
+    ],
+
     
 ];
