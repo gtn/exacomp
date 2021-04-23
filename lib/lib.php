@@ -1009,7 +1009,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 	}
 
 	$sql = '
-		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.isglobal
+		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?

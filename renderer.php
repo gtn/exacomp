@@ -282,18 +282,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         ]);
             }
 
-
+            $popupTitles = [
+                (($author = $subject->get_author()) ? block_exacomp_get_string('author', 'repository').": ".$author : '')
+            ];
+            if ($subject->get_editor()) {
+                $popupTitles[] = block_exacomp_get_string('editor').": ".$subject->get_editor();
+            }
+            $popuptitle = implode("\r\n", $popupTitles); // \r\n because it is common "title" attribute
 
             $content .= html_writer::tag('li',
                 html_writer::link(
                     new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS, 'colgroupid' => optional_param('colgroupid', 0, PARAM_INT)]),
                     $subject->title.$extra, [
                     'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
-                    'title' => (($author = $subject->get_author()) ? block_exacomp_get_string('author', 'repository').": ".$author : ''),
+                    'title' => $popuptitle,
                 ])
             );
-
-
 
             $studentid = 0;
             if (!$editmode && count($students) == 1) {
