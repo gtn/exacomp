@@ -14005,7 +14005,49 @@ class block_exacomp_external extends external_api {
     }
 
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_v_edit_course_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'courseid of course that should be edited', VALUE_DEFAULT, 0),
+            'fullname' => new external_value (PARAM_TEXT, 'new fullname of course'),
+            'shortname' => new external_value (PARAM_TEXT, 'new shortname of course'),
+        ));
+    }
 
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_v_edit_course( $courseid, $fullname, $shortname) {
+        static::validate_parameters(static::diggrplus_v_edit_course_parameters(), array(
+            'courseid' => $courseid,
+            'fullname' => $fullname,
+            'shortname' => $shortname
+        ));
+        global $DB;
+        block_exacomp_require_teacher($courseid);
+        $course = $DB->get_record('course', array('id' => $courseid));
+        $course->fullname = $fullname;
+        $course->shortname = $shortname;
+        $DB->update_record('course', $course);
+        return array("success" => true);
+    }
 
-
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_v_edit_course_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
 }

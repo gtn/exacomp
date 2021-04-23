@@ -1119,6 +1119,15 @@ get admin evaluation configurations',
 create example',
     'type' => 'write',
   ),
+  'diggrplus_v_edit_course' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_v_edit_course',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'Create an example or update it
+create example',
+    'type' => 'write',
+  ),
 );
 
 $services = array (
@@ -1260,6 +1269,7 @@ $services = array (
       127 => 'diggrplus_set_active_course_topics',
       128 => 'diggrplus_get_config',
       129 => 'diggrplus_annotate_example',
+      130 => 'diggrplus_v_edit_course',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,
