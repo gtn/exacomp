@@ -25,6 +25,7 @@ require_once $CFG->dirroot.'/mod/assign/locallib.php';
 require_once $CFG->dirroot.'/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot.'/lib/filelib.php';
 
+
 use block_exacomp\globals as g;
 //use tool_policy\api;
 //use tool_policy\policy_version;
@@ -14012,7 +14013,7 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_v_edit_course_parameters() {
         return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'courseid of course that should be edited', VALUE_DEFAULT, 0),
+            'courseid' => new external_value (PARAM_INT, 'courseid of course that should be edited'),
             'fullname' => new external_value (PARAM_TEXT, 'new fullname of course'),
             'shortname' => new external_value (PARAM_TEXT, 'new shortname of course'),
         ));
@@ -14050,4 +14051,126 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_v_create_or_update_student_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'courseid of course where the student should be added'),
+            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new', VALUE_DEFAULT, 0),
+            'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
+            'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_v_create_or_update_student($courseid, $userid = 0, $firstname, $lastname)
+    {
+        static::validate_parameters(static::diggrplus_v_create_or_update_student_parameters(), array(
+            'courseid' => $courseid,
+            'userid' => $userid,
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+        ));
+        global $CFG;
+        require_once $CFG->dirroot . '/lib/enrollib.php';
+        require_once $CFG->dirroot . '/user/lib.php';
+
+        if ($userid == 0) {
+            // create the student
+            $user = array(
+                'username' => $firstname . '-' . $lastname,
+                'password' => 'Diggrvpwd1!',
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'email' => 'student@diggrplus.com',
+                'description' => 'diggrv',
+            );
+            $userid = user_create_user($user);
+        } else {
+            $users = user_get_users_by_id([$userid]);
+            $user = array_pop($users);
+            $user->firstname = $firstname;
+            $user->lastname = $lastname;
+            user_update_user($user, false, false);
+        }
+
+        // enrol the student
+        $enrol = enrol_get_plugin("manual"); //enrolment = manual
+        $instances = enrol_get_instances($courseid, true);
+        $manualinstance = null;
+        foreach ($instances as $instance) {
+            if ($instance->enrol == "manual") {
+                $manualinstance = $instance;
+                break;
+            }
+        }
+
+        $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
+        return array("userid" => $userid);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_v_create_or_update_student_returns() {
+        return new external_single_structure (array(
+            'userid' => new external_value (PARAM_INT, 'userid of created or updated user'),
+        ));
+    }
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_v_delete_student_parameters() {
+        return new external_function_parameters (array(
+            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_v_delete_student( $userid) {
+        static::validate_parameters(static::diggrplus_v_delete_student_parameters(), array(
+            'userid' => $userid,
+        ));
+
+
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_v_delete_student_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
 }

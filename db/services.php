@@ -1128,6 +1128,24 @@ create example',
 create example',
     'type' => 'write',
   ),
+  'diggrplus_v_create_or_update_student' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_v_create_or_update_student',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'Create an example or update it
+create example',
+    'type' => 'write',
+  ),
+  'diggrplus_v_delete_student' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_v_delete_student',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'Create an example or update it
+create example',
+    'type' => 'write',
+  ),
 );
 
 $services = array (
@@ -1270,6 +1288,8 @@ $services = array (
       128 => 'diggrplus_get_config',
       129 => 'diggrplus_annotate_example',
       130 => 'diggrplus_v_edit_course',
+      131 => 'diggrplus_v_create_or_update_student',
+      132 => 'diggrplus_v_delete_student',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,

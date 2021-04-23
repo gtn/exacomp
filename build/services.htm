@@ -5891,9 +5891,8 @@ Params: <table>
 <td>courseid</td>
 <td>int</td>
 <td>null</td>
-<td>optional</td>
-<td>default: int(0)
-</td>
+<td>required</td>
+<td></td>
 <td>courseid of course that should be edited</td>
 <tr>
 <td>fullname</td>
@@ -5909,6 +5908,60 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>new shortname of course</td>
+</table>
+Returns:<pre>{
+    "success": "bool null (status)"
+}</pre>
+<h2>diggrplus_v_create_or_update_student</h2>
+<div>Create an example or update it
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>courseid of course where the student should be added</td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(0)
+</td>
+<td>userid of student. 0 if new</td>
+<tr>
+<td>firstname</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>firstname of student</td>
+<tr>
+<td>lastname</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>lastname of student</td>
+</table>
+Returns:<pre>{
+    "userid": "int null (userid of created or updated user)"
+}</pre>
+<h2>diggrplus_v_delete_student</h2>
+<div>Create an example or update it
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid of student. 0 if new</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)"
