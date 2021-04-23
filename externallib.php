@@ -14065,6 +14065,7 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new', VALUE_DEFAULT, 0),
             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+            'username' => new external_value (PARAM_TEXT, 'username to log in with'),
         ));
     }
 
@@ -14074,14 +14075,16 @@ class block_exacomp_external extends external_api {
      * @ws-type-write
      *
      * @return array
+     * @throws moodle_exception
      */
-    public static function diggrplus_v_create_or_update_student($courseid, $userid = 0, $firstname, $lastname)
+    public static function diggrplus_v_create_or_update_student($courseid, $userid = 0, $firstname, $lastname, $username)
     {
         static::validate_parameters(static::diggrplus_v_create_or_update_student_parameters(), array(
             'courseid' => $courseid,
             'userid' => $userid,
             'firstname' => $firstname,
             'lastname' => $lastname,
+            'username' => $username
         ));
         global $CFG;
         require_once $CFG->dirroot . '/lib/enrollib.php';
@@ -14090,20 +14093,27 @@ class block_exacomp_external extends external_api {
         if ($userid == 0) {
             // create the student
             $user = array(
-                'username' => $firstname . '-' . $lastname,
+                'username' => $username,
                 'password' => 'Diggrvpwd1!',
                 'firstname' => $firstname,
                 'lastname' => $lastname,
                 'email' => 'student@diggrplus.com',
                 'description' => 'diggrv',
+//                'suspended' => 1,
             );
             $userid = user_create_user($user);
         } else {
             $users = user_get_users_by_id([$userid]);
             $user = array_pop($users);
-            $user->firstname = $firstname;
-            $user->lastname = $lastname;
-            user_update_user($user, false, false);
+            if ($user->description == "diggrv") {
+                $user->firstname = $firstname;
+                $user->lastname = $lastname;
+                $user->username = $username;
+                user_update_user($user, false, false);
+            } else {
+                throw new moodle_exception('user is not a diggrv-student');
+            }
+
         }
 
         // enrol the student
@@ -14117,7 +14127,9 @@ class block_exacomp_external extends external_api {
             }
         }
 
+
         $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
+
         return array("userid" => $userid);
     }
 
