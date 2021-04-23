@@ -742,5 +742,21 @@
         <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="block_exacompsubjstudconfig" COMMENT="Settings for every student-subject configuration. Used for Diggrplus for priamry School (diggr-v)">
+      <FIELDS>
+          <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+          <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+          <FIELD NAME="subjectid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+          <FIELD NAME="spf" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+          <FIELD NAME="assess_with_grades" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+          <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+          <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+          <KEY NAME="niveauid" TYPE="foreign" FIELDS="niveauid" REFTABLE="block_exacompniveaus" REFFIELDS="id"/>
+          <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id" COMMENT="foreign key studentid"/>
+          <KEY NAME="subjectid" TYPE="foreign" FIELDS="subjectid" REFTABLE="block_exacompsubjects" REFFIELDS="id" COMMENT="foreign key subjectid"/>
+      </KEYS>
+    </TABLE>
   </TABLES>
 </XMLDB>

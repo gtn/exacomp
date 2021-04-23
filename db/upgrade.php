@@ -3773,9 +3773,32 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
         upgrade_block_savepoint(true, 2021042200, 'exacomp');
+    }
 
+    if ($oldversion < 2021042300) {
+        // Define table block_exacompsubjstudconfig to be created.
+        $table = new xmldb_table('block_exacompsubjstudconfig');
+        if (!$dbman->table_exists($table)) {
+            // Adding fields to table block_exacompexampannotation.
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field('studentid', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL);
+            $table->add_field('subjectid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('spf', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+            $table->add_field('assess_with_grades', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+            $table->add_field('niveauid', XMLDB_TYPE_INTEGER, '20');
+            // Adding keys to table block_exacompexampannotation.
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table->add_key('niveauid', XMLDB_KEY_FOREIGN, array('niveauid'), 'block_exacompniveaus', array('id'));
+            $table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
+            $table->add_key('subjectid', XMLDB_KEY_FOREIGN, array('subjectid'), 'block_exacompsubjects', array('id'));
+            // Conditionally launch create table for block_exacompexampannotation.
+            if (!$dbman->table_exists($table)) {
+                $dbman->create_table($table);
+            }
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021042300, 'exacomp');
     }
 
     /*
