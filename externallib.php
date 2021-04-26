@@ -14205,4 +14205,58 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_v_get_student_by_id_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT),
+            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     */
+    public static function diggrplus_v_get_student_by_id( $courseid, $userid) {
+        static::validate_parameters(static::diggrplus_v_get_student_by_id_parameters(), array(
+            'courseid' => $courseid,
+            'userid' => $userid,
+        ));
+        global $DB;
+
+        block_exacomp_require_diggrv_enabled();
+        block_exacomp_require_teacher($courseid);
+
+        $user = $DB->get_record('user', ['id' => $userid]);
+
+        if (block_exacomp_is_diggrv_student($user)) {
+            // only delete, if really is a diggrv user, else user just gets unenrolled
+            $DB->update_record('user', ['id' => $userid, 'deleted' => 1]);
+        }
+
+        return $user;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_v_get_student_by_id_returns() {
+        return new external_single_structure (array(
+            'id' => new external_value (PARAM_INT, 'id'),
+            'username' => new external_value (PARAM_TEXT, 'username'),
+            'firstname' => new external_value (PARAM_TEXT, 'firstname'),
+            'lastname' => new external_value (PARAM_TEXT, 'lastname'),
+            'email' => new external_value (PARAM_TEXT, 'email'),
+            'suspended' => new external_value (PARAM_BOOL, 'suspended')
+        ));
+    }
 }

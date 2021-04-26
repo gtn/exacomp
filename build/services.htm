@@ -5973,3 +5973,31 @@ Params: <table>
 Returns:<pre>{
     "success": "bool null (status)"
 }</pre>
+<h2>diggrplus_v_get_student_by_id</h2>
+<div>Create an example or update it
+create example</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<tr>
+<td>userid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>userid of student. 0 if new</td>
+</table>
+Returns:<pre>{
+    "id": "int null (id)",
+    "username": "text null (username)",
+    "firstname": "text null (firstname)",
+    "lastname": "text null (lastname)",
+    "email": "text null (email)",
+    "suspended": "bool null (suspended)"
+}</pre>
