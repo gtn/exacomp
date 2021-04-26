@@ -14086,6 +14086,8 @@ class block_exacomp_external extends external_api {
             'lastname' => $lastname,
             'username' => $username
         ));
+        // https://moodle.org/mod/forum/discuss.php?d=119161
+
         global $CFG;
         require_once $CFG->dirroot . '/lib/enrollib.php';
         require_once $CFG->dirroot . '/user/lib.php';
@@ -14094,12 +14096,14 @@ class block_exacomp_external extends external_api {
             // create the student
             $user = array(
                 'username' => $username,
-                'password' => 'Diggrvpwd1!',
+                'password' => $username,
                 'firstname' => $firstname,
                 'lastname' => $lastname,
                 'email' => 'student@diggrplus.com',
                 'description' => 'diggrv',
-//                'suspended' => 1,
+                'confirmed' => 1,
+                'mnethostid' => 1,
+                'suspended' => 1,
             );
             $userid = user_create_user($user);
         } else {
@@ -14153,7 +14157,7 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_v_delete_student_parameters() {
         return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
+            'userid' => new external_value (PARAM_INT, 'userid of student'),
         ));
     }
 
@@ -14168,8 +14172,13 @@ class block_exacomp_external extends external_api {
         static::validate_parameters(static::diggrplus_v_delete_student_parameters(), array(
             'userid' => $userid,
         ));
+        global $DB;
 
+        $student = $DB->get_record('user', array('id' => $userid));
 
+        if (!$student || !$student->description != 'diggrv') {
+            throw new invalid_parameter_exception ('Can not delete this user! It is not a diggrv-student.');
+        }
 
         return array("success" => true);
     }
@@ -14180,6 +14189,54 @@ class block_exacomp_external extends external_api {
      * @return external_multiple_structure
      */
     public static function diggrplus_v_delete_student_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_v_get_student_by_id_parameters() {
+        return new external_function_parameters (array(
+            'userid' => new external_value (PARAM_INT, 'userid of student'),
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     * @throws invalid_parameter_exception
+     */
+    public static function diggrplus_v_get_student_by_id( $userid) {
+        static::validate_parameters(static::diggrplus_v_get_student_by_id_parameters(), array(
+            'userid' => $userid,
+        ));
+        global $DB;
+
+        $student = $DB->get_record('user', array('id' => $userid));
+
+        if (!$student || !$student->description != 'diggrv') {
+            throw new invalid_parameter_exception ('Can not access this user! It is not a diggrv-student.');
+        }
+
+        return $student;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_v_get_student_by_id_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
