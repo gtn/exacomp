@@ -14238,10 +14238,8 @@ class block_exacomp_external extends external_api {
 
         $user = $DB->get_record('user', ['id' => $userid]);
 
-        if (block_exacomp_is_diggrv_student($user)) {
-            // only delete, if really is a diggrv user, else user just gets unenrolled
-            $DB->update_record('user', ['id' => $userid, 'deleted' => 1]);
-        }
+        //TODO: ausserordentlich
+
 
         return $user;
     }

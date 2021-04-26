@@ -286,6 +286,7 @@
         <FIELD NAME="gradingisold" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="shows if the grading is old / if there exists a newer grading in one of the childcompetences"/>
         <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence, even in different courses"/>
         <FIELD NAME="gradinghistory" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the history of gradings in this course on this descriptor"/>
+        <FIELD NAME="gradingtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that a teacher can write individually"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
