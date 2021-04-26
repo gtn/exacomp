@@ -21,7 +21,7 @@ function block_exacomp_diggrv_create_first_course() {
 
     if (block_exacomp_get_teacher_courses($USER->id)) {
         // already has one course
-        // return;
+        return;
     }
 
     // course_category exists?
