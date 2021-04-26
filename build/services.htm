@@ -5901,13 +5901,6 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>new fullname of course</td>
-<tr>
-<td>shortname</td>
-<td>text</td>
-<td>null</td>
-<td>required</td>
-<td></td>
-<td>new shortname of course</td>
 </table>
 Returns:<pre>{
     "success": "bool null (status)"
@@ -5947,12 +5940,12 @@ Params: <table>
 <td></td>
 <td>lastname of student</td>
 <tr>
-<td>username</td>
+<td>ausserordentlich</td>
 <td>text</td>
 <td>null</td>
 <td>required</td>
 <td></td>
-<td>username to log in with</td>
+<td></td>
 </table>
 Returns:<pre>{
     "userid": "int null (userid of created or updated user)"
@@ -5962,6 +5955,13 @@ Returns:<pre>{
 create example</div>
 <div>type: write</div>
 Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
 <tr>
 <td>userid</td>
 <td>int</td>

@@ -315,6 +315,9 @@ $DB->update_record('block_exacompapplogin', (object)[
 
 // actions after login:
 block_exacomp_turn_notifications_on();
+if (block_exacomp_is_diggrv_enabled()) { // && block_exacomp_is_teacher_in_any_course()
+    block_exacomp_diggrv_create_first_course();
+}
 
 $return_uri = $request_data->return_uri.'?moodle_token='.$applogin->moodle_data_token;
 
