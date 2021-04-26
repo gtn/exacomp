@@ -14107,6 +14107,8 @@ class block_exacomp_external extends external_api {
                 'email' => 'student@diggrplus.com',
                 'description' => 'diggrv',
                 'suspended' => 1,
+                'mnethostid' => 1,
+                'confirmed' => 1,
             );
             $userid = user_create_user($user);
         } else {
