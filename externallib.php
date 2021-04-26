@@ -14015,7 +14015,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'courseid of course that should be edited'),
             'fullname' => new external_value (PARAM_TEXT, 'new fullname of course'),
-            'shortname' => new external_value (PARAM_TEXT, 'new shortname of course'),
+            // 'shortname' => new external_value (PARAM_TEXT, 'new shortname of course'),
         ));
     }
 
@@ -14026,17 +14026,21 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_v_edit_course( $courseid, $fullname, $shortname) {
+    public static function diggrplus_v_edit_course( $courseid, $fullname) {
         static::validate_parameters(static::diggrplus_v_edit_course_parameters(), array(
             'courseid' => $courseid,
             'fullname' => $fullname,
-            'shortname' => $shortname
+            // 'shortname' => $shortname
         ));
         global $DB;
+
+        block_exacomp_require_diggrv_enabled();
         block_exacomp_require_teacher($courseid);
+
+
         $course = $DB->get_record('course', array('id' => $courseid));
         $course->fullname = $fullname;
-        $course->shortname = $shortname;
+        // $course->shortname = $shortname;
         $DB->update_record('course', $course);
         return array("success" => true);
     }
@@ -14065,7 +14069,7 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new', VALUE_DEFAULT, 0),
             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-            'username' => new external_value (PARAM_TEXT, 'username to log in with'),
+            'ausserordentlich' => new external_value (PARAM_TEXT),
         ));
     }
 
@@ -14077,44 +14081,48 @@ class block_exacomp_external extends external_api {
      * @return array
      * @throws moodle_exception
      */
-    public static function diggrplus_v_create_or_update_student($courseid, $userid = 0, $firstname, $lastname, $username)
+    public static function diggrplus_v_create_or_update_student($courseid, $userid = 0, $firstname, $lastname, $ausserordentlich)
     {
         static::validate_parameters(static::diggrplus_v_create_or_update_student_parameters(), array(
             'courseid' => $courseid,
             'userid' => $userid,
             'firstname' => $firstname,
             'lastname' => $lastname,
-            'username' => $username
+            'ausserordentlich' => $ausserordentlich
         ));
         global $CFG;
         require_once $CFG->dirroot . '/lib/enrollib.php';
         require_once $CFG->dirroot . '/user/lib.php';
 
+        block_exacomp_require_diggrv_enabled();
+        block_exacomp_require_teacher($courseid);
+
         if ($userid == 0) {
             // create the student
             $user = array(
-                'username' => $username,
-                'password' => 'Diggrvpwd1!',
+                'username' => 'diggrv-'.microtime(true),
+                'password' => generate_password(20),
                 'firstname' => $firstname,
                 'lastname' => $lastname,
                 'email' => 'student@diggrplus.com',
                 'description' => 'diggrv',
-//                'suspended' => 1,
+                'suspended' => 1,
             );
             $userid = user_create_user($user);
         } else {
             $users = user_get_users_by_id([$userid]);
             $user = array_pop($users);
-            if ($user->description == "diggrv") {
-                $user->firstname = $firstname;
-                $user->lastname = $lastname;
-                $user->username = $username;
-                user_update_user($user, false, false);
-            } else {
+
+            if (!block_exacomp_is_diggrv_student($user)) {
                 throw new moodle_exception('user is not a diggrv-student');
             }
 
+            $user->firstname = $firstname;
+            $user->lastname = $lastname;
+            user_update_user($user, false, false);
         }
+
+        // TODO: ausserordentlich
 
         // enrol the student
         $enrol = enrol_get_plugin("manual"); //enrolment = manual
@@ -14153,6 +14161,7 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_v_delete_student_parameters() {
         return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT),
             'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
         ));
     }
@@ -14161,15 +14170,27 @@ class block_exacomp_external extends external_api {
      * Create an example or update it
      * create example
      * @ws-type-write
-     *
-     * @return array
      */
-    public static function diggrplus_v_delete_student( $userid) {
+    public static function diggrplus_v_delete_student( $courseid, $userid) {
         static::validate_parameters(static::diggrplus_v_delete_student_parameters(), array(
+            'courseid' => $courseid,
             'userid' => $userid,
         ));
 
+        global $DB;
 
+        block_exacomp_require_diggrv_enabled();
+        block_exacomp_require_teacher($courseid);
+
+        $user = $DB->get_record('user', ['id' => $userid]);
+
+        // unenroll from course
+        role_unassign_all(array('userid'=>$userid, 'contextid'=>context_course::instance($courseid)->id));
+
+        if (block_exacomp_is_diggrv_student($user)) {
+            // only delete, if really is a diggrv user, else user just gets unenrolled
+            $DB->update_record('user', ['id' => $userid, 'deleted' => 1]);
+        }
 
         return array("success" => true);
     }
@@ -14184,5 +14205,4 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
-
 }
