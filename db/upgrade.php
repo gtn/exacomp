@@ -3819,6 +3819,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
 	// always normalize database after upgrade
 	block_exacomp\data::normalize_database();
+    block_exacomp_check_profile_fields();
 
 	return $return_result;
 }

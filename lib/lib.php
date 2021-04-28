@@ -12277,6 +12277,28 @@ function block_exacomp_get_date_of_birth($userid) {
     return date('d.m.Y', $timestamp);
 }
 
+function block_exacomp_set_custom_profile_field_value($userid, $fieldname, $value) {
+    $fieldid = g::$DB->get_field_sql("SELECT uif.id
+			FROM {user_info_field} uif
+			WHERE uif.shortname = ?
+			", [$fieldname]);
+    if ($fieldid > 0) {
+        $exists = g::$DB->get_record('user_info_data', ['userid' => $userid, 'fieldid' => $fieldid], '*', IGNORE_MULTIPLE);
+        if ($exists) {
+            $exists->data = $value;
+            $updated = g::$DB->update_record('user_info_data', $exists);
+        } else {
+            $data = new stdClass();
+            $data->userid = $userid;
+            $data->fieldid = $fieldid;
+            $data->data = $value;
+            $inserted = g::$DB->insert_record('user_info_data', $data);
+        }
+        return true;
+    }
+    return false;
+}
+
 //  /**
 //  * @param unknown $descriptorid
 //  * @param unknown $studentid
@@ -13425,4 +13447,55 @@ function block_exacomp_relate_komettranslator_to_exacomp(){
     }
 }
 
+function block_exacomp_is_user_in_course($userid, $courseid) {
+    $context = context_course::instance($courseid);
+
+    // also check for exacomp course?
+    // has_capability('block/exacomp:use', $context, $userid))
+    return is_enrolled($context, $userid, '', true);
+}
+
+function block_exacomp_check_profile_fields() {
+
+	$categoryid = g::$DB->get_field_sql("SELECT id FROM {user_info_category} ORDER BY sortorder LIMIT 1");
+	if (!$categoryid) {
+		$categoryid = g::$DB->insert_record('user_info_category', [
+			'name' => block_exacomp_get_string('profiledefaultcategory', 'admin'),
+			'sortorder' => 1,
+		]);
+	}
+
+	$sortorder = g::$DB->get_field_sql('SELECT MAX(sortorder) FROM {user_info_field} WHERE categoryid=?', [$categoryid]);
+
+	$fields = [
+		[
+			'shortname' => 'ausserordentlich',
+			'name' => block_exacomp_trans('de:Außerordentlich'),
+			'description' => '',
+			'datatype' => 'text',
+			'categoryid' => $categoryid,
+			'locked' => 1,
+			'required' => 0,
+			'visible' => 0,
+			'param1' => 30,
+			'param2' => 2048,
+			'param3' => 0,
+        ],
+	];
+
+	foreach ($fields as $field) {
+		$id = g::$DB->get_field('user_info_field', 'id', ['shortname' => $field['shortname']]);
+		if ($id) {
+			// don't update those:
+			unset($field['name']);
+			unset($field['description']);
+
+			g::$DB->update_record('user_info_field', $field, ['id' => $id]);
+		} else {
+			$sortorder++;
+			$field['sortorder'] = $sortorder;
+			g::$DB->insert_record('user_info_field', $field);
+		}
+	}
+}
 

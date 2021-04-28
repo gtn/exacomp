@@ -14099,18 +14099,32 @@ class block_exacomp_external extends external_api {
 
         if ($userid == 0) {
             // create the student
+            $username = 'diggrv-'.round((microtime(true)-1600000000)*1000);
             $user = array(
-                'username' => 'diggrv-'.microtime(true),
+                'username' => $username,
                 'password' => generate_password(20),
                 'firstname' => $firstname,
                 'lastname' => $lastname,
-                'email' => 'student@diggrplus.com',
+                'email' => $username.'@diggr-plus.at',
                 'description' => 'diggrv',
                 'suspended' => 1,
                 'mnethostid' => 1,
                 'confirmed' => 1,
             );
             $userid = user_create_user($user);
+
+            // enrol the student
+            $enrol = enrol_get_plugin("manual"); //enrolment = manual
+            $instances = enrol_get_instances($courseid, true);
+            $manualinstance = null;
+            foreach ($instances as $instance) {
+                if ($instance->enrol == "manual") {
+                    $manualinstance = $instance;
+                    break;
+                }
+            }
+
+            $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
         } else {
             $users = user_get_users_by_id([$userid]);
             $user = array_pop($users);
@@ -14118,27 +14132,16 @@ class block_exacomp_external extends external_api {
             if (!block_exacomp_is_diggrv_student($user)) {
                 throw new moodle_exception('user is not a diggrv-student');
             }
+            if (!block_exacomp_is_user_in_course($userid, $courseid)) {
+                throw new moodle_exception('user is not enrolled in course');
+            }
 
             $user->firstname = $firstname;
             $user->lastname = $lastname;
             user_update_user($user, false, false);
         }
 
-        // TODO: ausserordentlich
-
-        // enrol the student
-        $enrol = enrol_get_plugin("manual"); //enrolment = manual
-        $instances = enrol_get_instances($courseid, true);
-        $manualinstance = null;
-        foreach ($instances as $instance) {
-            if ($instance->enrol == "manual") {
-                $manualinstance = $instance;
-                break;
-            }
-        }
-
-
-        $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
+        block_exacomp_set_custom_profile_field_value($userid, 'ausserordentlich', $ausserordentlich);
 
         return array("userid" => $userid);
     }
@@ -14183,6 +14186,9 @@ class block_exacomp_external extends external_api {
 
         block_exacomp_require_diggrv_enabled();
         block_exacomp_require_teacher($courseid);
+        if (!block_exacomp_is_user_in_course($userid, $courseid)) {
+            throw new moodle_exception('user is not enrolled in course');
+        }
 
         $user = $DB->get_record('user', ['id' => $userid]);
 
@@ -14235,11 +14241,13 @@ class block_exacomp_external extends external_api {
 
         block_exacomp_require_diggrv_enabled();
         block_exacomp_require_teacher($courseid);
+        if (!block_exacomp_is_user_in_course($userid, $courseid)) {
+            throw new moodle_exception('user is not enrolled in course');
+        }
 
         $user = $DB->get_record('user', ['id' => $userid]);
 
-        //TODO: ausserordentlich
-
+        $user->ausserordentlich = block_exacomp_get_custom_profile_field_value($userid, 'ausserordentlich');
 
         return $user;
     }
@@ -14256,7 +14264,8 @@ class block_exacomp_external extends external_api {
             'firstname' => new external_value (PARAM_TEXT, 'firstname'),
             'lastname' => new external_value (PARAM_TEXT, 'lastname'),
             'email' => new external_value (PARAM_TEXT, 'email'),
-            'suspended' => new external_value (PARAM_BOOL, 'suspended')
+            'suspended' => new external_value (PARAM_BOOL, 'suspended'),
+            'ausserordentlich' => new external_value (PARAM_BOOL)
         ));
     }
 }

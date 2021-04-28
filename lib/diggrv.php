@@ -43,7 +43,7 @@ function block_exacomp_diggrv_create_first_course() {
     $course->fullname = 'Klasse - '.fullname($USER);
     $course->summary = '';
 
-    $course->idnumber = 'diggrv-'.microtime(true);
+    $course->idnumber = 'diggrv-'.round((microtime(true)-1600000000)*1000);
     // $course->format = $courseconfig->format;
     $course->visible = 1;
     // $course->newsitems = $courseconfig->newsitems;
