@@ -12996,7 +12996,7 @@ class block_exacomp_external extends external_api {
 	 * @param int|object $userid
 	 * @throws invalid_parameter_exception
 	 */
-	private static function require_can_access_course_user($courseid, $userid) {
+	public static function require_can_access_course_user($courseid, $userid) {
 		if ($courseid) {
 			// because in webservice block_exacomp_get_descriptors_for_example $courseid = 0
 
@@ -13037,7 +13037,7 @@ class block_exacomp_external extends external_api {
      * @param int $courseid
      * @param int|object $userid
      */
-    private static function can_access_course_user($courseid, $userid) {
+    public static function can_access_course_user($courseid, $userid) {
         if ($courseid) {
             // because in webservice block_exacomp_get_descriptors_for_example $courseid = 0
 
@@ -13395,7 +13395,7 @@ class block_exacomp_external extends external_api {
 		$item->timestampstudent = null;
 	}
 
-	protected function custom_htmltrim($string) {
+	public function custom_htmltrim($string) {
 	    //$string = strip_tags($string);
         $string = nl2br($string);
         $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>", "<sup>", "</sup>");
@@ -14004,268 +14004,5 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
-
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function diggrplus_v_edit_course_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'courseid of course that should be edited'),
-            'fullname' => new external_value (PARAM_TEXT, 'new fullname of course'),
-            // 'shortname' => new external_value (PARAM_TEXT, 'new shortname of course'),
-        ));
-    }
-
-    /**
-     * Create an example or update it
-     * create example
-     * @ws-type-write
-     *
-     * @return array
-     */
-    public static function diggrplus_v_edit_course( $courseid, $fullname) {
-        static::validate_parameters(static::diggrplus_v_edit_course_parameters(), array(
-            'courseid' => $courseid,
-            'fullname' => $fullname,
-            // 'shortname' => $shortname
-        ));
-        global $DB;
-
-        block_exacomp_require_diggrv_enabled();
-        block_exacomp_require_teacher($courseid);
-
-
-        $course = $DB->get_record('course', array('id' => $courseid));
-        $course->fullname = $fullname;
-        // $course->shortname = $shortname;
-        $DB->update_record('course', $course);
-        return array("success" => true);
-    }
-
-    /**
-     * Returns desription of method return values
-     *
-     * @return external_multiple_structure
-     */
-    public static function diggrplus_v_edit_course_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-        ));
-    }
-
-
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function diggrplus_v_create_or_update_student_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'courseid of course where the student should be added'),
-            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new', VALUE_DEFAULT, 0),
-            'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-            'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-            'ausserordentlich' => new external_value (PARAM_TEXT),
-        ));
-    }
-
-    /**
-     * Create an example or update it
-     * create example
-     * @ws-type-write
-     *
-     * @return array
-     * @throws moodle_exception
-     */
-    public static function diggrplus_v_create_or_update_student($courseid, $userid = 0, $firstname, $lastname, $ausserordentlich)
-    {
-        static::validate_parameters(static::diggrplus_v_create_or_update_student_parameters(), array(
-            'courseid' => $courseid,
-            'userid' => $userid,
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'ausserordentlich' => $ausserordentlich
-        ));
-        global $CFG;
-        require_once $CFG->dirroot . '/lib/enrollib.php';
-        require_once $CFG->dirroot . '/user/lib.php';
-
-        block_exacomp_require_diggrv_enabled();
-        block_exacomp_require_teacher($courseid);
-
-        if ($userid == 0) {
-            // create the student
-            $username = 'diggrv-'.round((microtime(true)-1600000000)*1000);
-            $user = array(
-                'username' => $username,
-                'password' => generate_password(20),
-                'firstname' => $firstname,
-                'lastname' => $lastname,
-                'email' => $username.'@diggr-plus.at',
-                'description' => 'diggrv',
-                'suspended' => 1,
-                'mnethostid' => 1,
-                'confirmed' => 1,
-            );
-            $userid = user_create_user($user);
-
-            // enrol the student
-            $enrol = enrol_get_plugin("manual"); //enrolment = manual
-            $instances = enrol_get_instances($courseid, true);
-            $manualinstance = null;
-            foreach ($instances as $instance) {
-                if ($instance->enrol == "manual") {
-                    $manualinstance = $instance;
-                    break;
-                }
-            }
-
-            $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
-        } else {
-            $users = user_get_users_by_id([$userid]);
-            $user = array_pop($users);
-
-            if (!block_exacomp_is_diggrv_student($user)) {
-                throw new moodle_exception('user is not a diggrv-student');
-            }
-            if (!block_exacomp_is_user_in_course($userid, $courseid)) {
-                throw new moodle_exception('user is not enrolled in course');
-            }
-
-            $user->firstname = $firstname;
-            $user->lastname = $lastname;
-            user_update_user($user, false, false);
-        }
-
-        block_exacomp_set_custom_profile_field_value($userid, 'ausserordentlich', $ausserordentlich);
-
-        return array("userid" => $userid);
-    }
-
-    /**
-     * Returns desription of method return values
-     *
-     * @return external_multiple_structure
-     */
-    public static function diggrplus_v_create_or_update_student_returns() {
-        return new external_single_structure (array(
-            'userid' => new external_value (PARAM_INT, 'userid of created or updated user'),
-        ));
-    }
-
-
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function diggrplus_v_delete_student_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT),
-            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
-        ));
-    }
-
-    /**
-     * Create an example or update it
-     * create example
-     * @ws-type-write
-     */
-    public static function diggrplus_v_delete_student( $courseid, $userid) {
-        static::validate_parameters(static::diggrplus_v_delete_student_parameters(), array(
-            'courseid' => $courseid,
-            'userid' => $userid,
-        ));
-
-        global $DB;
-
-        block_exacomp_require_diggrv_enabled();
-        block_exacomp_require_teacher($courseid);
-        if (!block_exacomp_is_user_in_course($userid, $courseid)) {
-            throw new moodle_exception('user is not enrolled in course');
-        }
-
-        $user = $DB->get_record('user', ['id' => $userid]);
-
-        // unenroll from course
-        role_unassign_all(array('userid'=>$userid, 'contextid'=>context_course::instance($courseid)->id));
-
-        if (block_exacomp_is_diggrv_student($user)) {
-            // only delete, if really is a diggrv user, else user just gets unenrolled
-            $DB->update_record('user', ['id' => $userid, 'deleted' => 1]);
-        }
-
-        return array("success" => true);
-    }
-
-    /**
-     * Returns desription of method return values
-     *
-     * @return external_multiple_structure
-     */
-    public static function diggrplus_v_delete_student_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-        ));
-    }
-
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function diggrplus_v_get_student_by_id_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT),
-            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
-        ));
-    }
-
-    /**
-     * Create an example or update it
-     * create example
-     * @ws-type-write
-     */
-    public static function diggrplus_v_get_student_by_id( $courseid, $userid) {
-        static::validate_parameters(static::diggrplus_v_get_student_by_id_parameters(), array(
-            'courseid' => $courseid,
-            'userid' => $userid,
-        ));
-        global $DB;
-
-        block_exacomp_require_diggrv_enabled();
-        block_exacomp_require_teacher($courseid);
-        if (!block_exacomp_is_user_in_course($userid, $courseid)) {
-            throw new moodle_exception('user is not enrolled in course');
-        }
-
-        $user = $DB->get_record('user', ['id' => $userid]);
-
-        $user->ausserordentlich = block_exacomp_get_custom_profile_field_value($userid, 'ausserordentlich');
-
-        return $user;
-    }
-
-    /**
-     * Returns desription of method return values
-     *
-     * @return external_multiple_structure
-     */
-    public static function diggrplus_v_get_student_by_id_returns() {
-        return new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id'),
-            'username' => new external_value (PARAM_TEXT, 'username'),
-            'firstname' => new external_value (PARAM_TEXT, 'firstname'),
-            'lastname' => new external_value (PARAM_TEXT, 'lastname'),
-            'email' => new external_value (PARAM_TEXT, 'email'),
-            'suspended' => new external_value (PARAM_BOOL, 'suspended'),
-            'ausserordentlich' => new external_value (PARAM_BOOL)
-        ));
-    }
 }
+
