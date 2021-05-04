@@ -1,3 +1,10 @@
+v4.6.5 (20200424)
+
+- New Field Editor to log which user has changed elements (competencies....), additional to author
+- Field Completefile which exists in Komet now also in new and edit example form
+- New Feature for Diggr (not diggr plus!): Create pdf-Certificate
+- New Configuration Setting for Dakora: Show overview, Show eportfolio
+
 v4.6.4 (2020120300)
 - New field teachermaterial. These materials are only shown for the teacher.
 - New tab "Overview". The complete grid/subject is displayed as a grid. teachergradings and studentgradings are displayed.
