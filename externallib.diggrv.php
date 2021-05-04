@@ -336,10 +336,11 @@ class block_exacomp_external_diggrv extends external_api {
             $elem_sub->assess_with_grades = !!$subjstudconfig->assess_with_grades;
 
             // TODO:
-            $elem_sub->mwd = 'M';
-            $elem_sub->teacherevaluation_text = 'test test test test test test';
-            $elem_sub->is_religion = true;
-            $elem_sub->is_pflichtgegenstand = true;
+            // $elem_sub->mwd = 'M';
+            $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
+            $elem_sub->teacherevaluation_text = $grading->gradingtext;
+            $elem_sub->is_religion = false;
+            $elem_sub->is_pflichtgegenstand = false;
             $elem_sub->is_freigegenstand = false;
 
             $elem_sub->topics = array();
@@ -362,7 +363,7 @@ class block_exacomp_external_diggrv extends external_api {
 
                     $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
                     $elem_desc->teacherevaluation = $grading->value;
-                    $elem_desc->teacherevaluation_text = $grading->gradingtext;
+                    // $elem_desc->teacherevaluation_text = $grading->gradingtext;
 
                     $elem_topic->descriptors[] = $elem_desc;
                 }
@@ -385,9 +386,9 @@ class block_exacomp_external_diggrv extends external_api {
             'competencetree' => new external_multiple_structure (new external_single_structure (array(
                 'id' => new external_value (PARAM_INT, 'id of subject'),
                 'title' => new external_value (PARAM_TEXT, 'title of subject'),
-                'mwd' => new external_value (PARAM_TEXT),
+                // 'mwd' => new external_value (PARAM_TEXT),
                 'teacherevaluation_text' => new external_value (PARAM_TEXT),
-                'assess_with_grades' => new external_value (PARAM_BOOL),
+                // 'assess_with_grades' => new external_value (PARAM_BOOL),
                 'is_religion' => new external_value (PARAM_BOOL),
                 'is_pflichtgegenstand' => new external_value (PARAM_BOOL),
                 'is_freigegenstand' => new external_value (PARAM_BOOL),
@@ -398,7 +399,7 @@ class block_exacomp_external_diggrv extends external_api {
                         'id' => new external_value (PARAM_INT, 'id of example'),
                         'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
                         'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-                        'teacherevaluation_text' => new external_value (PARAM_TEXT),
+                        // 'teacherevaluation_text' => new external_value (PARAM_TEXT),
                     ))),
                 ))),
             ))),
@@ -411,12 +412,13 @@ class block_exacomp_external_diggrv extends external_api {
             'courseid' => new external_value (PARAM_INT),
             'subjects' => new external_multiple_structure(new external_single_structure (array(
                 'id' => new external_value (PARAM_INT),
-                'assess_with_grades' => new external_value (PARAM_BOOL),
+                'teacherevaluation_text' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
+                // 'assess_with_grades' => new external_value (PARAM_BOOL),
             )), '', VALUE_OPTIONAL),
             'descriptors' => new external_multiple_structure(new external_single_structure (array(
                 'id' => new external_value (PARAM_INT),
                 'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
-                'teacherevaluation_text' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
+                // 'teacherevaluation_text' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
             )), ''),
         ));
     }
@@ -462,14 +464,18 @@ class block_exacomp_external_diggrv extends external_api {
                 throw new Exception('subject not allowed');
             }
 
-            g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
-                'assess_with_grades' => $subject_grading['assess_with_grades'],
-                // TODO:
-                // $elem_sub->mwd = 'M';
-                // $elem_sub->teacherevaluation_text = 'test test test test test test';
-                // $elem_sub->is_pflichtgegenstand = true;
-                // $elem_sub->is_freigegenstand = false;
-            ], ['studentid' => $userid, 'subjectid' => $subject_grading['id']]);
+            block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject_grading['id'], [
+                'gradingtext' => $subject_grading['teacherevaluation_text'],
+            ]);
+
+            // g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
+            //     'assess_with_grades' => $subject_grading['assess_with_grades'],
+            //     // TODO:
+            //     // $elem_sub->mwd = 'M';
+            //     // $elem_sub->teacherevaluation_text = 'test test test test test test';
+            //     // $elem_sub->is_pflichtgegenstand = true;
+            //     // $elem_sub->is_freigegenstand = false;
+            // ], ['studentid' => $userid, 'subjectid' => $subject_grading['id']]);
         }
 
         foreach ($descriptor_gradings as $descriptor_grading) {
@@ -479,12 +485,8 @@ class block_exacomp_external_diggrv extends external_api {
 
             block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor_grading['id'], [
                 'value' => $descriptor_grading['teacherevaluation'],
-                'gradingtext' => $descriptor_grading['teacherevaluation_text'],
+                // 'gradingtext' => $descriptor_grading['teacherevaluation_text'],
             ]);
-
-            // TODO:
-            // 'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
-            // 'teacherevaluation_text' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
         }
 
         return array("success" => true);

@@ -6482,9 +6482,7 @@ Returns:<pre>{
         {
             "id": "int null ('id of subject')",
             "title": "text null ('title of subject')",
-            "mwd": "text null",
             "teacherevaluation_text": "text null",
-            "assess_with_grades": "bool null",
             "is_religion": "bool null",
             "is_pflichtgegenstand": "bool null",
             "is_freigegenstand": "bool null",
@@ -6496,8 +6494,7 @@ Returns:<pre>{
                         {
                             "id": "int null ('id of example')",
                             "title": "text null ('title of descriptor')",
-                            "teacherevaluation": "int null ('teacher evaluation of descriptor')",
-                            "teacherevaluation_text": "text null"
+                            "teacherevaluation": "int null ('teacher evaluation of descriptor')"
                         },
                         "..."
                     ]
@@ -6538,7 +6535,7 @@ Params: <table>
 <td><pre>[
     {
         "id": "int null",
-        "assess_with_grades": "bool null"
+        "teacherevaluation_text": "text null"
     },
     "..."
 ]</pre></td>
@@ -6552,8 +6549,7 @@ Params: <table>
 <td><pre>[
     {
         "id": "int null",
-        "teacherevaluation": "int null",
-        "teacherevaluation_text": "text null"
+        "teacherevaluation": "int null"
     },
     "..."
 ]</pre></td>
