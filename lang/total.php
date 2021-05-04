@@ -1138,7 +1138,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Show examples from all courses',
 	],
 	'name_example' => [
-		'Name',
+		'Name des Lernmaterials',
 		'Name',
 	],
     'timeframe_example' => [
@@ -2136,7 +2136,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Example has already been added to at least one student\'s weekly schedule.',
 	],
 	'weekly_schedule_link_to_grid' => [
-		'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln',
+		'Um den Planungsspeicher zu befüllen in das Kompetenzraster wechseln',
 		'For adding examples to the schedule, please use the overview',
 	],
 	'pre_planning_storage' => [
