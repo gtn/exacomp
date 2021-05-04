@@ -47,6 +47,8 @@ call_user_func(function() {
     foreach ($externallibs as $externallib) {
         require_once __DIR__.'/../'.$externallib['file'];
 
+        $doku .= '<hr/><h1>Class: '.$externallib['className']."</h1><hr/>\n";
+
         $rc = new ReflectionClass($externallib['className']);
         $methods = $rc->getMethods(ReflectionMethod::IS_STATIC | ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
