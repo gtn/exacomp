@@ -99,6 +99,11 @@ class printer_TCPDF extends \TCPDF {
 }
 
 class printer {
+    static function getPdfPrinter($orientation) {
+	    $pdf = new printer_TCPDF($orientation);
+
+	    return $pdf;
+    }
 
 	static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
 	    ob_start();
@@ -120,7 +125,7 @@ class printer {
 			table {
 				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
 			}
-			
+
 			.exabis_comp_info {
 				background-color: #efefef;
 			}
@@ -129,7 +134,7 @@ class printer {
 			.exabis_comp_top_value {
 				font-weight: bold;
 			}
-				
+
 			tr.highlight {
 				background-color: #e6e6e6;
 			}
@@ -165,7 +170,7 @@ class printer {
 
 			$pdf->writeHTML($html_table);
 		}
-		
+
  		//die();
 		$pdf->Output();
 
@@ -201,12 +206,12 @@ class printer {
 			}
 			table.pdf-userdata, table.pdf-userdata td {
 			    border: none;
-			}			
+			}
 			table.statistictables, table.statistictables td {
 			    border: none;
 			}
 			table.statistictable {
-                width: 90%;			
+                width: 90%;
 			}
 			table.statistictable td.cell-th {
                 background-color: #e6e6e6;
@@ -216,18 +221,18 @@ class printer {
 			}
 			table.comparisontable tr.comparison_topic {
 			    background-color: #e6e6e6;
-			}  			
+			}
 			table.comparisontable td.col-numbering {
 			    width: 5%;
-			}            			
+			}
 			table.competence_profile_timelinegraph, table.competence_profile_timelinegraph td {
-			    border: none;			 
-			}			
-									
-									
+			    border: none;
+			}
+
+
 			.exabis_comp_info {
 				background-color: #efefef;
-			}				
+			}
 			tr.pdf-highlight {
 				background-color: #e6e6e6;
 			}
@@ -461,12 +466,12 @@ class printer {
 			.state9 {
 				background-color: #593d1e;
 			}
-			
+
 			.state10 {
 				background-color: #593d1e;
 				opacity: 0.5;
 			}
-			
+
 			.different-course {
 				background-color: #acbcca;
 			}
@@ -759,11 +764,11 @@ class printer {
 				width: 100%;
                 border: 1px solid #E3DFD4;
 			}
-			
+
 			th {
-                background-color: #e6e6e6;			    
+                background-color: #e6e6e6;
 			}
-				
+
 			tr.highlight {
 				background-color: #e6e6e6;
 			}
@@ -823,7 +828,7 @@ class printer {
 			* {
 				font-size: 9pt;
 			}
-			h3 {                
+			h3 {
                 font-size: 24pt;
             }
 			div {
@@ -870,14 +875,14 @@ class printer {
 			* {
 				font-size: 9pt;
 			}
-			h1 {                
+			h1 {
                 font-size: 18pt;
             }
-			h2 {                
-                font-size: 14pt;                
+			h2 {
+                font-size: 14pt;
             }
-			h3 {                
-                font-size: 14pt;                
+			h3 {
+                font-size: 14pt;
             }
             .toCenter {
                 text-align:center;
@@ -925,14 +930,14 @@ class printer {
 			* {
 				font-size: 9pt;
 			}
-			h1 {                
+			h1 {
                 font-size: 18pt;
             }
-			h2 {                
-                font-size: 14pt;                
+			h2 {
+                font-size: 14pt;
             }
-			h3 {                
-                font-size: 14pt;                
+			h3 {
+                font-size: 14pt;
             }
             .toCenter {
                 text-align:center;

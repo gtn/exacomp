@@ -503,6 +503,178 @@ class block_exacomp_external_diggrv extends external_api {
         ));
     }
 
+    public static function diggrplus_v_print_student_grading_report_parameters() {
+        return new external_function_parameters (array(
+            'userid' => new external_value (PARAM_INT),
+            'courseid' => new external_value (PARAM_INT),
+        ));
+    }
+
+    /**
+     * @ws-type-read
+     */
+    public static function diggrplus_v_print_student_grading_report($userid, $courseid) {
+        global $USER, $DB;
+
+        static::validate_parameters(static::diggrplus_v_print_student_grading_report_parameters(), array(
+            'userid' => $userid,
+            'courseid' => $courseid,
+        ));
+
+        block_exacomp_external::require_can_access_course_user($courseid, $userid);
+        $courses = enrol_get_users_courses($userid);
+        $course = $courses[$courseid];
+        $user = $DB->get_record('user', ['id' => $userid]);
+
+        $structure = array();
+
+        $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
+
+        $subjects_html = '';
+        foreach ($tree as $subject) {
+            if (empty($subject->topics)) {
+                continue;
+            }
+
+            //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
+            //     <b>W:</b> verschiedene Wege zu unterschiedlichen Bezugspunkten beschreiben; einfache geografische Gegebenheiten der Umgebung beschreiben; über die verantwortungsvolle Nutzung der Dinge des täglichen Lebens Bescheid wissen; unterschiedliche Berufe und deren Aufgabenfelder beschreiben<br/>
+            //     <b>D:</b> alte und neue Gegenstände beschreiben und mit den jeweiligen Lebensumständen in Zusammenhang bringen; über alle Zeitabläufe eines Jahres (Minuten, Stunden, Tage, Wochen, Monate, Jahreszeiten) Bescheid wissen und Auskunft geben<br/>
+            //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
+            //     </td>
+            // </tr>'.
+
+            $subject_content_html = [];
+            foreach ($subject->topics as $topic) {
+                foreach ($topic->descriptors as $descriptor) {
+                    if (!$descriptor->visible) {
+                        continue;
+                    }
+
+                    $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+                    // TODO: activate
+                    // if (!$grading->value) {
+                    //     // skip not graded items
+                    //     continue;
+                    // }
+
+                    if (!$subject_content_html[$descriptor->niveauid]) {
+                        $subject_content_html[$descriptor->niveauid] = '<b>'.static::custom_htmltrim($descriptor->niveau_title).':</b> ';
+                    }
+
+                    $subject_content_html[$descriptor->niveauid] .= static::custom_htmltrim($descriptor->title).', ';
+                }
+            }
+
+            $subject_content_html = array_map(function($item) {
+                // remove trailing colon
+                return trim($item, ', ');
+            }, $subject_content_html);
+            $subject_content_html = join('<br/>', $subject_content_html);
+
+            $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
+            if ($gradingtext = trim($grading->gradingtext)) {
+                if ($subject_content_html) {
+                    $subject_content_html .= '<br/><br/><b>Zusätzliche Informationen:</b><br/>';
+                }
+
+                $subject_content_html .= $gradingtext;
+            }
+
+            if (!$subject_content_html) {
+                $subject_content_html .= '-';
+            }
+
+            $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($subject->title).'</td>';
+            $subjects_html .= '<td>';
+            $subjects_html .= $subject_content_html;
+            $subjects_html .= '</td></tr>';
+        }
+
+        $pdf = \block_exacomp\printer::getPdfPrinter('P');
+        $pdf->SetFont('times', '', 9);
+        $pdf->setHeaderFont(['times', '', 9]);
+        $pdf->SetLeftMargin(20);
+        $pdf->SetRightMargin(20);
+
+        $pdf->setStyle('
+			* {
+				font-size: 10pt;
+			}
+			div {
+				padding: 0;
+				margin: 0;
+			}
+
+			table.header {
+			    padding: 0;
+            }
+            table.content {
+                padding: 3px 6pt;
+            }
+            table.content td {
+                border: 0.2pt solid black;
+            }
+        ');
+
+        $pdf->writeHTML('
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <div style="text-align: center;">Bezeichnung und Standort der Schule</div>
+            <br/>
+            <br/>
+            <div style="text-align: center; font-size: 20pt;">Schriftliche Erläuterung zur Ziffernbeurteilung</div>
+            <br/>
+            <br/>
+            <br/>
+            <table class="header"><tr>
+                <td>für '.fullname($user).'</td>
+                <td style="text-align: right">Schuljahr 2021/2022</td>
+            </tr></table>
+            <br/>
+            <br/>
+            <br/>
+            <table class="content">
+                <tr nobr="true">
+                    <td style="width: 30%"></td>
+                    <td style="width: 70%"><b>Die Schülerin/der Schüler hat folgende Anforderungen*) erfüllt:</b></td>
+                </tr>'.
+            $subjects_html.
+            // '<tr nobr="true">
+            //     <td>Sachunterricht</td>
+            //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
+            //     <b>W:</b> verschiedene Wege zu unterschiedlichen Bezugspunkten beschreiben; einfache geografische Gegebenheiten der Umgebung beschreiben; über die verantwortungsvolle Nutzung der Dinge des täglichen Lebens Bescheid wissen; unterschiedliche Berufe und deren Aufgabenfelder beschreiben<br/>
+            //     <b>D:</b> alte und neue Gegenstände beschreiben und mit den jeweiligen Lebensumständen in Zusammenhang bringen; über alle Zeitabläufe eines Jahres (Minuten, Stunden, Tage, Wochen, Monate, Jahreszeiten) Bescheid wissen und Auskunft geben<br/>
+            //     <br/>
+            //     <b>Zusätzliche Informationen:</b><br/>
+            //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
+            //     </td>
+            // </tr>'.
+            '</table>
+            <br/><br/><br/>
+            <br/><br/><br/>
+            <div nobr="true">
+                <table class="header"><tr>
+                    <td style="width: 40%; text-align: center;">...................................................<br/>Schul-/Clusterleitung</td>
+                    <td style="width: 20%; text-align: center;">Rund-<br/>siegel</td>
+                    <td style="width: 40%; text-align: center;">...................................................<br/>Klassenlehrer/Klassenlehrerin</td>
+                </tr></table>
+
+                <br/><br/><br/><br/>
+                *) Anforderungsniveaus: Mindestanforderungen (M), wesentliche Anforderungen (W), (weit) darüber hinausgehende Anforderungen (D)
+            </div>
+        ');
+        $pdf->Output();
+        exit;
+    }
+
+    public static function diggrplus_v_print_student_grading_report_returns() {
+        return new external_single_structure (array(
+            'pdf' => new external_value (PARAM_FILE),
+        ));
+    }
+
     protected function custom_htmltrim($string) {
         return block_exacomp_external::custom_htmltrim($string);
     }
