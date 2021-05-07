@@ -3812,6 +3812,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021042601, 'exacomp');
     }
 
+    if ($oldversion < 2021050700) {
+        // Remove gradingtext field for diggrv
+        $table = new xmldb_table('block_exacompcompuser');
+        $field = new xmldb_field('gradingtext', XMLDB_TYPE_TEXT);
+
+        // Conditionally launch drop field gradingtext.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021050700, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
