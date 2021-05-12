@@ -1,4 +1,4 @@
-v4.6.5 (20200424)
+v4.6.5 (2021042200)
 - Annotation for examples added: Diggrplus webservices can annotate examples, e.g. adding a description to an example in a specific course, but not changing the example itself
 - If the plugin "moodle-local_komettranslator" is installed, moodle-competency-frameworks can be created from komet-subjects and grading of those moodle-competencies grades the corresponding komet-competencies as well
 - URLs to diggrplus installations can now be allowed in the exacomp admin settings
