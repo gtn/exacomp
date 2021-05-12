@@ -1,5 +1,9 @@
 v4.6.5 (20200424)
-
+- Annotation for examples added: Diggrplus webservices can annotate examples, e.g. adding a description to an example in a specific course, but not changing the example itself
+- If the plugin "moodle-local_komettranslator" is installed, moodle-competency-frameworks can be created from komet-subjects and grading of those moodle-competencies grades the corresponding komet-competencies as well
+- URLs to diggrplus installations can now be allowed in the exacomp admin settings
+- Notifications are automatically turned on if a user logs into diggr-plus
+- Notifications created by dakora and diggrplus webservices now contain "customdata" to describe which app created the notification
 - New Field Editor to log which user has changed elements (competencies....), additional to author
 - Field Completefile which exists in Komet now also in new and edit example form
 - New Feature for Diggr (not diggr plus!): Create pdf-Certificate
