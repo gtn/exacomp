@@ -334,11 +334,14 @@ class block_exacomp_external_diggrv extends external_api {
             // $elem_sub->teacherevaluation = $student->subjects->teacher[$subject->id];
             // $elem_sub->studentevaluation = $student->subjects->student[$subject->id];
             $elem_sub->assess_with_grades = !!$subjstudconfig->assess_with_grades;
+            $elem_sub->spf = !!$subjstudconfig->spf; // this makes it false instead of null if nothing exists
+            $elem_sub->teacherevaluation_text = $subjstudconfig->infotext;
 
             // TODO:
             // $elem_sub->mwd = 'M';
-            $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
-            $elem_sub->teacherevaluation_text = $grading->gradingtext;
+            //$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
+            // $grading is not used, because the gradingtext is now stored in the subjstudconfig->infotext, not in the compuser table
+
             $elem_sub->is_religion = false;
             $elem_sub->is_pflichtgegenstand = false;
             $elem_sub->is_freigegenstand = false;
@@ -391,7 +394,8 @@ class block_exacomp_external_diggrv extends external_api {
                 'title' => new external_value (PARAM_TEXT, 'title of subject'),
                 // 'mwd' => new external_value (PARAM_TEXT),
                 'teacherevaluation_text' => new external_value (PARAM_TEXT),
-                // 'assess_with_grades' => new external_value (PARAM_BOOL),
+                'assess_with_grades' => new external_value (PARAM_BOOL),
+                'spf' => new external_value (PARAM_BOOL),
                 'is_religion' => new external_value (PARAM_BOOL),
                 'is_pflichtgegenstand' => new external_value (PARAM_BOOL),
                 'is_freigegenstand' => new external_value (PARAM_BOOL),
@@ -418,7 +422,8 @@ class block_exacomp_external_diggrv extends external_api {
             'subjects' => new external_multiple_structure(new external_single_structure (array(
                 'id' => new external_value (PARAM_INT),
                 'teacherevaluation_text' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
-                // 'assess_with_grades' => new external_value (PARAM_BOOL),
+                'assess_with_grades' => new external_value (PARAM_BOOL),
+                'spf' => new external_value (PARAM_BOOL),
             )), '', VALUE_OPTIONAL),
             'descriptors' => new external_multiple_structure(new external_single_structure (array(
                 'id' => new external_value (PARAM_INT),
@@ -469,18 +474,18 @@ class block_exacomp_external_diggrv extends external_api {
                 throw new Exception('subject not allowed');
             }
 
-            block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject_grading['id'], [
-                'gradingtext' => $subject_grading['teacherevaluation_text'],
-            ]);
+            block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject_grading['id'], null);
 
-            // g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
-            //     'assess_with_grades' => $subject_grading['assess_with_grades'],
-            //     // TODO:
-            //     // $elem_sub->mwd = 'M';
-            //     // $elem_sub->teacherevaluation_text = 'test test test test test test';
-            //     // $elem_sub->is_pflichtgegenstand = true;
-            //     // $elem_sub->is_freigegenstand = false;
-            // ], ['studentid' => $userid, 'subjectid' => $subject_grading['id']]);
+             g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
+                 'assess_with_grades' => $subject_grading['assess_with_grades'],
+                 'spf' => $subject_grading['spf'],
+                 'infotext' => $subject_grading['teacherevaluation_text'],
+                 // TODO:
+                 // $elem_sub->mwd = 'M';
+                 // $elem_sub->teacherevaluation_text = 'test test test test test test';
+                 // $elem_sub->is_pflichtgegenstand = true;
+                 // $elem_sub->is_freigegenstand = false;
+             ], ['studentid' => $userid, 'subjectid' => $subject_grading['id']]);
         }
 
         foreach ($descriptor_gradings as $descriptor_grading) {
