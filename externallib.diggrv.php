@@ -335,12 +335,12 @@ class block_exacomp_external_diggrv extends external_api {
             // $elem_sub->studentevaluation = $student->subjects->student[$subject->id];
             $elem_sub->assess_with_grades = !!$subjstudconfig->assess_with_grades;
             $elem_sub->spf = !!$subjstudconfig->spf; // this makes it false instead of null if nothing exists
-            $elem_sub->teacherevaluation_text = $subjstudconfig->infotext;
+            $elem_sub->personalisedtext = $subjstudconfig->personalisedtext;
 
             // TODO:
             // $elem_sub->mwd = 'M';
             //$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
-            // $grading is not used, because the gradingtext is now stored in the subjstudconfig->infotext, not in the compuser table
+            // $grading is not used, because the personalisedtext is now stored in the subjstudconfig->personalisedtext, not in the compuser table
 
             $elem_sub->is_religion = false;
             $elem_sub->is_pflichtgegenstand = false;
@@ -369,7 +369,7 @@ class block_exacomp_external_diggrv extends external_api {
 
                     $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
                     $elem_desc->teacherevaluation = $grading->value;
-                    // $elem_desc->teacherevaluation_text = $grading->gradingtext;
+                    $elem_desc->personalisedtext = $grading->personalisedtext;
 
                     $elem_topic->descriptors[] = $elem_desc;
                 }
@@ -393,7 +393,7 @@ class block_exacomp_external_diggrv extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of subject'),
                 'title' => new external_value (PARAM_TEXT, 'title of subject'),
                 // 'mwd' => new external_value (PARAM_TEXT),
-                'teacherevaluation_text' => new external_value (PARAM_TEXT),
+                'personalisedtext' => new external_value (PARAM_TEXT),
                 'assess_with_grades' => new external_value (PARAM_BOOL),
                 'spf' => new external_value (PARAM_BOOL),
                 'is_religion' => new external_value (PARAM_BOOL),
@@ -408,7 +408,7 @@ class block_exacomp_external_diggrv extends external_api {
                         'niveauid' => new external_value (PARAM_INT),
                         'niveau_title' => new external_value (PARAM_TEXT),
                         'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-                        // 'teacherevaluation_text' => new external_value (PARAM_TEXT),
+                        // 'personalisedtext' => new external_value (PARAM_TEXT),
                     ))),
                 ))),
             ))),
@@ -421,14 +421,14 @@ class block_exacomp_external_diggrv extends external_api {
             'courseid' => new external_value (PARAM_INT),
             'subjects' => new external_multiple_structure(new external_single_structure (array(
                 'id' => new external_value (PARAM_INT),
-                'teacherevaluation_text' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
+                'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
                 'assess_with_grades' => new external_value (PARAM_BOOL),
                 'spf' => new external_value (PARAM_BOOL),
             )), '', VALUE_OPTIONAL),
             'descriptors' => new external_multiple_structure(new external_single_structure (array(
                 'id' => new external_value (PARAM_INT),
                 'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
-                // 'teacherevaluation_text' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
+                // 'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
             )), ''),
         ));
     }
@@ -479,10 +479,10 @@ class block_exacomp_external_diggrv extends external_api {
              g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
                  'assess_with_grades' => $subject_grading['assess_with_grades'],
                  'spf' => $subject_grading['spf'],
-                 'infotext' => $subject_grading['teacherevaluation_text'],
+                 'personalisedtext' => $subject_grading['personalisedtext'],
                  // TODO:
                  // $elem_sub->mwd = 'M';
-                 // $elem_sub->teacherevaluation_text = 'test test test test test test';
+                 // $elem_sub->personalisedtext = 'test test test test test test';
                  // $elem_sub->is_pflichtgegenstand = true;
                  // $elem_sub->is_freigegenstand = false;
              ], ['studentid' => $userid, 'subjectid' => $subject_grading['id']]);
@@ -495,7 +495,7 @@ class block_exacomp_external_diggrv extends external_api {
 
             block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor_grading['id'], [
                 'value' => $descriptor_grading['teacherevaluation'],
-                // 'gradingtext' => $descriptor_grading['teacherevaluation_text'],
+                // 'personalisedtext' => $descriptor_grading['personalisedtext'],
             ]);
         }
 
@@ -577,12 +577,12 @@ class block_exacomp_external_diggrv extends external_api {
             $subject_content_html = join('<br/>', $subject_content_html);
 
             $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
-            if ($gradingtext = trim($grading->gradingtext)) {
+            if ($personalisedtext = trim($grading->personalisedtext)) {
                 if ($subject_content_html) {
                     $subject_content_html .= '<br/><br/><b>Zusätzliche Informationen:</b><br/>';
                 }
 
-                $subject_content_html .= $gradingtext;
+                $subject_content_html .= $personalisedtext;
             }
 
             if (!$subject_content_html) {

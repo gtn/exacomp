@@ -3848,6 +3848,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021051700, 'exacomp');
     }
 
+    if ($oldversion < 2021051701) {
+        /* block_exacompsubjstudconfig, change field infotext to personalisedtext */
+        $table = new xmldb_table('block_exacompsubjstudconfig');
+        $field = new xmldb_field('infotext', XMLDB_TYPE_INTEGER, '11');
+        if ($dbman->field_exists($table, $field)){
+            $dbman->rename_field($table, $field, 'personalisedtext');
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021051701, 'exacomp');
+    }
+
+
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

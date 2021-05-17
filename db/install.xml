@@ -751,7 +751,7 @@
           <FIELD NAME="spf" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
           <FIELD NAME="assess_with_grades" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
           <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-          <FIELD NAME="infotext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text a teacher can write individually for each student and subject"/>
+          <FIELD NAME="personalisedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text a teacher can write individually for each student and subject"/>
       </FIELDS>
       <KEYS>
           <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
