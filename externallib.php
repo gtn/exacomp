@@ -11523,20 +11523,23 @@ class block_exacomp_external extends external_api {
 
             // Only use the course the teacher is interested in (e.g. a student could be in 5 courses, but the teacher only wants to see the results of the student in his course
             if ($courseid != -1) {
-                $courses = enrol_get_users_courses($userid);
+                $courses = static::get_courses($userid);
                 $courses = array_filter($courses, function($course) use ($courseid) {
-                    return $course->id == $courseid;
+                    return $course["courseid"] == $courseid;
                 });
             } else {
-                $courses = enrol_get_users_courses($userid);
+//                $courses = enrol_get_users_courses($userid);
+                $courses = static::get_courses($userid); // this is better, because it checks for existance of exabis Blocks as well as for visibility
             }
 
             foreach ($courses as $course) {
-                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
+//                if($course->visible){
+                $courseExamples = block_exacomp_get_examples_by_course($course["courseid"], true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $example) {
-                    static::block_excomp_get_example_details($example, $course->id);
+                    static::block_excomp_get_example_details($example, $course["courseid"]);
                 }
                 $examples += $courseExamples;
+//                }
             }
         }else if($comptype == BLOCK_EXACOMP_TYPE_SUBJECT){
             //Get ALL examples, then only use the ones of the correct subject.
@@ -11545,17 +11548,17 @@ class block_exacomp_external extends external_api {
              * examples of all 5 topics will be returned, making this function unsuitable for getting examples of a course
              * ==> use $courseid
              */
-            $courses = enrol_get_users_courses($userid);
+            $courses = static::get_courses($userid); // this is better, because it checks for existance of exabis Blocks as well as for visibility
 
             if($courseid != -1){
                 $courses = array_filter($courses, function($course) use ($courseid) {
-                    return $course->id == $courseid;
+                    return $course["courseid"] == $courseid;
                 });
             }
 
 
             foreach ($courses as $course) {
-                $courseExamples = block_exacomp_get_examples_by_course($course->id, true, $search, true); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course["courseid"], true, $search, true); // TODO: duplicates?
                 foreach ($courseExamples as $key => $example) {
                     $exampleSubjects = block_exacomp_get_subjects_by_example($example->id);
                     if(!in_array($compid, $exampleSubjects)){
@@ -11569,7 +11572,7 @@ class block_exacomp_external extends external_api {
                                 continue;
                             }
                         }
-                        static::block_excomp_get_example_details($example, $course->id);
+                        static::block_excomp_get_example_details($example, $course["courseid"]);
                     }
                 }
 
