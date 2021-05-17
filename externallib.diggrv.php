@@ -341,6 +341,7 @@ class block_exacomp_external_diggrv extends external_api {
             // $elem_sub->mwd = 'M';
             //$grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
             // $grading is not used, because the personalisedtext is now stored in the subjstudconfig->personalisedtext, not in the compuser table
+            // 2021_05_17 now it could be stored in both, but we use the one from  subjstudconfig for faster access without any joins (redundant data: bad)
 
             $elem_sub->is_religion = false;
             $elem_sub->is_pflichtgegenstand = false;
@@ -408,7 +409,7 @@ class block_exacomp_external_diggrv extends external_api {
                         'niveauid' => new external_value (PARAM_INT),
                         'niveau_title' => new external_value (PARAM_TEXT),
                         'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-                        // 'personalisedtext' => new external_value (PARAM_TEXT),
+                        'personalisedtext' => new external_value (PARAM_TEXT),
                     ))),
                 ))),
             ))),
@@ -428,7 +429,7 @@ class block_exacomp_external_diggrv extends external_api {
             'descriptors' => new external_multiple_structure(new external_single_structure (array(
                 'id' => new external_value (PARAM_INT),
                 'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
-                // 'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
+                'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
             )), ''),
         ));
     }
@@ -495,7 +496,7 @@ class block_exacomp_external_diggrv extends external_api {
 
             block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor_grading['id'], [
                 'value' => $descriptor_grading['teacherevaluation'],
-                // 'personalisedtext' => $descriptor_grading['personalisedtext'],
+                'personalisedtext' => $descriptor_grading['personalisedtext'],
             ]);
         }
 
