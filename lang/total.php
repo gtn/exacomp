@@ -440,6 +440,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'',
 		'',
 	],
+	'settings_diggrv_enabled' => [
+		'Diggrv Enabled',
+		'Diggrv Enabled',
+	],
+	'settings_diggrv_enabled_description' => [
+		'',
+		'',
+	],
     'dakora_teachers' => [
         'Dakoralehrer',
         'Dakorateachers',
@@ -3307,5 +3315,5 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Edited by',
     ],
 
-    
+
 ];
