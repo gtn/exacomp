@@ -3837,6 +3837,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021050701, 'exacomp');
     }
 
+    if ($oldversion < 2021051700) {
+        // Add personalisedtext field for diggrv
+        $table = new xmldb_table('block_exacompcompuser');
+        $field = new xmldb_field('personalisedtext', XMLDB_TYPE_TEXT);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021051700, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
