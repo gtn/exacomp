@@ -224,7 +224,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     var new_list = document.getElementById(\'id_s_exacomp_assessment_verbose_options\').value;
                     var new_options = new_list.split(\',\');
                     var selectbox = document.getElementById(\'id_s_exacomp_assessment_verbose_negative\');
-                    var selected_value = selectbox.value;      
+                    var selected_value = selectbox.value;
                     var j;
                     for(j = selectbox.options.length - 1 ; j >= 0 ; j--) {
                         selectbox.remove(j);
@@ -233,7 +233,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         var doc = selectbox.ownerDocument;
                         var option = doc.createElement("option");
                         option.text = elem.trim();
-                        option.value = i;                      
+                        option.value = i;
                         doc = null;
                         if (selectbox.add.length === 2){
                             selectbox.add(option, null); // standards compliant
@@ -446,19 +446,19 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         };
                         if (elementsList[i].tagName.toLowerCase() == \'select\') {
                             var options = elementsList[i].options;
-                            for (var j = 0, lopt = options.length; j < lopt; j++) {                                                
-                                options[j].removeAttribute(\'disabled\');                                                                                                                                        
+                            for (var j = 0, lopt = options.length; j < lopt; j++) {
+                                options[j].removeAttribute(\'disabled\');
                             }
                         };
                         elementsList[i].removeAttribute("readOnly");
                         elementsList[i].removeAttribute("disabled");
                         elementsList[i].style.opacity = 1;
-                    }		           
+                    }
                     if (selectedValue > 0) {
-                        var preconfigData = preconfigurations[selectedValue];                        
+                        var preconfigData = preconfigurations[selectedValue];
                         var preconfigObject = JSON.parse(preconfigData);
                         for (var property in preconfigObject) {
-                            if (preconfigObject.hasOwnProperty(property)) {                                
+                            if (preconfigObject.hasOwnProperty(property)) {
                                 switch(property) {
                                     case \'assessment_example_scheme\':
                                     case \'assessment_example_diffLevel\':
@@ -493,10 +493,10 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                         break;
                                     default:
                                         var inputname = \'s_exacomp_\'+property;
-                                        break;                                      
+                                        break;
                                 }
                                 var inputvalue = preconfigObject[property];
-                                var elementsList = document.getElementsByName(inputname);                                
+                                var elementsList = document.getElementsByName(inputname);
                                 for (var i = 0, length = elementsList.length; i < length; i++) {
                                     var tag = elementsList[i].tagName.toLowerCase();
                                     var elementType = elementsList[i].type.toLowerCase();
@@ -505,21 +505,21 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                                 switch (elementType) {
                                                     case \'radio\':
                                                         if (elementsList[i].value == inputvalue) {
-                                                            elementsList[i].checked = true;                                                      
+                                                            elementsList[i].checked = true;
                                                         } else {
                                                             elementsList[i].checked = false;
                                                             elementsList[i].disabled = \'disabled\';
                                                         }
                                                         break;
-                                                    case \'checkbox\':                                                        
+                                                    case \'checkbox\':
                                                         if (inputvalue == 1) {
-                                                            elementsList[i].checked = true;                                                      
+                                                            elementsList[i].checked = true;
                                                         } else {
                                                             elementsList[i].checked = false;
                                                         }
                                                         elementsList[i].onclick = function () { return false; };
                                                         elementsList[i].onkeydown = function () { return false; };
-                                                        elementsList[i].style.opacity = 0.5;                                                        
+                                                        elementsList[i].style.opacity = 0.5;
                                                         break;
                                                     case \'text\':
                                                         elementsList[i].value = inputvalue;
@@ -530,9 +530,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                         case \'select\':
                                                 elementsList[i].value = inputvalue;
                                                 var options = elementsList[i].options;
-                                                for (var j = 0, lopt = options.length; j < lopt; j++) {                                                
+                                                for (var j = 0, lopt = options.length; j < lopt; j++) {
                                                     if (options[j].value != inputvalue) {
-                                                        options[j].disabled = \'disabled\';                                                                                                        
+                                                        options[j].disabled = \'disabled\';
                                                     }
                                                 }
                                                 break;
@@ -541,11 +541,11 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                                 elementsList[i].readOnly = true;
                                                 break;
                                     }
-                                }                                
+                                }
                             }
                         }
                     } else {
-                        // Doings if selected "no preconfigarate"                                              
+                        // Doings if selected "no preconfigarate"
                     }
 		        }
 		    ';
@@ -800,7 +800,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                             var isHidden = false;
                             if (table.offsetParent === null) {
                                 isHidden = true;
-                            } 
+                            }
                             if (isHidden) {
                                 table.style.display = \'block\';
                                 iconOpen.style.display = \'none\';
@@ -809,7 +809,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                                 table.style.display = \'none\';
                                 iconOpen.style.display = \'inline-block\';
                                 iconClose.style.display = \'none\';                            }
-                            
+
                         }';
             $return .= '</script>';
 
@@ -1198,6 +1198,10 @@ $settings->add(new admin_setting_configcheckbox('exacomp/export_password',
 $settings->add(new admin_setting_configtextarea('exacomp/applogin_redirect_urls',
         block_exacomp_get_string('settings_applogin_redirect_urls'),
         block_exacomp_get_string('settings_applogin_redirect_urls_description'),''));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/diggrv_enabled',
+        block_exacomp_get_string('settings_diggrv_enabled'),
+        block_exacomp_get_string('settings_diggrv_enabled_description'), 0, 1, 0));
 
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',

@@ -1,7 +1,9 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die;
+
 function block_exacomp_is_diggrv_enabled() {
-    return true; // TODO make a setting
+    return get_config('exacomp', 'diggrv_enabled');
 }
 
 function block_exacomp_require_diggrv_enabled() {
