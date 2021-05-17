@@ -1615,7 +1615,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	], $savegradinghistory);
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
-		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $compid, $comptype);
+		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $compid, $comptype, $options['notification_customdata']);
         if($subjectid == -1){
             $subject = block_exacomp_get_subject_by_descriptorid($compid);
         }else{
@@ -6508,7 +6508,7 @@ function block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$c
  * @param char $source  'S' for student, 'T' for teacher individually, 'C' for central.. if teacher assigns many at one time
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null, $customdata) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
@@ -6533,15 +6533,15 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 	    $subcategoryexamples = block_exacomp_get_eThema_children($exampleid);
         foreach ($subcategoryexamples as $example) {
             if ($example->ethema_issubcategory) {
-                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 1, $source, false, $distributionid);
+                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 1, $source, false, $distributionid, $customdata);
             } else {
-                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source, false, $distributionid);
+                block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source, false, $distributionid, $customdata);
             }
         }
 	} else if ($ethema_issubcategory) {
         $childexamples = block_exacomp_get_eThema_children($exampleid);
         foreach ($childexamples as $example) {
-            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source, false, $distributionid);
+            block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source, false, $distributionid, $customdata);
         }
 	} else {
         $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array(
@@ -6563,7 +6563,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
         //also, don't send notifications for ics_imports
         if (!$icsBackgroundEvent) {
             if ($creatorid != $studentid && $studentid > 0) {
-                block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+                block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid, $customdata);
             }
         }
         \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
@@ -8522,9 +8522,12 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 	$context = block_exacomp_get_string('notification_submission_context');
 
     if($CFG->version >= 2019052000){ //This is the version Number for Moodle 3.7.0
-        block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */, [
-            'exampleid' => $example->id
-        ]);
+        if(!$customdata){
+            $customdata = [
+                'exampleid' => $example->id
+            ];
+        }
+        block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0 /* kA wieso hier keine courseid --danielp */, $customdata);
     }else{
         block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl, false, 0, $customdata /* kA wieso hier keine courseid --danielp */);
     }
@@ -8603,7 +8606,7 @@ function block_exacomp_notify_all_teachers_about_self_assessment($courseid,$comp
  * @throws dml_exception
  * @throws moodle_exception
  */
-function block_exacomp_send_grading_notification($userfrom, $userto, $courseid, $compid, $comptype) {
+function block_exacomp_send_grading_notification($userfrom, $userto, $courseid, $compid, $comptype, $customdata) {
 	global $CFG, $USER, $SITE, $DB;
 
 	$course = get_course($courseid);
@@ -8624,7 +8627,7 @@ function block_exacomp_send_grading_notification($userfrom, $userto, $courseid, 
 
 
 
-	block_exacomp_send_notification("grading", $userfrom, $userto, $subject, $message, $context, $viewurl);
+	block_exacomp_send_notification("grading", $userfrom, $userto, $subject, $message, $context, $viewurl, null, null, $customdata);
 }
 
 /**
@@ -8650,7 +8653,7 @@ function block_exacomp_notify_students_about_grading($courseid, $students) {
  * @param unknown $courseid
  * @param unknown $exampleid
  */
-function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $courseid, $exampleid) {
+function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $courseid, $exampleid, $customdata) {
 	global $CFG, $USER, $DB, $SITE;
 
 	$course = get_course($courseid);
@@ -8662,7 +8665,7 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
 	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid, 'exampleid' => $exampleid));
 	//$viewurl = $CFG->wwwroot.'/blocks/exacomp/weekly_schedule.php?courseid='.$courseid.'&exampleid='.$exampleid;
 
-	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl, false, $courseid);
+	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl, false, $courseid, $customdata);
 }
 
 /**

@@ -2933,15 +2933,22 @@ class block_exacomp_external extends external_api {
                 $mapping = false;
             }
         }
+
+        $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'courseid' => $courseid, 'descriptorid' => $compid, 'userid' => $userid];
+
 		if ($mapping && $role == BLOCK_EXACOMP_ROLE_TEACHER) { // grade ==> mapping needed, save mapped value and save additionalinfo
 		    //check if teacher, because the student sends the selfevaluationvalue in $value, not in $additinalinfo
 		    $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
-		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid, $subjectid, false) < 0) {
+            if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid, $subjectid, false, [
+                    'notification_customdata' => $customdata
+                ]) < 0) {
 		        throw new invalid_parameter_exception ('Not allowed');
 		    }
 		    block_exacomp_save_additional_grading_for_comp($courseid, $compid, $userid, $additionalinfo, $comptype);
 		} else {    // not grade ==> no mapping needed, just save the adittionalinfo into value
-		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid, $subjectid, true) < 0) {
+		    if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid, $subjectid, true, [
+                    'notification_customdata' => $customdata
+                ]) < 0) {
 		        throw new invalid_parameter_exception ('Not allowed');
 		    }
 		}
@@ -3782,13 +3789,15 @@ class block_exacomp_external extends external_api {
 
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
 
+        $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'add_example_to_learning_calendar', 'exampleid' => $exampleid];
+
 		if ($forall) {
             $source = 'C';
  			$students = block_exacomp_get_students_by_course($courseid);
             //Add to all the students
 			foreach ($students as $student) {
 			    if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
-			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source);
+			        block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source, null, null, $customdata);
 				}
 			}
 		} else {
@@ -3796,12 +3805,12 @@ class block_exacomp_external extends external_api {
 		        $students = block_exacomp_groups_get_members($courseid,$groupid);
 		        foreach ($students as $student) {
 		            if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
-		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source);
+		                block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source, null, null, $customdata);
 		            }
 		        }
 		    }else{ // add for single student
 		        if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
-		            block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source);
+		            block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid,null,null,-1,-1,$source, null, null, $customdata);
 		        }
 		    }
 		}
@@ -6332,7 +6341,7 @@ class block_exacomp_external extends external_api {
 		}
 
 		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentvalue);
-        $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'submit_example', 'itemid' => $itemid, 'itemuserid' => $item->userid];
+        $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'submit_example', 'itemid' => $itemid, 'itemuserid' => $item->userid, 'exampleid' => $exampleid];
 		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time(),$studentcomment, $customdata);
 		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
