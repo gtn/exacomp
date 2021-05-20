@@ -3860,16 +3860,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021051701, 'exacomp');
     }
 
-    if ($oldversion < 2021052000) {
+    if ($oldversion < 2021052001) {
         /* block_exacompsubjstudconfig, change field infotext to personalisedtext ---> XMLDB_TYPE_TEXT ! */
         $table = new xmldb_table('block_exacompsubjstudconfig');
-        $field = new xmldb_field('infotext', XMLDB_TYPE_TEXT);
-        if ($dbman->field_exists($table, $field)){
-            $dbman->rename_field($table, $field, 'personalisedtext');
-        }
+        $field = new xmldb_field('personalisedtext', XMLDB_TYPE_TEXT);
+        $dbman->change_field_type($table, $field);
 
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2021052000, 'exacomp');
+        upgrade_block_savepoint(true, 2021052001, 'exacomp');
     }
 
 
