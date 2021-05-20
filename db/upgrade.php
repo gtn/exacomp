@@ -3851,13 +3851,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     if ($oldversion < 2021051701) {
         /* block_exacompsubjstudconfig, change field infotext to personalisedtext */
         $table = new xmldb_table('block_exacompsubjstudconfig');
-        $field = new xmldb_field('infotext', XMLDB_TYPE_INTEGER, '11');
+        $field = new xmldb_field('infotext', XMLDB_TYPE_TEXT);
         if ($dbman->field_exists($table, $field)){
             $dbman->rename_field($table, $field, 'personalisedtext');
         }
 
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2021051701, 'exacomp');
+    }
+
+    if ($oldversion < 2021052000) {
+        /* block_exacompsubjstudconfig, change field infotext to personalisedtext ---> XMLDB_TYPE_TEXT ! */
+        $table = new xmldb_table('block_exacompsubjstudconfig');
+        $field = new xmldb_field('infotext', XMLDB_TYPE_TEXT);
+        if ($dbman->field_exists($table, $field)){
+            $dbman->rename_field($table, $field, 'personalisedtext');
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021052000, 'exacomp');
     }
 
 
