@@ -3864,7 +3864,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         /* block_exacompsubjstudconfig, change field infotext to personalisedtext ---> XMLDB_TYPE_TEXT ! */
         $table = new xmldb_table('block_exacompsubjstudconfig');
         $field = new xmldb_field('personalisedtext', XMLDB_TYPE_TEXT);
-        $dbman->change_field_type($table, $field);
+        if ($dbman->field_exists($table, $field)){
+	        $dbman->change_field_type($table, $field);
+	      }
+        
 
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2021052001, 'exacomp');
