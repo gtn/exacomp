@@ -441,7 +441,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'',
 	],
 	'settings_diggrv_enabled' => [
-		'Diggrv Enabled',
+		'Anlegen von Userkonten über App',
 		'Diggrv Enabled',
 	],
 	'settings_diggrv_enabled_description' => [
