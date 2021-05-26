@@ -99,4 +99,8 @@ function block_exacomp_diggrv_create_first_course() {
     $DB->insert_record('block_instances', $blockinstance);
     // alternative:
     // add_block_at_end_of_default_region
+
+    // only allow manual enrolment method
+    // status=1 = disabled, strange but true
+    $DB->execute("UPDATE {enrol} SET status=1 WHERE enrol<>'manual' AND courseid=?", [$courseid]);
 }
