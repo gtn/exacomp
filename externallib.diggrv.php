@@ -343,7 +343,12 @@ class block_exacomp_external_diggrv extends external_api {
             // $grading is not used, because the personalisedtext is now stored in the subjstudconfig->personalisedtext, not in the compuser table
             // 2021_05_17 now it could be stored in both, but we use the one from  subjstudconfig for faster access without any joins (redundant data: bad)
 
-            $elem_sub->is_religion = str_contains($subject->title, "religion"); // religion is written the same way in english and german.. other language would need a different solution
+//            $elem_sub->is_religion = str_contains($subject->title, "religion"); // str_contains only is available in PHP8
+            $elem_sub->is_religion = strpos($subject->title, "religion"); // religion is written the same way in english and german.. other language would need a different solution
+            if(strpos($subject->title, "religion") !== false || strpos($subject->title, "Religion") !== false){ // careful: 0 if position at 0
+                $elem_sub->is_religion = true;
+            }
+
             $elem_sub->is_pflichtgegenstand = false;
             $elem_sub->is_freigegenstand = false;
 
