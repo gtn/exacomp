@@ -677,6 +677,9 @@ class block_exacomp_external_diggrv extends external_api {
                 *) Anforderungsniveaus: Mindestanforderungen (M), wesentliche Anforderungen (W), (weit) darüber hinausgehende Anforderungen (D)
             </div>
         ');
+
+
+        header('Access-Control-Allow-Origin: *');
         $pdf->Output();
         exit;
     }
