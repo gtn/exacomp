@@ -542,6 +542,13 @@ class block_exacomp_external_diggrv extends external_api {
                 continue;
             }
 
+            $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $userid, 'subjectid' => $subject->id]);
+
+            if (!$subjstudconfig->assess_with_grades) {
+                // skip
+                continue;
+            }
+
             //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
             //     <b>W:</b> verschiedene Wege zu unterschiedlichen Bezugspunkten beschreiben; einfache geografische Gegebenheiten der Umgebung beschreiben; über die verantwortungsvolle Nutzung der Dinge des täglichen Lebens Bescheid wissen; unterschiedliche Berufe und deren Aufgabenfelder beschreiben<br/>
             //     <b>D:</b> alte und neue Gegenstände beschreiben und mit den jeweiligen Lebensumständen in Zusammenhang bringen; über alle Zeitabläufe eines Jahres (Minuten, Stunden, Tage, Wochen, Monate, Jahreszeiten) Bescheid wissen und Auskunft geben<br/>
@@ -557,17 +564,17 @@ class block_exacomp_external_diggrv extends external_api {
                     }
 
                     $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-                    // TODO: activate
-                    // if (!$grading->value) {
-                    //     // skip not graded items
-                    //     continue;
-                    // }
+                    if (!$grading->value) {
+                        // skip not graded items
+                        continue;
+                    }
 
                     if (!$subject_content_html[$descriptor->niveauid]) {
                         $subject_content_html[$descriptor->niveauid] = '<b>'.static::custom_htmltrim($descriptor->niveau_title).':</b> ';
                     }
 
-                    $subject_content_html[$descriptor->niveauid] .= static::custom_htmltrim($descriptor->title).', ';
+                    $title = trim($grading->personalisedtext) ? $grading->personalisedtext : $descriptor->title;
+                    $subject_content_html[$descriptor->niveauid] .= static::custom_htmltrim($title).', ';
                 }
             }
 
@@ -577,8 +584,7 @@ class block_exacomp_external_diggrv extends external_api {
             }, $subject_content_html);
             $subject_content_html = join('<br/>', $subject_content_html);
 
-            $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject->id);
-            if ($personalisedtext = trim($grading->personalisedtext)) {
+            if ($personalisedtext = trim($subjstudconfig->personalisedtext)) {
                 if ($subject_content_html) {
                     $subject_content_html .= '<br/><br/><b>Zusätzliche Informationen:</b><br/>';
                 }
@@ -671,6 +677,9 @@ class block_exacomp_external_diggrv extends external_api {
                 *) Anforderungsniveaus: Mindestanforderungen (M), wesentliche Anforderungen (W), (weit) darüber hinausgehende Anforderungen (D)
             </div>
         ');
+
+
+        header('Access-Control-Allow-Origin: *');
         $pdf->Output();
         exit;
     }
