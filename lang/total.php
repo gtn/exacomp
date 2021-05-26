@@ -441,12 +441,12 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'',
 	],
 	'settings_diggrv_enabled' => [
-		'Anlegen von Userkonten über App',
+		'Diggrv aktivieren',
 		'Diggrv Enabled',
 	],
 	'settings_diggrv_enabled_description' => [
-		'',
-		'',
+		'Anlegen von Userkonten über App erlauben.',
+		'Allow creating users in the Diggrv-app.',
 	],
     'dakora_teachers' => [
         'Dakoralehrer',
