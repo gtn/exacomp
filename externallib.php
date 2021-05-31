@@ -5007,7 +5007,16 @@ class block_exacomp_external extends external_api {
 
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 
-		foreach ($examples as $example) {
+		foreach ($examples as $exampleKey => $example) {
+            // filter by is_teacherexample (only for teachers)
+            // TODO: may move this code to block_exacomp_get_examples_for_start_end_all_courses()? (is this needed to other example lists?)
+            if (!$isTeacher) {
+                if ($example->is_teacherexample) {
+                    unset($examples[$exampleKey]);
+                    continue;
+                }
+            }
+
             $example->title = static::custom_htmltrim(strip_tags($example->title));
 // 		    //Taxonomies:
 		    $taxonomies='';

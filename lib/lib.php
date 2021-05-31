@@ -7697,7 +7697,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker, e.timeframe as timeframe
+				e.schedule_marker, e.timeframe as timeframe, e.is_teacherexample
 				-- evalniveau.title as niveau,
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
@@ -7716,7 +7716,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker, e.timeframe as timeframe
+				e.schedule_marker, e.timeframe as timeframe, e.is_teacherexample
 				-- evalniveau.title as niveau,
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
