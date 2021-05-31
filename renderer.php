@@ -2445,6 +2445,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentid = array_values($students)[0]->id;
 				$one_student = true;
 			}
+			if ($editmode && $tempstudentid = optional_param('studentid', 0, PARAM_INT)) {
+				$studentid = $tempstudentid;
+				$one_student = true;
+			}
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
 			//TODO: if used, always visible?
 			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid);
@@ -2527,7 +2531,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if ($isEditingTeacher && ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_descriptor_visible($data->courseid, $descriptor, 0)))) {
 						if ($descriptor_used) {
 							$titleCell->text .= html_writer::span($this->local_pix_icon("visibility_lock.png", block_exacomp_get_string('competence_locked'), array('height' => '18')), 'imglocked', array('title' => block_exacomp_get_string('competence_locked')));
-
 						} else {
 							$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
 						}

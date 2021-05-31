@@ -6903,9 +6903,10 @@ function block_exacomp_is_niveau_visible($courseid, $topicid, $studentid, $nivea
 
 /**
  * visibility for descriptor in course and user context
- * @param unknown $courseid
+ * @param integer $courseid
  * @param unknown $descriptor
- * @param unknown $studentid
+ * @param integer $studentid
+ * @param bool $mindTopicVisibility
  * @return boolean
  */
 function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid, $mindTopicVisibility=true) {
@@ -6932,6 +6933,7 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid,
         return false;
     }
 
+    // visibility --for-all--  more important that visibility of concrete user, so - check it first
     $visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, 0);
     if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
         $visibleDescriptors[$courseid][$descriptor->id][$studentid] = false;
