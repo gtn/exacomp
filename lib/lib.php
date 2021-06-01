@@ -262,7 +262,7 @@ function block_exacomp_init_js_weekly_schedule() {
     // fullcalendar.js has a few changes from origin: regarding to language wordings
     // This fullcalendar.js can broke working of Moodle JS merging
     // So - generate fullcalendar.min.js and use it
-    //$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
+//    $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.min.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/locale-all.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/jquery.ui.touch.js');
@@ -3701,7 +3701,7 @@ function block_exacomp_get_eportfolioitem_association($students) {
 			$hash = 0;
 
 			$sql = '
-				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner
+				SELECT CONCAT_WS(\'_\', v.id, vs.userid, v.shareall, v.externaccess, vb.id) as uniqid, vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner
 				  FROM {block_exaportviewblock} vb
 				    JOIN {block_exaportview} v ON vb.viewid=v.id
 				    LEFT JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid
@@ -6508,7 +6508,7 @@ function block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$c
  * @param char $source  'S' for student, 'T' for teacher individually, 'C' for central.. if teacher assigns many at one time
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null, $customdata) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null, $customdata = null) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
@@ -7809,7 +7809,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 		$example_array['exampleid'] = $example->exampleid;
 		$example_array['niveau'] = isset($example->niveau) ? $example->niveau : null;
 		$example_array['description'] = isset($example->description) ? $example->description : "";
-        $example_array['activityid'] = $example->activityid;
+        $example_array['activityid'] = isset($example->activityid) ? $example->activityid : 0;
 
 		if ($mind_eval) {
 			$example_array['student_evaluation'] = $example->student_evaluation;
