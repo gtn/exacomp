@@ -334,6 +334,7 @@ class block_exacomp_external_diggrv extends external_api {
             // $elem_sub->teacherevaluation = $student->subjects->teacher[$subject->id];
             // $elem_sub->studentevaluation = $student->subjects->student[$subject->id];
             $elem_sub->assess_with_grades = !!$subjstudconfig->assess_with_grades;
+            $elem_sub->is_pflichtgegenstand = !!$subjstudconfig->is_pflichtgegenstand;
             $elem_sub->spf = !!$subjstudconfig->spf; // this makes it false instead of null if nothing exists
             $elem_sub->personalisedtext = $subjstudconfig->personalisedtext;
 
@@ -349,7 +350,7 @@ class block_exacomp_external_diggrv extends external_api {
                 $elem_sub->is_religion = true;
             }
 
-            $elem_sub->is_pflichtgegenstand = false;
+            //$elem_sub->is_pflichtgegenstand = false;
             $elem_sub->is_freigegenstand = false;
 
             $elem_sub->topics = array();
@@ -429,6 +430,7 @@ class block_exacomp_external_diggrv extends external_api {
                 'id' => new external_value (PARAM_INT),
                 'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
                 'assess_with_grades' => new external_value (PARAM_BOOL),
+                'is_pflichtgegenstand' => new external_value (PARAM_BOOL, VALUE_OPTIONAL),
                 'spf' => new external_value (PARAM_BOOL),
             )), '', VALUE_OPTIONAL),
             'descriptors' => new external_multiple_structure(new external_single_structure (array(
@@ -484,6 +486,7 @@ class block_exacomp_external_diggrv extends external_api {
 
              g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
                  'assess_with_grades' => $subject_grading['assess_with_grades'],
+                 'is_pflichtgegenstand' => $subject_grading['is_pflichtgegenstand'],
                  'spf' => $subject_grading['spf'],
                  'personalisedtext' => $subject_grading['personalisedtext'],
                  // TODO:

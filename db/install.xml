@@ -750,6 +750,7 @@
           <FIELD NAME="subjectid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
           <FIELD NAME="spf" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
           <FIELD NAME="assess_with_grades" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+          <FIELD NAME="is_pflichtgegenstand" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
           <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
           <FIELD NAME="personalisedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text a teacher can write individually for each student and subject"/>
       </FIELDS>
