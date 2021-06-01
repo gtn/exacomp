@@ -328,14 +328,13 @@ switch($action){
         }
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
-
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end);
-		foreach($examples as $example){
+		foreach ($examples as $example){
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
 		}
-		$json_examples = block_exacomp_get_json_examples($examples);
+        $json_examples = block_exacomp_get_json_examples($examples);
 
-		echo json_encode($json_examples);
+        echo json_encode($json_examples);
 		exit;
 	case 'get-weekly-schedule-configuration':
 		//$studentid = required_param('studentid', PARAM_INT);
