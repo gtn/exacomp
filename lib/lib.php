@@ -5550,10 +5550,22 @@ function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjec
  */
 function block_exacomp_delete_crosssub($crosssubjid) {
 	global $DB;
-	//delete student association if crosssubject is deleted
-	$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid' => $crosssubjid));
-  $DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid));
-	return $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
+    //delete examples that were created specifically only for this cross_subject
+    block_exacomp_delete_examples_for_crosssubject($crosssubjid);
+
+    // TODO: pruefen ob mein crosssubj?
+
+    //delete student-crosssubject association
+    $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
+
+    //delete descriptor-crosssubject association
+    $DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjid));
+
+    //delete crosssubject overall evaluations
+    $DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid'=>$crosssubjid, 'comptype'=>BLOCK_EXACOMP_TYPE_CROSSSUB));
+
+    //delete crosssubject
+    $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
 }
 
 /**
@@ -12342,11 +12354,28 @@ function block_exacomp_set_custom_profile_field_value($userid, $fieldname, $valu
 			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author, e.courseid
 			, mm.sorting, mm.id_foreign
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
-			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=?"
+			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=? AND mm.table_foreign='cross'"
          , array($crosssubjectid));
 
      return $examples;
  }
+
+/**
+ * delete all examples that have been created specifically for a crosssubject
+ * @param unknown $crosssubjectid
+ */
+function block_exacomp_delete_examples_for_crosssubject($crosssubjectid) {
+    global $DB;
+
+    $examples = block_exacomp_get_examples_for_crosssubject($crosssubjectid);
+    foreach($examples as $example){
+        $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $example->id));
+        $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid'=>$example->id, 'id_foreign' => $crosssubjectid, 'table_foreign'=>'cross'));
+    }
+
+
+    return $examples;
+}
 
 //  /**
 //   * return descriptor with examples

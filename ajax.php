@@ -288,19 +288,8 @@ switch($action){
 	case 'delete-crosssubject':
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
 
-		// TODO: pruefen ob mein crosssubj?
+        block_exacomp_delete_crosssub($crosssubjectid);
 
-		//delete student-crosssubject association
-		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
-
-		//delete descriptor-crosssubject association
-		$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
-
-		//delete crosssubject overall evaluations
-		$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid'=>$crosssubjectid, 'comptype'=>BLOCK_EXACOMP_TYPE_CROSSSUB));
-
-		//delete crosssubject
-		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
 	case 'set-example-start-end':
 		$scheduleid = required_param('scheduleid', PARAM_INT);
