@@ -71,23 +71,23 @@ echo $output->header($context, $courseid, '', false);
 /* CONTENT REGION */
 
 block_exacomp_require_teacher($context);
-$descrid = optional_param('descrid',-1, PARAM_INT);
-$topicid = optional_param('topicid',-1, PARAM_INT);
+$descrid = optional_param('descrid', -1, PARAM_INT);
+$topicid = optional_param('topicid', -1, PARAM_INT);
 $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
 
 // if($descid == -1 && $topicid == -1 && $crosssubjid != -1){ //add to a crosssubject
 
 // }else if($descrid != -1 && $topicid != -1){
     $taxonomies = $DB->get_records_menu("block_exacomptaxonomies",null,"","id, title");
-    $topicsub = $DB->get_record("block_exacomptopics", array("id"=>$topicid));
-    $topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'id, title');
+    $topicsub = $DB->get_record("block_exacomptopics", array("id" => $topicid));
+    $topics = $DB->get_records("block_exacomptopics", array("subjid" => @$topicsub->subjid), null, 'id, title');
 
     $example_descriptors = array();
     if ($exampleid > 0) {
         $example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid), '', 'descrid');
     }
-    if(!$questionid){
-    $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
+    if (!$questionid) {
+        $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
     } else {
         //adjustet example_descripotors to question_descriptors
         $question_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, array('questid' => $questionid), '', 'descrid');
