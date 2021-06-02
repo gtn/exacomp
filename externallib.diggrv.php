@@ -336,6 +336,7 @@ class block_exacomp_external_diggrv extends external_api {
             $elem_sub->assess_with_grades = !!$subjstudconfig->assess_with_grades;
             $elem_sub->spf = !!$subjstudconfig->spf; // this makes it false instead of null if nothing exists
             $elem_sub->personalisedtext = $subjstudconfig->personalisedtext;
+            $elem_sub->is_pflichtgegenstand = $subjstudconfig->is_pflichtgegenstand;
 
             // TODO:
             // $elem_sub->mwd = 'M';
@@ -349,7 +350,7 @@ class block_exacomp_external_diggrv extends external_api {
                 $elem_sub->is_religion = true;
             }
 
-            $elem_sub->is_pflichtgegenstand = false;
+
             $elem_sub->is_freigegenstand = false;
 
             $elem_sub->topics = array();
