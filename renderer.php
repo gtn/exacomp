@@ -1110,33 +1110,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $crossubjtitleRow->cells[] = $firstCol;
                     $crosstitleCell = new html_table_cell();
                     $crosstitleCell->text = $crosssubjectObj->title;
-                    $crosstitleCell->colspan = ((($students && count($students) > 0) ? count($students) : 1) * 3) + 2;
                     $crossubjtitleRow->cells[] = $crosstitleCell;
-//                    $crossubjtitleRow->cells[] = new html_table_cell();
-
-                    $rows[] = $crossubjtitleRow;
-
-                    $materialRow = new html_table_row();
-                    $materialRow->attributes['class'] = 'exahighlight';
-                    $materialRow->attributes['class'] = $this_rg2_class.' exahighlight';
-
-                    $firstCol = new html_table_cell();
-                    $firstCol->text = '';
-                    if ($this->is_edit_mode()){
-                        $firstCol->text .= " ".html_writer::link(
-                                new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $courseid, "crosssubjid" => $crosssubjid)),
-                                html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
-                                array("target" => "_blank", 'exa-type' => 'iframe-popup'));
-                    }
-                    $materialRow->cells[] = $firstCol;
-
-                    $outputnameCell = new html_table_cell();
-                    $outputname =  block_exacomp_get_string('crosssubject_files');
-                    $outputnameCell->text = html_writer::div($outputname);
-                    $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
-                    $materialRow->cells[] = $outputnameCell;
-                    $materialRow->cells[] = new html_table_cell();
-
+                    $crossubjtitleRow->cells[] = new html_table_cell();
                     foreach ($students as $student) {
                         if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
                             $reviewerid = $DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, "reviewerid", array("userid" => $student->id, "compid" => $crosssubjid, "courseid" => $courseid, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB));
@@ -1254,26 +1229,66 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         // Student
                         if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
                             if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
-                                $materialRow->cells[] = $niveau_cell;
+                                $crossubjtitleRow->cells[] = $niveau_cell;
                             }
                             if ($showevaluation) {
-                                $materialRow->cells[] = $teacher_evaluation_cell;
+                                $crossubjtitleRow->cells[] = $teacher_evaluation_cell;
                             }
-                            $materialRow->cells[] = $student_evaluation_cell;
+                            $crossubjtitleRow->cells[] = $student_evaluation_cell;
                         } else { // Teacher
                             if ($showevaluation) {
-                                $materialRow->cells[] = $student_evaluation_cell;
+                                $crossubjtitleRow->cells[] = $student_evaluation_cell;
                             }
                             if ($this->useEvalNiveau && $this->diffLevelExists) {
-                                $materialRow->cells[] = $niveau_cell;
+                                $crossubjtitleRow->cells[] = $niveau_cell;
                             }
-                            $materialRow->cells[] = $teacher_evaluation_cell;
+                            $crossubjtitleRow->cells[] = $teacher_evaluation_cell;
                         }
 
                     }
 
-                    $rows[] = $materialRow;
+                    $rows[] = $crossubjtitleRow;
 
+                    $materialRow = new html_table_row();
+                    $materialRow->attributes['class'] = 'exahighlight';
+                    $materialRow->attributes['class'] = $this_rg2_class.' exahighlight';
+
+                    $firstCol = new html_table_cell();
+                    $firstCol->text = '';
+                    if ($this->is_edit_mode()){
+                        $firstCol->text .= " ".html_writer::link(
+                                new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $courseid, "crosssubjid" => $crosssubjid)),
+                                html_writer::empty_tag('img', array('src' => 'pix/upload_12x12.png', 'alt' => 'upload')),
+                                array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+                    }
+                    $materialRow->cells[] = $firstCol;
+
+                    $outputnameCell = new html_table_cell();
+                    $outputname =  block_exacomp_get_string('crosssubject_files');
+                    $outputnameCell->text = html_writer::div($outputname);
+                    $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
+                    $materialRow->cells[] = $outputnameCell;
+                    $materialRow->cells[] = new html_table_cell();
+                    foreach ($students as $student) {
+                        if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
+                            if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
+                                $materialRow->cells[] = new html_table_cell();
+                            }
+                            if ($showevaluation) {
+                                $materialRow->cells[] = new html_table_cell();
+                            }
+                            $materialRow->cells[] = new html_table_cell();
+                        } else { // Teacher
+                            if ($showevaluation) {
+                                $materialRow->cells[] = new html_table_cell();
+                            }
+                            if ($this->useEvalNiveau && $this->diffLevelExists) {
+                                $materialRow->cells[] = new html_table_cell();
+                            }
+                            $materialRow->cells[] = new html_table_cell();
+                        }
+                    }
+                    $rows[] = $materialRow;
 
                     /* CROSSSUBJECTS */
                     //crosssubjectfiles and total eval
