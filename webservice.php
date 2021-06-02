@@ -562,7 +562,7 @@ class block_exacomp_simple_service {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP + 75, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT + 40, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(0);
         $pdf->SetFooterMargin(0);
 
@@ -583,8 +583,8 @@ class block_exacomp_simple_service {
         // ---------------------------------------------------------
 
         // set font
-        $pdf->SetFont('helvetica', 'B', 30);
-        $pdf->SetTextColor(160,0,0);
+        $pdf->SetFont('helvetica', 'B', 38);
+        $pdf->SetTextColor(0,0,0);
 
         // add a page
         $pdf->AddPage();
@@ -601,12 +601,10 @@ class block_exacomp_simple_service {
         // set bacground image
 
 
-        $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/background-red.jpg';
-        $pdf->Image($img_file, 0, 0, 210, 297, 'JPG', '', '', false, 300, '', false, false, 0);
-        $logo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/frauenstiftung-steyr-logo.jpg';
-        $pdf->Image($logo, 0, 0, 118, 15, 'JPG', '', '', false, 300, '', false, false, 0);
-        $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/DiWi-Logo-RGB.jpg';
-        $pdf->Image($diwilogo, 145, 268, 56, 17, 'JPG', '', '', false, 300, '', false, false, 0);
+        $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/diwipass_zertifikat_logo.jpg';
+        $pdf->Image($img_file, 0, 0, 190, 297, 'JPG', '', '', false, 300, '', false, false, 0);
+        $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/combined.PNG';
+        $pdf->Image($diwilogo, 0, 240, 210, 50, 'PNG', '', '', false, 300, '', false, false, 0);
         // restore auto-page-break status
         $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
         // set the starting point for the page content
@@ -614,46 +612,68 @@ class block_exacomp_simple_service {
 
 
 
-        $pdf->Write(0, "Zertifikat", '', 0, 'C', true, 0, false, false, 0);
+        $pdf->Write(0, "ZERTIFIKAT", '', 0, 'C', true, 0, false, false, 0);
 
-        $pdf->SetFont('helvetica', '', 15);
-        $pdf->SetTextColor(0,0,0);
+        $pdf->SetTextColor(160,0,0);
 
-
-        $pdf->Write(0, "Digitale Grundbildung", '', 0, 'C', true, 0, false, false, 0);
         $pdf->Ln();
-        $pdf->Ln();
-        $pdf->Ln();
-        $pdf->SetFont('helvetica', '', 20);
+        $pdf->SetFont('helvetica', '', 25);
         $pdf->Write(0, $username, '', 0, 'C', true, 0, false, false, 0);
-        $pdf->Ln();
-        $pdf->Ln();
-        $pdf->SetMargins(PDF_MARGIN_LEFT + 30, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        $pdf->Ln();
-
-        $pdf->SetFont('helvetica', '', 11);
-
-        $pdf->Write(0, "Sie haben den Anwendungscheck erfolgreich bestanden.", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Ln();
 
-        $pdf->Write(0, $gradings[0]['name'] . "                                    " . $gradings[0]['score'], '', 0, 'L', true, 0, false, false, 0);
-        array_shift($gradings);
+        $pdf->Write(0, "hat am ". date("Y.m.d"), '', 0, 'C', true, 0, false, false, 0);
+        $pdf->Write(0, "den Digitales-Wissen-Pass erfolgreich absolviert", '', 0, 'C', true, 0, false, false, 0);
+        $pdf->SetFont('helvetica', '', 12);
         $pdf->Ln();
-        $pdf->Write(0, "Sie haben den Wissenscheck erfolgreich bestanden.
-Der Wissenscheck umfasst Fragen zu folgenden Kompetenzbereichen:
-Grundlagen und Zugang, Umgang mit Informationen und Daten, Kommunikation
-und Zusammenarbeit, Kreation digitaler Inhalte und Sicherheit.", '', 0, 'L', true, 0, false, false, 0);
 
+        //$pdf->Write(0, $gradings[0]['name'] . "                                    " . $gradings[0]['score'], '', 0, 'L', true, 0, false, false, 0);
+        //array_shift($gradings);
+        $pdf->Ln();
+
+
+        $pdf->Write(0, "Für den Erwerb des Zertifikates wurde ein theoretischer und ein praktischer Nachweis in den Niveaustufen 1 bis 4 über folgende Kompetenzbereiche erbracht:", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->SetMargins(PDF_MARGIN_LEFT + 60, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->Ln();
+
+ //       foreach($gradings as $grading){
+ //           $pdf->Write(0, $grading['name'], '', 0, 'L', true, 0, false, false, 0);
+ //           //$pdf->MultiCell(80, 0, $grading['name'], 0, 'L', 0, 0, 90, '', true);
+ //           //$pdf->MultiCell(10, 0, "✓", 0, 'R', 0, 1, '', '', true);
+ //           $pdf->Ln();
+ //       }
+
+        $pdf->Write(0,"Grundlagen und Zugang", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Write(0,"Umgang mit Informationen und Daten", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Write(0,"Kommunikation und Zusammenarbeit", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Write(0,"Kreation digitaler Inhalte", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Write(0,"Sicherheit", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+
+        $pdf->SetMargins(PDF_MARGIN_LEFT + 40, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Ln();
+
+        $pdf->Write(0,"Folgendes Ergebnis wurde erzielt:", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->MultiCell(80, 0, "Theorieteil", 0, 'L', 0, 0, 60, '', true);
+        $pdf->MultiCell(30, 0, $gradings[1]['score'], 0, 'R', 0, 1, '', '', true);
+        $pdf->MultiCell(80, 0, "Praxisteil", 0, 'L', 0, 0, 60, '', true);
+        $pdf->MultiCell(30, 0, $gradings[0]['score'], 0, 'R', 0, 1, '', '', true);
+        $pdf->SetFont('helvetica', '', 12);
+        $pdf->Ln();
+        $pdf->Write(0, "Es wird bestätigt, dass der/die Teilnehmer*in über elementare digitale Kompetenzen verfügt, die Voraussetzung für eine erfolgreiche Bewältigung von Beruf und Alltag sind.", '', 0, 'L', true, 0, false, false, 0);
 
         $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT + 10);
         $pdf->Ln();
         $pdf->Ln();
 
-        foreach($gradings as $grading){
-            $pdf->MultiCell(80, 0, $grading['name'], 0, 'L', 0, 0, 90, '', true);
-            $pdf->MultiCell(20, 0, $grading['score'], 0, 'R', 0, 1, '', '', true);
-            $pdf->Ln();
-        }
+
 
         // ---------------------------------------------------------
 

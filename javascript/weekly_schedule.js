@@ -283,24 +283,25 @@
 
 	function add_pool_item(data) {
 		var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text(data.title);
+		var buttons = $('<div class="buttons"></div>').appendTo(el);
 
 		if (data.state < 9) {
-            el.append('	<div class="event-assoc">' + data.assoc_url + /*((event.solution)?event.solution:'')+*/'</div>');
+            buttons.append('	<div class="event-assoc">' + data.assoc_url + /*((event.solution)?event.solution:'')+*/'</div>');
         }
 
 		if (data.externalurl != null) {
-            el.append('<div class="event-task">' + data.externalurl + '</div>');
+            buttons.append('<div class="event-task">' + data.externalurl + '</div>');
         } else if (data.task != null) {
-            el.append('<div class="event-task">' + data.task + '</div>');
+            buttons.append('<div class="event-task">' + data.task + '</div>');
         } else if (data.externaltask != null) {
-            el.append('<div class="event-task">' + data.externaltask + '</div>');
+            buttons.append('<div class="event-task">' + data.externaltask + '</div>');
         }
 		
 		if (data.submission_url != null && data.activityid == 0) {
-            el.append('<div class="event-submission">' + data.submission_url + '</div>');
+            buttons.append('<div class="event-submission">' + data.submission_url + '</div>');
         }
         if (data.schedule_marker != null && data.schedule_marker != '') {
-            el.append('<div class="event-schedulermarker marker_'+data.schedule_marker+'">' + data.schedule_marker_short + '</div>');
+            buttons.append('<div class="event-schedulermarker marker_'+data.schedule_marker+'">' + data.schedule_marker_short + '</div>');
         }
 
 		el.addClass('state'+data.state);

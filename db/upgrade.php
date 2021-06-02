@@ -3864,10 +3864,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         /* block_exacompsubjstudconfig, change field infotext to personalisedtext ---> XMLDB_TYPE_TEXT ! */
         $table = new xmldb_table('block_exacompsubjstudconfig');
         $field = new xmldb_field('personalisedtext', XMLDB_TYPE_TEXT);
-        $dbman->change_field_type($table, $field);
+        if ($dbman->field_exists($table, $field)){
+	        $dbman->change_field_type($table, $field);
+	      }
+
 
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2021052001, 'exacomp');
+    }
+
+    if ($oldversion < 2021060100) {
+        /* block_exacompsubjstudconfig, change field infotext to personalisedtext ---> XMLDB_TYPE_TEXT ! */
+        $table = new xmldb_table('block_exacompsubjstudconfig');
+        $field = new xmldb_field('is_pflichtgegenstand', XMLDB_TYPE_INTEGER, '2', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021060100, 'exacomp');
     }
 
 

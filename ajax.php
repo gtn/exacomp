@@ -288,19 +288,8 @@ switch($action){
 	case 'delete-crosssubject':
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
 
-		// TODO: pruefen ob mein crosssubj?
+        block_exacomp_delete_crosssub($crosssubjectid);
 
-		//delete student-crosssubject association
-		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
-
-		//delete descriptor-crosssubject association
-		$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
-
-		//delete crosssubject overall evaluations
-		$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid'=>$crosssubjectid, 'comptype'=>BLOCK_EXACOMP_TYPE_CROSSSUB));
-
-		//delete crosssubject
-		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
 	case 'set-example-start-end':
 		$scheduleid = required_param('scheduleid', PARAM_INT);
@@ -328,14 +317,13 @@ switch($action){
         }
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
-
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end);
-		foreach($examples as $example){
+		foreach ($examples as $example){
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
 		}
-		$json_examples = block_exacomp_get_json_examples($examples);
+        $json_examples = block_exacomp_get_json_examples($examples);
 
-		echo json_encode($json_examples);
+        echo json_encode($json_examples);
 		exit;
 	case 'get-weekly-schedule-configuration':
 		//$studentid = required_param('studentid', PARAM_INT);

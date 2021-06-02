@@ -3067,7 +3067,6 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
-		    //'groupid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
 		    'groupid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT),
 		));
 	}
@@ -3743,7 +3742,6 @@ class block_exacomp_external extends external_api {
 			'creatorid' => new external_value (PARAM_INT, 'id of creator'),
 			'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-		    //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL) // ERROR! top level optional parameter!!!
 		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT)
 		));
 	}
@@ -5009,7 +5007,16 @@ class block_exacomp_external extends external_api {
 
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 
-		foreach ($examples as $example) {
+		foreach ($examples as $exampleKey => $example) {
+            // filter by is_teacherexample (only for teachers)
+            // TODO: may move this code to block_exacomp_get_examples_for_start_end_all_courses()? (is this needed to other example lists?)
+            if (!$isTeacher) {
+                if ($example->is_teacherexample) {
+                    unset($examples[$exampleKey]);
+                    continue;
+                }
+            }
+
             $example->title = static::custom_htmltrim(strip_tags($example->title));
 // 		    //Taxonomies:
 		    $taxonomies='';
@@ -5948,7 +5955,6 @@ class block_exacomp_external extends external_api {
 			'courseid' => new external_value (PARAM_INT, 'id of course'),
 			'examples' => new external_value (PARAM_TEXT, 'json array of examples'),
 			'students' => new external_value (PARAM_TEXT, 'json array of students'),
-		    //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
 		    'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
 		));
 	}
@@ -6027,7 +6033,6 @@ class block_exacomp_external extends external_api {
 	    return new external_function_parameters (array(
 	        'courseid' => new external_value (PARAM_INT, 'id of course'),
 	        'students' => new external_value (PARAM_TEXT, 'json array of students'),
-	        //'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
 	        'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
 	        'distributionid' => new external_value (PARAM_TEXT, 'distribution id. used for undo button', VALUE_DEFAULT, null),
 	    ));
@@ -10624,7 +10629,6 @@ class block_exacomp_external extends external_api {
 			'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
 			'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
 			'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
-		    //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
 		    'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
 		));
 	}
@@ -10678,7 +10682,6 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
-            //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
             'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
             'niveauid' => new external_value (PARAM_INT, 'id of the descriptorniveau'),
         ));
@@ -10917,7 +10920,6 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
             'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
             'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
-            //'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_OPTIONAL), // ERROR! top level optional parameter!!!
             'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
         ));
     }
@@ -13962,7 +13964,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated' , VALUE_DEFAULT, -1),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
-            'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_OPTIONAL),
+            'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_DEFAULT, ''),
 //            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?'),
         ));
     }

@@ -1,3 +1,16 @@
+// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
+//
+// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This script is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
+
 exacomp_nextgen
 ===============
 GTN-Solutions
@@ -41,3 +54,4 @@ Within the exabis-competencies-block  teachers may associate Moodle assignments 
 That's it!
 
 If you want to use Exabis Competence Grid Webservices read the "webservice-info.txt" and follow the steps.
+

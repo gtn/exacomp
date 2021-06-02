@@ -262,7 +262,7 @@ function block_exacomp_init_js_weekly_schedule() {
     // fullcalendar.js has a few changes from origin: regarding to language wordings
     // This fullcalendar.js can broke working of Moodle JS merging
     // So - generate fullcalendar.min.js and use it
-    //$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
+//    $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.min.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/locale-all.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/jquery.ui.touch.js');
@@ -3701,7 +3701,7 @@ function block_exacomp_get_eportfolioitem_association($students) {
 			$hash = 0;
 
 			$sql = '
-				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner
+				SELECT CONCAT_WS(\'_\', v.id, vs.userid, v.shareall, v.externaccess, vb.id) as uniqid, vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner
 				  FROM {block_exaportviewblock} vb
 				    JOIN {block_exaportview} v ON vb.viewid=v.id
 				    LEFT JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid
@@ -5550,10 +5550,22 @@ function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjec
  */
 function block_exacomp_delete_crosssub($crosssubjid) {
 	global $DB;
-	//delete student association if crosssubject is deleted
-	$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid' => $crosssubjid));
-  $DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid));
-	return $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
+    //delete examples that were created specifically only for this cross_subject
+    block_exacomp_delete_examples_for_crosssubject($crosssubjid);
+
+    // TODO: pruefen ob mein crosssubj?
+
+    //delete student-crosssubject association
+    $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
+
+    //delete descriptor-crosssubject association
+    $DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjid));
+
+    //delete crosssubject overall evaluations
+    $DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid'=>$crosssubjid, 'comptype'=>BLOCK_EXACOMP_TYPE_CROSSSUB));
+
+    //delete crosssubject
+    $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
 }
 
 /**
@@ -6508,7 +6520,7 @@ function block_exacomp_delete_imports_of_weekly_schedule($courseid,$studentid,$c
  * @param char $source  'S' for student, 'T' for teacher individually, 'C' for central.. if teacher assigns many at one time
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null, $customdata) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null, $customdata = null) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
@@ -6903,9 +6915,10 @@ function block_exacomp_is_niveau_visible($courseid, $topicid, $studentid, $nivea
 
 /**
  * visibility for descriptor in course and user context
- * @param unknown $courseid
+ * @param integer $courseid
  * @param unknown $descriptor
- * @param unknown $studentid
+ * @param integer $studentid
+ * @param bool $mindTopicVisibility
  * @return boolean
  */
 function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid, $mindTopicVisibility=true) {
@@ -6932,6 +6945,7 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid,
         return false;
     }
 
+    // visibility --for-all--  more important that visibility of concrete user, so - check it first
     $visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, 0);
     if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
         $visibleDescriptors[$courseid][$descriptor->id][$studentid] = false;
@@ -7697,7 +7711,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker, e.timeframe as timeframe
+				e.schedule_marker, e.timeframe as timeframe, e.is_teacherexample
 				-- evalniveau.title as niveau,
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
@@ -7716,7 +7730,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker, e.timeframe as timeframe
+				e.schedule_marker, e.timeframe as timeframe, e.is_teacherexample
 				-- evalniveau.title as niveau,
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
@@ -7807,7 +7821,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 		$example_array['exampleid'] = $example->exampleid;
 		$example_array['niveau'] = isset($example->niveau) ? $example->niveau : null;
 		$example_array['description'] = isset($example->description) ? $example->description : "";
-        $example_array['activityid'] = $example->activityid;
+        $example_array['activityid'] = isset($example->activityid) ? $example->activityid : 0;
 
 		if ($mind_eval) {
 			$example_array['student_evaluation'] = $example->student_evaluation;
@@ -12340,11 +12354,28 @@ function block_exacomp_set_custom_profile_field_value($userid, $fieldname, $valu
 			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author, e.courseid
 			, mm.sorting, mm.id_foreign
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
-			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=?"
+			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} mm ON e.id=mm.exampid AND mm.id_foreign=? AND mm.table_foreign='cross'"
          , array($crosssubjectid));
 
      return $examples;
  }
+
+/**
+ * delete all examples that have been created specifically for a crosssubject
+ * @param unknown $crosssubjectid
+ */
+function block_exacomp_delete_examples_for_crosssubject($crosssubjectid) {
+    global $DB;
+
+    $examples = block_exacomp_get_examples_for_crosssubject($crosssubjectid);
+    foreach($examples as $example){
+        $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $example->id));
+        $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid'=>$example->id, 'id_foreign' => $crosssubjectid, 'table_foreign'=>'cross'));
+    }
+
+
+    return $examples;
+}
 
 //  /**
 //   * return descriptor with examples
