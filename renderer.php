@@ -211,7 +211,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				);
 			}
 
-			if($isEditingTeacher){
+			if ($isEditingTeacher){
 			    $right_content .= $this->edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
 			}
 
@@ -244,9 +244,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return !empty($this->print);
 	}
 
+	/**
+     * @param \block_exacomp\url $url
+     * @return string
+     */
 	public function edit_mode_button($url) {
 		$edit = $this->is_edit_mode();
 
+        // clean params: studentid
+		$params = $url->params();
+		$params['studentid'] = null;
+        $url->params($params);
+		
 		return html_writer::empty_tag('input', array('type' => 'button', 'id' => 'edit_mode_submit', 'name' => 'edit_mode_submit', 'value' => block_exacomp_get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
 			"exa-type" => 'link', 'exa-url' => $url, 'class' => 'btn btn-default'));
 	}
