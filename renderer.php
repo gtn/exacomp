@@ -4331,7 +4331,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function visibility_icon_descriptor($visible, $descriptorid) {
 		if ($visible) {
-			$icon = $this->pix_icon("i/hide", block_exacomp_get_string("hide"));
+			$icon = $this->pix_icon("i/hide", block_exacomp_get_string("hide_for_all_students"));
 		} else {
 			$icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
 		}

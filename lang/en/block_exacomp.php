@@ -907,3 +907,4 @@ $string['competence_overview_teacher_short'] = 'T:';
 $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Clear filter';
 $string['editor'] = 'Edited by';
+$string['hide_for_all_students'] = 'für alle TN verstecken';

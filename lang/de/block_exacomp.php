@@ -917,3 +917,4 @@ $string['competence_overview_teacher_short'] = 'L:';
 $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Filter löschen';
 $string['editor'] = 'Überarbeitung durch';
+$string['hide_for_all_students'] = 'Hide for all stundents';

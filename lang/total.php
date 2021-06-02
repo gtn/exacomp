@@ -3314,6 +3314,9 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Überarbeitung durch',
         'Edited by',
     ],
-
+    'hide_for_all_students' => [
+        'Hide for all stundents',
+        'für alle TN verstecken',
+    ],
 
 ];
