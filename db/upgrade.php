@@ -3885,6 +3885,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021060100, 'exacomp');
     }
 
+    if ($oldversion < 2021060400) {
+        $table = new xmldb_table('block_exacompsubjects');
+        $field = new xmldb_field('class');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 200, null, null, null, '', null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021060400, 'exacomp');
+    }
+
 
 
     /*
