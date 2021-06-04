@@ -345,9 +345,8 @@ class block_exacomp_external_diggrv extends external_api {
             // $grading is not used, because the personalisedtext is now stored in the subjstudconfig->personalisedtext, not in the compuser table
             // 2021_05_17 now it could be stored in both, but we use the one from  subjstudconfig for faster access without any joins (redundant data: bad)
 
-//            $elem_sub->is_religion = str_contains($subject->title, "religion"); // str_contains only is available in PHP8
             $elem_sub->is_religion = strpos($subject->title, "religion"); // religion is written the same way in english and german.. other language would need a different solution
-            if(strpos($subject->title, "religion") !== false || strpos($subject->title, "Religion") !== false){ // careful: 0 if position at 0
+            if (preg_match('!religion!i', $subject->title)) {
                 $elem_sub->is_religion = true;
             }
 
@@ -485,17 +484,17 @@ class block_exacomp_external_diggrv extends external_api {
 
             block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject_grading['id'], null);
 
-             g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
-                 'assess_with_grades' => $subject_grading['assess_with_grades'],
-                 'is_pflichtgegenstand' => $subject_grading['is_pflichtgegenstand'],
-                 'spf' => $subject_grading['spf'],
-                 'personalisedtext' => $subject_grading['personalisedtext'],
-                 // TODO:
-                 // $elem_sub->mwd = 'M';
-                 // $elem_sub->personalisedtext = 'test test test test test test';
-                 // $elem_sub->is_pflichtgegenstand = true;
-                 // $elem_sub->is_freigegenstand = false;
-             ], ['studentid' => $userid, 'subjectid' => $subject_grading['id']]);
+            g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
+                'assess_with_grades' => $subject_grading['assess_with_grades'],
+                'is_pflichtgegenstand' => $subject_grading['is_pflichtgegenstand'],
+                'spf' => $subject_grading['spf'],
+                'personalisedtext' => $subject_grading['personalisedtext'],
+                // TODO:
+                // $elem_sub->mwd = 'M';
+                // $elem_sub->personalisedtext = 'test test test test test test';
+                // $elem_sub->is_pflichtgegenstand = true;
+                // $elem_sub->is_freigegenstand = false;
+            ], ['studentid' => $userid, 'subjectid' => $subject_grading['id']]);
         }
 
         foreach ($descriptor_gradings as $descriptor_grading) {
@@ -541,19 +540,19 @@ class block_exacomp_external_diggrv extends external_api {
         $course = $courses[$courseid];
         $user = $DB->get_record('user', ['id' => $userid]);
 
-        $structure = array();
-
         $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
 
         $subjects_html = '';
         foreach ($tree as $subject) {
-            if (empty($subject->topics)) {
-                continue;
-            }
-
             $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $userid, 'subjectid' => $subject->id]);
 
-            if (!$subjstudconfig->assess_with_grades) {
+            // if (empty($subject->topics)) {
+            //     continue;
+            // }
+
+            // religion: is_pflichtgegenstand
+            // andere fächer: assess_with_grades
+            if (!$subjstudconfig->assess_with_grades && !$subjstudconfig->is_pflichtgegenstand) {
                 // skip
                 continue;
             }
