@@ -887,7 +887,7 @@ $string['selectcourse_filter'] = 'Filter';
 $string['selectcourse_filter_schooltype'] = 'Schulart';
 $string['selectcourse_filter_onlyselected'] = 'Nur ausgewählte Raster anzeigen';
 $string['selectcourse_filter_submit'] = 'Filter';
-$string['selectcourse_filter_emptyresult'] = 'Nothing to show';
+$string['selectcourse_filter_emptyresult'] = 'Keine Ergebnisse zu diesem Filter';
 $string['descriptor_label'] = 'Kompetenzbeschreibung';
 $string['export_password_message'] = 'Bitte notieren Sie sich das Passwort "<strong>{$a}</strong>", bevor Sie fortfahren.<br/><br/>
 		Hinweis: Passwortgeschützte zip-Dateien können unter Windows zwar geöffnet werden, aber die Dateien innerhalb der Zip-Datei können nur mit einem externen Programm (z.B. 7-Zip) extrahiert werden.

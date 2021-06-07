@@ -3201,7 +3201,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Filter',
     ],
     'selectcourse_filter_emptyresult' => [
-        'Nothing to show',
+        'Keine Ergebnisse zu diesem Filter',
         'Nothing to show',
     ],
     'descriptor_label' => [
