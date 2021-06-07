@@ -4,5 +4,10 @@
 }
 
 .exacomp-courseselect-filter .cell.no-border {
-    border: none !important;
+    border: none !important; 
+}
+
+
+#block_exacomp .cell {
+	text-align: left;
 }
