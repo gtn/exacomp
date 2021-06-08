@@ -8491,7 +8491,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
         $eventdata->contexturl = $contexturl;
         $eventdata->contexturlname = $context;
         $eventdata->courseid = $courseid;
-        if ($customdata) {
+        if ($customdata && $CFG->version >= 2019052000) { // version must be 3.7 or higher, otherwise this field does not yet exist
         	$eventdata->customdata = $customdata;
 		}
     }
