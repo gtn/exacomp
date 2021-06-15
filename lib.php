@@ -125,6 +125,29 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 	exit;
 }
 
+function is_exacomp_active_in_course(){
+    global $COURSE, $PAGE, $CFG;
+
+    $page = new \moodle_page();
+    $page->set_url('/course/view.php', array('id' => $COURSE->id));
+    $page->set_pagelayout('course');
+    $page->set_course($COURSE);
+
+    $blockmanager = $page->blocks;
+
+    $blockmanager->load_blocks(true);
+
+    foreach ($blockmanager->get_regions() as $region) {
+        foreach ($blockmanager->get_blocks_for_region($region) as $block) {
+            $instance = $block->instance;
+            if($instance->blockname == "exacomp"){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 /**
  * Inject the exacomp element into all moodle module settings forms.
  *
@@ -134,7 +157,9 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
     global $CFG, $COURSE, $DB, $PAGE;
 
-    if (!empty($CFG->enableavailability)) {
+    $exacomp_active = is_exacomp_active_in_course(); // only inject if the block is active in this course
+
+    if (!empty($CFG->enableavailability) && $exacomp_active) {
         $cmid = optional_param('update', 0, PARAM_INT);
         $exacompUseAutoCompetencesVal = block_exacomp_cmodule_is_autocompetence($cmid);
         $mform->addElement('checkbox', 'exacompUseAutoCompetences', block_exacomp_get_string('module_used_availabilitycondition_competences'));
