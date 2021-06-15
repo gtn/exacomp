@@ -3792,10 +3792,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             $table->add_key('niveauid', XMLDB_KEY_FOREIGN, array('niveauid'), 'block_exacompniveaus', array('id'));
             $table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
             $table->add_key('subjectid', XMLDB_KEY_FOREIGN, array('subjectid'), 'block_exacompsubjects', array('id'));
-            // Conditionally launch create table for block_exacompexampannotation.
-            if (!$dbman->table_exists($table)) {
-                $dbman->create_table($table);
-            }
+
+            $dbman->create_table($table);
         }
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2021042300, 'exacomp');

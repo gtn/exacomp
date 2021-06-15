@@ -132,7 +132,7 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
  * @param MoodleQuickForm $mform The actual form object (required to modify the form).
  */
 function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
-    global $CFG, $COURSE, $DB;
+    global $CFG, $COURSE, $DB, $PAGE;
 
     if (!empty($CFG->enableavailability)) {
         $cmid = optional_param('update', 0, PARAM_INT);
