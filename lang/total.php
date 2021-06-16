@@ -378,7 +378,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 	],
 	'settings_admin_scheme' => [
 		'Vordefinierte Konfiguration',
-		'Predefined Konfiguration',
+		'Predefined configuration',
 	],
 	'settings_admin_scheme_description' => [
 		'Beurteilungen können auf unterschiedlichem Niveau erfolgen.',
@@ -598,7 +598,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'settings_assessment_grade_verbose_description' => [
             'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
-            'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
+            'Verbalized values of the grades, separated by commas. The number must match the "highest grade" value above. e.g .: very good, good, satisfactory, sufficient, deficient, insufficient',
     ],
     'settings_assessment_grade_verbose_default' => [
             'sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend',
