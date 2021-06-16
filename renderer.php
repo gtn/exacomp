@@ -5543,7 +5543,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		    $cell->attributes['module-type'] = $module->modname;
 
 //		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>A</button>';
-            $downloadTag = html_writer::tag("img", "", array("src" => "/blocks/exacomp/pix/ec_download_bl.png", "alt" => block_exacomp_get_string('download_activites'), 'height' => '12'));
+            $downloadTag = html_writer::tag("img", "", array("src" => new moodle_url('/blocks/exacomp/pix/ec_download_bl.png'), "alt" => block_exacomp_get_string('download_activites'), 'height' => '12'));
+
 		    $cell2->text ='<button class="activity-export-btn" value='.$module->id.'>'.$downloadTag.'</button>';
 		    $row->cells[] = $cell;
 		    $row2->cells[] = $cell2;
