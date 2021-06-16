@@ -6379,7 +6379,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             'evalValue' => $element->eval,
                             'evalMax' => block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR),
 //                            'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? $element->evalniveau : '-',
-                            'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR)&&$element->evalniveau ? $element->evalniveau : '-',
+                            'niveauTitle' =>  block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) && $element->evalniveau ? $element->evalniveau : '-',
                             'diffLevel' => block_exacomp_get_assessment_diffLevel(BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 1 : 0,
                             'assessmentType' => block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)
                     ];

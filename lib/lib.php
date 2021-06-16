@@ -13250,12 +13250,12 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
             return array(); // no assessment - no data for graph
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-            $direction = ' <= '; // highest value is worse
+            $direction = ' < '; // highest value is worse
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-            $direction = ' >= '; // highest value is better
+            $direction = ' > '; // highest value is better
             break;
     }
     //$maxVal = block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
@@ -13287,11 +13287,6 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
                         AND c.courseid = ?
                         AND d.parentid = 0'; // only parents?
 
-//        echo "<pre>debug:<strong>lib.php:13129</strong>\r\n"; print_r($sql); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13130</strong>\r\n"; print_r($topic->id); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13131</strong>\r\n"; print_r($studentid); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13132</strong>\r\n"; print_r($negativeLimit); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13133</strong>\r\n"; print_r($courseid); echo '</pre>'; // !!!!!!!!!! delete it
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $negativeLimit, $courseid));
         $topic->teacher = 0;
         if (count($totalDescr) > 0) {
