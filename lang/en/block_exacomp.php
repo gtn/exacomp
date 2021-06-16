@@ -275,7 +275,7 @@ $string['download_activites'] = 'Download activities';
 
 // === Configuration ===
 $string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of the main competence grids you would like to use in this Moodle installation.';
-$string['save_selection'] = 'Save selection';
+$string['save_selection'] = 'Confirm';
 $string['save_success'] = 'changes were successful';
 
 

@@ -274,8 +274,8 @@ $string['download_activites'] = 'Download activities';
 
 
 // === Configuration ===
-$string['explainconfig'] = 'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.';
-$string['save_selection'] = 'Auswahl speichern';
+$string['explainconfig'] = 'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz ausgewählt werden.';
+$string['save_selection'] = 'Bestätigen';
 $string['save_success'] = 'Änderungen erfolgreich übernommen';
 
 

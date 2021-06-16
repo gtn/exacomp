@@ -953,8 +953,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Your outcomes have already been imported. In this configuration you have to make the selection of the main competence grids you would like to use in this Moodle installation.',
 	],
 	'save_selection' => [
-		'Auswahl speichern',
-		'Save selection',
+		'Bestätigen',
+		'Confirm',
 	],
 	'save_success' => [
 		'Änderungen erfolgreich übernommen',
