@@ -1,0 +1,161 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="exacomp">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:string" name="skills"/>
+        <xs:element name="niveaus">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="niveau" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="title"/>
+                    <xs:element type="xs:short" name="sorting"/>
+                    <xs:element type="xs:byte" name="span"/>
+                    <xs:element type="xs:byte" name="numb"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="source" use="optional"/>
+                  <xs:attribute type="xs:byte" name="id" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:string" name="taxonomies"/>
+        <xs:element type="xs:string" name="categories"/>
+        <xs:element type="xs:string" name="categoriesn"/>
+        <xs:element type="xs:string" name="examples"/>
+        <xs:element name="descriptors">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="descriptor" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="niveauid">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="source" use="optional"/>
+                            <xs:attribute type="xs:byte" name="id" use="optional"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="title"/>
+                    <xs:element type="xs:int" name="sorting"/>
+                    <xs:element type="xs:byte" name="profoundness"/>
+                    <xs:element type="xs:byte" name="epop"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="source" use="optional"/>
+                  <xs:attribute type="xs:short" name="id" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:string" name="crosssubjects"/>
+        <xs:element name="edulevels">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="edulevel">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="title"/>
+                    <xs:element type="xs:short" name="sorting"/>
+                    <xs:element name="schooltypes">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="schooltype">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:string" name="title"/>
+                                <xs:element type="xs:byte" name="sorting"/>
+                                <xs:element type="xs:byte" name="isoez"/>
+                                <xs:element type="xs:byte" name="epop"/>
+                                <xs:element name="subjects">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="subject">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element type="xs:string" name="title"/>
+                                            <xs:element type="xs:string" name="titleshort"/>
+                                            <xs:element type="xs:short" name="sorting"/>
+                                            <xs:element type="xs:string" name="infolink"/>
+                                            <xs:element type="xs:byte" name="numb"/>
+                                            <xs:element type="xs:byte" name="epop"/>
+                                            <xs:element type="xs:string" name="author"/>
+                                            <xs:element name="topics">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="topic">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element type="xs:string" name="title"/>
+                                                        <xs:element type="xs:string" name="titleshort"/>
+                                                        <xs:element type="xs:short" name="sorting"/>
+                                                        <xs:element type="xs:string" name="description"/>
+                                                        <xs:element type="xs:string" name="knowledgecheck"/>
+                                                        <xs:element type="xs:string" name="Ataxonomie"/>
+                                                        <xs:element type="xs:string" name="Btaxonomie"/>
+                                                        <xs:element type="xs:string" name="Ctaxonomie"/>
+                                                        <xs:element type="xs:string" name="Dtaxonomie"/>
+                                                        <xs:element type="xs:string" name="Etaxonomie"/>
+                                                        <xs:element type="xs:string" name="Ftaxonomie"/>
+                                                        <xs:element type="xs:byte" name="epop"/>
+                                                        <xs:element type="xs:byte" name="numb"/>
+                                                        <xs:element name="descriptors">
+                                                          <xs:complexType>
+                                                            <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                              <xs:element name="descriptorid">
+                                                                <xs:complexType>
+                                                                  <xs:simpleContent>
+                                                                    <xs:extension base="xs:string">
+                                                                      <xs:attribute type="xs:string" name="source" use="optional"/>
+                                                                      <xs:attribute type="xs:short" name="id" use="optional"/>
+                                                                    </xs:extension>
+                                                                  </xs:simpleContent>
+                                                                </xs:complexType>
+                                                              </xs:element>
+                                                            </xs:choice>
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                      </xs:sequence>
+                                                      <xs:attribute type="xs:string" name="source"/>
+                                                      <xs:attribute type="xs:byte" name="id"/>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                            <xs:element type="xs:string" name="niveaus"/>
+                                          </xs:sequence>
+                                          <xs:attribute type="xs:string" name="source"/>
+                                          <xs:attribute type="xs:byte" name="id"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute type="xs:string" name="source"/>
+                              <xs:attribute type="xs:byte" name="id"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="source"/>
+                  <xs:attribute type="xs:byte" name="id"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="source"/>
+      <xs:attribute type="xs:string" name="sourcename"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
