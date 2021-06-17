@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/pChart/fonts" />
+      <path value="$PROJECT_DIR$/vendor/pChart/class" />
+      <path value="$PROJECT_DIR$/vendor/phpoffice/PhpWord" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/zendframework/zend-stdlib" />
+    </include_path>
+  </component>
+</project>

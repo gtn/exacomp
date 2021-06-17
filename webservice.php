@@ -567,6 +567,7 @@ class block_exacomp_simple_service {
         $pdf->SetFooterMargin(0);
 
         // remove default footer
+        $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
 
 
@@ -585,7 +586,6 @@ class block_exacomp_simple_service {
         // set font
         $pdf->SetFont('helvetica', 'B', 38);
         $pdf->SetTextColor(0,0,0);
-
         // add a page
         $pdf->AddPage();
 
@@ -623,7 +623,7 @@ class block_exacomp_simple_service {
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Ln();
 
-        $pdf->Write(0, "hat am ". date("Y.m.d"), '', 0, 'C', true, 0, false, false, 0);
+        $pdf->Write(0, "hat am ". date("d.m.Y"), '', 0, 'C', true, 0, false, false, 0);
         $pdf->Write(0, "den Digitales-Wissen-Pass erfolgreich absolviert", '', 0, 'C', true, 0, false, false, 0);
         $pdf->SetFont('helvetica', '', 12);
         $pdf->Ln();
@@ -633,7 +633,8 @@ class block_exacomp_simple_service {
         $pdf->Ln();
 
 
-        $pdf->Write(0, "Für den Erwerb des Zertifikates wurde ein theoretischer und ein praktischer Nachweis in den Niveaustufen 1 bis 4 über folgende Kompetenzbereiche erbracht:", '', 0, 'L', true, 0, false, false, 0);
+        $html = '<span style="text-align:justify;">Für den Erwerb des Zertifikates wurde ein theoretischer und ein praktischer Nachweis in den Niveaustufen 1 bis 4 über folgende Kompetenzbereiche erbracht:</span>';
+        $pdf->writeHTML($html, true, 0, true, true);
         $pdf->SetMargins(PDF_MARGIN_LEFT + 60, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $pdf->Ln();
 
@@ -662,13 +663,13 @@ class block_exacomp_simple_service {
         $pdf->Write(0,"Folgendes Ergebnis wurde erzielt:", '', 0, 'L', true, 0, false, false, 0);
         $pdf->Ln();
         $pdf->MultiCell(80, 0, "Theorieteil", 0, 'L', 0, 0, 60, '', true);
-        $pdf->MultiCell(30, 0, $gradings[1]['score'], 0, 'R', 0, 1, '', '', true);
+        $pdf->MultiCell(30, 0, $gradings[1]['score'] . " %", 0, 'R', 0, 1, '', '', true);
         $pdf->MultiCell(80, 0, "Praxisteil", 0, 'L', 0, 0, 60, '', true);
-        $pdf->MultiCell(30, 0, $gradings[0]['score'], 0, 'R', 0, 1, '', '', true);
+        $pdf->MultiCell(30, 0, $gradings[0]['score']. " %", 0, 'R', 0, 1, '', '', true);
         $pdf->SetFont('helvetica', '', 12);
         $pdf->Ln();
-        $pdf->Write(0, "Es wird bestätigt, dass der/die Teilnehmer*in über elementare digitale Kompetenzen verfügt, die Voraussetzung für eine erfolgreiche Bewältigung von Beruf und Alltag sind.", '', 0, 'L', true, 0, false, false, 0);
-
+        $html = '<span style="text-align:justify;">Es wird bestätigt, dass der/die Teilnehmer*in über elementare digitale Kompetenzen verfügt, die Voraussetzung für eine erfolgreiche Bewältigung von Beruf und Alltag sind.</span>';
+        $pdf->writeHTML($html, true, 0, true, true);
         $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT + 10);
         $pdf->Ln();
         $pdf->Ln();
