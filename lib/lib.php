@@ -9106,8 +9106,6 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
 	}
     $evaluation_niveau_types = explode(',', $evaluation_niveau_types);
     $evaluation_niveau_type = 0; //default
-//    echo "<pre>debug:<strong>lib.php:8930</strong>\r\n"; print_r($evaluation); echo '</pre>'; // !!!!!!!!!! delete it
-//    echo "<pre>debug:<strong>lib.php:8930</strong>\r\n"; print_r($evaluation_niveau_types); echo '</pre>'; exit; // !!!!!!!!!! delete it
 	if (array_key_exists($evaluation, $evaluation_niveau_types)) {
         $evaluation_niveau_type = $evaluation_niveau_types[$evaluation];
     }
@@ -13311,7 +13309,6 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
         }
         $topic->title = trim(html_entity_decode($topic->title));
     }
-//    echo "<pre>debug:<strong>lib.php:13147</strong>\r\n"; print_r($topics); echo '</pre>'; // !!!!!!!!!! delete it
     return $topics;
 }
 

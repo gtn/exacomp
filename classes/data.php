@@ -2405,6 +2405,17 @@ class data_importer extends data {
                     }
                 }
             }
+            // add child descriptors to the array
+            if (count($result) > 0) {
+                $subjectsIds = self::DOM_convert_valuearray_to_xpath_query($result, 'id');
+                $childQuery = '//descriptors/descriptor['.$subjectsIds.']/children/descriptor';
+                $subDescriptors = $xpath->query($childQuery);
+                if ($subDescriptors->length) {
+                    foreach ($subDescriptors as $subDescriptor) {
+                        $result[] = $subDescriptor->getAttribute('id');
+                    }
+                }
+            }
         }
         return $result;
     }
