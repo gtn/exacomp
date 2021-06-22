@@ -728,7 +728,7 @@ class block_exacomp_external_diggrv extends external_api {
         $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
         foreach ($levels as $level) {
             $data->levels[$level->id] = new stdClass ();
-            $data->levels[$level->id]->level = $level;
+            $data->levels[$level->id] = $level;
             $data->levels[$level->id]->schooltypes = array();
 
             $types = block_exacomp_get_schooltypes($level->id);
@@ -751,10 +751,8 @@ class block_exacomp_external_diggrv extends external_api {
     public static function diggrplus_v_get_course_edulevel_schooltype_tree_returns() {
         return new external_single_structure (array(
             'edulevels' => new external_multiple_structure (new external_single_structure (array(
-                'level' => new external_single_structure (array(
-                    'id' => new external_value (PARAM_INT),
-                    'title' => new external_value (PARAM_TEXT, 'schooltype title'),
-                )),
+                'id' => new external_value (PARAM_INT),
+                'title' => new external_value (PARAM_TEXT, 'schooltype title'),
                 'schooltypes' => new external_multiple_structure (new external_single_structure (array(
                     'id' => new external_value (PARAM_INT),
                     'title' => new external_value (PARAM_TEXT, 'schooltype title'),
