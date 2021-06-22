@@ -698,6 +698,93 @@ class block_exacomp_external_diggrv extends external_api {
         ));
     }
 
+
+
+
+
+
+
+
+    public static function diggrplus_v_get_course_edulevel_schooltype_tree_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT),
+        ));
+    }
+
+    /**
+     * @ws-type-read
+     */
+    public static function diggrplus_v_get_course_edulevel_schooltype_tree($courseid) {
+        static::validate_parameters(static::diggrplus_v_get_course_edulevel_schooltype_tree_parameters(), array(
+            'courseid' => $courseid,
+        ));
+
+        block_exacomp_require_teacher($courseid);
+
+        $data = new stdClass ();
+        $data->levels = array ();
+
+        $levels = block_exacomp_get_edulevels();
+        $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
+        foreach ($levels as $level) {
+            $data->levels[$level->id] = new stdClass ();
+            $data->levels[$level->id]->level = $level;
+            $data->levels[$level->id]->schooltypes = array();
+
+            $types = block_exacomp_get_schooltypes($level->id);
+            foreach ($types as $type) {
+                $type->subjects = block_exacomp_get_subjects_for_schooltype(0, $type->id);
+                $data->levels[$level->id]->schooltypes[$type->id] = $type;
+                foreach ($data->levels[$level->id]->schooltypes[$type->id]->subjects as $subject) {
+                    foreach ($subject->topics as $topic) {
+                        // some topics have html in the title, and moodle does not allow this?!?
+                        $topic->title = strip_tags($topic->title);
+                        $topic->active = !empty($active_topics[$topic->id]);
+                    }
+                }
+            }
+        }
+
+        return ['edulevels' => $data->levels];
+    }
+
+    public static function diggrplus_v_get_course_edulevel_schooltype_tree_returns() {
+        return new external_single_structure (array(
+            'edulevels' => new external_multiple_structure (new external_single_structure (array(
+                'level' => new external_single_structure (array(
+                    'id' => new external_value (PARAM_INT),
+                    'title' => new external_value (PARAM_TEXT, 'schooltype title'),
+                )),
+                'schooltypes' => new external_multiple_structure (new external_single_structure (array(
+                    'id' => new external_value (PARAM_INT),
+                    'title' => new external_value (PARAM_TEXT, 'schooltype title'),
+                    'subjects' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value (PARAM_INT),
+                        'title' => new external_value (PARAM_TEXT, 'subject title'),
+                        'topics' => new external_multiple_structure (new external_single_structure (array(
+                            'id' => new external_value (PARAM_INT),
+                            'title' => new external_value (PARAM_TEXT, 'topic title'),
+                            'active' => new external_value (PARAM_BOOL),
+                        ))),
+                    ))),
+                ))),
+            ))),
+        ));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     protected function custom_htmltrim($string) {
         return block_exacomp_external::custom_htmltrim($string);
     }

@@ -6319,7 +6319,8 @@ Params: <table>
 <td>text</td>
 <td>null</td>
 <td>optional</td>
-<td></td>
+<td>default: string(0) ""
+</td>
 <td>title of example</td>
 <td></td>
 </table>
@@ -6544,6 +6545,7 @@ Params: <table>
         "id": "int null",
         "personalisedtext": "text null",
         "assess_with_grades": "bool null",
+        "is_pflichtgegenstand": "bool null ('2')",
         "spf": "bool null"
     },
     "..."
@@ -6590,4 +6592,50 @@ Params: <table>
 </table>
 Returns:<pre>{
     "pdf": "file null"
+}</pre>
+<h2>diggrplus_v_get_course_edulevel_schooltype_tree</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "edulevels": [
+        {
+            "level": {
+                "id": "int null",
+                "title": "text null ('schooltype title')"
+            },
+            "schooltypes": [
+                {
+                    "id": "int null",
+                    "title": "text null ('schooltype title')",
+                    "subjects": [
+                        {
+                            "id": "int null",
+                            "title": "text null ('subject title')",
+                            "topics": [
+                                {
+                                    "id": "int null",
+                                    "title": "text null ('topic title')",
+                                    "active": "bool null"
+                                },
+                                "..."
+                            ]
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
 }</pre>
