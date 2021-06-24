@@ -678,6 +678,7 @@ $string['block_exacomp_notifications_head'] = 'Benachrichtigungen aktivieren';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 $string['block_exacomp_assign_activities_old_method_head'] = 'Tab Moodle-Aktivitäten zuordnen alt anzeigen';
 $string['block_exacomp_assign_activities_old_method_body'] = 'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.';
+$string['distribute_weekly_schedule'] = 'Wochenplan verteilen';
 
 
 // === Logging ===

@@ -2405,6 +2405,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.',
 		'This Tab was default replaced with Tab "Relate Moodle activities"',
 	],
+    'distribute_weekly_schedule' => [
+        'Wochenplan verteilen',
+        'Distribute weekly schedule',
+    ],
 
 
 	// === Logging ===

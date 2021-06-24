@@ -672,6 +672,7 @@ $string['block_exacomp_notifications_head'] = 'activate notifications';
 $string['block_exacomp_notifications_body'] = 'Users will get notified after relevant actions.';
 $string['block_exacomp_assign_activities_old_method_head'] = 'Show Tab "Assign Moodle activities" old';
 $string['block_exacomp_assign_activities_old_method_body'] = 'This Tab was default replaced with Tab "Relate Moodle activities"';
+$string['distribute_weekly_schedule'] = 'Distribute weekly schedule';
 
 
 // === Logging ===
