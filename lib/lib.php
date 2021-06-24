@@ -8846,12 +8846,17 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
  * get all examples associated with any descriptors in this course
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=false, $search="", $mindvisibility = true) {
-    if($withCompetenceInfo){
+function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=false, $search="", $mindvisibility = true, $userid=-1) {
+    global $USER;
+    if($userid==-1){
+        $userid = $USER->id;
+    }
+    if($withCompetenceInfo){ // with topics and subjects and evaluation and annotation of example (for diggrplus)
         if($mindvisibility){
             // Visibility of Niveaus is NOT minded. But cannot be changed in diggrplus anyways, for which this function is made
             // Student specific visibility is also NOT minded, only global
-            $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
+            $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle,
+                        exameval.teacher_evaluation, exameval.student_evaluation, examannot.annotationtext as annotation
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON dex.exampid = ex.id
             JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid
@@ -8865,6 +8870,9 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvis ON d.id=dvis.descrid
             JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvis ON topic.id=tvis.topicid AND tvis.niveauid IS NULL
             JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON ex.id=evis.exampleid
+
+            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} exameval ON exameval.exampleid = ex.id AND exameval.courseid = ? AND exameval.studentid = ".$userid."
+            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION."} examannot ON examannot.exampleid = ex.id AND examannot.courseid = ?
 
             WHERE ct.courseid = ?
             AND dvis.visible = true
@@ -8903,7 +8911,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
 		)";
     }
 
-	return g::$DB->get_records_sql($sql, array($courseid, $courseid));
+	return g::$DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 }
 
 

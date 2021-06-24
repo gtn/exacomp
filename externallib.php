@@ -11539,15 +11539,15 @@ class block_exacomp_external extends external_api {
                     return $course["courseid"] == $courseid;
                 });
             } else {
-//                $courses = enrol_get_users_courses($userid);
-                $courses = static::get_courses($userid); // this is better, because it checks for existance of exabis Blocks as well as for visibility
+                $courses = static::get_courses($userid); // this is better than enrol_get_users_courses($userid);, because it checks for existance of exabis Blocks as well as for visibility
             }
 
             foreach ($courses as $course) {
 //                if($course->visible){
-                $courseExamples = block_exacomp_get_examples_by_course($course["courseid"], true, $search, true); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course["courseid"], true, $search, true, $userid); // TODO: duplicates?
                 foreach ($courseExamples as $example) {
-                    static::block_excomp_get_example_details($example, $course["courseid"]);
+                    static::block_excomp_get_example_details($example, $course["courseid"], false); # TODO: a lot of time is lost in this loop
+                    # checkQuiz = false since we never use it in diggprlus (SO FAR!)
                 }
                 $examples += $courseExamples;
 //                }
@@ -11569,7 +11569,7 @@ class block_exacomp_external extends external_api {
 
 
             foreach ($courses as $course) {
-                $courseExamples = block_exacomp_get_examples_by_course($course["courseid"], true, $search, true); // TODO: duplicates?
+                $courseExamples = block_exacomp_get_examples_by_course($course["courseid"], true, $search, true, $userid); // TODO: duplicates?
                 foreach ($courseExamples as $key => $example) {
                     $exampleSubjects = block_exacomp_get_subjects_by_example($example->id);
                     if(!in_array($compid, $exampleSubjects)){
@@ -11583,7 +11583,7 @@ class block_exacomp_external extends external_api {
                                 continue;
                             }
                         }
-                        static::block_excomp_get_example_details($example, $course["courseid"]);
+                        static::block_excomp_get_example_details($example, $course["courseid"], false);
                     }
                 }
 
@@ -11670,7 +11670,7 @@ class block_exacomp_external extends external_api {
                 $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], true, null, null, $search);
                 // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
                 foreach($descriptorWithExamples->examples as $example){
-                    $example = static::block_excomp_get_example_details($example, $example->courseid);
+                    $example = static::block_excomp_get_example_details($example, $example->courseid, false);
                     $example->subjecttitle = $information->subjecttitle;
                     $example->subjectid = $information->subjectid;
                     $example->topictitle = $information->topictitle;
@@ -11695,7 +11695,7 @@ class block_exacomp_external extends external_api {
             $information = $DB->get_record_sql($sql, array($compid));
 
             foreach($examples as $example){
-                $example = static::block_excomp_get_example_details($example, $example->courseid); // TODO: for now use this to avoid code duplication. But maybe for performace use custom function
+                $example = static::block_excomp_get_example_details($example, $example->courseid, false); // TODO: for now use this to avoid code duplication. But maybe for performace use custom function
                 $example->subjecttitle = $information->subjecttitle;
                 $example->subjectid = $information->subjectid;
                 $example->topictitle = $information->topictitle;
@@ -11712,6 +11712,7 @@ class block_exacomp_external extends external_api {
             }
         }
 
+        // TODO: most of the time is lost in this mapping
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
         $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB, $comptype) {
             $objDeeper = new stdClass();
@@ -11734,12 +11735,19 @@ class block_exacomp_external extends external_api {
             }
 
             // Adding annotationinformation    TODO: Again: What IF the user has the same subject in two different courses.. which courseid to take?
-            $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+            // check if it is already there (done for "all" and "subject" so save computation time
+            if(!property_exists($example, "annotation")){
+                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+            }
 
-            // Adding the evaluation information
-            $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
-            $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
-            $example->student_evaluation = $exampleEvaluation->student_evaluation;
+            // Adding the evaluation information if it did not get queried before when getting the examples
+            // right now this is the case if "topic" is selected. For "all" and "subject" the evaluation is queried before ==> faster
+            if(!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))){
+                $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $example->courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
+                $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
+                $example->student_evaluation = $exampleEvaluation->student_evaluation;
+            }
+
 
             $objDeeper->courseid = $example->courseid;
             $objDeeper->example = $example;
@@ -11769,31 +11777,33 @@ class block_exacomp_external extends external_api {
 
     // for diggrplus webservices and get_example_by_id (used in diggr?)
 //    //TODO: _get_example_information better? or get_example_by_id()
-    private static function block_excomp_get_example_details($example, $courseid){
+    private static function block_excomp_get_example_details($example, $courseid, $checkQuiz=true){
         global $DB;
 
-        //da jetzt pr�fen ob Quiz pr�fen
-        $quizDB = $DB->get_records_sql("SELECT q.id, q.name, q.grade
+        if($checkQuiz){
+            //da jetzt pr�fen ob Quiz pr�fen
+            $quizDB = $DB->get_records_sql("SELECT q.id, q.name, q.grade
 							FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ca
 							JOIN {course_modules} cm ON ca.activityid = cm.id
 							JOIN {modules} m ON cm.module = m.id
 							JOIN {quiz} q ON cm.instance = q.id
 							WHERE m.name = 'quiz' AND  ca.id = ?
 							", array(
-                $example->id,
-            )
-        );
+                    $example->id,
+                )
+            );
 
-        $example->quiz = new stdClass ();
-        foreach ($quizDB as $quiz) {
-            $example->quiz->quizid = $quiz->id;
-            $example->quiz->quiz_title = $quiz->name;
-            $example->quiz->quiz_grade = $quiz->grade;
-        }
-        if($example->quiz->quizid == null){
-            $example->quiz->quizid = -1;
-            $example->quiz->quiz_title =  " ";
-            $example->quiz->quiz_grade = 0.0;
+            $example->quiz = new stdClass ();
+            foreach ($quizDB as $quiz) {
+                $example->quiz->quizid = $quiz->id;
+                $example->quiz->quiz_title = $quiz->name;
+                $example->quiz->quiz_grade = $quiz->grade;
+            }
+            if($example->quiz->quizid == null){
+                $example->quiz->quizid = -1;
+                $example->quiz->quiz_title =  " ";
+                $example->quiz->quiz_grade = 0.0;
+            }
         }
 
         $example->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $example->id));
