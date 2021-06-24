@@ -6063,7 +6063,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 $content .= html_writer::tag("h2", block_exacomp_get_string("topicgrading").$addtext, array("class" => "competence_profile_coursetitle"));
                 $content .= html_writer::tag("br","");
-        }
+            }
 
             foreach ($competence_tree as $subject) {
                 $content .= html_writer::tag("h4", $subject->title, array("class" => "competence_profile_coursetitle"));
@@ -6120,7 +6120,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 // Statistics
                 if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT)) { //prints the statistic
-                    $stat = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subject->id, $student->id,0,0,false,$crosssubj);
+                    $stat = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subject->id, $student->id, 0, 0, false, $crosssubj);
                     if ($subject->isglobal) { // only isglobal subjects!
                         //$allStats[$courseid][$subject->id]['subject'] = $subject;
                         $allStats[$courseid][$subject->id]['stats'] = $stat;
@@ -6368,7 +6368,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				//}
 				$cell = new html_table_cell ();
 
-				if ($element->show) {
+				if (isset($element->show) && $element->show) {
                     $height = 50;
                     $width = 50;
                     $imgWidth = $width; $imgHeight = $height;
@@ -6448,8 +6448,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
                 //$cell->text .= '<pre>'.print_r($element, true).'</pre>';
 
-				$cell->attributes['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
-				$cell->attributes['exa-timestamp'] = $element->timestamp;
+				$cell->attributes['class'] = ((isset($element->visible) && $element->visible && isset($rowcontent->visible) && $rowcontent->visible) ? '' : 'notvisible');
+				$cell->attributes['exa-timestamp'] = (isset($element->visible) ? $element->timestamp : null);
 //                $cell->attributes['vertical-align'] = 'middle';
                 $cell->attributes['class'] .= ' centered';
 

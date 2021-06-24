@@ -1356,156 +1356,158 @@ function block_exacomp_get_topics_by_descriptor($descriptorid) {
 function block_exacomp_sort_items(&$items, $sortings) {
 	$sortings = (array)$sortings;
 
-	uasort($items, function($a, $b) use ($sortings) {
-		foreach ($sortings as $prefix => $sorting) {
-			if (is_int($prefix)) {
-				$prefix = '';
-			}
+	if (is_array($items)) {
+        uasort($items, function ($a, $b) use ($sortings) {
+            foreach ($sortings as $prefix => $sorting) {
+                if (is_int($prefix)) {
+                    $prefix = '';
+                }
 
-			switch ($sorting) {
-                case BLOCK_EXACOMP_IS_GLOBAL:
-                    if (!property_exists($a, $prefix.'isglobal') || !property_exists($b, $prefix.'isglobal')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'isglobal');
-                    }
-                    return $a->{$prefix.'isglobal'} < $b->{$prefix.'isglobal'} ? -1 : 1;
-                    break;
-                case BLOCK_EXACOMP_DB_SUBJECTS:
-                    if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'source');
-                    }
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
+                switch ($sorting) {
+                    case BLOCK_EXACOMP_IS_GLOBAL:
+                        if (!property_exists($a, $prefix . 'isglobal') || !property_exists($b, $prefix . 'isglobal')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'isglobal');
+                        }
+                        return $a->{$prefix . 'isglobal'} < $b->{$prefix . 'isglobal'} ? -1 : 1;
+                        break;
+                    case BLOCK_EXACOMP_DB_SUBJECTS:
+                        if (!property_exists($a, $prefix . 'source') || !property_exists($b, $prefix . 'source')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'source');
+                        }
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
 
-                    // sort subjects
-                    // first imported, then generated
-                    if ($a->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-                        return 1;
-                    }
+                        // sort subjects
+                        // first imported, then generated
+                        if ($a->{$prefix . 'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix . 'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                        return 1;
-                    }
+                        if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                case BLOCK_EXACOMP_DB_TOPICS:
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
+                        }
+                        break;
+                    case BLOCK_EXACOMP_DB_TOPICS:
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'numb') || !property_exists($b, $prefix . 'numb')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'numb');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
 
-                    if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
-                        return 1;
-                    }
+                        if ($a->{$prefix . 'numb'} < $b->{$prefix . 'numb'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'numb'} > $b->{$prefix . 'numb'}) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                        return 1;
-                    }
+                        if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                case BLOCK_EXACOMP_DB_DESCRIPTORS:
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
+                        }
+                        break;
+                    case BLOCK_EXACOMP_DB_DESCRIPTORS:
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
 
-                    if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
-                        debugging('block_exacomp_sort_items() descriptors need a source', DEBUG_DEVELOPER);
-                    } else {
-                        if ($a->{$prefix.'source'} != $b->{$prefix.'source'}) {
-                            if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                        if (!property_exists($a, $prefix . 'source') || !property_exists($b, $prefix . 'source')) {
+                            debugging('block_exacomp_sort_items() descriptors need a source', DEBUG_DEVELOPER);
+                        } else {
+                            if ($a->{$prefix . 'source'} != $b->{$prefix . 'source'}) {
+                                if ($a->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                                    return 1;
+                                }
+                                if ($b->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                                    return -1;
+                                }
+                            }
+                        }
+
+                        if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                            return 1;
+                        }
+
+                        // last by title
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
+                        }
+                        break;
+                    case BLOCK_EXACOMP_DB_NIVEAUS:
+                        if (!property_exists($a, $prefix . 'numb') || !property_exists($b, $prefix . 'numb')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'numb');
+                        }
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
+
+                        if ($a->{$prefix . 'numb'} < $b->{$prefix . 'numb'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'numb'} > $b->{$prefix . 'numb'}) {
+                            return 1;
+                        }
+
+                        if ($a->{$prefix . 'sorting'} != $b->{$prefix . 'sorting'}) {
+                            // move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
+                            if (!$a->{$prefix . 'sorting'}) {
                                 return 1;
                             }
-                            if ($b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                            if (!$b->{$prefix . 'sorting'}) {
                                 return -1;
                             }
-                        }
-                    }
 
-                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                        return 1;
-                    }
-
-                    // last by title
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                case BLOCK_EXACOMP_DB_NIVEAUS:
-                    if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
-                    }
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
-
-                    if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
-                        return 1;
-                    }
-
-                    if ($a->{$prefix.'sorting'} != $b->{$prefix.'sorting'}) {
-                        // move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
-                        if (!$a->{$prefix.'sorting'}) {
-                            return 1;
-                        }
-                        if (!$b->{$prefix.'sorting'}) {
-                            return -1;
+                            if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                                return -1;
+                            }
+                            if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                                return 1;
+                            }
                         }
 
-                        if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                            return -1;
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
                         }
-                        if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                            return 1;
-                        }
-                    }
-
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                default:
-				    throw new \block_exacomp\moodle_exception('sorting type not found: '.$sorting);
-			}
-		}
-	});
+                        break;
+                    default:
+                        throw new \block_exacomp\moodle_exception('sorting type not found: ' . $sorting);
+                }
+            }
+        });
+    }
 
 	return $items;
 }
@@ -3482,7 +3484,7 @@ function block_exacomp_get_course_module_association($courseid) {
 			ORDER BY comptype, compid', array($courseid));
 
 	// records by new method relation
-    $sql = 'SELECT DISTINCT t.id, demm.descrid as compid, '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.' as comptype, t.activityid as activityid
+    $sql = 'SELECT DISTINCT CONCAT_WS(\'-\', t.id, demm.descrid, t.activityid) as tempId, t.id, demm.descrid as compid, '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.' as comptype, t.activityid as activityid
                 FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} t
                     JOIN {course_modules} cm ON cm.id = t.activityid
                     JOIN {modules} m ON m.id = cm.module
@@ -9381,13 +9383,13 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->span = 1;
 		}
 
-        //Hide niveaus that are not used in the crosssubject
-        if($crosssubj){
-            if(isset($descriptorsOfCrosssubj[$descriptor->id])){
+        // Hide niveaus that are not used in the crosssubject
+        if ($crosssubj) {
+            if (isset($descriptorsOfCrosssubj[$descriptor->id])) {
                 //ok
                 $niveausAlreadyCheckedForShowing[$niveau->title] = true;
-            }else{
-                if(!$niveausAlreadyCheckedForShowing[$niveau->title]){
+            } else {
+                if (!array_key_exists($niveau->title, $niveausAlreadyCheckedForShowing) || !$niveausAlreadyCheckedForShowing[$niveau->title]){
                     $data->niveaus[$niveau->title]->show = false;
                 }
             }
@@ -9915,7 +9917,6 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
         $child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
         $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
     }
-
 	$descriptorgradings = []; // array[niveauid][value][number of examples evaluated with this value and niveau]
 	$childgradings = [];
 	$examplegradings = [];
@@ -9996,7 +9997,8 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	foreach ($descriptors as $descriptor) {
 	    $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-		// check if grading is within timeframe
+
+        // check if grading is within timeframe
 	    if ($eval && ($eval->value || $eval->additionalinfo) !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 			//$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
             if (block_exacomp_get_assessment_comp_diffLevel()) {
@@ -13129,8 +13131,8 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                                 'evalniveau' => '',
                                 'evalniveauid' => -1, // block_exacomp_use_eval_niveau() ? -1 : 0 ???
                                 'eval' => -1,
-                                'show' => $niveauData->show,
-                                'visible' => $niveauData->visible,
+                                'show' => (isset($niveauData->show) ? $niveauData->show : false),
+                                'visible' => (isset($niveauData->visible) ? $niveauData->visible : false),
                                 'timestamp' => 0,
                                 'gradingisold' => '',
                         );
@@ -13139,7 +13141,7 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_sum'] += $niveauData->evalniveauid;
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count']++;
                     }
-                    if ($niveauData->eval != '' && $niveauData->eval > -1) {
+                    if (isset($niveauData->eval) && $niveauData->eval != '' && $niveauData->eval > -1) {
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['sum'] += $niveauData->eval;
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['count']++;
                     }
@@ -13251,12 +13253,14 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
     global $DB;
     $scheme = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
     $direction = ' >= '; // different for Points/Verb/Grade
+    $valuefield = 'value';
     switch ($scheme) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             return array(); // no assessment - no data for graph
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
             $direction = ' < '; // highest value is worse
+            $valuefield = 'additionalinfo'; // TODO: is this correct for GRADE type???? (also - only for teachers?)
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
@@ -13288,8 +13292,8 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
                         AND c.comptype = 0
                         AND c.role = ?
                         AND c.userid = ?
-                        AND c.value '.$direction.' ?
-                        AND c.value > -1
+                        AND c.'.$valuefield.' '.$direction.' ?
+                        AND c.'.$valuefield.' > -1
                         AND c.courseid = ?
                         AND d.parentid = 0'; // only parents?
 
