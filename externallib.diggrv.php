@@ -323,6 +323,10 @@ class block_exacomp_external_diggrv extends external_api {
         // $students = block_exacomp_get_students_by_course($course->id);
         // $student = $students[$userid];
         // block_exacomp_get_user_information_by_course($student, $course->id);
+
+        // sort subjects by sorting field
+        usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
+
         foreach ($tree as $subject) {
             $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $userid, 'subjectid' => $subject->id]);
             $elem_sub = new stdClass ();
@@ -742,6 +746,10 @@ class block_exacomp_external_diggrv extends external_api {
             $types = block_exacomp_get_schooltypes($level->id);
             foreach ($types as $type) {
                 $type->subjects = block_exacomp_get_subjects_for_schooltype(0, $type->id);
+
+                // sort subjects by sorting field
+                usort($type->subjects, function($a, $b) { return $a->sorting - $b->sorting; });
+
                 $data->levels[$level->id]->schooltypes[$type->id] = $type;
                 foreach ($data->levels[$level->id]->schooltypes[$type->id]->subjects as $subject) {
                     foreach ($subject->topics as $topic) {
