@@ -542,6 +542,10 @@ class block_exacomp_external_diggrv extends external_api {
 
         $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
 
+        // sort subjects by sorting field
+        // Fächer anhand des Bildungsplans sortieren (ist in der Datenbank im sorting Feld enthalten)
+        usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
+
         $subjects_html = '';
         foreach ($tree as $subject) {
             $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $userid, 'subjectid' => $subject->id]);
@@ -604,7 +608,11 @@ class block_exacomp_external_diggrv extends external_api {
                 $subject_content_html .= '-';
             }
 
-            $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($subject->title).'</td>';
+            $title = $subject->title;
+            // filter trailing numbers
+            $title = preg_replace('!\s+[0-9]+$!', '', $title);
+
+            $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($title).'</td>';
             $subjects_html .= '<td>';
             $subjects_html .= $subject_content_html;
             $subjects_html .= '</td></tr>';
