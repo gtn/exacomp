@@ -7374,25 +7374,23 @@ class block_exacomp_external extends external_api {
                     $elem_desc->childdescriptors = array();
                     $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
-                    if($withchilddescriptors != -1){
-                        foreach ($descriptor->children as $child) {
-                            $elem_child = new stdClass ();
-                            $elem_child->id = $child->id;
-                            $elem_child->title = static::custom_htmltrim(strip_tags($child->title));
-                            $elem_child->examples = array();
-                            $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
-                            $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
-                            foreach ($child->examples as $example) {
-                                $elem_example = new stdClass ();
-                                $elem_example->id = $example->id;
-                                $elem_example->title = $example->title;
-                                $elem_example->creatorid = $example->creatorid;
-                                $elem_example->visible = $example->visible;
+                    foreach ($descriptor->children as $child) {
+                        $elem_child = new stdClass ();
+                        $elem_child->id = $child->id;
+                        $elem_child->title = static::custom_htmltrim(strip_tags($child->title));
+                        $elem_child->examples = array();
+                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
+                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
+                        foreach ($child->examples as $example) {
+                            $elem_example = new stdClass ();
+                            $elem_example->id = $example->id;
+                            $elem_example->title = $example->title;
+                            $elem_example->creatorid = $example->creatorid;
+                            $elem_example->visible = $example->visible;
 //                            $elem_example->used = $example->used;
-                                $elem_child->examples[] = $elem_example;
-                            }
-                            $elem_desc->childdescriptors[] = $elem_child;
+                            $elem_child->examples[] = $elem_example;
                         }
+                        $elem_desc->childdescriptors[] = $elem_child;
                     }
                     $elem_desc->examples = array();
                     foreach ($descriptor->examples as $example) {
