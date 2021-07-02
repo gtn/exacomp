@@ -11641,18 +11641,18 @@ class block_exacomp_external extends external_api {
             $information = $DB->get_record_sql($sql, array($compid));
 
             $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one course, use one of those courses, since it does not matter for the descriptors
-            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true); // this only gets parents
+            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true, true); // this only gets parents
 
-            //Ignore childdescriptors for diggrplus
-//            foreach($descriptors as $descriptor){
-//                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true, true, true);
-//                // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
-//                foreach($childdescriptors as $child){
-//                    $child->niveauid = $descriptor->niveauid;
-//                    $child->cattitle = $descriptor->cattitle;
-//                }
-//                $descriptors += $childdescriptors;
-//            }
+            //Ignore childdescriptors for diggrplus   not anymore 02.07.2021
+            foreach($descriptors as $descriptor){
+                $childdescriptors = block_exacomp_get_child_descriptors($descriptor,$courseids[0], false, null, true, true, true);
+                // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
+                foreach($childdescriptors as $child){
+                    $child->niveauid = $descriptor->niveauid;
+                    $child->cattitle = $descriptor->cattitle;
+                }
+                $descriptors += $childdescriptors;
+            }
 
             // only use courseids where this user is enrolled, since it DOES matter for the examples
             //there can be examples in one course, but not in the other, even though it is the same subject
@@ -11670,7 +11670,7 @@ class block_exacomp_external extends external_api {
                         continue;
                     }
                 }
-                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], true, null, null, $search);
+                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id,null,true,$courseids[0], true, true, null, $search);
                 // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
                 foreach($descriptorWithExamples->examples as $example){
                     $example = static::block_excomp_get_example_details($example, $example->courseid, false);
@@ -11685,7 +11685,7 @@ class block_exacomp_external extends external_api {
             }
         }else if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
             $courseids = block_exacomp_get_courseids_by_descriptor($compid); // descriptor can be in more than one, I just need any course for the next function --> room for optimization!
-            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,true,$courseids[0],null, null, null, $search);
+            $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($compid,null,true,$courseids[0],true, true, null, $search);
             $examples = $descriptorWithExamples->examples;
 
             // get topic and subject information:

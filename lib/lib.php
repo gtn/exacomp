@@ -1956,9 +1956,6 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, $params);
 
 	foreach ($descriptors as $descriptor) {
-//        $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid, $mindvisibility, $showonlyvisible);
-//        $descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, null /* unused */, $filteredtaxonomies, $showallexamples, $mindvisibility, $showonlyvisible);
-//        $descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid, $mindvisibility, $showonlyvisible);
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, null /* unused */, $filteredtaxonomies, $showallexamples, $mindvisibility, $showonlyvisible);
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
