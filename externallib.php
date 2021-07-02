@@ -7322,7 +7322,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'withchilddescriptors' => new external_value (PARAM_INT, 'id of course', VALUE_DEFAULT, false),
+            'withchilddescriptors' => new external_value (PARAM_INT, 'id of course', VALUE_DEFAULT, -1),
         ));
     }
     /**
@@ -7332,12 +7332,13 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of user courses
      */
-    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid) {
+    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid, $withchilddescriptors=-1) {
         global $USER;
 
         static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
             'userid' => $userid,
             'courseid' => $courseid,
+            'withchilddescriptors' => $withchilddescriptors
         ));
 
         if (!$userid) {
