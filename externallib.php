@@ -7322,6 +7322,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'withchilddescriptors' => new external_value (PARAM_INT, 'id of course', VALUE_DEFAULT, false),
         ));
     }
     /**
@@ -13877,16 +13878,17 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters (array(
 			'courseid' => new external_value (PARAM_INT),
 			'topicids' => new external_multiple_structure(
-				new external_value (PARAM_INT)
+				new external_value (PARAM_INT), 'topicid optional so it can be empty', VALUE_DEFAULT, []
 			),
             'hide_new_examples' => new external_value (PARAM_BOOL),
 		));
 	}
 
-	/**
+
+    /**
 	 * @ws-type-write
 	 */
-	public static function diggrplus_set_active_course_topics($courseid, $topicids, $hide_new_examples) {
+	public static function diggrplus_set_active_course_topics($courseid, $topicids=[], $hide_new_examples) {
 		static::validate_parameters(static::diggrplus_set_active_course_topics_parameters(), array(
 			'courseid' => $courseid,
 			'topicids' => $topicids,
