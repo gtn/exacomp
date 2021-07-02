@@ -7321,8 +7321,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_all_subjects_for_course_as_tree_parameters() {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'withchilddescriptors' => new external_value (PARAM_INT, 'id of course', VALUE_DEFAULT, -1),
+            'courseid' => new external_value (PARAM_INT, 'id of course')
         ));
     }
     /**
@@ -7332,13 +7331,12 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of user courses
      */
-    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid, $withchilddescriptors=-1) {
+    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid) {
         global $USER;
 
         static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
             'userid' => $userid,
-            'courseid' => $courseid,
-            'withchilddescriptors' => $withchilddescriptors
+            'courseid' => $courseid
         ));
 
         if (!$userid) {
@@ -7376,23 +7374,25 @@ class block_exacomp_external extends external_api {
                     $elem_desc->childdescriptors = array();
                     $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
-                    foreach ($descriptor->children as $child) {
-                        $elem_child = new stdClass ();
-                        $elem_child->id = $child->id;
-                        $elem_child->title = static::custom_htmltrim(strip_tags($child->title));
-                        $elem_child->examples = array();
-                        $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
-                        $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
-                        foreach ($child->examples as $example) {
-                            $elem_example = new stdClass ();
-                            $elem_example->id = $example->id;
-                            $elem_example->title = $example->title;
-                            $elem_example->creatorid = $example->creatorid;
-                            $elem_example->visible = $example->visible;
+                    if($withchilddescriptors != -1){
+                        foreach ($descriptor->children as $child) {
+                            $elem_child = new stdClass ();
+                            $elem_child->id = $child->id;
+                            $elem_child->title = static::custom_htmltrim(strip_tags($child->title));
+                            $elem_child->examples = array();
+                            $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
+                            $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
+                            foreach ($child->examples as $example) {
+                                $elem_example = new stdClass ();
+                                $elem_example->id = $example->id;
+                                $elem_example->title = $example->title;
+                                $elem_example->creatorid = $example->creatorid;
+                                $elem_example->visible = $example->visible;
 //                            $elem_example->used = $example->used;
-                            $elem_child->examples[] = $elem_example;
+                                $elem_child->examples[] = $elem_example;
+                            }
+                            $elem_desc->childdescriptors[] = $elem_child;
                         }
-                        $elem_desc->childdescriptors[] = $elem_child;
                     }
                     $elem_desc->examples = array();
                     foreach ($descriptor->examples as $example) {
