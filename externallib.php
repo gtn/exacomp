@@ -14032,5 +14032,63 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
+
+
+
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diwipass_get_sections_with_materials_parameters() {
+        return new external_function_parameters (array(
+
+        ));
+    }
+
+    /**
+     * Create an example or update it
+     * create example
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diwipass_get_sections_with_materials() {
+        static::validate_parameters(static::diwipass_get_sections_with_materials_parameters(), array(
+
+        ));
+        global $USER;
+
+//        block_exacomp_require_teacher($courseid); TODO: only for teacher?
+//        $quizzes = mod_quiz_external::get_quizzes_by_courses(); // dont get the quizzes, but the sections
+
+        // Get courses, then for each course get sections with materials
+        $courses = get_courses($USER->id);
+        foreach ($courses as $course) {
+            $modinfo = get_fast_modinfo($course);
+            $sections = $modinfo->get_section_info_all();
+        }
+
+        $urls = mod_url_external::get_urls_by_courses($courses);
+        $resources = mod_resource_external::get_resources_by_courses($courses);
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diwipass_get_sections_with_materials_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+
 }
 
