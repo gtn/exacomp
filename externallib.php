@@ -1087,8 +1087,10 @@ class block_exacomp_external extends external_api {
 	public static function diggrplus_get_subjects_and_topics_for_user_parameters() {
 		return new external_function_parameters (array(
 			'userid' => new external_value (PARAM_INT, 'id of user'),
+            'courseid' => new external_value (PARAM_INT, 'id of course. This is used for teachers.', VALUE_DEFAULT, -1),
 		));
 	}
+
 	/**
 	 * Get Subjects
 	 * get subjects from one user for all his courses
@@ -1096,11 +1098,12 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return array of user courses
 	 */
-	public static function diggrplus_get_subjects_and_topics_for_user($userid) {
+	public static function diggrplus_get_subjects_and_topics_for_user($userid, $courseid) {
 		global $CFG, $USER, $DB;
 
 		static::validate_parameters(static::diggrplus_get_subjects_and_topics_for_user_parameters(), array(
 			'userid' => $userid,
+            'courseid' => $courseid,
 		));
 
 		if (!$userid) {
@@ -1110,7 +1113,14 @@ class block_exacomp_external extends external_api {
 
 		$structure = array();
 
-		$courses = static::get_courses($userid);
+        if ($courseid != -1) {
+            $courses = static::get_courses($userid);
+            $courses = array_filter($courses, function($course) use ($courseid) {
+                return $course["courseid"] == $courseid;
+            });
+        } else {
+            $courses = static::get_courses($userid); // this is better than enrol_get_users_courses($userid);, because it checks for existance of exabis Blocks as well as for visibility
+        }
 
 		$topicIdsWithExamples = $DB->get_records_sql_menu("SELECT DISTINCT dt.topicid, dt.topicid AS tmp
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
