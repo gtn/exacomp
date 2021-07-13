@@ -14050,8 +14050,7 @@ class block_exacomp_external extends external_api {
     }
 
     /**
-     * Create an example or update it
-     * create example
+     * Get urls and resources per section for every course of current user
      * @ws-type-write
      *
      * @return array
@@ -14066,16 +14065,31 @@ class block_exacomp_external extends external_api {
 //        $quizzes = mod_quiz_external::get_quizzes_by_courses(); // dont get the quizzes, but the sections
 
         // Get courses, then for each course get sections with materials
-        $courses = get_courses($USER->id);
-        foreach ($courses as $course) {
-            $modinfo = get_fast_modinfo($course);
+        $courses = static::get_courses($USER->id);
+        $index = 0;
+        foreach ($courses as $key => $course) {
+            $modinfo = get_fast_modinfo($course["courseid"]);
             $sections = $modinfo->get_section_info_all();
+            $courses[$key]["name"] = $course["fullname"];
+            $urls = mod_url_external::get_urls_by_courses(array($course["courseid"]));
+            $resources = mod_resource_external::get_resources_by_courses(array($course["courseid"]));
+            foreach ($sections as $key => $section ){
+                $sections[$key]->urls = array();
+                $sections[$key]->resources = array();
+            }
+            // distribute the urls and resources to the correct sections
+            foreach ($urls["urls"] as $url){
+                $sections[$url->section]->urls[] = $url;
+            }
+            foreach ($resources["resources"] as $resource){
+                $sections[$resource->section]->resources[] = $resource;
+            }
+
+            $courses[$index]["sections"] = $sections; // index because the array is not associative, but $key is the id
+            $index++;
         }
 
-        $urls = mod_url_external::get_urls_by_courses($courses);
-        $resources = mod_resource_external::get_resources_by_courses($courses);
-
-        return array("success" => true);
+        return array("courses" => $courses);
     }
 
     /**
@@ -14085,10 +14099,41 @@ class block_exacomp_external extends external_api {
      */
     public static function diwipass_get_sections_with_materials_returns() {
         return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+            'courses' => new external_multiple_structure (new external_single_structure (array(
+                'name' => new external_value (PARAM_TEXT, 'course name'),
+                'sections' => new external_multiple_structure (new external_single_structure (array(
+                    'name' => new external_value (PARAM_TEXT, 'section name', VALUE_DEFAULT, "sectionname missing"),
+                    'resources' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value(PARAM_INT, 'Module id'),
+                        'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
+                        'course' => new external_value(PARAM_INT, 'Course id'),
+                        'name' => new external_value(PARAM_RAW, 'Page name'),
+                        'intro' => new external_value(PARAM_RAW, 'Summary'),
+                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introfiles' => new external_files('Files in the introduction text'),
+                        'contentfiles' => new external_files('Files in the content'),
+                    ))),
+                    'urls' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value(PARAM_INT, 'Module id'),
+                        'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
+                        'course' => new external_value(PARAM_INT, 'Course id'),
+                        'name' => new external_value(PARAM_RAW, 'URL name'),
+                        'intro' => new external_value(PARAM_RAW, 'Summary'),
+                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introfiles' => new external_files('Files in the introduction text'),
+                        'externalurl' => new external_value(PARAM_RAW_TRIMMED, 'External URL'),
+                        'display' => new external_value(PARAM_INT, 'How to display the url'),
+                        'displayoptions' => new external_value(PARAM_RAW, 'Display options (width, height)'),
+                        'parameters' => new external_value(PARAM_RAW, 'Parameters to append to the URL'),
+                        'timemodified' => new external_value(PARAM_INT, 'Last time the url was modified'),
+                        'section' => new external_value(PARAM_INT, 'Course section id'),
+                        'visible' => new external_value(PARAM_INT, 'Module visibility'),
+                        'groupmode' => new external_value(PARAM_INT, 'Group mode'),
+                        'groupingid' => new external_value(PARAM_INT, 'Grouping id'),
+                    ))),
+                ))),
+            ))),
         ));
     }
-
-
 }
 

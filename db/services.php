@@ -1124,8 +1124,7 @@ create example',
     'classname' => 'block_exacomp_external',
     'methodname' => 'diwipass_get_sections_with_materials',
     'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => 'Create an example or update it
-create example',
+    'description' => 'Get urls and resources per section for every course of current user',
     'type' => 'write',
   ),
   'diggrplus_v_edit_course' => 
