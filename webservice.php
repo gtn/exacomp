@@ -562,7 +562,7 @@ class block_exacomp_simple_service {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT + 40, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT + 40, PDF_MARGIN_TOP + 15, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(0);
         $pdf->SetFooterMargin(0);
 
@@ -602,9 +602,9 @@ class block_exacomp_simple_service {
 
 
         $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/diwipass_zertifikat_logo.jpg';
-        $pdf->Image($img_file, 0, 0, 190, 297, 'JPG', '', '', false, 300, '', false, false, 0);
+        $pdf->Image($img_file, 0, 20, 190, 297, 'JPG', '', '', false, 300, '', false, false, 0);
         $diwilogo = $CFG->dirroot.'/blocks/exacomp/pix/certificate/combined.PNG';
-        $pdf->Image($diwilogo, 0, 240, 210, 50, 'PNG', '', '', false, 300, '', false, false, 0);
+        $pdf->Image($diwilogo, 0, 225, 210, 50, 'PNG', '', '', false, 300, '', false, false, 0);
         // restore auto-page-break status
         $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
         // set the starting point for the page content
@@ -635,7 +635,7 @@ class block_exacomp_simple_service {
 
         $html = '<span style="text-align:justify;">Für den Erwerb des Zertifikates wurde ein theoretischer und ein praktischer Nachweis in den Niveaustufen 1 bis 4 über folgende Kompetenzbereiche erbracht:</span>';
         $pdf->writeHTML($html, true, 0, true, true);
-        $pdf->SetMargins(PDF_MARGIN_LEFT + 60, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT + 60, PDF_MARGIN_TOP + 10, PDF_MARGIN_RIGHT);
         $pdf->Ln();
 
  //       foreach($gradings as $grading){
@@ -646,15 +646,10 @@ class block_exacomp_simple_service {
  //       }
 
         $pdf->Write(0,"Grundlagen und Zugang", '', 0, 'L', true, 0, false, false, 0);
-        $pdf->Ln();
         $pdf->Write(0,"Umgang mit Informationen und Daten", '', 0, 'L', true, 0, false, false, 0);
-        $pdf->Ln();
         $pdf->Write(0,"Kommunikation und Zusammenarbeit", '', 0, 'L', true, 0, false, false, 0);
-        $pdf->Ln();
         $pdf->Write(0,"Kreation digitaler Inhalte", '', 0, 'L', true, 0, false, false, 0);
-        $pdf->Ln();
         $pdf->Write(0,"Sicherheit", '', 0, 'L', true, 0, false, false, 0);
-        $pdf->Ln();
 
         $pdf->SetMargins(PDF_MARGIN_LEFT + 40, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $pdf->SetFont('helvetica', 'B', 12);
