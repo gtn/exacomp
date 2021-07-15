@@ -788,16 +788,35 @@ class block_exacomp_external_diggrv extends external_api {
 
 
 
+    public static function diggrv_create_course_parameters() {
+        return new external_function_parameters (array(
+            'coursename' => new external_value (PARAM_TEXT),
+            'schoolcode' => new external_value (PARAM_TEXT),
+        ));
+    }
 
+    /**
+     * @ws-type-read
+     */
+    public static function diggrv_create_course($courseid, $schoolcode) {
+        static::validate_parameters(static::block_exacomp_diggrv_create_course_parameters(), array(
+            'courseid' => $courseid,
+            'schoolcode' => $schoolcode,
+        ));
 
+//        block_exacomp_require_teacher($courseid);
+        // TODO: check if is teacher --> how?
 
+        block_exacomp_diggrv_create_first_course($courseid, $schoolcode);
 
+        return ['success' => true];
+    }
 
-
-
-
-
-
+    public static function diggrv_create_course_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
 
     protected function custom_htmltrim($string) {
         return block_exacomp_external::custom_htmltrim($string);
