@@ -255,7 +255,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$params = $url->params();
 		$params['studentid'] = null;
         $url->params($params);
-		
+
 		return html_writer::empty_tag('input', array('type' => 'button', 'id' => 'edit_mode_submit', 'name' => 'edit_mode_submit', 'value' => block_exacomp_get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
 			"exa-type" => 'link', 'exa-url' => $url, 'class' => 'btn btn-default'));
 	}
@@ -5014,6 +5014,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		return html_writer::div($content, 'exacomp_profile_badges');
+	}
+
+	public function edit_course_grading(){
+
+        $output = html_writer::tag('p', "asdf").html_writer::empty_tag('br');
+
+
+
+        return $output;
 	}
 
 	public function courseselection($schooltypes, $topics_activ, $headertext) {

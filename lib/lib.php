@@ -2775,8 +2775,10 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
 	if ($usebadges) {
 		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
 	}
+	// Grading submenu
+    // $settings_subtree[] = new tabobject('tab_teacher_settings_course_grading', new moodle_url('/blocks/exacomp/edit_course_grading.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_course_grading"), null, true);
 
-	return $settings_subtree;
+    return $settings_subtree;
 }
 
 /**

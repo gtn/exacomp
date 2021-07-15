@@ -909,3 +909,4 @@ $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Clear filter';
 $string['editor'] = 'Edited by';
 $string['hide_for_all_students'] = 'für alle TN verstecken';
+$string['tab_teacher_settings_course_grading'] = 'Kursspezifische Beurteilung';

@@ -919,3 +919,4 @@ $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Filter löschen';
 $string['editor'] = 'Überarbeitung durch';
 $string['hide_for_all_students'] = 'Hide for all stundents';
+$string['tab_teacher_settings_course_grading'] = 'Course grading';

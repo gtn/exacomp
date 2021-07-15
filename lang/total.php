@@ -3322,5 +3322,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Hide for all stundents',
         'für alle TN verstecken',
     ],
-
+    'tab_teacher_settings_course_grading' => [
+        'Course grading',
+        'Kursspezifische Beurteilung',
+    ],
 ];

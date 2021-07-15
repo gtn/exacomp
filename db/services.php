@@ -1195,6 +1195,14 @@ create example',
     'description' => '',
     'type' => 'read',
   ),
+  'block_exacomp_diggrv_create_course' => 
+  array (
+    'classname' => 'block_exacomp_external_diggrv',
+    'methodname' => 'diggrv_create_course',
+    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'description' => '',
+    'type' => 'read',
+  ),
 );
 
 $services = array (
@@ -1345,6 +1353,7 @@ $services = array (
       136 => 'diggrplus_v_save_student_grading',
       137 => 'diggrplus_v_print_student_grading_report',
       138 => 'diggrplus_v_get_course_edulevel_schooltype_tree',
+      139 => 'block_exacomp_diggrv_create_course',
     ),
     'downloadfiles' => 1,
     'uploadfiles' => 1,
