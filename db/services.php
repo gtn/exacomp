@@ -1110,14 +1110,6 @@ get admin evaluation configurations',
     'description' => '',
     'type' => 'read',
   ),
-  'block_exacomp_diwipass_get_sections_with_materials' => 
-  array (
-    'classname' => 'block_exacomp_external',
-    'methodname' => 'diwipass_get_sections_with_materials',
-    'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => 'Get urls and resources per section for every course of current user',
-    'type' => 'write',
-  ),
   'diggrplus_annotate_example' => 
   array (
     'classname' => 'block_exacomp_external',
@@ -1125,6 +1117,14 @@ get admin evaluation configurations',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => 'Create an example or update it
 create example',
+    'type' => 'write',
+  ),
+  'block_exacomp_diwipass_get_sections_with_materials' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diwipass_get_sections_with_materials',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'Get urls and resources per section for every course of current user',
     'type' => 'write',
   ),
   'diggrplus_v_edit_course' => 
@@ -1335,8 +1335,8 @@ $services = array (
       126 => 'diggrplus_get_course_schooltype_tree',
       127 => 'diggrplus_set_active_course_topics',
       128 => 'diggrplus_get_config',
-      129 => 'block_exacomp_diwipass_get_sections_with_materials',
-      130 => 'diggrplus_annotate_example',
+      129 => 'diggrplus_annotate_example',
+      130 => 'block_exacomp_diwipass_get_sections_with_materials',
       131 => 'diggrplus_v_edit_course',
       132 => 'diggrplus_v_create_or_update_student',
       133 => 'diggrplus_v_delete_student',

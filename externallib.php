@@ -13979,140 +13979,6 @@ class block_exacomp_external extends external_api {
 
 
 
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function diwipass_get_sections_with_materials_parameters() {
-        return new external_function_parameters (array(
-
-        ));
-    }
-
-    /**
-     * Get urls and resources per section for every course of current user
-     * @ws-type-write
-     *
-     * @return array
-     */
-    public static function diwipass_get_sections_with_materials() {
-        static::validate_parameters(static::diwipass_get_sections_with_materials_parameters(), array(
-
-        ));
-        global $USER;
-
-//        block_exacomp_require_teacher($courseid); TODO: only for teacher?
-//        $quizzes = mod_quiz_external::get_quizzes_by_courses(); // dont get the quizzes, but the sections
-
-        // Get courses, then for each course get sections with materials
-//        $courses = static::get_courses($USER->id);
-        $courses = enrol_get_my_courses();
-
-        foreach ($courses as $key => $course) {
-            $modinfo = get_fast_modinfo($course->id);
-            $sections = $modinfo->get_section_info_all();
-            $courses[$key]->name = $course->fullname;
-//            $urls = mod_url_external::get_urls_by_courses(array($course->id));
-            // get urls without caring about visibility:
-            $urls = get_all_instances_in_courses("url", array($course->id => $course), $USER->id, true);
-            $returnedurls = array();
-            foreach ($urls as $url) {
-                $context = context_module::instance($url->coursemodule);
-                // Entry to return.
-                $url->name = external_format_string($url->name, $context->id);
-
-                $options = array('noclean' => true);
-                list($url->intro, $url->introformat) =
-                    external_format_text($url->intro, $url->introformat, $context->id, 'mod_url', 'intro', null, $options);
-                $url->introfiles = external_util::get_area_files($context->id, 'mod_url', 'intro', false, false);
-
-                $returnedurls[] = $url;
-            }
-            $urls = $returnedurls;
-
-//            $resources = mod_resource_external::get_resources_by_courses(array($course->id));
-            // get resources without caring about visibility:
-            $resources = get_all_instances_in_courses("resource", array($course->id => $course), $USER->id, true);
-            $returnedresources = array();
-            foreach ($resources as $resource) {
-                $context = context_module::instance($resource->coursemodule);
-                // Entry to return.
-                $resource->name = external_format_string($resource->name, $context->id);
-                $options = array('noclean' => true);
-                list($resource->intro, $resource->introformat) =
-                    external_format_text($resource->intro, $resource->introformat, $context->id, 'mod_resource', 'intro', null,
-                        $options);
-                $resource->introfiles = external_util::get_area_files($context->id, 'mod_resource', 'intro', false, false);
-                $resource->contentfiles = external_util::get_area_files($context->id, 'mod_resource', 'content');
-
-                $returnedresources[] = $resource;
-            }
-            $resources = $returnedresources;
-
-            foreach ($sections as $sectionkey => $section ){
-                $sections[$sectionkey]->urls = array();
-                $sections[$sectionkey]->resources = array();
-                $sections[$sectionkey]->name = $section->name; // Otherwise it will not be returned since the value is stored in _name, not in name... ->name is a "getter" not a field
-            }
-            // distribute the urls and resources to the correct sections
-            foreach ($urls as $url){
-                $sections[$url->section]->urls[] = $url;
-            }
-            foreach ($resources as $resource){
-                $sections[$resource->section]->resources[] = $resource;
-            }
-            $courses[$key]->sections = $sections;
-        }
-
-        return array("courses" => $courses);
-    }
-
-    /**
-     * Returns desription of method return values
-     *
-     * @return external_multiple_structure
-     */
-    public static function diwipass_get_sections_with_materials_returns() {
-        return new external_single_structure (array(
-            'courses' => new external_multiple_structure (new external_single_structure (array(
-                'name' => new external_value (PARAM_TEXT, 'course name'),
-                'sections' => new external_multiple_structure (new external_single_structure (array(
-                    'name' => new external_value (PARAM_TEXT, 'section name', VALUE_DEFAULT, "sectionname missing"),
-                    'resources' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value(PARAM_INT, 'Module id'),
-                        'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
-                        'course' => new external_value(PARAM_INT, 'Course id'),
-                        'name' => new external_value(PARAM_RAW, 'Page name'),
-                        'intro' => new external_value(PARAM_RAW, 'Summary'),
-                        'introformat' => new external_format_value('intro', 'Summary format'),
-                        'introfiles' => new external_files('Files in the introduction text'),
-                        'contentfiles' => new external_files('Files in the content'),
-                    ))),
-                    'urls' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value(PARAM_INT, 'Module id'),
-                        'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
-                        'course' => new external_value(PARAM_INT, 'Course id'),
-                        'name' => new external_value(PARAM_RAW, 'URL name'),
-                        'intro' => new external_value(PARAM_RAW, 'Summary'),
-                        'introformat' => new external_format_value('intro', 'Summary format'),
-                        'introfiles' => new external_files('Files in the introduction text'),
-                        'externalurl' => new external_value(PARAM_RAW_TRIMMED, 'External URL'),
-                        'display' => new external_value(PARAM_INT, 'How to display the url'),
-                        'displayoptions' => new external_value(PARAM_RAW, 'Display options (width, height)'),
-                        'parameters' => new external_value(PARAM_RAW, 'Parameters to append to the URL'),
-                        'timemodified' => new external_value(PARAM_INT, 'Last time the url was modified'),
-                        'section' => new external_value(PARAM_INT, 'Course section id'),
-                        'visible' => new external_value(PARAM_INT, 'Module visibility'),
-                        'groupmode' => new external_value(PARAM_INT, 'Group mode'),
-                        'groupingid' => new external_value(PARAM_INT, 'Grouping id'),
-                    ))),
-                ))),
-            ))),
-        ));
-    }
-
-
 
 
 
@@ -14177,6 +14043,146 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_annotate_example_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diwipass_get_sections_with_materials_parameters() {
+        return new external_function_parameters (array(
+
+        ));
+    }
+
+    /**
+     * Get urls and resources per section for every course of current user
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diwipass_get_sections_with_materials() {
+        static::validate_parameters(static::diwipass_get_sections_with_materials_parameters(), array(
+
+        ));
+        global $USER;
+
+//        block_exacomp_require_teacher($courseid); TODO: only for teacher?
+//        $quizzes = mod_quiz_external::get_quizzes_by_courses(); // dont get the quizzes, but the sections
+        require_login(); // TODO: useless check?
+
+        // Get courses, then for each course get sections with materials
+//        $courses = static::get_courses($USER->id);
+        $courses = enrol_get_my_courses();
+
+        foreach ($courses as $key => $course) {
+            $modinfo = get_fast_modinfo($course->id);
+            $sections = $modinfo->get_section_info_all();
+            $courses[$key]->name = $course->fullname;
+//            $urls = mod_url_external::get_urls_by_courses(array($course->id));
+            // get urls without caring about visibility:
+            $urls = get_all_instances_in_courses("url", array($course->id => $course), $USER->id, true);
+            $returnedurls = array();
+            foreach ($urls as $url) {
+                $context = context_module::instance($url->coursemodule);
+                // Entry to return.
+                $url->name = external_format_string($url->name, $context->id);
+
+                $options = array('noclean' => true);
+                list($url->intro, $url->introformat) =
+                    external_format_text($url->intro, $url->introformat, $context->id, 'mod_url', 'intro', null, $options);
+                $url->introfiles = external_util::get_area_files($context->id, 'mod_url', 'intro', false, false);
+
+                $returnedurls[] = $url;
+            }
+            $urls = $returnedurls;
+
+//            $resources = mod_resource_external::get_resources_by_courses(array($course->id));
+            // get resources without caring about visibility:
+            $resources = get_all_instances_in_courses("resource", array($course->id => $course), $USER->id, true);
+            $returnedresources = array();
+            foreach ($resources as $resource) {
+                $context = context_module::instance($resource->coursemodule);
+                // Entry to return.
+                $resource->name = external_format_string($resource->name, $context->id);
+                $options = array('noclean' => true);
+                list($resource->intro, $resource->introformat) =
+                    external_format_text($resource->intro, $resource->introformat, $context->id, 'mod_resource', 'intro', null,
+                        $options);
+                $resource->introfiles = external_util::get_area_files($context->id, 'mod_resource', 'intro', false, false);
+                $resource->contentfiles = external_util::get_area_files($context->id, 'mod_resource', 'content');
+
+                $returnedresources[] = $resource;
+            }
+            $resources = $returnedresources;
+
+            foreach ($sections as $sectionkey => $section ){
+                $sections[$sectionkey]->urls = array();
+                $sections[$sectionkey]->resources = array();
+                $sections[$sectionkey]->name = $section->name; // Otherwise it will not be returned since the value is stored in _name, not in name... ->name is a "getter" not a field
+            }
+            // distribute the urls and resources to the correct sections
+            foreach ($urls as $url){
+                $sections[$url->section]->urls[] = $url;
+            }
+            foreach ($resources as $resource){
+                foreach ($resource->contentfiles as $contentfilekey => $contentfile){
+                    $resource->contentfiles[$contentfilekey]["fileurl"] = str_replace("webservice/pluginfile","blocks/exacomp/pluginfile_resource", $contentfile["fileurl"]);
+                    // this is done to use this custom pluginfile.php specifically for diggr. The difference is: It allows opening resources that are still hidden in moodle.
+                }
+                $sections[$resource->section]->resources[] = $resource;
+            }
+            $courses[$key]->sections = $sections;
+        }
+
+        return array("courses" => $courses);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diwipass_get_sections_with_materials_returns() {
+        return new external_single_structure (array(
+            'courses' => new external_multiple_structure (new external_single_structure (array(
+                'name' => new external_value (PARAM_TEXT, 'course name'),
+                'sections' => new external_multiple_structure (new external_single_structure (array(
+                    'name' => new external_value (PARAM_TEXT, 'section name', VALUE_DEFAULT, "sectionname missing"),
+                    'resources' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value(PARAM_INT, 'Module id'),
+                        'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
+                        'course' => new external_value(PARAM_INT, 'Course id'),
+                        'name' => new external_value(PARAM_RAW, 'Page name'),
+                        'intro' => new external_value(PARAM_RAW, 'Summary'),
+                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introfiles' => new external_files('Files in the introduction text'),
+                        'contentfiles' => new external_files('Files in the content'),
+                    ))),
+                    'urls' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value(PARAM_INT, 'Module id'),
+                        'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
+                        'course' => new external_value(PARAM_INT, 'Course id'),
+                        'name' => new external_value(PARAM_RAW, 'URL name'),
+                        'intro' => new external_value(PARAM_RAW, 'Summary'),
+                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introfiles' => new external_files('Files in the introduction text'),
+                        'externalurl' => new external_value(PARAM_RAW_TRIMMED, 'External URL'),
+                        'display' => new external_value(PARAM_INT, 'How to display the url'),
+                        'displayoptions' => new external_value(PARAM_RAW, 'Display options (width, height)'),
+                        'parameters' => new external_value(PARAM_RAW, 'Parameters to append to the URL'),
+                        'timemodified' => new external_value(PARAM_INT, 'Last time the url was modified'),
+                        'section' => new external_value(PARAM_INT, 'Course section id'),
+                        'visible' => new external_value(PARAM_INT, 'Module visibility'),
+                        'groupmode' => new external_value(PARAM_INT, 'Group mode'),
+                        'groupingid' => new external_value(PARAM_INT, 'Grouping id'),
+                    ))),
+                ))),
+            ))),
         ));
     }
 
