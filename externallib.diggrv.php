@@ -332,6 +332,7 @@ class block_exacomp_external_diggrv extends external_api {
             $elem_sub = new stdClass ();
             $elem_sub->id = $subject->id;
             $elem_sub->title = static::custom_htmltrim($subject->title);
+            $elem_sub->class = $subject->class;
             $elem_sub->courseid = $course->id;
             $elem_sub->courseshortname = $course->shortname;
             $elem_sub->coursefullname = $course->fullname;
@@ -403,6 +404,7 @@ class block_exacomp_external_diggrv extends external_api {
             'competencetree' => new external_multiple_structure (new external_single_structure (array(
                 'id' => new external_value (PARAM_INT, 'id of subject'),
                 'title' => new external_value (PARAM_TEXT, 'title of subject'),
+                'class' => new external_value (PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
                 // 'mwd' => new external_value (PARAM_TEXT),
                 'personalisedtext' => new external_value (PARAM_TEXT),
                 'assess_with_grades' => new external_value (PARAM_BOOL),
@@ -774,6 +776,7 @@ class block_exacomp_external_diggrv extends external_api {
                     'title' => new external_value (PARAM_TEXT, 'schooltype title'),
                     'subjects' => new external_multiple_structure (new external_single_structure (array(
                         'id' => new external_value (PARAM_INT),
+                        'class' => new external_value (PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
                         'title' => new external_value (PARAM_TEXT, 'subject title'),
                         'topics' => new external_multiple_structure (new external_single_structure (array(
                             'id' => new external_value (PARAM_INT),

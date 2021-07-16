@@ -5016,9 +5016,47 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, 'exacomp_profile_badges');
 	}
 
-	public function edit_course_grading(){
+	public function edit_course_grading($choices, $courseid){
 
-        $output = html_writer::tag('p', "asdf").html_writer::empty_tag('br');
+
+
+	    $output = html_writer::tag('h3', block_exacomp_get_string('course_grading_settings'));
+        $output .= '<p>'.block_exacomp_get_string("course_grading_config_infotext").'</p>';
+
+        $table = new html_table();
+        $table->attributes['class'] .= ' exacomp-courseselect-filter ';
+        $row = new html_table_row();
+//        $cell = new html_table_cell();
+//        $cell->attributes['class'] = ' no-border ';
+//        $cell->text = html_writer::label(block_exacomp_get_string('course_grading_configuration', 'asdf'), 'selection_preconfig');
+//        $row->cells[] = $cell;
+        $cell = new html_table_cell();
+        $cell->attributes['class'] = ' no-border ';
+        $cell->text = html_writer::select($choices, 'selection_preconfig');
+        $row->cells[] =  $cell;
+        $table->data[] = $row;
+
+        $input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-default'));
+
+        // why hiddenaction? I copied this from edit_course
+        $hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save'));
+
+        $form = html_writer::tag('form',html_writer::table($table).$input_submit.$hiddenaction,
+            array("method" => "post",
+                "action" => "edit_course_grading.php?courseid=".$courseid,
+                "id" => "course-grading-configuration"));
+
+//        $div = html_writer::div(html_writer::tag('form',
+//            $input_grading.$input_activities.$input_descriptors./*$input_examples.*/$hiddenaction.$input_nostudents.$input_isglobal.$input_hideglobalsubjects.$input_submit,
+//            array('action' => 'edit_course.php?courseid='.$courseid, 'method' => 'post')), 'block_excomp_center');
+//
+//        $filtercontent .= html_writer::tag('form',
+//            html_writer::table($filtertable),
+//            array("method" => "post",
+//                "action" => $PAGE->url,
+//                "id" => "course-selection-filter"));
+
+        $output .= $form;
 
 
 

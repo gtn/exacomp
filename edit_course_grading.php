@@ -17,10 +17,10 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+global $DB, $OUTPUT, $PAGE, $CFG;
+
 require __DIR__.'/inc.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
-
-global $DB, $OUTPUT, $PAGE;
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHAEXT);
@@ -51,20 +51,28 @@ $output = block_exacomp_get_renderer();
 echo $output->header_v2('tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
-
-$headertext = '';
-
-if ($action == 'save') {
-
-} else {
-
+// get the possible preconfigurations from the settings_preconfiguration.xml and create choices for the dropdown select menu
+$preconfigurations = block_exacomp_read_preconfigurations_xml();
+$choices = array('0' => block_exacomp_get_string('course_grading_use_global'));
+$preconfigurations = block_exacomp_read_preconfigurations_xml();
+if ($preconfigurations && is_array($preconfigurations)) {
+    foreach ($preconfigurations as $key => $config) {
+        $choices[$key] = $config['name'];
+    }
 }
 
-
+if ($action == 'save') {
+    $settings = block_exacomp_get_settings_by_course($courseid);
+    $settings->course_grading_scheme = optional_param('selection_preconfig', 0, PARAM_INT);
+    if($settings->course_grading_scheme == null || $settings->course_grading_scheme == 0){
+        // use global settings
+    }else{
+        // use chosen settings --> Create course specific entries in a Table... to be decided
+    }
+}
 
 /* CONTENT REGION */
-
-echo $output->edit_course_grading();
+echo $output->edit_course_grading($choices, $courseid);
 
 /* END CONTENT REGION */
 echo $output->footer();

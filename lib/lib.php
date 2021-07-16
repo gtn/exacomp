@@ -1010,7 +1010,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 	}
 
 	$sql = '
-		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal
+		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal, s.class
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -1144,7 +1144,7 @@ function block_exacomp_get_niveaus_by_example($exampleid) {
 function block_exacomp_get_all_subjects() {
 	global $DB;
 
-	return $DB->get_records(BLOCK_EXACOMP_DB_SUBJECTS, array(), '', 'id, title, source, sourceid, author, isglobal');
+	return $DB->get_records(BLOCK_EXACOMP_DB_SUBJECTS, array(), '', 'id, title, source, sourceid, author, isglobal, class');
 }
 
 /**
@@ -2776,7 +2776,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
 		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
 	}
 	// Grading submenu
-    // $settings_subtree[] = new tabobject('tab_teacher_settings_course_grading', new moodle_url('/blocks/exacomp/edit_course_grading.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_course_grading"), null, true);
+     $settings_subtree[] = new tabobject('tab_teacher_settings_course_grading', new moodle_url('/blocks/exacomp/edit_course_grading.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_course_grading"), null, true);
 
     return $settings_subtree;
 }
