@@ -1034,7 +1034,7 @@ function block_exacomp_get_assessment_subject_scheme($courseid = 0) {
     //return get_config('exacomp', 'assessment_subject_scheme');
 }
 
-function block_exacomp_get_assessment_subject_diffLevel($courseid) {
+function block_exacomp_get_assessment_subject_diffLevel($courseid = 0) {
     global $DB, $COURSE;
     static $value;
     if ($value !== null) {
@@ -1056,7 +1056,7 @@ function block_exacomp_get_assessment_subject_diffLevel($courseid) {
     //return get_config('exacomp', 'assessment_subject_diffLevel');
 }
 
-function block_exacomp_get_assessment_subject_SelfEval($courseid) {
+function block_exacomp_get_assessment_subject_SelfEval($courseid = 0) {
     global $DB, $COURSE;
     static $value;
     if ($value !== null) {

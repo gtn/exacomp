@@ -68,7 +68,8 @@ if ($action == 'save') {
 }
 
 /* CONTENT REGION */
-echo $output->edit_course_assessment($choices, $courseid);
+$courseSettings = block_exacomp_get_settings_by_course($courseid);
+echo $output->edit_course_assessment($choices, $courseid, $courseSettings->assessmentconfiguration);
 
 /* END CONTENT REGION */
 echo $output->footer();

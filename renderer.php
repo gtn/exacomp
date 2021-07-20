@@ -5016,7 +5016,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, 'exacomp_profile_badges');
 	}
 
-	public function edit_course_assessment($choices, $courseid){
+	public function edit_course_assessment($choices, $courseid, $currentSelection){
 	    $output = html_writer::tag('h3', block_exacomp_get_string('course_assessment_settings'));
         $output .= '<p>'.block_exacomp_get_string("course_assessment_config_infotext").'</p>';
 
@@ -5029,7 +5029,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 //        $row->cells[] = $cell;
         $cell = new html_table_cell();
         $cell->attributes['class'] = ' no-border ';
-        $cell->text = html_writer::select($choices, 'selection_preconfig');
+        $cell->text = html_writer::select($choices, 'selection_preconfig', $currentSelection);
         $row->cells[] =  $cell;
         $table->data[] = $row;
 
