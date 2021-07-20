@@ -36,10 +36,10 @@ $context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
-$page_identifier = 'tab_teacher_settings_course_grading';
+$page_identifier = 'tab_teacher_settings_course_assessment';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/edit_course_grading.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/edit_course_assessment.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
@@ -53,7 +53,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 
 // get the possible preconfigurations from the settings_preconfiguration.xml and create choices for the dropdown select menu
 $preconfigurations = block_exacomp_read_preconfigurations_xml();
-$choices = array('0' => block_exacomp_get_string('course_grading_use_global'));
+$choices = array('0' => block_exacomp_get_string('course_assessment_use_global'));
 $preconfigurations = block_exacomp_read_preconfigurations_xml();
 if ($preconfigurations && is_array($preconfigurations)) {
     foreach ($preconfigurations as $key => $config) {
@@ -62,17 +62,13 @@ if ($preconfigurations && is_array($preconfigurations)) {
 }
 
 if ($action == 'save') {
-    $settings = block_exacomp_get_settings_by_course($courseid);
-    $settings->course_grading_scheme = optional_param('selection_preconfig', 0, PARAM_INT);
-    if($settings->course_grading_scheme == null || $settings->course_grading_scheme == 0){
-        // use global settings
-    }else{
-        // use chosen settings --> Create course specific entries in a Table... to be decided
-    }
+    $settings = $DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
+    $settings->assessmentconfiguration = optional_param('selection_preconfig', 0, PARAM_INT);
+    $DB->update_record(BLOCK_EXACOMP_DB_SETTINGS, $settings);
 }
 
 /* CONTENT REGION */
-echo $output->edit_course_grading($choices, $courseid);
+echo $output->edit_course_assessment($choices, $courseid);
 
 /* END CONTENT REGION */
 echo $output->footer();

@@ -5016,12 +5016,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, 'exacomp_profile_badges');
 	}
 
-	public function edit_course_grading($choices, $courseid){
-
-
-
-	    $output = html_writer::tag('h3', block_exacomp_get_string('course_grading_settings'));
-        $output .= '<p>'.block_exacomp_get_string("course_grading_config_infotext").'</p>';
+	public function edit_course_assessment($choices, $courseid){
+	    $output = html_writer::tag('h3', block_exacomp_get_string('course_assessment_settings'));
+        $output .= '<p>'.block_exacomp_get_string("course_assessment_config_infotext").'</p>';
 
         $table = new html_table();
         $table->attributes['class'] .= ' exacomp-courseselect-filter ';
@@ -5043,8 +5040,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $form = html_writer::tag('form',html_writer::table($table).$input_submit.$hiddenaction,
             array("method" => "post",
-                "action" => "edit_course_grading.php?courseid=".$courseid,
-                "id" => "course-grading-configuration"));
+                "action" => "edit_course_assessment.php?courseid=".$courseid,
+                "id" => "course-assessment-configuration"));
 
 //        $div = html_writer::div(html_writer::tag('form',
 //            $input_grading.$input_activities.$input_descriptors./*$input_examples.*/$hiddenaction.$input_nostudents.$input_isglobal.$input_hideglobalsubjects.$input_submit,

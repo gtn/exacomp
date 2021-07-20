@@ -3322,21 +3322,21 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'für alle TN verstecken',
         'Hide for all stundents',
     ],
-    'tab_teacher_settings_course_grading' => [
+    'tab_teacher_settings_course_assessment' => [
         'Kursspezifische Beurteilung',
-        'Course grading',
+        'Course assessment',
     ],
-    'course_grading_config_infotext' => [
+    'course_assessment_config_infotext' => [
         'Wählen Sie das gewüntsche Beurteilungsschema aus.',
         'Choose an assessment scheme',
     ],
-    'course_grading_use_global' => [
+    'course_assessment_use_global' => [
         'Globale Beurteilungseinstellung nutzen',
         'Use global assessment settings',
     ],
-    'course_grading_settings' => [
+    'course_assessment_settings' => [
         'Kursspezifische Beurteilung',
-        'Course grading',
+        'Course assessment',
     ],
 
 ];

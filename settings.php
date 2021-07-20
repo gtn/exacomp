@@ -415,6 +415,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 		    // Add JS code, generated from settings_preconfiguration.xml.
 		    $output .= '<script>';
 		    $xmlarray = block_exacomp_read_preconfigurations_xml();
+
 		    if ($xmlarray && is_array($xmlarray)) {
 		        // Get all parameters from XML. XML can has different sets of parameters
                 $configparameters = array();
