@@ -8509,8 +8509,8 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	if (block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_SORTING, $example)) {
 		$sql = "SELECT e.*, de.sorting as descsorting FROM {block_exacompexamples} e
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON de.exampid = e.id
-			WHERE de.sorting '.((strcmp($operator, '<') == 0) ? '<' : '>').' ? AND de.descrid = ?
-			ORDER BY de.sorting '.((strcmp($operator, '<') == 0) ? 'DESC' : 'ASC').'
+			WHERE de.sorting ".((strcmp($operator, '<') == 0) ? '<' : '>')." ? AND de.descrid = ?
+			ORDER BY de.sorting ".((strcmp($operator, '<') == 0) ? 'DESC' : 'ASC')."
 			LIMIT 1";
 
 		$switchWith = $DB->get_record_sql($sql, array($example->descsorting, $descrid));
