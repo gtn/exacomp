@@ -474,8 +474,8 @@ switch($action){
 
 		break;
 	case 'get_statistics_for_profile' :
-		if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_SUBJECT)) {
-			$courseid = required_param ( 'courseid', PARAM_INT );
+        $courseid = required_param ( 'courseid', PARAM_INT );
+		if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_SUBJECT, $courseid)) {
 			$subjectid = required_param ( 'subjectid', PARAM_INT );
 			$studentid = required_param ( 'studentid', PARAM_INT );
 			$start = optional_param ( 'start', 0, PARAM_INT );
@@ -500,9 +500,9 @@ switch($action){
 		break;
 
     case 'grade_example_related_form' :
-        if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_EXAMPLE)) {
+        $courseid = required_param ( 'courseid', PARAM_INT );
+        if (block_exacomp_additional_grading (BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid)) {
             $content = '';
-            $courseid = required_param ( 'courseid', PARAM_INT );
             $exampleid = required_param ( 'exampleid', PARAM_INT );
             $students = required_param ('students', PARAM_RAW);
             $output = block_exacomp_get_renderer ();

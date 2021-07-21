@@ -2933,13 +2933,13 @@ class block_exacomp_external extends external_api {
 
 		$mapping = true;
 		//if($parent && block_exacomp_get_assessment_comp_scheme()!=1){
-		if ($parent && block_exacomp_additional_grading($comptype) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+		if ($parent && block_exacomp_additional_grading($comptype) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE, $courseid) {
 		    $mapping = false;
 		}
 		//if(!$parent && block_exacomp_get_assessment_childcomp_scheme()!=1){
         // dakora app sends always DESCRIPTOR types. So we need to check $parent variable
         if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
-            if (!$parent && block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+            if (!$parent && block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, $courseid) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
                 $mapping = false;
             }
         }
@@ -9743,7 +9743,7 @@ class block_exacomp_external extends external_api {
 		$comparison = new stdClass();
 		$comparison->descriptors = array();
 
-		$use_evalniveau = block_exacomp_use_eval_niveau();
+		$use_evalniveau = block_exacomp_use_eval_niveau($courseid);
 
 		foreach ($descriptors as $descriptor) {
 			$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
@@ -10315,7 +10315,7 @@ class block_exacomp_external extends external_api {
 		//$confiiig=get_config(\block_exacomp\global_config::get_evalniveaus(true));
 		//echo('asdf');
 
-		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
+		return array('use_evalniveau' => block_exacomp_use_eval_niveau(), // TODO: courseid?
 // 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(true),
 			'values' => \block_exacomp\global_config::get_teacher_eval_items(),
@@ -12122,7 +12122,7 @@ class block_exacomp_external extends external_api {
 	    $grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
 
 	    $number_evalniveaus = 1;
-	    if (block_exacomp_use_eval_niveau()) {
+	    if (block_exacomp_use_eval_niveau($courseid)) {
 	        $number_evalniveaus = 4;
 	    }
 

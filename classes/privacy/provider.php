@@ -156,9 +156,9 @@ class provider implements
 
         $sql = 'SELECT c.id
                     FROM {context} c
-                        INNER JOIN {block_instances} bi ON bi.blockname = ? AND bi.parentcontextid = c.id AND c.contextlevel = ?               
-                        INNER JOIN {block_exacompcompuser} ccu ON ccu.courseid = c.instanceid                        
-                    WHERE ccu.userid = ? 
+                        INNER JOIN {block_instances} bi ON bi.blockname = ? AND bi.parentcontextid = c.id AND c.contextlevel = ?
+                        INNER JOIN {block_exacompcompuser} ccu ON ccu.courseid = c.instanceid
+                    WHERE ccu.userid = ?
                           OR ccu.reviewerid = ?
         ';
 
@@ -469,7 +469,7 @@ class provider implements
             $courseid = $context->instanceid;
             $descrvisiblesData = array();
             $descrhiddenData = array();
-            $visibles = $DB->get_records_sql('SELECT d.title, dv.visible 
+            $visibles = $DB->get_records_sql('SELECT d.title, dv.visible
                     FROM {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dv
                         LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON dv.descrid = d.id
                     WHERE dv.studentid = ?
@@ -507,7 +507,7 @@ class provider implements
             $courseid = $context->instanceid;
             $examvisiblesData = array();
             $examhiddenData = array();
-            $visibles = $DB->get_records_sql('SELECT e.title, ev.visible 
+            $visibles = $DB->get_records_sql('SELECT e.title, ev.visible
                     FROM {'.BLOCK_EXACOMP_DB_EXAMPVISIBILITY.'} ev
                         LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON ev.exampleid = e.id
                     WHERE ev.studentid = ?
@@ -540,10 +540,10 @@ class provider implements
         // external trainers for student
         $context = \context_user::instance($user->id);
         $externaltrainersData = array();
-        $externaltrainers = $DB->get_fieldset_sql('SELECT DISTINCT u.id  
+        $externaltrainers = $DB->get_fieldset_sql('SELECT DISTINCT u.id
                 FROM {'.BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS.'} et
                     LEFT JOIN {user} u ON et.trainerid = u.id
-                WHERE et.studentid = ?                        
+                WHERE et.studentid = ?
                 ',
                 [$user->id]
         );
@@ -565,10 +565,10 @@ class provider implements
         // my external students
         $context = \context_user::instance($user->id);
         $externalstudentsData = array();
-        $externalstudents = $DB->get_fieldset_sql('SELECT DISTINCT u.id  
+        $externalstudents = $DB->get_fieldset_sql('SELECT DISTINCT u.id
                 FROM {'.BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS.'} et
                     LEFT JOIN {user} u ON et.studentid = u.id
-                WHERE et.trainerid = ?                        
+                WHERE et.trainerid = ?
                 ',
                 [$user->id]
         );
@@ -591,10 +591,10 @@ class provider implements
         // block_exacompprofilesettings
         $context = \context_user::instance($user->id);
         $selectedCourcesData = array();
-        $selectedCources = $DB->get_fieldset_sql('SELECT DISTINCT c.fullname   
+        $selectedCources = $DB->get_fieldset_sql('SELECT DISTINCT c.fullname
                 FROM {block_exacompprofilesettings} ps
                     LEFT JOIN {course} c ON ps.itemid = c.id AND ps.block = ?
-                WHERE ps.userid = ?                        
+                WHERE ps.userid = ?
                 ',
                 ['exacomp', $user->id]
         );
@@ -617,18 +617,18 @@ class provider implements
             $courseid = $context->instanceid;
             $examplesData = array();
             $examples = $DB->get_records_sql(
-                    'SELECT DISTINCT e.title as example_title, 
-                                    s.creatorid as creator_id, 
+                    'SELECT DISTINCT e.title as example_title,
+                                    s.creatorid as creator_id,
                                     s.timecreated as timecreated,
                                     s.timemodified as timemodified,
                                     s.sorting as sorting,
                                     s.start as startts,
-                                    s.end as endts                                                                           
+                                    s.end as endts
                         FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'} s
-                            LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = s.exampleid                                                   
+                            LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = s.exampleid
                         WHERE s.studentid = ?
                             AND s.courseid = ?
-                            AND s.deleted = 0 
+                            AND s.deleted = 0
                         ORDER BY s.sorting ',
                             [$user->id, $courseid]
             );
@@ -659,18 +659,18 @@ class provider implements
             $courseid = $context->instanceid;
             $examplesData = array();
             $examples = $DB->get_records_sql(
-                    'SELECT DISTINCT e.title as example_title, 
-                                    s.studentid as student_id,                                 
+                    'SELECT DISTINCT e.title as example_title,
+                                    s.studentid as student_id,
                                     s.timecreated as timecreated,
                                     s.timemodified as timemodified,
                                     s.sorting as sorting,
                                     s.start as startts,
-                                    s.end as endts                                                                           
+                                    s.end as endts
                         FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'} s
-                            LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = s.exampleid                                                   
+                            LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = s.exampleid
                         WHERE s.creatorid = ?
                             AND s.courseid = ?
-                            AND s.deleted = 0 
+                            AND s.deleted = 0
                         ORDER BY s.sorting ',
                             [$user->id, $courseid]
             );
@@ -704,7 +704,7 @@ class provider implements
             $courseid = $context->instanceid;
             $solutvisiblesData = array();
             $soluthiddenData = array();
-            $visibles = $DB->get_records_sql('SELECT e.title, sol.visible 
+            $visibles = $DB->get_records_sql('SELECT e.title, sol.visible
                     FROM {'.BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY.'} sol
                         LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON sol.exampleid = e.id
                     WHERE sol.studentid = ?
@@ -738,9 +738,9 @@ class provider implements
             $courseid = $context->instanceid;
             $topicvisiblesData = array();
             $topichiddenData = array();
-            $visibles = $DB->get_records_sql('SELECT t.title, tv.visible 
+            $visibles = $DB->get_records_sql('SELECT t.title, tv.visible
                     FROM {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tv
-                        LEFT JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON tv.topicid = t.id 
+                        LEFT JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON tv.topicid = t.id
                     WHERE tv.studentid = ?
                         AND tv.courseid = ? AND tv.niveauid IS NULL
                     ',
@@ -920,9 +920,9 @@ function block_exacomp_get_user_assesment_wordings($userid, $competenceid, $comp
         } else {
             $evaluation->niveau = mull;
         }
-        if (block_exacomp_additional_grading($competencetype)) {
+        if (block_exacomp_additional_grading($competencetype, $courseid)) {
             $result_grade = '';
-            switch (block_exacomp_additional_grading($competencetype)) {
+            switch (block_exacomp_additional_grading($competencetype, $courseid)) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                     $result_grade = block_exacomp_format_eval_value($teacher_evaluation->additionalinfo);
                     break;
@@ -982,7 +982,7 @@ function block_exacomp_get_teacher_assesment_wordings_array($teacherid, $compete
             }
             $niveau = block_exacomp_get_assessment_diffLevel_verb($eval->evalniveauid);
             $result_grade = '';
-            switch (block_exacomp_additional_grading($competencetype)) {
+            switch (block_exacomp_additional_grading($competencetype, $courseid)) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                     $result_grade = block_exacomp_format_eval_value($eval->additionalinfo);
                     break;

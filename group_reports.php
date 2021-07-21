@@ -274,7 +274,7 @@ function create_filterlogic_text($input_type,$filter,$filterlogictext) {
         }
     }
 
-    $gradingScheme = block_exacomp_additional_grading($input_type);
+    $gradingScheme = block_exacomp_additional_grading($input_type, g::$COURSE->id);
     $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, $gradingScheme);
     switch ($gradingScheme) {
         // Input fields for Grade|Points

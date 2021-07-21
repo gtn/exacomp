@@ -43,7 +43,7 @@ if ($userid != $USER->id) {
 	block_exacomp_require_teacher($courseid);
 }
 
-if (!block_exacomp_use_eval_niveau()) {
+if (!block_exacomp_use_eval_niveau($courseid)) {
 	print_error('invalidevalniveau', 'block_exacomp');
 }
 
