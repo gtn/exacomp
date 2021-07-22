@@ -315,7 +315,7 @@ function create_filterlogic_text($input_type,$filter,$filterlogictext) {
     if($filter[$input_type]["studentevaluation"]) {
         $filterlogictext .= " ".block_exacomp_get_string('AND')." ";
         $filterlogictext .= block_exacomp_get_string('selfevaluation').": ";
-        $scheme_values = \block_exacomp\global_config::get_student_eval_items(true, $input_type);
+        $scheme_values = \block_exacomp\global_config::get_student_eval_items(true, $input_type, null, $courseid);
         $first = true;
         foreach($filter[$input_type]["studentevaluation"] as $studenteval){
             if($studenteval == 0){

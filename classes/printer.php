@@ -603,7 +603,7 @@ class printer {
         $templateProcessor->duplicateCell('vd', $columnCount - 1);
         // fill header titles
         for ($i = $columnStart; $i < $columnCount; $i++) {
-            switch (block_exacomp_get_assessment_comp_scheme()) {
+            switch (block_exacomp_get_assessment_comp_scheme($courseid)) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                     $templateProcessor->setValue("c", $i, 1);
                     break;
@@ -645,7 +645,7 @@ class printer {
                 $templateProcessor->setValue('mainsubject', $subject->title, 1);
                 $subjectEntries = 0;
                 // subject (in result table, if this filter is activated)
-                $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_subject_scheme(), $subject->evaluation);
+                $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_subject_scheme($courseid), $subject->evaluation);
                 $subjectEntries++;
                 //$templateProcessor->duplicateRow("subject");
                 $templateProcessor->setValue("subject_main", $subject->get_numbering().' '.$subject->title, 1);
@@ -668,7 +668,7 @@ class printer {
                     $templateProcessor->cloneRowToEnd("descriptor");
                     if (isset($topic->evaluation)) {
                         $subjectEntries++;
-                        $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_topic_scheme(), $topic->evaluation);
+                        $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_topic_scheme($courseid), $topic->evaluation);
                         if ($selectedEval != '') {
                             $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
                             $templateProcessor->setValue("nt", $topic->evaluation->get_evalniveau_title(), 1);
@@ -690,7 +690,7 @@ class printer {
                         $templateProcessor->duplicateRow("descriptor");
                         if (isset($descriptor->evaluation)) {
                             $subjectEntries++;
-                            $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_comp_scheme(), $descriptor->evaluation);
+                            $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_comp_scheme($courseid), $descriptor->evaluation);
                             if ($selectedEval != '' ) {
                                 $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
                                 $templateProcessor->setValue("nd", $descriptor->evaluation->get_evalniveau_title(), 1);

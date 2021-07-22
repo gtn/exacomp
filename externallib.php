@@ -2933,7 +2933,7 @@ class block_exacomp_external extends external_api {
 
 		$mapping = true;
 		//if($parent && block_exacomp_get_assessment_comp_scheme()!=1){
-		if ($parent && block_exacomp_additional_grading($comptype) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE, $courseid) {
+		if ($parent && block_exacomp_additional_grading($comptype, $courseid) != BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
 		    $mapping = false;
 		}
 		//if(!$parent && block_exacomp_get_assessment_childcomp_scheme()!=1){
@@ -9530,7 +9530,7 @@ class block_exacomp_external extends external_api {
                 foreach ($niveaustat as $evalvalue => $sum) {
                     $eval = new stdClass();
                     if(!($evalvalue === "")){ //when the grading has existed but is reset to none, there is "" saved... DONT include these
-                        switch (block_exacomp_get_assessment_comp_scheme()) {
+                        switch (block_exacomp_get_assessment_comp_scheme($courseid)) {
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                                 $eval->value = round($evalvalue, 0, PHP_ROUND_HALF_DOWN);
                                 break;

@@ -905,7 +905,7 @@ function block_exacomp_get_user_assesment_wordings($userid, $competenceid, $comp
         $evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, $competencetype, $competenceid);*/
     $teacher_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, $competencetype, $competenceid);
     $self_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, $competencetype, $competenceid);
-    $value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items(false, $competencetype);
+    $value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items(false, $competencetype, null, $courseid);
     $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
     //}
     if ($teacher_evaluation || $self_evaluation) {
@@ -916,7 +916,7 @@ function block_exacomp_get_user_assesment_wordings($userid, $competenceid, $comp
             $evaluation->self_grade = null;
         }
         if (block_exacomp_get_assessment_diffLevel($competencetype)) {
-            $evaluation->niveau = block_exacomp_get_assessment_diffLevel_verb($teacher_evaluation->evalniveauid);
+            $evaluation->niveau = block_exacomp_get_assessment_diffLevel_verb($teacher_evaluation->evalniveauid, $courseid);
         } else {
             $evaluation->niveau = mull;
         }
@@ -980,7 +980,7 @@ function block_exacomp_get_teacher_assesment_wordings_array($teacherid, $compete
             if ($competencetype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 $eval->value = $eval->teacher_evaluation;
             }
-            $niveau = block_exacomp_get_assessment_diffLevel_verb($eval->evalniveauid);
+            $niveau = block_exacomp_get_assessment_diffLevel_verb($eval->evalniveauid, $courseid);
             $result_grade = '';
             switch (block_exacomp_additional_grading($competencetype, $courseid)) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:

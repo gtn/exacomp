@@ -511,7 +511,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->attributes['class'] = 'competence_grid';
 		$head = array();
 
-		$scheme = ($courseid == 0) ? 1 : block_exacomp_get_assessment_comp_scheme();
+		$scheme = ($courseid == 0) ? 1 : block_exacomp_get_assessment_comp_scheme($courseid);
 
 		if ($studentid > 0) {
             $student = $DB->get_record('user',array('id' => $studentid));
@@ -631,7 +631,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                                 $item = \block_exacomp\descriptor::get($descriptor->id);
                                 $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
-                                if (block_exacomp_get_assessment_SelfEval(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+                                if (block_exacomp_get_assessment_SelfEval(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
                                     if ($iconPath = $eval->get_student_value_pic_url()) {
                                         $studentTemp = $DB->get_record('user', ['id' => $eval->userid]);
                                         $reviewDescr = fullname($studentTemp) . ': ' . date('d.m.Y H:m', $eval->timestampstudent);
@@ -1140,7 +1140,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
                         $niveau_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
 
-                        if ($this->useEvalNiveau && block_exacomp_get_assessment_theme_diffLevel() == 1) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_theme_diffLevel($courseid) == 1) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                 'niveau_crosssub',
                                 $crosssubjid,
@@ -1219,7 +1219,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                         }
 
-                        if (block_exacomp_get_assessment_theme_SelfEval() == 1) {
+                        if (block_exacomp_get_assessment_theme_SelfEval($courseid) == 1) {
                             // Only emojis?
                             $student_evaluation_cell->text = $this->generate_select(
                                 $checkboxname,
@@ -1302,7 +1302,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     /* CROSSSUBJECTS */
                     //crosssubjectfiles and total eval
                     $checkboxname = "dataexamples";
-                    $example_scheme = block_exacomp_get_assessment_example_scheme();
+                    $example_scheme = block_exacomp_get_assessment_example_scheme($courseid);
                     $studentid = block_exacomp_get_studentid(); // TODO: is here needed student condition???
                     $editmode = optional_param('editmode', 0, PARAM_BOOL); // TODO: is here needed?
                     $one_student = false; // TODO: is here needed?
@@ -1541,7 +1541,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
 
-                            if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel() == 1) {
+                            if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel($courseid) == 1) {
                                 $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_examples',
                                     $example->id,
@@ -1611,7 +1611,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            if (block_exacomp_get_assessment_example_SelfEval() == 1) {
+                            if (block_exacomp_get_assessment_example_SelfEval($courseid) == 1) {
                                 // Only emojis?
                                 $student_evaluation_cell->text = $this->generate_select(
                                     $checkboxname,
@@ -1704,7 +1704,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
  						$niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
  						$niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 
- 						if ($this->useEvalNiveau && block_exacomp_get_assessment_subject_diffLevel()) {
+ 						if ($this->useEvalNiveau && block_exacomp_get_assessment_subject_diffLevel($courseid)) {
  					        $niveau_cell->text = $this->generate_niveau_select('niveau_subject',
                                                                                 $subject->id,
                                                                                 'subjects',
@@ -1764,10 +1764,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$evaluation_cell->text = "";
 						}*/
 						// Self evaluate from student.
-                        $subjectscheme = block_exacomp_get_assessment_subject_scheme();
+                        $subjectscheme = block_exacomp_get_assessment_subject_scheme($courseid);
                         $evaluation_cell->text = '';
 
-                        if (block_exacomp_get_assessment_subject_SelfEval() == 1) {
+                        if (block_exacomp_get_assessment_subject_SelfEval($courseid) == 1) {
                             // the student can evaluate self only by emojis
                             /*if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
                                 $evaluation_cell->text = $this->generate_checkbox(
@@ -1912,7 +1912,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $niveau_cell = new html_table_cell();
                         $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
                         $niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
-                        if ($this->useEvalNiveau && block_exacomp_get_assessment_subject_diffLevel()) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_subject_diffLevel($courseid)) {
                             $niveau_cell->text = $this->generate_niveau_select('niveau_subject',
                                     $subject->id,
                                     'subjects',
@@ -1941,7 +1941,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $subjectRow->cells[] = $niveau_cell;
                         }
 
-                        $subjectscheme = block_exacomp_get_assessment_subject_scheme();
+                        $subjectscheme = block_exacomp_get_assessment_subject_scheme($courseid);
 
                         switch ($subjectscheme) {
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE: // None.
@@ -1982,7 +1982,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         }
 
                         $self_evaluation_cell->text = '';
-                        if (block_exacomp_get_assessment_subject_SelfEval() == 1) {
+                        if (block_exacomp_get_assessment_subject_SelfEval($courseid) == 1) {
                             // self evalueation is only emojis
                            /* if ($subjectscheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO) { // Yes/No.
                                 $self_evaluation_cell->text = $this->generate_checkbox(
@@ -2030,7 +2030,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			/* TOPICS */
-			$topicsscheme = block_exacomp_get_assessment_topic_scheme();
+			$topicsscheme = block_exacomp_get_assessment_topic_scheme($courseid);
 			//for every topic
 			$data = (object)array(
 				'subject' => $subject,
@@ -2113,7 +2113,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $crosssubjid = 0, $isEditingTeacher = true, $forReport = false, $hideAllActionButtons = false) {
 		global $DB, $USER, $COURSE;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
-		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 0 || $topicparam == BLOCK_EXACOMP_SHOW_ALL_TOPICS) {
+		if (block_exacomp_is_topicgrading_enabled($data->courseid) || count($topics) > 0 || $topicparam == BLOCK_EXACOMP_SHOW_ALL_TOPICS) {
 			// display topic row
 			$display_topic_header_row = true;
 			$child_level = $level + 1;
@@ -2246,7 +2246,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						    $disableCell = ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student) ? false : true);
 						}
 
-                        if ($this->useEvalNiveau && block_exacomp_get_assessment_topic_diffLevel() == 1) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_topic_diffLevel($data->courseid) == 1) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_topic',
                                     $topic->id,
@@ -2291,7 +2291,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 						// student show evaluation
-						if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC, $courseid)) {
+						if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC, $data->courseid)) {
 						    switch ($data->scheme) {
                                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE: // None.
                                     $teacher_evaluation_cell->text = '';
@@ -2348,7 +2348,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                         }
 
-                        if (block_exacomp_get_assessment_topic_SelfEval() == 1) {
+                        if (block_exacomp_get_assessment_topic_SelfEval($data->courseid) == 1) {
 						    // Only emojis?
                             $student_evaluation_cell->text = $this->generate_select(
                                     $checkboxname,
@@ -2731,8 +2731,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						    $disableCell = ($data->role == BLOCK_EXACOMP_ROLE_STUDENT) ? true : (($visible_student) ? false : true);
 						}
 
-                        if (($this->useEvalNiveau && block_exacomp_get_assessment_comp_diffLevel() == 1 && $level == 1)
-                            || ($this->useEvalNiveau && block_exacomp_get_assessment_childcomp_diffLevel() == 1) && $level == 2) {
+                        if (($this->useEvalNiveau && block_exacomp_get_assessment_comp_diffLevel($data->courseid) == 1 && $level == 1)
+                            || ($this->useEvalNiveau && block_exacomp_get_assessment_childcomp_diffLevel($data->courseid) == 1) && $level == 2) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_descriptor',
                                     $descriptor->id,
@@ -2774,8 +2774,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
                         // student show evaluation
-                        if ((   block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid) && $level == 1)
-                                || (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, $courseid) && $level == 2)) {
+                        if ((   block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $data->courseid) && $level == 1)
+                                || (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, $data->courseid) && $level == 2)) {
                             switch ($data->scheme) {
                                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE: // None.
                                     $teacher_evaluation_cell->text = '';
@@ -2840,8 +2840,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                         }
 
-                        if ((block_exacomp_get_assessment_comp_SelfEval() == 1 && $level == 1)
-                            ||(block_exacomp_get_assessment_childcomp_SelfEval() == 1 && $level == 2)) {
+                        if ((block_exacomp_get_assessment_comp_SelfEval($data->courseid) == 1 && $level == 1)
+                            ||(block_exacomp_get_assessment_childcomp_SelfEval($data->courseid) == 1 && $level == 2)) {
                             // Only emojis?
                             $student_evaluation_cell->text = $this->generate_select(
                                     $checkboxname,
@@ -2950,7 +2950,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$rows[] = $descriptorRow;
 
 				$checkboxname = "dataexamples";
-                $example_scheme = block_exacomp_get_assessment_example_scheme();
+                $example_scheme = block_exacomp_get_assessment_example_scheme($data->courseid);
                 if (!$profoundness && !$forReport) { // TODO: does profoundness need examples?
                     foreach ($descriptor->examples as $example) {
                         $example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
@@ -3225,7 +3225,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         (($visible_student_example) ? false : true);
                             }
 
-                            if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel() == 1) {
+                            if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel($data->courseid) == 1) {
                                 $niveau_cell->text = $this->generate_niveau_select(
                                         'niveau_examples',
                                         $example->id,
@@ -3264,7 +3264,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
                             //student show evaluation
-                            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid)) {
+                            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE, $data->courseid)) {
                                 switch ($example_scheme) {
                                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE: // None.
                                         $teacher_evaluation_cell->text = '';
@@ -3307,7 +3307,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            if (block_exacomp_get_assessment_example_SelfEval() == 1) {
+                            if (block_exacomp_get_assessment_example_SelfEval($data->courseid) == 1) {
                                 // Only emojis?
                                 $student_evaluation_cell->text = $this->generate_select(
                                         $checkboxname,
@@ -3364,7 +3364,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
 				$child_data = clone $data;
 				$child_data->rg2_level++;
-                $child_data->scheme = block_exacomp_get_assessment_childcomp_scheme();
+                $child_data->scheme = block_exacomp_get_assessment_childcomp_scheme($data->courseid);
 
 				if (!empty($descriptor->children)) {
 					$this->descriptors($rows, $level + 1, $descriptor->children, $child_data, $students, $profoundness, $editmode, false, false, $crosssubjid, $descriptor_parent_visible, $isEditingTeacher, $forReport);
@@ -3581,7 +3581,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
                         $niveau_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
 
-                        if ($this->useEvalNiveau && block_exacomp_get_assessment_theme_diffLevel() == 1) {
+                        if ($this->useEvalNiveau && block_exacomp_get_assessment_theme_diffLevel($courseid) == 1) {
                             $niveau_cell->text = $this->generate_niveau_select(
                                 'niveau_crosssub',
                                 $crosssubjid,
@@ -3656,7 +3656,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            if (block_exacomp_get_assessment_theme_SelfEval() == 1) {
+                            if (block_exacomp_get_assessment_theme_SelfEval($courseid) == 1) {
                                 // Only emojis?
                                 $student_evaluation_cell->text = $this->generate_select(
                                 $checkboxname,
@@ -3698,7 +3698,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     /* CROSSSUBJECTS */
                     //crosssubjectfiles and total eval
                     $checkboxname = "dataexamples";
-                    $example_scheme = block_exacomp_get_assessment_example_scheme();
+                    $example_scheme = block_exacomp_get_assessment_example_scheme($courseid);
 
                     //Get associated files
                     //get files from competencies that are added to this cross:
@@ -3950,7 +3950,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
 
 
-                            if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel() == 1) {
+                            if ($this->useEvalNiveau && block_exacomp_get_assessment_example_diffLevel($courseid) == 1) {
                                 $niveau_cell->text = $this->generate_niveau_select(
                                     'niveau_examples',
                                     $example->id,
@@ -4012,7 +4012,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 }
                             }
 
-                            if (block_exacomp_get_assessment_example_SelfEval() == 1) {
+                            if (block_exacomp_get_assessment_example_SelfEval($courseid) == 1) {
                                 // Only emojis?
                                 $student_evaluation_cell->text = $this->generate_select(
                                 $checkboxname,
@@ -8420,17 +8420,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
             </div>
             <?php
                 // Subject can only be chosen if the grading scheme configured is the same as topic.
-                if (block_exacomp_get_assessment_subject_scheme() == block_exacomp_get_assessment_comp_scheme()) {
+                if (block_exacomp_get_assessment_subject_scheme($courseid) == block_exacomp_get_assessment_comp_scheme($courseid)) {
                     $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_SUBJECT, 'report_subject');
                 }
                 // Topic can only be chosen if the grading scheme configured is the same as competence.
-                if (block_exacomp_get_assessment_topic_scheme() == block_exacomp_get_assessment_comp_scheme()) {
+                if (block_exacomp_get_assessment_topic_scheme($courseid) == block_exacomp_get_assessment_comp_scheme($courseid)) {
                     $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_TOPIC, 'report_competencefield');
                 }
                 $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT, 'descriptor');
                 //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR, 'descriptor');
                 // Child-competence can only be chosen if the grading scheme configured is the same as competence.
-                if (block_exacomp_get_assessment_comp_scheme() == block_exacomp_get_assessment_childcomp_scheme()) {
+                if (block_exacomp_get_assessment_comp_scheme($courseid) == block_exacomp_get_assessment_childcomp_scheme($courseid)) {
                     $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD, 'descriptor_child');
                 }
                 //$this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_EXAMPLE, 'report_learniningmaterial');

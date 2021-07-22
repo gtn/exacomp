@@ -5647,42 +5647,42 @@ function block_exacomp_perform_auto_test() {
 
 function block_exacomp_assign_competences($courseid, $studentid, $topics, $descriptors, $examples, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) {
     if (isset($descriptors)) {
-        $grading_scheme = block_exacomp_get_assessment_comp_scheme();
+        $grading_scheme = block_exacomp_get_assessment_comp_scheme($courseid);
         foreach ($descriptors as $descriptor) {
             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
-                block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), $comptype = 0);
+                block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), $comptype = 0);
             }
             //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
             mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
         }
     }
     if (isset($topics)) {
-        $grading_scheme = block_exacomp_get_assessment_topic_scheme();
+        $grading_scheme = block_exacomp_get_assessment_topic_scheme($courseid);
         foreach ($topics as $topic) {
             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), BLOCK_EXACOMP_TYPE_EXAMPLE);
+                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_EXAMPLE);
             }
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $topic->compid, BLOCK_EXACOMP_TYPE_TOPIC, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            block_exacomp_set_user_competence($studentid, $topic->compid, BLOCK_EXACOMP_TYPE_TOPIC, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
             mtrace("set topic competence ".$topic->compid." for user ".$studentid.'<br>');
 
         }
     }
     if (isset($examples)) {
-        $grading_scheme = block_exacomp_get_assessment_example_scheme();
+        $grading_scheme = block_exacomp_get_assessment_example_scheme($courseid);
         foreach ($examples as $example) {
             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                block_exacomp_save_additional_grading_for_comp($courseid, $example->id, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), BLOCK_EXACOMP_TYPE_EXAMPLE);
+                block_exacomp_save_additional_grading_for_comp($courseid, $example->id, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_EXAMPLE);
             }
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
-            mtrace("set example grading: ".$example->id." for user ".$studentid.'  '.block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult).'<br>');
+            block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
+            mtrace("set example grading: ".$example->id." for user ".$studentid.'  '.block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid).'<br>');
         }
     }
 }
@@ -7719,7 +7719,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	$gradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 	//create grading statistic
 	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
-	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(null, $courseid);
 
 	if (block_exacomp_use_eval_niveau($courseid)) {
 		foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
@@ -8103,7 +8103,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
     }
     if (is_array($entries)) {
-        $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted();
+        $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted($courseid);
         foreach ($entries as $k => $entry) {
             if ($entry->evalniveauid && array_key_exists($entry->evalniveauid, $niveautitles)) {
                 $entries[$k]->niveau = $niveautitles[$entry->evalniveauid];
@@ -8354,17 +8354,17 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
     }
 
 	$comp = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid));
-	$gradingScheme = block_exacomp_get_assessment_example_scheme();
+	$gradingScheme = block_exacomp_get_assessment_example_scheme($courseid);
 
 	if ($comp && !$comp->resubmission && $comp->teacher_evaluation !== null) {
         if($gradingScheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE){ //the grading is in additionalinfo instead of teacher_evaluation
-            if($comp->additionalinfo == block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE)){
+            if($comp->additionalinfo == block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE, $courseid)){
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
             }else if($comp->additionalinfo != -1 && $comp->additionalinfo != 0){
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV;
             }
         }else if($gradingScheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){
-            if ($comp->teacher_evaluation < block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)/2) {
+            if ($comp->teacher_evaluation < block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS, $courseid)/2) {
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
             }
             return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV;
@@ -9101,7 +9101,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             return true;
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-            $gradelimit = block_exacomp_get_assessment_grade_limit();
+            $gradelimit = block_exacomp_get_assessment_grade_limit($courseid);
             if ($additionalinfo > $gradelimit) {
                 $additionalinfo = $gradelimit;
             } elseif ($additionalinfo > 0 && $additionalinfo < 1.0) {
@@ -9111,7 +9111,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options(null, $courseid));
             $max = count($verboses);
             if ($max > 0) {
                 $max -= 1;  // because it is possible zero
@@ -9121,7 +9121,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-            $pointlimit = block_exacomp_get_assessment_points_limit();
+            $pointlimit = block_exacomp_get_assessment_points_limit($courseid);
             if ($additionalinfo > $pointlimit) {
                 $additionalinfo = $pointlimit;
             }
@@ -9930,7 +9930,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
                     break;
                 case BLOCK_EXACOMP_ROLE_STUDENT:
                     $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_TOPIC, $rowcontent->topic_id);
-                    if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
+                    if (block_exacomp_get_assessment_topic_SelfEval($courseid) && $student_evaluation) {
                         $topic_eval->evaluation_text = $student_evaluation->get_value_title();
                         $topic_eval->evaluation = $student_evaluation->value;
                         $topic_eval->evaluation_mapped = $student_evaluation->value;
@@ -9970,7 +9970,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
                 break;
             case BLOCK_EXACOMP_ROLE_STUDENT:
                 $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subjectid);
-                if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
+                if (block_exacomp_get_assessment_topic_SelfEval($courseid) && $student_evaluation) {
                     $content_row->columns[1]->evaluation_text = $student_evaluation->get_value_title();
                     $content_row->columns[1]->evaluation = $student_evaluation->value;
                     $content_row->columns[1]->evaluation_mapped = $student_evaluation->value;
@@ -10276,12 +10276,12 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	$childgradings = [];
 	$examplegradings = [];
 
-	$compAssessment = block_exacomp_get_assessment_comp_scheme(); //variable for faster program RW
+	$compAssessment = block_exacomp_get_assessment_comp_scheme($courseid); //variable for faster program RW
 
 	// create grading statistic
 	//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid)); //deprecated/not generic? RW or just wrong?
     $schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, $compAssessment);
-	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, block_exacomp_get_assessment_example_scheme());
+	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, block_exacomp_get_assessment_example_scheme($courseid));
 
 // 	switch (block_exacomp_get_assessment_comp_scheme()) {
 // 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
@@ -10302,22 +10302,22 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	// 	 $schemeItems_descriptors = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR); //get the generic schemeItems RW
 
 	$evaluationniveau_items = block_exacomp_use_eval_niveau($courseid)
-		? \block_exacomp\global_config::get_evalniveaus() : [
+		? \block_exacomp\global_config::get_evalniveaus(null, $courseid) : [
         '-1' => ''
     ];
 
 	// if diff levels are not active, but some gradings already have them ---> handle those gradings like there is no niveau
-	if (block_exacomp_get_assessment_comp_diffLevel() == 1){
+	if (block_exacomp_get_assessment_comp_diffLevel($courseid) == 1){
         $evaluationniveau_items_comp = $evaluationniveau_items + ['-1' => ''];
 	} else {
         $evaluationniveau_items_comp = ['-1' => ''];
     }
-    if (block_exacomp_get_assessment_childcomp_diffLevel() == 1){
+    if (block_exacomp_get_assessment_childcomp_diffLevel($courseid) == 1){
         $evaluationniveau_items_childcomp = $evaluationniveau_items + ['-1' => ''];
     } else {
         $evaluationniveau_items_childcomp = ['-1' => ''];
     }
-    if (block_exacomp_get_assessment_example_diffLevel() == 1){
+    if (block_exacomp_get_assessment_example_diffLevel($courseid) == 1){
         $evaluationniveau_items_example = $evaluationniveau_items + ['-1' => ''];
     } else {
         $evaluationniveau_items_example = ['-1' => ''];
@@ -10356,7 +10356,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
         // check if grading is within timeframe
 	    if ($eval && ($eval->value || $eval->additionalinfo) !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 			//$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-            if (block_exacomp_get_assessment_comp_diffLevel()) {
+            if (block_exacomp_get_assessment_comp_diffLevel($courseid)) {
                 $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
             } else {
                 $niveaukey = -1;
@@ -10380,7 +10380,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		}
 	}
     // clean empty niveau if niveau is used and no any data in this row
-    if (block_exacomp_get_assessment_comp_diffLevel()) {
+    if (block_exacomp_get_assessment_comp_diffLevel($courseid)) {
         if (!count(array_filter($descriptorgradings[-1]))) {
             unset($descriptorgradings[-1]);
         }
@@ -10392,7 +10392,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        // check if grading is within timeframe
 	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 	            //$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-                if (block_exacomp_get_assessment_childcomp_diffLevel()) {
+                if (block_exacomp_get_assessment_childcomp_diffLevel($courseid)) {
                     $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
                 } else {
                     $niveaukey = -1;
@@ -10405,7 +10405,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        }
 	    }
         // clean empty niveau if niveau is used and no any data in this row
-        if (block_exacomp_get_assessment_childcomp_diffLevel()) {
+        if (block_exacomp_get_assessment_childcomp_diffLevel($courseid)) {
             if (!count(array_filter($childgradings[-1]))) {
                 unset($childgradings[-1]);
             }
@@ -10418,7 +10418,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        // check if grading is within timeframe
 	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 	            //$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-                if (block_exacomp_get_assessment_example_diffLevel()) {
+                if (block_exacomp_get_assessment_example_diffLevel($courseid)) {
                     $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
                 } else {
                     $niveaukey = -1;
@@ -10430,7 +10430,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        }
 	    }
 	    // clean empty niveau if niveau is used and no any data in this row
-        if (block_exacomp_get_assessment_example_diffLevel()) {
+        if (block_exacomp_get_assessment_example_diffLevel($courseid)) {
             if (!count(array_filter($examplegradings[-1]))) {
                 //unset($examplegradings[-1]);
             }
@@ -10471,9 +10471,9 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 	}
 
 	//$use_evalniveau = block_exacomp_use_eval_niveau();
-	$use_evalniveau = block_exacomp_get_assessment_comp_diffLevel();
+	$use_evalniveau = block_exacomp_get_assessment_comp_diffLevel($courseid);
 	if ($use_evalniveau) {
-        $evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(true);
+        $evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(true, $courseid);
     } else {
         $evaluationniveau_items = array(block_exacomp_get_string('teacherevaluation_short'));
     }
@@ -12146,7 +12146,7 @@ function block_exacomp_group_reports_annex_result($filter) {
             ) {
                 $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
-                $tableHeader = function(&$has_subject_results, &$firstSubject, $item, $colCount, $startColumn) {
+                $tableHeader = function(&$has_subject_results, &$firstSubject, $item, $colCount, $startColumn, $courseid) {
                     $has_subject_results = false;
                     // table wrapping with Subject title
                     if (!$firstSubject) {
@@ -12170,12 +12170,12 @@ function block_exacomp_group_reports_annex_result($filter) {
                     // THIRD WAY: columns by selected grading system (grading for competences)
                     for ($i = $startColumn; $i < $colCount; $i++) {
                         echo '<th class="heading toCenter">';
-                        switch (block_exacomp_get_assessment_comp_scheme()) {
+                        switch (block_exacomp_get_assessment_comp_scheme($courseid)) {
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                                 echo $i;
                                 break;
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                                $titles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+                                $titles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options($courseid));
                                 echo $titles[$i];
                                 break;
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
@@ -12996,7 +12996,7 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
             }
             // check on empty (not graded) child examples
             foreach (array_keys($torecalculate) as $parentid) {
-                switch (block_exacomp_get_assessment_example_scheme()) {
+                switch (block_exacomp_get_assessment_example_scheme($courseid)) {
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
                         // possible "0" value
@@ -13624,9 +13624,9 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
             break;
     }
     //$maxVal = block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
-    $negativeLimit = block_exacomp_get_assessment_negative_threshold(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+    $negativeLimit = block_exacomp_get_assessment_negative_threshold(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid);
 
-    $studentEvalItems = \block_exacomp\global_config::get_student_eval_items();
+    $studentEvalItems = \block_exacomp\global_config::get_student_eval_items(null, null, null, $courseid);
     $selfLimit = ceil(max(array_keys($studentEvalItems)) / 2);
     if ($subjectid) {
         // for topics only from this subject
