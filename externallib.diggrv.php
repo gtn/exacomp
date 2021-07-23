@@ -726,12 +726,6 @@ class block_exacomp_external_diggrv extends external_api {
     }
 
 
-
-
-
-
-
-
     public static function diggrplus_v_get_course_edulevel_schooltype_tree_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT),
@@ -749,7 +743,7 @@ class block_exacomp_external_diggrv extends external_api {
         block_exacomp_require_teacher($courseid);
 
         $data = new stdClass ();
-        $data->levels = array ();
+        $data->levels = array();
 
         $levels = block_exacomp_get_edulevels();
         $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
@@ -803,7 +797,6 @@ class block_exacomp_external_diggrv extends external_api {
     }
 
 
-
     public static function diggrv_create_course_parameters() {
         return new external_function_parameters (array(
             'coursename' => new external_value (PARAM_TEXT),
@@ -820,7 +813,7 @@ class block_exacomp_external_diggrv extends external_api {
             'schoolcode' => $schoolcode,
         ));
 
-//        block_exacomp_require_teacher($courseid);
+        //        block_exacomp_require_teacher($courseid);
         // TODO: check if is teacher --> how?
 
         block_exacomp_diggrv_create_first_course($courseid, $schoolcode);
