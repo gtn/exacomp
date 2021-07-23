@@ -634,7 +634,9 @@ class block_exacomp_external_diggrv extends external_api {
 				padding: 0;
 				margin: 0;
 			}
-
+			table {
+                border-collapse: collapse;
+			}
 			table.header {
 			    padding: 0;
             }
@@ -658,14 +660,14 @@ class block_exacomp_external_diggrv extends external_api {
             <br/>
             <br/>
             <br/>
-            <table class="header"><tr>
+            <table class="header" width="100%" cellspacing="0"><tr>
                 <td>für '.fullname($user).'</td>
                 <td style="text-align: right">Schuljahr 2021/2022</td>
             </tr></table>
             <br/>
             <br/>
             <br/>
-            <table class="content">
+            <table class="content" width="100%" cellspacing="0">
                 <tr nobr="true">
                     <td style="width: 30%"></td>
                     <td style="width: 70%"><b>Die Schülerin/der Schüler hat folgende Anforderungen*) erfüllt:</b></td>
@@ -681,11 +683,11 @@ class block_exacomp_external_diggrv extends external_api {
             //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
             //     </td>
             // </tr>'.
-            '</table>
+            '</table width="100%" cellspacing="0">
             <br/><br/><br/>
             <br/><br/><br/>
             <div nobr="true">
-                <table class="header"><tr>
+                <table class="header" width="100%" cellspacing="0"><tr>
                     <td style="width: 40%; text-align: center;">...................................................<br/>Schul-/Clusterleitung</td>
                     <td style="width: 20%; text-align: center;">Rund-<br/>siegel</td>
                     <td style="width: 40%; text-align: center;">...................................................<br/>Klassenlehrer/Klassenlehrerin</td>
