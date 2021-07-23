@@ -645,6 +645,7 @@ class block_exacomp_external_diggrv extends external_api {
             }
             table.content td {
                 border: 0.2pt solid black;
+                padding: 4px 6px;
             }
         ';
 
