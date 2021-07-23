@@ -527,18 +527,20 @@ class block_exacomp_external_diggrv extends external_api {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT),
             'courseid' => new external_value (PARAM_INT),
+            'output_format' => new external_value (PARAM_TEXT, 'pdf or html', VALUE_DEFAULT, 'pdf'),
         ));
     }
 
     /**
      * @ws-type-read
      */
-    public static function diggrplus_v_print_student_grading_report($userid, $courseid) {
+    public static function diggrplus_v_print_student_grading_report($userid, $courseid, $output_format) {
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_v_print_student_grading_report_parameters(), array(
             'userid' => $userid,
             'courseid' => $courseid,
+            'output_format' => $output_format,
         ));
 
         block_exacomp_external::require_can_access_course_user($courseid, $userid);
@@ -624,13 +626,7 @@ class block_exacomp_external_diggrv extends external_api {
             $subjects_html .= '</td></tr>';
         }
 
-        $pdf = \block_exacomp\printer::getPdfPrinter('P');
-        $pdf->SetFont('times', '', 9);
-        $pdf->setHeaderFont(['times', '', 9]);
-        $pdf->SetLeftMargin(20);
-        $pdf->SetRightMargin(20);
-
-        $pdf->setStyle('
+        $style = '
 			* {
 				font-size: 10pt;
 			}
@@ -648,9 +644,9 @@ class block_exacomp_external_diggrv extends external_api {
             table.content td {
                 border: 0.2pt solid black;
             }
-        ');
+        ';
 
-        $pdf->writeHTML('
+        $html = '
             <br/>
             <br/>
             <br/>
@@ -698,12 +694,29 @@ class block_exacomp_external_diggrv extends external_api {
                 <br/><br/><br/><br/>
                 *) Anforderungsniveaus: Mindestanforderungen (M), wesentliche Anforderungen (W), (weit) darüber hinausgehende Anforderungen (D)
             </div>
-        ');
+        ';
+
+        if ($output_format == 'html') {
+            header('Access-Control-Allow-Origin: *');
+
+            echo "<style>$style</style>".$html;
+            exit;
+        } else {
+            $pdf = \block_exacomp\printer::getPdfPrinter('P');
+            $pdf->SetFont('times', '', 9);
+            $pdf->setHeaderFont(['times', '', 9]);
+            $pdf->SetLeftMargin(20);
+            $pdf->SetRightMargin(20);
+
+            $pdf->setStyle($style);
+
+            $pdf->writeHTML($html);
 
 
-        header('Access-Control-Allow-Origin: *');
-        $pdf->Output();
-        exit;
+            header('Access-Control-Allow-Origin: *');
+            $pdf->Output();
+            exit;
+        }
     }
 
     public static function diggrplus_v_print_student_grading_report_returns() {
