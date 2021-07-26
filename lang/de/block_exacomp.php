@@ -88,7 +88,7 @@ $string['tab_cross_subjects'] = 'Themen';
 $string['tab_cross_subjects_overview'] = 'Übersicht';
 $string['tab_cross_subjects_course'] = 'Kursthemen';
 $string['tab_weekly_schedule'] = 'Wochenplan';
-$string['tab_group_reports'] = 'Gruppenberichte';
+$string['tab_group_reports'] = 'Berichte';
 $string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Kompetenzraster Modul zu importieren.';
@@ -730,7 +730,7 @@ $string['no_entries_found'] = 'Keine Einträge gefunden';
 $string['assessment_date'] = 'Bewertungsdatum';
 $string['number_of_found_students'] = 'Anzahl gefundener Schüler';
 $string['display_settings'] = 'Anzeigeoptionen';
-$string['settings_explanation_tooltipp'] = 'Die Ergebnisse im Gruppenbericht werden durch die einzelnen Filter von
+$string['settings_explanation_tooltipp'] = 'Die Ergebnisse im Bericht werden durch die einzelnen Filter von
         oben nach unten reduziert, aber nicht von unten nach oben.
         Wenn z.B. als einziges Filterkriterium "Niveau G" bei den Kompetenzen
         ausgewählt ist, so werden

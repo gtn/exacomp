@@ -256,7 +256,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Weekly Schedule',
 	],
 	'tab_group_reports' => [
-		'Gruppenberichte',
+		'Berichte',
 		'Group Reports',
 	],
 	'assign_descriptor_to_crosssubject' => [
@@ -2588,7 +2588,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'display settings',
     ],
     'settings_explanation_tooltipp' => [
-        'Die Ergebnisse im Gruppenbericht werden durch die einzelnen Filter von
+        'Die Ergebnisse im Bericht werden durch die einzelnen Filter von
         oben nach unten reduziert, aber nicht von unten nach oben.
         Wenn z.B. als einziges Filterkriterium "Niveau G" bei den Kompetenzen
         ausgewählt ist, so werden
