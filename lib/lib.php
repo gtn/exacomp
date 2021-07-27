@@ -2513,12 +2513,20 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 function block_exacomp_get_descriptors_by_subject($subjectid, $niveaus = true) {
 	global $DB;
 
-	$sql = "SELECT d.*, dt.topicid, t.title as topic_title FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_TOPICS."} t
-	WHERE d.id=dt.descrid AND d.parentid =0 AND dt.topicid IN (SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?)";
+	$sql = "SELECT d.*, dt.topicid, t.title as topic_title, t.sorting as topic_sorting
+              FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d, 
+                    {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, 
+                    {".BLOCK_EXACOMP_DB_TOPICS."} t
+	            WHERE d.id=dt.descrid 
+	                AND d.parentid =0 
+	                AND dt.topicid IN (
+	                        SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?
+                    ) ";
 	if ($niveaus) {
 		$sql .= " AND d.niveauid > 0";
 	}
-	$sql .= " AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
+	$sql .= " AND dt.topicid = t.id ";
+	$sql .= ' ORDER BY t.sorting, t.title, d.sorting, d.title, d.skillid, dt.topicid, d.niveauid ';
 
 	return $DB->get_records_sql($sql, array($subjectid));
 }
@@ -5046,7 +5054,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
         $topics[$descriptor->topicid] = $descriptor->topic_title;
     }
 
-    $selection = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('courseid'=>$courseid), '', 'topicid');
+    $selection = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('courseid' => $courseid), '', 'topicid');
 
     return array($niveaus, $skills, $topics, $data, $selection);
 

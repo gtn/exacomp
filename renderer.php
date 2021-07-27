@@ -556,6 +556,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			foreach ($skill as $topicid => $topic) {
+                if (!array_key_exists($topicid, $selection)) {
+                    continue; // only selected topics!
+                }
+
 				$row = new html_table_row();
 
 				$cellTopic = new html_table_cell();
