@@ -137,7 +137,6 @@ if ($course_settings->nostudents) {
 
 //var_dump($editmode);
 //die;
-
 $competence_tree = block_exacomp_get_competence_tree($courseid,
                         $selectedSubject ? $selectedSubject->id : null,
                         $selectedTopic ? $selectedTopic->id : null,

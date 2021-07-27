@@ -2380,7 +2380,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
                 unset($examples[$example->id]);
             }
 
-            if ($example->courseid > 0 && $example->courseid != $courseid) {
+            if ($example->activityid > 0 && $example->courseid > 0 && $example->courseid != $courseid) {
                 unset($examples[$example->id]);
             }
         }
