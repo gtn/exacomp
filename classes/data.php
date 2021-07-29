@@ -1816,6 +1816,8 @@ class data_importer extends data {
 	 */
 	private static $zip;
 
+    private static $unzippedPath = '';
+
 	public static function do_import_string($data = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null) {
 		global $CFG;
 
@@ -1891,6 +1893,9 @@ class data_importer extends data {
 		@set_time_limit(0);
 		// \core_php_time_limit::raise();
 		raise_memory_limit(MEMORY_HUGE);
+//		raise_memory_limit('16G');
+//        $memory_limit = ini_get('memory_limit');
+//        echo "<pre>debug:<strong>data.php:1898</strong>\r\n"; print_r($memory_limit); echo '</pre>'; exit; // !!!!!!!!!! delete it
 
 		self::$import_source_type = $par_source;
 		self::$import_time = time();
@@ -2020,7 +2025,7 @@ class data_importer extends data {
                 throw new import_exception('we have no this task!');
             }
         }
-
+        
         // work with GetPost, because additional form settings are not initialized yet
         $newSelecting = optional_param_array('selectedGrid', null, PARAM_RAW);
         $currentImportStep = optional_param('currentImportStep', 'compareCategories', PARAM_RAW);
@@ -2121,7 +2126,6 @@ class data_importer extends data {
         $descriptorsFromSelectedGrids = self::get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
         $topicsFromSelectedGrids = self::get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
 
-
 		$skillsFromSelected = self::get_property_for_descriptors_from_xml($xml, 'skillid', $descriptorsFromSelectedGrids);
 		//self::truncate_table(self::$import_source_local_id, BLOCK_EXACOMP_DB_SKILLS);
 		if(isset($xml->skills)) {
@@ -2179,14 +2183,18 @@ class data_importer extends data {
 		    $GLOBALS['activexamples']['example_sourceid'] = array();
 		    //example activitytype temporary
 		    $GLOBALS['activexamples']['activitytype'] = array();
-		    if( $course_template != 0) {
-
+		    if ($course_template != 0) {
+                error_reporting(E_ALL);
+                ini_set("display_errors", 1);
 		        if ($ret === true) { // only if it is zip
-		            extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
+		            $doNotDeleteUnzipped = extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
+		            if ($doNotDeleteUnzipped) {
+		                self::$unzippedPath = $doNotDeleteUnzipped;
+                    }
 		        }
 		    }
 
-			foreach($xml->examples->example as $example) {
+			foreach ($xml->examples->example as $example) {
 
 			    if (in_array((int)$example->attributes()->id, $examplesFromSelected)) {
 
@@ -2275,6 +2283,10 @@ class data_importer extends data {
 		block_exacomp_settstamp();
 
 		//$transaction->allow_commit();
+
+        if (self::$unzippedPath) {
+            rrmdir(self::$unzippedPath);
+        }
 
 		return true;
 	}
@@ -2652,43 +2664,56 @@ class data_importer extends data {
 		if (!self::$zip) {
 			return;
 		}
-		$filepathOrig = (string)$xmlItem->filepath->__toString();
-		$filecontent = self::$zip->getFromName($filepathOrig);
-		// different servers (and zip) can have different options, so:
-        // usually it is different slashes in zips
-		if (!$filecontent) {
-            $filepath = '/'.$filepathOrig;
-            $filecontent = self::$zip->getFromName($filepath);
+
+        $filerecord = array(
+            'contextid' => \context_system::instance()->id,
+            'component' => 'block_exacomp',
+            'filearea' => $filearea,
+            'itemid' => $item->id,
+            'filepath' => '/',
+
+            'filename' => (string)$xmlItem->filename,
+            'mimetype' => (string)$xmlItem->mimetype,
+            'author' => (string)$xmlItem->author,
+            'license' => (string)$xmlItem->license,
+            'timecreated' => (int)$xmlItem->timecreated,
+            'timemodified' => (int)$xmlItem->timemodified
+        );
+
+        $fs = get_file_storage();
+
+        // delete old file
+        $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', $filearea, $item->id);
+
+
+        $filepathOrig = (string)$xmlItem->filepath->__toString();
+		if (self::$unzippedPath) { // already unzipped (used for big zip-archives)
+//            $filecontent = file_get_contents(self::$unzippedPath.'/'.$filepathOrig); // PHP memory limit issue possible
+            $filepath = self::$unzippedPath.'/'.$filepathOrig;
+            if (file_exists($filepath)) {
+                // reimport
+                $fs->create_file_from_pathname($filerecord, $filepath);
+            }
+        } else {
+            $filecontent = self::$zip->getFromName($filepathOrig);
+
+            // different servers (and zip) can have different options, so:
+            // usually it is different slashes in zips
+            if (!$filecontent) {
+                $filepath = '/' . $filepathOrig;
+                $filecontent = self::$zip->getFromName($filepath);
+            }
+            if (!$filecontent) {
+                $filepath = str_replace('/', '\\', $filepathOrig);
+                $filecontent = self::$zip->getFromName($filepath);
+            }
+            if (!$filecontent) {
+                $filepath = '\\' . str_replace('/', '\\', $filepathOrig);
+                $filecontent = self::$zip->getFromName($filepath);
+            }
+            // reimport
+            $fs->create_file_from_string($filerecord, $filecontent);
         }
-        if (!$filecontent) {
-            $filepath = str_replace('/', '\\', $filepathOrig);
-            $filecontent = self::$zip->getFromName($filepath);
-        }
-        if (!$filecontent) {
-            $filepath = '\\'.str_replace('/', '\\', $filepathOrig);
-            $filecontent = self::$zip->getFromName($filepath);
-        }
-
-		$fs = get_file_storage();
-
-		// delete old file
-		$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', $filearea, $item->id);
-
-		// reimport
-		$fs->create_file_from_string(array(
-			'contextid' => \context_system::instance()->id,
-			'component' => 'block_exacomp',
-			'filearea' => $filearea,
-			'itemid' => $item->id,
-			'filepath' => '/',
-
-			'filename' => (string)$xmlItem->filename,
-			'mimetype' => (string)$xmlItem->mimetype,
-			'author' => (string)$xmlItem->author,
-			'license' => (string)$xmlItem->license,
-			'timecreated' => (int)$xmlItem->timecreated,
-			'timemodified' => (int)$xmlItem->timemodified
-		), $filecontent);
 	}
 
 	protected static function delete_mm_record_for_item($table, $field, $id) {
@@ -2812,7 +2837,7 @@ class data_importer extends data {
 		if ($xmlItem->filecompletefile) {
 			self::insert_file('example_completefile', $xmlItem->filecompletefile, $item);
 		}
-		if($xmlItem->activitytype){
+		if ($xmlItem->activitytype){
 
             if ($course_template > 0) {
                 $item->courseid = $course_template; // TODO: right? (need for correct relation of activities)
@@ -3300,35 +3325,44 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 }
 
 // function to extract a folder of a zip-file to a destination path
-
 function extract_zip_subdir($zipfile, $subpath, $destination, $temp_cache, $traverse_first_subdir = false){
     $zip = new ZipArchive;
 //     echo "extracting $zipfile... ";
     if(substr($temp_cache, -1) !== '/') {
         $temp_cache .= '/';
     }
+    $doNotDeleteUnzipped = false;
     $res = $zip->open($zipfile);
     if ($res === TRUE) {
         if ($traverse_first_subdir){
             $zip_dir = $temp_cache . $zip->getNameIndex(0);
-        }
-        else {
+        } else {
             $temp_cache = $temp_cache . basename($zipfile, ".tmp");
             $zip_dir = $temp_cache;
         }
-        $zip->extractTo($temp_cache);
+
+        if (filesize($zipfile) > 200000000) {
+            // ZipArchive is not working good with big archives
+            // be careful with this!
+            exec('unzip -q '.$zipfile.' -d '.$zip_dir);
+            $doNotDeleteUnzipped = $zip_dir;
+        } else {
+            $zip->extractTo($temp_cache);
+        }
         $zip->close();
-        //echo "<br>".$zip_dir . '/' . $subpath." -- to -- >  $destination\n";
-        //@rename($zip_dir . '/' . $subpath, $destination); // Windows has a problem with renaming to existing directory
+        // @rename($zip_dir . '/' . $subpath, $destination); // Windows has a problem with renaming to existing directory
         directory_copy($zip_dir.'/'.$subpath, $destination);
-//         echo "ok\n";
-//         echo "cleaning extraction dir... ";
-        rrmdir($zip_dir);
-//         echo "ok\n";
+        // cleaning extraction dir...
+        // only if it was unzipped by PHP ZipArchive
+        if (!$doNotDeleteUnzipped) {
+            rrmdir($zip_dir);
+        } else {
+            // delete files later. they will need also for other import processes
+        }
     } else {
-//         echo "failed\n";
         die();
     }
+    return $doNotDeleteUnzipped;
 }
 
 function rrmdir($source, $removeOnlyChildren = false)

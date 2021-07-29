@@ -313,9 +313,12 @@ try {
     } else {
         $course_template = null;
     }
+    $filecontent = ''; // Needed for next using, because $mform->get_file_content('file') can not work in the future
     if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
+        $filecontent = $data;
         $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC, $import_data->password);
     } elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
+        $filecontent = $data;
         $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $import_data->password);
 	} elseif ($isAdmin && ($importtype == 'demo')) {
 		//do demo import
@@ -341,7 +344,7 @@ $pagenode = $blocknode->add(block_exacomp_get_string($page_identifier), $PAGE->u
 $pagenode->make_active();
 
 $delete = false;
-if(($isAdmin || block_exacomp_check_customupload()) && ($action == 'delete' && $importtype != 'scheduler')) {
+if (($isAdmin || block_exacomp_check_customupload()) && ($action == 'delete' && $importtype != 'scheduler')) {
 		block_exacomp\data::delete_source(required_param('source', PARAM_INT));
 		$delete = true;
 }
@@ -362,7 +365,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                 if ($mform->is_cancelled()) {
                     redirect($PAGE->url);
                 } else {
-                    if ($data = $mform->get_file_content('file')) {
+                    if ($filecontent) { // Instead of $data = $mform->get_file_content('file')
                         if ($importSuccess) {
                             if ($importSuccess === true) {
                                 $string = block_exacomp_get_string('next_step');
