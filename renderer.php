@@ -36,8 +36,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
      * block_exacomp_renderer constructor.
      */
     public function __construct(moodle_page $page, $target) {
-        $this->diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist(); // TODO: courseid?
-        $this->useEvalNiveau = block_exacomp_use_eval_niveau(); // TODO: courseid?
+        $this->diffLevelExists = block_exacomp_get_assessment_any_diffLevel_exist();
+        $this->useEvalNiveau = block_exacomp_use_eval_niveau();
         $this->exaportExists = block_exacomp_exaportexists();
         parent::__construct($page, $target);
     }
@@ -50,7 +50,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function header($context = null, $courseid = 0, $page_identifier = "", $tabtree = null) {
 		global $PAGE;
 
-		block_exacomp_init_js_css();
+		block_exacomp_init_js_css($courseid);
 
 		$extras = "";
 		if ($PAGE->pagelayout == 'embedded') {
@@ -5529,7 +5529,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 
-	public function activity_content($subjects, $modules) {
+	public function activity_content($subjects, $modules, $courseid = 0) {
 		global $PAGE, $CFG, $COURSE;
 
         $nojs = (bool)get_config('exacomp', 'disable_js_edit_activities');
@@ -5610,7 +5610,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->text = html_writer::tag('b', $subject->title);
 			$row->cells[] = $cell;
 			$rows[] = $row;
-			$this->topics_activities($rows, 0, $subject->topics, $modules);
+			$this->topics_activities($rows, 0, $subject->topics, $modules, $courseid);
 		}
 		$table->data = $rows;
 
@@ -5643,7 +5643,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	}
 
-	public function topics_activities(&$rows, $level, $topics, $modules) {
+	public function topics_activities(&$rows, $level, $topics, $modules, $courseid = 0) {
 		foreach ($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic, true);
 
@@ -5662,7 +5662,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach ($modules as $module) {
 				$moduleCell = new html_table_cell();
 				$moduleCell->attributes['module-type='] = $module->modname;
-				if (block_exacomp_is_topicgrading_enabled()) {
+				if (block_exacomp_is_topicgrading_enabled($courseid)) {
                     $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topicdata['.$module->id.']['.$topic->id.']', 'value' => 0]);
 					$moduleCell->text .= html_writer::checkbox('topicdata['.$module->id.']['.$topic->id.']',
                             "1",
@@ -5969,7 +5969,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($forGlobalReport) { // GLOBAL REPORT
             // Grid view
             $subjectGenericData = $this->competence_profile_grid(null, null, $student->id, $max_scheme);
-            $newSubjectData = block_exacomp_new_subject_data_for_competence_profile($subjectGenericData);
+            $newSubjectData = block_exacomp_new_subject_data_for_competence_profile($subjectGenericData, $course->id);
             if (count($newSubjectData)) {
                 $innersection = html_writer::tag('legend', block_exacomp_get_string('innersection1'),
                         array('class' => 'competence_profile_insectitle'));

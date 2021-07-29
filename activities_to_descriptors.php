@@ -72,7 +72,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $headertext = "";
 $img = new moodle_url('/blocks/exacomp/pix/three.png');
-	 
+
 if ($action == "save") {
 	// RELATED DATA
     block_exacomp_update_example_activity_relations(isset($_POST['data']) ? $_POST['data'] : array(), isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid);
@@ -83,7 +83,7 @@ if ($action == "save") {
 	    $headertext = $output->notification(block_exacomp_get_string("save_success"), 'info');
 		$headertext .= html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
 			.block_exacomp_get_string('completed_config');
-	
+
 		$students = block_exacomp_get_students_by_course($courseid);
 		if (empty($students)) {
             $headertext .= html_writer::empty_tag('br')
@@ -149,27 +149,27 @@ if ($action == "filter") {
 	if (isset($_POST['niveau_filter'])) {
         $selected_niveaus = $_POST['niveau_filter'];
     }
-		
+
 	if (isset($_POST['module_filter'])) {
         $selected_modules = $_POST['module_filter'];
     }
 }
 
 if ($action == "export-activity") {
-    
+
     $zip = ZipArchive::create_temp_file();
     $backupid = moodle_backup(optional_param("activityid", PARAM_INT), $USER->id);
-    
+
     $source = block_exacomp_get_backup_temp_directory().$backupid;
     $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
-    
+
     foreach ($files as $name => $file) {
         // Skip directories (they would be added automatically)
         if (! $file->isDir()) {
             // Get real and relative path for current file
             $filePath = $file->getRealPath();
             $relativePath = 'activities/activity' . 1 . '/' . substr($filePath, strlen($source) + 1);
-            
+
             // Add current file to archive
             $zip->addFile($filePath, $relativePath);
         }
@@ -214,13 +214,13 @@ if ($modules) {
 		if (empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules)) {
             $visible_modules[] = $module;
         }
-		
+
 		$modules_to_filter[] = $module;
 	}
-	
+
 	$niveaus = block_exacomp_extract_niveaus($subjects);
 	block_exacomp_filter_niveaus($subjects, $selected_niveaus);
-	
+
 
 	$topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 
@@ -236,7 +236,7 @@ if ($modules) {
 		echo $output->activity_legend($headertext);
 		echo $output->transfer_activities();
         echo $colselector;
-		echo $output->activity_content($subjects, $visible_modules);
+		echo $output->activity_content($subjects, $visible_modules, $courseid);
 	}
 } else {
     echo $output->transfer_activities();

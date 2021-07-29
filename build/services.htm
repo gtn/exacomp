@@ -5122,6 +5122,119 @@ Returns:<pre>{
         "... values ..."
     ]
 }</pre>
+<h2>dakora_get_configs</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "points_limit": "int null ('points_limit')",
+    "grade_limit": "int null ('grade_limit')",
+    "points_negative_threshold": "int null ('points_negative_threshold. Values below this value are negative')",
+    "grade_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
+    "verbal_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
+    "example_scheme": "int null ('example_scheme')",
+    "example_diffLevel": "bool null ('example_diffLevel')",
+    "example_SelfEval": "bool null ('example_SelfEval')",
+    "childcomp_scheme": "int null ('childcomp_scheme')",
+    "childcomp_diffLevel": "bool null ('childcomp_diffLevel')",
+    "childcomp_SelfEval": "bool null ('childcomp_SelfEval')",
+    "comp_scheme": "int null ('comp_scheme')",
+    "comp_diffLevel": "bool null ('comp_diffLevel')",
+    "comp_SelfEval": "bool null ('comp_SelfEval')",
+    "topic_scheme": "int null ('topic_scheme')",
+    "topic_diffLevel": "bool null ('topic_diffLevel')",
+    "topic_SelfEval": "bool null ('topic_SelfEval')",
+    "subject_scheme": "int null ('subject_scheme')",
+    "subject_diffLevel": "bool null ('subject_diffLevel')",
+    "subject_SelfEval": "bool null ('subject_SelfEval')",
+    "theme_scheme": "int null ('theme_scheme')",
+    "theme_diffLevel": "bool null ('theme_diffLevel')",
+    "theme_SelfEval": "bool null ('theme_SelfEval')",
+    "use_evalniveau": "bool null ('use evaluation niveaus')",
+    "evalniveaus": [
+        {
+            "id": "int null ('id')",
+            "name": "text null ('name')"
+        },
+        "..."
+    ],
+    "teacherevalitems": [
+        {
+            "id": "int null ('id')",
+            "name": "text null ('name')"
+        },
+        "..."
+    ],
+    "teacherevalitems_short": [
+        {
+            "id": "int null ('id')",
+            "name": "text null ('name')"
+        },
+        "..."
+    ],
+    "studentevalitems": [
+        {
+            "id": "int null ('id')",
+            "name": "text null ('name')"
+        },
+        "..."
+    ],
+    "studentevalitems_short": [
+        {
+            "id": "int null ('id')",
+            "name": "text null ('name')"
+        },
+        "..."
+    ],
+    "studentevalitems_examples": [
+        {
+            "id": "int null ('id')",
+            "name": "text null ('name')"
+        },
+        "..."
+    ],
+    "studentevalitems_examples_short": [
+        {
+            "id": "int null ('id')",
+            "name": "text null ('name')"
+        },
+        "..."
+    ],
+    "gradingperiods": [
+        {
+            "id": "int null ('id')",
+            "description": "text null ('name')",
+            "starttime": "int null ('active from')",
+            "endtime": "int null ('active to')"
+        },
+        "... grading periods from exastud ..."
+    ],
+    "taxonomies": [
+        {
+            "id": "int null ('id')",
+            "title": "text null ('name')",
+            "source": "text null ('source')"
+        },
+        "... values ..."
+    ],
+    "version": "float null ('exacomp version number in YYYYMMDDXX format')",
+    "moodleversion": "float null ('moodle version number in YYYYMMDDXX format')",
+    "release": "text null ('plugin release x.x.x format')",
+    "exaportactive": "bool null ('flag if exaportfolio should be active')",
+    "customlanguagefile": "text null ('customlanguagefiel')",
+    "timeout": "int null ('a timeout timer')",
+    "show_overview": "bool null ('flag if \"show overview\" is active')",
+    "show_eportfolio": "bool null ('flag if \"show ePortfolio\" is active')",
+    "categories": [
+        {
+            "id": "int null ('id')",
+            "title": "text null ('name')",
+            "source": "text null ('source')"
+        },
+        "... values ..."
+    ]
+}</pre>
 <h2>block_exacomp_login</h2>
 <div>webservice called through token.php</div>
 <div>type: read</div>
