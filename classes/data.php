@@ -2184,8 +2184,8 @@ class data_importer extends data {
 		    //example activitytype temporary
 		    $GLOBALS['activexamples']['activitytype'] = array();
 		    if ($course_template != 0) {
-                error_reporting(E_ALL);
-                ini_set("display_errors", 1);
+//                error_reporting(E_ALL);
+//                ini_set("display_errors", 1);
 		        if ($ret === true) { // only if it is zip
 		            $doNotDeleteUnzipped = extract_zip_subdir($file, "activities", $CFG->tempdir.'/backup', $CFG->tempdir.'/backup');
 		            if ($doNotDeleteUnzipped) {
