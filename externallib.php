@@ -10489,14 +10489,167 @@ class block_exacomp_external extends external_api {
 
 
 
-
-
-
-
-
     public static function dakora_get_configs_parameters() {
         return new external_function_parameters(array());
     }
+
+    /**
+     *
+     * @ws-type-read
+     * @return array
+     */
+    public static function dakora_get_configs() {
+        global $CFG, $USER;
+        static::validate_parameters(static::dakora_get_configs_parameters(), array());
+
+        $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+
+        $gradingperiods = block_exacomp_is_exastud_installed() ? \block_exastud\api::get_periods() : [];
+
+        $exaportactive = true;
+
+        if(static::get_user_role_common($USER->id)->role == BLOCK_EXACOMP_WS_ROLE_STUDENT){
+            $exaportactive = block_exacomp_is_block_used_by_student("exaport", $USER->id);
+        }
+
+//        $courses = static::get_courses($USER->id);
+        $assessment_configurations = block_exacomp_get_assessment_configurations();
+
+        $configs = array();
+        $configs[] = array(
+            'points_limit' => block_exacomp_get_assessment_points_limit(),
+            'grade_limit' => block_exacomp_get_assessment_grade_limit(),
+            'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
+            'grade_negative_threshold' => block_exacomp_get_assessment_grade_negative_threshold(),
+            'verbal_negative_threshold' => block_exacomp_get_assessment_verbose_negative_threshold(),
+            //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
+            //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
+            'example_scheme' => block_exacomp_get_assessment_example_scheme(),
+            'example_diffLevel' => block_exacomp_get_assessment_example_diffLevel(),
+            'example_SelfEval' => block_exacomp_get_assessment_example_SelfEval(),
+            'childcomp_scheme' => block_exacomp_get_assessment_childcomp_scheme(),
+            'childcomp_diffLevel' => block_exacomp_get_assessment_childcomp_diffLevel(),
+            'childcomp_SelfEval' => block_exacomp_get_assessment_childcomp_SelfEval(),
+            'comp_scheme' => block_exacomp_get_assessment_comp_scheme(),
+            'comp_diffLevel' => block_exacomp_get_assessment_comp_diffLevel(),
+            'comp_SelfEval' => block_exacomp_get_assessment_comp_SelfEval(),
+            'topic_scheme' => block_exacomp_get_assessment_topic_scheme(),
+            'topic_diffLevel' => block_exacomp_get_assessment_topic_diffLevel(),
+            'topic_SelfEval' => block_exacomp_get_assessment_topic_SelfEval(),
+            'subject_scheme' => block_exacomp_get_assessment_subject_scheme(),
+            'subject_diffLevel' => block_exacomp_get_assessment_subject_diffLevel(),
+            'subject_SelfEval' => block_exacomp_get_assessment_subject_SelfEval(),
+            'theme_scheme' => block_exacomp_get_assessment_theme_scheme(),
+            'theme_diffLevel' => block_exacomp_get_assessment_theme_diffLevel(),
+            'theme_SelfEval' => block_exacomp_get_assessment_theme_SelfEval(),
+            'use_evalniveau' => block_exacomp_use_eval_niveau(),
+// 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
+            'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
+            'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,null,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
+            'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,true,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
+            'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
+            'studentevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,null,true)),
+            'studentevalitems_examples' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE)),
+            'studentevalitems_examples_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE,true)),
+            'gradingperiods' => $gradingperiods,
+            'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'source', 'id, title, source'),
+            'version' => $info->versiondb,
+            'moodleversion' => $CFG->version,
+            'release' => $info->release,
+            'exaportactive' => $exaportactive,
+            'customlanguagefile' => block_exacomp_get_config_dakora_language_file(true), // Returns JSON content.
+            'timeout' => block_exacomp_get_config_dakora_timeout(),
+            'show_overview' => block_exacomp_get_config_dakora_show_overview(),
+            'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
+            'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES,null,'source','id, title, source')
+        );
+
+        foreach ($assessment_configurations as $configuration) {
+            $configs[] = array(
+                'points_limit' => $configuration["assessment_points_limit"],
+                'grade_limit' => $configuration["assessment_grade_limit"],
+                'points_negative_threshold' => $configuration["assessment_points_negativ"],
+                'grade_negative_threshold' => $configuration["assessment_grade_negativ"],
+                'verbal_negative_threshold' => $configuration["assessment_verbose_negative"],
+                //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
+                //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
+                'example_scheme' => $configuration["assessment_example_scheme"],
+                'example_diffLevel' => $configuration["assessment_example_diffLevel"],
+                'example_SelfEval' => $configuration["assessment_example_SelfEval"],
+                'childcomp_scheme' => $configuration["assessment_childcomp_scheme"],
+                'childcomp_diffLevel' => $configuration["assessment_childcomp_diffLevel"],
+                'childcomp_SelfEval' => $configuration["assessment_childcomp_SelfEval"],
+                'comp_scheme' => $configuration["assessment_comp_scheme"],
+                'comp_diffLevel' => $configuration["assessment_comp_diffLevel"],
+                'comp_SelfEval' => $configuration["assessment_comp_SelfEval"],
+                'topic_scheme' => $configuration["assessment_topic_scheme"],
+                'topic_diffLevel' => $configuration["assessment_topic_diffLevel"],
+                'topic_SelfEval' => $configuration["assessment_topic_SelfEval"],
+                'subject_scheme' => $configuration["assessment_subject_scheme"],
+                'subject_diffLevel' => $configuration["assessment_subject_diffLevel"],
+                'subject_SelfEval' => $configuration["assessment_subject_SelfEval"],
+                'theme_scheme' => $configuration["assessment_theme_scheme"],
+                'theme_diffLevel' => $configuration["assessment_theme_diffLevel"],
+                'theme_SelfEval' => $configuration["assessment_theme_SelfEval"],
+                'use_evalniveau' => $configuration["assessment_diffLevel_options"] != '',
+// 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
+                'evalniveaus' => static::get_evalniveaus_from_config($configuration),
+//                'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,null,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
+                'teacherevalitems' => static::get_teacher_eval_items_from_config($configuration),
+                'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,true,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)), // TODO: short is not coursespecific yet
+                'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
+//                'studentevalitems' => static::get_student_eval_items_from_config($configuration),
+                'studentevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,null,true)),
+                'studentevalitems_examples' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE)),
+                'studentevalitems_examples_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE,true)),
+                'gradingperiods' => $gradingperiods,
+                'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'source', 'id, title, source'),
+                'version' => $info->versiondb,
+                'moodleversion' => $CFG->version,
+                'release' => $info->release,
+                'exaportactive' => $exaportactive,
+                'customlanguagefile' => block_exacomp_get_config_dakora_language_file(true), // Returns JSON content.
+                'timeout' => block_exacomp_get_config_dakora_timeout(),
+                'show_overview' => block_exacomp_get_config_dakora_show_overview(),
+                'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
+                'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES,null,'source','id, title, source')
+            );
+        }
+
+        return $configs;
+    }
+
+//    private static function get_student_eval_items_from_config ($configuration){
+//
+//    }
+
+    private static function get_teacher_eval_items_from_config ($configuration){
+        $jsondata = $configuration["assessment_verbose_options"];
+
+        $copyofdata = $jsondata;
+        $configdata = json_decode($jsondata, true);
+        if (json_last_error() && $copyofdata != '') { // if old data is not json
+            $configdata['de'] = $copyofdata;
+        }
+        $language = current_language();
+        if ($language && array_key_exists($language, $configdata) && $configdata[$language] != '') {
+            $evalitems =  $configdata[$language];
+        } else {
+            $evalitems = $configdata['de'];
+        }
+
+        $evalitems = array_map('trim', explode(',', $evalitems));
+        return static::return_key_value($evalitems);
+    }
+
+    private static function get_evalniveaus_from_config ($configuration){
+        $evalniveaus = preg_split("/[\s*,\s*]*,+[\s*,\s*]*/", $configuration["assessment_diffLevel_options"]);
+        $evalniveaus = array_combine(range(1, count($evalniveaus)), array_values($evalniveaus));
+        $evalniveaus = [0 => ''] + $evalniveaus;
+        return static::return_key_value($evalniveaus);
+    }
+
+
 
     /**
      * Returns description of method return values
@@ -10504,7 +10657,7 @@ class block_exacomp_external extends external_api {
      * @return external_multiple_structure
      */
     public static function dakora_get_configs_returns() {
-        return new external_single_structure (array(
+        return new external_multiple_structure (new external_single_structure (array(
             'points_limit' => new external_value (PARAM_INT, 'points_limit'),
             'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
             'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
@@ -10563,79 +10716,8 @@ class block_exacomp_external extends external_api {
                 'title' => new external_value (PARAM_TEXT, 'name'),
                 'source' => new external_value (PARAM_TEXT, 'source'),
             ]), 'values'),
-        ));
+        )));
     }
-
-    /**
-     *
-     * @ws-type-read
-     * @return array
-     */
-    public static function dakora_get_configs() {
-        global $CFG, $USER;
-        static::validate_parameters(static::dakora_get_evaluation_configs_parameters(), array());
-
-        $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
-
-        $gradingperiods = block_exacomp_is_exastud_installed() ? \block_exastud\api::get_periods() : [];
-
-        $exaportactive = true;
-
-        if(static::get_user_role_common($USER->id)->role == BLOCK_EXACOMP_WS_ROLE_STUDENT){
-            $exaportactive = block_exacomp_is_block_used_by_student("exaport", $USER->id);
-        }
-
-        return array(
-            'points_limit' => block_exacomp_get_assessment_points_limit(),
-            'grade_limit' => block_exacomp_get_assessment_grade_limit(),
-            'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
-            'grade_negative_threshold' => block_exacomp_get_assessment_grade_negative_threshold(),
-            'verbal_negative_threshold' => block_exacomp_get_assessment_verbose_negative_threshold(),
-            //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
-            //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
-            'example_scheme' => block_exacomp_get_assessment_example_scheme(),
-            'example_diffLevel' => block_exacomp_get_assessment_example_diffLevel(),
-            'example_SelfEval' => block_exacomp_get_assessment_example_SelfEval(),
-            'childcomp_scheme' => block_exacomp_get_assessment_childcomp_scheme(),
-            'childcomp_diffLevel' => block_exacomp_get_assessment_childcomp_diffLevel(),
-            'childcomp_SelfEval' => block_exacomp_get_assessment_childcomp_SelfEval(),
-            'comp_scheme' => block_exacomp_get_assessment_comp_scheme(),
-            'comp_diffLevel' => block_exacomp_get_assessment_comp_diffLevel(),
-            'comp_SelfEval' => block_exacomp_get_assessment_comp_SelfEval(),
-            'topic_scheme' => block_exacomp_get_assessment_topic_scheme(),
-            'topic_diffLevel' => block_exacomp_get_assessment_topic_diffLevel(),
-            'topic_SelfEval' => block_exacomp_get_assessment_topic_SelfEval(),
-            'subject_scheme' => block_exacomp_get_assessment_subject_scheme(),
-            'subject_diffLevel' => block_exacomp_get_assessment_subject_diffLevel(),
-            'subject_SelfEval' => block_exacomp_get_assessment_subject_SelfEval(),
-            'theme_scheme' => block_exacomp_get_assessment_theme_scheme(),
-            'theme_diffLevel' => block_exacomp_get_assessment_theme_diffLevel(),
-            'theme_SelfEval' => block_exacomp_get_assessment_theme_SelfEval(),
-            'use_evalniveau' => block_exacomp_use_eval_niveau(),
-// 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
-            'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus(true)),
-            'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,null,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
-            'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,true,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
-            'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
-            'studentevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,null,true)),
-            'studentevalitems_examples' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE)),
-            'studentevalitems_examples_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,BLOCK_EXACOMP_TYPE_EXAMPLE,true)),
-            'gradingperiods' => $gradingperiods,
-            'taxonomies' => g::$DB->get_records(BLOCK_EXACOMP_DB_TAXONOMIES, null, 'source', 'id, title, source'),
-            'version' => $info->versiondb,
-            'moodleversion' => $CFG->version,
-            'release' => $info->release,
-            'exaportactive' => $exaportactive,
-            'customlanguagefile' => block_exacomp_get_config_dakora_language_file(true), // Returns JSON content.
-            'timeout' => block_exacomp_get_config_dakora_timeout(),
-            'show_overview' => block_exacomp_get_config_dakora_show_overview(),
-            'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
-            'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES,null,'source','id, title, source')
-        );
-    }
-
-
-
 
 
 
