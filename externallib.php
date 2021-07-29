@@ -10489,7 +10489,7 @@ class block_exacomp_external extends external_api {
 
 
 
-    public static function dakora_get_configs_parameters() {
+    public static function dakora_get_courseconfigs_parameters() {
         return new external_function_parameters(array());
     }
 
@@ -10498,9 +10498,9 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array
      */
-    public static function dakora_get_configs() {
-        global $CFG, $USER;
-        static::validate_parameters(static::dakora_get_configs_parameters(), array());
+    public static function dakora_get_courseconfigs() {
+        global $CFG, $USER, $DB;
+        static::validate_parameters(static::dakora_get_courseconfigs_parameters(), array());
 
         $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
@@ -10512,7 +10512,16 @@ class block_exacomp_external extends external_api {
             $exaportactive = block_exacomp_is_block_used_by_student("exaport", $USER->id);
         }
 
-//        $courses = static::get_courses($USER->id);
+        // Get which configuration is used for which course
+
+        $courses = static::get_courses($USER->id);
+//        $courses_assoc = array();
+        foreach ($courses as $key => $course) {
+//            $courses_assoc[$course["courseid"]] = $course;
+//            $courses_assoc[$course["courseid"]]["assessment_config"] = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $course["courseid"]]);
+            $courses[$key]["assessment_config"] = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $course["courseid"]]);
+        }
+
         $assessment_configurations = block_exacomp_get_assessment_configurations();
 
         $configs = array();
@@ -10616,7 +10625,10 @@ class block_exacomp_external extends external_api {
             );
         }
 
-        return $configs;
+        $ret = array();
+        $ret["courses"] = $courses;
+        $ret["configs"] = $configs;
+        return $ret;
     }
 
 //    private static function get_student_eval_items_from_config ($configuration){
@@ -10656,67 +10668,74 @@ class block_exacomp_external extends external_api {
      *
      * @return external_multiple_structure
      */
-    public static function dakora_get_configs_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'points_limit' => new external_value (PARAM_INT, 'points_limit'),
-            'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
-            'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
-            'grade_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
-            'verbal_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
-            //'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
-            //'verbose_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'verbose_options'),
-            'example_scheme' => new external_value (PARAM_INT, 'example_scheme'),
-            'example_diffLevel' => new external_value (PARAM_BOOL, 'example_diffLevel'),
-            'example_SelfEval' => new external_value (PARAM_BOOL, 'example_SelfEval'),
-            'childcomp_scheme' => new external_value (PARAM_INT, 'childcomp_scheme'),
-            'childcomp_diffLevel' => new external_value (PARAM_BOOL, 'childcomp_diffLevel'),
-            'childcomp_SelfEval' => new external_value (PARAM_BOOL, 'childcomp_SelfEval'),
-            'comp_scheme' => new external_value (PARAM_INT, 'comp_scheme'),
-            'comp_diffLevel' => new external_value (PARAM_BOOL, 'comp_diffLevel'),
-            'comp_SelfEval' => new external_value (PARAM_BOOL, 'comp_SelfEval'),
-            'topic_scheme' => new external_value (PARAM_INT, 'topic_scheme'),
-            'topic_diffLevel' => new external_value (PARAM_BOOL, 'topic_diffLevel'),
-            'topic_SelfEval' => new external_value (PARAM_BOOL, 'topic_SelfEval'),
-            'subject_scheme' => new external_value (PARAM_INT, 'subject_scheme'),
-            'subject_diffLevel' => new external_value (PARAM_BOOL, 'subject_diffLevel'),
-            'subject_SelfEval' => new external_value (PARAM_BOOL, 'subject_SelfEval'),
-            'theme_scheme' => new external_value (PARAM_INT, 'theme_scheme'),
-            'theme_diffLevel' => new external_value (PARAM_BOOL, 'theme_diffLevel'),
-            'theme_SelfEval' => new external_value (PARAM_BOOL, 'theme_SelfEval'),
-            'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
+    public static function dakora_get_courseconfigs_returns() {
+        return new external_single_structure (array(
+            'courses' => new external_multiple_structure (new external_single_structure (array(
+                'courseid' => new external_value (PARAM_INT, 'id of course'),
+                'fullname' => new external_value (PARAM_TEXT, 'fullname of course'),
+                'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
+            ))),
+            'configs' => new external_multiple_structure (new external_single_structure (array(
+                'points_limit' => new external_value (PARAM_INT, 'points_limit'),
+                'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
+                'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
+                'grade_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
+                'verbal_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
+                //'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
+                //'verbose_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'verbose_options'),
+                'example_scheme' => new external_value (PARAM_INT, 'example_scheme'),
+                'example_diffLevel' => new external_value (PARAM_BOOL, 'example_diffLevel'),
+                'example_SelfEval' => new external_value (PARAM_BOOL, 'example_SelfEval'),
+                'childcomp_scheme' => new external_value (PARAM_INT, 'childcomp_scheme'),
+                'childcomp_diffLevel' => new external_value (PARAM_BOOL, 'childcomp_diffLevel'),
+                'childcomp_SelfEval' => new external_value (PARAM_BOOL, 'childcomp_SelfEval'),
+                'comp_scheme' => new external_value (PARAM_INT, 'comp_scheme'),
+                'comp_diffLevel' => new external_value (PARAM_BOOL, 'comp_diffLevel'),
+                'comp_SelfEval' => new external_value (PARAM_BOOL, 'comp_SelfEval'),
+                'topic_scheme' => new external_value (PARAM_INT, 'topic_scheme'),
+                'topic_diffLevel' => new external_value (PARAM_BOOL, 'topic_diffLevel'),
+                'topic_SelfEval' => new external_value (PARAM_BOOL, 'topic_SelfEval'),
+                'subject_scheme' => new external_value (PARAM_INT, 'subject_scheme'),
+                'subject_diffLevel' => new external_value (PARAM_BOOL, 'subject_diffLevel'),
+                'subject_SelfEval' => new external_value (PARAM_BOOL, 'subject_SelfEval'),
+                'theme_scheme' => new external_value (PARAM_INT, 'theme_scheme'),
+                'theme_diffLevel' => new external_value (PARAM_BOOL, 'theme_diffLevel'),
+                'theme_SelfEval' => new external_value (PARAM_BOOL, 'theme_SelfEval'),
+                'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
 // 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
-            'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
-            'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-            'teacherevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-            'studentevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-            'studentevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-            'studentevalitems_examples' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-            'studentevalitems_examples_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-            'gradingperiods' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'description' => new external_value (PARAM_TEXT, 'name'),
-                'starttime' => new external_value (PARAM_INT, 'active from'),
-                'endtime' => new external_value (PARAM_INT, 'active to'),
-            ]), 'grading periods from exastud'),
-            'taxonomies' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'title' => new external_value (PARAM_TEXT, 'name'),
-                'source' => new external_value (PARAM_TEXT, 'source'),
-            ]), 'values'),
-            'version' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
-            'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
-            'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
-            'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
-            'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
-            'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
-            'show_overview' => new external_value (PARAM_BOOL, 'flag if "show overview" is active'),
-            'show_eportfolio' => new external_value (PARAM_BOOL, 'flag if "show ePortfolio" is active'),
-            'categories' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'title' => new external_value (PARAM_TEXT, 'name'),
-                'source' => new external_value (PARAM_TEXT, 'source'),
-            ]), 'values'),
-        )));
+                'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
+                'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+                'teacherevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+                'studentevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+                'studentevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+                'studentevalitems_examples' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+                'studentevalitems_examples_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+                'gradingperiods' => new external_multiple_structure (new external_single_structure ([
+                    'id' => new external_value (PARAM_INT, 'id'),
+                    'description' => new external_value (PARAM_TEXT, 'name'),
+                    'starttime' => new external_value (PARAM_INT, 'active from'),
+                    'endtime' => new external_value (PARAM_INT, 'active to'),
+                ]), 'grading periods from exastud'),
+                'taxonomies' => new external_multiple_structure (new external_single_structure ([
+                    'id' => new external_value (PARAM_INT, 'id'),
+                    'title' => new external_value (PARAM_TEXT, 'name'),
+                    'source' => new external_value (PARAM_TEXT, 'source'),
+                ]), 'values'),
+                'version' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
+                'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
+                'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
+                'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
+                'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
+                'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
+                'show_overview' => new external_value (PARAM_BOOL, 'flag if "show overview" is active'),
+                'show_eportfolio' => new external_value (PARAM_BOOL, 'flag if "show ePortfolio" is active'),
+                'categories' => new external_multiple_structure (new external_single_structure ([
+                    'id' => new external_value (PARAM_INT, 'id'),
+                    'title' => new external_value (PARAM_TEXT, 'name'),
+                    'source' => new external_value (PARAM_TEXT, 'source'),
+                ]), 'values'),
+            )))
+        ));
     }
 
 
@@ -10799,6 +10818,7 @@ class block_exacomp_external extends external_api {
 			'user' => static::dakora_get_user_information_returns(),
 			'exacompcourses' => static::dakora_get_courses_returns(),
 			'config' => static::dakora_get_config_returns(),
+            'courseconfigs' => static::dakora_get_courseconfigs_returns(),
 			'tokens' => new external_multiple_structure (new external_single_structure ([
 				'service' => new external_value (PARAM_TEXT, 'name of service'),
 				'token' => new external_value (PARAM_TEXT, 'token of the service'),
@@ -10817,6 +10837,7 @@ class block_exacomp_external extends external_api {
 			'user' => static::dakora_get_user_information(),
 			'exacompcourses' => static::dakora_get_courses(),
 			'config' => static::dakora_get_config(),
+            'courseconfigs' => static::dakora_get_courseconfigs(),
 			'tokens' => [],
 		];
 	}

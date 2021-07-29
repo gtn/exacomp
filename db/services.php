@@ -894,10 +894,10 @@ get admin evaluation configurations',
     'description' => '',
     'type' => 'read',
   ),
-  'dakora_get_configs' => 
+  'dakora_get_courseconfigs' => 
   array (
     'classname' => 'block_exacomp_external',
-    'methodname' => 'dakora_get_configs',
+    'methodname' => 'dakora_get_courseconfigs',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => '',
     'type' => 'read',
@@ -1324,7 +1324,7 @@ $services = array (
       99 => 'block_exacomp_diggr_get_cohorts_of_trainer',
       100 => 'dakora_get_evaluation_config',
       101 => 'dakora_get_config',
-      102 => 'dakora_get_configs',
+      102 => 'dakora_get_courseconfigs',
       103 => 'block_exacomp_login',
       104 => 'dakora_set_descriptor_visibility',
       105 => 'dakora_set_example_visibility',
