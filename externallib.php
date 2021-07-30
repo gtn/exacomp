@@ -12030,7 +12030,15 @@ class block_exacomp_external extends external_api {
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
         $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB, $comptype) {
             $objDeeper = new stdClass();
-            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current(); TODO: This takes up most of the time
+
+            // if ANY student has submitted anything to this example: check for every student
+            // if no submission has ever been made: don't bother to even check
+            // enormous speedup for new installations. Slower, the more submissions there are.
+            if($example->hassubmissions){
+                $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current(); TODO: This takes up most of the time
+            }
+
+
             if($item){
                 $item = static::block_exacomp_get_item_details($item, $userid, $wstoken); // TODO: is this needed? much information is already there
                 $objDeeper->item = $item;
