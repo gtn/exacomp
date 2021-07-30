@@ -11860,8 +11860,8 @@ class block_exacomp_external extends external_api {
 //                if($course->visible){
                 $courseExamples = block_exacomp_get_examples_by_course($course["courseid"], true, $search, true, $userid); // TODO: duplicates?
                 foreach ($courseExamples as $example) {
-                    static::block_excomp_get_example_details($example, $course["courseid"], false); # TODO: a lot of time is lost in this loop
-                    # checkQuiz = false since we never use it in diggprlus (SO FAR!)
+                    static::block_excomp_get_example_details($example, $course["courseid"], false);
+                    // checkQuiz = false since we never use it in diggprlus (SO FAR!)
                 }
                 $examples += $courseExamples;
 //                }
@@ -12030,7 +12030,7 @@ class block_exacomp_external extends external_api {
         // add one layer of depth to structure and add items to example. Also get more information for the items (e.g. files)
         $examplesAndItems = array_map(function ($example) use ($userid, $wstoken, $DB, $comptype) {
             $objDeeper = new stdClass();
-            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current();
+            $item = current(block_exacomp_get_items_for_competence($userid,$example->id,BLOCK_EXACOMP_TYPE_EXAMPLE)); //there will be only one item ==> current(); TODO: This takes up most of the time
             if($item){
                 $item = static::block_exacomp_get_item_details($item, $userid, $wstoken); // TODO: is this needed? much information is already there
                 $objDeeper->item = $item;
@@ -12089,8 +12089,7 @@ class block_exacomp_external extends external_api {
 
 
 
-    // for diggrplus webservices and get_example_by_id (used in diggr?)
-//    //TODO: _get_example_information better? or get_example_by_id()
+    // for diggrplus webservices and get_example_by_id (which is used in diggr?)
     private static function block_excomp_get_example_details($example, $courseid, $checkQuiz=true){
         global $DB;
 
@@ -12120,87 +12119,105 @@ class block_exacomp_external extends external_api {
             }
         }
 
-        $example->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $example->id));
+        // The data that is queried here is cached for example for diggrplus.
+        // get_teacher_examples_and_items uses this function for every student for every example
+        // the examples should only be queried once. If the example is already known, the $cachedExampleDatas are used.
+        static $cachedExampleDatas = array();
+        if (isset($cachedExampleDatas[$courseid][$example->id])) {
+            $exampleData = $cachedExampleDatas[$courseid][$example->id];
+        }else{
+            $exampleData = $cachedExampleDatas[$courseid][$example->id] = (object)[];
+
+            $exampleData->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $example->id));
+
+            //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
+            // Newer solution: an array of "task" objects: taskfiles. These object contain all the information: the url is extended for the position value, so this does not have to be done in Dakora
+            // To not break Dakora, the old system of taskfileurl + taskfilenames + taskfilecount will be kept
+            $exampleData->taskfiles = [];
 
 
-        //New solution: filenameS instead of filename... keep both for compatibilty for now   RW
-        // Newer solution: an array of "task" objects: taskfiles. These object contain all the information: the url is extended for the position value, so this does not have to be done in Dakora
-        // To not break Dakora, the old system of taskfileurl + taskfilenames + taskfilecount will be kept
-        $example->taskfiles = [];
+            $exampleData->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
+            $exampleData->taskfilenames = "";
+            $exampleData->taskfileurl = "";
+            for ($i=0; $i<$exampleData->taskfilecount; $i++){
+                if ($file = block_exacomp_get_file($example, 'example_task', $i)) {
+                    $exampleData->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
+                    $exampleData->taskfilenames .= $file->get_filename().',';
 
 
-        $example->taskfilecount = block_exacomp_get_number_of_files($example, 'example_task');
-        $example->taskfilenames = "";
-        $example->taskfileurl = "";
-        for ($i=0; $i<$example->taskfilecount; $i++){
-            if ($file = block_exacomp_get_file($example, 'example_task', $i)) {
-                $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
-                $example->taskfilenames .= $file->get_filename().',';
-
-
-                //new solution for the taskfiles array
-                $example->taskfiles[$i]->url = $example->taskfileurl = static::get_webservice_url_for_file($file, $courseid, $i)->out(false);
-                $example->taskfiles[$i]->name = $file->get_filename();
-                $example->taskfiles[$i]->type = $file->get_mimetype();
-            } else {
-                $example->taskfileurl = "";
-                $example->taskfilenames = "";
+                    //new solution for the taskfiles array
+                    $exampleData->taskfiles[$i]->url = $exampleData->taskfileurl = static::get_webservice_url_for_file($file, $courseid, $i)->out(false);
+                    $exampleData->taskfiles[$i]->name = $file->get_filename();
+                    $exampleData->taskfiles[$i]->type = $file->get_mimetype();
+                } else {
+                    $exampleData->taskfileurl = "";
+                    $exampleData->taskfilenames = "";
+                }
             }
+
+
+            //		if ($file = block_exacomp_get_file($example, 'example_task')) {
+            //			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
+            //            $example->taskfilename = $file->get_filename();
+            //		} else {
+            //			$example->taskfileurl = null;
+            //			$example->taskfilename = null;
+            //		}
+
+            // fall back to old fields
+            // TODO: check if this can be deleted?!?
+            $exampleData->externalurl = $example->externalurl;
+            $exampleData->externaltask = $example->externaltask;
+            $exampleData->task = $example->task;
+            if (!$exampleData->externalurl && $exampleData->externaltask) {
+                $exampleData->externalurl = $exampleData->externaltask;
+            }
+
+            if (!$exampleData->externalurl && $exampleData->task) {
+                $exampleData->externalurl = $exampleData->task;
+            }
+
+
+
+            if ($exampleData->externaltask) {
+                $exampleData->externaltask = static::format_url($exampleData->externaltask);
+            }
+
+
+            if ($exampleData->externalurl) {
+                $exampleData->externalurl = static::format_url($exampleData->externalurl);
+            }
+
+            // TODO: task field still needed in exacomp?
+            if (!$exampleData->task) {
+                $exampleData->task = $exampleData->taskfileurl;
+            }
+            if (!$exampleData->task) {
+                $exampleData->task = $exampleData->externalurl;
+            }
+
+
+            $exampleData->solution = "";
+            $exampleData->solutionfilename = "";
+            $exampleData->solution_visible = 0;
+            $solution = block_exacomp_get_file($example, 'example_solution');
+
+            if ($solution) {
+                $exampleData->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
+                $exampleData->solutionfilename = $solution->get_filename();
+            } elseif ($example->externalsolution) {
+                $exampleData->solution = $example->externalsolution;
+            }
+
+            // $example->description = strip_tags($example->description);
+            // $example->description = static::custom_htmltrim($example->description);
         }
 
-
-//		if ($file = block_exacomp_get_file($example, 'example_task')) {
-//			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
-//            $example->taskfilename = $file->get_filename();
-//		} else {
-//			$example->taskfileurl = null;
-//			$example->taskfilename = null;
-//		}
-
-        // fall back to old fields
-        // TODO: check if this can be deleted?!?
-        if (!$example->externalurl && $example->externaltask) {
-            $example->externalurl = $example->externaltask;
+        foreach ($exampleData as $key => $value) {
+            $example->{$key} = $value;
         }
+//        $example = (object)array_merge((array)$example, (array)$exampleData);
 
-        if (!$example->externalurl && $example->task) {
-            $example->externalurl = $example->task;
-        }
-
-
-
-        if ($example->externaltask) {
-            $example->externaltask = static::format_url($example->externaltask);
-        }
-
-
-        if ($example->externalurl) {
-            $example->externalurl = static::format_url($example->externalurl);
-        }
-
-        // TODO: task field still needed in exacomp?
-        if (!$example->task) {
-            $example->task = $example->taskfileurl;
-        }
-        if (!$example->task) {
-            $example->task = $example->externalurl;
-        }
-
-
-        $example->solution = "";
-        $example->solutionfilename = "";
-        $example->solution_visible = 0;
-        $solution = block_exacomp_get_file($example, 'example_solution');
-
-        if ($solution) {
-            $example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
-            $example->solutionfilename = $solution->get_filename();
-        } elseif ($example->externalsolution) {
-            $example->solution = $example->externalsolution;
-        }
-
-        $example->description = strip_tags($example->description);
-        $example->description = static::custom_htmltrim($example->description);
 
         return $example;
     }

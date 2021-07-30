@@ -2514,11 +2514,11 @@ function block_exacomp_get_descriptors_by_subject($subjectid, $niveaus = true) {
 	global $DB;
 
 	$sql = "SELECT d.*, dt.topicid, t.title as topic_title, t.sorting as topic_sorting
-              FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d, 
-                    {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, 
+              FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d,
+                    {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt,
                     {".BLOCK_EXACOMP_DB_TOPICS."} t
-	            WHERE d.id=dt.descrid 
-	                AND d.parentid =0 
+	            WHERE d.id=dt.descrid
+	                AND d.parentid =0
 	                AND dt.topicid IN (
 	                        SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?
                     ) ";
@@ -8611,7 +8611,11 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             break;
     }
 
+    $params = [];
+
     // TODO: use niveaucondition.   For now it is irrelevant, because own_items will only be submitted to topics, which do not have niveauinformation (only descriptors have)
+    // The joins do not really take up much of the time. The high amount of queries does. Maybe indizes could speed this up?
+    // THe search could be made conditional
     switch($comptype){
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -8629,6 +8633,8 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 AND ie.competence_type = ?
                 AND (d.title LIKE "%'.$search.'%" OR d.description LIKE "%'.$search.'%" OR i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
+            // TODO: dangerous... solve like this:            $params [courseid]="%$search%";
+
             break;
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -8679,7 +8685,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
     }
     if($compid == -1){
 //        if($niveauid == -1){
-            $items = $DB->get_records_sql($sql, array($userid, $comptype));
+            $items = $DB->get_records_sql($sql, $params);
 //        }else{
 //            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
 //        }
