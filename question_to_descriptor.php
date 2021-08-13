@@ -29,7 +29,7 @@ global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
 
 
 $courseid = required_param('courseid', PARAM_INT);
-$moduleid = required_param('moduleid', PARAM_INT);
+//$moduleid = required_param('moduleid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
@@ -45,22 +45,20 @@ $output = block_exacomp_get_renderer();
 block_exacomp_require_teacher($context);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
-$page_identifier = 'tab_teacher_settings_activitiestodescriptors';
+$page_identifier = 'tab_teacher_settings_questiontodescriptors';
 
 $page_params =  array('courseid' => $courseid);
-if ($columngroupnumber !== null) {
-    $page_params['colgroupid'] = $columngroupnumber;
-}
+
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/question_overview.php', $page_params);
+$PAGE->set_url('/blocks/exacomp/question_to_descriptor.php', $page_params);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-	 
+
 
 // build tab navigation & print header
 echo $output->header($context,$courseid, 'tab_teacher_settings');
@@ -68,12 +66,12 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 
 /* CONTENT REGION */
 
-$questions = block_exacomp_get_questions_of_quiz(intval($moduleid));
+$questions = block_exacomp_get_questions_of_quiz(intval(1));
 
 
 echo '<ul style="list-style: none;">';
 foreach ( $questions as $question){
- $descriptors = block_exacomp_get__descriptor_of_question($question->id);
+ $descriptors = block_exacomp_get_descriptor_of_question($question->id);
  echo '<li><a target="_blank" exa-type="iframe-popup" href="'.$CFG->wwwroot . '/blocks/exacomp/example_upload.php?courseid='. $COURSE->id .'&amp;questionid='. $question->id .'">' . $question->name. ' </a></li>';
  echo '<ul style="list-style: none;">';
  foreach ( $descriptors as $descriptor){

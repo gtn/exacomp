@@ -119,6 +119,10 @@ return [
 		'Moodle-Aktivitäten verknüpfen',
 		'Relate Moodle activities',
 	],
+    'tab_teacher_settings_questiontodescriptors' => [
+        'Quiz-question verknüpfen',
+        'Relate Quiz questions',
+    ],
 	'tab_teacher_settings_badges' => [
 		'Auszeichnungen bearbeiten',
 		'Edit badges',

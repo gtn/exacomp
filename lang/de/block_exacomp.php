@@ -49,6 +49,7 @@ $string['tab_teacher_settings_selection_st'] = 'Schulart / Bezüge zum Bildungsp
 $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
 $string['tab_teacher_settings_activitiestodescriptors'] = 'Moodle-Aktivitäten verknüpfen';
+$string['tab_teacher_settings_questiontodescriptors'] = 'Quiz-question verknüpfen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neues Kompetenzraster anlegen';
 $string['tab_teacher_settings_taxonomies'] = 'Niveaustufen';

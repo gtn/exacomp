@@ -2,9 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1cb1f9f-67e5-4712-ac8b-dc3942dfba3d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/services.htm" beforeDir="false" afterPath="$PROJECT_DIR$/build/services.htm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db/services.php" beforeDir="false" afterPath="$PROJECT_DIR$/db/services.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webservice.php" beforeDir="false" afterPath="$PROJECT_DIR$/webservice.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lang/de/block_exacomp.php" beforeDir="false" afterPath="$PROJECT_DIR$/lang/de/block_exacomp.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lang/en/block_exacomp.php" beforeDir="false" afterPath="$PROJECT_DIR$/lang/en/block_exacomp.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lang/total.php" beforeDir="false" afterPath="$PROJECT_DIR$/lang/total.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/lib.php" beforeDir="false" afterPath="$PROJECT_DIR$/lib/lib.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question_overview.php" beforeDir="false" afterPath="$PROJECT_DIR$/question_to_descriptor.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer.php" beforeDir="false" afterPath="$PROJECT_DIR$/renderer.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +61,9 @@
       <updated>1623318188764</updated>
       <workItem from="1623318192346" duration="5256000" />
       <workItem from="1623472945799" duration="1190000" />
+      <workItem from="1627613186987" duration="8490000" />
+      <workItem from="1628241683905" duration="1084000" />
+      <workItem from="1628823805720" duration="553000" />
     </task>
     <servers />
   </component>
@@ -62,6 +71,15 @@
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
