@@ -88,6 +88,7 @@ class block_exacomp_external extends external_api {
 					"courseid" => $mycourse->id,
 					"fullname" => $mycourse->fullname,
 					"shortname" => $mycourse->shortname,
+                    "assessment_config" => $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $mycourse->id]),
 					"exarole" => $exarole,
 					"teachercanedit" => $teachercanedit,
 				);
@@ -110,6 +111,7 @@ class block_exacomp_external extends external_api {
 			'shortname' => new external_value (PARAM_RAW, 'shortname of course'),
 			'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
 			'teachercanedit' => new external_value (PARAM_BOOL),
+            'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
 		)));
 	}
 
