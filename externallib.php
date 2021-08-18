@@ -10653,6 +10653,8 @@ class block_exacomp_external extends external_api {
         }
 
         $evalitems = array_map('trim', explode(',', $evalitems));
+        $no_grading = array(-1 => '');
+        $evalitems = $no_grading + $evalitems;
         return static::return_key_value($evalitems);
     }
 
@@ -10819,7 +10821,7 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure ([
 			'user' => static::dakora_get_user_information_returns(),
 			'exacompcourses' => static::dakora_get_courses_returns(),
-			'config' => static::dakora_get_config_returns(),
+//			'config' => static::dakora_get_config_returns(),
             'courseconfigs' => static::dakora_get_courseconfigs_returns(),
 			'tokens' => new external_multiple_structure (new external_single_structure ([
 				'service' => new external_value (PARAM_TEXT, 'name of service'),
@@ -10838,7 +10840,7 @@ class block_exacomp_external extends external_api {
 		return [
 			'user' => static::dakora_get_user_information(),
 			'exacompcourses' => static::dakora_get_courses(),
-			'config' => static::dakora_get_config(),
+//			'config' => static::dakora_get_config(), everything is included in courseconfigs
             'courseconfigs' => static::dakora_get_courseconfigs(),
 			'tokens' => [],
 		];
