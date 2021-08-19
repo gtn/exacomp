@@ -17,72 +17,59 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-use block_exacomp\data_importer;
-
+global $DB, $OUTPUT, $PAGE, $CFG;
 
 require __DIR__.'/inc.php';
-
-require_once __DIR__.'/classes/data.php';
-
-global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
-
-
+require_once($CFG->dirroot . "/lib/datalib.php");
 
 $courseid = required_param('courseid', PARAM_INT);
-$moduleid = required_param('moduleid', PARAM_INT);
-$action = optional_param("action", "", PARAM_TEXT);
+$action = optional_param('action', "", PARAM_ALPHAEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-
-require_login($course);
+block_exacomp_require_login($course);
 
 $context = context_course::instance($courseid);
-$output = block_exacomp_get_renderer();
 
 block_exacomp_require_teacher($context);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
-$page_identifier = 'tab_teacher_settings_activitiestodescriptors';
-
-$page_params =  array('courseid' => $courseid);
-if ($columngroupnumber !== null) {
-    $page_params['colgroupid'] = $columngroupnumber;
-}
+$page_identifier = 'tab_teacher_settings_course_assessment';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/question_overview.php', $page_params);
+$PAGE->set_url('/blocks/exacomp/edit_course_assessment.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-	 
-
 // build tab navigation & print header
-echo $output->header($context,$courseid, 'tab_teacher_settings');
+$output = block_exacomp_get_renderer();
+echo $output->header_v2('tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
-/* CONTENT REGION */
-
-$questions = block_exacomp_get_questions_of_quiz(intval($moduleid));
-
-
-echo '<ul style="list-style: none;">';
-foreach ( $questions as $question){
- $descriptors = block_exacomp_get__descriptor_of_question($question->id);
- echo '<li><a target="_blank" exa-type="iframe-popup" href="'.$CFG->wwwroot . '/blocks/exacomp/example_upload.php?courseid='. $COURSE->id .'&amp;questionid='. $question->id .'">' . $question->name. ' </a></li>';
- echo '<ul style="list-style: none;">';
- foreach ( $descriptors as $descriptor){
-    echo '<li>' . $descriptor->title . '</li>';
- }
- echo '</ul>';
+// get the possible preconfigurations from the settings_preconfiguration.xml and create choices for the dropdown select menu
+$preconfigurations = block_exacomp_read_preconfigurations_xml();
+$choices = array('0' => block_exacomp_get_string('course_assessment_use_global'));
+$preconfigurations = block_exacomp_read_preconfigurations_xml();
+if ($preconfigurations && is_array($preconfigurations)) {
+    foreach ($preconfigurations as $key => $config) {
+        $choices[$key] = $config['name'];
+    }
 }
-echo '</ul>';
 
+if ($action == 'save') {
+    $settings = $DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
+    $settings->assessmentconfiguration = optional_param('selection_preconfig', 0, PARAM_INT);
+    $DB->update_record(BLOCK_EXACOMP_DB_SETTINGS, $settings);
+}
+
+/* CONTENT REGION */
+$courseSettings = block_exacomp_get_settings_by_course($courseid);
+echo $output->edit_course_assessment($choices, $courseid, $courseSettings->assessmentconfiguration);
 
 /* END CONTENT REGION */
 echo $output->footer();

@@ -323,11 +323,16 @@ class block_exacomp_external_diggrv extends external_api {
         // $students = block_exacomp_get_students_by_course($course->id);
         // $student = $students[$userid];
         // block_exacomp_get_user_information_by_course($student, $course->id);
+
+        // sort subjects by sorting field
+        usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
+
         foreach ($tree as $subject) {
             $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $userid, 'subjectid' => $subject->id]);
             $elem_sub = new stdClass ();
             $elem_sub->id = $subject->id;
             $elem_sub->title = static::custom_htmltrim($subject->title);
+            $elem_sub->class = $subject->class;
             $elem_sub->courseid = $course->id;
             $elem_sub->courseshortname = $course->shortname;
             $elem_sub->coursefullname = $course->fullname;
@@ -399,6 +404,7 @@ class block_exacomp_external_diggrv extends external_api {
             'competencetree' => new external_multiple_structure (new external_single_structure (array(
                 'id' => new external_value (PARAM_INT, 'id of subject'),
                 'title' => new external_value (PARAM_TEXT, 'title of subject'),
+                'class' => new external_value (PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
                 // 'mwd' => new external_value (PARAM_TEXT),
                 'personalisedtext' => new external_value (PARAM_TEXT),
                 'assess_with_grades' => new external_value (PARAM_BOOL),
@@ -521,18 +527,20 @@ class block_exacomp_external_diggrv extends external_api {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT),
             'courseid' => new external_value (PARAM_INT),
+            'output_format' => new external_value (PARAM_TEXT, 'pdf or html', VALUE_DEFAULT, 'pdf'),
         ));
     }
 
     /**
      * @ws-type-read
      */
-    public static function diggrplus_v_print_student_grading_report($userid, $courseid) {
+    public static function diggrplus_v_print_student_grading_report($userid, $courseid, $output_format) {
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_v_print_student_grading_report_parameters(), array(
             'userid' => $userid,
             'courseid' => $courseid,
+            'output_format' => $output_format,
         ));
 
         block_exacomp_external::require_can_access_course_user($courseid, $userid);
@@ -541,6 +549,10 @@ class block_exacomp_external_diggrv extends external_api {
         $user = $DB->get_record('user', ['id' => $userid]);
 
         $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
+
+        // sort subjects by sorting field
+        // Fächer anhand des Bildungsplans sortieren (ist in der Datenbank im sorting Feld enthalten)
+        usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
 
         $subjects_html = '';
         foreach ($tree as $subject) {
@@ -604,19 +616,17 @@ class block_exacomp_external_diggrv extends external_api {
                 $subject_content_html .= '-';
             }
 
-            $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($subject->title).'</td>';
+            $title = $subject->title;
+            // filter trailing numbers
+            $title = preg_replace('!\s+[0-9]+$!', '', $title);
+
+            $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($title).'</td>';
             $subjects_html .= '<td>';
             $subjects_html .= $subject_content_html;
             $subjects_html .= '</td></tr>';
         }
 
-        $pdf = \block_exacomp\printer::getPdfPrinter('P');
-        $pdf->SetFont('times', '', 9);
-        $pdf->setHeaderFont(['times', '', 9]);
-        $pdf->SetLeftMargin(20);
-        $pdf->SetRightMargin(20);
-
-        $pdf->setStyle('
+        $style = '
 			* {
 				font-size: 10pt;
 			}
@@ -624,7 +634,9 @@ class block_exacomp_external_diggrv extends external_api {
 				padding: 0;
 				margin: 0;
 			}
-
+			table {
+                border-collapse: collapse;
+			}
 			table.header {
 			    padding: 0;
             }
@@ -633,10 +645,12 @@ class block_exacomp_external_diggrv extends external_api {
             }
             table.content td {
                 border: 0.2pt solid black;
+                padding: 4px 6px;
+                vertical-align: top;
             }
-        ');
+        ';
 
-        $pdf->writeHTML('
+        $html = '
             <br/>
             <br/>
             <br/>
@@ -648,14 +662,14 @@ class block_exacomp_external_diggrv extends external_api {
             <br/>
             <br/>
             <br/>
-            <table class="header"><tr>
+            <table class="header" width="100%" cellspacing="0"><tr>
                 <td>für '.fullname($user).'</td>
                 <td style="text-align: right">Schuljahr 2021/2022</td>
             </tr></table>
             <br/>
             <br/>
             <br/>
-            <table class="content">
+            <table class="content" width="100%" cellspacing="0">
                 <tr nobr="true">
                     <td style="width: 30%"></td>
                     <td style="width: 70%"><b>Die Schülerin/der Schüler hat folgende Anforderungen*) erfüllt:</b></td>
@@ -671,11 +685,11 @@ class block_exacomp_external_diggrv extends external_api {
             //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
             //     </td>
             // </tr>'.
-            '</table>
+            '</table width="100%" cellspacing="0">
             <br/><br/><br/>
             <br/><br/><br/>
             <div nobr="true">
-                <table class="header"><tr>
+                <table class="header" width="100%" cellspacing="0"><tr>
                     <td style="width: 40%; text-align: center;">...................................................<br/>Schul-/Clusterleitung</td>
                     <td style="width: 20%; text-align: center;">Rund-<br/>siegel</td>
                     <td style="width: 40%; text-align: center;">...................................................<br/>Klassenlehrer/Klassenlehrerin</td>
@@ -684,17 +698,136 @@ class block_exacomp_external_diggrv extends external_api {
                 <br/><br/><br/><br/>
                 *) Anforderungsniveaus: Mindestanforderungen (M), wesentliche Anforderungen (W), (weit) darüber hinausgehende Anforderungen (D)
             </div>
-        ');
+        ';
+
+        if ($output_format == 'html') {
+            header('Access-Control-Allow-Origin: *');
+
+            echo "<style>$style</style>".$html;
+            exit;
+        } else {
+            $pdf = \block_exacomp\printer::getPdfPrinter('P');
+            $pdf->SetFont('times', '', 9);
+            $pdf->setHeaderFont(['times', '', 9]);
+            $pdf->SetLeftMargin(20);
+            $pdf->SetRightMargin(20);
+
+            $pdf->setStyle($style);
+
+            $pdf->writeHTML($html);
 
 
-        header('Access-Control-Allow-Origin: *');
-        $pdf->Output();
-        exit;
+            header('Access-Control-Allow-Origin: *');
+            $pdf->Output();
+            exit;
+        }
     }
 
     public static function diggrplus_v_print_student_grading_report_returns() {
         return new external_single_structure (array(
             'pdf' => new external_value (PARAM_FILE),
+        ));
+    }
+
+
+    public static function diggrplus_v_get_course_edulevel_schooltype_tree_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT),
+        ));
+    }
+
+    /**
+     * @ws-type-read
+     */
+    public static function diggrplus_v_get_course_edulevel_schooltype_tree($courseid) {
+        static::validate_parameters(static::diggrplus_v_get_course_edulevel_schooltype_tree_parameters(), array(
+            'courseid' => $courseid,
+        ));
+
+        block_exacomp_require_teacher($courseid);
+
+        $data = new stdClass ();
+        $data->levels = array();
+
+        $levels = block_exacomp_get_edulevels();
+        $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
+        foreach ($levels as $level) {
+            $data->levels[$level->id] = new stdClass ();
+            $data->levels[$level->id] = $level;
+            $data->levels[$level->id]->schooltypes = array();
+
+            $types = block_exacomp_get_schooltypes($level->id);
+            foreach ($types as $type) {
+                $type->subjects = block_exacomp_get_subjects_for_schooltype(0, $type->id);
+
+                // sort subjects by sorting field
+                usort($type->subjects, function($a, $b) { return $a->sorting - $b->sorting; });
+
+                $data->levels[$level->id]->schooltypes[$type->id] = $type;
+                foreach ($data->levels[$level->id]->schooltypes[$type->id]->subjects as $subject) {
+                    foreach ($subject->topics as $topic) {
+                        // some topics have html in the title, and moodle does not allow this?!?
+                        $topic->title = strip_tags($topic->title);
+                        $topic->active = !empty($active_topics[$topic->id]);
+                    }
+                }
+            }
+        }
+
+        return ['edulevels' => $data->levels];
+    }
+
+    public static function diggrplus_v_get_course_edulevel_schooltype_tree_returns() {
+        return new external_single_structure (array(
+            'edulevels' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_INT),
+                'title' => new external_value (PARAM_TEXT, 'schooltype title'),
+                'schooltypes' => new external_multiple_structure (new external_single_structure (array(
+                    'id' => new external_value (PARAM_INT),
+                    'title' => new external_value (PARAM_TEXT, 'schooltype title'),
+                    'subjects' => new external_multiple_structure (new external_single_structure (array(
+                        'id' => new external_value (PARAM_INT),
+                        'class' => new external_value (PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
+                        'title' => new external_value (PARAM_TEXT, 'subject title'),
+                        'topics' => new external_multiple_structure (new external_single_structure (array(
+                            'id' => new external_value (PARAM_INT),
+                            'title' => new external_value (PARAM_TEXT, 'topic title'),
+                            'active' => new external_value (PARAM_BOOL),
+                        ))),
+                    ))),
+                ))),
+            ))),
+        ));
+    }
+
+
+    public static function diggrv_create_course_parameters() {
+        return new external_function_parameters (array(
+            'coursename' => new external_value (PARAM_TEXT),
+            'schoolcode' => new external_value (PARAM_TEXT),
+        ));
+    }
+
+    /**
+     * @ws-type-read
+     */
+    public static function diggrv_create_course($courseid, $schoolcode) {
+        static::validate_parameters(static::block_exacomp_diggrv_create_course_parameters(), array(
+            'courseid' => $courseid,
+            'schoolcode' => $schoolcode,
+        ));
+
+        //        block_exacomp_require_teacher($courseid);
+        // TODO: check if is teacher --> how?
+
+        block_exacomp_diggrv_create_first_course($courseid, $schoolcode);
+
+        return ['success' => true];
+    }
+
+    public static function diggrv_create_course_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
 

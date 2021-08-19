@@ -49,7 +49,7 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', [
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
-$scheme = block_exacomp_get_assessment_theme_scheme();
+$scheme = block_exacomp_get_assessment_theme_scheme($courseid);
 
 $output = block_exacomp_get_renderer();
 

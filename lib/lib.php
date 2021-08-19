@@ -149,15 +149,35 @@ const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
 
 const BLOCK_EXACOMP_IS_GLOBAL = 'isglobal';
 
+// Item status for diggrplus
 const BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS = 0;
 const BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED = 1;
 const BLOCK_EXACOMP_ITEM_STATUS_COMPLETED = 2;
-
 
 // data for multiple using
 $block_exacomp_topic_used_values = array();
 $block_exacomp_descriptor_used_values = array();
 $block_exacomp_example_used_values = array();
+
+// course specific assessment configuration
+$block_exacomp_assessment_configurations = array();
+
+/**
+ * get the assessemnt preconfigurations from the xml, but only load it once (global)
+ * @return array
+ */
+function block_exacomp_get_assessment_configurations()
+{
+    global $DB, $block_exacomp_assessment_configurations;
+
+    if (!empty($block_exacomp_assessment_configurations)) {
+        return $block_exacomp_assessment_configurations;
+    } else {
+        $block_exacomp_assessment_configurations = block_exacomp_read_preconfigurations_xml();
+    }
+    return $block_exacomp_assessment_configurations;
+}
+
 
 
 /**
@@ -167,18 +187,39 @@ function block_exacomp_is_skillsmanagement() {
 	return !empty(g::$CFG->is_skillsmanagement);
 }
 
-function block_exacomp_is_topicgrading_enabled() {
-    $topicscheme = get_config('exacomp', 'assessment_topic_scheme');
+function block_exacomp_is_topicgrading_enabled($courseid = 0) {
+    global $DB, $COURSE;
+    if($courseid == 0){
+        $courseid = $COURSE->id;
+    }
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $topicscheme = $configurations[$assessment_config]["assessment_topic_scheme"];
+    }else{
+        $topicscheme = get_config('exacomp', 'assessment_topic_scheme');
+    }
     return ($topicscheme ? true : false);
 }
 
-function block_exacomp_is_subjectgrading_enabled() {
-    $subjectscheme = get_config('exacomp', 'assessment_subject_scheme');
+function block_exacomp_is_subjectgrading_enabled($courseid = 0) {
+    global $DB, $COURSE;
+    if($courseid == 0){
+        $courseid = $COURSE->id;
+    }
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $subjectscheme = $configurations[$assessment_config]["assessment_subject_scheme"];
+    }else{
+        $subjectscheme = get_config('exacomp', 'assessment_subject_scheme');
+    }
+
 	return ($subjectscheme ? true : false);
 }
 
 function block_exacomp_is_numbering_enabled() {
-	return get_config('exacomp', 'usenumbering');
+    return get_config('exacomp', 'usenumbering');
 }
 
 /**
@@ -195,7 +236,7 @@ function block_exacomp_get_renderer() {
  *
  * Includes all neccessary JavaScript files
  */
-function block_exacomp_init_js_css() {
+function block_exacomp_init_js_css($courseid = 0) {
 	global $PAGE, $CFG;
 
 	// only allowed to be called once
@@ -207,7 +248,7 @@ function block_exacomp_init_js_css() {
 
 	// js/css for whole block
     $exacomp_config = array( //
-            0 => array('grade_limit' => block_exacomp_get_assessment_grade_limit()),
+            0 => array('grade_limit' => block_exacomp_get_assessment_grade_limit($courseid)),
     );
     $PAGE->requires->js_init_call('$E.set_exacomp_config', $exacomp_config);
 	$PAGE->requires->css('/blocks/exacomp/css/styles.css');
@@ -375,8 +416,9 @@ function block_exacomp_is_admin($context = null) {
 	return has_capability('block/exacomp:admin', $context);
 }
 
+
 function block_exacomp_is_elove_student_self_assessment_enabled() {
-	return get_config('exacomp', 'elove_student_self_assessment');
+   return get_config('exacomp', 'elove_student_self_assessment');
 }
 
 function block_exacomp_use_old_activities_method() {
@@ -386,18 +428,18 @@ function block_exacomp_use_old_activities_method() {
     return false;
 }
 
-function block_exacomp_use_eval_niveau() {
-	$evaluation_niveau = block_exacomp_get_assessment_diffLevel_options();
+function block_exacomp_use_eval_niveau($courseid = 0) {
+	$evaluation_niveau = block_exacomp_get_assessment_diffLevel_options($courseid);
     return $evaluation_niveau != '';
     //return $evaluation_niveau >= 1 && $evaluation_niveau <= 3;
 }
 
-function block_exacomp_get_assessment_any_diffLevel_exist() {
-    return (block_exacomp_get_assessment_subject_diffLevel() == 1
-                || block_exacomp_get_assessment_topic_diffLevel() == 1
-                || block_exacomp_get_assessment_comp_diffLevel() == 1
-                || block_exacomp_get_assessment_childcomp_diffLevel() == 1
-                || block_exacomp_get_assessment_example_diffLevel() == 1 ? true : false);
+function block_exacomp_get_assessment_any_diffLevel_exist($courseid = 0) {
+    return (block_exacomp_get_assessment_subject_diffLevel($courseid) == 1
+                || block_exacomp_get_assessment_topic_diffLevel($courseid) == 1
+                || block_exacomp_get_assessment_comp_diffLevel($courseid) == 1
+                || block_exacomp_get_assessment_childcomp_diffLevel($courseid) == 1
+                || block_exacomp_get_assessment_example_diffLevel($courseid) == 1 ? true : false);
 }
 
 
@@ -413,21 +455,21 @@ function block_exacomp_evaluation_niveau_type() {
  * @var boolean $level
  * @return mixed
  */
-function block_exacomp_additional_grading($level = null) {
+function block_exacomp_additional_grading($level = null, $courseid = 0) {
     switch ($level) {
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
-            return block_exacomp_get_assessment_comp_scheme();
+            return block_exacomp_get_assessment_comp_scheme($courseid);
         case BLOCK_EXACOMP_TYPE_TOPIC:
-            return block_exacomp_get_assessment_topic_scheme();
+            return block_exacomp_get_assessment_topic_scheme($courseid);
         case BLOCK_EXACOMP_TYPE_CROSSSUB:
-            return block_exacomp_get_assessment_theme_scheme();
+            return block_exacomp_get_assessment_theme_scheme($courseid);
         case BLOCK_EXACOMP_TYPE_SUBJECT:
-            return block_exacomp_get_assessment_subject_scheme();
+            return block_exacomp_get_assessment_subject_scheme($courseid);
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
-            return block_exacomp_get_assessment_example_scheme();
+            return block_exacomp_get_assessment_example_scheme($courseid);
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
-            return block_exacomp_get_assessment_childcomp_scheme();
+            return block_exacomp_get_assessment_childcomp_scheme($courseid);
         default:
             return false;
     }
@@ -440,11 +482,11 @@ function block_exacomp_additional_grading($level = null) {
  * @var int $type
  * @return bool
  */
-function block_exacomp_additional_grading_used_type($type) {
+function block_exacomp_additional_grading_used_type($type, $courseid = 0) {
     $levels = array(BLOCK_EXACOMP_TYPE_DESCRIPTOR, BLOCK_EXACOMP_TYPE_TOPIC, BLOCK_EXACOMP_TYPE_CROSSSUB,
             BLOCK_EXACOMP_TYPE_SUBJECT, BLOCK_EXACOMP_TYPE_EXAMPLE, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD);
     foreach ($levels as $level) {
-        if (block_exacomp_additional_grading($level) == $type) {
+        if (block_exacomp_additional_grading($level, $courseid) == $type) {
             return true;
         }
     }
@@ -457,8 +499,10 @@ function block_exacomp_additional_grading_used_type($type) {
 //     return array($points_limit,$grad_limit);
 // }
 
-function block_exacomp_get_assessment_points_limit($onlyGlobal = true) {
-    global $DB;
+function block_exacomp_get_assessment_points_limit($onlyGlobal = true, $courseid = 0) {
+    global $DB, $COURSE;
+
+    // is this deprecated? RW 2021_07_20
     if (!$onlyGlobal) {
         // if we have courseid and we have at leat one level, which uses Points - we can use custom points limit for vourse
         $courseid = optional_param('courseid', 0, PARAM_INT);
@@ -466,40 +510,64 @@ function block_exacomp_get_assessment_points_limit($onlyGlobal = true) {
             $courseid = g::$COURSE->id;
         }
         $useprofoundness = get_config('exacomp', 'useprofoundness'); // if not selected - can be used custom limits
-        if ($courseid && !$useprofoundness && block_exacomp_additional_grading_used_type(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)) {
+        if ($courseid && !$useprofoundness && block_exacomp_additional_grading_used_type(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS, $courseid)) {
             $limitForCourse = $DB->get_field('block_exacompsettings', 'grading', ['courseid' => $courseid]);
             if ($limitForCourse && $limitForCourse > 1) { // if = 1 - please use Yes/No type
                 return $limitForCourse;
             }
         }
     }
-    return get_config('exacomp', 'assessment_points_limit');
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
+    }
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        return $configurations[$assessment_config]["assessment_points_limit"];
+    }else{
+        return get_config('exacomp', 'assessment_points_limit');
+    }
 }
 
-function block_exacomp_get_assessment_grade_limit() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_grade_limit($courseid = 0) {
+    global $DB, $COURSE;
+
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_grade_limit');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_grade_limit"];
+    }else{
+        $value = get_config('exacomp', 'assessment_grade_limit');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_grade_limit');
 }
 
-function block_exacomp_get_assessment_grade_verbose($getforlanguage = null) {
-    static $value;
-    if ($value !== null && array_key_exists($getforlanguage, $value)) {
-        return $value[$getforlanguage];
-    }
-    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_grade_verbose', $getforlanguage);
+function block_exacomp_get_assessment_grade_verbose($getforlanguage = null, $courseid = 0) {
+//    static $value;
+//    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+//        return $value[$getforlanguage];
+//    }
+    $value = array();
+    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_grade_verbose', $getforlanguage, $courseid);
     return $value[$getforlanguage];
     //return block_exacomp_get_translatable_parameter('assessment_grade_verbose', $getforlanguage);
     //return get_config('exacomp', 'assessment_grade_verbose');
 }
 
-function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqual = true) {
-    $limit = block_exacomp_get_assessment_negative_threshold($level);
-    $scheme = block_exacomp_additional_grading($level);
+function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqual = true, $courseid = 0) {
+    $limit = block_exacomp_get_assessment_negative_threshold($level, $courseid);
+    $scheme = block_exacomp_additional_grading($level, $courseid);
     switch ($scheme) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             return true; // TODO: always negative?
@@ -536,20 +604,20 @@ function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqua
     return false;
 }
 
-function block_exacomp_get_assessment_negative_threshold($level) {
-    $type = block_exacomp_additional_grading($level);
+function block_exacomp_get_assessment_negative_threshold($level, $courseid = 0) {
+    $type = block_exacomp_additional_grading($level, $courseid);
     switch ($type) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             return 0;
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-            return block_exacomp_get_assessment_grade_negative_threshold();
+            return block_exacomp_get_assessment_grade_negative_threshold($courseid);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            return block_exacomp_get_assessment_verbose_negative_threshold();
+            return block_exacomp_get_assessment_verbose_negative_threshold($courseid);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-            return block_exacomp_get_assessment_points_negative_threshold();
+            return block_exacomp_get_assessment_points_negative_threshold($courseid);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
             return 1; // yes
@@ -557,63 +625,111 @@ function block_exacomp_get_assessment_negative_threshold($level) {
     }
 }
 
-function block_exacomp_get_assessment_points_negative_threshold(){
-    return get_config('exacomp', 'assessment_points_negativ');
-}
-
-
-function block_exacomp_get_assessment_grade_negative_threshold(){
-    return get_config('exacomp', 'assessment_grade_negativ');
-}
-
-function block_exacomp_get_assessment_verbose_negative_threshold(){
-    return get_config('exacomp', 'assessment_verbose_negative');
-}
-
-function block_exacomp_get_assessment_diffLevel_options() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_points_negative_threshold($courseid = 0){
+    global $DB, $COURSE;
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = trim(get_config('exacomp', 'assessment_diffLevel_options'));
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        return $configurations[$assessment_config]["assessment_points_negativ"];
+    }else{
+        return get_config('exacomp', 'assessment_points_negativ');
+    }
+}
+
+
+function block_exacomp_get_assessment_grade_negative_threshold($courseid = 0){
+    global $DB, $COURSE;
+    if($courseid == 0){
+        $courseid = $COURSE->id;
+    }
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        return $configurations[$assessment_config]["assessment_grade_negativ"];
+    }else{
+        return get_config('exacomp', 'assessment_grade_negativ');
+    }
+
+}
+
+function block_exacomp_get_assessment_verbose_negative_threshold($courseid = 0){
+    global $DB, $COURSE;
+    if($courseid == 0){
+        $courseid = $COURSE->id;
+    }
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        return $configurations[$assessment_config]["assessment_verbose_negative"];
+    }else{
+        return get_config('exacomp', 'assessment_verbose_negative');
+    }
+
+}
+
+function block_exacomp_get_assessment_diffLevel_options($courseid = 0) {
+    global $DB, $COURSE;
+
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
+    }
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_diffLevel_options"];
+    }else{
+        $value = trim(get_config('exacomp', 'assessment_diffLevel_options'));
+    }
+
     return $value;
     //return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
-function block_exacomp_get_assessment_diffLevel_options_splitted() {
-    static $value;
-    if ($value !== null) {
-        return $value;
-    }
-    $value = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options());
+function block_exacomp_get_assessment_diffLevel_options_splitted($courseid = 0) {
+    // this static value is faster BUT: it breaks course specific settings on e.g. the competence profile
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+    $value = preg_split( "/[\s*,\s*]*,+[\s*,\s*]*/", block_exacomp_get_assessment_diffLevel_options($courseid));
     // indexes - from 1: like ID in database
     $value = array_combine(range(1, count($value)), array_values($value));
     return $value;
     //return trim(get_config('exacomp', 'assessment_diffLevel_options'));
 }
 
-function block_exacomp_get_assessment_verbose_options($getforlanguage = null) {
-    static $value;
-    if ($value !== null && array_key_exists($getforlanguage, $value)) {
-        return $value[$getforlanguage];
-    }
-    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
+function block_exacomp_get_assessment_verbose_options($getforlanguage = null, $courseid = 0) {
+//    static $value;
+//    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+//        return $value[$getforlanguage];
+//    }
+    $value = array();
+    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage, $courseid);
     return $value[$getforlanguage];
     //return block_exacomp_get_translatable_parameter('assessment_verbose_options', $getforlanguage);
 }
 
-function block_exacomp_get_assessment_verbose_options_short($getforlanguage = null) {
-    static $value;
-    if ($value !== null && array_key_exists($getforlanguage, $value)) {
-        return $value[$getforlanguage];
-    }
-    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
+function block_exacomp_get_assessment_verbose_options_short($getforlanguage = null, $courseid = 0) {
+//    static $value;
+//    if ($value !== null && array_key_exists($getforlanguage, $value)) {
+//        return $value[$getforlanguage];
+//    }
+    $value = array();
+    $value[$getforlanguage] = block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage, $courseid);
     return $value[$getforlanguage];
     //return block_exacomp_get_translatable_parameter('assessment_verbose_options_short', $getforlanguage);
 }
 
-function block_exacomp_get_assessment_diffLevel_verb($value) {
-    $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted();
+function block_exacomp_get_assessment_diffLevel_verb($value, $courseid = 0) {
+    $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted($courseid);
     // start from 1
     $difflevels = array_combine(range(1, count($difflevels)), array_values($difflevels));
     if (array_key_exists($value, $difflevels)) {
@@ -622,216 +738,436 @@ function block_exacomp_get_assessment_diffLevel_verb($value) {
     return null;
 }
 
-function block_exacomp_get_assessment_selfEval_verboses($level = 'example', $type = 'long', $getforlanguage = null) {
-    static $value;
+function block_exacomp_get_assessment_selfEval_verboses($level = 'example', $type = 'long', $getforlanguage = null, $courseid = 0) {
+//    static $value;
     if ($level != 'example') {
         $level = 'comp';
     }
-    if ($value !== null && array_key_exists($getforlanguage.$level.$type, $value)) {
-        return $value[$getforlanguage.$level.$type];
-    }
-    $value[$getforlanguage.$level.$type] = block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
+//    if ($value !== null && array_key_exists($getforlanguage.$level.$type, $value)) {
+//        return $value[$getforlanguage.$level.$type];
+//    }
+    $value = array();
+    $value[$getforlanguage.$level.$type] = block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage, $courseid);
     return $value[$getforlanguage.$level.$type];
     //return block_exacomp_get_translatable_parameter('assessment_selfEvalVerbose_'.$level.'_'.$type, $getforlanguage);
 }
 
-function block_exacomp_get_assessment_example_scheme() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_example_scheme($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_example_scheme');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_example_scheme"];
+    }else{
+        $value = get_config('exacomp', 'assessment_example_scheme');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_example_scheme');
 }
 
-function block_exacomp_get_assessment_example_diffLevel() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_example_diffLevel($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_example_diffLevel');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_example_diffLevel"];
+    }else{
+        $value = get_config('exacomp', 'assessment_example_diffLevel');
+    }
     return $value;
     //return get_config('exacomp', 'assessment_example_diffLevel');
 }
 
-function block_exacomp_get_assessment_example_SelfEval() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_example_SelfEval($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_example_SelfEval');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_example_SelfEval"];
+    }else{
+        $value = get_config('exacomp', 'assessment_example_SelfEval');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_example_SelfEval');
 }
 
-function block_exacomp_get_assessment_childcomp_scheme() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_childcomp_scheme($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_childcomp_scheme');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_childcomp_scheme"];
+    }else{
+        $value = get_config('exacomp', 'assessment_childcomp_scheme');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_childcomp_scheme');
 }
 
-function block_exacomp_get_assessment_childcomp_diffLevel() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_childcomp_diffLevel($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_childcomp_diffLevel');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_childcomp_diffLevel"];
+    }else{
+        $value = get_config('exacomp', 'assessment_childcomp_diffLevel');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_childcomp_diffLevel');
 }
 
-function block_exacomp_get_assessment_childcomp_SelfEval() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_childcomp_SelfEval($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_childcomp_SelfEval');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_childcomp_SelfEval"];
+    }else{
+        $value = get_config('exacomp', 'assessment_childcomp_SelfEval');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_childcomp_SelfEval');
 }
 
-function block_exacomp_get_assessment_comp_scheme() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_comp_scheme($courseid = 0) {
+    global $DB, $COURSE;
+
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_comp_scheme');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_comp_scheme"];
+    }else{
+        $value = get_config('exacomp', 'assessment_comp_scheme');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_comp_scheme');
 }
 
-function block_exacomp_get_assessment_comp_diffLevel() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_comp_diffLevel($courseid = 0) {
+    global $DB, $COURSE;
+
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_comp_diffLevel');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_comp_diffLevel"];
+    }else{
+        $value = get_config('exacomp', 'assessment_comp_diffLevel');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_comp_diffLevel');
 }
 
-function block_exacomp_get_assessment_comp_SelfEval() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_comp_SelfEval($courseid = 0) {
+    global $DB, $COURSE;
+
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_comp_SelfEval');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_comp_SelfEval"];
+    }else{
+        $value = get_config('exacomp', 'assessment_comp_SelfEval');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_comp_SelfEval');
 }
 
-function block_exacomp_get_assessment_topic_scheme() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_topic_scheme($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_topic_scheme');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_topic_scheme"];
+    }else{
+        $value = get_config('exacomp', 'assessment_topic_scheme');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_topic_scheme');
 }
 
-function block_exacomp_get_assessment_topic_diffLevel() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_topic_diffLevel($courseid = 0) {
+    global $DB, $COURSE;
+
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_topic_diffLevel');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_topic_diffLevel"];
+    }else{
+        $value = get_config('exacomp', 'assessment_topic_diffLevel');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_topic_diffLevel');
 }
 
-function block_exacomp_get_assessment_topic_SelfEval() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_topic_SelfEval($courseid = 0) {
+    global $DB, $COURSE;
+
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_topic_SelfEval');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_topic_SelfEval"];
+    }else{
+        $value = get_config('exacomp', 'assessment_topic_SelfEval');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_topic_SelfEval');
 }
 
-function block_exacomp_get_assessment_subject_scheme() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_subject_scheme($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_subject_scheme');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_subject_scheme"];
+    }else{
+        $value = get_config('exacomp', 'assessment_subject_scheme');
+    }
     return $value;
     //return get_config('exacomp', 'assessment_subject_scheme');
 }
 
-function block_exacomp_get_assessment_subject_diffLevel() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_subject_diffLevel($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_subject_diffLevel');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_subject_diffLevel"];
+    }else{
+        $value = get_config('exacomp', 'assessment_subject_diffLevel');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_subject_diffLevel');
 }
 
-function block_exacomp_get_assessment_subject_SelfEval() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_subject_SelfEval($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_subject_SelfEval');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_subject_SelfEval"];
+    }else{
+        $value = get_config('exacomp', 'assessment_subject_SelfEval');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_subject_SelfEval');
 }
 
-function block_exacomp_get_assessment_theme_scheme() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_theme_scheme($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_theme_scheme');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_theme_scheme"];
+    }else{
+        $value = get_config('exacomp', 'assessment_theme_scheme');
+    }
     return $value;
     //return get_config('exacomp', 'assessment_theme_scheme');
 }
 
-function block_exacomp_get_assessment_theme_diffLevel() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_theme_diffLevel($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_theme_diffLevel');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_theme_diffLevel"];
+    }else{
+        $value = get_config('exacomp', 'assessment_theme_diffLevel');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_theme_diffLevel');
 }
 
-function block_exacomp_get_assessment_theme_SelfEval() {
-    static $value;
-    if ($value !== null) {
-        return $value;
+function block_exacomp_get_assessment_theme_SelfEval($courseid = 0) {
+    global $DB, $COURSE;
+//    static $value;
+//    if ($value !== null) {
+//        return $value;
+//    }
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
     }
-    $value = get_config('exacomp', 'assessment_theme_SelfEval');
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $value = $configurations[$assessment_config]["assessment_theme_SelfEval"];
+    }else{
+        $value = get_config('exacomp', 'assessment_theme_SelfEval');
+    }
+
     return $value;
     //return get_config('exacomp', 'assessment_theme_SelfEval');
 }
 
-function block_exacomp_get_assessment_max_value($type) {
+function block_exacomp_get_assessment_max_value($type, $courseid = 0) {
     $max = 0;
     switch ($type) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-            $max = block_exacomp_get_assessment_grade_limit();
+            $max = block_exacomp_get_assessment_grade_limit($courseid);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options(null, $courseid));
             $max = count($verboses);
             if ($max > 0) {
                 $max -= 1;  // because it is possible zero
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-            $max = block_exacomp_get_assessment_points_limit();
+            $max = block_exacomp_get_assessment_points_limit(true, $courseid);
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
             $max = 1;
@@ -840,7 +1176,7 @@ function block_exacomp_get_assessment_max_value($type) {
     return $max;
 }
 
-function block_exacomp_get_assessment_max_good_value($type, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) { // for example 1 - good, 6 - bad
+function block_exacomp_get_assessment_max_good_value($type, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null, $courseid = 0) { // for example 1 - good, 6 - bad
     $max = 0; // it is the best for used assessment type
     $real = 0; // it is regarding student real results (with percent of grading)
     if ($maxGrade > 0 && $studentGradeResult > 0) {
@@ -852,7 +1188,7 @@ function block_exacomp_get_assessment_max_good_value($type, $userrealvalue = fal
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-            $limit = block_exacomp_get_assessment_grade_limit();
+            $limit = block_exacomp_get_assessment_grade_limit($courseid);
             if ($percent > 0) {
                 $k = ($limit - 1) / 100;
                 $x = $limit - ($percent * $k);
@@ -861,7 +1197,7 @@ function block_exacomp_get_assessment_max_good_value($type, $userrealvalue = fal
             $max = 1;
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options(null, $courseid));
             $max = count($verboses);
             if ($max > 0) {
                 $max -= 1;  // because it is possible zero
@@ -873,7 +1209,7 @@ function block_exacomp_get_assessment_max_good_value($type, $userrealvalue = fal
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-            $max = block_exacomp_get_assessment_points_limit();
+            $max = block_exacomp_get_assessment_points_limit(null, $courseid);
             if ($percent > 0) {
                 $k = ($max) / 100;
                 $x = ($percent * $k);
@@ -898,47 +1234,47 @@ function block_exacomp_get_assessment_max_good_value($type, $userrealvalue = fal
 }
 
 
-function block_exacomp_get_assessment_max_value_by_level($level) {
-    $type = block_exacomp_additional_grading($level);
-    return block_exacomp_get_assessment_max_value($type);
+function block_exacomp_get_assessment_max_value_by_level($level, $courseid = 0) {
+    $type = block_exacomp_additional_grading($level, $courseid);
+    return block_exacomp_get_assessment_max_value($type, $courseid);
 }
 
-function block_exacomp_get_assessment_diffLevel($level) {
+function block_exacomp_get_assessment_diffLevel($level, $courseid = 0) {
     switch ($level) {
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
-            return block_exacomp_get_assessment_comp_diffLevel();
+            return block_exacomp_get_assessment_comp_diffLevel($courseid);
         case BLOCK_EXACOMP_TYPE_TOPIC:
-            return block_exacomp_get_assessment_topic_diffLevel();
+            return block_exacomp_get_assessment_topic_diffLevel($courseid);
         case BLOCK_EXACOMP_TYPE_CROSSSUB:
-            return block_exacomp_get_assessment_theme_diffLevel();
+            return block_exacomp_get_assessment_theme_diffLevel($courseid);
         case BLOCK_EXACOMP_TYPE_SUBJECT:
-            return block_exacomp_get_assessment_subject_diffLevel();
+            return block_exacomp_get_assessment_subject_diffLevel($courseid);
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
-            return block_exacomp_get_assessment_example_diffLevel();
+            return block_exacomp_get_assessment_example_diffLevel($courseid);
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
-            return block_exacomp_get_assessment_childcomp_diffLevel();
+            return block_exacomp_get_assessment_childcomp_diffLevel($courseid);
         default:
             return false;
     }
     return false;
 }
 
-function block_exacomp_get_assessment_SelfEval($level) {
+function block_exacomp_get_assessment_SelfEval($level, $courseid = 0) {
     switch ($level) {
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT:
-            return block_exacomp_get_assessment_comp_SelfEval();
+            return block_exacomp_get_assessment_comp_SelfEval($courseid);
         case BLOCK_EXACOMP_TYPE_TOPIC:
-            return block_exacomp_get_assessment_topic_SelfEval();
+            return block_exacomp_get_assessment_topic_SelfEval($courseid);
         case BLOCK_EXACOMP_TYPE_CROSSSUB:
-            return block_exacomp_get_assessment_theme_SelfEval();
+            return block_exacomp_get_assessment_theme_SelfEval($courseid);
         case BLOCK_EXACOMP_TYPE_SUBJECT:
-            return block_exacomp_get_assessment_subject_SelfEval();
+            return block_exacomp_get_assessment_subject_SelfEval($courseid);
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
-            return block_exacomp_get_assessment_example_SelfEval();
+            return block_exacomp_get_assessment_example_SelfEval($courseid);
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD:
-            return block_exacomp_get_assessment_childcomp_SelfEval();
+            return block_exacomp_get_assessment_childcomp_SelfEval($courseid);
         default:
             return false;
     }
@@ -946,12 +1282,29 @@ function block_exacomp_get_assessment_SelfEval($level) {
 }
 
 
-function block_exacomp_get_translatable_parameter($parameter = '', $getforlanguage = null ) {
+function block_exacomp_get_translatable_parameter($parameter = '', $getforlanguage = null, $courseid = 0 ) {
+    global $DB, $COURSE;
     if ($parameter == '')
         return false;
     // stored as json for different languages
     // de - default language
-    $jsondata = get_config('exacomp', $parameter);
+
+    if($courseid == 0){
+        $courseid = $COURSE->id;
+    }
+    $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
+    if($assessment_config != 0){
+        $configurations = block_exacomp_get_assessment_configurations();
+        $jsondata = $configurations[$assessment_config][$parameter];
+        // TODO: what if e.g. assessment_selfEvalVerbose_example_long is not set in the config, but assessment_grade_verbose is?
+        // for now: if null use the adminsettings
+        if($jsondata == null){
+            $jsondata = get_config('exacomp', $parameter);
+        }
+    }else{
+        $jsondata = get_config('exacomp', $parameter);
+    }
+
     $copyofdata = $jsondata;
     $configdata = json_decode($jsondata, true);
     if (json_last_error() && $copyofdata != '') { // if old data is not json
@@ -1010,7 +1363,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 	}
 
 	$sql = '
-		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal
+		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal, s.class
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -1144,7 +1497,7 @@ function block_exacomp_get_niveaus_by_example($exampleid) {
 function block_exacomp_get_all_subjects() {
 	global $DB;
 
-	return $DB->get_records(BLOCK_EXACOMP_DB_SUBJECTS, array(), '', 'id, title, source, sourceid, author, isglobal');
+	return $DB->get_records(BLOCK_EXACOMP_DB_SUBJECTS, array(), '', 'id, title, source, sourceid, author, isglobal, class');
 }
 
 /**
@@ -1356,156 +1709,158 @@ function block_exacomp_get_topics_by_descriptor($descriptorid) {
 function block_exacomp_sort_items(&$items, $sortings) {
 	$sortings = (array)$sortings;
 
-	uasort($items, function($a, $b) use ($sortings) {
-		foreach ($sortings as $prefix => $sorting) {
-			if (is_int($prefix)) {
-				$prefix = '';
-			}
+	if (is_array($items)) {
+        uasort($items, function ($a, $b) use ($sortings) {
+            foreach ($sortings as $prefix => $sorting) {
+                if (is_int($prefix)) {
+                    $prefix = '';
+                }
 
-			switch ($sorting) {
-                case BLOCK_EXACOMP_IS_GLOBAL:
-                    if (!property_exists($a, $prefix.'isglobal') || !property_exists($b, $prefix.'isglobal')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'isglobal');
-                    }
-                    return $a->{$prefix.'isglobal'} < $b->{$prefix.'isglobal'} ? -1 : 1;
-                    break;
-                case BLOCK_EXACOMP_DB_SUBJECTS:
-                    if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'source');
-                    }
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
+                switch ($sorting) {
+                    case BLOCK_EXACOMP_IS_GLOBAL:
+                        if (!property_exists($a, $prefix . 'isglobal') || !property_exists($b, $prefix . 'isglobal')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'isglobal');
+                        }
+                        return $a->{$prefix . 'isglobal'} < $b->{$prefix . 'isglobal'} ? -1 : 1;
+                        break;
+                    case BLOCK_EXACOMP_DB_SUBJECTS:
+                        if (!property_exists($a, $prefix . 'source') || !property_exists($b, $prefix . 'source')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'source');
+                        }
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
 
-                    // sort subjects
-                    // first imported, then generated
-                    if ($a->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-                        return 1;
-                    }
+                        // sort subjects
+                        // first imported, then generated
+                        if ($a->{$prefix . 'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix . 'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                        return 1;
-                    }
+                        if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                case BLOCK_EXACOMP_DB_TOPICS:
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
+                        }
+                        break;
+                    case BLOCK_EXACOMP_DB_TOPICS:
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'numb') || !property_exists($b, $prefix . 'numb')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'numb');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
 
-                    if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
-                        return 1;
-                    }
+                        if ($a->{$prefix . 'numb'} < $b->{$prefix . 'numb'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'numb'} > $b->{$prefix . 'numb'}) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                        return 1;
-                    }
+                        if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                            return 1;
+                        }
 
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                case BLOCK_EXACOMP_DB_DESCRIPTORS:
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
+                        }
+                        break;
+                    case BLOCK_EXACOMP_DB_DESCRIPTORS:
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
 
-                    if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
-                        debugging('block_exacomp_sort_items() descriptors need a source', DEBUG_DEVELOPER);
-                    } else {
-                        if ($a->{$prefix.'source'} != $b->{$prefix.'source'}) {
-                            if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                        if (!property_exists($a, $prefix . 'source') || !property_exists($b, $prefix . 'source')) {
+                            debugging('block_exacomp_sort_items() descriptors need a source', DEBUG_DEVELOPER);
+                        } else {
+                            if ($a->{$prefix . 'source'} != $b->{$prefix . 'source'}) {
+                                if ($a->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                                    return 1;
+                                }
+                                if ($b->{$prefix . 'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                                    return -1;
+                                }
+                            }
+                        }
+
+                        if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                            return 1;
+                        }
+
+                        // last by title
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
+                        }
+                        break;
+                    case BLOCK_EXACOMP_DB_NIVEAUS:
+                        if (!property_exists($a, $prefix . 'numb') || !property_exists($b, $prefix . 'numb')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'numb');
+                        }
+                        if (!property_exists($a, $prefix . 'sorting') || !property_exists($b, $prefix . 'sorting')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'sorting');
+                        }
+                        if (!property_exists($a, $prefix . 'title') || !property_exists($b, $prefix . 'title')) {
+                            throw new \block_exacomp\moodle_exception('col not found: ' . $prefix . 'title');
+                        }
+
+                        if ($a->{$prefix . 'numb'} < $b->{$prefix . 'numb'}) {
+                            return -1;
+                        }
+                        if ($a->{$prefix . 'numb'} > $b->{$prefix . 'numb'}) {
+                            return 1;
+                        }
+
+                        if ($a->{$prefix . 'sorting'} != $b->{$prefix . 'sorting'}) {
+                            // move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
+                            if (!$a->{$prefix . 'sorting'}) {
                                 return 1;
                             }
-                            if ($b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                            if (!$b->{$prefix . 'sorting'}) {
                                 return -1;
                             }
-                        }
-                    }
 
-                    if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                        return 1;
-                    }
-
-                    // last by title
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                case BLOCK_EXACOMP_DB_NIVEAUS:
-                    if (!property_exists($a, $prefix.'numb') || !property_exists($b, $prefix.'numb')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'numb');
-                    }
-                    if (!property_exists($a, $prefix.'sorting') || !property_exists($b, $prefix.'sorting')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'sorting');
-                    }
-                    if (!property_exists($a, $prefix.'title') || !property_exists($b, $prefix.'title')) {
-                        throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
-                    }
-
-                    if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
-                        return -1;
-                    }
-                    if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
-                        return 1;
-                    }
-
-                    if ($a->{$prefix.'sorting'} != $b->{$prefix.'sorting'}) {
-                        // move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
-                        if (!$a->{$prefix.'sorting'}) {
-                            return 1;
-                        }
-                        if (!$b->{$prefix.'sorting'}) {
-                            return -1;
+                            if ($a->{$prefix . 'sorting'} < $b->{$prefix . 'sorting'}) {
+                                return -1;
+                            }
+                            if ($a->{$prefix . 'sorting'} > $b->{$prefix . 'sorting'}) {
+                                return 1;
+                            }
                         }
 
-                        if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
-                            return -1;
+                        if ($a->{$prefix . 'title'} != $b->{$prefix . 'title'}) {
+                            return strcmp($a->{$prefix . 'title'}, $b->{$prefix . 'title'});
                         }
-                        if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
-                            return 1;
-                        }
-                    }
-
-                    if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
-                        return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
-                    }
-                    break;
-                default:
-				    throw new \block_exacomp\moodle_exception('sorting type not found: '.$sorting);
-			}
-		}
-	});
+                        break;
+                    default:
+                        throw new \block_exacomp\moodle_exception('sorting type not found: ' . $sorting);
+                }
+            }
+        });
+    }
 
 	return $items;
 }
@@ -1623,7 +1978,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
         }
 
 		if($subject->isglobal){
-            block_exacomp_update_globalgradings_text($compid,$userid,$comptype);
+            block_exacomp_update_globalgradings_text($compid,$userid,$comptype, $courseid);
         }
 //        block_exacomp_update_gradinghistory_text($compid,$userid,$courseid,$comptype);
 	} else {
@@ -1954,8 +2309,8 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, $params);
 
 	foreach ($descriptors as $descriptor) {
-		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, null /* unused */, $filteredtaxonomies);
+		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid, $mindvisibility, $showonlyvisible);
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, null /* unused */, $filteredtaxonomies, $showallexamples, $mindvisibility, $showonlyvisible);
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 
@@ -2025,7 +2380,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
                 unset($examples[$example->id]);
             }
 
-            if ($example->courseid > 0 && $example->courseid != $courseid) {
+            if ($example->activityid > 0 && $example->courseid > 0 && $example->courseid != $courseid) {
                 unset($examples[$example->id]);
             }
         }
@@ -2158,12 +2513,20 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 function block_exacomp_get_descriptors_by_subject($subjectid, $niveaus = true) {
 	global $DB;
 
-	$sql = "SELECT d.*, dt.topicid, t.title as topic_title FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_TOPICS."} t
-	WHERE d.id=dt.descrid AND d.parentid =0 AND dt.topicid IN (SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?)";
+	$sql = "SELECT d.*, dt.topicid, t.title as topic_title, t.sorting as topic_sorting
+              FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d,
+                    {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt,
+                    {".BLOCK_EXACOMP_DB_TOPICS."} t
+	            WHERE d.id=dt.descrid
+	                AND d.parentid =0
+	                AND dt.topicid IN (
+	                        SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?
+                    ) ";
 	if ($niveaus) {
 		$sql .= " AND d.niveauid > 0";
 	}
-	$sql .= " AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
+	$sql .= " AND dt.topicid = t.id ";
+	$sql .= ' ORDER BY t.sorting, t.title, d.sorting, d.title, d.skillid, dt.topicid, d.niveauid ';
 
 	return $DB->get_records_sql($sql, array($subjectid));
 }
@@ -2773,8 +3136,10 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
 	if ($usebadges) {
 		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
 	}
+	// Grading submenu
+     $settings_subtree[] = new tabobject('tab_teacher_settings_course_assessment', new moodle_url('/blocks/exacomp/edit_course_assessment.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_course_assessment"), null, true);
 
-	return $settings_subtree;
+    return $settings_subtree;
 }
 
 /**
@@ -3482,7 +3847,7 @@ function block_exacomp_get_course_module_association($courseid) {
 			ORDER BY comptype, compid', array($courseid));
 
 	// records by new method relation
-    $sql = 'SELECT DISTINCT t.id, demm.descrid as compid, '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.' as comptype, t.activityid as activityid
+    $sql = 'SELECT DISTINCT CONCAT_WS(\'-\', t.id, demm.descrid, t.activityid) as tempId, t.id, demm.descrid as compid, '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.' as comptype, t.activityid as activityid
                 FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} t
                     JOIN {course_modules} cm ON cm.id = t.activityid
                     JOIN {modules} m ON m.id = cm.module
@@ -4689,7 +5054,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
         $topics[$descriptor->topicid] = $descriptor->topic_title;
     }
 
-    $selection = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('courseid'=>$courseid), '', 'topicid');
+    $selection = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('courseid' => $courseid), '', 'topicid');
 
     return array($niveaus, $skills, $topics, $data, $selection);
 
@@ -5290,42 +5655,42 @@ function block_exacomp_perform_auto_test() {
 
 function block_exacomp_assign_competences($courseid, $studentid, $topics, $descriptors, $examples, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) {
     if (isset($descriptors)) {
-        $grading_scheme = block_exacomp_get_assessment_comp_scheme();
+        $grading_scheme = block_exacomp_get_assessment_comp_scheme($courseid);
         foreach ($descriptors as $descriptor) {
-            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
-                block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), $comptype = 0);
+                block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), $comptype = 0);
             }
             //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
             mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
         }
     }
     if (isset($topics)) {
-        $grading_scheme = block_exacomp_get_assessment_topic_scheme();
+        $grading_scheme = block_exacomp_get_assessment_topic_scheme($courseid);
         foreach ($topics as $topic) {
-            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC)) {
+            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), BLOCK_EXACOMP_TYPE_EXAMPLE);
+                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_EXAMPLE);
             }
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $topic->compid, BLOCK_EXACOMP_TYPE_TOPIC, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
+            block_exacomp_set_user_competence($studentid, $topic->compid, BLOCK_EXACOMP_TYPE_TOPIC, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
             mtrace("set topic competence ".$topic->compid." for user ".$studentid.'<br>');
 
         }
     }
     if (isset($examples)) {
-        $grading_scheme = block_exacomp_get_assessment_example_scheme();
+        $grading_scheme = block_exacomp_get_assessment_example_scheme($courseid);
         foreach ($examples as $example) {
-            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE)) {
+            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                block_exacomp_save_additional_grading_for_comp($courseid, $example->id, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult), BLOCK_EXACOMP_TYPE_EXAMPLE);
+                block_exacomp_save_additional_grading_for_comp($courseid, $example->id, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_EXAMPLE);
             }
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult));
-            mtrace("set example grading: ".$example->id." for user ".$studentid.'  '.block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult).'<br>');
+            block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
+            mtrace("set example grading: ".$example->id." for user ".$studentid.'  '.block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid).'<br>');
         }
     }
 }
@@ -7362,9 +7727,9 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	$gradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 	//create grading statistic
 	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
-	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(null, $courseid);
 
-	if (block_exacomp_use_eval_niveau()) {
+	if (block_exacomp_use_eval_niveau($courseid)) {
 		foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
 			$gradings[$niveaukey] = array();
 			foreach ($scheme_items as $schemekey => $schemetitle) {
@@ -7430,7 +7795,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 				}
 
 				//create grading statistic
-				if (block_exacomp_use_eval_niveau()) {
+				if (block_exacomp_use_eval_niveau($courseid)) {
 					if (isset($student->examples->teacher[$example->id]) && isset($student->examples->niveau[$example->id])) {
 						$gradings[$student->examples->niveau[$example->id]][$student->examples->teacher[$example->id]]++;
 					}
@@ -7746,7 +8111,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
     }
     if (is_array($entries)) {
-        $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted();
+        $niveautitles = block_exacomp_get_assessment_diffLevel_options_splitted($courseid);
         foreach ($entries as $k => $entry) {
             if ($entry->evalniveauid && array_key_exists($entry->evalniveauid, $niveautitles)) {
                 $entries[$k]->niveau = $niveautitles[$entry->evalniveauid];
@@ -7997,17 +8362,17 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
     }
 
 	$comp = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid));
-	$gradingScheme = block_exacomp_get_assessment_example_scheme();
+	$gradingScheme = block_exacomp_get_assessment_example_scheme($courseid);
 
 	if ($comp && !$comp->resubmission && $comp->teacher_evaluation !== null) {
         if($gradingScheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE){ //the grading is in additionalinfo instead of teacher_evaluation
-            if($comp->additionalinfo == block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE)){
+            if($comp->additionalinfo == block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE, $courseid)){
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
             }else if($comp->additionalinfo != -1 && $comp->additionalinfo != 0){
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV;
             }
         }else if($gradingScheme == BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS){
-            if ($comp->teacher_evaluation < block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS)/2) {
+            if ($comp->teacher_evaluation < block_exacomp_get_assessment_max_value(BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS, $courseid)/2) {
                 return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
             }
             return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV;
@@ -8160,8 +8525,8 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	if (block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_SORTING, $example)) {
 		$sql = "SELECT e.*, de.sorting as descsorting FROM {block_exacompexamples} e
 			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON de.exampid = e.id
-			WHERE de.sorting '.((strcmp($operator, '<') == 0) ? '<' : '>').' ? AND de.descrid = ?
-			ORDER BY de.sorting '.((strcmp($operator, '<') == 0) ? 'DESC' : 'ASC').'
+			WHERE de.sorting ".((strcmp($operator, '<') == 0) ? '<' : '>')." ? AND de.descrid = ?
+			ORDER BY de.sorting ".((strcmp($operator, '<') == 0) ? 'DESC' : 'ASC')."
 			LIMIT 1";
 
 		$switchWith = $DB->get_record_sql($sql, array($example->descsorting, $descrid));
@@ -8246,7 +8611,11 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             break;
     }
 
+    $params = [];
+
     // TODO: use niveaucondition.   For now it is irrelevant, because own_items will only be submitted to topics, which do not have niveauinformation (only descriptors have)
+    // The joins do not really take up much of the time. The high amount of queries does. Maybe indizes could speed this up?
+    // THe search could be made conditional
     switch($comptype){
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -8264,6 +8633,8 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 AND ie.competence_type = ?
                 AND (d.title LIKE "%'.$search.'%" OR d.description LIKE "%'.$search.'%" OR i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
               ORDER BY ie.timecreated DESC';
+            // TODO: dangerous... solve like this:            $params [courseid]="%$search%";
+
             break;
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -8314,7 +8685,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
     }
     if($compid == -1){
 //        if($niveauid == -1){
-            $items = $DB->get_records_sql($sql, array($userid, $comptype));
+            $items = $DB->get_records_sql($sql, $params);
 //        }else{
 //            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
 //        }
@@ -8739,12 +9110,12 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 		$additionalinfo = (float)str_replace(",", ".", $additionalinfo);
 	}
 
-	switch (block_exacomp_additional_grading($comptype)) {
+	switch (block_exacomp_additional_grading($comptype, $courseid)) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             return true;
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-            $gradelimit = block_exacomp_get_assessment_grade_limit();
+            $gradelimit = block_exacomp_get_assessment_grade_limit($courseid);
             if ($additionalinfo > $gradelimit) {
                 $additionalinfo = $gradelimit;
             } elseif ($additionalinfo > 0 && $additionalinfo < 1.0) {
@@ -8754,7 +9125,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+            $verboses = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options(null, $courseid));
             $max = count($verboses);
             if ($max > 0) {
                 $max -= 1;  // because it is possible zero
@@ -8764,7 +9135,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-            $pointlimit = block_exacomp_get_assessment_points_limit();
+            $pointlimit = block_exacomp_get_assessment_points_limit($courseid);
             if ($additionalinfo > $pointlimit) {
                 $additionalinfo = $pointlimit;
             }
@@ -8834,7 +9205,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
                 $subject = block_exacomp_get_subject_by_subjectid($subjectid);
             }
             if ($subject->isglobal) {
-                block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype);
+                block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype, $courseid);
             }
 //            block_exacomp_update_gradinghistory_text($descriptorid,$studentid,$courseid,$comptype);
         }
@@ -8846,12 +9217,17 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
  * get all examples associated with any descriptors in this course
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=false, $search="", $mindvisibility = true) {
-    if($withCompetenceInfo){
+function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=false, $search="", $mindvisibility = true, $userid=-1) {
+    global $USER;
+    if($userid==-1){
+        $userid = $USER->id;
+    }
+    if($withCompetenceInfo){ // with topics and subjects and evaluation and annotation of example (for diggrplus)
         if($mindvisibility){
             // Visibility of Niveaus is NOT minded. But cannot be changed in diggrplus anyways, for which this function is made
             // Student specific visibility is also NOT minded, only global
-            $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
+            $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle,
+                        exameval.teacher_evaluation, exameval.student_evaluation, examannot.annotationtext as annotation
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
             JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON dex.exampid = ex.id
             JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid
@@ -8865,6 +9241,9 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvis ON d.id=dvis.descrid
             JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvis ON topic.id=tvis.topicid AND tvis.niveauid IS NULL
             JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON ex.id=evis.exampleid
+
+            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} exameval ON exameval.exampleid = ex.id AND exameval.courseid = ? AND exameval.studentid = ".$userid."
+            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION."} examannot ON examannot.exampleid = ex.id AND examannot.courseid = ?
 
             WHERE ct.courseid = ?
             AND dvis.visible = true
@@ -8903,7 +9282,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
 		)";
     }
 
-	return g::$DB->get_records_sql($sql, array($courseid, $courseid));
+	return g::$DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 }
 
 
@@ -9106,8 +9485,6 @@ function block_exacomp_get_html_for_niveau_eval($evaluation) {
 	}
     $evaluation_niveau_types = explode(',', $evaluation_niveau_types);
     $evaluation_niveau_type = 0; //default
-//    echo "<pre>debug:<strong>lib.php:8930</strong>\r\n"; print_r($evaluation); echo '</pre>'; // !!!!!!!!!! delete it
-//    echo "<pre>debug:<strong>lib.php:8930</strong>\r\n"; print_r($evaluation_niveau_types); echo '</pre>'; exit; // !!!!!!!!!! delete it
 	if (array_key_exists($evaluation, $evaluation_niveau_types)) {
         $evaluation_niveau_type = $evaluation_niveau_types[$evaluation];
     }
@@ -9179,9 +9556,9 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$table_content = new stdClass();
 	$table_content->content = array();
 
-	$use_evalniveau = block_exacomp_use_eval_niveau();
+	$use_evalniveau = block_exacomp_use_eval_niveau($courseid);
 	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
-	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(null, $courseid);
 
     //If crosssubject then only get those topics where a descriptor has been added
     if($crosssubj){
@@ -9212,7 +9589,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
             // 				: ((isset($user->topics->teacher[$topic->id]))
             // 					? $scheme_items[$user->topics->teacher[$topic->id]] : '-1'));
             $data->topic_eval =
-                ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
+                ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC, $courseid) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
                     ((isset($user->topics->teacher_additional_grading[$topic->id]))
                         ? $user->topics->teacher_additional_grading[$topic->id] : '')
                     : ((isset($user->topics->teacher[$topic->id]))
@@ -9238,7 +9615,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 			? $user->subjects->niveau[$subject->id] : -1)
 		: 0);
 
-	$table_content->subject_eval = ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
+	$table_content->subject_eval = ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_SUBJECT, $courseid) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ?
 		(( property_exists($subject, 'id') && isset($user->subjects->teacher_additional_grading[$subject->id]))
 			? $user->subjects->teacher_additional_grading[$subject->id] : '')
 		: ((isset($user->subjects->teacher[$subject->id]))
@@ -9296,8 +9673,8 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 	$data->niveaus = array();
 	$data->span = @$topic->span ? $topic->span : 0;
 
-	$use_evalniveau = block_exacomp_use_eval_niveau();
-	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+	$use_evalniveau = block_exacomp_use_eval_niveau($courseid);
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(null, $courseid);
 
     $niveausAvgsCalc = array();
     $evalniveauAvgsCalc = array();
@@ -9347,7 +9724,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
             }
 		}
 
-        if ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE)) {
+        if ((block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE)) {
             $v = (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '');
             if ($v && $useEval) { // add only evaluated values
                 $niveausAvgsCalc[$niveau->title][] = $v;
@@ -9360,7 +9737,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
         };
 
 
-        if (block_exacomp_get_assessment_comp_SelfEval() && $student_evaluation) {
+        if (block_exacomp_get_assessment_comp_SelfEval($courseid) && $student_evaluation) {
             if ($student_evaluation->value  && $useEval) { // add only evaluated values
                 $niveausAvgsSelfCalc[$niveau->title][] = $student_evaluation->value;
             }
@@ -9375,13 +9752,13 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 			$data->span = 1;
 		}
 
-        //Hide niveaus that are not used in the crosssubject
-        if($crosssubj){
-            if(isset($descriptorsOfCrosssubj[$descriptor->id])){
+        // Hide niveaus that are not used in the crosssubject
+        if ($crosssubj) {
+            if (isset($descriptorsOfCrosssubj[$descriptor->id])) {
                 //ok
                 $niveausAlreadyCheckedForShowing[$niveau->title] = true;
-            }else{
-                if(!$niveausAlreadyCheckedForShowing[$niveau->title]){
+            } else {
+                if (!array_key_exists($niveau->title, $niveausAlreadyCheckedForShowing) || !$niveausAlreadyCheckedForShowing[$niveau->title]){
                     $data->niveaus[$niveau->title]->show = false;
                 }
             }
@@ -9396,7 +9773,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
                 $data->niveaus[$nTitle]->eval = round(array_sum($nValues) / count($nValues), 1);
             } else {
                 $data->niveaus[$nTitle]->eval =
-                    (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ? '' : '-1';
+                    (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) ? '' : '-1';
             }
         }
     }
@@ -9417,7 +9794,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
             if (count($nValues) > 0) {
                 $evalid = round(array_sum($nValues) / count($nValues));
                 $data->niveaus[$nTitle]->self_evalid = $evalid;
-                $data->niveaus[$nTitle]->self_eval = block_exacomp\global_config::get_student_eval_title_by_id($evalid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+                $data->niveaus[$nTitle]->self_eval = block_exacomp\global_config::get_student_eval_title_by_id($evalid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid);
             } else {
                 $data->niveaus[$nTitle]->self_evalid = -1;
                 $data->niveaus[$nTitle]->self_eval = '';
@@ -9498,7 +9875,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		}
 	}
 
-	if (block_exacomp_is_topicgrading_enabled()) {
+	if (block_exacomp_is_topicgrading_enabled($courseid)) {
 		$topic_eval_header = new stdClass();
 		$topic_eval_header->text = block_exacomp_get_string('total');
 		$topic_eval_header->span = 0;
@@ -9555,7 +9932,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$current_idx++;
 		}
 
-		if (block_exacomp_is_topicgrading_enabled()) { //TOPICS
+		if (block_exacomp_is_topicgrading_enabled($courseid)) { //TOPICS
 			$topic_eval = new stdClass();
             switch($targetrole) {
                 case BLOCK_EXACOMP_ROLE_TEACHER:
@@ -9567,7 +9944,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
                     break;
                 case BLOCK_EXACOMP_ROLE_STUDENT:
                     $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_TOPIC, $rowcontent->topic_id);
-                    if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
+                    if (block_exacomp_get_assessment_topic_SelfEval($courseid) && $student_evaluation) {
                         $topic_eval->evaluation_text = $student_evaluation->get_value_title();
                         $topic_eval->evaluation = $student_evaluation->value;
                         $topic_eval->evaluation_mapped = $student_evaluation->value;
@@ -9589,7 +9966,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$table->rows[] = $content_row;
 	}
 
-	if (block_exacomp_is_subjectgrading_enabled()) {	   //SUBJECT
+	if (block_exacomp_is_subjectgrading_enabled($courseid)) {	   //SUBJECT
 		$content_row = new stdClass();
 		$content_row->columns = array();
 
@@ -9607,7 +9984,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
                 break;
             case BLOCK_EXACOMP_ROLE_STUDENT:
                 $student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subjectid);
-                if (block_exacomp_get_assessment_topic_SelfEval() && $student_evaluation) {
+                if (block_exacomp_get_assessment_topic_SelfEval($courseid) && $student_evaluation) {
                     $content_row->columns[1]->evaluation_text = $student_evaluation->get_value_title();
                     $content_row->columns[1]->evaluation = $student_evaluation->value;
                     $content_row->columns[1]->evaluation_mapped = $student_evaluation->value;
@@ -9909,17 +10286,16 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
         $child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
         $examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
     }
-
 	$descriptorgradings = []; // array[niveauid][value][number of examples evaluated with this value and niveau]
 	$childgradings = [];
 	$examplegradings = [];
 
-	$compAssessment = block_exacomp_get_assessment_comp_scheme(); //variable for faster program RW
+	$compAssessment = block_exacomp_get_assessment_comp_scheme($courseid); //variable for faster program RW
 
 	// create grading statistic
 	//$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid)); //deprecated/not generic? RW or just wrong?
     $schemeItems_descriptors = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, $compAssessment);
-	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, block_exacomp_get_assessment_example_scheme());
+	$schemeItems_examples = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, block_exacomp_get_assessment_example_scheme($courseid));
 
 // 	switch (block_exacomp_get_assessment_comp_scheme()) {
 // 	    case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
@@ -9939,23 +10315,23 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	// 	 $schemeItems_descriptors = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR); //get the generic schemeItems RW
 
-	$evaluationniveau_items = block_exacomp_use_eval_niveau()
-		? \block_exacomp\global_config::get_evalniveaus() : [
+	$evaluationniveau_items = block_exacomp_use_eval_niveau($courseid)
+		? \block_exacomp\global_config::get_evalniveaus(null, $courseid) : [
         '-1' => ''
     ];
 
 	// if diff levels are not active, but some gradings already have them ---> handle those gradings like there is no niveau
-	if (block_exacomp_get_assessment_comp_diffLevel() == 1){
+	if (block_exacomp_get_assessment_comp_diffLevel($courseid) == 1){
         $evaluationniveau_items_comp = $evaluationniveau_items + ['-1' => ''];
 	} else {
         $evaluationniveau_items_comp = ['-1' => ''];
     }
-    if (block_exacomp_get_assessment_childcomp_diffLevel() == 1){
+    if (block_exacomp_get_assessment_childcomp_diffLevel($courseid) == 1){
         $evaluationniveau_items_childcomp = $evaluationniveau_items + ['-1' => ''];
     } else {
         $evaluationniveau_items_childcomp = ['-1' => ''];
     }
-    if (block_exacomp_get_assessment_example_diffLevel() == 1){
+    if (block_exacomp_get_assessment_example_diffLevel($courseid) == 1){
         $evaluationniveau_items_example = $evaluationniveau_items + ['-1' => ''];
     } else {
         $evaluationniveau_items_example = ['-1' => ''];
@@ -9990,10 +10366,11 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	foreach ($descriptors as $descriptor) {
 	    $eval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-		// check if grading is within timeframe
+
+        // check if grading is within timeframe
 	    if ($eval && ($eval->value || $eval->additionalinfo) !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 			//$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-            if (block_exacomp_get_assessment_comp_diffLevel()) {
+            if (block_exacomp_get_assessment_comp_diffLevel($courseid)) {
                 $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
             } else {
                 $niveaukey = -1;
@@ -10017,7 +10394,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		}
 	}
     // clean empty niveau if niveau is used and no any data in this row
-    if (block_exacomp_get_assessment_comp_diffLevel()) {
+    if (block_exacomp_get_assessment_comp_diffLevel($courseid)) {
         if (!count(array_filter($descriptorgradings[-1]))) {
             unset($descriptorgradings[-1]);
         }
@@ -10029,7 +10406,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        // check if grading is within timeframe
 	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 	            //$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-                if (block_exacomp_get_assessment_childcomp_diffLevel()) {
+                if (block_exacomp_get_assessment_childcomp_diffLevel($courseid)) {
                     $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
                 } else {
                     $niveaukey = -1;
@@ -10042,7 +10419,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        }
 	    }
         // clean empty niveau if niveau is used and no any data in this row
-        if (block_exacomp_get_assessment_childcomp_diffLevel()) {
+        if (block_exacomp_get_assessment_childcomp_diffLevel($courseid)) {
             if (!count(array_filter($childgradings[-1]))) {
                 unset($childgradings[-1]);
             }
@@ -10055,7 +10432,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        // check if grading is within timeframe
 	        if ($eval && $eval->value !== null && $eval->timestamp >= $start_timestamp && ($end_timestamp == 0 || $eval->timestamp <= $end_timestamp)) {
 	            //$niveaukey = block_exacomp_use_eval_niveau() ? $eval->evalniveauid : 0;
-                if (block_exacomp_get_assessment_example_diffLevel()) {
+                if (block_exacomp_get_assessment_example_diffLevel($courseid)) {
                     $niveaukey = $eval->evalniveauid ? $eval->evalniveauid : -1;
                 } else {
                     $niveaukey = -1;
@@ -10067,7 +10444,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	        }
 	    }
 	    // clean empty niveau if niveau is used and no any data in this row
-        if (block_exacomp_get_assessment_example_diffLevel()) {
+        if (block_exacomp_get_assessment_example_diffLevel($courseid)) {
             if (!count(array_filter($examplegradings[-1]))) {
                 //unset($examplegradings[-1]);
             }
@@ -10108,9 +10485,9 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 	}
 
 	//$use_evalniveau = block_exacomp_use_eval_niveau();
-	$use_evalniveau = block_exacomp_get_assessment_comp_diffLevel();
+	$use_evalniveau = block_exacomp_get_assessment_comp_diffLevel($courseid);
 	if ($use_evalniveau) {
-        $evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(true);
+        $evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(true, $courseid);
     } else {
         $evaluationniveau_items = array(block_exacomp_get_string('teacherevaluation_short'));
     }
@@ -10168,7 +10545,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
             }
         }
 
-        if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+        if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
             $descriptorgradings[$niveau->title]->teachervalue = (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_evaluation->additionalinfo) : '');
             $avgsum[$niveau->title][$evalniveauindex][] = (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? $teacher_evaluation->additionalinfo : 0);
         } else {
@@ -10196,7 +10573,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 	foreach ($avgsum as $ntitle => $evalniveaus) {
 	    foreach ($evalniveaus as $evalniveauid => $vals) {
             $average = round(array_sum($vals) / count($vals));
-            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
+            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid) == BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE) {
                 $teachervalue = \block_exacomp\global_config::get_additionalinfo_value_mapping($average);
                 $averagedescriptorgradings[$ntitle]->teachervalues[$evalniveauid] = $teachervalue;
                 $averagedescriptorgradings[$ntitle]->teachervaluetitles[$evalniveauid] = $teachervalue;
@@ -10667,8 +11044,8 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
 	return $examples;
 }
 
-function block_exacomp_check_competence_data_is_gained($competence_data) {
-	if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR)) {
+function block_exacomp_check_competence_data_is_gained($competence_data, $courseid = 0) {
+	if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
 		$value = block_exacomp\global_config::get_additionalinfo_value_mapping($competence_data->additionalinfo);
 
 		return $value >= 1;
@@ -10680,7 +11057,7 @@ function block_exacomp_check_competence_data_is_gained($competence_data) {
 function block_exacomp_get_comp_eval_gained($courseid, $role, $userid, $comptype, $compid) {
 	$eval = block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid);
 
-	return $eval && block_exacomp_check_competence_data_is_gained($eval) ? $eval : null;
+	return $eval && block_exacomp_check_competence_data_is_gained($eval, $courseid) ? $eval : null;
 }
 
 /**
@@ -10841,7 +11218,7 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 				'role' => $role
 			]);
 
-            $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0, false, block_exacomp_additional_grading($comptype));
+            $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0, false, block_exacomp_additional_grading($comptype, $courseid));
 			if ($record) {
 				$changed = false;
 				if (array_key_exists('additionalinfo', $data) && $data['additionalinfo'] != $record->additionalinfo) {
@@ -11358,7 +11735,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
 				if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 					$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 				}
-                $item_scheme = block_exacomp_additional_grading($item_type); //this has to be done AFTER specifying the item type of course, otherwise always the scheme of the parent descriptor will be taken
+                $item_scheme = block_exacomp_additional_grading($item_type, $courseid); //this has to be done AFTER specifying the item type of course, otherwise always the scheme of the parent descriptor will be taken
 
 
 
@@ -11428,7 +11805,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
 
 				//item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
 				$item_type = $item::TYPE;
-                $item_scheme = block_exacomp_additional_grading($item_type);
+                $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
 				if ($item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
 				    echo '<tr class="exarep_subject_row">';
 				}else if ($item_type == BLOCK_EXACOMP_TYPE_TOPIC) {
@@ -11462,7 +11839,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
                         break;
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                         $value = @$eval->teacherevaluation === null ? -1 : @$eval->teacherevaluation;
-                        $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items(g::$COURSE->id, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+                        $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
                         if (isset($teacher_eval_items[$value])) {
                             echo $teacher_eval_items[$value];
                         }
@@ -11554,7 +11931,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
         ob_start();
 		block_exacomp_tree_walk($subjects, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($courseid, $filter, $students, $html) {
 			$item_type = $item::TYPE;
-            $item_scheme = block_exacomp_additional_grading($item_type);
+            $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
 			if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 				$item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
 			}
@@ -11722,7 +12099,7 @@ function block_exacomp_group_reports_annex_result($filter) {
             $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
             $item_type = $item::TYPE;
-            $item_scheme = block_exacomp_additional_grading($item_type);
+            $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
             if ($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
                 $item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
             }
@@ -11746,7 +12123,7 @@ function block_exacomp_group_reports_annex_result($filter) {
 
         // count of columns
         //$colCount = block_exacomp_get_grading_scheme($courseid);
-        $colCount = block_exacomp_get_report_columns_count_by_assessment();
+        $colCount = block_exacomp_get_report_columns_count_by_assessment($courseid);
         $startColumn = 0;
 
         if ($isDocx) {
@@ -11783,7 +12160,7 @@ function block_exacomp_group_reports_annex_result($filter) {
             ) {
                 $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
 
-                $tableHeader = function(&$has_subject_results, &$firstSubject, $item, $colCount, $startColumn) {
+                $tableHeader = function(&$has_subject_results, &$firstSubject, $item, $colCount, $startColumn, $courseid) {
                     $has_subject_results = false;
                     // table wrapping with Subject title
                     if (!$firstSubject) {
@@ -11807,12 +12184,12 @@ function block_exacomp_group_reports_annex_result($filter) {
                     // THIRD WAY: columns by selected grading system (grading for competences)
                     for ($i = $startColumn; $i < $colCount; $i++) {
                         echo '<th class="heading toCenter">';
-                        switch (block_exacomp_get_assessment_comp_scheme()) {
+                        switch (block_exacomp_get_assessment_comp_scheme($courseid)) {
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                                 echo $i;
                                 break;
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-                                $titles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options());
+                                $titles = preg_split("/(\/|,) /", block_exacomp_get_assessment_verbose_options($courseid));
                                 echo $titles[$i];
                                 break;
                             case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
@@ -11831,7 +12208,7 @@ function block_exacomp_group_reports_annex_result($filter) {
 
                 //item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
                 $item_type = $item::TYPE;
-                $item_scheme = block_exacomp_additional_grading($item_type);
+                $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
 
                 if (!$item->visible) {
                     if ($item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
@@ -11846,7 +12223,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                     return false;
                 }
 
-                $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_scheme, $eval);
+                $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_scheme, $eval, $courseid);
 
                 if ($selectedEval != '' || $item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
                     switch ($item_type) {
@@ -12013,18 +12390,18 @@ function block_exacomp_formulaColumnByValue($maxColumn = 4, $minColumn = 1, $max
  * work with competence grading system. (TODO: is it ok?)
  * @return int
  */
-function block_exacomp_get_report_columns_count_by_assessment() {
-    switch (block_exacomp_get_assessment_comp_scheme()) {
+function block_exacomp_get_report_columns_count_by_assessment($courseid = 0) {
+    switch (block_exacomp_get_assessment_comp_scheme($courseid)) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             $count = 0;
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
             // first column with ZERO!
-            $count = block_exacomp_get_assessment_grade_limit();
+            $count = block_exacomp_get_assessment_grade_limit($courseid);
             $count++;
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            $conf = block_exacomp_get_assessment_verbose_options();
+            $conf = block_exacomp_get_assessment_verbose_options(null, $courseid);
             if ($conf == '') {
                 $count = 0;
             } else {
@@ -12033,7 +12410,7 @@ function block_exacomp_get_report_columns_count_by_assessment() {
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
-            $count = block_exacomp_get_assessment_points_limit();
+            $count = block_exacomp_get_assessment_points_limit(null, $courseid);
             $count++; // With zero
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
@@ -12045,9 +12422,9 @@ function block_exacomp_get_report_columns_count_by_assessment() {
     return $count;
 }
 
-function block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_scheme, $eval) {
+function block_exacomp_report_annex_get_selectedcolumn_by_assessment_type($item_scheme, $eval, $courseid = 0) {
     $selectedEval = null;
-    $column_count = block_exacomp_get_report_columns_count_by_assessment();
+    $column_count = block_exacomp_get_report_columns_count_by_assessment($courseid);
     switch ($item_scheme) {
         // FIRST way
         // we have ONE column and put value of evaluation, but not 'X' in the cells
@@ -12633,7 +13010,7 @@ function block_exacomp_etheme_autograde_examples_tree($courseid, $examples) {
             }
             // check on empty (not graded) child examples
             foreach (array_keys($torecalculate) as $parentid) {
-                switch (block_exacomp_get_assessment_example_scheme()) {
+                switch (block_exacomp_get_assessment_example_scheme($courseid)) {
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                     case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
                         // possible "0" value
@@ -12783,7 +13160,7 @@ function block_exacomp_is_block_used_by_student($blockname,$studentid){
 //    return $globalgradings_text;
 //}
 
-function block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype){
+function block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype, $courseid = 0){
     global $DB;
 
     $query = 'SELECT compuser.*, userr.firstname, userr.lastname
@@ -12801,7 +13178,7 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
     $records = $DB->get_records_sql($query, array($descriptorid,$studentid,$comptype));
 
-    $scheme_values = \block_exacomp\global_config::get_teacher_eval_items(0,false,block_exacomp_additional_grading($comptype));
+    $scheme_values = \block_exacomp\global_config::get_teacher_eval_items($courseid,false, block_exacomp_additional_grading($comptype, $courseid));
 
     $globalgradings_text = "";
     foreach($records as $record){
@@ -13062,18 +13439,18 @@ function block_exacomp_require_login($courseorid = null, $autologinguest = true,
 	}
 }
 
-function block_exacomp_new_subject_data_for_competence_profile($subjectGenericData) {
+function block_exacomp_new_subject_data_for_competence_profile($subjectGenericData, $courseid = 0) {
     global $DB;
     $use_evalniveau = array(
             BLOCK_EXACOMP_TYPE_SUBJECT => block_exacomp_get_assessment_subject_diffLevel(),
             BLOCK_EXACOMP_TYPE_TOPIC => block_exacomp_get_assessment_topic_diffLevel(),
             BLOCK_EXACOMP_TYPE_DESCRIPTOR => block_exacomp_get_assessment_comp_diffLevel(),
     );
-    $evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+    $evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus(null, $courseid);
     $newSubjectData = array();
     $avgSubjectsTmp = $avgTopicsTmp = $avgNiveausTmp = array(); //array('sum' => 0, 'count' => 0);
-    $roundFunction = function($level, $value) {
-        $assessmentType = block_exacomp_additional_grading($level);
+    $roundFunction = function($level, $value, $courseid) {
+        $assessmentType = block_exacomp_additional_grading($level, $courseid);
         switch ($assessmentType) {
             case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                 return round($value, 0, PHP_ROUND_HALF_DOWN);
@@ -13123,8 +13500,8 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                                 'evalniveau' => '',
                                 'evalniveauid' => -1, // block_exacomp_use_eval_niveau() ? -1 : 0 ???
                                 'eval' => -1,
-                                'show' => $niveauData->show,
-                                'visible' => $niveauData->visible,
+                                'show' => (isset($niveauData->show) ? $niveauData->show : false),
+                                'visible' => (isset($niveauData->visible) ? $niveauData->visible : false),
                                 'timestamp' => 0,
                                 'gradingisold' => '',
                         );
@@ -13133,7 +13510,7 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_sum'] += $niveauData->evalniveauid;
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count']++;
                     }
-                    if ($niveauData->eval != '' && $niveauData->eval > -1) {
+                    if (isset($niveauData->eval) && $niveauData->eval != '' && $niveauData->eval > -1) {
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['sum'] += $niveauData->eval;
                         @$avgNiveausTmp[$tId.':::'.$niveauTitle]['count']++;
                     }
@@ -13243,25 +13620,27 @@ function block_exacomp_list_possible_activities_for_example($courseid) {
  */
 function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjectid = null) {
     global $DB;
-    $scheme = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+    $scheme = block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid);
     $direction = ' >= '; // different for Points/Verb/Grade
+    $valuefield = 'value';
     switch ($scheme) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             return array(); // no assessment - no data for graph
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
-            $direction = ' <= '; // highest value is worse
+            $direction = ' < '; // highest value is worse
+            $valuefield = 'additionalinfo'; // TODO: is this correct for GRADE type???? (also - only for teachers?)
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
-            $direction = ' >= '; // highest value is better
+            $direction = ' > '; // highest value is better
             break;
     }
     //$maxVal = block_exacomp_get_assessment_max_value_by_level(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
-    $negativeLimit = block_exacomp_get_assessment_negative_threshold(BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+    $negativeLimit = block_exacomp_get_assessment_negative_threshold(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid);
 
-    $studentEvalItems = \block_exacomp\global_config::get_student_eval_items();
+    $studentEvalItems = \block_exacomp\global_config::get_student_eval_items(null, null, null, $courseid);
     $selfLimit = ceil(max(array_keys($studentEvalItems)) / 2);
     if ($subjectid) {
         // for topics only from this subject
@@ -13282,16 +13661,11 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
                         AND c.comptype = 0
                         AND c.role = ?
                         AND c.userid = ?
-                        AND c.value '.$direction.' ?
-                        AND c.value > -1
+                        AND c.'.$valuefield.' '.$direction.' ?
+                        AND c.'.$valuefield.' > -1
                         AND c.courseid = ?
                         AND d.parentid = 0'; // only parents?
 
-//        echo "<pre>debug:<strong>lib.php:13129</strong>\r\n"; print_r($sql); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13130</strong>\r\n"; print_r($topic->id); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13131</strong>\r\n"; print_r($studentid); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13132</strong>\r\n"; print_r($negativeLimit); echo '</pre>'; // !!!!!!!!!! delete it
-//        echo "<pre>debug:<strong>lib.php:13133</strong>\r\n"; print_r($courseid); echo '</pre>'; // !!!!!!!!!! delete it
         $competencies = $DB->get_records_sql($sql, array($topic->id, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $negativeLimit, $courseid));
         $topic->teacher = 0;
         if (count($totalDescr) > 0) {
@@ -13316,7 +13690,6 @@ function block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjec
         }
         $topic->title = trim(html_entity_decode($topic->title));
     }
-//    echo "<pre>debug:<strong>lib.php:13147</strong>\r\n"; print_r($topics); echo '</pre>'; // !!!!!!!!!! delete it
     return $topics;
 }
 

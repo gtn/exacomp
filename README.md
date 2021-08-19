@@ -55,3 +55,5 @@ That's it!
 
 If you want to use Exabis Competence Grid Webservices read the "webservice-info.txt" and follow the steps.
 
+You can import grid data from external systems, i.e. KOMET. The datastructure description you can find in data.xsd file.
+

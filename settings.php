@@ -415,6 +415,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 		    // Add JS code, generated from settings_preconfiguration.xml.
 		    $output .= '<script>';
 		    $xmlarray = block_exacomp_read_preconfigurations_xml();
+
 		    if ($xmlarray && is_array($xmlarray)) {
 		        // Get all parameters from XML. XML can has different sets of parameters
                 $configparameters = array();
@@ -1077,7 +1078,7 @@ $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_o
 // keys are from 0: 0,1,2...
 $settings->add(new block_exacomp_admin_setting_verbose_negative('exacomp/assessment_verbose_negative',
         block_exacomp_get_string('settings_assessment_grade_verbose_negative'),
-        block_exacomp_get_string('settings_assessment_grade_verbose_negative_description'), block_exacomp_get_assessment_verbose_negative_threshold(), $options));
+        block_exacomp_get_string('settings_assessment_grade_verbose_negative_description'), block_exacomp_get_assessment_verbose_negative_threshold(0), $options));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_verbose_options_short',
         block_exacomp_get_string('settings_assessment_verbose_options_short'),
         block_exacomp_get_string('settings_assessment_verbose_options_short_description'),

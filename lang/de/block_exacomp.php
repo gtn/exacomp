@@ -49,6 +49,7 @@ $string['tab_teacher_settings_selection_st'] = 'Schulart / Bezüge zum Bildungsp
 $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
 $string['tab_teacher_settings_activitiestodescriptors'] = 'Moodle-Aktivitäten verknüpfen';
+$string['tab_teacher_settings_questiontodescriptors'] = 'Quiz-question verknüpfen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_teacher_settings_new_subject'] = 'Neues Kompetenzraster anlegen';
 $string['tab_teacher_settings_taxonomies'] = 'Niveaustufen';
@@ -88,7 +89,7 @@ $string['tab_cross_subjects'] = 'Themen';
 $string['tab_cross_subjects_overview'] = 'Übersicht';
 $string['tab_cross_subjects_course'] = 'Kursthemen';
 $string['tab_weekly_schedule'] = 'Wochenplan';
-$string['tab_group_reports'] = 'Gruppenberichte';
+$string['tab_group_reports'] = 'Berichte';
 $string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Kompetenzraster Modul zu importieren.';
@@ -611,7 +612,7 @@ $string['choosecourse'] = 'Kurs auswählen: ';
 $string['choosecoursetemplate'] = 'Bitte Vorlagenkurs für zu importierende Moodle Aktivitäten auswählen: ';
 $string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Kursteilnehmer/innen auf den Planungsspeicher im Wochenplan gelegt.';
 $string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem/r Schüler/in bereits im Planungsspeicher im Wochenplan.';
-$string['weekly_schedule_link_to_grid'] = 'Um den Planungsspeicher zu befüllen in das Kompetenzraster wechseln';
+$string['weekly_schedule_link_to_grid'] = 'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln';
 $string['pre_planning_storage'] = 'Planungsspeicher';
 $string['pre_planning_storage_popup_button'] = 'Material verteilen';
 $string['pre_planning_storage_example_button'] = 'in meinen Planungsspeicher';
@@ -678,6 +679,7 @@ $string['block_exacomp_notifications_head'] = 'Benachrichtigungen aktivieren';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 $string['block_exacomp_assign_activities_old_method_head'] = 'Tab Moodle-Aktivitäten zuordnen alt anzeigen';
 $string['block_exacomp_assign_activities_old_method_body'] = 'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.';
+$string['distribute_weekly_schedule'] = 'Wochenplan verteilen';
 
 
 // === Logging ===
@@ -729,7 +731,7 @@ $string['no_entries_found'] = 'Keine Einträge gefunden';
 $string['assessment_date'] = 'Bewertungsdatum';
 $string['number_of_found_students'] = 'Anzahl gefundener Schüler';
 $string['display_settings'] = 'Anzeigeoptionen';
-$string['settings_explanation_tooltipp'] = 'Die Ergebnisse im Gruppenbericht werden durch die einzelnen Filter von
+$string['settings_explanation_tooltipp'] = 'Die Ergebnisse im Bericht werden durch die einzelnen Filter von
         oben nach unten reduziert, aber nicht von unten nach oben.
         Wenn z.B. als einziges Filterkriterium "Niveau G" bei den Kompetenzen
         ausgewählt ist, so werden
@@ -917,4 +919,8 @@ $string['competence_overview_teacher_short'] = 'L:';
 $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Filter löschen';
 $string['editor'] = 'Überarbeitung durch';
-$string['hide_for_all_students'] = 'Hide for all stundents';
+$string['hide_for_all_students'] = 'für alle TN verstecken';
+$string['tab_teacher_settings_course_assessment'] = 'Kursspezifische Beurteilung';
+$string['course_assessment_config_infotext'] = 'Wählen Sie das gewüntsche Beurteilungsschema aus.';
+$string['course_assessment_use_global'] = 'Globale Beurteilungseinstellung nutzen';
+$string['course_assessment_settings'] = 'Kursspezifische Beurteilung';

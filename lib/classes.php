@@ -1216,27 +1216,27 @@ class global_config {
 
 		    $result = array();
 		    if (!$scheme) {
-                $scheme = block_exacomp_get_assessment_subject_scheme();
+                $scheme = block_exacomp_get_assessment_subject_scheme($courseid);
             }
 		    switch($scheme) {
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
                     // Options from plugin settings: 0, 1... -> assessment_points_limit.
-                    $result = array('-1' => '') + range(0, block_exacomp_get_assessment_points_limit());
+                    $result = array('-1' => '') + range(0, block_exacomp_get_assessment_points_limit(null, $courseid));
                     break;
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                     $result = array(-1 => '');
                     // Options from plugin settings: assessment_grade_verbose.
                     if ($short) {
-                        $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options_short()));
+                        $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options_short(null, $courseid)));
                     }else {
-                        $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options()));
+                        $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options(null, $courseid)));
                     }
                     //$options = array_reverse($options);
                     $result = $result + $options;
                     break;
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE:
                     // Options from plugin settings: 0, 1... ->  assessment_grade_limit.
-                    $result = array('0' => '') + range(0, block_exacomp_get_assessment_grade_limit());
+                    $result = array('0' => '') + range(0, block_exacomp_get_assessment_grade_limit($courseid));
                     break;
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
                     // Options from plugin settings: assessment_grade_limit.
@@ -1245,7 +1245,7 @@ class global_config {
                 default:
                     // Old code!
                     // if additional_grading is set, use global value scheme
-                    if (block_exacomp_additional_grading()) {
+                    if (block_exacomp_additional_grading(null, $courseid)) {
                         if ($short) {
                             return array(
                                     -1 => block_exacomp_get_string('comp_-1_short'),
@@ -1298,8 +1298,8 @@ class global_config {
      * @param bool $short
      * @return array
 	 */
-	static function get_student_eval_items($include_empty = false, $level = BLOCK_EXACOMP_TYPE_SUBJECT, $short = false) {
-		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty, $level, $short) {
+	static function get_student_eval_items($include_empty = false, $level = BLOCK_EXACOMP_TYPE_SUBJECT, $short = false, $courseid = 0) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__, func_get_args()], function() use ($include_empty, $level, $short, $courseid) {
 			// if additional_grading is set, use global value scheme
 
 			if ($include_empty) {
@@ -1360,7 +1360,7 @@ class global_config {
                     } else {
                         $paramtype = 'long';
                     }
-                    $verbosesstring = block_exacomp_get_assessment_selfEval_verboses($target, $paramtype);
+                    $verbosesstring = block_exacomp_get_assessment_selfEval_verboses($target, $paramtype, null, $courseid);
                     if (!$verbosesstring) { // If no any value in the settings.
                         $verbosesstring = block_exacomp_get_string('selfEvalVerbose'.($target == 'example' ? 'Example' : '').'.defaultValue_'.$paramtype);
                     }
@@ -1394,27 +1394,34 @@ class global_config {
 	 * Returns title for one value
 	 * @param id $id
 	 */
-	static function get_student_eval_title_by_id($id, $type = BLOCK_EXACOMP_TYPE_SUBJECT) {
+	static function get_student_eval_title_by_id($id, $type = BLOCK_EXACOMP_TYPE_SUBJECT, $courseid = 0) {
 		if ($id === null || $id < 0) {
 			return ' ';
 		}
-		return @static::get_student_eval_items(false, $type)[$id];
+		return @static::get_student_eval_items(false, $type, null, $courseid)[$id];
 	}
 
 	/**
 	 * Returns all evaluation niveaus, specified by the admin
 	 */
-	static function get_evalniveaus($include_empty = false) {
-		static $values;
+	static function get_evalniveaus($include_empty = false, $courseid = 0) {
+//		static $values;
+//
+//		if ($values === null) {
+//			$values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, null, '', 'id,title');
+//		}
+//
+//		$ret = $values;
+//		if ($include_empty) {
+//			$ret = [0 => ''] + $ret;
+//		}
+        // TODO: why would we use this table? We have the same information in the config_plugins table... 2021_07_21 RW
 
-		if ($values === null) {
-			$values = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, null, '', 'id,title');
-		}
-
-		$ret = $values;
-		if ($include_empty) {
-			$ret = [0 => ''] + $ret;
-		}
+        // Instead: use this way, just like for all the other admin settings
+        $ret = block_exacomp_get_assessment_diffLevel_options_splitted($courseid);
+        if ($include_empty) {
+            $ret = [0 => ''] + $ret;
+        }
 
 		return $ret;
 	}

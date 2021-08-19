@@ -28,7 +28,8 @@ Returns:<pre>[
         "fullname": "text null ('fullname of course')",
         "shortname": "raw null ('shortname of course')",
         "exarole": "int null ('1=trainer, 2=student')",
-        "teachercanedit": "bool null"
+        "teachercanedit": "bool null",
+        "assessment_config": "raw null ('which course specific assessment_config is used')"
     },
     "..."
 ]</pre>
@@ -329,6 +330,15 @@ Params: <table>
 <td>required</td>
 <td></td>
 <td>id of user</td>
+<td></td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td>default: int(-1)
+</td>
+<td>id of course. This is used for teachers.</td>
 <td></td>
 </table>
 Returns:<pre>[
@@ -1281,7 +1291,8 @@ Returns:<pre>[
         "fullname": "text null ('fullname of course')",
         "shortname": "raw null ('shortname of course')",
         "exarole": "int null ('1=trainer, 2=student')",
-        "teachercanedit": "bool null"
+        "teachercanedit": "bool null",
+        "assessment_config": "raw null ('which course specific assessment_config is used')"
     },
     "..."
 ]</pre>
@@ -5113,6 +5124,132 @@ Returns:<pre>{
         "... values ..."
     ]
 }</pre>
+<h2>dakora_get_courseconfigs</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "courses": [
+        {
+            "courseid": "int null ('id of course')",
+            "fullname": "text null ('fullname of course')",
+            "assessment_config": "raw null ('which course specific assessment_config is used')"
+        },
+        "..."
+    ],
+    "configs": [
+        {
+            "points_limit": "int null ('points_limit')",
+            "grade_limit": "int null ('grade_limit')",
+            "points_negative_threshold": "int null ('points_negative_threshold. Values below this value are negative')",
+            "grade_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
+            "verbal_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
+            "example_scheme": "int null ('example_scheme')",
+            "example_diffLevel": "bool null ('example_diffLevel')",
+            "example_SelfEval": "bool null ('example_SelfEval')",
+            "childcomp_scheme": "int null ('childcomp_scheme')",
+            "childcomp_diffLevel": "bool null ('childcomp_diffLevel')",
+            "childcomp_SelfEval": "bool null ('childcomp_SelfEval')",
+            "comp_scheme": "int null ('comp_scheme')",
+            "comp_diffLevel": "bool null ('comp_diffLevel')",
+            "comp_SelfEval": "bool null ('comp_SelfEval')",
+            "topic_scheme": "int null ('topic_scheme')",
+            "topic_diffLevel": "bool null ('topic_diffLevel')",
+            "topic_SelfEval": "bool null ('topic_SelfEval')",
+            "subject_scheme": "int null ('subject_scheme')",
+            "subject_diffLevel": "bool null ('subject_diffLevel')",
+            "subject_SelfEval": "bool null ('subject_SelfEval')",
+            "theme_scheme": "int null ('theme_scheme')",
+            "theme_diffLevel": "bool null ('theme_diffLevel')",
+            "theme_SelfEval": "bool null ('theme_SelfEval')",
+            "use_evalniveau": "bool null ('use evaluation niveaus')",
+            "evalniveaus": [
+                {
+                    "id": "int null ('id')",
+                    "name": "text null ('name')"
+                },
+                "..."
+            ],
+            "teacherevalitems": [
+                {
+                    "id": "int null ('id')",
+                    "name": "text null ('name')"
+                },
+                "..."
+            ],
+            "teacherevalitems_short": [
+                {
+                    "id": "int null ('id')",
+                    "name": "text null ('name')"
+                },
+                "..."
+            ],
+            "studentevalitems": [
+                {
+                    "id": "int null ('id')",
+                    "name": "text null ('name')"
+                },
+                "..."
+            ],
+            "studentevalitems_short": [
+                {
+                    "id": "int null ('id')",
+                    "name": "text null ('name')"
+                },
+                "..."
+            ],
+            "studentevalitems_examples": [
+                {
+                    "id": "int null ('id')",
+                    "name": "text null ('name')"
+                },
+                "..."
+            ],
+            "studentevalitems_examples_short": [
+                {
+                    "id": "int null ('id')",
+                    "name": "text null ('name')"
+                },
+                "..."
+            ],
+            "gradingperiods": [
+                {
+                    "id": "int null ('id')",
+                    "description": "text null ('name')",
+                    "starttime": "int null ('active from')",
+                    "endtime": "int null ('active to')"
+                },
+                "... grading periods from exastud ..."
+            ],
+            "taxonomies": [
+                {
+                    "id": "int null ('id')",
+                    "title": "text null ('name')",
+                    "source": "text null ('source')"
+                },
+                "... values ..."
+            ],
+            "version": "float null ('exacomp version number in YYYYMMDDXX format')",
+            "moodleversion": "float null ('moodle version number in YYYYMMDDXX format')",
+            "release": "text null ('plugin release x.x.x format')",
+            "exaportactive": "bool null ('flag if exaportfolio should be active')",
+            "customlanguagefile": "text null ('customlanguagefiel')",
+            "timeout": "int null ('a timeout timer')",
+            "show_overview": "bool null ('flag if \"show overview\" is active')",
+            "show_eportfolio": "bool null ('flag if \"show ePortfolio\" is active')",
+            "categories": [
+                {
+                    "id": "int null ('id')",
+                    "title": "text null ('name')",
+                    "source": "text null ('source')"
+                },
+                "... values ..."
+            ]
+        },
+        "..."
+    ]
+}</pre>
 <h2>block_exacomp_login</h2>
 <div>webservice called through token.php</div>
 <div>type: read</div>
@@ -5167,116 +5304,130 @@ Returns:<pre>{
             "fullname": "text null ('fullname of course')",
             "shortname": "raw null ('shortname of course')",
             "exarole": "int null ('1=trainer, 2=student')",
-            "teachercanedit": "bool null"
+            "teachercanedit": "bool null",
+            "assessment_config": "raw null ('which course specific assessment_config is used')"
         },
         "..."
     ],
-    "config": {
-        "points_limit": "int null ('points_limit')",
-        "grade_limit": "int null ('grade_limit')",
-        "points_negative_threshold": "int null ('points_negative_threshold. Values below this value are negative')",
-        "grade_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
-        "verbal_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
-        "example_scheme": "int null ('example_scheme')",
-        "example_diffLevel": "bool null ('example_diffLevel')",
-        "example_SelfEval": "bool null ('example_SelfEval')",
-        "childcomp_scheme": "int null ('childcomp_scheme')",
-        "childcomp_diffLevel": "bool null ('childcomp_diffLevel')",
-        "childcomp_SelfEval": "bool null ('childcomp_SelfEval')",
-        "comp_scheme": "int null ('comp_scheme')",
-        "comp_diffLevel": "bool null ('comp_diffLevel')",
-        "comp_SelfEval": "bool null ('comp_SelfEval')",
-        "topic_scheme": "int null ('topic_scheme')",
-        "topic_diffLevel": "bool null ('topic_diffLevel')",
-        "topic_SelfEval": "bool null ('topic_SelfEval')",
-        "subject_scheme": "int null ('subject_scheme')",
-        "subject_diffLevel": "bool null ('subject_diffLevel')",
-        "subject_SelfEval": "bool null ('subject_SelfEval')",
-        "theme_scheme": "int null ('theme_scheme')",
-        "theme_diffLevel": "bool null ('theme_diffLevel')",
-        "theme_SelfEval": "bool null ('theme_SelfEval')",
-        "use_evalniveau": "bool null ('use evaluation niveaus')",
-        "evalniveaus": [
+    "courseconfigs": {
+        "courses": [
             {
-                "id": "int null ('id')",
-                "name": "text null ('name')"
+                "courseid": "int null ('id of course')",
+                "fullname": "text null ('fullname of course')",
+                "assessment_config": "raw null ('which course specific assessment_config is used')"
             },
             "..."
         ],
-        "teacherevalitems": [
+        "configs": [
             {
-                "id": "int null ('id')",
-                "name": "text null ('name')"
+                "points_limit": "int null ('points_limit')",
+                "grade_limit": "int null ('grade_limit')",
+                "points_negative_threshold": "int null ('points_negative_threshold. Values below this value are negative')",
+                "grade_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
+                "verbal_negative_threshold": "int null ('grade_negative_threshold. Values below this value are negative')",
+                "example_scheme": "int null ('example_scheme')",
+                "example_diffLevel": "bool null ('example_diffLevel')",
+                "example_SelfEval": "bool null ('example_SelfEval')",
+                "childcomp_scheme": "int null ('childcomp_scheme')",
+                "childcomp_diffLevel": "bool null ('childcomp_diffLevel')",
+                "childcomp_SelfEval": "bool null ('childcomp_SelfEval')",
+                "comp_scheme": "int null ('comp_scheme')",
+                "comp_diffLevel": "bool null ('comp_diffLevel')",
+                "comp_SelfEval": "bool null ('comp_SelfEval')",
+                "topic_scheme": "int null ('topic_scheme')",
+                "topic_diffLevel": "bool null ('topic_diffLevel')",
+                "topic_SelfEval": "bool null ('topic_SelfEval')",
+                "subject_scheme": "int null ('subject_scheme')",
+                "subject_diffLevel": "bool null ('subject_diffLevel')",
+                "subject_SelfEval": "bool null ('subject_SelfEval')",
+                "theme_scheme": "int null ('theme_scheme')",
+                "theme_diffLevel": "bool null ('theme_diffLevel')",
+                "theme_SelfEval": "bool null ('theme_SelfEval')",
+                "use_evalniveau": "bool null ('use evaluation niveaus')",
+                "evalniveaus": [
+                    {
+                        "id": "int null ('id')",
+                        "name": "text null ('name')"
+                    },
+                    "..."
+                ],
+                "teacherevalitems": [
+                    {
+                        "id": "int null ('id')",
+                        "name": "text null ('name')"
+                    },
+                    "..."
+                ],
+                "teacherevalitems_short": [
+                    {
+                        "id": "int null ('id')",
+                        "name": "text null ('name')"
+                    },
+                    "..."
+                ],
+                "studentevalitems": [
+                    {
+                        "id": "int null ('id')",
+                        "name": "text null ('name')"
+                    },
+                    "..."
+                ],
+                "studentevalitems_short": [
+                    {
+                        "id": "int null ('id')",
+                        "name": "text null ('name')"
+                    },
+                    "..."
+                ],
+                "studentevalitems_examples": [
+                    {
+                        "id": "int null ('id')",
+                        "name": "text null ('name')"
+                    },
+                    "..."
+                ],
+                "studentevalitems_examples_short": [
+                    {
+                        "id": "int null ('id')",
+                        "name": "text null ('name')"
+                    },
+                    "..."
+                ],
+                "gradingperiods": [
+                    {
+                        "id": "int null ('id')",
+                        "description": "text null ('name')",
+                        "starttime": "int null ('active from')",
+                        "endtime": "int null ('active to')"
+                    },
+                    "... grading periods from exastud ..."
+                ],
+                "taxonomies": [
+                    {
+                        "id": "int null ('id')",
+                        "title": "text null ('name')",
+                        "source": "text null ('source')"
+                    },
+                    "... values ..."
+                ],
+                "version": "float null ('exacomp version number in YYYYMMDDXX format')",
+                "moodleversion": "float null ('moodle version number in YYYYMMDDXX format')",
+                "release": "text null ('plugin release x.x.x format')",
+                "exaportactive": "bool null ('flag if exaportfolio should be active')",
+                "customlanguagefile": "text null ('customlanguagefiel')",
+                "timeout": "int null ('a timeout timer')",
+                "show_overview": "bool null ('flag if \"show overview\" is active')",
+                "show_eportfolio": "bool null ('flag if \"show ePortfolio\" is active')",
+                "categories": [
+                    {
+                        "id": "int null ('id')",
+                        "title": "text null ('name')",
+                        "source": "text null ('source')"
+                    },
+                    "... values ..."
+                ]
             },
             "..."
-        ],
-        "teacherevalitems_short": [
-            {
-                "id": "int null ('id')",
-                "name": "text null ('name')"
-            },
-            "..."
-        ],
-        "studentevalitems": [
-            {
-                "id": "int null ('id')",
-                "name": "text null ('name')"
-            },
-            "..."
-        ],
-        "studentevalitems_short": [
-            {
-                "id": "int null ('id')",
-                "name": "text null ('name')"
-            },
-            "..."
-        ],
-        "studentevalitems_examples": [
-            {
-                "id": "int null ('id')",
-                "name": "text null ('name')"
-            },
-            "..."
-        ],
-        "studentevalitems_examples_short": [
-            {
-                "id": "int null ('id')",
-                "name": "text null ('name')"
-            },
-            "..."
-        ],
-        "gradingperiods": [
-            {
-                "id": "int null ('id')",
-                "description": "text null ('name')",
-                "starttime": "int null ('active from')",
-                "endtime": "int null ('active to')"
-            },
-            "... grading periods from exastud ..."
-        ],
-        "taxonomies": [
-            {
-                "id": "int null ('id')",
-                "title": "text null ('name')",
-                "source": "text null ('source')"
-            },
-            "... values ..."
-        ],
-        "version": "float null ('exacomp version number in YYYYMMDDXX format')",
-        "moodleversion": "float null ('moodle version number in YYYYMMDDXX format')",
-        "release": "text null ('plugin release x.x.x format')",
-        "exaportactive": "bool null ('flag if exaportfolio should be active')",
-        "customlanguagefile": "text null ('customlanguagefiel')",
-        "timeout": "int null ('a timeout timer')",
-        "show_overview": "bool null ('flag if \"show overview\" is active')",
-        "show_eportfolio": "bool null ('flag if \"show ePortfolio\" is active')",
-        "categories": [
-            {
-                "id": "int null ('id')",
-                "title": "text null ('name')",
-                "source": "text null ('source')"
-            },
-            "... values ..."
         ]
     },
     "tokens": [
@@ -6263,12 +6414,14 @@ Params: <table>
 <td>topicids</td>
 <td></td>
 <td>not null</td>
-<td>required</td>
-<td></td>
-<td></td>
+<td>optional</td>
+<td>default: array(0) {
+}
+</td>
+<td>topicid optional so it can be empty</td>
 <td><pre>[
     "int null ()",
-    "..."
+    "... topicid optional so it can be empty ..."
 ]</pre></td>
 <tr>
 <td>hide_new_examples</td>
@@ -6326,6 +6479,95 @@ Params: <table>
 </table>
 Returns:<pre>{
     "success": "bool null ('status')"
+}</pre>
+<h2>block_exacomp_diwipass_get_sections_with_materials</h2>
+<div>Get urls and resources per section for every course of current user</div>
+<div>type: write</div>
+Params: <table>
+</table>
+Returns:<pre>{
+    "courses": [
+        {
+            "name": "text null ('course name')",
+            "sections": [
+                {
+                    "name": "text null ('section name')",
+                    "resources": [
+                        {
+                            "id": "int null ('Module id')",
+                            "coursemodule": "int null ('Course module id')",
+                            "course": "int null ('Course id')",
+                            "name": "raw null ('Page name')",
+                            "intro": "raw null ('Summary')",
+                            "introformat": "int null ('intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)')",
+                            "introfiles": [
+                                {
+                                    "filename": "file null ('File name.')",
+                                    "filepath": "path null ('File path.')",
+                                    "filesize": "int null ('File size.')",
+                                    "fileurl": "url null ('Downloadable file url.')",
+                                    "timemodified": "int null ('Time modified.')",
+                                    "mimetype": "raw null ('File mime type.')",
+                                    "isexternalfile": "bool null ('Whether is an external file.')",
+                                    "repositorytype": "plugin null ('The repository type for external files.')"
+                                },
+                                "... Files in the introduction text ..."
+                            ],
+                            "contentfiles": [
+                                {
+                                    "filename": "file null ('File name.')",
+                                    "filepath": "path null ('File path.')",
+                                    "filesize": "int null ('File size.')",
+                                    "fileurl": "url null ('Downloadable file url.')",
+                                    "timemodified": "int null ('Time modified.')",
+                                    "mimetype": "raw null ('File mime type.')",
+                                    "isexternalfile": "bool null ('Whether is an external file.')",
+                                    "repositorytype": "plugin null ('The repository type for external files.')"
+                                },
+                                "... Files in the content ..."
+                            ]
+                        },
+                        "..."
+                    ],
+                    "urls": [
+                        {
+                            "id": "int null ('Module id')",
+                            "coursemodule": "int null ('Course module id')",
+                            "course": "int null ('Course id')",
+                            "name": "raw null ('URL name')",
+                            "intro": "raw null ('Summary')",
+                            "introformat": "int null ('intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)')",
+                            "introfiles": [
+                                {
+                                    "filename": "file null ('File name.')",
+                                    "filepath": "path null ('File path.')",
+                                    "filesize": "int null ('File size.')",
+                                    "fileurl": "url null ('Downloadable file url.')",
+                                    "timemodified": "int null ('Time modified.')",
+                                    "mimetype": "raw null ('File mime type.')",
+                                    "isexternalfile": "bool null ('Whether is an external file.')",
+                                    "repositorytype": "plugin null ('The repository type for external files.')"
+                                },
+                                "... Files in the introduction text ..."
+                            ],
+                            "externalurl": "raw_trimmed null ('External URL')",
+                            "display": "int null ('How to display the url')",
+                            "displayoptions": "raw null ('Display options (width, height)')",
+                            "parameters": "raw null ('Parameters to append to the URL')",
+                            "timemodified": "int null ('Last time the url was modified')",
+                            "section": "int null ('Course section id')",
+                            "visible": "int null ('Module visibility')",
+                            "groupmode": "int null ('Group mode')",
+                            "groupingid": "int null ('Grouping id')"
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
 }</pre>
 <hr/><h1>Class: block_exacomp_external_diggrv</h1><hr/>
 <h2>diggrplus_v_edit_course</h2>
@@ -6485,6 +6727,7 @@ Returns:<pre>{
         {
             "id": "int null ('id of subject')",
             "title": "text null ('title of subject')",
+            "class": "text null ('class number. E.g. \"First Grade\" or \"1\"')",
             "personalisedtext": "text null",
             "assess_with_grades": "bool null",
             "spf": "bool null",
@@ -6589,7 +6832,85 @@ Params: <table>
 <td></td>
 <td></td>
 <td></td>
+<tr>
+<td>output_format</td>
+<td>text</td>
+<td>null</td>
+<td>optional</td>
+<td>default: string(3) "pdf"
+</td>
+<td>pdf or html</td>
+<td></td>
 </table>
 Returns:<pre>{
     "pdf": "file null"
+}</pre>
+<h2>diggrplus_v_get_course_edulevel_schooltype_tree</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "edulevels": [
+        {
+            "id": "int null",
+            "title": "text null ('schooltype title')",
+            "schooltypes": [
+                {
+                    "id": "int null",
+                    "title": "text null ('schooltype title')",
+                    "subjects": [
+                        {
+                            "id": "int null",
+                            "class": "text null ('class number. E.g. \"First Grade\" or \"1\"')",
+                            "title": "text null ('subject title')",
+                            "topics": [
+                                {
+                                    "id": "int null",
+                                    "title": "text null ('topic title')",
+                                    "active": "bool null"
+                                },
+                                "..."
+                            ]
+                        },
+                        "..."
+                    ]
+                },
+                "..."
+            ]
+        },
+        "..."
+    ]
+}</pre>
+<h2>block_exacomp_diggrv_create_course</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>coursename</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>schoolcode</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "success": "bool null ('status')"
 }</pre>

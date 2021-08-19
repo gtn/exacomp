@@ -49,6 +49,7 @@ $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
 $string['tab_teacher_settings_activitiestodescriptors'] = 'Relate Moodle activities';
+$string['tab_teacher_settings_questiontodescriptors'] = 'Relate Quiz questions';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_teacher_settings_new_subject'] = 'Create new subject';
 $string['tab_teacher_settings_taxonomies'] = 'Difficulty levels';
@@ -672,6 +673,7 @@ $string['block_exacomp_notifications_head'] = 'activate notifications';
 $string['block_exacomp_notifications_body'] = 'Users will get notified after relevant actions.';
 $string['block_exacomp_assign_activities_old_method_head'] = 'Show Tab "Assign Moodle activities" old';
 $string['block_exacomp_assign_activities_old_method_body'] = 'This Tab was default replaced with Tab "Relate Moodle activities"';
+$string['distribute_weekly_schedule'] = 'Distribute weekly schedule';
 
 
 // === Logging ===
@@ -907,4 +909,8 @@ $string['competence_overview_teacher_short'] = 'T:';
 $string['competence_overview_student_short'] = 'S:';
 $string['filterClear'] = 'Clear filter';
 $string['editor'] = 'Edited by';
-$string['hide_for_all_students'] = 'für alle TN verstecken';
+$string['hide_for_all_students'] = 'Hide for all stundents';
+$string['tab_teacher_settings_course_assessment'] = 'Course assessment';
+$string['course_assessment_config_infotext'] = 'Choose an assessment scheme';
+$string['course_assessment_use_global'] = 'Use global assessment settings';
+$string['course_assessment_settings'] = 'Course assessment';

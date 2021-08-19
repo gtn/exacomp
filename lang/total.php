@@ -119,6 +119,10 @@ return [
 		'Moodle-Aktivitäten verknüpfen',
 		'Relate Moodle activities',
 	],
+    'tab_teacher_settings_questiontodescriptors' => [
+        'Quiz-question verknüpfen',
+        'Relate Quiz questions',
+    ],
 	'tab_teacher_settings_badges' => [
 		'Auszeichnungen bearbeiten',
 		'Edit badges',
@@ -256,7 +260,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Weekly Schedule',
 	],
 	'tab_group_reports' => [
-		'Gruppenberichte',
+		'Berichte',
 		'Group Reports',
 	],
 	'assign_descriptor_to_crosssubject' => [
@@ -2144,7 +2148,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Example has already been added to at least one student\'s weekly schedule.',
 	],
 	'weekly_schedule_link_to_grid' => [
-		'Um den Planungsspeicher zu befüllen in das Kompetenzraster wechseln',
+		'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln',
 		'For adding examples to the schedule, please use the overview',
 	],
 	'pre_planning_storage' => [
@@ -2405,6 +2409,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.',
 		'This Tab was default replaced with Tab "Relate Moodle activities"',
 	],
+    'distribute_weekly_schedule' => [
+        'Wochenplan verteilen',
+        'Distribute weekly schedule',
+    ],
 
 
 	// === Logging ===
@@ -2584,7 +2592,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'display settings',
     ],
     'settings_explanation_tooltipp' => [
-        'Die Ergebnisse im Gruppenbericht werden durch die einzelnen Filter von
+        'Die Ergebnisse im Bericht werden durch die einzelnen Filter von
         oben nach unten reduziert, aber nicht von unten nach oben.
         Wenn z.B. als einziges Filterkriterium "Niveau G" bei den Kompetenzen
         ausgewählt ist, so werden
@@ -3315,8 +3323,24 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Edited by',
     ],
     'hide_for_all_students' => [
-        'Hide for all stundents',
         'für alle TN verstecken',
+        'Hide for all stundents',
+    ],
+    'tab_teacher_settings_course_assessment' => [
+        'Kursspezifische Beurteilung',
+        'Course assessment',
+    ],
+    'course_assessment_config_infotext' => [
+        'Wählen Sie das gewüntsche Beurteilungsschema aus.',
+        'Choose an assessment scheme',
+    ],
+    'course_assessment_use_global' => [
+        'Globale Beurteilungseinstellung nutzen',
+        'Use global assessment settings',
+    ],
+    'course_assessment_settings' => [
+        'Kursspezifische Beurteilung',
+        'Course assessment',
     ],
 
 ];
