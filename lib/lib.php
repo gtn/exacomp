@@ -8683,18 +8683,18 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             break;
     }
     if($compid == -1){
-        if($niveauid == -1){
+//        if($niveauid == -1){
 //            $items = $DB->get_records_sql($sql, $params);
             $items = $DB->get_records_sql($sql, array($userid, $comptype));
-        }else{
-            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
-        }
+//        }else{
+//            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
+//        }
     }else{
-        if($niveauid == -1){
+//        if($niveauid == -1){
             $items = $DB->get_records_sql($sql, array($userid, $compid, $comptype));
-        }else{
-            $items = $DB->get_records_sql($sql, array($userid, $compid, $niveauid, $comptype));
-        }
+//        }else{
+//            $items = $DB->get_records_sql($sql, array($userid, $compid, $niveauid, $comptype));
+//        }
     }
 
 
