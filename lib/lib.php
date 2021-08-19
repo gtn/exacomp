@@ -5446,7 +5446,7 @@ function block_exacomp_perform_auto_test() {
 		// get all tests/quizes that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
-        $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
+        $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]); // get "related" activities gets the assigned ones?
         $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 		// get student grading for each test
@@ -8594,8 +8594,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
     $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
 //    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = ?";
 //    $niveauConditionD = $niveauid==-1 ? "" : "AND d.niveauid = ?";
-
-
+    
     switch($status){
         case "inprogress":
             $statusCondition = "AND ie.status = 0";
@@ -8684,17 +8683,18 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             break;
     }
     if($compid == -1){
-//        if($niveauid == -1){
-            $items = $DB->get_records_sql($sql, $params);
-//        }else{
-//            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
-//        }
+        if($niveauid == -1){
+//            $items = $DB->get_records_sql($sql, $params);
+            $items = $DB->get_records_sql($sql, array($userid, $comptype));
+        }else{
+            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
+        }
     }else{
-//        if($niveauid == -1){
+        if($niveauid == -1){
             $items = $DB->get_records_sql($sql, array($userid, $compid, $comptype));
-//        }else{
-//            $items = $DB->get_records_sql($sql, array($userid, $compid, $niveauid, $comptype));
-//        }
+        }else{
+            $items = $DB->get_records_sql($sql, array($userid, $compid, $niveauid, $comptype));
+        }
     }
 
 
