@@ -5452,10 +5452,20 @@ function block_exacomp_perform_auto_test() {
 		// get student grading for each test
 
 
+
+
 		foreach ($students as $student) {
+            $modinfo = get_fast_modinfo($courseid, $student->id);
+            $modnamesused = $modinfo->get_used_module_names();
+            $mods = $modinfo->get_cms();
+            $sections = $modinfo->get_section_info_all();
+            // I need to call those lines because otherwise not all info is present
+            // Then, all the info I need is available in one section
+            // Could be made more perforamnt probably
+            $cms_availability = $sections[0]->modinfo->cms;
+
             $changedquizes = array();
 			foreach ($tests as $test) {
-
 				// get grading for each test and assign topics and descriptors
 				$quiz = $DB->get_record('quiz_grades', array('quiz' => $test->id, 'userid' => $student->id));
 				$quiz_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $test->id, 'userid' => $student->id));
@@ -5490,6 +5500,7 @@ function block_exacomp_perform_auto_test() {
                     //no "else if" because a test can be assigned or related OR BOTH
                     if($test->examples){ // examples are associated and should be graded ... "new method"
                         block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
+                        // TODO: set the visibility according to the visibility of the assignment
                     }
 
 					if (!$quiz_assignment) {
@@ -5507,6 +5518,25 @@ function block_exacomp_perform_auto_test() {
 
 			// For every activity that is not a quiz: if completed: set competence as gained
             foreach ($otherActivities as $activity) {
+                // get availability (visibility) info
+                $available = $cms_availability[$activity->activityid]->available;
+                if (!$available) {
+                    // Hide the related exacomp material if not yet hidden
+                    foreach ($activity->examples as $example){
+                        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
+                            ['visible' => 0],
+                            ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
+                        );
+                    }
+                } else {
+                    foreach ($activity->examples as $example){
+                        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
+                            ['visible' => 1],
+                            ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
+                        );
+                    }
+                }
+
                 // get completion info for each activity
                 $activity_completion = $DB->get_record('course_modules_completion', array('coursemoduleid' => $activity->activityid, 'userid' => $student->id));
                 $activity_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $activity->activityid, 'userid' => $student->id));
@@ -8594,7 +8624,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
     $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
 //    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = ?";
 //    $niveauConditionD = $niveauid==-1 ? "" : "AND d.niveauid = ?";
-    
+
     switch($status){
         case "inprogress":
             $statusCondition = "AND ie.status = 0";
