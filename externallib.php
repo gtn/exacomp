@@ -2012,6 +2012,118 @@ class block_exacomp_external extends external_api {
 
 
 
+    public static function diggrplus_import_ms_teams_students_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, 'id of course to import to'),
+            'accesstoken' => new external_value(PARAM_TEXT, 'msteams access token'),
+            'teamid' => new external_value(PARAM_TEXT, 'uuid of msteams team to import from'),
+        ));
+    }
+
+    /**
+     * @ws-type-write
+     */
+    public static function diggrplus_import_ms_teams_students($courseid, $accesstoken, $teamid) {
+        global $DB, $USER, $CFG;
+
+        require_once $CFG->dirroot.'/lib/enrollib.php';
+        require_once $CFG->dirroot.'/user/lib.php';
+
+        static::validate_parameters(static::diggrplus_import_ms_teams_students_parameters(), array(
+            'courseid' => $courseid,
+            'accesstoken' => $accesstoken,
+            'teamid' => $teamid,
+        ));
+
+        block_exacomp_require_teacher($courseid);
+
+        $ch = curl_init('https://graph.microsoft.com/v1.0/groups/ff81fd81-f95f-49df-bb27-ea16e0b597fc/members');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer '.$accesstoken
+        ]);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+        $result = curl_exec($ch);
+        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        curl_close($ch);
+
+        if ($status_code != 200) {
+            throw new moodle_exception('request failed');
+        }
+
+        $result = json_decode($result);
+        if (!$result->value) {
+            throw new moodle_exception('got empty result');
+        }
+        if (!is_array($result->value)) {
+            throw new moodle_exception('result is not array');
+        }
+
+        foreach ($result->value as $teamsUser) {
+            $email = $teamsUser->userPrincipalName;
+
+            $user = $DB->get_record('user', ['email' => $email]);
+            if (!$user) {
+                // create the student
+                $username = 'diggrv-'.round((microtime(true) - 1600000000) * 1000);
+                $user = array(
+                    'username' => $email,
+                    'password' => generate_password(20),
+                    'firstname' => $teamsUser->givenName,
+                    'lastname' => $teamsUser->surname,
+                    'description' => 'diggr-plus: imported from msteams',
+                    'email' => $email,
+                    'suspended' => 0,
+                    'mnethostid' => 1,
+                    'confirmed' => 0,
+                );
+
+                $userid = user_create_user($user);
+            } else {
+                $userid = $user->id;
+
+                $context = context_course::instance($courseid);
+                if (is_enrolled($context, $user)) {
+                    continue;
+                }
+            }
+
+            // enrol the student
+            $enrol = enrol_get_plugin("manual"); //enrolment = manual
+            $instances = enrol_get_instances($courseid, true);
+            $manualinstance = null;
+            foreach ($instances as $instance) {
+                if ($instance->enrol == "manual") {
+                    $manualinstance = $instance;
+                    break;
+                }
+            }
+
+            $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
+        }
+
+        return array(
+            "totalCount" => count($result->value),
+        );
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_import_ms_teams_students_returns() {
+        return new external_single_structure (array(
+            'totalCount' => new external_value (PARAM_INT, 'number of imported users'),
+        ));
+    }
+
+
+
+
 
 
 
