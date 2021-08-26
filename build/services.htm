@@ -941,7 +941,7 @@ Params: <table>
 Returns:<pre>{
     "success": "bool null ('true if grading was successful')"
 }</pre>
-<h2>diggrplus_import_ms_teams_students</h2>
+<h2>diggrplus_msteams_import_students</h2>
 <div></div>
 <div>type: write</div>
 Params: <table>
@@ -954,7 +954,7 @@ Params: <table>
 <td>id of course to import to</td>
 <td></td>
 <tr>
-<td>accesstoken</td>
+<td>access_token</td>
 <td>text</td>
 <td>null</td>
 <td>required</td>
@@ -971,7 +971,32 @@ Params: <table>
 <td></td>
 </table>
 Returns:<pre>{
-    "totalCount": "int null ('number of imported users')"
+    "total_count": "int null ('number of users in the team')",
+    "imported_count": "int null ('number of newly imported users')"
+}</pre>
+<h2>diggrplus_msteams_get_access_token</h2>
+<div></div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>tenantid</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>authentication_token</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>msteams authentication token</td>
+<td></td>
+</table>
+Returns:<pre>{
+    "access_token": "text null"
 }</pre>
 <h2>block_exacomp_grade_item</h2>
 <div>Grade an item

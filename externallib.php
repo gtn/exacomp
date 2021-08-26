@@ -2012,10 +2012,10 @@ class block_exacomp_external extends external_api {
 
 
 
-    public static function diggrplus_import_ms_teams_students_parameters() {
+    public static function diggrplus_msteams_import_students_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course to import to'),
-            'accesstoken' => new external_value(PARAM_TEXT, 'msteams access token'),
+            'access_token' => new external_value(PARAM_TEXT, 'msteams access token'),
             'teamid' => new external_value(PARAM_TEXT, 'uuid of msteams team to import from'),
         ));
     }
@@ -2023,15 +2023,15 @@ class block_exacomp_external extends external_api {
     /**
      * @ws-type-write
      */
-    public static function diggrplus_import_ms_teams_students($courseid, $accesstoken, $teamid) {
+    public static function diggrplus_msteams_import_students($courseid, $access_token, $teamid) {
         global $DB, $USER, $CFG;
 
         require_once $CFG->dirroot.'/lib/enrollib.php';
         require_once $CFG->dirroot.'/user/lib.php';
 
-        static::validate_parameters(static::diggrplus_import_ms_teams_students_parameters(), array(
+        static::validate_parameters(static::diggrplus_msteams_import_students_parameters(), array(
             'courseid' => $courseid,
-            'accesstoken' => $accesstoken,
+            'access_token' => $access_token,
             'teamid' => $teamid,
         ));
 
@@ -2039,7 +2039,7 @@ class block_exacomp_external extends external_api {
 
         $ch = curl_init('https://graph.microsoft.com/v1.0/groups/ff81fd81-f95f-49df-bb27-ea16e0b597fc/members');
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer '.$accesstoken
+            'Authorization: Bearer '.$access_token
         ]);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -2051,7 +2051,7 @@ class block_exacomp_external extends external_api {
         curl_close($ch);
 
         if ($status_code != 200) {
-            throw new moodle_exception('request failed');
+            throw new moodle_exception('request failed, status_code: '.$status_code);
         }
 
         $result = json_decode($result);
@@ -2061,6 +2061,8 @@ class block_exacomp_external extends external_api {
         if (!is_array($result->value)) {
             throw new moodle_exception('result is not array');
         }
+
+        $importedCount = 0;
 
         foreach ($result->value as $teamsUser) {
             $email = $teamsUser->userPrincipalName;
@@ -2103,25 +2105,102 @@ class block_exacomp_external extends external_api {
             }
 
             $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
+
+            $importedCount++;
         }
 
         return array(
-            "totalCount" => count($result->value),
+            "total_count" => count($result->value),
+            "imported_count" => $importedCount,
         );
     }
 
     /**
-     * Returns desription of method return values
-     *
      * @return external_multiple_structure
      */
-    public static function diggrplus_import_ms_teams_students_returns() {
+    public static function diggrplus_msteams_import_students_returns() {
         return new external_single_structure (array(
-            'totalCount' => new external_value (PARAM_INT, 'number of imported users'),
+            'total_count' => new external_value (PARAM_INT, 'number of users in the team'),
+            'imported_count' => new external_value (PARAM_INT, 'number of newly imported users'),
         ));
     }
 
+    public static function diggrplus_msteams_get_access_token_parameters() {
+        return new external_function_parameters (array(
+            'tenantid' => new external_value (PARAM_TEXT),
+            'authentication_token' => new external_value (PARAM_TEXT, 'msteams authentication token'),
+        ));
+    }
 
+    /**
+     * @ws-type-write
+     */
+    public static function diggrplus_msteams_get_access_token($tenantid, $authentication_token) {
+        global $DB, $USER, $CFG;
+
+        static::validate_parameters(static::diggrplus_msteams_get_access_token_parameters(), array(
+            'tenantid' => $tenantid,
+            'authentication_token' => $authentication_token,
+        ));
+
+        $ch = curl_init('https://login.microsoftonline.com/'.$tenantid.'/oauth2/v2.0/token');
+    	curl_setopt($ch, CURLOPT_POST, 1);
+
+        $client_id = get_config("exacomp", 'msteams_client_id');
+        $client_secret = get_config("exacomp", 'msteams_client_secret');
+        if (!$client_id) {
+            throw new moodle_exception('client_id not set');
+        }
+        if (!$client_secret) {
+            throw new moodle_exception('client_secret not set');
+        }
+
+        $postdata = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer".
+            "&client_id=".$client_id.
+            "&client_secret=".$client_secret.
+            "&scope=https://graph.microsoft.com/groupmember.read.all".
+            "&requested_token_use=on_behalf_of".
+            "&assertion=".$authentication_token;
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+            'Accept: application/json'
+        ]);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+        $result = curl_exec($ch);
+        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        curl_close($ch);
+
+        if ($status_code != 200) {
+            throw new moodle_exception('request failed, status_code: '.$status_code);
+        }
+
+        $result = json_decode($result);
+        if (!$result->access_token) {
+            throw new moodle_exception('got empty result');
+        }
+
+        $access_token = $result->access_token;
+
+        return array(
+            "access_token" => $access_token,
+        );
+    }
+
+    /**
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_msteams_get_access_token_returns() {
+        return new external_single_structure (array(
+            'access_token' => new external_value (PARAM_TEXT),
+        ));
+    }
 
 
 

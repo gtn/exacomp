@@ -139,6 +139,10 @@ $string['settings_applogin_redirect_urls'] = 'Applogin Urls';
 $string['settings_applogin_redirect_urls_description'] = '';
 $string['settings_diggrv_enabled'] = 'Diggrv Funktionen aktivieren';
 $string['settings_diggrv_enabled_description'] = 'Anlegen von Userkonten über App erlauben.';
+$string['settings_msteams_client_id'] = 'Diggr+ MS Teams App Client Id';
+$string['settings_msteams_client_id_description'] = '';
+$string['settings_msteams_client_secret'] = 'Diggr+ MS Teams App Client Secret';
+$string['settings_msteams_client_secret_description'] = '';
 $string['dakora_teachers'] = 'Dakoralehrer';
 $string['settings_new_app_login_description'] = 'Der neue App-Login erlaubt Benutzern sich mit allen aktivierten Moodle Login-Plugins einzuloggen. Diese Einstellung ist nicht mit dem Gamification Plugin kompatibel.';
 $string['settings_heading_performance'] = 'Performance';
@@ -275,7 +279,7 @@ $string['download_activites'] = 'Download activities';
 
 
 // === Configuration ===
-$string['explainconfig'] = 'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz ausgewählt werden.';
+$string['explainconfig'] = 'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.';
 $string['save_selection'] = 'Bestätigen';
 $string['save_success'] = 'Änderungen erfolgreich übernommen';
 

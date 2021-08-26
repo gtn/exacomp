@@ -444,14 +444,30 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'',
 		'',
 	],
-	'settings_diggrv_enabled' => [
-		'Diggrv Funktionen aktivieren',
-		'Enable Diggrv Functions',
-	],
-	'settings_diggrv_enabled_description' => [
-		'Anlegen von Userkonten über App erlauben.',
-		'Allow creating users in the Diggrv-app.',
-	],
+    'settings_diggrv_enabled' => [
+        'Diggrv Funktionen aktivieren',
+        'Enable Diggrv Functions',
+    ],
+    'settings_diggrv_enabled_description' => [
+        'Anlegen von Userkonten über App erlauben.',
+        'Allow creating users in the Diggrv-app.',
+    ],
+    'settings_msteams_client_id' => [
+        'Diggr+ MS Teams App Client Id',
+        'Diggr+ MS Teams App Client Id',
+    ],
+    'settings_msteams_client_id_description' => [
+        '',
+        '',
+    ],
+    'settings_msteams_client_secret' => [
+        'Diggr+ MS Teams App Client Secret',
+        'Diggr+ MS Teams App Client Secret',
+    ],
+    'settings_msteams_client_secret_description' => [
+        '',
+        '',
+    ],
     'dakora_teachers' => [
         'Dakoralehrer',
         'Dakorateachers',

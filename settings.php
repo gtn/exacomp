@@ -1204,6 +1204,14 @@ $settings->add(new admin_setting_configcheckbox('exacomp/diggrv_enabled',
         block_exacomp_get_string('settings_diggrv_enabled'),
         block_exacomp_get_string('settings_diggrv_enabled_description'), 0, 1, 0));
 
+$settings->add(new admin_setting_configtext('exacomp/msteams_client_id',
+    block_exacomp_get_string('settings_msteams_client_id'),
+    block_exacomp_get_string('settings_msteams_client_id_description'), '', PARAM_TEXT));
+
+$settings->add(new admin_setting_configtext('exacomp/msteams_client_secret',
+    block_exacomp_get_string('settings_msteams_client_secret'),
+    block_exacomp_get_string('settings_msteams_client_secret_description'), '', PARAM_TEXT));
+
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
 //        block_exacomp_get_string('settings_admin_scheme'),
