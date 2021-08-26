@@ -210,7 +210,109 @@ function block_exacomp_coursemodule_edit_post_actions($data, $course) {
             $DB->insert_record('block_exacompcmsettings', $insert);
         }
     }
+
+    block_exacomp_check_relatedactivitydata($data->coursemodule, $data->name);
+
     return $data;
+}
+
+/**
+ * no any possibility to insert own hook for inplace_editable. So we need to make via top level hook
+ * @param stdClass $externalfunctioninfo
+ * @param array $params
+ * @return bool
+ */
+function block_exacomp_override_webservice_execution($externalfunctioninfo, $params) {
+    if (
+            $externalfunctioninfo->name == 'core_update_inplace_editable'
+            && $externalfunctioninfo->classname == 'core_external'
+            && $externalfunctioninfo->methodname == 'update_inplace_editable'
+        )
+    {
+        $component = $params[0];
+        $itemtype = $params[1];
+        if ($component == 'core_course') {
+            if ($itemtype == 'activityname') {
+                block_exacomp_check_relatedactivitydata($params[2], $params[3]);
+            }
+        }
+    }
+    return false; // false - call original function!
+}
+
+
+/**
+ * delete relations: competence-activity
+ * @param stdClass $cm
+ */
+function block_exacomp_pre_course_module_delete($cm) {
+
+    // Sometimes records will not delete immediately. It is if current Moodle installation has some plugin with enabled async deleting.
+    // In this case exacomp relations will be deleted during adhoc task
+    // for example - RECICLER BIN tool - it is ENABLED by default!
+    // also there can be other plugins, you can find them by search 'course_module_background_deletion_recommended' in the code
+
+    block_exacomp_checkfordelete_relatedactivity($cm->id);
+
+    return true;
+}
+
+/**
+ * Check related activities were changed/deleted - change example datas
+ *
+ * @param integer $cmid
+ * @param string $newtitle
+ * @return boolean
+ */
+function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
+    global $DB, $CFG;
+    require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+    // 1. new method of relation - the relation is EXAMPLE
+    $DB->execute('
+        UPDATE {block_exacompexamples}
+            SET title = ?,
+              activitytitle = ?
+            WHERE activityid = ?
+              AND title != ? 
+              AND activitytitle != ?         
+        ', [$newtitle, $newtitle, $cmid, $newtitle, $newtitle]); // TODO: title is also changed or only activitytitle?
+    // 2. old method - with MM table
+    if (block_exacomp_use_old_activities_method()) {
+        $DB->execute('
+            UPDATE {block_exacompcompactiv_mm}
+                SET activitytitle = ?
+                WHERE activityid = ?                 
+                  AND activitytitle != ?         
+            ', [$newtitle, $cmid, $newtitle]);
+    }
+    return true;
+}
+
+function block_exacomp_checkfordelete_relatedactivity($cmid) {
+    global $DB, $CFG;
+    require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+    // 1. new method of relation - the relation is EXAMPLE
+    // TODO: right now is deleted related example. May we need to stay the example, but change activity fields
+    $DB->execute('
+            DELETE FROM {block_exacompexamples}                
+                WHERE activityid = ?                                          
+            ', [$cmid]);
+    // if we need to change activity fields only, not delete the example at all
+   /* $DB->execute('
+        UPDATE {block_exacompexamples}
+            SET activityid = ?,
+              activitytitle = ?,
+              activitylink = ?,
+              courseid = ?
+            WHERE activityid = ?              
+        ', [0, '', '', 0, $cmid]);*/
+    // 2. old method - with MM table
+    if (block_exacomp_use_old_activities_method()) {
+        $DB->execute('
+            DELETE FROM {block_exacompcompactiv_mm}                
+                WHERE activityid = ?                                          
+            ', [$cmid]);
+    }
 }
 
 // possibility to look into this way 'cm_info_dynamic'... now it is not success
