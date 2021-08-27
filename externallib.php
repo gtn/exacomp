@@ -2055,9 +2055,6 @@ class block_exacomp_external extends external_api {
         }
 
         $result = json_decode($result);
-        if (!$result->value) {
-            throw new moodle_exception('got empty result');
-        }
         if (!is_array($result->value)) {
             throw new moodle_exception('result is not array');
         }
