@@ -14474,9 +14474,13 @@ class block_exacomp_external extends external_api {
 
         $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
+        $msteams_client_id = $client_id = get_config("exacomp", 'msteams_client_id');
+
         return array(
             'exacompversion' => $info->versiondb,
             'moodleversion' => $CFG->version,
+            'msteams_import_enabled' => !!trim($msteams_client_id),
+            'msteams_azure_app_client_id' => $msteams_client_id,
         );
     }
 
@@ -14489,6 +14493,8 @@ class block_exacomp_external extends external_api {
         return new external_single_structure (array(
             'exacompversion' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
             'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
+            'msteams_import_enabled' => new external_value (PARAM_BOOL, ''),
+            'msteams_azure_app_client_id' => new external_value (PARAM_TEXT, ''),
         ));
     }
 
