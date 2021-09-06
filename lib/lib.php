@@ -5436,8 +5436,6 @@ function block_exacomp_perform_auto_test() {
 	//for all courses where exacomp is used
 	$courses = block_exacomp_get_courseids();
 
-
-
 	foreach ($courses as $courseid) {
 	    //also get all other activites, that are NOT tests/quizes ... assigned and related (if settings allow both)
         $otherActivities = block_exacomp_get_active_activities_by_course($courseid);
@@ -5450,9 +5448,6 @@ function block_exacomp_perform_auto_test() {
         $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 		// get student grading for each test
-
-
-
 
 		foreach ($students as $student) {
             $modinfo = get_fast_modinfo($courseid, $student->id);
@@ -5516,7 +5511,7 @@ function block_exacomp_perform_auto_test() {
 				}
 			}
 
-			// For every activity that is not a quiz: if completed: set competence as gained
+			// For every activity that is not a quiz: 1. check if it should be visible, 2. check if completed and set competence as gained
             foreach ($otherActivities as $activity) {
                 // get availability (visibility) info
                 $available = $cms_availability[$activity->activityid]->available;
@@ -5582,7 +5577,7 @@ function block_exacomp_perform_auto_test() {
 
             // TODO: may be add adding of self-completention?
 
-			// activities with restrict access
+			// activities with restrict access   // TODO: why is this needed RW 2021.09.06
 			if ($CFG->enableavailability && count($cms) > 0) {
                 foreach ($cms as $cm) {
                     if ($cm->availability && block_exacomp_cmodule_is_autocompetence($cm->id)) {
