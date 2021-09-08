@@ -5465,7 +5465,7 @@ function block_exacomp_perform_auto_test() {
                 $available = $cms_availability[$test->activityid]->available;
                 if (!$available) {
                     // Hide the related exacomp material if not yet hidden
-                    foreach ($test->examples as $example){
+                    foreach ($test->examples as $example) {
                         g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
                             ['visible' => 0],
                             ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
@@ -5473,6 +5473,7 @@ function block_exacomp_perform_auto_test() {
                         // TODO: add a setting that allows or blocks the feature of adding it to the schedule automatically
                         // if not on schedule: add
                         // block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid,null,null,-1,-1, null, null, null, null);
+                    }
                 } else {
                     foreach ($test->examples as $example){
                         g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
