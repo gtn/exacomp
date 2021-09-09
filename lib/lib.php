@@ -5437,6 +5437,11 @@ function block_exacomp_perform_auto_test() {
 	$courses = block_exacomp_get_courseids();
 
 	foreach ($courses as $courseid) {
+        // If this course does not use moodle activities all queries can just be skipped entirely
+        if (!block_exacomp_get_settings_by_course($courseid)->uses_activities) {
+            continue;
+        }
+
 	    //also get all other activites, that are NOT tests/quizes ... assigned and related (if settings allow both)
         $otherActivities = block_exacomp_get_active_activities_by_course($courseid);
 
@@ -5445,7 +5450,6 @@ function block_exacomp_perform_auto_test() {
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
         $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]); // get "related" activities gets the assigned ones?
-        $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 		// get student grading for each test
 
