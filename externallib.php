@@ -10793,9 +10793,8 @@ class block_exacomp_external extends external_api {
                 'use_evalniveau' => $configuration["assessment_diffLevel_options"] != '',
 // 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
                 'evalniveaus' => static::get_evalniveaus_from_config($configuration),
-//                'teacherevalitems' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,null,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)),
                 'teacherevalitems' => static::get_teacher_eval_items_from_config($configuration),
-                'teacherevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items(0,true,BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE)), // TODO: short is not coursespecific yet
+                'teacherevalitems_short' => static::get_teacher_eval_items_short_from_config($configuration),
                 'studentevalitems' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true)),
 //                'studentevalitems' => static::get_student_eval_items_from_config($configuration),
                 'studentevalitems_short' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items(true,null,true)),
@@ -10824,6 +10823,29 @@ class block_exacomp_external extends external_api {
 //    private static function get_student_eval_items_from_config ($configuration){
 //
 //    }
+
+
+    private static function get_teacher_eval_items_short_from_config ($configuration){
+        $jsondata = $configuration["assessment_verbose_options_short"];
+
+        $copyofdata = $jsondata;
+        $configdata = json_decode($jsondata, true);
+        if (json_last_error() && $copyofdata != '') { // if old data is not json
+            $configdata['de'] = $copyofdata;
+        }
+        $language = current_language();
+        if ($language && array_key_exists($language, $configdata) && $configdata[$language] != '') {
+            $evalitems =  $configdata[$language];
+        } else {
+            $evalitems = $configdata['de'];
+        }
+
+        $evalitems = array_map('trim', explode(',', $evalitems));
+        $no_grading = array(-1 => '');
+        $evalitems = $no_grading + $evalitems;
+        return static::return_key_value($evalitems);
+    }
+
 
     private static function get_teacher_eval_items_from_config ($configuration){
         $jsondata = $configuration["assessment_verbose_options"];

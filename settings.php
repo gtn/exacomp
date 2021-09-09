@@ -242,6 +242,13 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         }
                     });
                     selectbox.value = selected_value;
+
+                    // if preconfig is selected ==> the id_s_exacomp_assessment_preconfiguration.value is not 0, but any other number ==> disable this field
+                    if(document.getElementById(\'id_s_exacomp_assessment_preconfiguration\').value != 0){
+                        selectbox.setAttribute("disabled","true");
+                    }else{
+                        selectbox.removeAttribute("disabled");
+                    }
                 };
             reloadVerboseNegativeSelectbox();
             </script>';
@@ -410,6 +417,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $selector = new DOMXPath($doc);
             foreach($selector->query('//select') as $e ) {
                 $e->setAttribute("onChange", "setupPreconfiguration(this);");
+                $e->setAttribute('onChange', $e->getAttribute('onChange').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
             }
             $output = $doc->saveHTML($doc->documentElement);
 		    // Add JS code, generated from settings_preconfiguration.xml.
@@ -1078,7 +1086,8 @@ $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_o
 // keys are from 0: 0,1,2...
 $settings->add(new block_exacomp_admin_setting_verbose_negative('exacomp/assessment_verbose_negative',
         block_exacomp_get_string('settings_assessment_grade_verbose_negative'),
-        block_exacomp_get_string('settings_assessment_grade_verbose_negative_description'), block_exacomp_get_assessment_verbose_negative_threshold(0), $options));
+        block_exacomp_get_string('settings_assessment_grade_verbose_negative_description'),
+        block_exacomp_get_assessment_verbose_negative_threshold(0), $options));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/assessment_verbose_options_short',
         block_exacomp_get_string('settings_assessment_verbose_options_short'),
         block_exacomp_get_string('settings_assessment_verbose_options_short_description'),

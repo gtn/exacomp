@@ -27,6 +27,7 @@
 		<assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
 		<assessment_verbose_options>nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht</assessment_verbose_options>
 		<assessment_verbose_negative>0</assessment_verbose_negative>
+        <assessment_verbose_options_short>ne, te, üe, ve</assessment_verbose_options_short>
 	</configOption>
 	<configOption id="2">
 		<name>berufliche Schulen</name>
@@ -56,5 +57,6 @@
 		<assessment_diffLevel_options>A,B,C</assessment_diffLevel_options>
 		<assessment_verbose_options>nicht erreicht, teilweise erreicht, überwiegend erreicht, vollständig erreicht</assessment_verbose_options>
 		<assessment_verbose_negative>0</assessment_verbose_negative>
+        <assessment_verbose_options_short>ne, te, üe, ve</assessment_verbose_options_short>
 	</configOption>
 </settingsPreconfiguration>
