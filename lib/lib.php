@@ -11856,18 +11856,22 @@ function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isT
 
 				//item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
 				$item_type = $item::TYPE;
-                $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
+
 				if ($item_type == BLOCK_EXACOMP_TYPE_SUBJECT) {
 				    echo '<tr class="exarep_subject_row">';
 				}else if ($item_type == BLOCK_EXACOMP_TYPE_TOPIC) {
 				    echo '<tr class="exarep_topic_row">';
 				}else if($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $level <= 2) {
+                    $item_type = BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT; // ITEM_TYPE needs to be child or parent, not just Descriptor for block_exacomp_additional_grading to work
 				    echo '<tr class="exarep_descriptor_parent_row">';
 				}else if($item_type == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $level > 2) {
+                    $item_type = BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD;
 				    echo '<tr class="exarep_descriptor_child_row">';
 				}else if($item_type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
 				    echo '<tr class="exarep_example_row">';
 				}
+
+                $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
 
 				echo '<td class="exarep_descriptor" width="4%" style="white-space: nowrap;">'.$item->get_numbering().'</td>';
 				echo '<td class="exarep_descriptorText" width="'.($isPdf ? '50%' : '65%').'" style="padding-left: '.(5 + $level * 15).'px;">'.
