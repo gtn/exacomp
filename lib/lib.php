@@ -5474,9 +5474,8 @@ function block_exacomp_perform_auto_test() {
                             ['visible' => 0],
                             ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
                         );
-                        // TODO: add a setting that allows or blocks the feature of adding it to the schedule automatically
-                        // if not on schedule: add
-                        // block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid,null,null,-1,-1, null, null, null, null);
+                        // if already on schedule: remove
+                        $DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid, 'creatorid' => $student->id));
                     }
                 } else {
                     foreach ($test->examples as $example){
@@ -5484,8 +5483,8 @@ function block_exacomp_perform_auto_test() {
                             ['visible' => 1],
                             ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
                         );
-                        // if already on schedule: remove
-                        // $DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid, 'creatorid' => $student->id));
+                        // if not on schedule: add ( the check happens in the function)
+                        block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid,null,null,-1,-1, null, null, null, null);
                     }
                 }
 
@@ -5552,6 +5551,8 @@ function block_exacomp_perform_auto_test() {
                             ['visible' => 0],
                             ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
                         );
+                        // if already on schedule: remove
+                        $DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid, 'creatorid' => $student->id));
                     }
                 } else {
                     foreach ($activity->examples as $example){
@@ -5559,6 +5560,8 @@ function block_exacomp_perform_auto_test() {
                             ['visible' => 1],
                             ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
                         );
+                        // if not on schedule: add ( the check happens in the function)
+                        block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid,null,null,-1,-1, null, null, null, null);
                     }
                 }
 
