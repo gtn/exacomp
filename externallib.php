@@ -2037,7 +2037,7 @@ class block_exacomp_external extends external_api {
 
         block_exacomp_require_teacher($courseid);
 
-        $ch = curl_init('https://graph.microsoft.com/v1.0/groups/ff81fd81-f95f-49df-bb27-ea16e0b597fc/members');
+        $ch = curl_init('https://graph.microsoft.com/v1.0/groups/'.$teamid.'/members');
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: Bearer '.$access_token
         ]);
@@ -2063,6 +2063,8 @@ class block_exacomp_external extends external_api {
 
         foreach ($result->value as $teamsUser) {
             $email = $teamsUser->userPrincipalName;
+            // uppercase email addresses on hak-steyr
+            $email = strtolower($email);
 
             $user = $DB->get_record('user', ['email' => $email]);
             if (!$user) {
