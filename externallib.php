@@ -67,7 +67,13 @@ class block_exacomp_external extends external_api {
 		$mycourses = enrol_get_users_courses($userid, true);
 		$courses = array();
 
-		foreach ($mycourses as $mycourse) {
+        $time = time();
+
+        foreach ($mycourses as $mycourse) {
+            if($mycourse->visible == 0 || $mycourse->enddate < $time && $mycourse->enddate != 0){ //enddate is a smaller number than today ==> NOT visible, since it is over already
+                continue;
+            }
+
 			$context = context_course::instance($mycourse->id);
 			if ($DB->record_exists("block_instances", array(
 				"blockname" => "exacomp",
