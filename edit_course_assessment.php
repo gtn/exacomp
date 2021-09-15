@@ -19,14 +19,14 @@
 
 global $DB, $OUTPUT, $PAGE, $CFG;
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHAEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
+    print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -62,9 +62,11 @@ if ($preconfigurations && is_array($preconfigurations)) {
 }
 
 if ($action == 'save') {
-    $settings = $DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
+//    $settings = $DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
+    $settings = block_exacomp_get_settings_by_course($courseid);
     $settings->assessmentconfiguration = optional_param('selection_preconfig', 0, PARAM_INT);
-    $DB->update_record(BLOCK_EXACOMP_DB_SETTINGS, $settings);
+    $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies); // TODO: why like this? Is this done at every location? Then why not in the function.. copied from edit_course.php
+    block_exacomp_save_coursesettings($courseid, $settings);
 }
 
 /* CONTENT REGION */

@@ -10717,7 +10717,10 @@ class block_exacomp_external extends external_api {
         foreach ($courses as $key => $course) {
 //            $courses_assoc[$course["courseid"]] = $course;
 //            $courses_assoc[$course["courseid"]]["assessment_config"] = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $course["courseid"]]);
-            $courses[$key]["assessment_config"] = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $course["courseid"]]);
+//            $courses[$key]["assessment_config"] = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $course["courseid"]]); // already done in get_courses
+            if($courses[$key]["assessment_config"] == null){
+                $courses[$key]["assessment_config"] = 0;
+            }
         }
 
         $assessment_configurations = block_exacomp_get_assessment_configurations();

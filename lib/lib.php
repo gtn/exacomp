@@ -2155,7 +2155,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 		$settings->uses_activities = 0;
 	}
 	if (!$settings->uses_activities) {
-		$settings->show_all_descriptors = 1;
+		$settings->show_all_descriptors = 1; //TODO is this a copy-paste error?
 	}
 	if (!isset($settings->show_all_descriptors)) {
 		$settings->show_all_descriptors = 1;
@@ -2165,6 +2165,10 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	} else {
 		$settings->filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
 	}
+
+    if (!isset($settings->assessmentconfiguration)) {
+        $settings->assessmentconfiguration = 0;
+    }
 
 	return $settings;
 }
