@@ -202,7 +202,7 @@ class data {
 
 		foreach ($tables as $table) {
 			g::$DB->execute("DELETE FROM {{$table['table']}}
-				WHERE 
+				WHERE
 				{$table['mm1'][0]} IN (SELECT id FROM {{$table['mm1'][1]}} WHERE source=?) AND
 				{$table['mm2'][0]} IN (SELECT id FROM {{$table['mm2'][1]}} WHERE source=?)
 			", array($source, $source));
@@ -232,7 +232,7 @@ class data {
     {
         // delete entries with no source anymore
         foreach (self::$sourceTables as $table) {
-            $sql = "DELETE FROM {{$table}} 
+            $sql = "DELETE FROM {{$table}}
 						WHERE source >= " . data::MIN_SOURCE_ID . "
 						AND source NOT IN (SELECT id FROM {" . BLOCK_EXACOMP_DB_DATASOURCES . "})
 					";
@@ -2025,7 +2025,7 @@ class data_importer extends data {
                 throw new import_exception('we have no this task!');
             }
         }
-        
+
         // work with GetPost, because additional form settings are not initialized yet
         $newSelecting = optional_param_array('selectedGrid', null, PARAM_RAW);
         $currentImportStep = optional_param('currentImportStep', 'compareCategories', PARAM_RAW);
@@ -2816,7 +2816,7 @@ class data_importer extends data {
             $item->ethema_parent = $item->ethema_parent['@attributes']['id'];
         }
 
-
+        $item->courseid = $course_template; // 2021.09.16 otherwise the courseid of the export-course is used, and the examples are not shown in the import-course/template-course.
         self::insert_or_update_item(BLOCK_EXACOMP_DB_EXAMPLES, $item);
 		self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_EXAMPLES, $item);
 
