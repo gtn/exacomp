@@ -1366,8 +1366,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             if ($editmode) {
                                 $titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
 
-
-
                                 if (block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
                                     $titleCell->text .= html_writer::link(
                                     // 	                            new moodle_url('/blocks/exacomp/example_upload.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id, "topicid" => $descriptor->topicid, "exampleid" => $example->id)),
@@ -1463,13 +1461,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
                                     $titleCell->text .= $this->schedule_icon($example->id, $USER->id, $courseid);
 
-                                    if($example->activityid == 0){
-                                        $titleCell->text .= $this->submission_icon($courseid, $example->id, $USER->id);
-                                    }
-
+                                    $titleCell->text .= $this->submission_icon($courseid, $example->id, $USER->id); // TODO: is this correct? No activityidcheck, since it will always be a purely exacomp-made example
 
                                     $titleCell->text .= $this->competence_association_icon($example->id, $courseid, false);
-
                                 } else if ($isEditingTeacher && $role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                     $studentid = block_exacomp_get_studentid();
 
