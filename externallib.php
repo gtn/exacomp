@@ -2084,8 +2084,8 @@ class block_exacomp_external extends external_api {
                     'description' => 'diggr-plus: imported from msteams',
                     'email' => $email,
                     'suspended' => 0,
-                    'mnethostid' => 1,
-                    'confirmed' => 0,
+                    'mnethostid' => $CFG->mnet_localhost_id,
+                    'confirmed' => 1,
                 );
 
                 $userid = user_create_user($user);

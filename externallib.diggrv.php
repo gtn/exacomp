@@ -127,7 +127,7 @@ class block_exacomp_external_diggrv extends external_api {
                 'email' => $username.'@diggr-plus.at',
                 'description' => 'diggrv',
                 'suspended' => 1,
-                'mnethostid' => 1,
+                'mnethostid' => $CFG->mnet_localhost_id,
                 'confirmed' => 1,
             );
             $userid = user_create_user($user);
