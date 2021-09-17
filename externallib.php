@@ -12402,12 +12402,10 @@ class block_exacomp_external extends external_api {
             $exampleData->externalurl = $example->externalurl;
             $exampleData->externaltask = $example->externaltask;
             $exampleData->task = $example->task;
-            if (!$exampleData->externalurl && $exampleData->externaltask) {
-                $exampleData->externalurl = $exampleData->externaltask;
-            }
-
+           
             if (!$exampleData->externalurl && $exampleData->task) {
                 $exampleData->externalurl = $exampleData->task;
+                $exampleData->task= "";
             }
 
 
