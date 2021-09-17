@@ -251,8 +251,10 @@ function block_exacomp_pre_course_module_delete($cm) {
     // In this case exacomp relations will be deleted during adhoc task
     // for example - RECICLER BIN tool - it is ENABLED by default!
     // also there can be other plugins, you can find them by search 'course_module_background_deletion_recommended' in the code
+    // TODO: may be it is possible to do with webservice hook?
 
     block_exacomp_checkfordelete_relatedactivity($cm->id);
+
 
     return true;
 }
