@@ -973,7 +973,7 @@ class descriptor extends db_record {
 	}
 
 	static function insertInCourse($courseid, $data) {
-		global $DB;
+		global $DB, $USER;
 
 		$descriptor = static::create($data);
 		$parent_descriptor = isset($descriptor->parentid) ? descriptor::get($descriptor->parentid) : null;
@@ -1004,8 +1004,9 @@ class descriptor extends db_record {
 		$descriptor->source = BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR;
 		$descriptor->sorting = $max_sorting + 1;
 		$descriptor->creatorid = g::$USER->id;
+        $descriptor->author = fullname($USER);
+        $descriptor->editor = fullname($USER);
 		$descriptor->insert();
-
 		//topic association
 		$childdesctopic_mm = new \stdClass();
 		$childdesctopic_mm->topicid = $topicid;

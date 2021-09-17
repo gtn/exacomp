@@ -100,6 +100,8 @@ if($formdata = $form->get_data()) {
 	$new = new stdClass();
 	$new->title = $formdata->title;
 	$new->niveauid = $formdata->niveauid;
+    $new->author = fullname($USER);
+    $new->editor = fullname($USER);
 	
 	if (!$item) {
 		die('TODO');
