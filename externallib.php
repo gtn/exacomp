@@ -2075,7 +2075,6 @@ class block_exacomp_external extends external_api {
             $user = $DB->get_record('user', ['email' => $email]);
             if (!$user) {
                 // create the student
-                $username = 'diggrv-'.round((microtime(true) - 1600000000) * 1000);
                 $user = array(
                     'username' => $email,
                     'password' => generate_password(20),
@@ -14505,7 +14504,7 @@ class block_exacomp_external extends external_api {
 
         $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
-        $msteams_client_id = $client_id = get_config("exacomp", 'msteams_client_id');
+        $msteams_client_id = get_config("exacomp", 'msteams_client_id');
 
         return array(
             'exacompversion' => $info->versiondb,
