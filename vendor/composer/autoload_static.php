@@ -7,38 +7,50 @@ namespace Composer\Autoload;
 class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
 {
     public static $prefixLengthsPsr4 = array (
-        'Z' =>
-            array (
-                'Zend\\Stdlib\\' => 12,
-            ),
+        'Z' => 
+        array (
+            'Zend\\Stdlib\\' => 12,
+        ),
         'S' => 
-            array (
-                'Super\\' => 6,
-            ),
-        'P' =>
-            array (
-                'PhpOffice\\PhpWord\\' => 18,
-                'PhpOffice\\' => 10,
-            ),
+        array (
+            'Super\\' => 6,
+        ),
+        'P' => 
+        array (
+            'PhpOffice\\PhpWord\\' => 18,
+            'PhpOffice\\' => 10,
+        ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'Zend\\Stdlib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
+        ),
         'Super\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/super',
-            ),
-        'Zend\\Stdlib\\' =>
-            array (
-                0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
-            ),
-        'PhpOffice\\PhpWord\\' =>
-            array (
-                0 => __DIR__ . '/..' . '/phpoffice/PhpWord',
-            ),
-        'PhpOffice\\' =>
-            array (
-                0 => __DIR__ . '/..' . '/phpoffice',
-            ),
+        array (
+            0 => __DIR__ . '/..' . '/super',
+        ),
+        'PhpOffice\\PhpWord\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/PhpWord',
+        ),
+        'PhpOffice\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
+    );
+
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -46,6 +58,7 @@ class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345::$classMap;
 
         }, null, ClassLoader::class);
     }

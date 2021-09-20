@@ -3,7 +3,13 @@
   "type": "moodle-block",
   "autoload": {
     "psr-4": {
-      "Super\\": "vendor/super/"
+      "Super\\": "vendor/super/",
+      "Zend\\Stdlib\\": "vendor/zendframework/zend-stdlib/src/",
+      "PhpOffice\\PhpWord\\": "vendor/phpoffice/PhpWord/",
+      "PhpOffice\\": "vendor/phpoffice/"
     }
+  },
+  "require": {
+    "firebase/php-jwt": "^5.4"
   }
 }

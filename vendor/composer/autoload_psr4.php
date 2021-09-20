@@ -6,8 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Super\\' => array($vendorDir . '/super'),
     'Zend\\Stdlib\\' => array($vendorDir . '/zendframework/zend-stdlib/src'),
+    'Super\\' => array($vendorDir . '/super'),
     'PhpOffice\\PhpWord\\' => array($vendorDir . '/phpoffice/PhpWord'),
     'PhpOffice\\' => array($vendorDir . '/phpoffice'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
 );

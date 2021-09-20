@@ -206,38 +206,40 @@ if ($action == 'msteams_login') {
     // test user
     // $user = get_complete_user_data('id', 3);
 
-    $access_token_payload = explode('.', $access_token);
-    $access_token_payload = json_decode(base64_decode($access_token_payload[1]));
+    $client_id = get_config("exacomp", 'msteams_client_id');
+    if (!$client_id) {
+        throw new moodle_exception('client_id not set');
+    }
 
+    // check access_token
+    $jwks = json_decode(file_get_contents('https://login.microsoftonline.com/common/discovery/v2.0/keys'), true);
+    $decoded = \Firebase\JWT\JWT::decode($access_token, \Firebase\JWT\JWK::parseKeySet($jwks), array('RS256'));
+
+    // actually checking audience is not needed, because we check tenant
+    if ($decoded->aud != 'api://diggr-plus.at/'.$client_id) {
+        $errorResult('audience not allowed: '.$decoded->aud);
+    }
+    if (time() > $decoded->exp) {
+        $errorResult('access_token expired');
+    }
+    if ($decoded->scp != 'access_as_user') {
+        $errorResult('Wrong scp: '.$decoded->scp);
+    }
     // check config
     // demo tenantid = hak-steyr
-    if ($access_token_payload->tid != '3171ff0c-9e10-4061-9afb-66b6b12b03a9') {
-        $errorResult('Wrong token: wrong tenantid '.$access_token_payload->tid);
+    if ($decoded->tid != '3171ff0c-9e10-4061-9afb-66b6b12b03a9') {
+        $errorResult('Wrong token: wrong tenantid '.$decoded->tid);
     }
 
-    $ch = curl_init('https://graph.microsoft.com/v1.0/me');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer '.$access_token,
-    ]);
+    $userPrincipalName = $decoded->upn;
+    $familyName = $decoded->family_name;
+    $givenName = $decoded->given_name;
 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-
-    $result = curl_exec($ch);
-    $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    curl_close($ch);
-
-    if ($status_code != 200) {
-        $errorResult('Azure request failed, status_code: '.$status_code);
+    if (!$userPrincipalName) {
+        $errorResult('decoded->userPrincipalName not set');
     }
 
-    $teamsUser = json_decode($result);
-    if (@!$teamsUser->userPrincipalName) {
-        $errorResult('teamsUser->userPrincipalName not set');
-    }
-
-    $email = $teamsUser->userPrincipalName;
+    $email = $userPrincipalName;
     // uppercase email addresses on hak-steyr
     $email = strtolower($email);
 
@@ -253,8 +255,8 @@ if ($action == 'msteams_login') {
         $user = array(
             'username' => $email,
             'password' => generate_password(20),
-            'firstname' => $teamsUser->givenName,
-            'lastname' => $teamsUser->surname,
+            'firstname' => $givenName,
+            'lastname' => $familyName,
             'description' => 'diggr-plus: imported with msteams login',
             'email' => $email,
             'suspended' => 0,
