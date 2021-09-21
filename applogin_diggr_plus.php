@@ -298,7 +298,7 @@ if ($action == 'msteams_login') {
     ]);
 
     $data = [
-        'moodle_data_token' => $moodle_data_token,
+        'moodle_token' => $moodle_data_token,
     ];
     header('Content-Type: application/json');
     echo json_encode($data);
