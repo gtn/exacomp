@@ -1,6 +1,14 @@
+v4.6.6 (2021091100)
+- Diggrplus functionalities added: Create or update student, create and edit course, personalise competence grading text, create competence based verbal certificate (Zeugnis) for students
+- Added fields to students (SPF, ausserordentlicher_schueler) and subjects (is_pflichtgegenstand)
+- Substantial performance increase for diggrplus-webservices
+- Subjects with childdescriptors work with diggrplus now
+- Course specific grading added: Teachers can now choose if they want to use the global exacomp grading settings (default) or if they want to use a different preset grading method for each course individually. The set of presets can be defined in the settings_preconfiguration.xml. This feature works in moodle and dakora for now.
+- Moodle activities that have restricted visibility and are related to exacomp competencies now work more coherently with the exacomp examples. If the activity is hidden, the example gets hidden as well, and vice versa. Also, the examples created by relating activities to descriptors that are visible are added to the planning-storage automatically.
+
 v4.6.5
 - weekly scheduler fix jQuery conflict, Layout improvement
-- crosssubjects/Themen: Delete related examples if crosssubject is deleted 
+- crosssubjects/Themen: Delete related examples if crosssubject is deleted
 
 v4.6.5 (2021042200)
 - Annotation for examples added: Diggrplus webservices can annotate examples, e.g. adding a description to an example in a specific course, but not changing the example itself
