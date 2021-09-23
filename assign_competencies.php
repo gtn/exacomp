@@ -155,7 +155,7 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,
 
 
 // skip all niveaus that are empty for the selected topic if not in editmode
-if($topicid){
+if($topicid && $topicid != -1){
     $used_niveaus = $competence_tree[$selectedSubject->id]->topics[$topicid]->used_niveaus;
     foreach ($niveaus as $k => $niveau){
         if(!$editmode){
