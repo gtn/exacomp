@@ -260,11 +260,21 @@ echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 
 echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 
+list($competence_overview, $asdf) = $output->competence_overview($competence_tree,
+    $courseid,
+    $students,
+    $showevaluation,
+    $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+    $scheme,
+    ($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS),
+    0,
+    $isEditingTeacher);
+
 echo '<div class="gridlayout-left">';
 echo $output->subjects_menu($courseSubjects, $selectedSubject, $selectedTopic, $students, $editmode);
 echo '</div>';
 echo '<div class="gridlayout-right">';
-echo $output->niveaus_menu($niveaus, $selectedNiveau, $selectedTopic);
+echo $output->niveaus_menu($niveaus, $selectedNiveau, $selectedTopic, $competence_tree[$selectedSubject->id]->topics[$selectedTopic->id]->used_niveaus);
 //var_dump($niveaus);
 
 
@@ -278,15 +288,26 @@ if ($course_settings->nostudents != 1 && $studentid) {
     echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
 }
 
-list($competence_overview, $used_niveaus) = $output->competence_overview($competence_tree,
-    $courseid,
-    $students,
-    $showevaluation,
-    $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
-    $scheme,
-    ($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS),
-    0,
-    $isEditingTeacher);
+
+
+// remove the unused niveaus (columns)
+//if(!$editmode){
+//    foreach ($niveaus as $niveau){
+//        if(!in_array($niveau->id, $used_niveaus)){
+//            // remove with css via id
+////            echo '<style type="text/css">
+////                    #niveauid-'.$niveau->id.' {
+////                        display: none;
+////                    }
+////                    </style>';
+//            echo '<style type="text/css">
+//                    #niveauid-1 {
+//                        display: none;
+//                    }
+//                    </style>';
+//        }
+//    }
+//}
 
 echo $competence_overview;
 

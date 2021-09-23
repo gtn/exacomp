@@ -2629,6 +2629,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors, 0, $showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
 	}
 
+
 	if ($filteredDescriptors && is_array($filteredDescriptors) && count($filteredDescriptors) > 0) {
         $allDescriptors = array_filter($allDescriptors,
                 function ($key) use ($filteredDescriptors) {
@@ -2638,22 +2639,30 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
         );
     }
 
+    // niveaus that are used in this topic... needed for not displaying empty niveaus in the exacomp competence grid
 	foreach ($allDescriptors as $descriptor) {
-
-		if ($niveauid != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $calledfromoverview) {
-			if ($descriptor->niveauid != $niveauid) {
-				continue;
-			}
-		}
-
 		// get descriptor topic
 		if (empty($allTopics[$descriptor->topicid])) {
 			continue;
 		}
+
 		$topic = $allTopics[$descriptor->topicid];
         //if the niveau of this topic is invisible: skip
         if(!$editmode && !block_exacomp_is_niveau_visible($courseid,$topic,0,$descriptor->niveauid)){
             continue;
+        }
+
+        if(!property_exists($topic,"used_niveaus")){
+            $topic->used_niveaus = array();
+        }
+        if (!in_array($descriptor->niveauid, $topic->used_niveaus)) {
+            $topic->used_niveaus[] = $descriptor->niveauid;
+        }
+
+        if ($niveauid != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $calledfromoverview) {
+            if ($descriptor->niveauid != $niveauid) {
+                continue;
+            }
         }
 
 		$topic->descriptors[$descriptor->id] = $descriptor;
