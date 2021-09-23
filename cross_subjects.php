@@ -172,14 +172,16 @@ if (optional_param('print', false, PARAM_BOOL)) {
             //$html_pdf = $output->overview_legend($isTeacher);
             $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
 
-            $html_pdf .= $output->competence_overview($subjects,
-                                $courseid,
-                                $students,
-                                $showevaluation,
-                                $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
-                                $scheme,
-                                false,
-                                $cross_subject->id);
+            list($competence_overview, $used_niveaus) = $output->competence_overview($subjects,
+                $courseid,
+                $students,
+                $showevaluation,
+                $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+                $scheme,
+                false,
+                $cross_subject->id);
+
+            $html_pdf .= $competence_overview;
             $html_tables[] = $html_pdf;
         }
         block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
@@ -434,7 +436,8 @@ if ($cross_subject) {
 	        echo $output->overview_legend($isTeacher);
 	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-	        echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
+            list($competence_overview, $used_niveaus) = $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
+	        echo $competence_overview;
 	        echo html_writer::end_tag("div");
 	        echo html_writer::end_tag('form');
 	    } else if ($style == 1){

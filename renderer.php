@@ -2051,7 +2051,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 // 			echo "<br>";
 
 			$row_cnt = count($rows); // save row count to calc print_width
-			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher, false, $hideAllActionButtons); //renders the topics
+			$used_niveaus = $this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid, $isEditingTeacher, false, $hideAllActionButtons); //renders the topics
 
 			if ($this->is_print_mode()) {
 				$row = $rows[$row_cnt];
@@ -2105,7 +2105,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$table_html .= html_writer::end_tag('form');
 		}
 
-		return $table_html;
+		return array($table_html,$used_niveaus);
 	}
 
 	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $crosssubjid = 0, $isEditingTeacher = true, $forReport = false, $hideAllActionButtons = false) {
@@ -2400,12 +2400,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->rg2_level += $child_level - $level;
 				$child_data->scheme = block_exacomp_get_assessment_comp_scheme();
 
+                // save all niveaus that are used in this topic
+                $used_niveaus = array();
 				if (!empty($topic->descriptors)) {
 
 // 				    echo "<br>";
 // 				    echo "<br>";
 // 				    echo "<br>";
 // 				    echo "<br>";
+                    foreach ($topic->descriptors as $descriptor) {
+                        if (!in_array($descriptor->niveau_numb, $used_niveaus)) {
+                            $used_niveaus[] = $descriptor->niveau_numb;
+                        }
+                    }
 
 					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, false, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport, $hideAllActionButtons);
 					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, true, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport, $hideAllActionButtons);
@@ -2439,6 +2446,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 			}
 		}
+        return $used_niveaus;
 	}
 
 	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true, $forReport = false, $hideAllActionButtons = false) {

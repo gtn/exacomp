@@ -159,14 +159,15 @@ class block_exacomp_simple_service {
 	            //$html_pdf = $output->overview_legend($isTeacher);
 	            $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
 
-	            $html_pdf .= $output->competence_overview($subjects,
-	                $courseid,
-	                $students,
-	                $showevaluation,
-	                $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
-	                $scheme,
-	                false,
-	                $cross_subject->id);
+                list($competence_overview, $niveaus_used) = $output->competence_overview($subjects,
+                    $courseid,
+                    $students,
+                    $showevaluation,
+                    $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+                    $scheme,
+                    false,
+                    $cross_subject->id);
+	            $html_pdf .= $competence_overview;
 	            $html_tables[] = $html_pdf;
 	        }
 	        block_exacomp\printer::crossubj_overview($cross_subject, $subjects, $students, '', $html_tables);
@@ -326,15 +327,16 @@ class block_exacomp_simple_service {
 
 	        $html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
-	        $html_tables[] = $output->competence_overview($competence_tree,
-	            $courseid,
-	            $students_to_print,
-	            $showevaluation,
-	            $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
-	            $scheme,
-	            $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS,
-	            0,
-	            $isEditingTeacher);
+            list($competence_overview, $used_niveaus) = $output->competence_overview($competence_tree,
+                $courseid,
+                $students_to_print,
+                $showevaluation,
+                $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+                $scheme,
+                $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS,
+                0,
+                $isEditingTeacher);
+	        $html_tables[] = $competence_overview;
 	    }
 
 

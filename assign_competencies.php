@@ -211,7 +211,8 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		$html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 		// $html .= "&nbsp;<br />";
-		$html_tables[] = $output->competence_overview($competence_tree,
+
+		list($competence_overview, $used_niveaus) = $output->competence_overview($competence_tree,
                                                     $courseid,
                                                     $students_to_print,
                                                     $showevaluation,
@@ -220,6 +221,8 @@ if (optional_param('print', false, PARAM_BOOL)) {
                                                     $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS,
                                                     0,
                                                     $isEditingTeacher);
+
+        $html_tables[] = $competence_overview;
 	}
 
 
@@ -275,15 +278,18 @@ if ($course_settings->nostudents != 1 && $studentid) {
     echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
 }
 
-echo $output->competence_overview($competence_tree,
-                                    $courseid,
-                                    $students,
-                                    $showevaluation,
-		                            $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
-                                    $scheme,
-		                            ($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS),
-                                    0,
-                                    $isEditingTeacher);
+list($competence_overview, $used_niveaus) = $output->competence_overview($competence_tree,
+    $courseid,
+    $students,
+    $showevaluation,
+    $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT,
+    $scheme,
+    ($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS),
+    0,
+    $isEditingTeacher);
+
+echo $competence_overview;
+
 echo '</div>';
 //die;
 echo html_writer::end_tag("div");
