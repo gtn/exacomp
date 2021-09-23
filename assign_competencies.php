@@ -153,6 +153,32 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,
                         null,
                         $editmode);
 
+
+// skip all niveaus that are empty for the selected topic if not in editmode
+if($topicid){
+    $used_niveaus = $competence_tree[$selectedSubject->id]->topics[$topicid]->used_niveaus;
+    foreach ($niveaus as $k => $niveau){
+        if(!$editmode){
+            if(!in_array($niveau->id, $used_niveaus) && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS){
+                if($selectedNiveau->id == $niveau->id){
+                    $selectedNiveau = $niveaus[BLOCK_EXACOMP_SHOW_ALL_NIVEAUS]; // if e.g. niveau with id 6 is clicked, then the topic is switched and niveau 6 does not exist ==> go to "show all"
+                    $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
+                        'courseid' => $courseid,
+                        'showevaluation' => $showevaluation,
+                        'studentid' => $selectedStudentid,
+                        'editmode' => $editmode,
+                        'niveauid' => $selectedNiveau->id,
+                        'subjectid' => $subjectid,
+                        'topicid' => $topicid,
+                    ]);
+                    redirect($PAGE->url);
+                }
+                unset($niveaus[$k]);
+            }
+        }
+    }
+}
+
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector = "";
 if ($isTeacher) {	//mind nostudents setting
@@ -212,7 +238,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 
 		// $html .= "&nbsp;<br />";
 
-		list($competence_overview, $used_niveaus) = $output->competence_overview($competence_tree,
+		$competence_overview = $output->competence_overview($competence_tree,
                                                     $courseid,
                                                     $students_to_print,
                                                     $showevaluation,
@@ -260,7 +286,7 @@ echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 
 echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 
-list($competence_overview, $asdf) = $output->competence_overview($competence_tree,
+$competence_overview = $output->competence_overview($competence_tree,
     $courseid,
     $students,
     $showevaluation,
@@ -274,9 +300,8 @@ echo '<div class="gridlayout-left">';
 echo $output->subjects_menu($courseSubjects, $selectedSubject, $selectedTopic, $students, $editmode);
 echo '</div>';
 echo '<div class="gridlayout-right">';
-echo $output->niveaus_menu($niveaus, $selectedNiveau, $selectedTopic, $competence_tree[$selectedSubject->id]->topics[$selectedTopic->id]->used_niveaus);
-//var_dump($niveaus);
 
+echo $output->niveaus_menu($niveaus, $selectedNiveau, $selectedTopic);
 
 echo '<div class="clearfix"></div>';
 
@@ -288,31 +313,9 @@ if ($course_settings->nostudents != 1 && $studentid) {
     echo $output->student_evaluation($showevaluation, $isTeacher, $selectedNiveau->id, $subjectid, $topicid, $studentid);
 }
 
-
-
-// remove the unused niveaus (columns)
-//if(!$editmode){
-//    foreach ($niveaus as $niveau){
-//        if(!in_array($niveau->id, $used_niveaus)){
-//            // remove with css via id
-////            echo '<style type="text/css">
-////                    #niveauid-'.$niveau->id.' {
-////                        display: none;
-////                    }
-////                    </style>';
-//            echo '<style type="text/css">
-//                    #niveauid-1 {
-//                        display: none;
-//                    }
-//                    </style>';
-//        }
-//    }
-//}
-
 echo $competence_overview;
 
 echo '</div>';
-//die;
 echo html_writer::end_tag("div");
 echo html_writer::end_tag("div");
 echo html_writer::end_tag("div");

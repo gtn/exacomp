@@ -159,7 +159,7 @@ class block_exacomp_simple_service {
 	            //$html_pdf = $output->overview_legend($isTeacher);
 	            $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
 
-                list($competence_overview, $niveaus_used) = $output->competence_overview($subjects,
+                $competence_overview = $output->competence_overview($subjects,
                     $courseid,
                     $students,
                     $showevaluation,
@@ -327,7 +327,7 @@ class block_exacomp_simple_service {
 
 	        $html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
-            list($competence_overview, $used_niveaus) = $output->competence_overview($competence_tree,
+            $competence_overview = $output->competence_overview($competence_tree,
                 $courseid,
                 $students_to_print,
                 $showevaluation,

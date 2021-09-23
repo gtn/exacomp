@@ -172,7 +172,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
             //$html_pdf = $output->overview_legend($isTeacher);
             $html_pdf = $output->overview_metadata_cross_subjects($cross_subject, false);
 
-            list($competence_overview, $used_niveaus) = $output->competence_overview($subjects,
+            $competence_overview = $output->competence_overview($subjects,
                 $courseid,
                 $students,
                 $showevaluation,
@@ -436,7 +436,7 @@ if ($cross_subject) {
 	        echo $output->overview_legend($isTeacher);
 	        echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 	        echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-            list($competence_overview, $used_niveaus) = $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
+            $competence_overview = $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
 	        echo $competence_overview;
 	        echo html_writer::end_tag("div");
 	        echo html_writer::end_tag('form');
