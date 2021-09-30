@@ -2794,7 +2794,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	if (!$selectedTopic) {
 		// $descriptors contains all descriptors for this course, so filter it for just descriptors of selected subject
 		foreach ($descriptors as $key => $descriptor) {
-			if (isset($courseTopics[$descriptor->topicid]) && ($courseTopics[$descriptor->topicid]->subjid == $selectedSubject->id)) {
+			if ($selectedSubject && isset($courseTopics[$descriptor->topicid]) && ($courseTopics[$descriptor->topicid]->subjid == $selectedSubject->id)) {
 				// OK
 			} else {
 				unset($descriptors[$key]);
@@ -2855,7 +2855,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	}
 
 	foreach ($courseTopics as $topic) {
-	    if($courseSubjects[$topic->subjid]){ //check if this subject is not removed already
+	    if(!empty($courseSubjects) && array_key_exists($topic->subjid,$courseSubjects)){ //check if this subject is not removed already
             $courseSubjects[$topic->subjid]->topics[$topic->id] = $topic;
         }
 	}
