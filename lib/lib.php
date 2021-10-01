@@ -3148,7 +3148,8 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
 		    if (block_exacomp_use_old_activities_method()) {
                 $settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
             }
-			$settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
+		    $settings_subtree[] = new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null, true);
+            $settings_subtree[] = new tabobject('tab_teacher_settings_questiontodescriptors', new moodle_url('/blocks/exacomp/question_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_questiontodescriptors"), null, true);
 		}
 	}
     // Badges submenu
@@ -14035,5 +14036,60 @@ function block_exacomp_check_profile_fields() {
 			g::$DB->insert_record('user_info_field', $field);
 		}
 	}
+}
+
+function block_exacomp_build_comp_tree($question) {
+    global $CFG, $USER, $COURSE, $DB;
+    $content = '<form></form>';
+    $content .= '<form id="treeform" method="post" '.
+        ' action="'.$CFG->wwwroot.'/blocks/exacomp/question_to_descriptors.php?courseid='.$COURSE->id.'">';
+    $activedescriptors = $DB->get_fieldset_select("block_exacompdescrquest_mm",'descrid', 'questid = '.$question->id);
+
+    $printtree = function($items, $level = 0) use (&$printtree, $activedescriptors) {
+        if (!$items) {
+            return '';
+        }
+
+        $content = '';
+        if ($level == 0) {
+            $content .= '<ul id="comptree" class="treeview">';
+        } else {
+            $content .= '<ul>';
+        }
+
+        foreach ($items as $item) {
+            if ($item instanceof \block_exacomp\descriptor && in_array($item->id, $activedescriptors)) {
+                $checked = 'checked="checked"';
+            } else {
+                $checked = '';
+            }
+
+            $content .= '<li>';
+            if ($item instanceof \block_exacomp\descriptor) {
+                $content .= '<input type="checkbox" name="desc['.$item->id.']" '.$checked.' value="'.$item->id.'">';
+            }
+            $content .= $item->title.
+                ($item->achieved ? ' '.g::$OUTPUT->pix_icon("i/badge",
+                        block_exaport_get_string('selected_competencies')) : '').
+                $printtree($item->get_subs(), $level + 1).
+                '</li>';
+        }
+
+        $content .= '</ul>';
+
+        return $content;
+    };
+
+    $comptree = \block_exacomp\api::get_comp_tree_for_exaport($USER->id);
+
+    $content .= $printtree($comptree);
+    $content .= '<input type="hidden" value="'.$question->id.'" name="questid">';
+    $content .= '<input type="hidden" value="save" name="action">';
+    $content .= '<input type="submit" id="id_submitbutton" type="submit" value="'.get_string('savechanges').
+        '" name="submitbutton">';
+
+    $content .= '</form>';
+
+    return $content;
 }
 
