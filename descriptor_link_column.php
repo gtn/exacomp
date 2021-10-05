@@ -15,13 +15,13 @@ class descriptor_link_column extends column_base
 
     protected function get_title()
     {
-        return get_string('createdby', 'question');
+        return '';
     }
 
     protected function display_content($question, $rowclasses)
     {
     global $USER, $DB;
-    echo'<a href="#" class="competences"> Link </a>';
+    echo'<a href="#" class="competences'.$question->id.'"> Link </a>';
 
         $conditions = array("id" => 1, "userid" => $USER->id);
         $existing = $DB->get_record('block_exaportitem', $conditions)
@@ -29,14 +29,13 @@ class descriptor_link_column extends column_base
 
         ?>
         <div style="display: none">
-            <div id='inline_comp_tree' style='padding: 10px; background: #fff;'>
+            <div id="inline_comp_tree" class="ict<?php echo $question->id; ?>" style='padding: 10px; background: #fff;'>
                 <h4>
-                    <?php echo get_string("opencomps", "block_exaport") ?>
+                    <?php echo block_exacomp_get_string("opencomps") ?>
                 </h4>
 
-                <a href="javascript:ddtreemenu.flatten('comptree', 'expand')"><?php echo get_string("expandcomps", "block_exaport") ?>
-                </a> | <a href="javascript:ddtreemenu.flatten('comptree', 'contact')"><?php echo get_string("contactcomps",
-                        "block_exaport") ?>
+                <a href="javascript:ddtreemenu.flatten('comptree<?php echo $question->id; ?>', 'expand')"><?php echo block_exacomp_get_string("expandcomps") ?>
+                </a> | <a href="javascript:ddtreemenu.flatten('comptree<?php echo $question->id; ?>', 'contact')"><?php echo block_exacomp_get_string("contactcomps") ?>
                 </a>
 
                 <?php echo block_exacomp_build_comp_tree($question); ?>
@@ -47,16 +46,16 @@ class descriptor_link_column extends column_base
             //<![CDATA[
             jQueryExacomp(function ($) {
 
-                $("#treeform :checkbox").click(function (e) {
+                $("#treeform<?php echo $question->id; ?> :checkbox").click(function (e) {
                     // Prevent item open/close.
                     e.stopPropagation();
                 });
 
                 var $compids = $("input[name=compids]");
-                var $descriptors = $("#treeform :checkbox");
+                var $descriptors = $("#treeform<?php echo $question->id; ?> :checkbox");
 
-                $(".competences").colorbox({
-                    width: "75%", height: "75%", inline: true, href: "#inline_comp_tree", onClosed: function () {
+                $(".competences<?php echo $question->id; ?>").colorbox({
+                    width: "75%", height: "75%", inline: true, href: ".ict<?php echo $question->id; ?>", onClosed: function () {
                         // Save ids to input field.
                         var compids = "";
                         $descriptors.filter(":checked").each(function () {
@@ -67,12 +66,12 @@ class descriptor_link_column extends column_base
                         build_competence_output();
                     }
                 });
-                ddtreemenu.createTree("comptree", true);
+                ddtreemenu.createTree("comptree<?php echo $question->id; ?>", true);
 
                 function build_competence_output() {
-                    var $tree = $("#comptree").clone();
+                    var $tree = $("#comptree<?php echo $question->id; ?>").clone();
                     // Remove original id, conflicts with real tree.
-                    $tree.attr("id", "comptree-selected");
+                    $tree.attr("id", "comptree<?php echo $question->id; ?>-selected");
 
                     // Delete all not checked.
                     $tree.find("li").each(function () {
@@ -85,10 +84,10 @@ class descriptor_link_column extends column_base
                     $tree.find(":checkbox").remove();
 
                     $("#comptitles").empty().append($tree);
-                    ddtreemenu.createTree("comptree-selected", false);
+                    ddtreemenu.createTree("comptree<?php echo $question->id; ?>-selected", false);
 
                     // Open all.
-                    ddtreemenu.flatten("comptree-selected", "expand");
+                    ddtreemenu.flatten("comptree<?php echo $question->id; ?>-selected", "expand");
                 }
 
                 build_competence_output();

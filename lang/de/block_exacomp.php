@@ -930,3 +930,7 @@ $string['tab_teacher_settings_course_assessment'] = 'Kursspezifische Beurteilung
 $string['course_assessment_config_infotext'] = 'Wählen Sie das gewüntsche Beurteilungsschema aus.';
 $string['course_assessment_use_global'] = 'Globale Beurteilungseinstellung nutzen';
 $string['course_assessment_settings'] = 'Kursspezifische Beurteilung';
+$string['close'] = 'Schließen';
+$string['opencomps'] = 'Kompetenzen auswählen';
+$string['expandcomps'] = 'Alle öffnen';
+$string['contactcomps'] = 'Alle schließen';

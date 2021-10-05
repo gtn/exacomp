@@ -3366,5 +3366,21 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Kursspezifische Beurteilung',
         'Course assessment',
     ],
+    'close' => [
+        'Schließen',
+        'Close',
+    ],
+    'opencomps' => [
+        'Kompetenzen auswählen',
+        'Choose your competences',
+    ],
+    'expandcomps' => [
+        'Alle öffnen',
+        'Expand all',
+    ],
+    'contactcomps' => [
+        'Alle schließen',
+        'Contract all',
+    ],
 
 ];

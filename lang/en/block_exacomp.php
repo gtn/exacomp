@@ -920,3 +920,7 @@ $string['tab_teacher_settings_course_assessment'] = 'Course assessment';
 $string['course_assessment_config_infotext'] = 'Choose an assessment scheme';
 $string['course_assessment_use_global'] = 'Use global assessment settings';
 $string['course_assessment_settings'] = 'Course assessment';
+$string['close'] = 'Close';
+$string['opencomps'] = 'Choose your competences';
+$string['expandcomps'] = 'Expand all';
+$string['contactcomps'] = 'Contract all';

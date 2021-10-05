@@ -17,10 +17,10 @@ global $DB, $CFG, $PAGE, $OUTPUT, $COURSE, $USER;
 global $PAGE;
 $PAGE->requires->jquery();
 $PAGE->requires-> js('/blocks/exacomp/javascript/exacomp.js', true);
-$PAGE->requires->js('/blocks/exaport/javascript/simpletreemenu.js', true);
-$PAGE->requires->css('/blocks/exaport/javascript/simpletree.css');
-$PAGE->requires->css('/blocks/exaport/css/colorbox.css');
-$PAGE->requires-> js('/blocks/exaport/javascript/jquery.colorbox.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/simpletreemenu/simpletreemenu.js', true);
+$PAGE->requires->css('/blocks/exacomp/javascript/simpletreemenu/simpletree.css');
+$PAGE->requires->css('/blocks/exacomp/css/colorbox.css');
+$PAGE->requires-> js('/blocks/exacomp/javascript/jquery.colorbox.js', true);
 
 
 //require_once(__DIR__ . '/../config.php');
@@ -37,6 +37,16 @@ $questid = optional_param('questid', '', PARAM_RAW);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
+
+if($action == 'save'){
+    $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
+    foreach($descs as $desc) {
+        if(!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc))){
+            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc));
+        }
+    }
+}
+
 
 
 require_login($course);
@@ -68,6 +78,10 @@ $url = new moodle_url('/blocks/exacomp/question_to_descriptors.php', $page_param
 if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
     $url->param('lastchanged', $lastchanged);
 }
+
+$questionbank = new core_question\bank\exacomp_view($contexts, $url, $COURSE, $cm);
+$questionbank->process_actions();
+
 $PAGE->set_url($url);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 //$streditingquestions = get_string('editquestions', 'question');
@@ -82,8 +96,7 @@ echo $OUTPUT->header($context,$courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
 
-$questionbank = new core_question\bank\exacomp_view($contexts, $url, $COURSE, $cm);
-$questionbank->process_actions();
+
 
 //$context = $contexts->lowest();
 //$streditingquestions = get_string('editquestions', 'question');
@@ -114,13 +127,6 @@ $catcontext = \context::instance_by_id($contextid);
 $event = \core\event\question_category_viewed::create_from_question_category_instance($category, $catcontext);
 $event->trigger();
 
-if($action == 'save'){
-    foreach($descs as $desc) {
-        if(!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc))){
-            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc));
-        }
-    }
-}
 
 
 echo $OUTPUT->footer();

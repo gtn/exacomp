@@ -14046,18 +14046,18 @@ function block_exacomp_check_profile_fields() {
 function block_exacomp_build_comp_tree($question) {
     global $CFG, $USER, $COURSE, $DB;
     $content = '<form></form>';
-    $content .= '<form id="treeform" method="post" '.
+    $content .= '<form id="treeform'.$question->id.'" method="post" '.
         ' action="'.$CFG->wwwroot.'/blocks/exacomp/question_to_descriptors.php?courseid='.$COURSE->id.'">';
     $activedescriptors = $DB->get_fieldset_select("block_exacompdescrquest_mm",'descrid', 'questid = '.$question->id);
 
-    $printtree = function($items, $level = 0) use (&$printtree, $activedescriptors) {
+    $printtree = function($items, $level = 0) use (&$printtree, $activedescriptors, $question) {
         if (!$items) {
             return '';
         }
 
         $content = '';
         if ($level == 0) {
-            $content .= '<ul id="comptree" class="treeview">';
+            $content .= '<ul id="comptree'.$question->id.'" class="treeview">';
         } else {
             $content .= '<ul>';
         }
