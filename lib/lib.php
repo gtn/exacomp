@@ -4877,7 +4877,12 @@ function block_exacomp_get_activitiy_by_id($activityid) {
  */
 function block_exacomp_update_example_activity_relations($descriptorsData = array(), $topicsData = array(), $courseid) {
     global $DB, $CFG, $USER;
+
+
     foreach ($descriptorsData as $activityid => $descriptors) {
+        //todo löschen von examples wenn verknüpfung ausgetragen
+        //$oldexamples = $DB->get_record('block_exacompexamples', array('activityid'=>$activityid));
+
         $relatedDescriptors = array_filter($descriptors);
         $relatedDescriptors = array_keys($relatedDescriptors);
         block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
