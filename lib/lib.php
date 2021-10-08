@@ -2358,20 +2358,22 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 //            ." ORDER BY de.sorting"
 //            , array($descriptor->id, $courseid, $courseid));
 //    }else{
-        $examples = \block_exacomp\example::get_objects_sql(
-            "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid, e.task,
+
+    // TODO: check for example->courseid
+    $examples = \block_exacomp\example::get_objects_sql(
+        "SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, e.creatorid, e.task,
             e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author, e.editor,
             e.ethema_issubcategory, e.ethema_ismain, e.ethema_parent, e.ethema_important, e.example_icon,
             de.sorting, e.courseid, e.activityid, e.activitylink, e.author_origin, e.is_teacherexample
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
-            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
-            ." WHERE "
-            ." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
-            .($showallexamples ? " 1=1 " : " e.creatorid > 0")
-            .(!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND e.is_teacherexample = 0 ' : '')
-            ." AND (e.title LIKE '%".$search."%' OR e.description LIKE '%".$search."%')"
-            ." ORDER BY de.sorting"
-            , array($descriptor->id, $courseid, $courseid));
+            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=:descriptorid"
+        ." WHERE "
+        ." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
+        .($showallexamples ? " 1=1 " : " e.creatorid > 0")
+        .(!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND e.is_teacherexample = 0 ' : '')
+        ." AND (e.title LIKE :searchtitle OR e.description LIKE :searchdescription)"
+        ." ORDER BY de.sorting"
+        , array("descriptorid"=>$descriptor->id, "searchtitle"=>"%".$search."%", "searchdescription"=>"%".$search."%"));
 //    }
 
     // old
@@ -7419,7 +7421,8 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid) {
 
     $exampleid = is_scalar($example) ? $example : $example->id;
 
-    // if the example has courseid and it is not equal $courseid
+    // if the example has courseid and it is not equal $courseid --> So the example has been created in diggrplus only for this course... but why should it then even exist?
+    // keep the check, but actually, the example should not even be here invisibly, because that will confuse the teachers who cannot change visibility but have this foreign example in their subject
     if ($example->courseid > 0 && $example->courseid != $courseid) {
         $visibleExamples[$courseid][$exampleid][$studentid] = false;
         return false;
@@ -8664,7 +8667,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
 
     $courseidCondition = $courseid==-1 ? "" : "AND i.courseid = ".$courseid;
 
-    $compidCondition = $compid==-1 ? "" : "AND d.id = ?";
+    $compidCondition = $compid==-1 ? "" : "AND d.id = :compid";
 //    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = ?";
 //    $niveauConditionD = $niveauid==-1 ? "" : "AND d.niveauid = ?";
 
@@ -8698,15 +8701,20 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {block_exacompdescrtopic_mm} desctop ON desctop.descrid = descexamp.descrid
                 JOIN {block_exacomptopics} topic ON topic.id = desctop.topicid
                 JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
-              WHERE i.userid = ?
+              WHERE i.userid = :userid
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
-                AND ie.competence_type = ?
-                AND (d.title LIKE "%'.$search.'%" OR d.description LIKE "%'.$search.'%" OR i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
+                AND ie.competence_type = :comptype
+                AND (d.title LIKE :searchtitle OR d.description LIKE :searchdescription OR i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
-            // TODO: dangerous... solve like this:            $params [courseid]="%$search%";
-
+            $params["userid"]=$userid;
+            $params["compid"]=$compid;
+            $params["comptype"]=$comptype;
+            $params["searchtitle"]="%".$search."%";
+            $params["searchdescription"]="%".$search."%";
+            $params["searchname"]="%".$search."%";
+            $params["searchintro"]="%".$search."%";
             break;
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -8716,13 +8724,18 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {block_exacompdescrtopic_mm} desctop ON desctop.descrid = d.id
                 JOIN {block_exacomptopics} topic ON topic.id = desctop.topicid
                 JOIN {block_exacompsubjects} subj ON topic.subjid = subj.id
-              WHERE i.userid = ?
+              WHERE i.userid = :userid
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
-                AND ie.competence_type = ?
-                AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
+                AND ie.competence_type = :comptype
+                AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
+            $params["userid"]=$userid;
+            $params["compid"]=$compid;
+            $params["comptype"]=$comptype;
+            $params["searchname"]="%".$search."%";
+            $params["searchintro"]="%".$search."%";
             break;
         case -1: // TODO: only for now: same as for topics, since descriptors are not used in diggrplus
             $comptype = BLOCK_EXACOMP_TYPE_TOPIC;
@@ -8732,13 +8745,18 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
                 JOIN {block_exacompsubjects} subj ON d.subjid = subj.id
-              WHERE i.userid = ?
+              WHERE i.userid = :userid
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
-                AND ie.competence_type = ?
-                AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
+                AND ie.competence_type = :comptype
+                AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
+            $params["userid"]=$userid;
+            $params["compid"]=$compid;
+            $params["comptype"]=$comptype;
+            $params["searchname"]="%".$search."%";
+            $params["searchintro"]="%".$search."%";
             break;
         case BLOCK_EXACOMP_TYPE_SUBJECT: // TODO: Only of subject, or also of topics beneath?  for now: also of topics beneath
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, d.title as subjecttitle, topic.id as topicid, d.id as subjectid
@@ -8746,29 +8764,24 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 JOIN {block_exacomptopics} topic ON topic.subjid = d.id
                 JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON (ie.exacomp_record_id = d.id OR ie.exacomp_record_id = topic.id)
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
-              WHERE i.userid = ?
+              WHERE i.userid = :userid
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
-                AND (ie.competence_type = ? OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.')
-                AND (i.name LIKE "%'.$search.'%" OR i.intro LIKE "%'.$search.'%")
+                AND (ie.competence_type = :comptype OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.')
+                AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
+            $params["userid"]=$userid;
+            $params["compid"]=$compid;
+            $params["comptype"]=$comptype;
+            $params["searchname"]="%".$search."%";
+            $params["searchintro"]="%".$search."%";
             break;
     }
-    if($compid == -1){
-//        if($niveauid == -1){
-//            $items = $DB->get_records_sql($sql, $params);
-            $items = $DB->get_records_sql($sql, array($userid, $comptype));
-//        }else{
-//            $items = $DB->get_records_sql($sql, array($userid, $niveauid, $comptype));
-//        }
-    }else{
-//        if($niveauid == -1){
-            $items = $DB->get_records_sql($sql, array($userid, $compid, $comptype));
-//        }else{
-//            $items = $DB->get_records_sql($sql, array($userid, $compid, $niveauid, $comptype));
-//        }
-    }
+
+    // some parameters will not be needed, but this does not matter, since they have been named
+    $items = $DB->get_records_sql($sql, $params);
+
 
 
     foreach($items as $item){
