@@ -2372,8 +2372,9 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
         .($showallexamples ? " 1=1 " : " e.creatorid > 0")
         .(!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND e.is_teacherexample = 0 ' : '')
         ." AND (e.title LIKE :searchtitle OR e.description LIKE :searchdescription)"
+        ." AND (e.courseid = 0 OR e.courseid = :courseid OR e.courseid IS NULL)"
         ." ORDER BY de.sorting"
-        , array("descriptorid"=>$descriptor->id, "searchtitle"=>"%".$search."%", "searchdescription"=>"%".$search."%"));
+        , array("descriptorid"=>$descriptor->id, "searchtitle"=>"%".$search."%", "searchdescription"=>"%".$search."%", "courseid"=>$courseid));
 //    }
 
     // old
@@ -9328,17 +9329,17 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvis ON topic.id=tvis.topicid AND tvis.niveauid IS NULL
             JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON ex.id=evis.exampleid
 
-            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} exameval ON exameval.exampleid = ex.id AND exameval.courseid = ? AND exameval.studentid = ".$userid."
-            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION."} examannot ON examannot.exampleid = ex.id AND examannot.courseid = ?
+            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} exameval ON exameval.exampleid = ex.id AND exameval.courseid = :courseidexameval AND exameval.studentid = :userid
+            LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION."} examannot ON examannot.exampleid = ex.id AND examannot.courseid = :courseidexamannot
 
-            WHERE ct.courseid = ?
+            WHERE ct.courseid = :courseid
             AND dvis.visible = true
             AND tvis.visible = true
             AND evis.visible = true
-            AND (ex.courseid = 0 OR ex.courseid = ? OR ex.courseid IS NULL)
-            AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')
+            AND (ex.courseid = 0 OR ex.courseid = :courseidexample OR ex.courseid IS NULL)
+            AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
             GROUP BY ex.id
-            ";;
+            ";
         }else{
             $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
@@ -9351,8 +9352,8 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
             JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON det.descrid=d.id
             JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON n.id = d.niveauid
 
-            WHERE ct.courseid = ?
-            AND (ex.title LIKE '%".$search."%' OR ex.description LIKE '%".$search."%')
+            WHERE ct.courseid = :courseid
+            AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
             GROUP BY ex.id
             ";
         }
@@ -9364,11 +9365,12 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo=fal
 			FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex
 			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} det ON dex.descrid = det.descrid
 			JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
-			WHERE ct.courseid = ?
+			WHERE ct.courseid = :courseid
 		)";
     }
 
-	return g::$DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
+    return g::$DB->get_records_sql($sql, array("courseid" => $courseid, "courseidexample" => $courseid, "courseidexameval" => $courseid,
+        "courseidexamannot" => $courseid, "searchtitle" => "%" . $search . "%", "searchdescription" => "%" . $search . "%", "userid" => $userid));
 }
 
 
