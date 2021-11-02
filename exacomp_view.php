@@ -63,4 +63,38 @@ class exacomp_view extends \core_question\bank\view
         }
         return $this->requiredcolumns;
     }
+
+    public function display($tabname, $page, $perpage, $cat,
+                            $recurse, $showhidden, $showquestiontext, $tagids = []) {
+        global $PAGE, $CFG;
+
+        if ($this->process_actions_needing_ui()) {
+            return;
+        }
+        $editcontexts = $this->contexts->having_one_edit_tab_cap($tabname);
+        list(, $contextid) = explode(',', $cat);
+        $catcontext = \context::instance_by_id($contextid);
+        $thiscontext = $this->get_most_specific_context();
+        // Category selection form.
+        $this->display_question_bank_header();
+
+        // Display tag filter if usetags setting is enabled.
+        if ($CFG->usetags) {
+            array_unshift($this->searchconditions,
+                new \core_question\bank\search\tag_condition([$catcontext, $thiscontext], $tagids));
+            $PAGE->requires->js_call_amd('core_question/edit_tags', 'init', ['#questionscontainer']);
+        }
+
+        array_unshift($this->searchconditions, new \core_question\bank\search\hidden_condition(!$showhidden));
+        array_unshift($this->searchconditions, new \core_question\bank\search\category_condition(
+            $cat, $recurse, $editcontexts, $this->baseurl, $this->course));
+        $this->display_options_form($showquestiontext, '/blocks/exacomp/question_to_descriptors.php');
+
+        // Continues with list of questions.
+        $this->display_question_list($editcontexts,
+            $this->baseurl, $cat, $this->cm,
+            null, $page, $perpage, $showhidden, $showquestiontext,
+            $this->contexts->having_cap('moodle/question:add'));
+
+    }
 }
