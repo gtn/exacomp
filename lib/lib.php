@@ -4894,6 +4894,10 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
         $mod_info = get_fast_modinfo($courseid);
     }
 
+    //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
+    $courseOpenForGuests = !$DB->get_record("enrol", array("courseid" => $courseid, "enrol" => "guest"))->status; // 0 stands for ENABLED ==> !
+
+
 
     if (count($descriptors)) { // if no any descriptor - no sense to insert the example (no relation to activity)
 //        var_dump("Activityid: ", $activityid);
@@ -4918,7 +4922,22 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
             } else {
                 $example_icons = null;
             }
-            $newExample = (object) array(
+
+            //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
+            if($courseOpenForGuests){
+                $newExample = (object) array(
+                    'title' => $module->name,
+                    'courseid' => 0,
+                    'activityid' => $activityid,
+                    'activitylink' => $activitylink,
+                    'activitytitle' => $module->name,
+                    'externaltask' => $externaltask,
+                    'creatorid' => $USER->id,
+                    'parentid' => 0,
+                    'example_icon' => $example_icons
+                );
+            }else{
+                $newExample = (object) array(
                     'title' => $module->name,
                     'courseid' => $courseid,
                     'activityid' => $activityid,
@@ -4928,7 +4947,10 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
                     'creatorid' => $USER->id,
                     'parentid' => 0,
                     'example_icon' => $example_icons
-            );
+                );
+            }
+
+
             $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
         }
 

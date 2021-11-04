@@ -197,6 +197,7 @@ if ($modules) {
         $module->descriptors = array();
         $module->topics = array();
 
+        // examples created by relating moodle-competencies created by the komettranslatortool will NOT be shown here, since the courseid is 0
 		$relatedexample = $DB->get_record('block_exacompexamples', array('activityid'=>$module->id, 'courseid' => $courseid), '*', IGNORE_MULTIPLE);
 		if ($relatedexample) {
             $descriptors = block_exacomp_get_descriptors_by_example($relatedexample->id);
