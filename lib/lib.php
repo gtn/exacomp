@@ -4887,7 +4887,7 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
  * @param integer $activityid
  * @param array $descriptors
  */
-function block_exacomp_relate_example_to_activity($courseid, $activityid, $descriptors = array()){
+function block_exacomp_relate_example_to_activity($courseid, $activityid, $descriptors = array(), $komettranslator=false){
     global $DB, $CFG, $USER;
     static $mod_info = null;
     if ($mod_info === null) {
@@ -4924,7 +4924,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
             }
 
             //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
-            if($courseOpenForGuests){
+            if($komettranslator && $courseOpenForGuests){
                 $newExample = (object) array(
                     'title' => $module->name,
                     'courseid' => 0,
@@ -13919,7 +13919,7 @@ function block_exacomp_relate_komettranslator_to_exacomp(){
         $courseid = array_values($descriptors)[0]->courseid;
         $descriptors = array_keys($descriptors); //the keys are the descriptorids, which is what I need
         if($descriptors){
-            block_exacomp_relate_example_to_activity($courseid, $module->moduleid, $descriptors);
+            block_exacomp_relate_example_to_activity($courseid, $module->moduleid, $descriptors, true);
         }
 
         // TODO: the following works based on existing functions(good), but could be done more performant(bad)
