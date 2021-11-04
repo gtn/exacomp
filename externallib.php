@@ -1158,13 +1158,13 @@ class block_exacomp_external extends external_api {
 					$elem_topic = new stdClass ();
 					$elem_topic->id = $topic->id;
                     $elem_topic->title = static::custom_htmltrim(strip_tags($topic->title));
-					//$elem_topic->descriptors = array();
-					//foreach ($topic->descriptors as $descriptor) {
-					//	$elem_desc = new stdClass ();
-					//	$elem_desc->descriptorid = $descriptor->id;
-					//	$elem_desc->descriptortitle = $descriptor->title;
-					//	$elem_topic->descriptors[] = $elem_desc;
-					//}
+					$elem_topic->descriptors = array();
+					foreach ($topic->descriptors as $descriptor) {
+						$elem_desc = new stdClass ();
+						$elem_desc->descriptorid = $descriptor->id;
+						$elem_desc->descriptortitle = $descriptor->title;
+						$elem_topic->descriptors[] = $elem_desc;
+					}
 					$elem_sub->topics[] = $elem_topic;
 				}
 
@@ -1192,10 +1192,10 @@ class block_exacomp_external extends external_api {
 			'topics' => new external_multiple_structure (new external_single_structure (array(
 				'id' => new external_value (PARAM_INT, 'id of example'),
 				'title' => new external_value (PARAM_TEXT, 'title of example'),
-				//'descriptors' => new external_multiple_structure (new external_single_structure (array(
-				//	'descriptorid' => new external_value (PARAM_INT, 'id of example'),
-				//	'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
-				//))),
+				'descriptors' => new external_multiple_structure (new external_single_structure (array(
+					'descriptorid' => new external_value (PARAM_INT, 'id of example'),
+					'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+				))),
 			))),
 		)));
 	}
@@ -12401,7 +12401,7 @@ class block_exacomp_external extends external_api {
             $exampleData->externalurl = $example->externalurl;
             $exampleData->externaltask = $example->externaltask;
             $exampleData->task = $example->task;
-           
+
             if (!$exampleData->externalurl && $exampleData->task) {
                 $exampleData->externalurl = $exampleData->task;
                 $exampleData->task= "";

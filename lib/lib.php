@@ -8760,19 +8760,21 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             $params["searchname"]="%".$search."%";
             $params["searchintro"]="%".$search."%";
             break;
-        case -1: // TODO: only for now: same as for topics, since descriptors are not used in diggrplus
-            $comptype = BLOCK_EXACOMP_TYPE_TOPIC;
-        case BLOCK_EXACOMP_TYPE_TOPIC:
+        case BLOCK_EXACOMP_TYPE_TOPIC: // topics AND descriptors of those topics
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, d.title as topictitle, subj.title as subjecttitle, d.id as topicid, subj.id as subjectid
               FROM {block_exacomptopics} d
-                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+
+                JOIN {block_exacompdescrtopic_mm} desctop ON desctop.topicid = d.id
+                JOIN {block_exacompdescriptors} descr ON descr.id = desctop.descrid
+
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON (ie.exacomp_record_id = d.id OR ie.exacomp_record_id = descr.id)
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
                 JOIN {block_exacompsubjects} subj ON d.subjid = subj.id
               WHERE i.userid = :userid
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
-                AND ie.competence_type = :comptype
+                AND (ie.competence_type = :comptype OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.')
                 AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
             $params["userid"]=$userid;
@@ -8781,17 +8783,23 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             $params["searchname"]="%".$search."%";
             $params["searchintro"]="%".$search."%";
             break;
+        case -1: // same as for subject, since this contains ALL items
+            $comptype = BLOCK_EXACOMP_TYPE_SUBJECT;
         case BLOCK_EXACOMP_TYPE_SUBJECT: // TODO: Only of subject, or also of topics beneath?  for now: also of topics beneath
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, d.title as subjecttitle, topic.id as topicid, d.id as subjectid
               FROM {block_exacompsubjects} d
                 JOIN {block_exacomptopics} topic ON topic.subjid = d.id
-                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON (ie.exacomp_record_id = d.id OR ie.exacomp_record_id = topic.id)
+
+                JOIN {block_exacompdescrtopic_mm} desctop ON desctop.topicid = topic.id
+                JOIN {block_exacompdescriptors} descr ON descr.id = desctop.descrid
+
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON (ie.exacomp_record_id = d.id OR ie.exacomp_record_id = topic.id OR ie.exacomp_record_id = descr.id)
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = :userid
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
-                AND (ie.competence_type = :comptype OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.')
+                AND (ie.competence_type = :comptype OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.' OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.')
                 AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
             $params["userid"]=$userid;
