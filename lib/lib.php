@@ -8691,8 +8691,8 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
     $courseidCondition = $courseid==-1 ? "" : "AND i.courseid = ".$courseid;
 
     $compidCondition = $compid==-1 ? "" : "AND d.id = :compid";
-//    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = ?";
-//    $niveauConditionD = $niveauid==-1 ? "" : "AND d.niveauid = ?";
+    $niveauCondition = $niveauid==-1 ? "" : "AND descr.niveauid = :niveauid";
+    $niveauConditionD = $niveauid==-1 ? "" : "AND d.niveauid = :niveauid";
 
     switch($status){
         case "inprogress":
@@ -8711,7 +8711,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
 
     $params = [];
 
-    // TODO: use niveaucondition.   For now it is irrelevant, because own_items will only be submitted to topics, which do not have niveauinformation (only descriptors have)
+    // niveaucondition is needed now since we use descriptors as well, and descripotrs can have niveaus 04.11.2021
     // The joins do not really take up much of the time. The high amount of queries does. Maybe indizes could speed this up?
     // THe search could be made conditional
     switch($comptype){
@@ -8738,6 +8738,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             $params["searchdescription"]="%".$search."%";
             $params["searchname"]="%".$search."%";
             $params["searchintro"]="%".$search."%";
+            $params["niveauid"]=$niveauid;
             break;
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, topic.title as topictitle, subj.title as subjecttitle, topic.id as topicid, subj.id as subjectid
@@ -8751,6 +8752,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
+                '.$niveauConditionD.'
                 AND ie.competence_type = :comptype
                 AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
@@ -8759,6 +8761,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             $params["comptype"]=$comptype;
             $params["searchname"]="%".$search."%";
             $params["searchintro"]="%".$search."%";
+            $params["niveauid"]=$niveauid;
             break;
         case BLOCK_EXACOMP_TYPE_TOPIC: // topics AND descriptors of those topics
             $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue, d.title as topictitle, subj.title as subjecttitle, d.id as topicid, subj.id as subjectid
@@ -8774,6 +8777,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
+                '.$niveauCondition.'
                 AND (ie.competence_type = :comptype OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.')
                 AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
@@ -8782,6 +8786,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             $params["comptype"]=$comptype;
             $params["searchname"]="%".$search."%";
             $params["searchintro"]="%".$search."%";
+            $params["niveauid"]=$niveauid;
             break;
         case -1: // same as for subject, since this contains ALL items
             $comptype = BLOCK_EXACOMP_TYPE_SUBJECT;
@@ -8799,6 +8804,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
                 '.$compidCondition.'
                 '.$statusCondition.'
                 '.$courseidCondition.'
+                '.$niveauCondition.'
                 AND (ie.competence_type = :comptype OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_TOPIC.' OR ie.competence_type = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.')
                 AND (i.name LIKE :searchname OR i.intro LIKE :searchintro)
               ORDER BY ie.timecreated DESC';
@@ -8807,6 +8813,7 @@ function block_exacomp_get_items_for_competence($userid, $compid=-1, $comptype=-
             $params["comptype"]=$comptype;
             $params["searchname"]="%".$search."%";
             $params["searchintro"]="%".$search."%";
+            $params["niveauid"]=$niveauid;
             break;
     }
 
