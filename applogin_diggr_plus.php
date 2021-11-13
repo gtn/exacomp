@@ -4,6 +4,23 @@ require __DIR__.'/inc.php';
 require_once($CFG->libdir.'/externallib.php');
 require_once __DIR__.'/externallib.php';
 
+function block_exacomp_json_result_success($data) {
+    header('Content-Type: application/json');
+    echo json_encode(array_merge([
+        'type' => 'success',
+    ], $data));
+    exit;
+}
+
+function block_exacomp_json_result_error($error) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'type' => 'error',
+        'error' => $error,
+    ]);
+    exit;
+}
+
 function block_exacomp_load_service($serviceshortname) {
     global $DB;
 
@@ -134,152 +151,20 @@ function block_exacomp_init_cors() {
     }
 }
 
-$PAGE->set_context(context_system::instance());
-$PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
-$PAGE->set_pagelayout('embedded');
-
-// Allow CORS requests.
-header('Access-Control-Allow-Origin: *');
-
-// always delete old login data
-$DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time() - 60 * 30]);
-
-$action = optional_param('action', '', PARAM_TEXT);
-
-if ($action == 'get_login_url') {
-    required_param('app', PARAM_TEXT);
-    required_param('app_version', PARAM_TEXT);
-
-    $return_uri = required_param('return_uri', PARAM_TEXT);
-
-    if (!block_exacomp_is_return_uri_allowed($return_uri)) {
-        $data = [
-            'error' => block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]),
-        ];
-
-        header('Content-Type: application/json');
-        echo json_encode($data);
-        exit;
-    }
-
-    $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
-    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
-
-    $DB->insert_record('block_exacompapplogin', [
-        'app_token' => required_param('app_token', PARAM_TEXT),
-        'moodle_redirect_token' => $moodle_redirect_token,
-        'moodle_data_token' => $moodle_data_token,
-        'created_at' => time(),
-        'request_data' => json_encode([
-            'return_uri' => $return_uri,
-            'services' => optional_param('services', '', PARAM_TEXT),
-        ]),
-        'result_data' => '',
-    ]);
-
-    $data = [
-        'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
-    ];
-
-    header('Content-Type: application/json');
-    echo json_encode($data);
-    exit;
-}
-
-if ($action == 'msteams_login') {
-    required_param('app', PARAM_TEXT);
-    required_param('app_version', PARAM_TEXT);
-    $access_token = required_param('access_token', PARAM_TEXT);
-
-    $errorResult = function($error) {
-        header('Content-Type: application/json');
-        echo json_encode([
-            'type' => 'error',
-            'error' => $error,
-        ]);
-        exit;
-    };
-
-    block_exacomp_init_cors();
-
-    // idea from https://github.com/catalyst/moodle-auth_userkey/blob/MOODLE_33PLUS/auth.php
-    // test user
-    // $user = get_complete_user_data('id', 3);
-
-    $client_id = get_config("exacomp", 'msteams_client_id');
-    if (!$client_id) {
-        throw new moodle_exception('client_id not set');
-    }
-
-    // check access_token
-    $jwks = json_decode(file_get_contents('https://login.microsoftonline.com/common/discovery/v2.0/keys'), true);
-    $decoded = \Firebase\JWT\JWT::decode($access_token, \Firebase\JWT\JWK::parseKeySet($jwks), array('RS256'));
-
-    // actually checking audience is not needed, because we check tenant
-    if ($decoded->aud != 'api://diggr-plus.at/'.$client_id) {
-        $errorResult('audience not allowed: '.$decoded->aud);
-    }
-    if (time() > $decoded->exp) {
-        $errorResult('access_token expired');
-    }
-    if ($decoded->scp != 'access_as_user') {
-        $errorResult('Wrong scp: '.$decoded->scp);
-    }
-    // check config
-    // demo tenantid = hak-steyr
-    if ($decoded->tid != '3171ff0c-9e10-4061-9afb-66b6b12b03a9') {
-        $errorResult('Wrong token: wrong tenantid '.$decoded->tid);
-    }
-
-    $userPrincipalName = $decoded->upn;
-    $familyName = $decoded->family_name;
-    $givenName = $decoded->given_name;
-
-    if (!$userPrincipalName) {
-        $errorResult('decoded->userPrincipalName not set');
-    }
-
-    $email = $userPrincipalName;
-    // uppercase email addresses on hak-steyr
-    $email = strtolower($email);
-
-    if (preg_match('!#!', $email)) {
-        // eg. userPrincipalName starts with #EXT# for external users
-        $errorResult('External Users are not allowed to login');
-    }
-
-
-    $user = $DB->get_record('user', ['email' => $email]);
-    if (!$user) {
-        // create the user
-        $user = array(
-            'username' => $email,
-            'password' => generate_password(20),
-            'firstname' => $givenName,
-            'lastname' => $familyName,
-            'description' => 'diggr-plus: imported with msteams login',
-            'email' => $email,
-            'suspended' => 0,
-            'mnethostid' => $CFG->mnet_localhost_id,
-            'confirmed' => 1,
-        );
-
-        require_once($CFG->dirroot.'/user/lib.php');
-        $userid = user_create_user($user);
-    } else {
-        $userid = $user->id;
-    }
-
-    $user = get_complete_user_data('id', $userid);
-
-
+function block_exacomp_send_login_result($user) {
     // hack to get tokens
-    global $USER;
+    global $USER, $DB;
     $origUSER = $USER;
     $USER = $user;
 
-    $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
-    block_exacomp_login_successfull();
+    try {
+        $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
+        block_exacomp_login_successfull();
+    } catch (\Exception $e) {
+        block_exacomp_logout();
+
+        block_exacomp_json_result_error($e->getMessage());
+    }
 
     $USER = $origUSER;
 
@@ -297,11 +182,248 @@ if ($action == 'msteams_login') {
         'result_data' => json_encode($result_data),
     ]);
 
-    $data = [
+    block_exacomp_json_result_success([
         'moodle_token' => $moodle_data_token,
-    ];
-    header('Content-Type: application/json');
-    echo json_encode($data);
+    ]);
+}
+
+;
+
+
+$PAGE->set_context(context_system::instance());
+$PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
+
+// Allow CORS requests.
+header('Access-Control-Allow-Origin: *');
+
+// always delete old login data
+$DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time() - 60 * 30]);
+
+$action = optional_param('action', '', PARAM_TEXT);
+
+if ($action == 'get_login_url') {
+    required_param('app', PARAM_TEXT);
+    required_param('app_version', PARAM_TEXT);
+
+    $return_uri = required_param('return_uri', PARAM_TEXT);
+
+    if (!block_exacomp_is_return_uri_allowed($return_uri)) {
+        block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
+    }
+
+    $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
+    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+
+    $DB->insert_record('block_exacompapplogin', [
+        'app_token' => required_param('app_token', PARAM_TEXT),
+        'moodle_redirect_token' => $moodle_redirect_token,
+        'moodle_data_token' => $moodle_data_token,
+        'created_at' => time(),
+        'request_data' => json_encode([
+            'return_uri' => $return_uri,
+            'services' => optional_param('services', '', PARAM_TEXT),
+        ]),
+        'result_data' => '',
+    ]);
+
+    block_exacomp_json_result_success([
+        'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
+    ]);
+    exit;
+}
+
+if ($action == 'msteams_login') {
+    required_param('app', PARAM_TEXT);
+    required_param('app_version', PARAM_TEXT);
+    $access_token = required_param('access_token', PARAM_TEXT);
+
+    block_exacomp_init_cors();
+
+    // idea from https://github.com/catalyst/moodle-auth_userkey/blob/MOODLE_33PLUS/auth.php
+    // test user
+    // $user = get_complete_user_data('id', 3);
+
+    $client_id = get_config("exacomp", 'msteams_client_id');
+    if (!$client_id) {
+        throw new moodle_exception('client_id not set');
+    }
+
+    if (isloggedin()) {
+        // login directly
+        block_exacomp_send_login_result($USER);
+    }
+
+    try {
+        // check access_token
+        $jwks = json_decode(file_get_contents('https://login.microsoftonline.com/common/discovery/v2.0/keys'), true);
+        $decoded = \Firebase\JWT\JWT::decode($access_token, \Firebase\JWT\JWK::parseKeySet($jwks), array('RS256'));
+    } catch (\Exception $e) {
+        block_exacomp_json_result_error('jwt error: '.$e->getMessage());
+    }
+
+    // actually checking audience is not needed, because we check tenant
+    if ($decoded->aud != 'api://diggr-plus.at/'.$client_id) {
+        block_exacomp_json_result_error('audience not allowed: '.$decoded->aud);
+    }
+    if (time() > $decoded->exp) {
+        block_exacomp_json_result_error('access_token expired');
+    }
+    if ($decoded->scp != 'access_as_user') {
+        block_exacomp_json_result_error('Wrong scp: '.$decoded->scp);
+    }
+    // check config
+    // demo tenantid = hak-steyr
+    if ($decoded->tid != '3171ff0c-9e10-4061-9afb-66b6b12b03a9') {
+        block_exacomp_json_result_error('Wrong token: wrong tenantid '.$decoded->tid);
+    }
+
+    $userPrincipalName = $decoded->upn;
+    $tenantId = $decoded->tid;
+    $familyName = $decoded->family_name;
+    $givenName = $decoded->given_name;
+    // $oid = $decoded->oid; // unique id for a user in one tenant
+
+    if (!$userPrincipalName) {
+        block_exacomp_json_result_error('decoded->userPrincipalName not set');
+    }
+
+    $email = $userPrincipalName;
+    // uppercase email addresses on hak-steyr
+    $email = strtolower($email);
+
+    if (preg_match('!#!', $email)) {
+        // eg. userPrincipalName starts with #EXT# for external users
+        block_exacomp_json_result_error('External Users are not allowed to login');
+    }
+
+    if (!block_exacomp_is_diggrv_enabled()) {
+        // new logic mit o365 user verknüpfen
+        $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
+        if (!$usermap) {
+            $usermap = (object)[
+                'provider' => 'o365',
+                'tenant_id' => $tenantId,
+                'remoteuserid' => $email,
+                'timecreated' => time(),
+            ];
+            $usermap->id = $DB->insert_record('block_exacomp_usermap', $usermap);
+        }
+
+        $DB->update_record('block_exacomp_usermap', [
+            'lastaccess' => time(),
+            'firstname' => $givenName,
+            'lastname' => $familyName,
+            'email' => $email,
+            'id' => $usermap->id,
+        ]);
+
+        $usermap = $DB->get_record('block_exacomp_usermap', ['id' => $usermap->id]);
+
+        $moodle_user = null;
+        if ($usermap->userid) {
+            // already mapped -> login
+            $moodle_user = $DB->get_record('user', ['id' => $usermap->userid]);
+            if (!$moodle_user) {
+                // remove the mapping
+                $DB->update_record('block_exacomp_usermap', ['userid' => 0, 'id' => $usermap->id]);
+            }
+        }
+
+        if ($moodle_user) {
+            block_exacomp_send_login_result($moodle_user);
+        } else {
+            $return_uri = required_param('return_uri', PARAM_TEXT);
+
+            if (!block_exacomp_is_return_uri_allowed($return_uri)) {
+                block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
+            }
+
+            $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
+            $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+
+            $DB->insert_record('block_exacompapplogin', [
+                'app_token' => required_param('app_token', PARAM_TEXT),
+                'moodle_redirect_token' => $moodle_redirect_token,
+                'moodle_data_token' => $moodle_data_token,
+                'created_at' => time(),
+                'request_data' => json_encode([
+                    'usermapid' => $usermap->id,
+                    'return_uri' => $return_uri,
+                    'services' => optional_param('services', '', PARAM_TEXT),
+                ]),
+                'result_data' => '',
+            ]);
+
+            block_exacomp_json_result_success([
+                'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
+            ]);
+        }
+    } else {
+        // old logic with creating the user if not existing (for diggrv)
+        $user = $DB->get_record('user', ['email' => $email]);
+        if (!$user) {
+            // create the user
+            $user = array(
+                'username' => $email,
+                'password' => generate_password(20),
+                'firstname' => $givenName,
+                'lastname' => $familyName,
+                'description' => 'diggr-plus: imported with msteams login',
+                'email' => $email,
+                'suspended' => 0,
+                'mnethostid' => $CFG->mnet_localhost_id,
+                'confirmed' => 1,
+            );
+
+            require_once($CFG->dirroot.'/user/lib.php');
+            $userid = user_create_user($user);
+        } else {
+            $userid = $user->id;
+        }
+
+        $user = get_complete_user_data('id', $userid);
+
+        block_exacomp_send_login_result($user);
+    }
+}
+
+if ($action == 'connected_users') {
+    if (!isloggedin()) {
+        die('not loggedin');
+    }
+
+    if ($disconnect_userid = optional_param('disconnect_userid', 0, PARAM_INT)) {
+        $usermap = $DB->get_record('block_exacomp_usermap', ['id' => $disconnect_userid, 'userid' => $USER->id, 'candisconnect' => 1]);
+        if ($usermap) {
+            $DB->update_record('block_exacomp_usermap', ['userid' => 0, 'id' => $usermap->id]);
+        }
+    }
+
+    $usermaps = $DB->get_records('block_exacomp_usermap', ['userid' => $USER->id]);
+
+    // came from login form
+    echo $OUTPUT->header();
+
+    if (!$usermaps) {
+        echo block_exacomp_trans(['de:Keine verbundenen Benutzer gefunden', 'en:No connected accounts found']);
+    } else {
+        echo '<table class="generaltable">';
+        foreach ($usermaps as $usermap) {
+            echo '<tr>';
+            echo '<td>'.$usermap->provider.'</td>';
+            echo '<td>'.$usermap->firstname.'</td>';
+            echo '<td>'.$usermap->lastname.'</td>';
+            echo '<td>'.$usermap->email.'</td>';
+            echo '<td><form method="post">
+            <input type="hidden" name="disconnect_userid" value="'.$usermap->id.'"/>
+            <input type="submit" class="btn btn-secondary" value="'.block_exacomp_trans(['de:Trennen', 'en:Disconnect']).'"/>
+        </form></td>';
+        }
+        echo '</table>';
+    }
+
+    echo $OUTPUT->footer();
+
     exit;
 }
 
@@ -314,20 +436,14 @@ if ($action == 'login_result') {
 
     $applogin = $DB->get_record('block_exacompapplogin', ['moodle_data_token' => $moodle_data_token]);
     if (!$applogin) {
-        header('Content-Type: application/json');
-        echo json_encode([
-            'type' => 'error',
-            'error' => 'Wrong token',
-        ]);
-        exit;
+        block_exacomp_json_result_error('Wrong token');
     }
 
     // can only be used once
     $DB->delete_records('block_exacompapplogin', ['id' => $applogin->id]);
 
     $result_data = json_decode($applogin->result_data);
-    header('Content-Type: application/json');
-    echo json_encode([
+    block_exacomp_json_result_success([
         'type' => 'login_successful',
         'data' => $result_data,
     ]);
@@ -340,14 +456,11 @@ if ($action == 'info') {
 
     $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
-    $info = array(
+    block_exacomp_json_result_success([
         'version' => $info->versiondb,
         'release' => $info->release,
         'login_method' => get_config('exacomp', 'new_app_login') ? 'popup' : '',
-    );
-
-    header('Content-Type: application/json');
-    echo json_encode($info);
+    ]);
     exit;
 }
 
@@ -374,6 +487,8 @@ if ($action) {
 }
 
 
+$PAGE->set_pagelayout('embedded');
+
 $SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'].'&from_login=1';
 
 require_login(0, false, null, false, false);
@@ -396,14 +511,26 @@ if (!$applogin) {
 
 $request_data = json_decode($applogin->request_data);
 
+try {
+    $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
+    block_exacomp_login_successfull();
+} catch (\Exception $e) {
+    block_exacomp_logout();
+
+    throw $e;
+}
+
 $DB->update_record('block_exacompapplogin', (object)[
     'id' => $applogin->id,
     'result_data' => json_encode([
-        'tokens' => block_exacomp_get_service_tokens($request_data->services),
+        'tokens' => $tokens,
     ]),
 ]);
 
-block_exacomp_login_successfull();
+if (@$request_data->usermapid) {
+    // came from o365 -> map the user
+    $DB->update_record('block_exacomp_usermap', ['userid' => $USER->id, 'id' => $request_data->usermapid]);
+}
 
 $return_uri = $request_data->return_uri.'?moodle_token='.$applogin->moodle_data_token;
 

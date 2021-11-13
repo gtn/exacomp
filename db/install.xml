@@ -763,5 +763,30 @@
           <KEY NAME="subjectid" TYPE="foreign" FIELDS="subjectid" REFTABLE="block_exacompsubjects" REFFIELDS="id" COMMENT="foreign key subjectid"/>
       </KEYS>
     </TABLE>
+      <TABLE NAME="block_exacomp_usermap" COMMENT="Mapping of users">
+          <FIELDS>
+              <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="true" COMMENT="id"/>
+              <FIELD NAME="provider" TYPE="char" LENGTH="15" NOTNULL="false" SEQUENCE="false" COMMENT="provider"/>
+              <FIELD NAME="tenant_id" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="tenant_id"/>
+              <FIELD NAME="school" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="school name from provider"/>
+              <FIELD NAME="remoteuserid" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+              <FIELD NAME="remoteuserrole" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="user role in remote"/>
+              <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="userid in moodle"/>
+              <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="time mapping was created"/>
+              <FIELD NAME="lastaccess" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="timestamp of last access"/>
+              <FIELD NAME="firstname" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="lastname" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="email" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="userinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="candisconnect" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+          </KEYS>
+          <INDEXES>
+              <INDEX NAME="tenant_id_remoteuserid" UNIQUE="true" FIELDS="tenant_id, remoteuserid"/>
+              <INDEX NAME="idx_tenant_id" UNIQUE="false" FIELDS="tenant_id"/>
+          </INDEXES>
+      </TABLE>
   </TABLES>
 </XMLDB>

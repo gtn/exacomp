@@ -3905,7 +3905,42 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2021072000, 'exacomp');
     }
 
+    if ($oldversion < 2021111201) {
 
+        // Define table block_exacomp_usermap to be created.
+        $table = new xmldb_table('block_exacomp_usermap');
+
+        // Adding fields to table block_exacomp_usermap.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, null, XMLDB_SEQUENCE, null);
+        $table->add_field('provider', XMLDB_TYPE_CHAR, '15', null, null, null, null);
+        $table->add_field('tenant_id', XMLDB_TYPE_CHAR, '50', null, null, null, null);
+        $table->add_field('school', XMLDB_TYPE_CHAR, '50', null, null, null, null);
+        $table->add_field('remoteuserid', XMLDB_TYPE_CHAR, '50', null, null, null, null);
+        $table->add_field('remoteuserrole', XMLDB_TYPE_CHAR, '20', null, null, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('lastaccess', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('firstname', XMLDB_TYPE_CHAR, '50', null, null, null, null);
+        $table->add_field('lastname', XMLDB_TYPE_CHAR, '50', null, null, null, null);
+        $table->add_field('email', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('userinfo', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('candisconnect', XMLDB_TYPE_INTEGER, '1', null, null, null, '1');
+
+        // Adding keys to table block_exacomp_usermap.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table block_exacomp_usermap.
+        $table->add_index('tenant_id_remoteuserid', XMLDB_INDEX_UNIQUE, ['tenant_id', 'remoteuserid']);
+        $table->add_index('idx_tenant_id', XMLDB_INDEX_NOTUNIQUE, ['tenant_id']);
+
+        // Conditionally launch create table for block_exacomp_usermap.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2021111201, 'exacomp');
+    }
 
     /*
      * insert new upgrade scripts before this comment section
