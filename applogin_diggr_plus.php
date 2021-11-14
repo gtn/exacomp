@@ -248,10 +248,10 @@ if ($action == 'msteams_login') {
         throw new moodle_exception('client_id not set');
     }
 
-    if (isloggedin()) {
-        // login directly
-        block_exacomp_send_login_result($USER);
-    }
+    // if (isloggedin()) {
+    //     // login directly
+    //     block_exacomp_send_login_result($USER);
+    // }
 
     try {
         // check access_token
@@ -296,95 +296,97 @@ if ($action == 'msteams_login') {
         block_exacomp_json_result_error('External Users are not allowed to login');
     }
 
-    if (!block_exacomp_is_diggrv_enabled()) {
-        // new logic mit o365 user verknüpfen
-        $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
-        if (!$usermap) {
-            $usermap = (object)[
-                'provider' => 'o365',
-                'tenant_id' => $tenantId,
-                'remoteuserid' => $email,
-                'timecreated' => time(),
-            ];
-            $usermap->id = $DB->insert_record('block_exacomp_usermap', $usermap);
-        }
 
-        $DB->update_record('block_exacomp_usermap', [
-            'lastaccess' => time(),
+    $moodle_user = $DB->get_record('user', ['username' => $email]);
+    if ($moodle_user) {
+        block_exacomp_send_login_result($moodle_user);
+    }
+
+    if (get_config('exacomp', 'sso_create_users')) {
+        // old logic with creating the user if not existing (for diggrv)
+        // create the user
+        $moodle_user = array(
+            'username' => $email,
+            'password' => generate_password(20),
             'firstname' => $givenName,
             'lastname' => $familyName,
+            'description' => 'diggr-plus: created by msteams login',
             'email' => $email,
-            'id' => $usermap->id,
-        ]);
+            'suspended' => 0,
+            'mnethostid' => $CFG->mnet_localhost_id,
+            'confirmed' => 1,
+        );
 
-        $usermap = $DB->get_record('block_exacomp_usermap', ['id' => $usermap->id]);
+        require_once($CFG->dirroot.'/user/lib.php');
+        $userid = user_create_user($moodle_user);
 
-        $moodle_user = null;
-        if ($usermap->userid) {
-            // already mapped -> login
-            $moodle_user = $DB->get_record('user', ['id' => $usermap->userid]);
-            if (!$moodle_user) {
-                // remove the mapping
-                $DB->update_record('block_exacomp_usermap', ['userid' => 0, 'id' => $usermap->id]);
-            }
-        }
+        $moodle_user = get_complete_user_data('id', $userid);
 
-        if ($moodle_user) {
-            block_exacomp_send_login_result($moodle_user);
-        } else {
-            $return_uri = required_param('return_uri', PARAM_TEXT);
-
-            if (!block_exacomp_is_return_uri_allowed($return_uri)) {
-                block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
-            }
-
-            $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
-            $moodle_data_token = 'data-'.block_exacomp_random_password(24);
-
-            $DB->insert_record('block_exacompapplogin', [
-                'app_token' => required_param('app_token', PARAM_TEXT),
-                'moodle_redirect_token' => $moodle_redirect_token,
-                'moodle_data_token' => $moodle_data_token,
-                'created_at' => time(),
-                'request_data' => json_encode([
-                    'usermapid' => $usermap->id,
-                    'return_uri' => $return_uri,
-                    'services' => optional_param('services', '', PARAM_TEXT),
-                ]),
-                'result_data' => '',
-            ]);
-
-            block_exacomp_json_result_success([
-                'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
-            ]);
-        }
-    } else {
-        // old logic with creating the user if not existing (for diggrv)
-        $user = $DB->get_record('user', ['email' => $email]);
-        if (!$user) {
-            // create the user
-            $user = array(
-                'username' => $email,
-                'password' => generate_password(20),
-                'firstname' => $givenName,
-                'lastname' => $familyName,
-                'description' => 'diggr-plus: imported with msteams login',
-                'email' => $email,
-                'suspended' => 0,
-                'mnethostid' => $CFG->mnet_localhost_id,
-                'confirmed' => 1,
-            );
-
-            require_once($CFG->dirroot.'/user/lib.php');
-            $userid = user_create_user($user);
-        } else {
-            $userid = $user->id;
-        }
-
-        $user = get_complete_user_data('id', $userid);
-
-        block_exacomp_send_login_result($user);
+        block_exacomp_send_login_result($moodle_user);
     }
+
+
+    // new logic mit o365 user verknüpfen
+    $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
+    if (!$usermap) {
+        $usermap = (object)[
+            'provider' => 'o365',
+            'tenant_id' => $tenantId,
+            'remoteuserid' => $email,
+            'timecreated' => time(),
+        ];
+        $usermap->id = $DB->insert_record('block_exacomp_usermap', $usermap);
+    }
+
+    $DB->update_record('block_exacomp_usermap', [
+        'lastaccess' => time(),
+        'firstname' => $givenName,
+        'lastname' => $familyName,
+        'email' => $email,
+        'id' => $usermap->id,
+    ]);
+
+    $usermap = $DB->get_record('block_exacomp_usermap', ['id' => $usermap->id]);
+
+    $moodle_user = null;
+    if ($usermap->userid) {
+        // already mapped -> login
+        $moodle_user = $DB->get_record('user', ['id' => $usermap->userid]);
+        if (!$moodle_user) {
+            // remove the mapping
+            $DB->update_record('block_exacomp_usermap', ['userid' => 0, 'id' => $usermap->id]);
+        }
+    }
+
+    if ($moodle_user) {
+        block_exacomp_send_login_result($moodle_user);
+    }
+
+    $return_uri = required_param('return_uri', PARAM_TEXT);
+
+    if (!block_exacomp_is_return_uri_allowed($return_uri)) {
+        block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
+    }
+
+    $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
+    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+
+    $DB->insert_record('block_exacompapplogin', [
+        'app_token' => required_param('app_token', PARAM_TEXT),
+        'moodle_redirect_token' => $moodle_redirect_token,
+        'moodle_data_token' => $moodle_data_token,
+        'created_at' => time(),
+        'request_data' => json_encode([
+            'usermapid' => $usermap->id,
+            'return_uri' => $return_uri,
+            'services' => optional_param('services', '', PARAM_TEXT),
+        ]),
+        'result_data' => '',
+    ]);
+
+    block_exacomp_json_result_success([
+        'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
+    ]);
 }
 
 if ($action == 'connected_users') {

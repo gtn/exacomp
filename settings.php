@@ -1210,8 +1210,12 @@ $settings->add(new admin_setting_configtextarea('exacomp/applogin_redirect_urls'
         block_exacomp_get_string('settings_applogin_redirect_urls_description'),''));
 
 $settings->add(new admin_setting_configcheckbox('exacomp/diggrv_enabled',
-        block_exacomp_get_string('settings_diggrv_enabled'),
-        block_exacomp_get_string('settings_diggrv_enabled_description'), 0, 1, 0));
+    block_exacomp_get_string('settings_diggrv_enabled'),
+    block_exacomp_get_string('settings_diggrv_enabled_description'), 0, 1, 0));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/sso_create_users',
+    block_exacomp_get_string('settings_sso_create_users'),
+    block_exacomp_get_string('settings_sso_create_users_description'), 0, 1, 0));
 
 $settings->add(new admin_setting_configtext('exacomp/msteams_client_id',
     block_exacomp_get_string('settings_msteams_client_id'),

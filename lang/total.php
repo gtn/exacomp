@@ -452,6 +452,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Anlegen von Userkonten über App erlauben.',
         'Allow creating users in the Diggrv-app.',
     ],
+    'settings_sso_create_users' => [
+        'SSO: Neue Benutzer erstellen',
+        'SSO: Create new Users',
+    ],
+    'settings_sso_create_users_description' => [
+        '',
+        '',
+    ],
     'settings_msteams_client_id' => [
         'Diggr+ MS Teams App Client Id',
         'Diggr+ MS Teams App Client Id',
