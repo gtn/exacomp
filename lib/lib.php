@@ -1405,13 +1405,16 @@ function block_exacomp_get_subject_by_subjectid($subjectid) {
 }
 
 /**
-
+ * @param int $descriptorid
  */
 function block_exacomp_get_subject_by_descriptorid($descriptorid) {
     global $DB;
     $topicid = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptorid), "topicid");
-    $subjectid = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid->topicid), "subjid");
-    return $DB->get_record('block_exacompsubjects', array('id' => $subjectid->subjid));
+    if ($topicid) {
+        $subjectid = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid->topicid), "subjid");
+        return $DB->get_record('block_exacompsubjects', array('id' => $subjectid->subjid));
+    }
+    return null; // Why it is possible?
 }
 
 /**
@@ -1970,15 +1973,15 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	], $savegradinghistory);
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
-		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $compid, $comptype, $options['notification_customdata']);
+		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $compid, $comptype, @$options['notification_customdata']);
         if($subjectid == -1){
             $subject = block_exacomp_get_subject_by_descriptorid($compid);
         }else{
             $subject = block_exacomp_get_subject_by_subjectid($subjectid);
         }
 
-		if($subject->isglobal){
-            block_exacomp_update_globalgradings_text($compid,$userid,$comptype, $courseid);
+		if (@$subject->isglobal) {
+            block_exacomp_update_globalgradings_text($compid, $userid, $comptype, $courseid);
         }
 //        block_exacomp_update_gradinghistory_text($compid,$userid,$courseid,$comptype);
 	} else {
@@ -4595,7 +4598,6 @@ function block_exacomp_get_related_activities($courseid, $conditions = array()) 
                     JOIN {course_modules} cm ON cm.id = t.activityid
                     JOIN {modules} m ON m.id = cm.module
                 WHERE cm.course = ? ';
-
     $cond = array($courseid);
 
     if (@$conditions['availability']) {
@@ -4610,7 +4612,7 @@ function block_exacomp_get_related_activities($courseid, $conditions = array()) 
             $activ->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
                     array('activityid' => $activ->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
         } else {
-            $activ->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activ->activityid, 'courseid' => $courseid), '', 'id');
+            $activ->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activ->id, 'courseid' => $courseid), '', 'id');
         }
     }
 
@@ -5507,28 +5509,28 @@ function block_exacomp_perform_auto_test() {
 			foreach ($tests as $test) {
                 // get availability (visibility) info
                 $available = $cms_availability[$test->activityid]->available;
-                if (!$available) {
-                    // Hide the related exacomp material if not yet hidden
-                    foreach ($test->examples as $example) {
-                        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
-                            ['visible' => 0],
-                            ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
-                        );
-                        // if already on schedule: remove
-                        $DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid, 'creatorid' => $student->id));
-                    }
-                } else {
-                    foreach ($test->examples as $example){
-                        g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
-                            ['visible' => 1],
-                            ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
-                        );
-                        // if not on schedule: add ( the check happens in the function)
-                        block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid,null,null,-1,-1, null, null, null, null);
+                if (is_array(@$test->examples)) {
+                    if (!$available) {
+                        // Hide the related exacomp material if not yet hidden
+                        foreach ($test->examples as $example) {
+                            g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
+                                ['visible' => 0],
+                                ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
+                            );
+                            // if already on schedule: remove
+                            $DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid, 'creatorid' => $student->id));
+                        }
+                    } else {
+                        foreach ($test->examples as $example) {
+                            g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
+                                ['visible' => 1],
+                                ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
+                            );
+                            // if not on schedule: add ( the check happens in the function)
+                            block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid, null, null, -1, -1, null, null, null, null);
+                        }
                     }
                 }
-
-
 
 				// get grading for each test and assign topics and descriptors
 				$quiz = $DB->get_record('quiz_grades', array('quiz' => $test->id, 'userid' => $student->id));
@@ -5558,11 +5560,11 @@ function block_exacomp_perform_auto_test() {
 //                    }
 
 
-                    if ($test->descriptors) { // descriptors are associated and should be graded ... "old method"
+                    if (@$test->descriptors) { // descriptors are associated and should be graded ... "old method"
                         block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
                     }
                     //no "else if" because a test can be assigned or related OR BOTH
-                    if($test->examples){ // examples are associated and should be graded ... "new method"
+                    if (@$test->examples){ // examples are associated and should be graded ... "new method"
                         block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
                         // TODO: set the visibility according to the visibility of the assignment
                     }
@@ -9125,7 +9127,7 @@ function block_exacomp_send_grading_notification($userfrom, $userto, $courseid, 
 	$context = block_exacomp_get_string('notification_grading_context');
 
 	//$courseid, $topicid, $descriptorid
-
+    $viewurl = null;
     if($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR){
         $descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $compid));
         $topicid = $descriptor_topic_mm->topicid;
@@ -9328,8 +9330,8 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             } else {
                 $subject = block_exacomp_get_subject_by_subjectid($subjectid);
             }
-            if ($subject->isglobal) {
-                block_exacomp_update_globalgradings_text($descriptorid,$studentid,$comptype, $courseid);
+            if (@$subject->isglobal) {
+                block_exacomp_update_globalgradings_text($descriptorid, $studentid, $comptype, $courseid);
             }
 //            block_exacomp_update_gradinghistory_text($descriptorid,$studentid,$courseid,$comptype);
         }
