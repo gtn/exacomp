@@ -555,6 +555,14 @@ class block_exacomp_external extends external_api {
 
 		$example = static::block_excomp_get_example_details($example, $courseid);
 
+        // rip out all html tags and other content if html is used
+        if(strpos($example->description, "<!doctype html>") !== false){
+            $example->description = "";
+        }else{
+            $example->description = static::custom_htmltrim($example->description);
+            $example->description = strip_tags($example->description);
+        }
+
 		return $example;
 	}
 
