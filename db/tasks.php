@@ -56,4 +56,13 @@ $tasks = array(
         'month' => '*',
         'dayofweek' => '*',
     ),
+    array(
+        'classname' => 'block_exacomp\task\question_grading',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ),
 );

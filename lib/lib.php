@@ -5804,6 +5804,51 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
     }
 }
 
+
+function block_exacomp_perform_question_grading(){
+    global $DB;
+
+    $question_array = array();
+    $descquests = $DB->get_records("block_exacompdescrquest_mm");
+    foreach ($descquests as $descquest){
+        if(!in_array($descquest->questid, $question_array)){
+            $question_array[] = $descquest->questid;
+        }
+    }
+
+
+    $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid
+            FROM {question_attempts} attempts
+            JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
+            WHERE step.sequencenumber = 2";
+
+    $attempts = array_filter($DB->get_records_sql($sql), function($a) use ($question_array){
+        return in_array($a->questionid, $question_array);
+    });
+
+    foreach($attempts as $attempt){
+        if($attempt->maxmark / 2 <= $attempt->fraction){
+            foreach($descquests as $descquest){
+                if($attempt->questionid == $descquest->questid){
+
+                }
+            }
+        }
+    }
+
+//    $grading_scheme = block_exacomp_get_assessment_comp_scheme($courseid);
+//    foreach ($descriptors as $descriptor) {
+//        if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
+//            //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
+//            block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), $comptype = 0);
+//        }
+//        //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+//        block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
+//        mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
+//    }
+
+}
+
 function block_exacomp_get_gained_competences($course, $student, $subject=null, $crosssubj=null) {
 
 	$gained_competencies_teacher = [];
