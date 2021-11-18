@@ -377,6 +377,7 @@ class block_exacomp_external_diggrv extends external_api {
                     $elem_desc->title = static::custom_htmltrim($descriptor->title);
                     $elem_desc->niveauid = $descriptor->niveauid;
                     $elem_desc->niveau_title = static::custom_htmltrim($descriptor->niveau_title);
+                    $elem_desc->sorting = $descriptor->sorting;
                     // $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
 
                     $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
@@ -422,6 +423,7 @@ class block_exacomp_external_diggrv extends external_api {
                         'niveau_title' => new external_value (PARAM_TEXT),
                         'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
                         'personalisedtext' => new external_value (PARAM_TEXT),
+                        'sorting' => new external_value (PARAM_INT)
                     ))),
                 ))),
             ))),
