@@ -41,8 +41,8 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 if($action == 'save'){
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
     foreach($descs as $desc) {
-        if(!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc))){
-            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc));
+        if(!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid))){
+            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid));
         }
     }
 }

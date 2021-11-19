@@ -711,6 +711,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="questid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
         <FIELD NAME="descrid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Deskriptors oder Topics"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="courseid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

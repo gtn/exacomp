@@ -5808,6 +5808,7 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
 function block_exacomp_perform_question_grading(){
     global $DB;
 
+
     $question_array = array();
     $descquests = $DB->get_records("block_exacompdescrquest_mm");
     foreach ($descquests as $descquest){
@@ -5830,22 +5831,12 @@ function block_exacomp_perform_question_grading(){
         if($attempt->maxmark / 2 <= $attempt->fraction){
             foreach($descquests as $descquest){
                 if($attempt->questionid == $descquest->questid){
-
+                    $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
+                    block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
                 }
             }
         }
     }
-
-//    $grading_scheme = block_exacomp_get_assessment_comp_scheme($courseid);
-//    foreach ($descriptors as $descriptor) {
-//        if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
-//            //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
-//            block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), $comptype = 0);
-//        }
-//        //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-//        block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
-//        mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
-//    }
 
 }
 
