@@ -297,12 +297,12 @@ if ($action == 'msteams_login') {
     }
 
 
-    $moodle_user = $DB->get_record('user', ['username' => $email]);
-    if ($moodle_user) {
-        block_exacomp_send_login_result($moodle_user);
-    }
-
     if (get_config('exacomp', 'sso_create_users')) {
+        $moodle_user = $DB->get_record('user', ['username' => $email]);
+        if ($moodle_user) {
+            block_exacomp_send_login_result($moodle_user);
+        }
+
         // old logic with creating the user if not existing (for diggrv)
         // create the user
         $moodle_user = array(
@@ -323,70 +323,69 @@ if ($action == 'msteams_login') {
         $moodle_user = get_complete_user_data('id', $userid);
 
         block_exacomp_send_login_result($moodle_user);
-    }
-
-
-    // new logic mit o365 user verknüpfen
-    $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
-    if (!$usermap) {
-        $usermap = (object)[
-            'provider' => 'o365',
-            'tenant_id' => $tenantId,
-            'remoteuserid' => $email,
-            'timecreated' => time(),
-        ];
-        $usermap->id = $DB->insert_record('block_exacomp_usermap', $usermap);
-    }
-
-    $DB->update_record('block_exacomp_usermap', [
-        'lastaccess' => time(),
-        'firstname' => $givenName,
-        'lastname' => $familyName,
-        'email' => $email,
-        'id' => $usermap->id,
-    ]);
-
-    $usermap = $DB->get_record('block_exacomp_usermap', ['id' => $usermap->id]);
-
-    $moodle_user = null;
-    if ($usermap->userid) {
-        // already mapped -> login
-        $moodle_user = $DB->get_record('user', ['id' => $usermap->userid]);
-        if (!$moodle_user) {
-            // remove the mapping
-            $DB->update_record('block_exacomp_usermap', ['userid' => 0, 'id' => $usermap->id]);
+    } else {
+        // new logic mit o365 user verknüpfen
+        $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
+        if (!$usermap) {
+            $usermap = (object)[
+                'provider' => 'o365',
+                'tenant_id' => $tenantId,
+                'remoteuserid' => $email,
+                'timecreated' => time(),
+            ];
+            $usermap->id = $DB->insert_record('block_exacomp_usermap', $usermap);
         }
+
+        $DB->update_record('block_exacomp_usermap', [
+            'lastaccess' => time(),
+            'firstname' => $givenName,
+            'lastname' => $familyName,
+            'email' => $email,
+            'id' => $usermap->id,
+        ]);
+
+        $usermap = $DB->get_record('block_exacomp_usermap', ['id' => $usermap->id]);
+
+        $moodle_user = null;
+        if ($usermap->userid) {
+            // already mapped -> login
+            $moodle_user = $DB->get_record('user', ['id' => $usermap->userid]);
+            if (!$moodle_user) {
+                // remove the mapping
+                $DB->update_record('block_exacomp_usermap', ['userid' => 0, 'id' => $usermap->id]);
+            }
+        }
+
+        if ($moodle_user) {
+            block_exacomp_send_login_result($moodle_user);
+        }
+
+        $return_uri = required_param('return_uri', PARAM_TEXT);
+
+        if (!block_exacomp_is_return_uri_allowed($return_uri)) {
+            block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
+        }
+
+        $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
+        $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+
+        $DB->insert_record('block_exacompapplogin', [
+            'app_token' => required_param('app_token', PARAM_TEXT),
+            'moodle_redirect_token' => $moodle_redirect_token,
+            'moodle_data_token' => $moodle_data_token,
+            'created_at' => time(),
+            'request_data' => json_encode([
+                'usermapid' => $usermap->id,
+                'return_uri' => $return_uri,
+                'services' => optional_param('services', '', PARAM_TEXT),
+            ]),
+            'result_data' => '',
+        ]);
+
+        block_exacomp_json_result_success([
+            'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
+        ]);
     }
-
-    if ($moodle_user) {
-        block_exacomp_send_login_result($moodle_user);
-    }
-
-    $return_uri = required_param('return_uri', PARAM_TEXT);
-
-    if (!block_exacomp_is_return_uri_allowed($return_uri)) {
-        block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
-    }
-
-    $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
-    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
-
-    $DB->insert_record('block_exacompapplogin', [
-        'app_token' => required_param('app_token', PARAM_TEXT),
-        'moodle_redirect_token' => $moodle_redirect_token,
-        'moodle_data_token' => $moodle_data_token,
-        'created_at' => time(),
-        'request_data' => json_encode([
-            'usermapid' => $usermap->id,
-            'return_uri' => $return_uri,
-            'services' => optional_param('services', '', PARAM_TEXT),
-        ]),
-        'result_data' => '',
-    ]);
-
-    block_exacomp_json_result_success([
-        'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
-    ]);
 }
 
 if ($action == 'connected_users') {
@@ -491,7 +490,7 @@ if ($action) {
 
 $PAGE->set_pagelayout('embedded');
 
-$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'].'&from_login=1';
+$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'];
 
 require_login(0, false, null, false, false);
 
@@ -530,6 +529,23 @@ $DB->update_record('block_exacompapplogin', (object)[
 ]);
 
 if (@$request_data->usermapid) {
+    $confirm = optional_param('confirm', false, PARAM_BOOL);
+
+    if (!$confirm) {
+        echo $OUTPUT->header();
+
+        echo '<div style="text-align: center; padding: 60px 20px">';
+        echo block_exacomp_trans(['de:Hiermit verknüpfen Sie Ihren MS Teams Benutzer mit dem Moodle Benutzer {$a}', 'en:You are connecting your MS Teams user with the Moodle user {$a}'], fullname($USER));
+        echo '<br/><br/>';
+        echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=logout" class="btn btn-secondary">'.block_exacomp_trans(['de:Mit anderem Benutzer einloggen', 'en:Login with another user']).'</a>';
+        echo '&nbsp;&nbsp;&nbsp;';
+        echo '<a href="'.$_SERVER['REQUEST_URI'].'&confirm=1" class="btn btn-primary">'.block_exacomp_trans(['de:Weiter', 'en:Continue']).'</a>';
+        echo '</div>';
+
+        echo $OUTPUT->footer();
+        exit;
+    }
+
     // came from o365 -> map the user
     $DB->update_record('block_exacomp_usermap', ['userid' => $USER->id, 'id' => $request_data->usermapid]);
 }
