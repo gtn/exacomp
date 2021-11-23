@@ -5799,6 +5799,9 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
             block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
+
+            block_exacomp_allow_resubmission($studentid,$example->id,$courseid); // 23.11.2021 this is a quickfix for allowing self grading of students if the example has been graded by auto_test
+
             mtrace("set example grading: ".$example->id." for user ".$studentid.'  '.block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid).'<br>');
         }
     }
