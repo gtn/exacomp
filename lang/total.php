@@ -296,8 +296,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'In the second configuration step topics to work with in this course have to be selected.',
 	],
 	'teacher_third_configuration_step' => [
-		'Im nächsten Schritt werden Moodle-Aktivitäten zu Kompetenzen zugeordnet. ',
-		'The next step is to assign  Moodle activities to competencies ',
+		'Im nächsten Schritt werden Moodle-Aktivitäten mit Kompetenzen assoziiert. ',
+		'The next step is to associate Moodle activities with competencies ',
 	],
 	'teacher_third_configuration_step_link' => [
 		'(Optional: Wenn Sie nicht mit Moodle-Aktivitäten arbeiten möchten, dann entfernen Sie das Häkchen "Ich möchte mit Moodle-Aktivitäten arbeiten" im Tab "Einstellungen".)',
@@ -337,8 +337,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 		'Automatical grading through Moodle-activities',
 	],
 	'settings_autotest_description' => [
-		'Kompetenzen oder Aufgaben die zu Aktivitäten zugeordnet sind, gelten automatisch als erworben, wenn die in der Aktivität angegebenen Aktivitätsabschlusskriterien erfüllt sind.',
-		'Competences or Assignments that are assigned to activities are gained automatically if the completion requirements of the activity are met. ',
+		'Kompetenzen oder Aufgaben die mit Aktivitäten verbunden sind, gelten automatisch als erworben, wenn die in der Aktivität angegebenen Aktivitätsabschlusskriterien erfüllt sind.',
+		'Competences or Assignments that are associated with activities are gained automatically if the completion requirements of the activity are met. ',
 	],
 	'settings_testlimit' => [
 		'Testlimit in %',
