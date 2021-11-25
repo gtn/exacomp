@@ -261,7 +261,7 @@ if ($action == 'msteams_login') {
         block_exacomp_json_result_error('jwt error: '.$e->getMessage());
     }
 
-    // actually checking audience is not needed, because we check tenant
+    // actually checking audience is not needed?
     if ($decoded->aud != 'api://diggr-plus.at/'.$client_id) {
         block_exacomp_json_result_error('audience not allowed: '.$decoded->aud);
     }
@@ -273,8 +273,11 @@ if ($action == 'msteams_login') {
     }
     // check config
     // demo tenantid = hak-steyr
-    if ($decoded->tid != '3171ff0c-9e10-4061-9afb-66b6b12b03a9') {
-        block_exacomp_json_result_error('Wrong token: wrong tenantid '.$decoded->tid);
+    // if ($decoded->tid != '3171ff0c-9e10-4061-9afb-66b6b12b03a9') {
+    //     block_exacomp_json_result_error('Wrong token: wrong tenantid '.$decoded->tid);
+    // }
+    if (!$decoded->tid) {
+        block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff mit einem privaten Account ist nicht möglich', 'en:Access with a private account is not possible'));
     }
 
     $userPrincipalName = $decoded->upn;
@@ -295,7 +298,6 @@ if ($action == 'msteams_login') {
         // eg. userPrincipalName starts with #EXT# for external users
         block_exacomp_json_result_error('External Users are not allowed to login');
     }
-
 
     if (get_config('exacomp', 'sso_create_users')) {
         $moodle_user = $DB->get_record('user', ['username' => $email]);
@@ -550,7 +552,9 @@ if (@$request_data->usermapid) {
     $DB->update_record('block_exacomp_usermap', ['userid' => $USER->id, 'id' => $request_data->usermapid]);
 }
 
-$return_uri = $request_data->return_uri.'?moodle_token='.$applogin->moodle_data_token;
+$return_uri = $request_data->return_uri.
+    (preg_match('!\\?!', $request_data->return_uri) ? '&' : '?').
+    'moodle_token='.$applogin->moodle_data_token;
 
 if (optional_param('withlogout', '', PARAM_BOOL)) {
 
