@@ -13710,13 +13710,13 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
         if (array_key_exists($sId, $avgSubjectsTmp)) {
             if (@$avgSubjectsTmp[$sId]['evalniveau_count'] > 0) {
                 $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_SUBJECT,
-                        $avgSubjectsTmp[$sId]['evalniveau_sum'] / $avgSubjectsTmp[$sId]['evalniveau_count']);
+                        $avgSubjectsTmp[$sId]['evalniveau_sum'] / $avgSubjectsTmp[$sId]['evalniveau_count'], $courseid);
                 $newSubjectData[$sId]->subject_evalniveau = @$evaluationniveau_items[$new_evalniveau] ?: '';
                 $newSubjectData[$sId]->subject_evalniveauid = $new_evalniveau;
             }
             if (@$avgSubjectsTmp[$sId]['count'] > 0) {
                 $newSubjectData[$sId]->subject_eval =
-                        $roundFunction(BLOCK_EXACOMP_TYPE_SUBJECT, $avgSubjectsTmp[$sId]['sum'] / $avgSubjectsTmp[$sId]['count']);
+                        $roundFunction(BLOCK_EXACOMP_TYPE_SUBJECT, $avgSubjectsTmp[$sId]['sum'] / $avgSubjectsTmp[$sId]['count'], $courseid);
             }
         }
         foreach ($subjectData['courses_table_content'] as $cId => $courseContent) {
@@ -13725,14 +13725,14 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                     if (array_key_exists($tId, $avgTopicsTmp)) {
                         if (@$avgTopicsTmp[$tId]['evalniveau_count'] > 0) {
                             $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_TOPIC,
-                                    $avgTopicsTmp[$tId]['evalniveau_sum'] / $avgTopicsTmp[$tId]['evalniveau_count']);
+                                    $avgTopicsTmp[$tId]['evalniveau_sum'] / $avgTopicsTmp[$tId]['evalniveau_count'], $courseid);
                             $newSubjectData[$sId]->content[$tId]->topic_evalniveau =
                                     @$evaluationniveau_items[$new_evalniveau] ?: '';
                             $newSubjectData[$sId]->content[$tId]->topic_evalniveauid = $new_evalniveau;
                         }
                         if (@$avgTopicsTmp[$tId]['count'] > 0) {
                             $newSubjectData[$sId]->content[$tId]->topic_eval = $roundFunction(BLOCK_EXACOMP_TYPE_TOPIC,
-                                    $avgTopicsTmp[$tId]['sum'] / $avgTopicsTmp[$tId]['count']);
+                                    $avgTopicsTmp[$tId]['sum'] / $avgTopicsTmp[$tId]['count'], $courseid);
                         }
                     }
                     foreach ($topicData->niveaus as $niveauTitle => $niveauData) {
@@ -13740,7 +13740,7 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                             if (@$avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count'] > 0) {
                                 $new_evalniveau = $roundFunction(BLOCK_EXACOMP_TYPE_DESCRIPTOR,
                                         $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_sum'] /
-                                        $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count']);
+                                        $avgNiveausTmp[$tId.':::'.$niveauTitle]['evalniveau_count'], $courseid);
                                 $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->evalniveau =
                                         @$evaluationniveau_items[$new_evalniveau] ?: '';
                                 $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->evalniveauid = $new_evalniveau;
@@ -13749,7 +13749,7 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                                 $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle]->eval =
                                         $roundFunction(BLOCK_EXACOMP_TYPE_DESCRIPTOR,
                                                 $avgNiveausTmp[$tId.':::'.$niveauTitle]['sum'] /
-                                                $avgNiveausTmp[$tId.':::'.$niveauTitle]['count']);
+                                                $avgNiveausTmp[$tId.':::'.$niveauTitle]['count'], $courseid);
                             }
                         }
                     }
