@@ -277,7 +277,7 @@ if ($action == 'msteams_login') {
     //     block_exacomp_json_result_error('Wrong token: wrong tenantid '.$decoded->tid);
     // }
     if (!$decoded->tid) {
-        block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff mit einem privaten Account ist nicht möglich', 'en:Access with a private account is not possible'));
+        block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff mit einem privaten Account ist nicht möglich', 'en:Access with a private account is not possible']));
     }
 
     $userPrincipalName = $decoded->upn;
