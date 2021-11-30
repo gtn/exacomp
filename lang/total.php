@@ -120,7 +120,7 @@ return [
 		'Relate Moodle activities',
 	],
     'tab_teacher_settings_questiontodescriptors' => [
-        'Quiz-question verknüpfen',
+        'Test-Fragen verknüpfen',
         'Relate Quiz questions',
     ],
 	'tab_teacher_settings_badges' => [
@@ -3381,6 +3381,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'contactcomps' => [
         'Alle schließen',
         'Contract all',
+    ],
+    'questlink' => [
+        'Fragen verknüpfen',
+        'Relate questions',
     ],
 
 ];

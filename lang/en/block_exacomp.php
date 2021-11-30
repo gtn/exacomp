@@ -924,3 +924,4 @@ $string['close'] = 'Close';
 $string['opencomps'] = 'Choose your competences';
 $string['expandcomps'] = 'Expand all';
 $string['contactcomps'] = 'Contract all';
+$string['questlink'] = 'Relate questions';

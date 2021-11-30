@@ -21,7 +21,7 @@ class descriptor_link_column extends column_base
     protected function display_content($question, $rowclasses)
     {
     global $USER, $DB;
-    echo'<a href="#" class="competences'.$question->id.'"> Link </a>';
+    echo'<a href="#" class="competences'.$question->id.'"> block_exacomp_get_string("opencomps") </a>';
 
         $conditions = array("id" => 1, "userid" => $USER->id);
         $existing = $DB->get_record('block_exaportitem', $conditions)
@@ -31,7 +31,7 @@ class descriptor_link_column extends column_base
         <div style="display: none">
             <div id="inline_comp_tree" class="ict<?php echo $question->id; ?>" style='padding: 10px; background: #fff;'>
                 <h4>
-                    <?php echo block_exacomp_get_string("opencomps") ?>
+                    <?php echo block_exacomp_get_string("questlink") ?>
                 </h4>
 
                 <a href="javascript:ddtreemenu.flatten('comptree<?php echo $question->id; ?>', 'expand')"><?php echo block_exacomp_get_string("expandcomps") ?>
