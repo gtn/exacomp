@@ -5821,10 +5821,11 @@ function block_exacomp_perform_question_grading(){
     }
 
 
-    $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid
+    $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid, max(attempts.timemodified)
             FROM {question_attempts} attempts
             JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
-            WHERE step.sequencenumber = 2";
+            WHERE step.sequencenumber = 2
+            GROUP BY questionid";
 
     $attempts = array_filter($DB->get_records_sql($sql), function($a) use ($question_array){
         return in_array($a->questionid, $question_array);
@@ -5834,8 +5835,10 @@ function block_exacomp_perform_question_grading(){
         if($attempt->maxmark / 2 <= $attempt->fraction){
             foreach($descquests as $descquest){
                 if($attempt->questionid == $descquest->questid){
-                    $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
-                    block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
+                    if($descquest->courseid != -1){
+                        $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
+                        block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
+                    }
                 }
             }
         }

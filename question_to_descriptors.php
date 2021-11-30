@@ -114,7 +114,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 //echo $renderer->extra_horizontal_navigation();
 
 echo '<div class="questionbankwindow boxwidthwide boxaligncenter">';
-$questionbank->display('questions', $pagevars['qpage'], $pagevars['qperpage'],
+$questionbank->display('questions', $pagevars['qpage'], 500,
     $pagevars['cat'], $pagevars['recurse'], $pagevars['showhidden'],
     $pagevars['qbshowtext'], $pagevars['qtagids']);
 echo "</div>\n";
