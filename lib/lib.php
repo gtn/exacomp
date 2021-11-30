@@ -5832,7 +5832,6 @@ function block_exacomp_perform_question_grading(){
     });
 
     foreach($attempts as $attempt){
-        if($attempt->maxmark / 2 <= $attempt->fraction){
             foreach($descquests as $descquest){
                 if($attempt->questionid == $descquest->questid){
                     if($descquest->courseid != -1){
@@ -5841,7 +5840,6 @@ function block_exacomp_perform_question_grading(){
                     }
                 }
             }
-        }
     }
 
 }
