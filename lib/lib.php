@@ -2697,6 +2697,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		if (!isset($topic->descriptors)) {
 			$topic->descriptors = array();
 		}
+        if (!isset($topic->used_niveaus)) {
+            $topic->used_niveaus = array();
+        }
 		$topic = block_exacomp\topic::create($topic);
 
 		// found: add it to the subject result
@@ -5499,7 +5502,7 @@ function block_exacomp_perform_auto_test() {
 		// get all tests/quizes that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
-        $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]); // get "related" activities gets the assigned ones?
+        $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]); // get "related" activities gets the assigned ones? depends on the setting
         $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 		// get student grading for each test
