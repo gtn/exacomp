@@ -25,7 +25,7 @@ require_once __DIR__.'/externallib.php';
 
 use block_exacomp\globals as g;
 
-class block_exacomp_external_diggrv extends external_api {
+class block_exacomp_external_setapp extends external_api {
     /**
      * Returns description of method parameters
      *
@@ -54,7 +54,7 @@ class block_exacomp_external_diggrv extends external_api {
         ));
         global $DB;
 
-        block_exacomp_require_diggrv_enabled();
+        block_exacomp_require_setapp_enabled();
         block_exacomp_require_teacher($courseid);
 
 
@@ -113,7 +113,7 @@ class block_exacomp_external_diggrv extends external_api {
         require_once $CFG->dirroot.'/lib/enrollib.php';
         require_once $CFG->dirroot.'/user/lib.php';
 
-        block_exacomp_require_diggrv_enabled();
+        block_exacomp_require_setapp_enabled();
         block_exacomp_require_teacher($courseid);
 
         if ($userid == 0) {
@@ -202,7 +202,7 @@ class block_exacomp_external_diggrv extends external_api {
 
         global $DB;
 
-        block_exacomp_require_diggrv_enabled();
+        block_exacomp_require_setapp_enabled();
         block_exacomp_require_teacher($courseid);
         if (!block_exacomp_is_user_in_course($userid, $courseid)) {
             throw new moodle_exception('user is not enrolled in course');
@@ -257,7 +257,7 @@ class block_exacomp_external_diggrv extends external_api {
         ));
         global $DB;
 
-        block_exacomp_require_diggrv_enabled();
+        block_exacomp_require_setapp_enabled();
         block_exacomp_require_teacher($courseid);
         if (!block_exacomp_is_user_in_course($userid, $courseid)) {
             throw new moodle_exception('user is not enrolled in course');
@@ -423,7 +423,7 @@ class block_exacomp_external_diggrv extends external_api {
                         'niveau_title' => new external_value (PARAM_TEXT),
                         'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
                         'personalisedtext' => new external_value (PARAM_TEXT),
-                        'sorting' => new external_value (PARAM_INT)
+                        'sorting' => new external_value (PARAM_INT),
                     ))),
                 ))),
             ))),
@@ -527,7 +527,7 @@ class block_exacomp_external_diggrv extends external_api {
 
     public static function diggrplus_v_print_student_grading_report_parameters() {
         return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT),
+            'userid' => new external_value (PARAM_TEXT, 'userid (number) or \'all\' to print all users'),
             'courseid' => new external_value (PARAM_INT),
             'output_format' => new external_value (PARAM_TEXT, 'pdf or html', VALUE_DEFAULT, 'pdf'),
         ));
@@ -545,10 +545,24 @@ class block_exacomp_external_diggrv extends external_api {
             'output_format' => $output_format,
         ));
 
-        block_exacomp_external::require_can_access_course_user($courseid, $userid);
-        $courses = enrol_get_users_courses($userid);
-        $course = $courses[$courseid];
-        $user = $DB->get_record('user', ['id' => $userid]);
+        if ($userid == 'all') {
+            $allusers = true;
+            $userid = 0;
+            block_exacomp_external::require_can_access_course($courseid);
+
+            $course = $DB->get_record('course', array('id' => $courseid));
+
+            $students = block_exacomp_get_students_by_course($courseid);
+        } else {
+            $allusres = false;
+            // keep userid
+            block_exacomp_external::require_can_access_course_user($courseid, $userid);
+
+            $courses = enrol_get_users_courses($userid);
+            $course = $courses[$courseid];
+            $user = $DB->get_record('user', ['id' => $userid]);
+            $students = [$user];
+        }
 
         $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
 
@@ -556,77 +570,140 @@ class block_exacomp_external_diggrv extends external_api {
         // Fächer anhand des Bildungsplans sortieren (ist in der Datenbank im sorting Feld enthalten)
         usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
 
-        $subjects_html = '';
-        foreach ($tree as $subject) {
-            $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $userid, 'subjectid' => $subject->id]);
+        $get_user_output = function($user) use ($course, $tree, $DB) {
+            $subjects_html = '';
+            foreach ($tree as $subject) {
+                $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $user->id, 'subjectid' => $subject->id]);
 
-            // if (empty($subject->topics)) {
-            //     continue;
-            // }
+                // if (empty($subject->topics)) {
+                //     continue;
+                // }
 
-            // religion: is_pflichtgegenstand
-            // andere fächer: assess_with_grades
-            if (!$subjstudconfig->assess_with_grades && !$subjstudconfig->is_pflichtgegenstand) {
-                // skip
-                continue;
-            }
-
-            //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
-            //     <b>W:</b> verschiedene Wege zu unterschiedlichen Bezugspunkten beschreiben; einfache geografische Gegebenheiten der Umgebung beschreiben; über die verantwortungsvolle Nutzung der Dinge des täglichen Lebens Bescheid wissen; unterschiedliche Berufe und deren Aufgabenfelder beschreiben<br/>
-            //     <b>D:</b> alte und neue Gegenstände beschreiben und mit den jeweiligen Lebensumständen in Zusammenhang bringen; über alle Zeitabläufe eines Jahres (Minuten, Stunden, Tage, Wochen, Monate, Jahreszeiten) Bescheid wissen und Auskunft geben<br/>
-            //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
-            //     </td>
-            // </tr>'.
-
-            $subject_content_html = [];
-            foreach ($subject->topics as $topic) {
-                foreach ($topic->descriptors as $descriptor) {
-                    if (!$descriptor->visible) {
-                        continue;
-                    }
-
-                    $grading = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
-                    if (!$grading->value) {
-                        // skip not graded items
-                        continue;
-                    }
-
-                    if (!$subject_content_html[$descriptor->niveauid]) {
-                        $subject_content_html[$descriptor->niveauid] = '<b>'.static::custom_htmltrim($descriptor->niveau_title).':</b> ';
-                    }
-
-                    $title = trim($grading->personalisedtext) ? $grading->personalisedtext : $descriptor->title;
-                    $subject_content_html[$descriptor->niveauid] .= static::custom_htmltrim($title).', ';
-                }
-            }
-
-            $subject_content_html = array_map(function($item) {
-                // remove trailing colon
-                return trim($item, ', ');
-            }, $subject_content_html);
-            $subject_content_html = join('<br/>', $subject_content_html);
-
-            if ($personalisedtext = trim($subjstudconfig->personalisedtext)) {
-                if ($subject_content_html) {
-                    $subject_content_html .= '<br/><br/><b>Zusätzliche Informationen:</b><br/>';
+                // religion: is_pflichtgegenstand
+                // andere fächer: assess_with_grades
+                if (!$subjstudconfig->assess_with_grades && !$subjstudconfig->is_pflichtgegenstand) {
+                    // skip
+                    continue;
                 }
 
-                $subject_content_html .= $personalisedtext;
+                //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
+                //     <b>W:</b> verschiedene Wege zu unterschiedlichen Bezugspunkten beschreiben; einfache geografische Gegebenheiten der Umgebung beschreiben; über die verantwortungsvolle Nutzung der Dinge des täglichen Lebens Bescheid wissen; unterschiedliche Berufe und deren Aufgabenfelder beschreiben<br/>
+                //     <b>D:</b> alte und neue Gegenstände beschreiben und mit den jeweiligen Lebensumständen in Zusammenhang bringen; über alle Zeitabläufe eines Jahres (Minuten, Stunden, Tage, Wochen, Monate, Jahreszeiten) Bescheid wissen und Auskunft geben<br/>
+                //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
+                //     </td>
+                // </tr>'.
+
+                $subject_content_html = [];
+                foreach ($subject->topics as $topic) {
+                    foreach ($topic->descriptors as $descriptor) {
+                        if (!$descriptor->visible) {
+                            continue;
+                        }
+
+                        $grading = block_exacomp_get_comp_eval($course->id, BLOCK_EXACOMP_ROLE_TEACHER, $user->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+                        if (!$grading->value) {
+                            // skip not graded items
+                            continue;
+                        }
+
+                        // use sorting + id as key, so we can sort the array later
+                        $subject_content_html_entry_id = sprintf('%10d_%10d', $descriptor->niveau_sorting, $descriptor->niveauid);
+
+                        if (!$subject_content_html[$subject_content_html_entry_id]) {
+                            $subject_content_html[$subject_content_html_entry_id] = '<b>'.static::custom_htmltrim($descriptor->niveau_title).':</b> ';
+                        }
+
+                        $title = trim($grading->personalisedtext) ? $grading->personalisedtext : $descriptor->title;
+                        $subject_content_html[$subject_content_html_entry_id] .= static::custom_htmltrim($title).', ';
+                    }
+                }
+
+                natsort($subject_content_html);
+                $subject_content_html = array_map(function($item) {
+                    // remove trailing colon
+                    return trim($item, ', ');
+                }, $subject_content_html);
+                $subject_content_html = join('<br/>', $subject_content_html);
+
+                if ($personalisedtext = trim($subjstudconfig->personalisedtext)) {
+                    if ($subject_content_html) {
+                        $subject_content_html .= '<br/><br/><b>Zusätzliche Informationen:</b><br/>';
+                    }
+
+                    $subject_content_html .= $personalisedtext;
+                }
+
+                if (!$subject_content_html) {
+                    $subject_content_html .= '-';
+                }
+
+                $title = $subject->title;
+                // filter trailing numbers
+                $title = preg_replace('!\s+[0-9]+$!', '', $title);
+
+                $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($title).'</td>';
+                $subjects_html .= '<td>';
+                $subjects_html .= $subject_content_html;
+                $subjects_html .= '</td></tr>';
             }
 
-            if (!$subject_content_html) {
-                $subject_content_html .= '-';
-            }
+            $html = '
+	            <br/>
+	            <br/>
+	            <br/>
+	            <br/>
+	            <div style="text-align: center;">'.get_config('exacomp', 'schoolname').'</div>
+	            <br/>
+	            <br/>
+	            <div style="text-align: center; font-size: 20pt;">Schriftliche Erläuterung zur Ziffernbeurteilung</div>
+	            <br/>
+	            <br/>
+	            <br/>
+	            <table class="header" width="100%" cellspacing="0"><tr>
+	                <td>für '.fullname($user).'</td>
+	                <td style="text-align: right">Schuljahr 2021/2022</td>
+	            </tr></table>
+	            <br/>
+	            <br/>
+	            <br/>
+	            <table class="content" width="100%" cellspacing="0">
+	                <tr nobr="true">
+	                    <td style="width: 30%"></td>
+	                    <td style="width: 70%"><b>Die Schülerin/der Schüler hat folgende Anforderungen erfüllt:</b></td>
+	                </tr>'.
+                $subjects_html.
+                // '<tr nobr="true">
+                //     <td>Sachunterricht</td>
+                //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
+                //     <b>W:</b> verschiedene Wege zu unterschiedlichen Bezugspunkten beschreiben; einfache geografische Gegebenheiten der Umgebung beschreiben; über die verantwortungsvolle Nutzung der Dinge des täglichen Lebens Bescheid wissen; unterschiedliche Berufe und deren Aufgabenfelder beschreiben<br/>
+                //     <b>D:</b> alte und neue Gegenstände beschreiben und mit den jeweiligen Lebensumständen in Zusammenhang bringen; über alle Zeitabläufe eines Jahres (Minuten, Stunden, Tage, Wochen, Monate, Jahreszeiten) Bescheid wissen und Auskunft geben<br/>
+                //     <br/>
+                //     <b>Zusätzliche Informationen:</b><br/>
+                //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
+                //     </td>
+                // </tr>'.
+                '</table width="100%" cellspacing="0">
+	            <br/><br/><br/>
+	            <br/><br/><br/>
+	            <div nobr="true">
+	                <table class="header" width="100%" cellspacing="0"><tr>
+	                    <td style="width: 40%; text-align: center;"><!-- ...................................................<br/>Schul-/Clusterleitung --></td>
+	                    <td style="width: 20%; text-align: center;">Rund-<br/>siegel</td>
+	                    <td style="width: 40%; text-align: center;">...................................................<br/>Klassenlehrer/Klassenlehrerin</td>
+	                </tr></table>
+	            </div>
+	        ';
+            // <br/><br/><br/><br/>
+            // *) Anforderungsniveaus: Mindestanforderungen (M), wesentliche Anforderungen (W), (weit) darüber hinausgehende Anforderungen (D)
 
-            $title = $subject->title;
-            // filter trailing numbers
-            $title = preg_replace('!\s+[0-9]+$!', '', $title);
+            return $html;
+        };
 
-            $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($title).'</td>';
-            $subjects_html .= '<td>';
-            $subjects_html .= $subject_content_html;
-            $subjects_html .= '</td></tr>';
+        $htmlSegments = [];
+        foreach ($students as $user) {
+            $htmlSegments[] = $get_user_output($user);
         }
+
 
         $style = '
 			* {
@@ -652,63 +729,16 @@ class block_exacomp_external_diggrv extends external_api {
             }
         ';
 
-        $html = '
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <div style="text-align: center;">Bezeichnung und Standort der Schule</div>
-            <br/>
-            <br/>
-            <div style="text-align: center; font-size: 20pt;">Schriftliche Erläuterung zur Ziffernbeurteilung</div>
-            <br/>
-            <br/>
-            <br/>
-            <table class="header" width="100%" cellspacing="0"><tr>
-                <td>für '.fullname($user).'</td>
-                <td style="text-align: right">Schuljahr 2021/2022</td>
-            </tr></table>
-            <br/>
-            <br/>
-            <br/>
-            <table class="content" width="100%" cellspacing="0">
-                <tr nobr="true">
-                    <td style="width: 30%"></td>
-                    <td style="width: 70%"><b>Die Schülerin/der Schüler hat folgende Anforderungen*) erfüllt:</b></td>
-                </tr>'.
-            $subjects_html.
-            // '<tr nobr="true">
-            //     <td>Sachunterricht</td>
-            //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
-            //     <b>W:</b> verschiedene Wege zu unterschiedlichen Bezugspunkten beschreiben; einfache geografische Gegebenheiten der Umgebung beschreiben; über die verantwortungsvolle Nutzung der Dinge des täglichen Lebens Bescheid wissen; unterschiedliche Berufe und deren Aufgabenfelder beschreiben<br/>
-            //     <b>D:</b> alte und neue Gegenstände beschreiben und mit den jeweiligen Lebensumständen in Zusammenhang bringen; über alle Zeitabläufe eines Jahres (Minuten, Stunden, Tage, Wochen, Monate, Jahreszeiten) Bescheid wissen und Auskunft geben<br/>
-            //     <br/>
-            //     <b>Zusätzliche Informationen:</b><br/>
-            //     Text des frei befüllbaren Texfeldes für Ergänzungen durch die Lehrperson, z.B.: zu Vereinbarungen aus dem KEL-Gespräche, Fördermaßnahmen etc.
-            //     </td>
-            // </tr>'.
-            '</table width="100%" cellspacing="0">
-            <br/><br/><br/>
-            <br/><br/><br/>
-            <div nobr="true">
-                <table class="header" width="100%" cellspacing="0"><tr>
-                    <td style="width: 40%; text-align: center;">...................................................<br/>Schul-/Clusterleitung</td>
-                    <td style="width: 20%; text-align: center;">Rund-<br/>siegel</td>
-                    <td style="width: 40%; text-align: center;">...................................................<br/>Klassenlehrer/Klassenlehrerin</td>
-                </tr></table>
-
-                <br/><br/><br/><br/>
-                *) Anforderungsniveaus: Mindestanforderungen (M), wesentliche Anforderungen (W), (weit) darüber hinausgehende Anforderungen (D)
-            </div>
-        ';
-
         if ($output_format == 'html') {
             header('Access-Control-Allow-Origin: *');
 
-            echo "<style>$style</style>".$html;
+            echo "<style>$style</style>".join('<hr/>', $htmlSegments);
             exit;
         } else {
-            $pdf = \block_exacomp\printer::getPdfPrinter('P');
+            // $pdf = \block_exacomp\printer::getPdfPrinter('P');
+            \block_exacomp\printer::getPdfPrinter('P');
+            $pdf = new \block_exacomp\printer_TCPDF_student_report('P');
+
             $pdf->SetFont('times', '', 9);
             $pdf->setHeaderFont(['times', '', 9]);
             $pdf->SetLeftMargin(20);
@@ -716,8 +746,11 @@ class block_exacomp_external_diggrv extends external_api {
 
             $pdf->setStyle($style);
 
-            $pdf->writeHTML($html);
-
+            foreach ($htmlSegments as $htmlSegment) {
+                $pdf->startPageGroup();
+                $pdf->AddPage();
+                $pdf->writeHTML($htmlSegment);
+            }
 
             header('Access-Control-Allow-Origin: *');
             $pdf->Output();

@@ -137,8 +137,8 @@ $string['settings_new_app_login'] = 'SSO-App-Login verwenden';
 $string['settings_dakora_teacher_link'] = 'Klicken Sie, um die Dakoralehrer festzulegen';
 $string['settings_applogin_redirect_urls'] = 'Applogin Urls';
 $string['settings_applogin_redirect_urls_description'] = '';
-$string['settings_diggrv_enabled'] = 'Diggrv Funktionen aktivieren';
-$string['settings_diggrv_enabled_description'] = 'Anlegen von Userkonten über App erlauben.';
+$string['settings_setapp_enabled'] = 'SET-App Funktionen aktivieren';
+$string['settings_setapp_enabled_description'] = 'Anlegen von Userkonten über App erlauben.';
 $string['settings_sso_create_users'] = 'SSO: Neue Benutzer erstellen';
 $string['settings_sso_create_users_description'] = '';
 $string['settings_msteams_client_id'] = 'Diggr+ MS Teams App Client Id';
@@ -181,6 +181,9 @@ $string['settings_assessment_verbose_options_default'] = 'nicht erreicht, teilwe
 $string['settings_assessment_verbose_options_short'] = 'Verbalisierung Werte Abkürzung';
 $string['settings_assessment_verbose_options_short_description'] = 'Abkürzung obiger verbalisierter Werte für die Auswertungen';
 $string['settings_assessment_verbose_options_short_default'] = 'ne, te, üe, ve';
+$string['settings_schoolname'] = 'Bezeichnung und Standort der Schule';
+$string['settings_schoolname_description'] = '';
+$string['settings_schoolname_default'] = 'Bezeichnung und Standort der Schule';
 $string['settings_assessment_grade_verbose'] = 'Noten Verbalisierung';
 $string['settings_assessment_grade_verbose_description'] = 'Verbalisierte Werte der Noten, kommagetrennt. Die Anzahl muß mit dem Wert "Höchste Note" oben übereinstimmen. z.B: sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend';
 $string['settings_assessment_grade_verbose_default'] = 'sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend';
@@ -209,7 +212,6 @@ $string['settings_disable_js_editactivities'] = 'JS für die Zuteilung von Moodl
 $string['settings_disable_js_editactivities_description'] = 'Aktivieren, falls sich die Seite "Moodle-Aktivitäten zuteilen"  zu langsam aufbaut.';
 $string['settings_example_autograding'] = 'übergeordnete Materialien automatische Beurteilung';
 $string['settings_example_autograding_description'] = 'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
-
 
 
 // === Unit Tests ===

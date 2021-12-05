@@ -137,8 +137,8 @@ $string['settings_new_app_login'] = 'Use SSO-App-Login';
 $string['settings_dakora_teacher_link'] = 'Click to assign the dakorateachers';
 $string['settings_applogin_redirect_urls'] = 'Applogin Urls';
 $string['settings_applogin_redirect_urls_description'] = '';
-$string['settings_diggrv_enabled'] = 'Enable Diggrv Functions';
-$string['settings_diggrv_enabled_description'] = 'Allow creating users in the Diggrv-app.';
+$string['settings_setapp_enabled'] = 'Enable SET-App Functions';
+$string['settings_setapp_enabled_description'] = 'Allow creating users in the App.';
 $string['settings_sso_create_users'] = 'SSO: Create new Users';
 $string['settings_sso_create_users_description'] = '';
 $string['settings_msteams_client_id'] = 'Diggr+ MS Teams App Client Id';
@@ -181,6 +181,9 @@ $string['settings_assessment_verbose_options_default'] = 'not gained, partly gai
 $string['settings_assessment_verbose_options_short'] = 'verbose Options (EN) short';
 $string['settings_assessment_verbose_options_short_description'] = 'list of verbose Options, i.e. not gained, partly gained, mostly gained, completely gained';
 $string['settings_assessment_verbose_options_short_default'] = 'ng, pg, mg, cg';
+$string['settings_schoolname'] = 'Name and address of school';
+$string['settings_schoolname_description'] = '';
+$string['settings_schoolname_default'] = 'Name and address of school';
 $string['settings_assessment_grade_verbose'] = 'verbalized grades (EN)';
 $string['settings_assessment_grade_verbose_description'] = 'Verbalized values of the grades, separated by commas. The number must match the "highest grade" value above. e.g .: very good, good, satisfactory, sufficient, deficient, insufficient';
 $string['settings_assessment_grade_verbose_default'] = 'very good, good, satisfactory, sufficient, deficient, insufficient';
@@ -209,7 +212,6 @@ $string['settings_disable_js_editactivities'] = 'Disable JS in students selectio
 $string['settings_disable_js_editactivities_description'] = 'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem';
 $string['settings_example_autograding'] = 'automatic assessment of parent materials';
 $string['settings_example_autograding_description'] = 'When all child examples have been graded, the parent material should be assessed automatically.';
-
 
 
 // === Unit Tests ===

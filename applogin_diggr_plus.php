@@ -101,7 +101,7 @@ function block_exacomp_turn_notifications_on() {
 function block_exacomp_login_successfull() {
     // actions after login:
     block_exacomp_turn_notifications_on();
-    if (block_exacomp_is_diggrv_enabled()) { // && block_exacomp_is_teacher_in_any_course()
+    if (block_exacomp_is_setapp_enabled()) { // && block_exacomp_is_teacher_in_any_course()
         block_exacomp_diggrv_create_first_course();
     }
 }

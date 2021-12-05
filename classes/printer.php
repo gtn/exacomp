@@ -27,90 +27,104 @@ use PhpOffice\PhpWord\Escaper\RegExp;
 use PhpOffice\PhpWord\Escaper\Xml;
 
 class printer_TCPDF extends \TCPDF {
-	private $_header = '';
-	private $_style = '';
+    private $_header = '';
+    private $_style = '';
 
-	public function __construct($orientation) {
-		parent::__construct($orientation);
-		$this->SetFont('helvetica', '', 9);
-		$this->setHeaderFont(['helvetica', '', 9]);
-	}
+    public function __construct($orientation) {
+        parent::__construct($orientation);
+        $this->SetFont('helvetica', '', 9);
+        $this->setHeaderFont(['helvetica', '', 9]);
+    }
 
-	private function _initPage() {
-		if ($this->numpages == 0) {
-			// at least one page
-			$this->AddPage();
-		}
-	}
+    private function _initPage() {
+        if ($this->numpages == 0) {
+            // at least one page
+            $this->AddPage();
+        }
+    }
 
-	public function setHeaderHTML($header) {
-		$this->_header = $header;
-	}
+    public function setHeaderHTML($header) {
+        $this->_header = $header;
+    }
 
-	public function setStyle($style) {
-		$this->_style = $style;
-	}
+    public function setStyle($style) {
+        $this->_style = $style;
+    }
 
-	public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = array()) {
-		$args = func_get_args();
+    public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = array()) {
+        $args = func_get_args();
 
-		// replace moodle image urls with local urls
-		if (preg_match('!image.php/[^/]+/(?<component>[^/]+)/[^/]+/(?<imagename>.+)$!', $file, $matches)) {
-			$path = g::$PAGE->theme->resolve_image_location($matches['imagename'], $matches['component']);
-			$args[0] = $path;
-		}
+        // replace moodle image urls with local urls
+        if (preg_match('!image.php/[^/]+/(?<component>[^/]+)/[^/]+/(?<imagename>.+)$!', $file, $matches)) {
+            $path = g::$PAGE->theme->resolve_image_location($matches['imagename'], $matches['component']);
+            $args[0] = $path;
+        }
 
-		return call_user_func_array(array('parent', __FUNCTION__), $args);
-	}
+        return call_user_func_array(array('parent', __FUNCTION__), $args);
+    }
 
-	public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '') {
-		$this->_initPage();
+    public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '') {
+        $this->_initPage();
 
-		$style = '';
-		if ($this->_style) {
-			$style = "<style> $this->_style </style>";
-		}
+        $style = '';
+        if ($this->_style) {
+            $style = "<style> $this->_style </style>";
+        }
 
-		// remove input and select fields
-		$html = preg_replace('!<input\s[^>]*type="text"[^>]*value="([^"]*)"[^>]*>!smiU', '$1', $html);
-		$html = preg_replace_callback('!<select\s.*</select>!smiU', function($matches) {
-			if (preg_match('!<option\s[^>]*selected="[^"]+"[^>]*>([^<]*)<!smiU', $matches[0], $subMatches)) {
-				return $subMatches[1];
-			}
-			if (preg_match('!<option(\s[^>]*)?>([^<]*)<!smiU', $matches[0], $subMatches)) {
-				return $subMatches[2];
-			}
+        // remove input and select fields
+        $html = preg_replace('!<input\s[^>]*type="text"[^>]*value="([^"]*)"[^>]*>!smiU', '$1', $html);
+        $html = preg_replace_callback('!<select\s.*</select>!smiU', function($matches) {
+            if (preg_match('!<option\s[^>]*selected="[^"]+"[^>]*>([^<]*)<!smiU', $matches[0], $subMatches)) {
+                return $subMatches[1];
+            }
+            if (preg_match('!<option(\s[^>]*)?>([^<]*)<!smiU', $matches[0], $subMatches)) {
+                return $subMatches[2];
+            }
 
-			return $matches[0];
-		}, $html);
+            return $matches[0];
+        }, $html);
 
-		return parent::writeHTML($style.$html, $ln, $fill, $reseth, $cell, $align);
-	}
+        return parent::writeHTML($style.$html, $ln, $fill, $reseth, $cell, $align);
+    }
 
-	public function Header() {
-		if ($this->_header) {
-			$this->writeHTML($this->_header);
-		}
-	}
+    public function Header() {
+        if ($this->_header) {
+            $this->writeHTML($this->_header);
+        }
+    }
 
-	public function Footer() {
-		return;
-	}
+    public function Footer() {
+        return;
+    }
+}
+
+class printer_TCPDF_student_report extends printer_TCPDF {
+    public function Footer() {
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('times', '', 9);
+        // Page number
+        $this->Cell(184, 10,
+            block_exacomp_trans(['en: Page {$a->num} of {$a->total}', 'de:Seite {$a->num} von {$a->total}'],
+                ['num' => $this->getPageNumGroupAlias(), 'total' => $this->getPageGroupAlias()]),
+            0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
 }
 
 class printer {
     static function getPdfPrinter($orientation) {
-	    $pdf = new printer_TCPDF($orientation);
+        $pdf = new printer_TCPDF($orientation);
 
-	    return $pdf;
+        return $pdf;
     }
 
-	static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
-	    ob_start();
+    static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
+        ob_start();
 
-	    $pdf = new printer_TCPDF('L');
+        $pdf = new printer_TCPDF('L');
 
-		$pdf->setStyle('
+        $pdf->setStyle('
 			* {
 				font-size: 9pt;
 			}
@@ -140,50 +154,50 @@ class printer {
 			}
 				');
 
-		$pdf->setHeaderMargin(5);
-		$pdf->SetTopMargin(40);
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(40);
 
-		foreach ($html_tables as $html_table) {
+        foreach ($html_tables as $html_table) {
 
-			// convert padding to spaces, because tcpdf doesn't support padding
-			/*
-			$html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
-				return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
-			}, $html_table);
-			*/
-			// echo $html_table; exit;
+            // convert padding to spaces, because tcpdf doesn't support padding
+            /*
+            $html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
+                return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
+            }, $html_table);
+            */
+            // echo $html_table; exit;
 
-			// add spacing for examples
-			$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
+            // add spacing for examples
+            $html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
 
-			// ersten beide zeilen in den header geben
-			if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
-				die('error #gg98daa');
-			}
+            // ersten beide zeilen in den header geben
+            if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
+                die('error #gg98daa');
+            }
 
-			$html_table = str_replace($matches[1], '', $html_table);
-			$html_table = str_replace('<tr ', '<tr nobr="true"', $html_table);
+            $html_table = str_replace($matches[1], '', $html_table);
+            $html_table = str_replace('<tr ', '<tr nobr="true"', $html_table);
 
-			$pdf->setHeaderHTML($html_header.$matches[0].'</table>');
+            $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
 
-			$pdf->AddPage();
+            $pdf->AddPage();
 
-			$pdf->writeHTML($html_table);
-		}
+            $pdf->writeHTML($html_table);
+        }
 
- 		//die();
-		$pdf->Output();
+        //die();
+        $pdf->Output();
 
-		exit;
-	}
+        exit;
+    }
 
-	static function competenceprofile_overview($studentid, $html_header, $html_tables) {
-	    //print_r($html_tables); exit;
-	    ob_start();
+    static function competenceprofile_overview($studentid, $html_header, $html_tables) {
+        //print_r($html_tables); exit;
+        ob_start();
 
-	    $pdf = new printer_TCPDF('P');
+        $pdf = new printer_TCPDF('P');
 
-		$pdf->setStyle('
+        $pdf->setStyle('
 			* {
 				font-size: 9pt;
 			}
@@ -238,48 +252,48 @@ class printer {
 			}
 				');
 
-		$pdf->setHeaderMargin(5);
-		$pdf->SetTopMargin(10);
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(10);
 
-		foreach ($html_tables as $html_table) {
-			// convert padding to spaces, because tcpdf doesn't support padding
-			/*
-			$html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
-				return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
-			}, $html_table);
-			*/
-			// echo $html_table; exit;
+        foreach ($html_tables as $html_table) {
+            // convert padding to spaces, because tcpdf doesn't support padding
+            /*
+            $html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
+                return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
+            }, $html_table);
+            */
+            // echo $html_table; exit;
 
-			// ersten beide zeilen in den header geben
-			//if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
-			//	die('error #gg98daa');
-			//}
+            // ersten beide zeilen in den header geben
+            //if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
+            //	die('error #gg98daa');
+            //}
 
             $html_table = preg_replace('/<a.*class=([^=]*)([^(a-z|A-Z|0-9|\-|_)])compprofpie("|([^(a-z|A-Z|0-9|\-|_)]).*").*<\/a>/i', '', $html_table);
 
-			//$html_table = str_replace($matches[1], '', $html_table);
-			$html_table = str_replace('<tr ', '<tr nobr="true" ', $html_table);
+            //$html_table = str_replace($matches[1], '', $html_table);
+            $html_table = str_replace('<tr ', '<tr nobr="true" ', $html_table);
             $html_table = htmlspecialchars_decode($html_table);
 
-			//$pdf->setHeaderHTML($html_header.$matches[0].'</table>');
+            //$pdf->setHeaderHTML($html_header.$matches[0].'</table>');
 
-			$pdf->AddPage();
-			$pdf->writeHTML($html_table);
-		}
-         //echo $html_table; exit;
-		$pdf->Output();
+            $pdf->AddPage();
+            $pdf->writeHTML($html_table);
+        }
+        //echo $html_table; exit;
+        $pdf->Output();
 
-		exit;
-	}
+        exit;
+    }
 
-	static function crossubj_overview($cross_subject, $subjects, $students, $html_header, $html_tables) {
-	    //print_r($html_tables);exit;
-	    ob_start();
+    static function crossubj_overview($cross_subject, $subjects, $students, $html_header, $html_tables) {
+        //print_r($html_tables);exit;
+        ob_start();
 
-	    $pdf = new printer_TCPDF('L');
+        $pdf = new printer_TCPDF('L');
 
 
-		$pdf->setStyle('
+        $pdf->setStyle('
 			* {
 				font-size: 9pt;
 			}
@@ -299,17 +313,17 @@ class printer {
 			}
 				');
 
-		$pdf->setHeaderMargin(5);
-		$pdf->SetTopMargin(20);
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(20);
 
-		foreach ($html_tables as $html_table) {
-			// add spacing for examples
+        foreach ($html_tables as $html_table) {
+            // add spacing for examples
 
-		    $html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
-		        return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
-		    }, $html_table);
+            $html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches) {
+                return $matches[0].str_repeat('&nbsp;', max(0, $matches[1]) * 4); // .' level '.$matches[1];
+            }, $html_table);
 
-			$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
+            $html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
 
             if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
                 die('error #gg98daa');
@@ -320,130 +334,130 @@ class printer {
 
             $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
 
-			$pdf->AddPage();
-			$pdf->writeHTML($html_table);
+            $pdf->AddPage();
+            $pdf->writeHTML($html_table);
 
-		}
+        }
 
-		$pdf->Output();
+        $pdf->Output();
 
-		exit;
-	}
+        exit;
+    }
 
-	static function weekly_schedule($course, $student, $interval /* week or day */) {
-		$first_day = optional_param('time', time(), PARAM_INT);
-		if ($interval == 'week') {
-			$first_day = block_exacomp_add_days($first_day, 1 - date('N', $first_day)); // get monday
-			$day_cnt = 5;
-		} elseif ($interval == 'day') {
-			$first_day = block_exacomp_add_days($first_day, 0); // get midnight
-			$day_cnt = 1;
-		} else {
-			print_error('wrong interval');
-		}
+    static function weekly_schedule($course, $student, $interval /* week or day */) {
+        $first_day = optional_param('time', time(), PARAM_INT);
+        if ($interval == 'week') {
+            $first_day = block_exacomp_add_days($first_day, 1 - date('N', $first_day)); // get monday
+            $day_cnt = 5;
+        } elseif ($interval == 'day') {
+            $first_day = block_exacomp_add_days($first_day, 0); // get midnight
+            $day_cnt = 1;
+        } else {
+            print_error('wrong interval');
+        }
 
-		$days = [];
+        $days = [];
 
-		function generate_day($day, $studentid) {
-			$day->title = strftime('%a %d.%m.', $day->time);
+        function generate_day($day, $studentid) {
+            $day->title = strftime('%a %d.%m.', $day->time);
 
-			$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $day->time, block_exacomp_add_days($day->time, 1) - 1);
+            $examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $day->time, block_exacomp_add_days($day->time, 1) - 1);
 
-			$examples = block_exacomp_get_json_examples($examples);
-			$examples = array_map(function($o) {
-				return (object)$o;
-			}, $examples);
+            $examples = block_exacomp_get_json_examples($examples);
+            $examples = array_map(function($o) {
+                return (object)$o;
+            }, $examples);
 
-			foreach ($examples as $example) {
-				// get data
-				$example->descriptors = block_exacomp_get_descriptors_by_example($example->id);
-				$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
+            foreach ($examples as $example) {
+                // get data
+                $example->descriptors = block_exacomp_get_descriptors_by_example($example->id);
+                $example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
 
-				// find start slot
-				for ($i = 0; $i < count($day->slots); $i++) {
-					if ($day->slots[$i]->start_time >= $example->start) {
-						$example->start_slot = $i;
-						$example->end_slot = $i;
-						break;
-					}
-				}
+                // find start slot
+                for ($i = 0; $i < count($day->slots); $i++) {
+                    if ($day->slots[$i]->start_time >= $example->start) {
+                        $example->start_slot = $i;
+                        $example->end_slot = $i;
+                        break;
+                    }
+                }
 
-				// find end slot
-				for ($i = $example->start_slot; $i < count($day->slots); $i++) {
-					if ($day->slots[$i]->start_time >= $example->end) {
-						break;
-					}
-					$example->end_slot = $i;
-				}
+                // find end slot
+                for ($i = $example->start_slot; $i < count($day->slots); $i++) {
+                    if ($day->slots[$i]->start_time >= $example->end) {
+                        break;
+                    }
+                    $example->end_slot = $i;
+                }
 
-				$example->rowspan = $example->end_slot - $example->start_slot + 1;
-			}
+                $example->rowspan = $example->end_slot - $example->start_slot + 1;
+            }
 
-			// first sort by start time, then by duration (same as fullcalendar)
-			usort($examples, function($a, $b) {
-				return
-					(
-					$a->start <> $b->start
-						? $a->start > $b->start
-						: $a->rowspan < $b->rowspan
-					) ? 1 : -1;
-			});
+            // first sort by start time, then by duration (same as fullcalendar)
+            usort($examples, function($a, $b) {
+                return
+                    (
+                    $a->start <> $b->start
+                        ? $a->start > $b->start
+                        : $a->rowspan < $b->rowspan
+                    ) ? 1 : -1;
+            });
 
-			// init empty columns
-			foreach ($day->slots as $slot) {
-				$slot->cols = array_fill(0, 1000, false);
-			}
+            // init empty columns
+            foreach ($day->slots as $slot) {
+                $slot->cols = array_fill(0, 1000, false);
+            }
 
-			$day->colspan = 1; // the max colspan for this day
-			foreach ($examples as $example) {
-				for ($col_i = 0; $col_i < 1000; $col_i++) {
-					// check if the event can be inserted into this column (all cells are free)
-					$ok = true;
-					for ($slot_i = $example->start_slot; $slot_i <= $example->end_slot; $slot_i++) {
-						if ($day->slots[$slot_i]->cols[$col_i]) {
-							$ok = false;
-							break;
-						}
-					}
+            $day->colspan = 1; // the max colspan for this day
+            foreach ($examples as $example) {
+                for ($col_i = 0; $col_i < 1000; $col_i++) {
+                    // check if the event can be inserted into this column (all cells are free)
+                    $ok = true;
+                    for ($slot_i = $example->start_slot; $slot_i <= $example->end_slot; $slot_i++) {
+                        if ($day->slots[$slot_i]->cols[$col_i]) {
+                            $ok = false;
+                            break;
+                        }
+                    }
 
-					// yes, can be inserted here
-					if ($ok) {
-						for ($slot_i = $example->start_slot; $slot_i <= $example->end_slot; $slot_i++) {
-							$day->slots[$slot_i]->cols[$col_i] = true;
-						}
+                    // yes, can be inserted here
+                    if ($ok) {
+                        for ($slot_i = $example->start_slot; $slot_i <= $example->end_slot; $slot_i++) {
+                            $day->slots[$slot_i]->cols[$col_i] = true;
+                        }
 
-						$day->slots[$example->start_slot]->cols[$col_i] = $example;
-						$day->colspan = max($day->colspan, $col_i + 1);
-						break;
-					}
+                        $day->slots[$example->start_slot]->cols[$col_i] = $example;
+                        $day->colspan = max($day->colspan, $col_i + 1);
+                        break;
+                    }
 
-					// no -> continue to next column
-				}
-			}
-		}
+                    // no -> continue to next column
+                }
+            }
+        }
 
-		for ($i = 0; $i < $day_cnt; $i++) {
-			// build the day object
-			$time = block_exacomp_add_days($first_day, $i);
-			$days[$time] = (object)[
-				'time' => $time,
-				'slots' => array_map(function($x) {
-					return (object)$x;
-				}, block_exacomp_build_json_time_slots($time)),
-			];
+        for ($i = 0; $i < $day_cnt; $i++) {
+            // build the day object
+            $time = block_exacomp_add_days($first_day, $i);
+            $days[$time] = (object)[
+                'time' => $time,
+                'slots' => array_map(function($x) {
+                    return (object)$x;
+                }, block_exacomp_build_json_time_slots($time)),
+            ];
 
-			// load the events and columns for this day
-			generate_day($days[$time], $student->id);
-		}
+            // load the events and columns for this day
+            generate_day($days[$time], $student->id);
+        }
 
 
-		// Instanciation of inherited class
-		$pdf = new printer_TCPDF($interval == 'week' ? 'L' : null /* landscape for weekly print */);
+        // Instanciation of inherited class
+        $pdf = new printer_TCPDF($interval == 'week' ? 'L' : null /* landscape for weekly print */);
 
-		$pdf->setHeaderMargin(5);
-		$pdf->SetTopMargin(25);
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(25);
 
-		$pdf->setStyle('
+        $pdf->setStyle('
 			* {
 				font-size: 9pt;
 			}
@@ -477,100 +491,100 @@ class printer {
 			}
 		');
 
-		$header = '
+        $header = '
 			<table><tr>
 				<td style="font-size: 12pt; font-weight: bold;" align="left">'.block_exacomp_get_string("weekly_schedule").'</td>
 				<td style="font-size: 12pt; font-weight: bold;" align="right">'.block_exacomp_get_string("participating_student").': '.fullname($student).'</td>
 			</tr></table>
 			&nbsp;<br />
 			<table border="0.1" style="padding: 1px">';
-		$header .= '<tr><td></td>';
-		foreach ($days as $day) {
-			$header .= '<td colspan="'.$day->colspan.'" align="center">'.$day->title.'</td>';
-		}
-		$header .= '</tr></table>';
-		$pdf->setHeaderHTML($header);
+        $header .= '<tr><td></td>';
+        foreach ($days as $day) {
+            $header .= '<td colspan="'.$day->colspan.'" align="center">'.$day->title.'</td>';
+        }
+        $header .= '</tr></table>';
+        $pdf->setHeaderHTML($header);
 
-		$tbl = '<table border="0.1" style="padding: 1px">';
-		$color_i = 0;
-		foreach (block_exacomp_build_json_time_slots() as $slot_i => $slot) {
-			$tbl .= '<tr nobr="true"';
-			if ($slot['name']) {
-				$color_i++;
-			}
-			if ($color_i % 2) {
-				$tbl .= ' style="background-color:#EEEEEE;"';
-			}
-			//if (block_exacomp_get_string($slot['name']) != '[[]]'){
-			//    $tbl .= '><td>'.block_exacomp_get_string($slot['name']).'</td>';
-            if ($slot['name'] != ''){
-			    $tbl .= '><td>'.$slot['name'].'</td>';
-			} else {
-			    $tbl .= '><td></td>';
-			}
-			foreach ($days as $day) {
-				for ($col_i = 0; $col_i < $day->colspan; $col_i++) {
-					$example = $day->slots[$slot_i]->cols[$col_i];
-					if (is_object($example)) {
+        $tbl = '<table border="0.1" style="padding: 1px">';
+        $color_i = 0;
+        foreach (block_exacomp_build_json_time_slots() as $slot_i => $slot) {
+            $tbl .= '<tr nobr="true"';
+            if ($slot['name']) {
+                $color_i++;
+            }
+            if ($color_i % 2) {
+                $tbl .= ' style="background-color:#EEEEEE;"';
+            }
+            //if (block_exacomp_get_string($slot['name']) != '[[]]'){
+            //    $tbl .= '><td>'.block_exacomp_get_string($slot['name']).'</td>';
+            if ($slot['name'] != '') {
+                $tbl .= '><td>'.$slot['name'].'</td>';
+            } else {
+                $tbl .= '><td></td>';
+            }
+            foreach ($days as $day) {
+                for ($col_i = 0; $col_i < $day->colspan; $col_i++) {
+                    $example = $day->slots[$slot_i]->cols[$col_i];
+                    if (is_object($example)) {
 
-						$class = 'event-default';
-						if (!empty($example->state)) {
-							$state_text = 'state'.$example->state; // TODO: change state text
-							$class .= ' state'.$example->state;
-						} elseif ($example->courseid != $course->id) {
-							$state_text = '';
-							$class .= ' different-course';
-						} else {
-							$state_text = '';
-						}
+                        $class = 'event-default';
+                        if (!empty($example->state)) {
+                            $state_text = 'state'.$example->state; // TODO: change state text
+                            $class .= ' state'.$example->state;
+                        } elseif ($example->courseid != $course->id) {
+                            $state_text = '';
+                            $class .= ' different-course';
+                        } else {
+                            $state_text = '';
+                        }
 
 
-						$course = get_course($example->courseid);
-						$tbl .= '<td rowspan="'.$example->rowspan.'" class="'.$class.'">';
-						// for now don't print state_text
-						// if ($state_text) $tbl .= '<b>'.$state_text.':</b><br />';
-						$tbl .= '<b>'.$course->shortname.':</b><br />';
-						$tbl .= $example->title;
+                        $course = get_course($example->courseid);
+                        $tbl .= '<td rowspan="'.$example->rowspan.'" class="'.$class.'">';
+                        // for now don't print state_text
+                        // if ($state_text) $tbl .= '<b>'.$state_text.':</b><br />';
+                        $tbl .= '<b>'.$course->shortname.':</b><br />';
+                        $tbl .= $example->title;
 
-						if ($example->description) {
-							$tbl .= '<br />'.$example->description;
-						}
+                        if ($example->description) {
+                            $tbl .= '<br />'.$example->description;
+                        }
 
-						if ($example->student_evaluation_title) {
-							$tbl .= '<br />S: '.$example->student_evaluation_title;
-						}
+                        if ($example->student_evaluation_title) {
+                            $tbl .= '<br />S: '.$example->student_evaluation_title;
+                        }
 
-						$teacher_evaluation = [];
-						if ($example->teacher_evaluation_title) {
-							$teacher_evaluation[] = $example->teacher_evaluation_title;
-						}
-						if ($teacher_evaluation) {
-							$tbl .= '<br />L: '.join(' / ', $teacher_evaluation);
-						}
-						/*if ($example->descriptors) {
-							$tbl .= '<br />';
-							foreach ($example->descriptors as $descriptor) {
-								$tbl .= '<br />• '.$descriptor->title;
-							}
-						}*/
+                        $teacher_evaluation = [];
+                        if ($example->teacher_evaluation_title) {
+                            $teacher_evaluation[] = $example->teacher_evaluation_title;
+                        }
+                        if ($teacher_evaluation) {
+                            $tbl .= '<br />L: '.join(' / ', $teacher_evaluation);
+                        }
+                        /*if ($example->descriptors) {
+                            $tbl .= '<br />';
+                            foreach ($example->descriptors as $descriptor) {
+                                $tbl .= '<br />• '.$descriptor->title;
+                            }
+                        }*/
 
-						$tbl .= '</td>';
-					} else if (!$example) {
-						$tbl .= '<td></td>';
-					}
-				}
-			}
-			$tbl .= '</tr>';
-		}
-		$tbl .= '</table>';
+                        $tbl .= '</td>';
+                    } else if (!$example) {
+                        $tbl .= '<td></td>';
+                    }
+                }
+            }
+            $tbl .= '</tr>';
+        }
+        $tbl .= '</table>';
 
-		// $tbl .= '<b>Legende:</b><br />';
+        // $tbl .= '<b>Legende:</b><br />';
 
-		$pdf->writeHTML($tbl);
+        $pdf->writeHTML($tbl);
 
-		$pdf->Output();
-		exit;
-	}
+        $pdf->Output();
+        exit;
+    }
 
     static function block_exacomp_generate_report_annex_docx($courseid, $dataRow) {
         global $CFG;
@@ -663,7 +677,7 @@ class printer {
                     $templateProcessor->deleteRow("subject");
                 }
                 // topics
-                foreach($subject->topics as $topic) {
+                foreach ($subject->topics as $topic) {
                     $templateProcessor->cloneRowToEnd("topic");
                     $templateProcessor->cloneRowToEnd("descriptor");
                     if (isset($topic->evaluation)) {
@@ -691,7 +705,7 @@ class printer {
                         if (isset($descriptor->evaluation)) {
                             $subjectEntries++;
                             $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_comp_scheme($courseid), $descriptor->evaluation, $courseid);
-                            if ($selectedEval != '' ) {
+                            if ($selectedEval != '') {
                                 $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
                                 $templateProcessor->setValue("nd", $descriptor->evaluation->get_evalniveau_title(), 1);
                                 for ($i = $columnStart; $i < $columnCount; $i++) {
@@ -730,7 +744,7 @@ class printer {
                 }
             }
         }
-        for ($i=0; $i<=$toDeleteBlocks; $i++) {
+        for ($i = 0; $i <= $toDeleteBlocks; $i++) {
             $templateProcessor->replaceBlock('todelete', '');
         }
         //echo $templateProcessor->getDocumentMainPart(); exit;
@@ -966,7 +980,7 @@ class printer {
         $pdf->SetTopMargin(20);
 
         $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
-//echo $html_content;
+        //echo $html_content;
         $pdf->writeHTML($html_content);
         $pdf->Output();
         exit;
@@ -975,49 +989,40 @@ class printer {
 
 }
 
-class Slice
-{
+class Slice {
 
-    function __construct($string, $start, $end)
-    {
+    function __construct($string, $start, $end) {
         $this->before = substr($string, 0, $start);
         $this->slice = substr($string, $start, $end - $start);
         $this->after = substr($string, $end);
     }
 
-    function get()
-    {
+    function get() {
         return $this->slice;
     }
 
-    function set($value)
-    {
+    function set($value) {
         $this->slice = $value;
 
         return $this;
     }
 
-    function join()
-    {
-        return $this->before . $this->slice . $this->after;
+    function join() {
+        return $this->before.$this->slice.$this->after;
     }
 }
 
-class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
-{
+class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
 
-    function getDocumentMainPart()
-    {
+    function getDocumentMainPart() {
         return $this->tempDocumentMainPart;
     }
 
-    function setDocumentMainPart($part)
-    {
+    function setDocumentMainPart($part) {
         $this->tempDocumentMainPart = $part;
     }
 
-    function setValues($data)
-    {
+    function setValues($data) {
         foreach ($data as $key => $value) {
             $this->setValue($key, $value);
             /*
@@ -1028,22 +1033,20 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         }
     }
 
-    function setValue($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT)
-    {
+    function setValue($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT) {
         $replace = $this->escape($replace);
         $replace = str_replace([
-                "\r",
-                "\n"
+            "\r",
+            "\n",
         ], [
-                '',
-                '</w:t><w:br/><w:t>'
+            '',
+            '</w:t><w:br/><w:t>',
         ], $replace);
 
         return $this->setValueRaw($search, $replace, $limit);
     }
 
-    function setValueRaw($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT)
-    {
+    function setValueRaw($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT) {
         $oldEscaping = \PhpOffice\PhpWord\Settings::isOutputEscapingEnabled();
 
         // it's a raw value
@@ -1056,15 +1059,13 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         return $ret;
     }
 
-    function applyFilters($filters)
-    {
+    function applyFilters($filters) {
         foreach ($filters as $filter) {
             $this->tempDocumentMainPart = $filter($this->tempDocumentMainPart);
         }
     }
 
-    function applyFiltersAllParts($filters)
-    {
+    function applyFiltersAllParts($filters) {
         foreach ($filters as $filter) {
             $this->tempDocumentHeaders = $filter($this->tempDocumentHeaders);
             $this->tempDocumentMainPart = $filter($this->tempDocumentMainPart);
@@ -1072,46 +1073,41 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         }
     }
 
-    function replaceWords($data)
-    {
+    function replaceWords($data) {
         foreach ($data as $key => $value) {
-            $this->tempDocumentMainPart = str_replace('>' . $key . '<', '>' . $value . '<', $this->tempDocumentMainPart);
+            $this->tempDocumentMainPart = str_replace('>'.$key.'<', '>'.$value.'<', $this->tempDocumentMainPart);
         }
     }
 
-    function check()
-    {
+    function check() {
         if (preg_match('!\\$(.*(>|{)(?<name>[a-z{}].*)<)!iU', $this->tempDocumentMainPart, $matches)) {
             throw new \Exception("fehler in variable ${matches['name']}");
         }
     }
 
-    function tagPos($search)
-    {
-        if ('${' !== substr($search, 0, 2) && '}' !== substr($search, - 1)) {
-            $search = '${' . $search . '}';
+    function tagPos($search) {
+        if ('${' !== substr($search, 0, 2) && '}' !== substr($search, -1)) {
+            $search = '${'.$search.'}';
         }
 
         $tagPos = strpos($this->tempDocumentMainPart, $search);
-        if (! $tagPos) {
+        if (!$tagPos) {
             throw new \Exception("Can't find '$search'");
         }
 
         return $tagPos;
     }
 
-    public function cloneBlockAndSetNewVarNames($blockname, $clones, $replace, $varname)
-    {
+    public function cloneBlockAndSetNewVarNames($blockname, $clones, $replace, $varname) {
         $clone = $this->cloneBlock($blockname, $clones, $replace);
 
-        for ($i = 0; $i < $clones; $i ++) {
+        for ($i = 0; $i < $clones; $i++) {
             $regExpEscaper = new RegExp();
-            $this->tempDocumentMainPart = preg_replace($regExpEscaper->escape($clone), str_replace('${', '${' . $varname . $i . '-', $clone), $this->tempDocumentMainPart, 1);
+            $this->tempDocumentMainPart = preg_replace($regExpEscaper->escape($clone), str_replace('${', '${'.$varname.$i.'-', $clone), $this->tempDocumentMainPart, 1);
         }
     }
 
-    function cloneRowToEnd($search)
-    {
+    function cloneRowToEnd($search) {
         $tagPos = $this->tagPos($search);
 
         $rowStart = $this->findRowStart($tagPos);
@@ -1127,8 +1123,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         $this->tempDocumentMainPart = $result;
     }
 
-    function duplicateRow($search)
-    {
+    function duplicateRow($search) {
         $tagPos = $this->tagPos($search);
 
         $rowStart = $this->findRowStart($tagPos);
@@ -1142,19 +1137,17 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         $this->tempDocumentMainPart = $result;
     }
 
-    function deleteRow($search)
-    {
+    function deleteRow($search) {
         $this->cloneRow($search, 0);
     }
 
 
-    function splitByTag($string, $tag)
-    {
+    function splitByTag($string, $tag) {
         $rest = $string;
         $parts = [];
 
         while ($rest) {
-            if (! preg_match('!^(?<before>.*)(?<tag><w:' . $tag . '[\s>].*</w:' . $tag . '>|<w:' . $tag . '(\s[^>]+)?/>)!Uis', $rest, $matches)) {
+            if (!preg_match('!^(?<before>.*)(?<tag><w:'.$tag.'[\s>].*</w:'.$tag.'>|<w:'.$tag.'(\s[^>]+)?/>)!Uis', $rest, $matches)) {
                 $parts[] = $rest;
                 break;
             }
@@ -1170,8 +1163,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         return $parts;
     }
 
-    function rfindTagStart($tag, $offset, $fromContent = '')
-    {
+    function rfindTagStart($tag, $offset, $fromContent = '') {
         /*
          * if (!preg_match('!<w:'.$tag.'[\s>].*$!Uis', substr($this->tempDocumentMainPart, 0, $offset), $matches)) {
          * throw new \Exception('tagStart $tag not found');
@@ -1185,21 +1177,20 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
             $searchIn = $this->tempDocumentMainPart;
         }
 
-        $tagStart = strrpos($searchIn, '<w:' . $tag . ' ', ((strlen($searchIn) - $offset) * - 1));
+        $tagStart = strrpos($searchIn, '<w:'.$tag.' ', ((strlen($searchIn) - $offset) * -1));
 
-        if (! $tagStart) {
-            $tagStart = strrpos($searchIn, '<w:' . $tag . '>', ((strlen($searchIn) - $offset) * - 1));
+        if (!$tagStart) {
+            $tagStart = strrpos($searchIn, '<w:'.$tag.'>', ((strlen($searchIn) - $offset) * -1));
         }
-        if (! $tagStart) {
-            throw new Exception('Can not find the start position of tag ' . $tag . '.');
+        if (!$tagStart) {
+            throw new Exception('Can not find the start position of tag '.$tag.'.');
         }
 
         return $tagStart;
     }
 
-    function findTagEnd($tag, $offset, $fromContent = '')
-    {
-        $search = '</w:' . $tag . '>';
+    function findTagEnd($tag, $offset, $fromContent = '') {
+        $search = '</w:'.$tag.'>';
         if ($fromContent) {
             $searchIn = $fromContent;
         } else {
@@ -1208,8 +1199,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         return strpos($searchIn, $search, $offset) + strlen($search);
     }
 
-    function slice($string, $start, $end)
-    {
+    function slice($string, $start, $end) {
         return new Slice($string, $start, $end);
     }
 
@@ -1218,10 +1208,9 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
      * @param string $search
      * @param int $numberOfCells
      */
-    function duplicateCell($search, $numberOfCells = 1)
-    {
-        if ('${' !== substr($search, 0, 2) && '}' !== substr($search, - 1)) {
-            $search = '${' . $search . '}';
+    function duplicateCell($search, $numberOfCells = 1) {
+        if ('${' !== substr($search, 0, 2) && '}' !== substr($search, -1)) {
+            $search = '${'.$search.'}';
         }
 
         $tagPos = $this->tagPos($search);
@@ -1235,7 +1224,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
 
         // add new cell after source cell
         $resultCells = '';
-        for($i = 0; $i < $numberOfCells; $i++) {
+        for ($i = 0; $i < $numberOfCells; $i++) {
             $resultCells .= $cellToCopy->get();
         }
         $tableContent = substr_replace($table->get(), $resultCells, $cellEndPos, 0);
@@ -1245,8 +1234,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
     }
 
 
-    function duplicateCol($search, $numberOfCols = 1)
-    {
+    function duplicateCol($search, $numberOfCols = 1) {
         $tagPos = $this->tagPos($search);
 
         $table = $this->slice($this->tempDocumentMainPart, $this->rfindTagStart('tbl', $tagPos), $this->findTagEnd('tbl', $tagPos));
@@ -1266,8 +1254,8 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
 
         $splits = static::splitByTag(join('', $splits), 'tc');
 
-        $splits[1] = preg_replace('!(w:w=")[0-9]+!', '${1}' . $newWidth, $splits[1]);
-        $splits[4] = preg_replace('!(w:w=")[0-9]+!', '${1}' . $newWidth, $splits[4]);
+        $splits[1] = preg_replace('!(w:w=")[0-9]+!', '${1}'.$newWidth, $splits[1]);
+        $splits[4] = preg_replace('!(w:w=")[0-9]+!', '${1}'.$newWidth, $splits[4]);
 
         $splits[2] = str_repeat($splits[2], $numberOfCols);
         $splits[5] = str_repeat($splits[5], $numberOfCols);
@@ -1277,18 +1265,16 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         $this->tempDocumentMainPart = $table->join();
     }
 
-    function escape($str)
-    {
+    function escape($str) {
         static $xmlEscaper = null;
-        if (! $xmlEscaper) {
+        if (!$xmlEscaper) {
             $xmlEscaper = new Xml();
         }
 
         return $xmlEscaper->escape($str);
     }
 
-    function updateFile($filename, $path)
-    {
+    function updateFile($filename, $path) {
         return $this->zipClass->addFromString($filename, file_get_contents($path));
     }
 
@@ -1298,15 +1284,14 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
         $body = $this->slice($this->tempDocumentMainPart, $startPos, $endPos);
         $bodyContent = $body->get();
         $result = '';
-        for($i = 1; $i <= $count; $i++) {
+        for ($i = 1; $i <= $count; $i++) {
             $result .= $bodyContent;
         }
         $body->set($result);
         $this->tempDocumentMainPart = $body->join();
     }
 
-    public function cloneBlockOnlyFirst($blockname)
-    {
+    public function cloneBlockOnlyFirst($blockname) {
         $startPos = strpos($this->tempDocumentMainPart, '${'.$blockname.'}');
         $endPos = strpos($this->tempDocumentMainPart, '${/'.$blockname.'}', $startPos) + 4 + strlen($blockname);
         $startPosContent = strpos($this->tempDocumentMainPart, '${'.$blockname.'}') + 3 + strlen($blockname);
@@ -1318,9 +1303,9 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor
 
     function replaceBlockOnlyFirst($blockname, $replacement) {
         preg_match(
-                '/(<\?xml.*)(<w:p.*>\${' . $blockname . '}<\/w:.*?p>)(.*)(<w:p.*\${\/' . $blockname . '}<\/w:.*?p>)/is',
-                $this->tempDocumentMainPart,
-                $matches
+            '/(<\?xml.*)(<w:p.*>\${'.$blockname.'}<\/w:.*?p>)(.*)(<w:p.*\${\/'.$blockname.'}<\/w:.*?p>)/is',
+            $this->tempDocumentMainPart,
+            $matches
         );
 
         if (isset($matches[3])) {

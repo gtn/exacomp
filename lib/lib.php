@@ -28,7 +28,7 @@ require_once __DIR__.'/../block_exacomp.php';
 require_once($CFG->libdir.'/badgeslib.php');
 require_once($CFG->dirroot.'/badges/lib/awardlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
-require_once __DIR__.'/diggrv.php';
+require_once __DIR__.'/setapp.php';
 
 
 /**

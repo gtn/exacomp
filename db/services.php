@@ -1153,77 +1153,77 @@ create example',
   ),
   'diggrplus_v_edit_course' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_edit_course',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => 'Create an example or update it
 create example',
     'type' => 'write',
   ),
   'diggrplus_v_create_or_update_student' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_create_or_update_student',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => 'Create an example or update it
 create example',
     'type' => 'write',
   ),
   'diggrplus_v_delete_student' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_delete_student',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => 'Create an example or update it
 create example',
     'type' => 'write',
   ),
   'diggrplus_v_get_student_by_id' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_get_student_by_id',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => 'Create an example or update it
 create example',
     'type' => 'write',
   ),
   'diggrplus_v_get_student_grading_tree' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_get_student_grading_tree',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => 'Get competence statistic for profile',
     'type' => 'read',
   ),
   'diggrplus_v_save_student_grading' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_save_student_grading',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => '',
     'type' => 'read',
   ),
   'diggrplus_v_print_student_grading_report' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_print_student_grading_report',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => '',
     'type' => 'read',
   ),
   'diggrplus_v_get_course_edulevel_schooltype_tree' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrplus_v_get_course_edulevel_schooltype_tree',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => '',
     'type' => 'read',
   ),
   'block_exacomp_diggrv_create_course' => 
   array (
-    'classname' => 'block_exacomp_external_diggrv',
+    'classname' => 'block_exacomp_external_setapp',
     'methodname' => 'diggrv_create_course',
-    'classpath' => 'blocks/exacomp/externallib.diggrv.php',
+    'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => '',
     'type' => 'read',
   ),

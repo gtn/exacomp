@@ -7,7 +7,7 @@ call_user_func(function() {
 
     $externallibs = [
         ['file' => 'externallib.php', 'className' => 'block_exacomp_external'],
-        ['file' => 'externallib.diggrv.php', 'className' => 'block_exacomp_external_diggrv'],
+        ['file' => 'externallib.setapp.php', 'className' => 'block_exacomp_external_setapp'],
     ];
 
     if (file_exists($servicesFile)) {
@@ -123,8 +123,8 @@ call_user_func(function() {
             foreach ($params as $paramName => $paramInfo) {
                 $doku .= "<tr>\n";
                 $doku .= '<td>'.$paramName."</td>\n";
-                $doku .= '<td>'.$paramInfo->type."</td>\n";
-                $doku .= '<td>'.($paramInfo->allownull ? 'null' : 'not null')."</td>\n";
+                $doku .= '<td>'.($paramInfo->type ?? '')."</td>\n";
+                $doku .= '<td>'.(!isset($paramInfo->allownull) ? '' : ($paramInfo->allownull ? 'null' : 'not null'))."</td>\n";
                 $doku .= '<td>';
                 if ($paramInfo->required == VALUE_REQUIRED) {
                     $doku .= 'required';
