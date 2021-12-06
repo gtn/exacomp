@@ -693,7 +693,7 @@ class block_exacomp_external_setapp extends external_api {
 	            <br/><br/><br/>
 	            <div nobr="true">
 	                <table class="header" width="100%" cellspacing="0"><tr>
-	                    <td style="width: 40%; text-align: center;"><!-- ...................................................<br/>Schul-/Clusterleitung --></td>
+	                    <td style="width: 40%; text-align: center;">...................................................<br/>Schul-/Clusterleitung</td>
 	                    <td style="width: 20%; text-align: center;">Rund-<br/>siegel</td>
 	                    <td style="width: 40%; text-align: center;">...................................................<br/>Klassenlehrer/Klassenlehrerin</td>
 	                </tr></table>
