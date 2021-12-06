@@ -530,20 +530,26 @@ class block_exacomp_external_setapp extends external_api {
             'userid' => new external_value (PARAM_TEXT, 'userid (number) or \'all\' to print all users'),
             'courseid' => new external_value (PARAM_INT),
             'output_format' => new external_value (PARAM_TEXT, 'pdf or html', VALUE_DEFAULT, 'pdf'),
+            'schoolname' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
         ));
     }
 
     /**
      * @ws-type-read
      */
-    public static function diggrplus_v_print_student_grading_report($userid, $courseid, $output_format) {
+    public static function diggrplus_v_print_student_grading_report($userid, $courseid, $output_format, $schoolname) {
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_v_print_student_grading_report_parameters(), array(
             'userid' => $userid,
             'courseid' => $courseid,
             'output_format' => $output_format,
+            'schoolname' => $schoolname,
         ));
+
+        if (!$schoolname) {
+            $schoolname = get_config('exacomp', 'schoolname');
+        }
 
         if ($userid == 'all') {
             $allusers = true;
@@ -570,7 +576,7 @@ class block_exacomp_external_setapp extends external_api {
         // Fächer anhand des Bildungsplans sortieren (ist in der Datenbank im sorting Feld enthalten)
         usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
 
-        $get_user_output = function($user) use ($course, $tree, $DB) {
+        $get_user_output = function($user) use ($course, $tree, $DB, $schoolname) {
             $subjects_html = '';
             foreach ($tree as $subject) {
                 $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $user->id, 'subjectid' => $subject->id]);
@@ -652,7 +658,7 @@ class block_exacomp_external_setapp extends external_api {
 	            <br/>
 	            <br/>
 	            <br/>
-	            <div style="text-align: center;">'.get_config('exacomp', 'schoolname').'</div>
+	            <div style="text-align: center;">'.$schoolname.'</div>
 	            <br/>
 	            <br/>
 	            <div style="text-align: center; font-size: 20pt;">Schriftliche Erläuterung zur Ziffernbeurteilung</div>
