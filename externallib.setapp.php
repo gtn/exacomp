@@ -531,13 +531,14 @@ class block_exacomp_external_setapp extends external_api {
             'courseid' => new external_value (PARAM_INT),
             'output_format' => new external_value (PARAM_TEXT, 'pdf or html', VALUE_DEFAULT, 'pdf'),
             'schoolname' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
+            'assessment_period_title' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
         ));
     }
 
     /**
      * @ws-type-read
      */
-    public static function diggrplus_v_print_student_grading_report($userid, $courseid, $output_format, $schoolname) {
+    public static function diggrplus_v_print_student_grading_report($userid, $courseid, $output_format, $schoolname, $assessment_period_title) {
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_v_print_student_grading_report_parameters(), array(
@@ -545,10 +546,14 @@ class block_exacomp_external_setapp extends external_api {
             'courseid' => $courseid,
             'output_format' => $output_format,
             'schoolname' => $schoolname,
+            'assessment_period_title' => $assessment_period_title,
         ));
 
         if (!$schoolname) {
             $schoolname = get_config('exacomp', 'schoolname');
+        }
+        if (!$assessment_period_title) {
+            $assessment_period_title = 'Schuljahr 2021/2022';
         }
 
         if ($userid == 'all') {
@@ -576,7 +581,7 @@ class block_exacomp_external_setapp extends external_api {
         // Fächer anhand des Bildungsplans sortieren (ist in der Datenbank im sorting Feld enthalten)
         usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
 
-        $get_user_output = function($user) use ($course, $tree, $DB, $schoolname) {
+        $get_user_output = function($user) use ($course, $tree, $DB, $schoolname, $assessment_period_title) {
             $subjects_html = '';
             foreach ($tree as $subject) {
                 $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $user->id, 'subjectid' => $subject->id]);
@@ -667,7 +672,7 @@ class block_exacomp_external_setapp extends external_api {
 	            <br/>
 	            <table class="header" width="100%" cellspacing="0"><tr>
 	                <td>für '.fullname($user).'</td>
-	                <td style="text-align: right">Schuljahr 2021/2022</td>
+	                <td style="text-align: right">'.$assessment_period_title.'</td>
 	            </tr></table>
 	            <br/>
 	            <br/>
