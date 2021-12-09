@@ -650,9 +650,14 @@ class block_exacomp_external_setapp extends external_api {
 
                 $title = $subject->title;
                 // filter trailing numbers
+                $title = trim($title);
                 $title = preg_replace('!\s+[0-9]+$!', '', $title);
+                $title = static::custom_htmltrim($title);
 
-                $subjects_html .= '<tr nobr="true"><td>'.static::custom_htmltrim($title).'</td>';
+                // schulstufe löschen
+                $title = preg_replace('![0-9]+\.\s*Schulstufe$!i', '', $title);
+
+                $subjects_html .= '<tr nobr="true"><td>'.$title.'</td>';
                 $subjects_html .= '<td>';
                 $subjects_html .= $subject_content_html;
                 $subjects_html .= '</td></tr>';
