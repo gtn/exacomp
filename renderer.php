@@ -2810,9 +2810,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             }
                             if ($descriptor->parentid == 0){ //if descriptor is parentdescriptor
                                 if(array_key_exists($descriptor->id, $student->competencies->gradingisold) && $student->competencies->gradingisold[$descriptor->id]){
-                                    //Hackable????
-                                    $gradingisoldwarning = html_writer::tag('a', '     !!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
-                                    $teacher_evaluation_cell->text .= $gradingisoldwarning;
+                                    if($isEditingTeacher && ($data->role == BLOCK_EXACOMP_ROLE_TEACHER)){
+                                        //Hackable????
+                                        $gradingisoldwarning = html_writer::tag('a', '     !!!', array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),'class' => 'competencegrid_tooltip'));
+                                        $teacher_evaluation_cell->text .= $gradingisoldwarning;
+                                    }
                                 }
                             }
 

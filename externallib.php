@@ -890,11 +890,15 @@ class block_exacomp_external extends external_api {
             return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
             ];
+        } else {
+            return (object)[
+                "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
+            ];
         }
-        // neither student or trainer or teacher
-        return (object)[
-            "role" => 0,
-        ];
+        // neither student or trainer or teacher (depricated)
+ //       return (object)[
+ //           "role" => 0,
+ //       ];
     }
 
     /**
