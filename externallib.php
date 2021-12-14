@@ -816,6 +816,13 @@ class block_exacomp_external extends external_api {
             'studentid' => $USER->id,
         ));
 
+        $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb', 'courseid'), $USER->id);
+        if ($isTeacher) {
+            return (object)[
+                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
+            ];
+        }
+
         if ($student) {
             return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
