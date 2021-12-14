@@ -7222,10 +7222,10 @@ function block_exacomp_add_days($date, $days) {
  * @param string $showallexamples
  * @return associative_array
  */
-function block_exacomp_build_example_association_tree($courseid, $associated_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false, $editmode=false) {
+function block_exacomp_build_example_association_tree($courseid, $associated_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false, $editmode=false, $showonlyvisible=true) {
 	//get all subjects, topics, descriptors and examples
 	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies,
-        false, false, true, false, false, true, null, $editmode);
+        false, false, $showonlyvisible , false, false, true, null, $editmode);
 
 
 

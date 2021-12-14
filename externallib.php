@@ -3377,7 +3377,7 @@ class block_exacomp_external extends external_api {
         }
 
 
-        return static::dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, false, $editmode);
+        return static::dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, false, $editmode,false);
     }
 
     /**
@@ -12481,7 +12481,7 @@ class block_exacomp_external extends external_api {
     }
 
 
-    private static function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated, $editmode = false) {
+    private static function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated, $editmode = false,$showonlyvisible=true) {
         global $DB;
 
         if ($forall) {
@@ -12490,7 +12490,7 @@ class block_exacomp_external extends external_api {
             static::require_can_access_course_user($courseid, $userid);
         }
 
-        $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true, $editmode);
+        $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true, $editmode,$showonlyvisible);
 
 
         $non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
