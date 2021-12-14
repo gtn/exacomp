@@ -618,7 +618,7 @@ class block_exacomp_external_setapp extends external_api {
                         }
 
                         // use sorting + id as key, so we can sort the array later
-                        $subject_content_html_entry_id = sprintf('%010d_%010d', $descriptor->niveau_sorting, $descriptor->niveauid);
+                        $subject_content_html_entry_id = sprintf('%010d_%010d_%010d', $descriptor->niveau_numb, $descriptor->niveau_sorting, $descriptor->niveauid);
 
                         if (!$subject_content_html[$subject_content_html_entry_id]) {
                             $subject_content_html[$subject_content_html_entry_id] = '<b>'.static::custom_htmltrim($descriptor->niveau_title).':</b> ';
