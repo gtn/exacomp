@@ -816,21 +816,18 @@ class block_exacomp_external extends external_api {
             'studentid' => $USER->id,
         ));
 
-        $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb', 'courseid'), $USER->id);
-        if ($isTeacher) {
-            return (object)[
-                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
-            ];
+
+				$courses = static::get_courses($USER->id);
+        foreach ($courses as $course) {
+            $context = context_course::instance($course["courseid"]);
+            $isTeacher = block_exacomp_is_teacher($context);
+            if ($isTeacher) {
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
+            }
         }
 
-        if ($student) {
-            return (object)[
-                "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
-            ];
-        }
-        return (object)[
-            "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
-        ];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
+
 
 //        // neither student or trainer depricated
 //        return (object)[
