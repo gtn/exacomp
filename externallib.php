@@ -821,11 +821,14 @@ class block_exacomp_external extends external_api {
                 "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
             ];
         }
-
-        // neither student or trainer
         return (object)[
-            "role" => 0,
+            "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
         ];
+
+//        // neither student or trainer depricated
+//        return (object)[
+//            "role" => 0,
+//        ];
     }
 
     /**
@@ -890,11 +893,11 @@ class block_exacomp_external extends external_api {
             return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
             ];
-        } else {
-            return (object)[
-                "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
-            ];
         }
+        return (object)[
+            "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
+        ];
+
         // neither student or trainer or teacher (depricated)
  //       return (object)[
  //           "role" => 0,
