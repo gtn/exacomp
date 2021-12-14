@@ -943,6 +943,9 @@ class data_exporter extends data {
 			$xmlItem->sorting = $dbItem->sorting;
 			$xmlItem->profoundness = $dbItem->profoundness;
 			$xmlItem->epop = $dbItem->epop;
+            $xmlItem->editor = $dbItem->editor;
+            $xmlItem->author = $dbItem->author;
+
 
 			// children
 			self::export_descriptors($xmlItem, $dbItem->id);
