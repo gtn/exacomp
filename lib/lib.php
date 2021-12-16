@@ -5502,7 +5502,11 @@ function block_exacomp_perform_auto_test() {
 		// get all tests/quizes that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
 		$students = block_exacomp_get_students_by_course($courseid);
-        $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]); // get "related" activities gets the assigned ones? depends on the setting
+
+        $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
+        // get "related" activities gets the assigned ones? depends on the setting  ==> TODO: it depends on a GLOBAL setting and that could be a problem
+        // if the old method is allowed, the new method does not work anymore for the specific cases where restriction is used
+
         $mod_info = get_fast_modinfo($courseid);
 		//$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 		// get student grading for each test
@@ -5677,7 +5681,7 @@ function block_exacomp_perform_auto_test() {
 
                         $info = new \core_availability\info_module($modInfo);
                         $tree = new \core_availability\tree(json_decode($cm->availability));
-                        $result = $tree->check_available(false, $info, true, $student->id);
+                        $result = $tree->check_available(false, $info, true, $student->id); // TODO: here an error occurs in certain situations (using autotest and tick setting in the restricted access tab of an activity)
                         $information = $tree->get_result_information($info, $result);
                         if ($result->is_available() && !$information) { // the user have got access to this module
                             $relatedData = array();
