@@ -1283,22 +1283,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $materialRow->cells[] = $outputnameCell;
                     $materialRow->cells[] = new html_table_cell();
                     foreach ($students as $student) {
+                        $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
                         if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
                             if ($this->useEvalNiveau && $showevaluation && $this->diffLevelExists) {
-                                $materialRow->cells[] = new html_table_cell();
+                                $niveau_cell = new html_table_cell();
+                                $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                                $materialRow->cells[] = $niveau_cell;
                             }
                             if ($showevaluation) {
-                                $materialRow->cells[] = new html_table_cell();
+                                $teacher_evaluation_cell = new html_table_cell();
+                                $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                                $materialRow->cells[] = $teacher_evaluation_cell;
                             }
-                            $materialRow->cells[] = new html_table_cell();
+                            $student_evaluation_cell = new html_table_cell();
+                            $student_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                            $materialRow->cells[] = $student_evaluation_cell;
                         } else { // Teacher
                             if ($showevaluation) {
-                                $materialRow->cells[] = new html_table_cell();
+                                $teacher_evaluation_cell = new html_table_cell();
+                                $teacher_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                                $materialRow->cells[] = $teacher_evaluation_cell;
                             }
                             if ($this->useEvalNiveau && $this->diffLevelExists) {
-                                $materialRow->cells[] = new html_table_cell();
+                                $niveau_cell = new html_table_cell();
+                                $niveau_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                                $materialRow->cells[] = $niveau_cell;
                             }
-                            $materialRow->cells[] = new html_table_cell();
+                            $student_evaluation_cell = new html_table_cell();
+                            $student_evaluation_cell->attributes['class'] = 'colgroup colgroup-'.$columnGroup;
+                            $materialRow->cells[] = $student_evaluation_cell;
                         }
                     }
                     $rows[] = $materialRow;
