@@ -5043,6 +5043,10 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
         if ($descriptor->parentid > 0) {
             continue;
         }
+        if(!block_exacomp_is_niveau_visible($courseid,$descriptor->topicid,0,$descriptor->niveauid)){
+            continue;
+        }
+
 
         /*$descriptor->children = $DB->get_records('block_exacompdescriptors', array('parentid' => $descriptor->id));
 
