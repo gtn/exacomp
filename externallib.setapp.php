@@ -795,6 +795,13 @@ class block_exacomp_external_setapp extends external_api {
             'courseid' => $courseid,
         ));
 
+        $hidden_subjects = [
+            'Lebende Fremdsprache',
+            'digi.komp4  - Informatische Grundbildung',
+            'Katholischer Religionsunterricht 1. - 4. Schulstufe',
+            'Evangelischer Religionsunterricht 1. - 4. Schulstufe',
+        ];
+
         block_exacomp_require_teacher($courseid);
 
         $data = new stdClass ();
@@ -808,14 +815,18 @@ class block_exacomp_external_setapp extends external_api {
             $data->levels[$level->id]->schooltypes = array();
 
             $types = block_exacomp_get_schooltypes($level->id);
-            foreach ($types as $type) {
+            foreach ($types as $key => $type) {
                 $type->subjects = block_exacomp_get_subjects_for_schooltype(0, $type->id);
 
                 // sort subjects by sorting field
                 usort($type->subjects, function($a, $b) { return $a->sorting - $b->sorting; });
 
                 $data->levels[$level->id]->schooltypes[$type->id] = $type;
-                foreach ($data->levels[$level->id]->schooltypes[$type->id]->subjects as $subject) {
+                foreach ($data->levels[$level->id]->schooltypes[$type->id]->subjects as $subjkey => $subject) {
+                    if (in_array($subject->title, $hidden_subjects)) {
+                        unset($data->levels[$level->id]->schooltypes[$type->id]->subjects[$subjkey]);
+                        continue;
+                    }
                     foreach ($subject->topics as $topic) {
                         // some topics have html in the title, and moodle does not allow this?!?
                         $topic->title = strip_tags($topic->title);

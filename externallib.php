@@ -6874,7 +6874,12 @@ class block_exacomp_external extends external_api {
             }
             $comment->fullname = $users[$comment->userid]->firstname.' '.$users[$comment->userid]->lastname;
             $comment->comment = $comment->entry;
+
+            $userpicture = new user_picture($users[$comment->userid]);
+            $userpicture->size = 1; // Size f1.
+            $comment->profileimageurl = $userpicture->get_url(g::$PAGE)->out(false);
         }
+
         return $itemcomments;
     }
 
@@ -6890,6 +6895,7 @@ class block_exacomp_external extends external_api {
             'fullname' => new external_value (PARAM_TEXT, 'fullname of user'),
             'comment' => new external_value (PARAM_TEXT, 'commenttext'),
             'timemodified' => new external_value (PARAM_INT, 'timemodified'),
+            'profileimageurl' => new external_value (PARAM_TEXT, ''),
         )));
     }
 
