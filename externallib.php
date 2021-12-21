@@ -803,12 +803,20 @@ class block_exacomp_external extends external_api {
 
         static::validate_parameters(static::get_user_role_parameters(), array());
 
+        $firstLoginDiggr = block_exacomp_get_custom_profile_field_value($USER->id, "diwipassapp_login");
+        if(!$firstLoginDiggr){
+            $firstLoginDiggr = 0;
+        }
+        if($firstLoginDiggr != 1){
+            block_exacomp_set_custom_profile_field_value($USER->id, "diwipassapp_login", 1);
+        }
+
         $trainer = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array(
             'trainerid' => $USER->id,
         ));
         if ($trainer) {
             return (object)[
-                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
+                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr
             ];
         }
 
@@ -822,11 +830,11 @@ class block_exacomp_external extends external_api {
             $context = context_course::instance($course["courseid"]);
             $isTeacher = block_exacomp_is_teacher($context);
             if ($isTeacher) {
-                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr];
             }
         }
 
-        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr];
 
 
 //        // neither student or trainer depricated
@@ -843,6 +851,7 @@ class block_exacomp_external extends external_api {
     public static function get_user_role_returns() {
         return new external_function_parameters (array(
             'role' => new external_value (PARAM_INT, '1=trainer, 2=student'),
+            'diwipassapp_login' => new external_value (PARAM_INT, '0=first, 1=not first'),
         ));
     }
 
@@ -871,12 +880,21 @@ class block_exacomp_external extends external_api {
 
         static::validate_parameters(static::diggr_get_user_role_parameters(), array());
 
+        $firstLoginDiggr = block_exacomp_get_custom_profile_field_value($USER->id, "diwipassapp_login");
+        if(!$firstLoginDiggr){
+            $firstLoginDiggr = 0;
+        }
+        if($firstLoginDiggr != 1){
+            block_exacomp_set_custom_profile_field_value($USER->id, "diwipassapp_login", 1);
+        }
+
+
         $trainer = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array(
             'trainerid' => $USER->id,
         ));
         if ($trainer) {
             return (object)[
-                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
+                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr
             ];
         }
 
@@ -886,20 +904,25 @@ class block_exacomp_external extends external_api {
 
         if ($student) {
             return (object)[
-                "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
+                "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr
             ];
         }
 
         //Added this for dgb: if the teacher is a teacher of the DGB course, it is fine.
         //In ELOVE the teacher would have to be an EXTERNALTRAINER, in DGB, being an externltrainer OR being teacher in the DGB course suffices
-        $isTeacher = block_exacomp_is_teacher(get_config('auth_dgb', 'courseid'), $USER->id);
-        if ($isTeacher) {
-            return (object)[
-                "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
-            ];
+        //$isTeacher = block_exacomp_is_teacher(get_config('auth_dgb', 'courseid'), $USER->id);
+        $courses = static::get_courses($USER->id);
+        foreach ($courses as $course) {
+            $context = context_course::instance($course["courseid"]);
+            $isTeacher = block_exacomp_is_teacher($context);
+            if ($isTeacher) {
+                return (object)[
+                    "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr
+                ];
+            }
         }
         return (object)[
-            "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
+            "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr
         ];
 
         // neither student or trainer or teacher (depricated)
@@ -916,6 +939,7 @@ class block_exacomp_external extends external_api {
     public static function diggr_get_user_role_returns() {
         return new external_function_parameters (array(
             'role' => new external_value (PARAM_INT, '1=trainer, 2=student'),
+            'diwipassapp_login' => new external_value (PARAM_INT, '0=first, 1=not first'),
         ));
     }
 
