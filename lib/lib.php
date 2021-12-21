@@ -9355,7 +9355,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             if (!property_exists($record, 'gradinghistory')) {
                 $record->gradinghistory = '';
             }
-            $record->gradinghistory .= $USER->firstname." ".$USER->lastname." ".date("Y-m-d", $record->timestamp).": ".$value."<br>";
+            $record->gradinghistory .= $USER->firstname." ".$USER->lastname." ".date("d.m.y G:i", $record->timestamp).": ".$value."<br>";
 
     		if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $record);
@@ -9372,7 +9372,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
     		$insert->role = $role;
     		$insert->reviewerid = $USER->id;
     		$insert->timestamp = time();
-            $insert->gradinghistory = $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$insert->timestamp).": ".$value."<br>";
+            $insert->gradinghistory = $USER->firstname." ".$USER->lastname." ".date("d.m.y G:i",$insert->timestamp).": ".$value."<br>";
 
     		$insert->additionalinfo = $additionalinfo;
     		$insert->value = $value;
@@ -11433,13 +11433,13 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
 					$data['timestamp'] = time();
 //					if(!block_exacomp_additional_grading($comptype)) { //only add to history if not using additionalgrading or it will be a duplicate entry
                     if($savegradinghistory) { //only add to history if not using additionalgrading or it will be a duplicate entry
-                        $data['gradinghistory'] = $record->gradinghistory.$USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
+                        $data['gradinghistory'] = $record->gradinghistory.$USER->firstname." ".$USER->lastname." ".date("d.m.y G:i",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
                     }
 				}
 			} else {
                 if($savegradinghistory) {
                     $data['timestamp'] = time();
-                    $data['gradinghistory'] = $USER->firstname." ".$USER->lastname." ".date("Y-m-d",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
+                    $data['gradinghistory'] = $USER->firstname." ".$USER->lastname." ".date("d.m.y G:i",$data['timestamp']).": ".$scheme_values[$data['value']]."<br>";
                 }
 			}
 		}
@@ -13340,7 +13340,7 @@ function block_exacomp_is_block_used_by_student($blockname,$studentid){
 //
 //    $globalgradings_text = "";
 //    foreach($records as $record){
-//        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("Y-m-d",$record->timestamp).": ".$scheme_values[$record->value]."<br>";
+//        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("d.m.y G:i",$record->timestamp).": ".$scheme_values[$record->value]."<br>";
 //    }
 //
 //    foreach($records as $record){
@@ -13373,7 +13373,7 @@ WHERE compuser.compid = 1 AND compuser.userid = 4 AND compuser.comptype = 1;
 
     $globalgradings_text = "";
     foreach($records as $record){
-        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("Y-m-d",$record->timestamp).": ".$scheme_values[$record->value]."<br>";
+        $globalgradings_text .= $record->firstname." ".$record->lastname." ".date("d.m.y G:i",$record->timestamp).": ".$scheme_values[$record->value]."<br>";
     }
 
     $globalgradingrecord = [
