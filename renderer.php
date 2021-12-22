@@ -269,7 +269,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach ($subjects as $subject) {
             $extra = '';
-            if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+            if ($this->is_edit_mode() && ($subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM ||  (property_exists($subject, "is_editable") && $subject->is_editable))) {
                 $extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid='.$COURSE->id.'&id='.$subject->id]);
                 $forwardUrl = g::$PAGE->url;
                 // if the Subject is only single and it will be deleted now - redirect to Settings page
@@ -284,6 +284,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $forwardUrl = new moodle_url('/blocks/exacomp/edit_course.php', ['courseid' => $courseid]);
                 }
                 $deleteUrl = html_entity_decode(new block_exacomp\url('subject.php', ['courseid' => $COURSE->id, 'id' => $subject->id, 'action' => 'delete', 'forward' => $forwardUrl]));
+                // subject delete button
                 $extra .= ' '.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                         null, [
                             'title' => block_exacomp_get_string("delete"),
@@ -316,12 +317,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
             foreach ($subject->topics as $topic) {
                 if (block_exacomp_is_teacher() || block_exacomp_is_topic_visible($COURSE->id, $topic, g::$USER->id)) {
                     $extra = '';
-                    if ($this->is_edit_mode() && $topic->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                    if ($this->is_edit_mode() && ($topic->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($subject, "is_editable") && $subject->is_editable))) {
                         $extra .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, [
                                 'exa-type' => "iframe-popup",
                                 'exa-url' => 'topic.php?courseid='.$COURSE->id.'&id='.$topic->id,
                             ]);
                         $deleteUrl = html_entity_decode(new block_exacomp\url('topic.php', ['courseid' => $COURSE->id, 'id' => $topic->id, 'action' => 'delete', 'forward' => g::$PAGE->url.'&editmode=1']));
+                        // topic delete button
                         $extra .= ' '.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                                 null, [
                                     'title' => block_exacomp_get_string("delete"),
@@ -353,7 +355,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function niveaus_menu($niveaus, $selectedNiveau, $selectedTopic) {
+	public function niveaus_menu($niveaus, $selectedNiveau, $selectedTopic, $selectedSubject) {
 		global $CFG, $COURSE, $PAGE;
 
 		$content = html_writer::start_div('niveaus_menu');
@@ -365,8 +367,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
 
                 $extra = '';
-                if ($this->is_edit_mode() && $niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+                if ($this->is_edit_mode() && ($niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($selectedSubject, "is_editable") && $selectedSubject->is_editable))) {
                     $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'forward' => g::$PAGE->url.'&editmode=1']));
+                    // Niveau delete button
                     $extra .= '&nbsp;'.html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                             null, [
                                 'class' => 'niveau-button',
