@@ -1363,7 +1363,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 	}
 
 	$sql = '
-		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal, s.class
+		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal, s.class, s.is_editable
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -11585,7 +11585,7 @@ function block_exacomp_require_item_capability($cap, $item) {
 			throw new block_exacomp_permission_exception('No course subject');
 		}
 
-		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && !$item->is_editable) {
 			throw new block_exacomp_permission_exception('Not a custom subject');
 		}
 	} elseif ($item instanceof \block_exacomp\topic && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
@@ -11600,7 +11600,11 @@ function block_exacomp_require_item_capability($cap, $item) {
 
 
 		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
-			throw new block_exacomp_permission_exception('Not a custom topic');
+            // get the subject to check if this whole subject is editable and therefore the item as well
+            $subject = $item->get_subject();
+            if(!$subject->is_editable){
+                throw new block_exacomp_permission_exception('Not a custom topic');
+            }
 		}
 	} elseif ($item instanceof \block_exacomp\descriptor && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
         // only if it is not imported utem (custom)
