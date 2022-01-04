@@ -2822,7 +2822,7 @@ class data_importer extends data {
 
         $item->courseid = $course_template; // 2021.09.16 otherwise the courseid of the export-course is used, and the examples are not shown in the import-course/template-course.
         // SZ: 29.11.2021. courseid value must be filled only if the example is activity
-        if (!$item->activityid) {
+        if (!isset($item->activityid)) { // RW: isset instead of $item->activityid because this throws warnings in moodle
             $item->courseid = 0; // look also below about $item->courseid
         }
         self::insert_or_update_item(BLOCK_EXACOMP_DB_EXAMPLES, $item);
