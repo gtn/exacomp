@@ -260,6 +260,7 @@ class db_layer_whole_moodle extends db_layer {
 		// $subjects = array_values($subjects);
 		// $subjects = array($subjects[10]); // , $subjects[1]);
 
+//        $start = microtime(true);
 		// check delete
 		foreach ($subjects as $subject) {
 		    // filter subjects by source. Other levels will be from needed subject trees
@@ -287,7 +288,7 @@ class db_layer_whole_moodle extends db_layer {
                         $child_descriptor->another_source = (!($child_descriptor->source == $source));
                         $child_descriptor->has_another_source = false;
 
-						$examples = array();
+//						//$examples = array();
 						foreach ($child_descriptor->examples as $example) {
 							$example->can_delete = ($example->source == $source);
                             $example->another_source = (!($example->source == $source));
@@ -301,7 +302,7 @@ class db_layer_whole_moodle extends db_layer {
 							//	unset($child_descriptor->examples[$example->id]);
 							//}
 						}
-						$child_descriptor->examples = $examples;
+						//$child_descriptor->examples = $examples; // RW 2022.01.04 this would just set the examples of every child descriptor to an empty array... why did we have this line??
 
 						if (!$child_descriptor->can_delete) {
 							$descriptor->can_delete = false;
@@ -357,7 +358,7 @@ class db_layer_whole_moodle extends db_layer {
 				unset($subjects[$subject->id]);
 			}
 		}
-
+//        $time_elapsed_secs = microtime(true) - $start;
 		return $subjects;
 	}
 }

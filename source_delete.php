@@ -53,7 +53,7 @@ function block_exacomp_source_delete_get_subjects($source) {
 }
 
 $subjects = block_exacomp_source_delete_get_subjects($source);
-
+//$start = microtime(true);
 if ($action == 'delete_selected') {
 	$json_data = block_exacomp\param::required_json('json_data', (object)array(
 		'subjects' => [PARAM_INT],
@@ -111,6 +111,13 @@ if ($action == 'delete_selected') {
 	if ($delete_examples) {
 		// TODO auch filestorage loeschen
 		$DB->delete_records_list(BLOCK_EXACOMP_DB_EXAMPLES, 'id', $delete_examples);
+        // BLOCK_EXACOMP_DB_EXAMPTAX, BLOCK_EXACOMP_DB_ITEM_MM, BLOCK_EXACOMP_DB_EXAMPLEEVAL etc will/should be handles when normalizing the database
+        // Loop probably a loop will be needed for clearing the filestorage
+//        $fs = get_file_storage();
+//        $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid);
+//        $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid);
+//        $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_completefile', $exampleid);
+
 	}
 	if ($delete_descriptors) {
 		$DB->delete_records_list(BLOCK_EXACOMP_DB_DESCRIPTORS, 'id', $delete_descriptors);
@@ -121,9 +128,9 @@ if ($action == 'delete_selected') {
 	if ($delete_subjects) {
 		$DB->delete_records_list(BLOCK_EXACOMP_DB_SUBJECTS, 'id', $delete_subjects);
 	}
-	
+    // TODO: delete gradings etc
 	block_exacomp\data::normalize_database();
-	
+//    $time_elapsed_secs = microtime(true) - $start;
 	redirect($CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid);
 	exit;
 } else if ($action == 'select') {
