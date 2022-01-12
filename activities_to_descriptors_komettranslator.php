@@ -19,4 +19,5 @@
 
 require __DIR__ . '/inc.php';
 
+// deprecated... this is not needed. Keeping the code for now if someday it is needed
 block_exacomp_relate_komettranslator_to_exacomp();

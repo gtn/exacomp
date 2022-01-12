@@ -4886,9 +4886,6 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
 
 
     foreach ($descriptorsData as $activityid => $descriptors) {
-        //todo löschen von examples wenn verknüpfung ausgetragen
-        //$oldexamples = $DB->get_record('block_exacompexamples', array('activityid'=>$activityid));
-
         $relatedDescriptors = array_filter($descriptors);
         $relatedDescriptors = array_keys($relatedDescriptors);
         block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
@@ -4913,94 +4910,92 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
 
 
 
-    if (count($descriptors)) { // if no any descriptor - no sense to insert the example (no relation to activity)
+//    if (count($descriptors)) { // if no any descriptor - no sense to insert the example (no relation to activity)... RW 2020.01.12 it DOES make sense, because otherwise you cannot delete the last connection
 //        var_dump("Activityid: ", $activityid);
 //        var_dump("descriptors: ", $descriptors);
 
-        $existsRelatedExample =
-                $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
-                        IGNORE_MULTIPLE);
-        if ($existsRelatedExample) {
-            $exampleId = $existsRelatedExample->id;
+    $existsRelatedExample =
+            $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('courseid' => $courseid, 'activityid' => $activityid), '*',
+                    IGNORE_MULTIPLE);
+    if ($existsRelatedExample) {
+        $exampleId = $existsRelatedExample->id;
+    } else {
+        $module = get_coursemodule_from_id(null, $activityid);
+        $activitylink = block_exacomp_get_activityurl($module)->out(false);
+        $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
+        $externaltask = block_exacomp_get_activityurl($module)->out(false);
+        $cm = $mod_info->cms[$activityid];
+        if($cm){
+            $example_icons = $cm->get_icon_url()->out(false);
+        }
+        if ($example_icons) {
+            $example_icons = serialize(array('externaltask' => $example_icons));
         } else {
-            $module = get_coursemodule_from_id(null, $activityid);
-            $activitylink = block_exacomp_get_activityurl($module)->out(false);
-            $activitylink = str_replace($CFG->wwwroot.'/', '', $activitylink);
-            $externaltask = block_exacomp_get_activityurl($module)->out(false);
-            $cm = $mod_info->cms[$activityid];
-            if($cm){
-                $example_icons = $cm->get_icon_url()->out(false);
-            }
-            if ($example_icons) {
-                $example_icons = serialize(array('externaltask' => $example_icons));
-            } else {
-                $example_icons = null;
-            }
-
-            //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
-            if($komettranslator && $courseOpenForGuests){
-                $newExample = (object) array(
-                    'title' => $module->name,
-                    'courseid' => 0,
-                    'activityid' => $activityid,
-                    'activitylink' => $activitylink,
-                    'activitytitle' => $module->name,
-                    'externaltask' => $externaltask,
-                    'creatorid' => $USER->id,
-                    'parentid' => 0,
-                    'example_icon' => $example_icons
-                );
-            }else{
-                $newExample = (object) array(
-                    'title' => $module->name,
-                    'courseid' => $courseid,
-                    'activityid' => $activityid,
-                    'activitylink' => $activitylink,
-                    'activitytitle' => $module->name,
-                    'externaltask' => $externaltask,
-                    'creatorid' => $USER->id,
-                    'parentid' => 0,
-                    'example_icon' => $example_icons
-                );
-            }
-
-
-            $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
+            $example_icons = null;
         }
 
-        // Add visibility in course: this is needed for the planning storage and weekly schedule
-        // other courses
-        $otherCourseids = block_exacomp_get_courseids_by_example($exampleId);
-        // add myself (should be in there anyway)
-        if (!in_array($courseid, $otherCourseids)) {
-            $otherCourseids[] = $courseid;
-        }
-
-        foreach ($otherCourseids as $otherCourseid) {
-            //add visibility if not exists
-            if (!$DB->get_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0))) {
-                $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0, 'visible'=>1));
-            }
-            if (!$DB->get_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0))) {
-                $DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0, 'visible'=>1));
-            }
-        }
-
-
-
-        // clean old relations to descriptors
-        $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
-        // insert new relations to descriptors
-        foreach ($descriptors as $descriptorid) {
-            $newRelation = (object) array(
-                    'exampid' => $exampleId,
-                    'descrid' => $descriptorid
+        //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
+        if($komettranslator && $courseOpenForGuests){
+            $newExample = (object) array(
+                'title' => $module->name,
+                'courseid' => 0,
+                'activityid' => $activityid,
+                'activitylink' => $activitylink,
+                'activitytitle' => $module->name,
+                'externaltask' => $externaltask,
+                'creatorid' => $USER->id,
+                'parentid' => 0,
+                'example_icon' => $example_icons
             );
-            $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
+        }else{
+            $newExample = (object) array(
+                'title' => $module->name,
+                'courseid' => $courseid,
+                'activityid' => $activityid,
+                'activitylink' => $activitylink,
+                'activitytitle' => $module->name,
+                'externaltask' => $externaltask,
+                'creatorid' => $USER->id,
+                'parentid' => 0,
+                'example_icon' => $example_icons
+            );
         }
 
 
+        $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
     }
+
+    // Add visibility in course: this is needed for the planning storage and weekly schedule
+    // other courses
+    $otherCourseids = block_exacomp_get_courseids_by_example($exampleId);
+    // add myself (should be in there anyway)
+    if (!in_array($courseid, $otherCourseids)) {
+        $otherCourseids[] = $courseid;
+    }
+
+    foreach ($otherCourseids as $otherCourseid) {
+        //add visibility if not exists
+        if (!$DB->get_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0))) {
+            $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0, 'visible'=>1));
+        }
+        if (!$DB->get_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0))) {
+            $DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$exampleId, 'studentid'=>0, 'visible'=>1));
+        }
+    }
+
+
+
+    // clean old relations to descriptors
+    $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
+    // insert new relations to descriptors
+    foreach ($descriptors as $descriptorid) {
+        $newRelation = (object) array(
+                'exampid' => $exampleId,
+                'descrid' => $descriptorid
+        );
+        $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $newRelation);
+    }
+
 
 };
 
