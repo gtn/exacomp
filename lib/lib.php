@@ -4905,8 +4905,16 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
         $mod_info = get_fast_modinfo($courseid);
     }
 
+    //2022.01.13 remove this functionality since it is not needed for now, and not tested enough. Apparently $DB->get_record("enrol", array("courseid" => $courseid, "enrol" => "guest")) can return multiple values in some cases
     //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
-    $courseOpenForGuests = !$DB->get_record("enrol", array("courseid" => $courseid, "enrol" => "guest"))->status; // 0 stands for ENABLED ==> !
+//    $enrol = $DB->get_record("enrol", array("courseid" => $courseid, "enrol" => "guest"));
+//    if($enrol){
+//        $courseOpenForGuests = !$enrol->status; // 0 stands for ENABLED ==> !.. the course is open for guests if status == 0
+//    }else{
+//        $courseOpenForGuests = false;
+//    }
+//    $courseOpenForGuests = !$DB->get_record("enrol", array("courseid" => $courseid, "enrol" => "guest"))->status; // 0 stands for ENABLED ==> ! .. leads to nullpointer exception in some cases
+
 
 
 
@@ -4934,20 +4942,21 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
             $example_icons = null;
         }
 
-        //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
-        if($komettranslator && $courseOpenForGuests){
-            $newExample = (object) array(
-                'title' => $module->name,
-                'courseid' => 0,
-                'activityid' => $activityid,
-                'activitylink' => $activitylink,
-                'activitytitle' => $module->name,
-                'externaltask' => $externaltask,
-                'creatorid' => $USER->id,
-                'parentid' => 0,
-                'example_icon' => $example_icons
-            );
-        }else{
+//        2022.01.13 remove this functionality since it is not needed for now, and not tested enough
+//        //2021.11.04 RW: Add a check for the course, if the course is usable by guests, the example should NOT have a courseid and therefore exist globally in this subject, not only in this course.
+//        if($komettranslator && $courseOpenForGuests){
+//            $newExample = (object) array(
+//                'title' => $module->name,
+//                'courseid' => 0,
+//                'activityid' => $activityid,
+//                'activitylink' => $activitylink,
+//                'activitytitle' => $module->name,
+//                'externaltask' => $externaltask,
+//                'creatorid' => $USER->id,
+//                'parentid' => 0,
+//                'example_icon' => $example_icons
+//            );
+//        }else{
             $newExample = (object) array(
                 'title' => $module->name,
                 'courseid' => $courseid,
@@ -4959,7 +4968,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
                 'parentid' => 0,
                 'example_icon' => $example_icons
             );
-        }
+//        }
 
 
         $exampleId = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
@@ -13958,8 +13967,9 @@ function block_exacomp_relate_komettranslator_to_exacomp(){
     global $DB;
     //relate the modules(activities) to descriptors -> create examples
     //First, get all the activityids that are relevant: all activities that have any competency where the competency exists in local_komettranslator
+    //DISCTINCT, since I only need to find all modules that have ANY relation. It does not matter how many competencies are linked.
     $modules = $DB->get_records_sql('
-        SELECT modcomp.cmid as moduleid
+        SELECT DISTINCT modcomp.cmid as moduleid
         FROM {competency_modulecomp} modcomp
         JOIN {local_komettranslator} komet ON komet.internalid = modcomp.competencyid
         ');

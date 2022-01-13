@@ -259,6 +259,7 @@ class db_layer_whole_moodle extends db_layer {
 		$subjects = $this->get_subjects();
 		// $subjects = array_values($subjects);
 		// $subjects = array($subjects[10]); // , $subjects[1]);
+        // TODO: dont get ALL subject, but only the subject of this source with e.g. get_records()
 
 //        $start = microtime(true);
 		// check delete
