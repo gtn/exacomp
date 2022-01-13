@@ -269,6 +269,7 @@ class db_layer_whole_moodle extends db_layer {
             // now it is impossible to delete, but with the message about 'children from another source'
 		    if ($subject->source != $source) {
 		        unset($subjects[$subject->id]);
+                continue;
             }
 			$subject->can_delete = ($subject->source == $source);
             $subject->has_another_source = false;

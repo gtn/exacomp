@@ -47,8 +47,9 @@ $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 function block_exacomp_source_delete_get_subjects($source) {
 	//$DB->set_debug(true);
+//    $start = microtime(true);
 	$subjects = block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source);
-	
+//    $time_elapsed_secs = microtime(true) - $start;
 	return $subjects;
 }
 
@@ -61,45 +62,45 @@ if ($action == 'delete_selected') {
 		'descriptors' => [PARAM_INT],
 		'examples' => [PARAM_INT]
 	));
-	
+
 	$post_examples = array_combine($json_data->examples, $json_data->examples);
 	$post_descriptors = array_combine($json_data->descriptors, $json_data->descriptors);
 	$post_topics = array_combine($json_data->topics, $json_data->topics);
 	$post_subjects = array_combine($json_data->subjects, $json_data->subjects);
-	
+
 	$delete_examples = array();
 	$delete_descriptors = array();
 	$delete_topics = array();
 	$delete_subjects = array();
-	
+
 	// rechte hier nochmal pruefen!
 	foreach ($subjects as $subject) {
 		if (!empty($post_subjects[$subject->id]) /*&& $subject->can_delete*/) {
 			$delete_subjects[$subject->id] = $subject->id;
 		}
-	
+
 		foreach ($subject->topics as $topic) {
 			if (!empty($post_topics[$topic->id]) /*&& $topic->can_delete*/) {
 				$delete_topics[$topic->id] = $topic->id;
 			}
-			
+
 			foreach($topic->descriptors as $descriptor){
 				if (!empty($post_descriptors[$descriptor->id]) /*&& $descriptor->can_delete*/) {
 					$delete_descriptors[$descriptor->id] = $descriptor->id;
 				}
-				
+
 				foreach($descriptor->children as $child_descriptor){
 					if (!empty($post_descriptors[$child_descriptor->id]) /*&& $child_descriptor->can_delete*/) {
 						$delete_descriptors[$child_descriptor->id] = $child_descriptor->id;
 					}
-					
+
 					foreach ($child_descriptor->examples as $example){
 						if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
 							$delete_examples[$example->id] = $example->id;
 						}
 					}
 				}
-	
+
 				foreach ($descriptor->examples as $example){
 					if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
 						$delete_examples[$example->id] = $example->id;
@@ -134,18 +135,18 @@ if ($action == 'delete_selected') {
 	redirect($CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid);
 	exit;
 } else if ($action == 'select') {
-	
+
 	// build breadcrumbs navigation
 	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 	$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
 	$pagenode = $blocknode->add(block_exacomp_get_string($page_identifier), $PAGE->url);
 	$pagenode->make_active();
-	
+
 	echo $output->header($course_context,$courseid, 'tab_admin_settings');
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
-	
+
 	echo $output->descriptor_selection_source_delete($source, $subjects);
-	
+
 	echo $output->footer();
 } else {
 	print_error("wrong action '$action'");
