@@ -7293,27 +7293,28 @@ class block_exacomp_external extends external_api {
             $examplesAndItems = array_merge($examplesAndItems, $studentExamplesAndItems);
         }
 
-        // TODO: sorting
-
+        // array_unique with SORT_REGULAR comapres using "==", not "===". It compares the properties, not for object identity. We want to compare the properties --> good
+        // also tested: it goes deep, it e.g. compared the item->timemodified.. if those are not ==, the whole thing is not ==
+        $examplesAndItems = array_unique($examplesAndItems, SORT_REGULAR);
         foreach ($examplesAndItems as $key => $exampleItem) {
             // TODO hack: only examples with submitted items
-            if (!$exampleItem->item) {
-                unset($examplesAndItems[$key]);
-                continue;
-            }
+//            if (!$exampleItem->item) {
+//                unset($examplesAndItems[$key]);
+//                continue;
+//            }
 
             if ($exampleItem->item) {
                 if ($status == "new") { // if filtered by "new" then only examples without items should be shown
                     unset($examplesAndItems[$key]);
                 } else {
                     switch ($exampleItem->item->status) {
-                        case 0: //inprogress
+                        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
                             $exampleItem->status = "inprogress";
                             break;
-                        case 1: //submitted
+                        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
                             $exampleItem->status = "submitted";
                             break;
-                        case 2: //completed
+                        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
                             $exampleItem->status = "completed";
                             break;
                         default:
@@ -7339,6 +7340,9 @@ class block_exacomp_external extends external_api {
 
         return $examplesAndItems;
     }
+
+
+
 
 
     /**
