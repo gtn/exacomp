@@ -7297,12 +7297,6 @@ class block_exacomp_external extends external_api {
         // also tested: it goes deep, it e.g. compared the item->timemodified.. if those are not ==, the whole thing is not ==
         $examplesAndItems = array_unique($examplesAndItems, SORT_REGULAR);
         foreach ($examplesAndItems as $key => $exampleItem) {
-            // TODO hack: only examples with submitted items
-//            if (!$exampleItem->item) {
-//                unset($examplesAndItems[$key]);
-//                continue;
-//            }
-
             if ($exampleItem->item) {
                 if ($status == "new") { // if filtered by "new" then only examples without items should be shown
                     unset($examplesAndItems[$key]);
