@@ -5313,7 +5313,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'export_selected')), "id" => "course-selection"));
 	}
 
-	public function descriptor_selection_source_delete($source, $subjects, $preselected_subjects=-1) {
+	public function descriptor_selection_source_delete($source, $subjects) {
 		global $PAGE;
 
 		$headertext = block_exacomp_get_string('please_choose');

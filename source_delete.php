@@ -58,13 +58,11 @@ function block_exacomp_source_delete_get_subjects_for_preselection($source) {
 
 
 if ($action == 'delete_selected') {
-    $subjects = block_exacomp_source_delete_get_subjects($source);
 	$json_data = block_exacomp\param::required_json('json_data', (object)array(
 		'subjects' => [PARAM_INT],
 		'topics' => [PARAM_INT],
 		'descriptors' => [PARAM_INT],
 		'examples' => [PARAM_INT],
-        'testdata' => [PARAM_INT]
 	));
 
 	$post_examples = array_combine($json_data->examples, $json_data->examples);
@@ -73,9 +71,9 @@ if ($action == 'delete_selected') {
 	$post_subjects = array_combine($json_data->subjects, $json_data->subjects);
 
 
-
-	// rechte hier nochmal pruefen!
     // 2022.01.20 RW this is not needed anymore. The warnings are displayed before anyways, but deletion is still allowed and will never be stopped here.
+
+    // rechte hier nochmal pruefen!
 //    $delete_examples = array();
 //    $delete_descriptors = array();
 //    $delete_topics = array();
@@ -159,6 +157,8 @@ if ($action == 'delete_selected') {
 
 	echo $output->footer();
 } else if ($action == 'preselect_subjects') {
+    // The user can select from which subject they want to delete. This can be only one subject, or several, or all.
+    // If the user chooses all in a huge setting, this could lead to performance issues.
     $subjects = block_exacomp_source_delete_get_subjects_for_preselection($source);
     // build breadcrumbs navigation
     $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
@@ -173,6 +173,7 @@ if ($action == 'delete_selected') {
 
     echo $output->footer();
 } else if ($action == 'select_from_preselection') {
+    // The user has selected 1 or several subjects from a source. Now the user can choose the details of what exactly they want to delete.
     $json_data = block_exacomp\param::required_json('json_data', (object)array(
         'subjects' => [PARAM_INT]
     ));
