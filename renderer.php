@@ -4149,7 +4149,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach ($sources as $source) {
 			$name = ($source->name ? $source->name : $source->source);
 			$ret .= $this->box("Importierte Daten von <strong>\"$name\"</strong> ".html_writer::link(new moodle_url('/blocks/exacomp/source_delete.php',
-                                                                                        array('courseid' => $courseid, 'action' => 'select', 'source' => $source->id)),
+                                                                                        array('courseid' => $courseid, 'action' => 'preselect_subjects', 'source' => $source->id)),
 					                                                                    block_exacomp_get_string('delete...'),
                                                                                         [/*'class' => 'btn btn-sm btn-link'*/]));
 		}
@@ -5313,7 +5313,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'export_selected')), "id" => "course-selection"));
 	}
 
-	public function descriptor_selection_source_delete($source, $subjects) {
+	public function descriptor_selection_source_delete($source, $subjects, $preselected_subjects=-1) {
 		global $PAGE;
 
 		$headertext = block_exacomp_get_string('please_choose');
@@ -5494,6 +5494,46 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'delete_selected')), "id" => "exa-selector"));
 	}
+
+    public function subject_preselection_source_delete($source, $subjects, $courseid) {
+        global $PAGE;
+
+        $headertext = block_exacomp_get_string('please_choose_preselection');
+
+        $header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
+
+
+        $table = new html_table();
+        $table->attributes['class'] = 'exabis_comp_comp rg2 exacomp_source_delete';
+        $rows = array();
+
+        foreach ($subjects as $subject) {
+            $row = new html_table_row();
+            $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
+
+            $cell = new html_table_cell();
+
+            $cell->text = html_writer::div('<input type="checkbox"
+			                                        exa-name="subjects"
+                                                    id="subject_'.$subject->id.'"
+			                                        value="'.$subject->id.'"'.
+                ' />'.
+                html_writer::tag('b', $subject->title));
+            $cell->attributes['class'] = 'rg2-arrow';
+            $row->cells[] = $cell;
+            $rows[] = $row;
+        }
+
+        $table->data = $rows;
+
+        $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
+        $table_html .= html_writer::div(html_writer::empty_tag('input',
+            array('type' => 'submit',
+                'value' => 'Select Subjects')),
+            '', array('id' => 'exabis_save_button'));
+
+        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'select_from_preselection')), "id" => "exa-selector"));
+    }
 
 	public function topics_courseselection(&$rows, $level, $topics, $topics_activ) {
 		foreach ($topics as $topic) {

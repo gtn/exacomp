@@ -37,9 +37,9 @@
 				descriptors: $form.find('input[exa-name='+'descriptors'+']:checked').map(function(){return this.value;}).get(),
 				examples:	$form.find('input[exa-name='+'examples'   +']:checked').map(function(){return this.value;}).get()
 			};
-			
+
 			$json_data.val(JSON.stringify(data));
 		});
 	});
-	
+
 })(jQueryExacomp);

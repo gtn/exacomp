@@ -502,6 +502,7 @@ $string['create_new_area'] = 'New area';
 $string['really_delete'] = 'Are you sure you want to delete the selected items?';
 $string['add_niveau'] = 'Add niveau';
 $string['please_choose'] = 'Please select';
+$string['please_choose_preselection'] = 'Please select the subjects you want to delete from.';
 $string['delete_niveau'] = 'Delete niveau';
 $string['add_new_taxonomie'] = 'Add a new difficulty level';
 $string['taxonomy_was_deleted'] = 'Difficulty level was deleted';

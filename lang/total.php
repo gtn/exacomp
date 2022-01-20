@@ -1783,6 +1783,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Bitte wählen',
         'Please select',
     ],
+    'please_choose_preselection' => [
+        'Bitte wählen sie die Raster von denen Sie etwas löschen wollen.',
+        'Please select the subjects you want to delete from.',
+    ],
     'delete_niveau' => [
         'Löschen hinzufügen',
         'Delete niveau',

@@ -508,6 +508,7 @@ $string['create_new_area'] = 'Neuer Bereich';
 $string['really_delete'] = 'Wirklich löschen?';
 $string['add_niveau'] = 'Neuen Lernfortschritt hinzufügen';
 $string['please_choose'] = 'Bitte wählen';
+$string['please_choose_preselection'] = 'Bitte wählen sie die Raster von denen Sie etwas löschen wollen.';
 $string['delete_niveau'] = 'Löschen hinzufügen';
 $string['add_new_taxonomie'] = 'neue Niveaustufe hinzufügen';
 $string['taxonomy_was_deleted'] = 'Niveaustufe was deleted';

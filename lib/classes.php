@@ -255,13 +255,19 @@ class db_layer {
 }
 
 class db_layer_whole_moodle extends db_layer {
-	function get_subjects_for_source($source) {
+	function get_subjects_for_source($source, $subjects_preselection = null) {
 		$subjects = $this->get_subjects();
 		// $subjects = array_values($subjects);
 		// $subjects = array($subjects[10]); // , $subjects[1]);
-        // TODO: dont get ALL subject, but only the subject of this source with e.g. get_records()
 
-//        $start = microtime(true);
+        if ($subjects_preselection != -1){
+            foreach ($subjects as $subject) {
+                if (empty($subjects_preselection[$subject->id])) {
+                    unset($subjects[$subject->id]);
+                }
+            }
+        }
+
 		// check delete
 		foreach ($subjects as $subject) {
 		    // filter subjects by source. Other levels will be from needed subject trees
@@ -356,13 +362,32 @@ class db_layer_whole_moodle extends db_layer {
 				//}
 			}
 
-			if ($subject->source != $source && empty($subject->topics)) {
-				unset($subjects[$subject->id]);
-			}
+//			if ($subject->source != $source && empty($subject->topics)) {
+//				unset($subjects[$subject->id]);
+//			}
 		}
-//        $time_elapsed_secs = microtime(true) - $start;
 		return $subjects;
 	}
+
+
+    /**
+     * @param $source
+     * @return subject[]
+     * Showing all the subjects of a source can become a huge task on large systems ==> Show only the subject, but not the topics etc in the first step
+     */
+    function get_subjects_preselection_for_source($source) {
+        $subjects = $this->get_subjects();
+        // $subjects = array_values($subjects);
+        // $subjects = array($subjects[10]); // , $subjects[1]);
+
+        // could do this with an sql statement instead of loop
+        foreach ($subjects as $subject) {
+            if ($subject->source != $source) {
+                unset($subjects[$subject->id]);
+            }
+        }
+        return $subjects;
+    }
 }
 
 class db_layer_course extends db_layer {

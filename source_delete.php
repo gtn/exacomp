@@ -45,22 +45,26 @@ $PAGE->set_url('/blocks/exacomp/source_delete.php', array('courseid' => $coursei
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
-function block_exacomp_source_delete_get_subjects($source) {
-	//$DB->set_debug(true);
-//    $start = microtime(true);
-	$subjects = block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source);
-//    $time_elapsed_secs = microtime(true) - $start;
+function block_exacomp_source_delete_get_subjects($source, $subjects_preselection=-1) {
+	$subjects = block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source, $subjects_preselection);
 	return $subjects;
 }
 
-$subjects = block_exacomp_source_delete_get_subjects($source);
-//$start = microtime(true);
+// Showing all the subjects of a source can become a huge task on large systems ==> Show only the subject, but not the topics etc in the first step
+function block_exacomp_source_delete_get_subjects_for_preselection($source) {
+    $subjects = block_exacomp\db_layer_whole_moodle::get()->get_subjects_preselection_for_source($source);
+    return $subjects;
+}
+
+
 if ($action == 'delete_selected') {
+    $subjects = block_exacomp_source_delete_get_subjects($source);
 	$json_data = block_exacomp\param::required_json('json_data', (object)array(
 		'subjects' => [PARAM_INT],
 		'topics' => [PARAM_INT],
 		'descriptors' => [PARAM_INT],
-		'examples' => [PARAM_INT]
+		'examples' => [PARAM_INT],
+        'testdata' => [PARAM_INT]
 	));
 
 	$post_examples = array_combine($json_data->examples, $json_data->examples);
@@ -68,50 +72,55 @@ if ($action == 'delete_selected') {
 	$post_topics = array_combine($json_data->topics, $json_data->topics);
 	$post_subjects = array_combine($json_data->subjects, $json_data->subjects);
 
-	$delete_examples = array();
-	$delete_descriptors = array();
-	$delete_topics = array();
-	$delete_subjects = array();
+
 
 	// rechte hier nochmal pruefen!
-	foreach ($subjects as $subject) {
-		if (!empty($post_subjects[$subject->id]) /*&& $subject->can_delete*/) {
-			$delete_subjects[$subject->id] = $subject->id;
-		}
+    // 2022.01.20 RW this is not needed anymore. The warnings are displayed before anyways, but deletion is still allowed and will never be stopped here.
+//    $delete_examples = array();
+//    $delete_descriptors = array();
+//    $delete_topics = array();
+//    $delete_subjects = array();
+//	foreach ($subjects as $subject) {
+//		if (!empty($post_subjects[$subject->id]) /*&& $subject->can_delete*/) {
+//			$delete_subjects[$subject->id] = $subject->id;
+//		}
+//
+//		foreach ($subject->topics as $topic) {
+//			if (!empty($post_topics[$topic->id]) /*&& $topic->can_delete*/) {
+//				$delete_topics[$topic->id] = $topic->id;
+//			}
+//
+//			foreach($topic->descriptors as $descriptor){
+//				if (!empty($post_descriptors[$descriptor->id]) /*&& $descriptor->can_delete*/) {
+//					$delete_descriptors[$descriptor->id] = $descriptor->id;
+//				}
+//
+//				foreach($descriptor->children as $child_descriptor){
+//					if (!empty($post_descriptors[$child_descriptor->id]) /*&& $child_descriptor->can_delete*/) {
+//						$delete_descriptors[$child_descriptor->id] = $child_descriptor->id;
+//					}
+//
+//					foreach ($child_descriptor->examples as $example){
+//						if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
+//							$delete_examples[$example->id] = $example->id;
+//						}
+//					}
+//				}
+//
+//				foreach ($descriptor->examples as $example){
+//					if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
+//						$delete_examples[$example->id] = $example->id;
+//					}
+//				}
+//			}
+//		}
+//	}
 
-		foreach ($subject->topics as $topic) {
-			if (!empty($post_topics[$topic->id]) /*&& $topic->can_delete*/) {
-				$delete_topics[$topic->id] = $topic->id;
-			}
 
-			foreach($topic->descriptors as $descriptor){
-				if (!empty($post_descriptors[$descriptor->id]) /*&& $descriptor->can_delete*/) {
-					$delete_descriptors[$descriptor->id] = $descriptor->id;
-				}
 
-				foreach($descriptor->children as $child_descriptor){
-					if (!empty($post_descriptors[$child_descriptor->id]) /*&& $child_descriptor->can_delete*/) {
-						$delete_descriptors[$child_descriptor->id] = $child_descriptor->id;
-					}
-
-					foreach ($child_descriptor->examples as $example){
-						if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
-							$delete_examples[$example->id] = $example->id;
-						}
-					}
-				}
-
-				foreach ($descriptor->examples as $example){
-					if (!empty($post_examples[$example->id]) /*&& $example->can_delete*/) {
-						$delete_examples[$example->id] = $example->id;
-					}
-				}
-			}
-		}
-	}
-	if ($delete_examples) {
+	if ($post_examples) {
 		// TODO auch filestorage loeschen
-		$DB->delete_records_list(BLOCK_EXACOMP_DB_EXAMPLES, 'id', $delete_examples);
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_EXAMPLES, 'id', $post_examples);
         // BLOCK_EXACOMP_DB_EXAMPTAX, BLOCK_EXACOMP_DB_ITEM_MM, BLOCK_EXACOMP_DB_EXAMPLEEVAL etc will/should be handles when normalizing the database
         // Loop probably a loop will be needed for clearing the filestorage
 //        $fs = get_file_storage();
@@ -120,14 +129,14 @@ if ($action == 'delete_selected') {
 //        $fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_completefile', $exampleid);
 
 	}
-	if ($delete_descriptors) {
-		$DB->delete_records_list(BLOCK_EXACOMP_DB_DESCRIPTORS, 'id', $delete_descriptors);
+	if ($post_descriptors) {
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_DESCRIPTORS, 'id', $post_descriptors);
 	}
-	if ($delete_topics) {
-		$DB->delete_records_list(BLOCK_EXACOMP_DB_TOPICS, 'id', $delete_topics);
+	if ($post_topics) {
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_TOPICS, 'id', $post_topics);
 	}
-	if ($delete_subjects) {
-		$DB->delete_records_list(BLOCK_EXACOMP_DB_SUBJECTS, 'id', $delete_subjects);
+	if ($post_subjects) {
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_SUBJECTS, 'id', $post_subjects);
 	}
     // TODO: delete gradings etc
 	block_exacomp\data::normalize_database();
@@ -135,7 +144,8 @@ if ($action == 'delete_selected') {
 	redirect($CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid);
 	exit;
 } else if ($action == 'select') {
-
+    // deprecated... this shows ALL subjects at once... Would be useful for small sources. For sources with a huge amount of subjects, preselection is needed.
+    $subjects = block_exacomp_source_delete_get_subjects($source);
 	// build breadcrumbs navigation
 	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 	$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
@@ -148,6 +158,40 @@ if ($action == 'delete_selected') {
 	echo $output->descriptor_selection_source_delete($source, $subjects);
 
 	echo $output->footer();
+} else if ($action == 'preselect_subjects') {
+    $subjects = block_exacomp_source_delete_get_subjects_for_preselection($source);
+    // build breadcrumbs navigation
+    $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
+    $blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
+    $pagenode = $blocknode->add(block_exacomp_get_string($page_identifier), $PAGE->url);
+    $pagenode->make_active();
+
+    echo $output->header($course_context,$courseid, 'tab_admin_settings');
+    echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
+
+    echo $output->subject_preselection_source_delete($source, $subjects, $courseid);
+
+    echo $output->footer();
+} else if ($action == 'select_from_preselection') {
+    $json_data = block_exacomp\param::required_json('json_data', (object)array(
+        'subjects' => [PARAM_INT]
+    ));
+    $preselected_subjects = array_combine($json_data->subjects, $json_data->subjects);
+    // Now we have the preselected subjects that the user wants to see in detail. The following code is very similar to the old 'select' code, where all subjects of a source have been shown in detail.
+    $subjects = block_exacomp_source_delete_get_subjects($source, $preselected_subjects);
+    // build breadcrumbs navigation
+    $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
+    $blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
+    $pagenode = $blocknode->add(block_exacomp_get_string($page_identifier), $PAGE->url);
+    $pagenode->make_active();
+
+    echo $output->header($course_context,$courseid, 'tab_admin_settings');
+    echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
+
+    echo $output->descriptor_selection_source_delete($source, $subjects, $preselected_subjects);
+
+    echo $output->footer();
+
 } else {
 	print_error("wrong action '$action'");
 }
