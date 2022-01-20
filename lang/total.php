@@ -1773,7 +1773,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'really_delete' => [
         'Wirklich löschen?',
-        'Really to delete?',
+        'Are you sure you want to delete the selected items?',
     ],
     'add_niveau' => [
         'Neuen Lernfortschritt hinzufügen',
