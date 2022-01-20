@@ -7195,7 +7195,6 @@ class block_exacomp_external extends external_api {
             'status' => $status,
         ));
 
-        // TODO: check if is teacher
         block_exacomp_require_teacher($courseid);
 
         $teacherid = $USER->id;
