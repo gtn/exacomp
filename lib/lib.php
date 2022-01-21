@@ -8081,7 +8081,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker, e.activityid
+				e.schedule_marker, e.activityid, e.is_teacherexample
 			FROM {block_exacompschedule} s
 			  JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
@@ -8099,7 +8099,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description, s.courseid as schedulecourseid,
-				e.schedule_marker, e.activityid
+				e.schedule_marker, e.activityid, e.is_teacherexample
 			FROM {block_exacompschedule} s
 			  JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
