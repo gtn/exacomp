@@ -268,7 +268,7 @@ function block_exacomp_pre_course_module_delete($cm) {
  */
 function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
     global $DB, $CFG;
-    require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+    require_once $CFG->dirroot.'/blocks/exacomp/inc.php';
     // 1. new method of relation - the relation is EXAMPLE
     $DB->execute('
         UPDATE {block_exacompexamples}
@@ -292,7 +292,7 @@ function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
 
 function block_exacomp_checkfordelete_relatedactivity($cmid) {
     global $DB, $CFG;
-    require_once $CFG->dirroot.'/blocks/exaport/inc.php';
+    require_once $CFG->dirroot.'/blocks/exacomp/inc.php';
     // 1. new method of relation - the relation is EXAMPLE
     // TODO: right now is deleted related example. May we need to stay the example, but change activity fields
     $DB->execute('
