@@ -2819,12 +2819,12 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'To insert a new competence, you must first select or add a difficulty level!',
     ],
     'delete_level_from_another_source' => [
-        'Importierter Kompetenzraster hat Inhalte einer anderen Quelle. Diese können nur vom Admin gelöscht werden.',
-        'Content from another source. These can only be deleted by the admin.',
+        'Importierter Kompetenzraster hat Inhalte einer anderen Quelle. Wenn hier gelöscht wird, wird auch von der anderen Quelle gelöscht! Nur löschen wenn Sie sicher sind!',
+        'Content from another source. If you delete them here, they will be deleted from the other source as well! Only delete if you are sure!',
     ],
     'delete_level_has_children_from_another_source' => [
-        'Importierter Kompetenzraster wurde in dieser Installation weiterbearbeitet. Diese Ergänzungen werden ausgewiesen und müssen gelöscht werden, bevor der gesamte Kompetenzraster löschbar wird.',
-        'Has children from another source!',
+        'Importierter Kompetenzraster wurde in dieser Installation weiterbearbeitet. Diese Ergänzungen sollten vor dem Löschen ausgewiesen werden. Ansonsten werden potenziell auch die Inhalte anderer Raster gelöscht wenn sie diesen Raster löschen! ',
+        'Has children from another source! If you do not remove the children first and delete this subject, you will also delete from the other source!',
     ],
 
     'module_used_availabilitycondition_competences' => [
