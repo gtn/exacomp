@@ -3075,11 +3075,20 @@ class data_importer extends data {
         // if a topic has been in a previous version of this subject (and therefore in the exacomp tables) but is not in this xml: remove
         // the following code should actually have been done in just ONE array_map of $xmlItem->topics->topic, but it just did not work => double array_map
         // it gets the topicids of the current subject from the xml
-        $xmlTopicSourceData = array_map(function($t) {
-            return array_map(function($top) {
-                return $top["@attributes"];
+        if($xmlItem->topics->topic->count() > 1){ //is_array() does not work here, because SimpleXMLElement is a special object
+            // $xmlItem->topics->topic is an array ob objects, each with an @attributes field
+            $xmlTopicSourceData = array_map(function($t) {
+                return array_map(function($top) {
+                    return $top["@attributes"];
                 }, $t);
             }, self::parse_xml_item($xmlItem)->topics)["topic"];
+        }else{
+            // $xmlItem->topics->topic is an object with an @attributes field
+            $xmlTopicSourceData = array(array_map(function($t) {
+                return $t["@attributes"];
+            }, self::parse_xml_item($xmlItem)->topics)["topic"]);
+        }
+
         // get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wront
         $existingTopics = g::$DB->get_records(BLOCK_EXACOMP_DB_TOPICS, array('subjid' => $subject->id, 'source' => $subject->source), '', 'id, sourceid, source');
         foreach ($existingTopics as $topic) {
