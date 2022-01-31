@@ -3401,5 +3401,9 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Fragen verknüpfen',
         'Relate questions',
     ],
+    'select_subjects' => [
+        'Select Subjects',
+        'Raster auswählen',
+    ],
 
 ];
