@@ -928,4 +928,4 @@ $string['opencomps'] = 'Choose your competences';
 $string['expandcomps'] = 'Expand all';
 $string['contactcomps'] = 'Contract all';
 $string['questlink'] = 'Relate questions';
-$string['select_subjects'] = 'Raster auswählen';
+$string['select_subjects'] = 'Select Subjects';
