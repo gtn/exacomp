@@ -2805,7 +2805,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                             1,
                                             ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? false : true,
                                             null,
-                                            ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
+                                            ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
+                                            ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewername : null);
                                     break;
                                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_GRADE: // Input.
                                     $params['value'] = isset($student->competencies->teacher_additional_grading[$descriptor->id]) ?
@@ -4580,7 +4581,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $checkbox html code for checkbox
 	 */
-	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $value, $disabled = false, $activityid = null, $reviewerid = null) {
+	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $value, $disabled = false, $activityid = null, $reviewerid = null, $reviewername = null) {
 		global $USER;
 
 		$attributes = array();
@@ -4590,6 +4591,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($reviewerid && $reviewerid != $USER->id) {
 			$attributes["reviewerid"] = $reviewerid;
 		}
+
+        $attributes["reviewername"] = $reviewername;
 
 		$attributes['exa-compid'] = $compid;
 		$attributes['exa-userid'] = $student->id;

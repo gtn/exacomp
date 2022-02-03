@@ -17,10 +17,9 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 (function($) {
-
 	// ## AJAX
 	// # COMPETENCIES
-	//cannot hide anymore, as soon as competence is checked
+	// cannot hide anymore, as soon as competence is checked
 	var competencies = {};
 
 	var prev_val;
@@ -36,14 +35,13 @@
 	});
 
 	$(document).on('change', 'input[name^=datadescriptors\-]', function() {
-		// check if anyone else has edited the competence before. if so, ask for confirmation
-		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
-				$(this).prop("checked",prev_val);
+		// Check if anyone else has edited the competence before. if so, ask for confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
+				$(this).prop("checked", prev_val);
 				return;
-			}
-			else {
-				//remove reviewer attribute
+			} else {
+				// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
@@ -53,33 +51,33 @@
 
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_descriptor-'+compid+'-'+userid).val();
+		var niveauid = $('select[name=niveau_descriptor-' + compid + '-' + userid).val();
 
 		if ($(this).prop("checked")) {
 			if (competencies[compid + "-" + userid]) {
 				competencies[compid + "-" + userid].value = $(this).val();
 			} else {
 				competencies[compid + "-" + userid] = {
-					userid : userid,
-					compid : compid,
-					value : $(this).val(),
-					niveauid : niveauid
+					userid: userid,
+					compid: compid,
+					value: $(this).val(),
+					niveauid: niveauid
 				};
 			}
-			//check comp->hide descriptor not possible
+			// Check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
 			if (competencies[compid + "-" + userid]) {
 				competencies[compid + "-" + userid].value = -1;
 			} else {
 				competencies[compid + "-" + userid] = {
-					userid : userid,
-					compid : compid,
-					value : 0,
-					niveauid : niveauid
+					userid: userid,
+					compid: compid,
+					value: 0,
+					niveauid: niveauid
 				};
 			}
-			//uncheck comp -> hide possible again
+			// Uncheck comp -> hide possible again
 			hide.removeClass("hidden");
 		}
 
@@ -93,31 +91,33 @@
 	});
 
 	$(document).on('change', 'select[name^=datadescriptors\-]', function() {
-		// check if anyone else has edited the competence before. if so, ask for
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
+
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_descriptor-'+compid+'-'+userid).val();
+		var niveauid = $('select[name=niveau_descriptor-' + compid + '-' + userid).val();
 
-		if(!competencies[compid + "-" + userid])
-			competencies[compid + "-" + userid] = {
-					userid : this.getAttribute('exa-userid'),
-					compid : this.getAttribute('exa-compid'),
-					value : $(this).val(),
-					niveauid : niveauid
+		if (!competencies[compid + "-" + userid]) {
+ competencies[compid + "-" + userid] = {
+					userid: this.getAttribute('exa-userid'),
+					compid: this.getAttribute('exa-compid'),
+					value: $(this).val(),
+					niveauid: niveauid
 			};
-		else
-			competencies[compid + "-" + userid]['value'] = $(this).val();
+} else {
+ competencies[compid + "-" + userid].value = $(this).val();
+}
 	});
 
 	$(document).on('change', 'select[name^=niveau_descriptor\-]', function(event) {
@@ -125,36 +125,38 @@
 		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
 
-		// check if anyone else has edited the competence before. if so, ask for
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
-		var value = $('select[name=datadescriptors-'+compid+'-'+userid+'-teacher]').val();
-		// in case of checkboxes instead of selects:
-		if(value === undefined)
-			if ($('input[name=datadescriptors-'+compid+'-'+userid+'-teacher]').prop("checked"))
-				value = $('input[name=datadescriptors-'+compid+'-'+userid+'-teacher]').val();
-			else
-				value = -1;
+		var value = $('select[name=datadescriptors-' + compid + '-' + userid + '-teacher]').val();
+		// In case of checkboxes instead of selects:
+		if (value === undefined) {
+ if ($('input[name=datadescriptors-' + compid + '-' + userid + '-teacher]').prop("checked")) {
+ value = $('input[name=datadescriptors-' + compid + '-' + userid + '-teacher]').val();
+} else {
+ value = -1;
+}
+}
 
-		if(!competencies[compid + "-" + userid]) {
+		if (!competencies[compid + "-" + userid]) {
 			competencies[compid + "-" + userid] = {
-					userid : userid,
-					compid : compid,
-					value : value,
-					niveauid : niveauid
+					userid: userid,
+					compid: compid,
+					value: value,
+					niveauid: niveauid
 				};
-		}
-		else
-			competencies[compid + "-" + userid]['niveauid'] = niveauid;
+		} else {
+ competencies[compid + "-" + userid].niveauid = niveauid;
+}
 	});
 
 	$(document).on('focus', 'input[name^=add-grading\-]', function() {
@@ -162,15 +164,14 @@
 	});
 
 	$(document).on('keyup', 'input[name^=add-grading\-]', function(event) {
-		// check if anyone else has edited the competence before. if so, ask for confirmation
-		if(event.keyCode != 9){
-			if($(this).attr("reviewerid")) {
-				if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+		// Check if anyone else has edited the competence before. if so, ask for confirmation
+		if (event.keyCode != 9) {
+			if ($(this).attr("reviewerid")) {
+				if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 					$(this).val(prev_val);
 					return;
-				}
-				else {
-					//remove reviewer attribute
+				} else {
+					// Remove reviewer attribute
 					$(this).removeAttr("reviewerid");
 				}
 			}
@@ -184,41 +185,44 @@
 
 		value = value.replace(",", ".");
 
-		// check for valid grading input range
+		// Check for valid grading input range
 		var grade_limit = Number($E.exacomp_config.grade_limit);
 		if (value > grade_limit) {
-			message = M.util.get_string('value_too_large','block_exacomp')
+			message = M.util.get_string('value_too_large', 'block_exacomp');
             message = message.replace("{limit}", grade_limit);
 			alert(message);
 			value = null;
 			$(this).val(value);
-		}
-		else if(value < 1.0 && value != "") {
-			alert(M.util.get_string('value_too_low','block_exacomp'));
-			value = null
+		} else if (value < 1.0 && value != "") {
+			alert(M.util.get_string('value_too_low', 'block_exacomp'));
+			value = null;
 			$(this).val(value);
-		} else if(value != "" && !$.isNumeric(value)) {
-			alert(M.util.get_string('value_not_allowed','block_exacomp'));
-			value = null
+		} else if (value != "" && !$.isNumeric(value)) {
+			alert(M.util.get_string('value_not_allowed', 'block_exacomp'));
+			value = null;
 			$(this).val(value);
 		}
 
 		var type = this.getAttribute('exa-type');
-		if(type == 0) {
-			if(!competencies_additional_grading[compid])
-				competencies_additional_grading[compid] = {};
+		if (type == 0) {
+			if (!competencies_additional_grading[compid]) {
+ competencies_additional_grading[compid] = {};
+}
 			competencies_additional_grading[compid][userid] = value;
-		} else if(type == 1) {
-			if(!topics_additional_grading[compid])
-				topics_additional_grading[compid] = {};
+		} else if (type == 1) {
+			if (!topics_additional_grading[compid]) {
+ topics_additional_grading[compid] = {};
+}
 			topics_additional_grading[compid][userid] = value;
-		} else if(type == 2) {
-			if(!crosssubs_additional_grading[compid])
-				crosssubs_additional_grading[compid] = {};
+		} else if (type == 2) {
+			if (!crosssubs_additional_grading[compid]) {
+ crosssubs_additional_grading[compid] = {};
+}
 			crosssubs_additional_grading[compid][userid] = value;
-		} else if(type == 3) {
-			if(!subjects_additional_grading[compid])
-				subjects_additional_grading[compid] = {};
+		} else if (type == 3) {
+			if (!subjects_additional_grading[compid]) {
+ subjects_additional_grading[compid] = {};
+}
 			subjects_additional_grading[compid][userid] = value;
 		}
 	});
@@ -230,22 +234,21 @@
 	});
 
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
-		var id = this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid');
+		var id = this.getAttribute('exa-compid') + "-" + this.getAttribute('exa-userid');
 
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-topic"]');
 
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
+		var niveauid = $('select[name=niveau_topic-' + compid + '-' + userid + ']').val();
 
-		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
-				$(this).prop("checked",prev_val);
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
+				$(this).prop("checked", prev_val);
 				return;
-			}
-			else {
-				//remove reviewer attribute
+			} else {
+				// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
@@ -253,28 +256,30 @@
 		if ($(this).prop("checked")) {
 			if (topics[this.name]) {
 				topics[this.name].value = $(this).val();
-			} else
-				topics[this.name] = {
-					userid : this.getAttribute('exa-userid'),
-					compid : this.getAttribute('exa-compid'),
-					value : $(this).val(),
-					niveauid : niveauid
+			} else {
+ topics[this.name] = {
+					userid: this.getAttribute('exa-userid'),
+					compid: this.getAttribute('exa-compid'),
+					value: $(this).val(),
+					niveauid: niveauid
 				};
+}
 
-			//check comp->hide descriptor not possible
+			// Check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
-			if (topics[this.name])
-				topics[this.name].value = -1;
-			else
-				topics[this.name] = {
-					userid : this.getAttribute('exa-userid'),
-					compid : this.getAttribute('exa-compid'),
-					value : 0,
-					niveauid : niveauid
+			if (topics[this.name]) {
+ topics[this.name].value = -1;
+} else {
+ topics[this.name] = {
+					userid: this.getAttribute('exa-userid'),
+					compid: this.getAttribute('exa-compid'),
+					value: 0,
+					niveauid: niveauid
 				};
+}
 
-			//uncheck comp -> hide possible again
+			// Uncheck comp -> hide possible again
 			hide.removeClass("hidden");
 		}
 	});
@@ -285,72 +290,74 @@
 
 
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
-		// check if anyone else has edited the competence before. if so, ask for
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
+		var niveauid = $('select[name=niveau_topic-' + compid + '-' + userid + ']').val();
 
-		if(!topics[this.name]) {
+		if (!topics[this.name]) {
 			topics[this.name] = {
-				userid : userid,
-				compid : compid,
-				value : $(this).val(),
-				niveauid : niveauid
+				userid: userid,
+				compid: compid,
+				value: $(this).val(),
+				niveauid: niveauid
 			};
-		} else
-			topics[this.name]['value'] = $(this).val();
+		} else {
+ topics[this.name].value = $(this).val();
+}
 	});
 
 	$(document).on('change', 'select[name^=niveau_topic\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
-		var name = 'datatopics-'+compid+'-'+userid+'-teacher';
-		var value = $('select[name='+name+']').val();
-
-		// check if anyone else has edited the competence before. if so, ask for
+		var name = 'datatopics-' + compid + '-' + userid + '-teacher';
+		var value = $('select[name=' + name + ']').val();
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
-		// in case of checkboxes instead of selects:
-		if(value === undefined)
-			if ($('input[name='+name+']').prop("checked"))
-				value = $('input[name='+name+']').val();
-			else
-				value = -1;
+		// In case of checkboxes instead of selects:
+		if (value === undefined) {
+ if ($('input[name=' + name + ']').prop("checked")) {
+ value = $('input[name=' + name + ']').val();
+} else {
+ value = -1;
+}
+}
 
-		if(!topics[name]) {
+		if (!topics[name]) {
 			topics[name] = {
-					userid : userid,
-					compid : compid,
-					value : value,
-					niveauid : niveauid
+					userid: userid,
+					compid: compid,
+					value: value,
+					niveauid: niveauid
 				};
-		}
-		else
-			topics[name]['niveauid'] = niveauid;
+		} else {
+ topics[name].niveauid = niveauid;
+}
 	});
 	// # SUBJECTS
-	var subjects = {}
+	var subjects = {};
 	var topics = {};
 	$(document).on('focus', 'input[name^=datasubjects\-]', function() {
 		prev_val = $(this).val();
@@ -359,15 +366,14 @@
 	$(document).on('click', 'input[name^=datasubjects\-]', function() {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid+']').val();
+		var niveauid = $('select[name=niveau_subject-' + compid + '-' + userid + ']').val();
 
-		if($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
-				$(this).prop("checked",prev_val);
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
+				$(this).prop("checked", prev_val);
 				return;
-			}
-			else {
-				//remove reviewer attribute
+			} else {
+				// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
@@ -375,23 +381,25 @@
 		if ($(this).prop("checked")) {
 			if (subjects[this.name]) {
 				subjects[this.name].value = $(this).val();
-			} else
-				subjects[this.name] = {
-					userid : this.getAttribute('exa-userid'),
-					compid : this.getAttribute('exa-compid'),
-					value : $(this).val(),
-					niveauid : niveauid
+			} else {
+ subjects[this.name] = {
+					userid: this.getAttribute('exa-userid'),
+					compid: this.getAttribute('exa-compid'),
+					value: $(this).val(),
+					niveauid: niveauid
 				};
+}
 		} else {
-			if (subjects[this.name])
-				subjects[this.name].value = -1;
-			else
-				subjects[this.name] = {
-					userid : this.getAttribute('exa-userid'),
-					compid : this.getAttribute('exa-compid'),
-					value : 0,
-					niveauid : niveauid
+			if (subjects[this.name]) {
+ subjects[this.name].value = -1;
+} else {
+ subjects[this.name] = {
+					userid: this.getAttribute('exa-userid'),
+					compid: this.getAttribute('exa-compid'),
+					value: 0,
+					niveauid: niveauid
 				};
+}
 		}
 	});
 
@@ -400,31 +408,32 @@
 	});
 
 	$(document).on('change', 'select[name^=datasubjects\-]', function() {
-		// check if anyone else has edited the competence before. if so, ask for
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid).val();
+		var niveauid = $('select[name=niveau_subject-' + compid + '-' + userid).val();
 
-		if(!subjects[this.name]) {
+		if (!subjects[this.name]) {
 			subjects[this.name] = {
-				userid : userid,
-				compid : compid,
-				value : $(this).val(),
-				niveauid : niveauid
+				userid: userid,
+				compid: compid,
+				value: $(this).val(),
+				niveauid: niveauid
 			};
-		} else
-			subjects[this.name]['value'] = $(this).val();
+		} else {
+ subjects[this.name].value = $(this).val();
+}
 
 	});
 
@@ -432,105 +441,111 @@
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
-		var name = 'datasubjects-'+compid+'-'+userid+'-teacher';
-		var value = $('select[name='+name+']').val();
+		var name = 'datasubjects-' + compid + '-' + userid + '-teacher';
+		var value = $('select[name=' + name + ']').val();
 
-		// check if anyone else has edited the competence before. if so, ask for
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
-		// in case of checkboxes instead of selects:
-		if(value === undefined)
-			if ($('input[name='+name+']').prop("checked"))
-				value = $('input[name='+name+']').val();
-			else
-				value = -1;
+		// In case of checkboxes instead of selects:
+		if (value === undefined) {
+ if ($('input[name=' + name + ']').prop("checked")) {
+ value = $('input[name=' + name + ']').val();
+} else {
+ value = -1;
+}
+}
 
-		if(!subjects[name]) {
+		if (!subjects[name]) {
 			subjects[name] = {
-					userid : userid,
-					compid : compid,
-					niveauid : niveauid,
-					value : value
+					userid: userid,
+					compid: compid,
+					niveauid: niveauid,
+					value: value
 				};
-		}
-		else
-			subjects[name]['niveauid'] = niveauid;
+		} else {
+ subjects[name].niveauid = niveauid;
+}
 	});
 
-	//#CROSSSUBJECTS
-	var crosssubs = {}
+	// #CROSSSUBJECTS
+	var crosssubs = {};
 
 	$(document).on('change', 'select[name^=niveau_crosssub\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
-		var name = 'datacrosssubs-'+compid+'-'+userid+'-teacher';
-		var value = $('select[name='+name+']').val();
+		var name = 'datacrosssubs-' + compid + '-' + userid + '-teacher';
+		var value = $('select[name=' + name + ']').val();
 
-		// in case of checkboxes instead of selects:
-		if(value === undefined)
-			if ($('input[name='+name+']').prop("checked"))
-				value = $('input[name='+name+']').val();
-			else
-				value = -1;
+		// In case of checkboxes instead of selects:
+		if (value === undefined) {
+ if ($('input[name=' + name + ']').prop("checked")) {
+ value = $('input[name=' + name + ']').val();
+} else {
+ value = -1;
+}
+}
 
-		if(!crosssubs[name]) {
+		if (!crosssubs[name]) {
 			crosssubs[name] = {
-					userid : userid,
-					compid : compid,
-					niveauid : niveauid,
-					value : value
+					userid: userid,
+					compid: compid,
+					niveauid: niveauid,
+					value: value
 				};
-		}
-		else
-			crosssubs[name]['niveauid'] = niveauid;
+		} else {
+ crosssubs[name].niveauid = niveauid;
+}
 	});
 	$(document).on('click', 'input[name^=datacrosssubs\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_crosssub-'+compid+'-'+userid+']').val();
+		var niveauid = $('select[name=niveau_crosssub-' + compid + '-' + userid + ']').val();
 		if ($(this).prop("checked")) {
 			if (crosssubs[this.name]) {
 				crosssubs[this.name].value = $(this).val();
-			} else
-				crosssubs[this.name] = {
-					userid : values[2],
-					compid : values[1],
-					value : $(this).val(),
-					niveauid : niveauid
+			} else {
+ crosssubs[this.name] = {
+					userid: values[2],
+					compid: values[1],
+					value: $(this).val(),
+					niveauid: niveauid
 				};
+}
 		} else {
-			if (crosssubs[this.name])
-				crosssubs[this.name].value = 0;
-			else
-				crosssubs[this.name] = {
-					userid : values[2],
-					compid : values[1],
-					value : -1,
-					niveauid : niveauid
+			if (crosssubs[this.name]) {
+ crosssubs[this.name].value = 0;
+} else {
+ crosssubs[this.name] = {
+					userid: values[2],
+					compid: values[1],
+					value: -1,
+					niveauid: niveauid
 				};
+}
 		}
 	});
 	$(document).on('change', 'select[name^=datacrosssubs\-]', function() {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');
-		var niveauid = $('select[name=niveau_crosssub-'+compid+'-'+userid+']').val();
+		var niveauid = $('select[name=niveau_crosssub-' + compid + '-' + userid + ']').val();
 		var values = $(this).attr("name").split("-");
 		crosssubs[this.name] = {
-			userid : values[2],
-			compid : values[1],
-			value : $(this).val(),
-			niveauid : niveauid
+			userid: values[2],
+			compid: values[1],
+			value: $(this).val(),
+			niveauid: niveauid
 		};
 	});
 
@@ -546,41 +561,39 @@
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-example"]');
-
-		if($(this).attr("reviewerid") > 0) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
-				$(this).prop("checked",prev_val);
+		if ($(this).attr("reviewerid") > 0) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
+				$(this).prop("checked", prev_val);
 				return;
-			}
-			else {
-				//remove reviewer attribute
+			} else {
+				// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
         if ($(this).is(':checkbox')) {
             examples[this.name] = {
-                userid : values[2],
-                exampleid : values[1],
-                value : $(this).prop("checked")
+                userid: values[2],
+                exampleid: values[1],
+                value: $(this).prop("checked")
             };
             if ($(this).prop("checked")) {
-                //check comp->hide descriptor not possible
+                // Check comp->hide descriptor not possible
                 hide.addClass("hidden");
             } else {
-                //uncheck comp -> hide possible again
+                // Uncheck comp -> hide possible again
                 hide.removeClass("hidden");
             }
         } else {
-            var niveauid = $('select[name=niveau_examples-'+values[1]+'-'+values[2]).val();
+            var niveauid = $('select[name=niveau_examples-' + values[1] + '-' + values[2]).val();
             var val = $(this).val();
             console.log($(this));
             console.log(val);
             examples[this.name] = {
-                userid : values[2],
-                exampleid : values[1],
-                value : val,
-                niveauid : niveauid
+                userid: values[2],
+                exampleid: values[1],
+                value: val,
+                niveauid: niveauid
             };
         }
 	});
@@ -590,67 +603,67 @@
 	});
 
 	$(document).on('change', 'select[name^=dataexamples\-]', function() {
-		// check if anyone else has edited the competence before. if so, ask for
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 				return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
 		var values = $(this).attr("name").split("-");
-		if(!examples[this.name]) {
-			// get current niveau
-			var niveauid = $('select[name=niveau_examples-'+values[1]+'-'+values[2]).val();
+		if (!examples[this.name]) {
+			// Get current niveau
+			var niveauid = $('select[name=niveau_examples-' + values[1] + '-' + values[2]).val();
 			examples[this.name] = {
-				userid : values[2],
-				exampleid : values[1],
-				value : $(this).val(),
-				niveauid : niveauid
+				userid: values[2],
+				exampleid: values[1],
+				value: $(this).val(),
+				niveauid: niveauid
 			};
-		}
-		else
-			examples[this.name]['value'] = $(this).val();
+		} else {
+ examples[this.name].value = $(this).val();
+}
 	});
 	$(document).on('change', 'select[name^=niveau_examples\-]', function(event) {
 
-		// check if anyone else has edited the competence before. if so, ask for
+		// Check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
-			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp')+$(this).attr("reviewername")+M.util.get_string('override_notice2', 'block_exacomp'))) {
+			if (!confirm(M.util.get_string('override_notice1', 'block_exacomp') + $(this).attr("reviewername") + M.util.get_string('override_notice2', 'block_exacomp'))) {
 				$(this).val(prev_val);
 					return;
 			} else {
-			// remove reviewer attribute
+			// Remove reviewer attribute
 				$(this).removeAttr("reviewerid");
 			}
 		}
 
-		var name = this.name.replace("niveau_","data") + "-teacher"
+		var name = this.name.replace("niveau_", "data") + "-teacher";
 		var niveauid = $(this).val();
 
-		if(!examples[name]) {
+		if (!examples[name]) {
 			var values = name.split("-");
 
-			var value = $('select[name='+name+']').val();
+			var value = $('select[name=' + name + ']').val();
 
 			examples[name] = {
-					userid : values[2],
-					exampleid : values[1],
-					value : value,
-					niveauid : niveauid
+					userid: values[2],
+					exampleid: values[1],
+					value: value,
+					niveauid: niveauid
 				};
-		}
-		else
-			examples[name]['niveauid'] = niveauid;
+		} else {
+ examples[name].niveauid = niveauid;
+}
 	});
 	$(document).on('keydown', ':text[exa-type="new-descriptor"]', function(event) {
 		if (event.keyCode == 13) {
-			// enter
+			// Enter
 			$(this).siblings(':button[exa-type="new-descriptor"]').trigger('click');
 		}
 	});
@@ -667,7 +680,7 @@
 
 		block_exacomp.call_ajax({
 			action: 'multi',
-			// send data as json, because php max input setting
+			// Send data as json, because php max input setting
 			data: JSON.stringify({new_descriptors: [{
 				parentid: $input.attr('parentid'),
 				topicid: $input.attr('topicid'),
@@ -683,11 +696,13 @@
 	i_want_my_reload = true;
 
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button], #grade_example_related input[type=submit], #competence_grid input[type=submit]', function(event) {
-		if ($(this).is('.allow-submit')) return;
+		if ($(this).is('.allow-submit')) {
+ return;
+}
 		event.preventDefault();
 		var courseid = block_exacomp.get_param('courseid');
 
-		// only for crosssubjects
+		// Only for crosssubjects
 		var crosssubjid = block_exacomp.get_param('crosssubjid');
 		var button_id = $(this).attr('id');
 
@@ -700,13 +715,13 @@
 
 			function all_done() {
 				if (reload) {
-					// do not hide spinner - page will be reloaded
+					// Do not hide spinner - page will be reloaded
 					location.reload();
 					alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
 				} else {
-					// hide spinner
-					$('#'+spinnerId).remove();
-					document.location.href='#';
+					// Hide spinner
+					$('#' + spinnerId).remove();
+					document.location.href = '#';
 					alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
 				}
 			}
@@ -741,22 +756,22 @@
 			}
 
 			if (competencies_by_type.length) {
-				multiQueryData.competencies_by_type = competencies_by_type
+				multiQueryData.competencies_by_type = competencies_by_type;
 			}
 
-			if(!$.isEmptyObject(competencies_additional_grading)){
+			if (!$.isEmptyObject(competencies_additional_grading)) {
 				multiQueryData.competencies_additional_grading = competencies_additional_grading;
 			}
 
-			if(!$.isEmptyObject(topics_additional_grading)){
+			if (!$.isEmptyObject(topics_additional_grading)) {
 				multiQueryData.topics_additional_grading = topics_additional_grading;
 			}
 
-			if(!$.isEmptyObject(crosssubs_additional_grading)){
+			if (!$.isEmptyObject(crosssubs_additional_grading)) {
 				multiQueryData.crosssubs_additional_grading = crosssubs_additional_grading;
 			}
 
-			if(!$.isEmptyObject(subjects_additional_grading)){
+			if (!$.isEmptyObject(subjects_additional_grading)) {
 				multiQueryData.subjects_additional_grading = subjects_additional_grading;
 			}
 
@@ -764,9 +779,9 @@
                 if (!$.isEmptyObject(multiQueryData)) {
                     block_exacomp.call_ajax({
                         action: 'multi',
-                        // send data as json, because php max input setting
+                        // Send data as json, because php max input setting
                         data: JSON.stringify(multiQueryData)
-                    }).done(function (msg) {
+                    }).done(function(msg) {
                         all_done();
                     });
                 } else {
@@ -776,22 +791,22 @@
                 if (!$.isEmptyObject(multiQueryData)) {
                     block_exacomp.call_ajax({
                         action: 'multi',
-                        // send data as json, because php max input setting
+                        // Send data as json, because php max input setting
                         data: JSON.stringify(multiQueryData)
-                    }).done(function (msg) {
+                    }).done(function(msg) {
                         alert(M.util.get_string('save_changes_competence_evaluation', 'block_exacomp'));
-                        block_exacomp.popup_close()
+                        block_exacomp.popup_close();
                     });
                 } else {
-                    block_exacomp.popup_close()
+                    block_exacomp.popup_close();
                 }
-                // hide spinner
-                $('#'+spinnerId).remove();
+                // Hide spinner
+                $('#' + spinnerId).remove();
 			}
 
 			break;
 		/*
-		case 'save_as_draft':
+		Case 'save_as_draft':
 			if (crosssubjid > 0) {
 				block_exacomp.call_ajax({
 					crosssubjid : crosssubjid,
@@ -825,36 +840,37 @@
 		var not_crosssubjects = [];
 		var descrid = block_exacomp.get_param('descrid');
 		$("input[name='crosssubject']").each(function() {
-			if (this.checked == "1")
-				crosssubjects.push($(this).val());
-			else
-				not_crosssubjects.push($(this).val());
+			if (this.checked == "1") {
+ crosssubjects.push($(this).val());
+} else {
+ not_crosssubjects.push($(this).val());
+}
 		});
 
 		block_exacomp.call_ajax({
-			crosssubjects : JSON.stringify(crosssubjects),
-			not_crosssubjects : JSON.stringify(not_crosssubjects),
-			descrid : descrid,
-			action : 'crosssubj-descriptors',
+			crosssubjects: JSON.stringify(crosssubjects),
+			not_crosssubjects: JSON.stringify(not_crosssubjects),
+			descrid: descrid,
+			action: 'crosssubj-descriptors',
 		}).done(function(msg) {
 			block_exacomp.popup_close_and_reload();
 		});
 	});
 
 	$(document).on('click', 'a[id^=competence-grid-link]', function(event) {
-		if($(this).hasClass('deactivated')){
+		if ($(this).hasClass('deactivated')) {
 			event.preventDefault();
 		}
 	});
 
 	$(document).keydown(function(event) {
-		if ( event.which == 13 ) {
+		if (event.which == 13) {
 			   event.preventDefault();
 		}
 	});
 
-	// preload M.core.dialogue if necessary
-	$(function(){
+	// Preload M.core.dialogue if necessary
+	$(function() {
 		if ($('[exa-type=iframe-popup]').length) {
 			Y.use('moodle-core-notification-dialogue');
 		}
@@ -863,38 +879,38 @@
 	$(document).on('click', '[exa-type=iframe-popup]', function(event) {
 		event.preventDefault();
 		popupheight = this.getAttribute('exa-height');
-		windowheight = $( window ).height() * 0.8;
+		windowheight = $(window).height() * 0.8;
 
-		if(popupheight != null){
-			if(popupheight.endsWith("px")){
+		if (popupheight != null) {
+			if (popupheight.endsWith("px")) {
 				popupheight = popupheight.slice(0, -2);
 			}
 
-			if(popupheight > windowheight){
+			if (popupheight > windowheight) {
 				popupheight = windowheight;
 			}
-		}else{
+		} else {
 			popupheight = windowheight;
 		}
-		// open iframe from exa-url OR href attribute
+		// Open iframe from exa-url OR href attribute
 		var exaData = {};
 		$(this).each(function() {
-            $.each(this.attributes, function(i,a){
+            $.each(this.attributes, function(i, a) {
             	attrName = a.name;
             	if (attrName.indexOf('exa-data-') !== -1) {
                     attrName = attrName.replace('exa-data-', '');
             		exaData[attrName] = a.value;
                 }
-            })
-        })
-		// concrete unique cases
-		if ($(this).hasClass('example-related-button')) { // example related competencies
+            });
+        });
+		// Concrete unique cases
+		if ($(this).hasClass('example-related-button')) { // Example related competencies
 			// get shown students (for students pagebrowser)
 			var shownStudents = [];
-			$('table.competence-overview .exabis_comp_top_studentcol:visible').each(function () {
+			$('table.competence-overview .exabis_comp_top_studentcol:visible').each(function() {
 				var stid = $(this).attr('data-studentid');
                 shownStudents.indexOf(stid) === -1 ? shownStudents.push(stid) : null;
-            })
+            });
 			exaData.students = shownStudents.join(',');
 		}
 
@@ -926,13 +942,13 @@
 		var select = document
 			.getElementById("menulis_topics");
 
-		if(studentid < 0) {
-			// no negative studentid: (all users, gesamtübersicht,...)
+		if (studentid < 0) {
+			// No negative studentid: (all users, gesamtübersicht,...)
 			studentid = 0;
 		}
 
-		if(val=='-'){
-			$(this).attr('state','+');
+		if (val == '-') {
+			$(this).attr('state', '+');
 			visible = 0;
 
 			$(this).trigger('rg2.lock');
@@ -940,33 +956,34 @@
 			$(this).find("i").addClass('fa-eye-slash');
 			$(this).find("i").removeClass('fa-eye');
 
-			//disable checkbox for teacher, when hiding descriptor for student
-			if(studentid > 0){
-				$('input[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-				$('select[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-				$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", true);
-				$('select[name=niveau_descriptor-'+descrid+'-'+studentid+']').prop("disabled", true);
+			// Disable checkbox for teacher, when hiding descriptor for student
+			if (studentid > 0) {
+				$('input[name=datadescriptors-' + descrid + '-' + studentid + '-' + 'teacher]').prop("disabled", true);
+				$('select[name=datadescriptors-' + descrid + '-' + studentid + '-' + 'teacher]').prop("disabled", true);
+				$('input[name=add-grading-' + studentid + '-' + descrid + ']').prop("disabled", true);
+				$('select[name=niveau_descriptor-' + descrid + '-' + studentid + ']').prop("disabled", true);
 			}
 
 			var img = $("img", this);
-			img.attr('src',$(this).attr('hideurl'));
-			img.attr('alt', M.util.get_string('show','moodle'));
-			img.attr('title', M.util.get_string('show','moodle'));
+			img.attr('src', $(this).attr('hideurl'));
+			img.attr('alt', M.util.get_string('show', 'moodle'));
+			img.attr('title', M.util.get_string('show', 'moodle'));
 
-			//only for competence grid
-			var link = $('#competence-grid-link-'+descrid);
-			if(link) {
+			// Only for competence grid
+			var link = $('#competence-grid-link-' + descrid);
+			if (link) {
 				 link.addClass('deactivated');
 			}
 
 			if (select) {
-				for(i=0; i<select.options.length; i++){
-					if(select.options[i].value == descrid)
-						$(select.options[i]).attr('disabled', 'disabled');
+				for (i = 0; i < select.options.length; i++) {
+					if (select.options[i].value == descrid) {
+ $(select.options[i]).attr('disabled', 'disabled');
+}
 				}
 			}
-		}else{
-			$(this).attr('state','-');
+		} else {
+			$(this).attr('state', '-');
 			visible = 1;
 			$(this).trigger('rg2.unlock');
 
@@ -974,41 +991,42 @@
 			$(this).find("i").addClass('fa-eye');
 			$(this).find("i").removeClass('fa-eye-slash');
 
-			//enable checkbox for teacher, when showing descriptor for student
+			// Enable checkbox for teacher, when showing descriptor for student
 
-			$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", false);
-			$('select[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-			$('select[name=niveau_descriptor-'+descrid+'-'+studentid+']').prop("disabled", false);
+			$('input[name=add-grading-' + studentid + '-' + descrid + ']').prop("disabled", false);
+			$('select[name=datadescriptors-' + descrid + '-' + studentid + '-' + 'teacher]').prop("disabled", false);
+			$('select[name=niveau_descriptor-' + descrid + '-' + studentid + ']').prop("disabled", false);
 
 			var img = $("img", this);
-			img.attr('src',$(this).attr('showurl'));
-			img.attr('alt', M.util.get_string('hide','moodle'));
-			img.attr('title', M.util.get_string('hide','moodle'));
+			img.attr('src', $(this).attr('showurl'));
+			img.attr('alt', M.util.get_string('hide', 'moodle'));
+			img.attr('title', M.util.get_string('hide', 'moodle'));
 
-			//only for competence grid
-			var link = $('#competence-grid-link-'+descrid);
-			if(link) {
+			// Only for competence grid
+			var link = $('#competence-grid-link-' + descrid);
+			if (link) {
 				 link.removeClass('deactivated');
 			}
 
 			if (select) {
-				for(i=0; i<select.options.length; i++){
-					if(select.options[i].value == descrid)
-						$(select.options[i]).removeAttr('disabled');
+				for (i = 0; i < select.options.length; i++) {
+					if (select.options[i].value == descrid) {
+ $(select.options[i]).removeAttr('disabled');
+}
 				}
 			}
 		}
 
 		block_exacomp.call_ajax({
-			descrid : descrid,
-			value : visible,
-			studentid : studentid,
-			action : 'hide-descriptor'
+			descrid: descrid,
+			value: visible,
+			studentid: studentid,
+			action: 'hide-descriptor'
 		});
 
 	});
 
-	$(document).on('click', 'a[exa-type=example-sorting]', function (event) {
+	$(document).on('click', 'a[exa-type=example-sorting]', function(event) {
 		event.preventDefault();
 
 		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
@@ -1022,7 +1040,7 @@
 			direction: this.getAttribute('exa-direction'),
 			descrid: this.getAttribute('exa-descrid'),
 			exampleid: this.getAttribute('exa-exampleid'),
-		}).done(function () {
+		}).done(function() {
 			location.reload();
 		});
 	});
@@ -1034,11 +1052,12 @@
 		var exampleid = $(this).attr('exampleid');
 		var courseid = block_exacomp.get_param('courseid');
 		var studentid = block_exacomp.get_studentid();
-		if(studentid==null)
-			studentid = 0;
+		if (studentid == null) {
+ studentid = 0;
+}
 
-		// an example can be attached at several competencies, therefore we need to process all example instances
-		var examples = $('a[id="hide-example"][exampleid="'+exampleid+'"]').each(function() {
+		// An example can be attached at several competencies, therefore we need to process all example instances
+		var examples = $('a[id="hide-example"][exampleid="' + exampleid + '"]').each(function() {
 
 			var tr = $(this).closest('tr');
 			var schedule = $(this).siblings('.add-to-schedule');
@@ -1046,10 +1065,10 @@
 
 			var val = $(this).attr('state');
 
-			debugger
+			;
 
-			if(val=='-'){
-				$(this).attr('state','+');
+			if (val == '-') {
+				$(this).attr('state', '+');
 				visible = 0;
 
 				exabis_rg2.get_row(this)
@@ -1057,70 +1076,74 @@
 					.addClass('rg2-locked');
 
 
-
 				$(this).find("i").addClass('fa-eye-slash');
 				$(this).find("i").removeClass('fa-eye');
 
 
-				//disable checkbox for teacher, when hiding descriptor for student
-				if(studentid > 0)
-					$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-					$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", true);
-					$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", true);
+				// Disable checkbox for teacher, when hiding descriptor for student
+				if (studentid > 0) {
+ $('input[name=dataexamples-' + exampleid + '-' + studentid + '-' + 'teacher]').prop("disabled", true);
+}
+					$('select[name=dataexamples-' + exampleid + '-' + studentid + '-teacher]').prop("disabled", true);
+					$('select[name=niveau_examples-' + exampleid + '-' + studentid + ']').prop("disabled", true);
 
 				var img = $("img", this);
-				img.attr('src',$(this).attr('hideurl'));
-				img.attr('alt', M.util.get_string('show','moodle'));
-				img.attr('title', M.util.get_string('show','moodle'));
+				img.attr('src', $(this).attr('hideurl'));
+				img.attr('alt', M.util.get_string('show', 'moodle'));
+				img.attr('title', M.util.get_string('show', 'moodle'));
 
-				schedule.click(function () {return false;});
-				preplanning.click(function () {return false;});
+				schedule.click(function() {
+ return false;
+});
+				preplanning.click(function() {
+ return false;
+});
 
-				schedule.children().prop("title", M.util.get_string('weekly_schedule_disabled','block_exacomp'));
-				preplanning.children().prop("title", M.util.get_string('pre_planning_storage_disabled','block_exacomp'));
+				schedule.children().prop("title", M.util.get_string('weekly_schedule_disabled', 'block_exacomp'));
+				preplanning.children().prop("title", M.util.get_string('pre_planning_storage_disabled', 'block_exacomp'));
 
-				//only for competence grid
-				var link = $('#competence-grid-link-'+exampleid);
-				if(link) {
+				// Only for competence grid
+				var link = $('#competence-grid-link-' + exampleid);
+				if (link) {
 					 link.addClass('deactivated');
 				}
-			}else{
-				$(this).attr('state','-');
+			} else {
+				$(this).attr('state', '-');
 				visible = 1;
 				tr.removeClass('rg2-locked');
 
 				$(this).find("i").addClass('fa-eye');
 				$(this).find("i").removeClass('fa-eye-slash');
 
-				//enable checkbox for teacher, when showing descriptor for student
-				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-				$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", false);
-				$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", false);
+				// Enable checkbox for teacher, when showing descriptor for student
+				$('input[name=dataexamples-' + exampleid + '-' + studentid + '-' + 'teacher]').prop("disabled", false);
+				$('select[name=dataexamples-' + exampleid + '-' + studentid + '-teacher]').prop("disabled", false);
+				$('select[name=niveau_examples-' + exampleid + '-' + studentid + ']').prop("disabled", false);
 
 				var img = $("img", this);
-				img.attr('src',$(this).attr('showurl'));
-				img.attr('alt', M.util.get_string('hide','moodle'));
-				img.attr('title', M.util.get_string('hide','moodle'));
+				img.attr('src', $(this).attr('showurl'));
+				img.attr('alt', M.util.get_string('hide', 'moodle'));
+				img.attr('title', M.util.get_string('hide', 'moodle'));
 
 				schedule.unbind('click');
 				preplanning.unbind('click');
 
-				schedule.children().prop("title", M.util.get_string('weekly_schedule','block_exacomp'));
-				preplanning.children().prop("title", M.util.get_string('pre_planning_storage','block_exacomp'));
+				schedule.children().prop("title", M.util.get_string('weekly_schedule', 'block_exacomp'));
+				preplanning.children().prop("title", M.util.get_string('pre_planning_storage', 'block_exacomp'));
 
-				//only for competence grid
-				var link = $('#competence-grid-link-'+exampleid);
-				if(link) {
+				// Only for competence grid
+				var link = $('#competence-grid-link-' + exampleid);
+				if (link) {
 					 link.removeClass('deactivated');
 				}
 			}
 		});
 
 		block_exacomp.call_ajax({
-			exampleid : exampleid,
-			value : visible,
-			studentid : studentid,
-			action : 'hide-example'
+			exampleid: exampleid,
+			value: visible,
+			studentid: studentid,
+			action: 'hide-example'
 		});
 
 	});
@@ -1134,13 +1157,13 @@
 		var studentid = block_exacomp.get_studentid() || 0;
 		var topicid = $(this).attr('topicid');
 		var val = $(this).attr('state');
-		if(studentid < 0) {
-			// no negative studentid: (all users, gesamtübersicht,...)
+		if (studentid < 0) {
+			// No negative studentid: (all users, gesamtübersicht,...)
 			studentid = 0;
 		}
 
-		if(val=='-'){
-			$(this).attr('state','+');
+		if (val == '-') {
+			$(this).attr('state', '+');
 			visible = 0;
 
 			$(this).trigger('rg2.lock');
@@ -1148,44 +1171,44 @@
 			$(this).find("i").addClass('fa-eye-slash');
 			$(this).find("i").removeClass('fa-eye');
 
-			//disable checkbox for teacher, when hiding descriptor for student
-			if(studentid > 0){
-				$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-				$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-				$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", true);
-				$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", true);
+			// Disable checkbox for teacher, when hiding descriptor for student
+			if (studentid > 0) {
+				$('input[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", true);
+				$('select[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", true);
+				$('input[name=add-grading-' + studentid + '-' + topicid + ']').prop("disabled", true);
+				$('select[name=niveau_topic-' + topicid + '-' + studentid + ']').prop("disabled", true);
 			}
 
 			var img = $("img", this);
-			img.attr('src',$(this).attr('hideurl'));
-			img.attr('alt', M.util.get_string('show','moodle'));
-			img.attr('title', M.util.get_string('show','moodle'));
+			img.attr('src', $(this).attr('hideurl'));
+			img.attr('alt', M.util.get_string('show', 'moodle'));
+			img.attr('title', M.util.get_string('show', 'moodle'));
 
-		}else{
-			$(this).attr('state','-');
+		} else {
+			$(this).attr('state', '-');
 			visible = 1;
 			$(this).trigger('rg2.unlock');
 
 			$(this).find("i").addClass('fa-eye');
 			$(this).find("i").removeClass('fa-eye-slash');
 
-			//enable checkbox for teacher, when showing descriptor for student
-			$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-			$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", false);
-			$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-			$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", false);
+			// Enable checkbox for teacher, when showing descriptor for student
+			$('input[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", false);
+			$('input[name=add-grading-' + studentid + '-' + topicid + ']').prop("disabled", false);
+			$('select[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", false);
+			$('select[name=niveau_topic-' + topicid + '-' + studentid + ']').prop("disabled", false);
 
 			var img = $("img", this);
-			img.attr('src',$(this).attr('showurl'));
-			img.attr('alt', M.util.get_string('hide','moodle'));
-			img.attr('title', M.util.get_string('hide','moodle'));
+			img.attr('src', $(this).attr('showurl'));
+			img.attr('alt', M.util.get_string('hide', 'moodle'));
+			img.attr('title', M.util.get_string('hide', 'moodle'));
 		}
 
 		block_exacomp.call_ajax({
-			topicid : topicid,
-			value : visible,
-			studentid : studentid,
-			action : 'hide-topic'
+			topicid: topicid,
+			value: visible,
+			studentid: studentid,
+			action: 'hide-topic'
 		});
 
 	});
@@ -1201,13 +1224,13 @@
 		var topicid = $(this).attr('topicid');
 		var niveauid = $(this).attr('niveauid');
 		var val = $(this).attr('state');
-		if(studentid < 0) {
-			// no negative studentid: (all users, gesamtübersicht,...)
+		if (studentid < 0) {
+			// No negative studentid: (all users, gesamtübersicht,...)
 			studentid = 0;
 		}
 
-		if(val=='-'){
-			$(this).attr('state','+');
+		if (val == '-') {
+			$(this).attr('state', '+');
 			visible = 0;
 
 			$(this).trigger('rg2.lock');
@@ -1215,54 +1238,50 @@
 			$(this).find("i").addClass('fa-eye-slash');
 			$(this).find("i").removeClass('fa-eye');
 
-			//disable checkbox for teacher, when hiding descriptor for student
-			if(studentid > 0){
-				$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-				$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-				$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", true);
-				$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", true);
+			// Disable checkbox for teacher, when hiding descriptor for student
+			if (studentid > 0) {
+				$('input[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", true);
+				$('select[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", true);
+				$('input[name=add-grading-' + studentid + '-' + topicid + ']').prop("disabled", true);
+				$('select[name=niveau_topic-' + topicid + '-' + studentid + ']').prop("disabled", true);
 			}
 
 			var img = $("img", this);
-			img.attr('src',$(this).attr('hideurl'));
-			img.attr('alt', M.util.get_string('show','moodle'));
-			img.attr('title', M.util.get_string('show','moodle'));
+			img.attr('src', $(this).attr('hideurl'));
+			img.attr('alt', M.util.get_string('show', 'moodle'));
+			img.attr('title', M.util.get_string('show', 'moodle'));
 
-		}else{
-			$(this).attr('state','-');
+		} else {
+			$(this).attr('state', '-');
 			visible = 1;
 			$(this).trigger('rg2.unlock');
 
 			$(this).find("i").addClass('fa-eye');
 			$(this).find("i").removeClass('fa-eye-slash');
 
-			//enable checkbox for teacher, when showing descriptor for student
-			$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-			$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", false);
-			$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-			$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", false);
+			// Enable checkbox for teacher, when showing descriptor for student
+			$('input[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", false);
+			$('input[name=add-grading-' + studentid + '-' + topicid + ']').prop("disabled", false);
+			$('select[name=datatopics-' + topicid + '-' + studentid + '-' + 'teacher]').prop("disabled", false);
+			$('select[name=niveau_topic-' + topicid + '-' + studentid + ']').prop("disabled", false);
 
 			var img = $("img", this);
-			img.attr('src',$(this).attr('showurl'));
-			img.attr('alt', M.util.get_string('hide','moodle'));
-			img.attr('title', M.util.get_string('hide','moodle'));
+			img.attr('src', $(this).attr('showurl'));
+			img.attr('alt', M.util.get_string('hide', 'moodle'));
+			img.attr('title', M.util.get_string('hide', 'moodle'));
 		}
 
 		block_exacomp.call_ajax({
-			topicid : topicid,
-			value : visible,
-			studentid : studentid,
-			niveauid : niveauid,
-			action : 'hide-niveau'
+			topicid: topicid,
+			value: visible,
+			studentid: studentid,
+			niveauid: niveauid,
+			action: 'hide-niveau'
 		}).done(function() {
 			location.reload();
 		});
 
 	});
-
-
-
-
 
 
 	$(document).on('click', '#hide-solution', function(event) {
@@ -1275,96 +1294,105 @@
         var exampleid = $(this).attr('exampleid');
         var val = $(this).attr('state');
 
-        if(studentid==null)
-            studentid = 0;
+        if (studentid == null) {
+ studentid = 0;
+}
 
-        if(val=='-'){
-            $(this).attr('state','+');
+        if (val == '-') {
+            $(this).attr('state', '+');
             visible = 0;
 
             var img = $("img", this);
-            img.attr('src',$(this).attr('hideurl'));
-            img.attr('alt', M.util.get_string('show_solution','block_exacomp'));
-            img.attr('title', M.util.get_string('show_solution','block_exacomp'));
+            img.attr('src', $(this).attr('hideurl'));
+            img.attr('alt', M.util.get_string('show_solution', 'block_exacomp'));
+            img.attr('title', M.util.get_string('show_solution', 'block_exacomp'));
 
-        }else{
-            $(this).attr('state','-');
+        } else {
+            $(this).attr('state', '-');
             visible = 1;
 
             var img = $("img", this);
-            img.attr('src',$(this).attr('showurl'));
-            img.attr('alt', M.util.get_string('hide_solution','block_exacomp'));
-            img.attr('title', M.util.get_string('hide_solution','block_exacomp'));
+            img.attr('src', $(this).attr('showurl'));
+            img.attr('alt', M.util.get_string('hide_solution', 'block_exacomp'));
+            img.attr('title', M.util.get_string('hide_solution', 'block_exacomp'));
 
         }
 
         block_exacomp.call_ajax({
-            exampleid : exampleid,
-            value : visible,
-            studentid : studentid,
-            action : 'hide-solution'
+            exampleid: exampleid,
+            value: visible,
+            studentid: studentid,
+            action: 'hide-solution'
         });
 
     });
 
-	$(document).on('click','[exa-type=add-example-to-schedule]', function(event) {
+	$(document).on('click', '[exa-type=add-example-to-schedule]', function(event) {
 		var exampleid = $(this).attr('exampleid');
 		var studentid = $(this).attr('studentid');
 		var groupid;
 		var courseid = block_exacomp.get_param('courseid');
 
-		if(studentid == -1){
+		if (studentid == -1) {
 			if (confirm("Möchten Sie das Beispiel wirklich bei allen Schülern auf den Planungsspeicher legen?")) {
 				block_exacomp.call_ajax({
-					exampleid : exampleid,
-					studentid : studentid,
-					action : 'add-example-to-schedule'
-				}).done(function(msg) { alert(msg) });
+					exampleid: exampleid,
+					studentid: studentid,
+					action: 'add-example-to-schedule'
+				}).done(function(msg) {
+ alert(msg);
+});
 			}
-		}else if(studentid < -1){ //add to selected group.... when group is selected, the groupid = (-1)*studentid -1   this has been done, because groups were not intended from the start
-			groupid = (-1)*studentid - 1;
+		} else if (studentid < -1) { // Add to selected group.... when group is selected, the groupid = (-1)*studentid -1   this has been done, because groups were not intended from the start
+			groupid = (-1) * studentid - 1;
 			if (confirm("Möchten Sie das Beispiel wirklich allen Schülern dieser Gruppe auf den Planungsspeicher legen?")) {
 				block_exacomp.call_ajax({
-					exampleid : exampleid,
-					groupid : groupid,
-					courseid : courseid,
-					action : 'add-example-to-schedule'
-				}).done(function(msg) { alert(msg) });
+					exampleid: exampleid,
+					groupid: groupid,
+					courseid: courseid,
+					action: 'add-example-to-schedule'
+				}).done(function(msg) {
+ alert(msg);
+});
 			}
-		}else {
+		} else {
 			block_exacomp.call_ajax({
-				exampleid : exampleid,
-				studentid : studentid,
-				action : 'add-example-to-schedule'
-			}).done(function(msg) { alert(msg) });
+				exampleid: exampleid,
+				studentid: studentid,
+				action: 'add-example-to-schedule'
+			}).done(function(msg) {
+ alert(msg);
+});
 		}
 
 		event.preventDefault();
 		return false;
 	});
 
-	$(document).on('click','[exa-type=allow-resubmission]', function(event) {
+	$(document).on('click', '[exa-type=allow-resubmission]', function(event) {
 		var exampleid = $(this).attr('exampleid');
 		var studentid = $(this).attr('studentid');
 
 
 		block_exacomp.call_ajax({
-			exampleid : exampleid,
-			studentid : studentid,
-			action : 'allow-resubmission'
-		}).done(function(msg) { alert(msg) });
+			exampleid: exampleid,
+			studentid: studentid,
+			action: 'allow-resubmission'
+		}).done(function(msg) {
+ alert(msg);
+});
 
 		event.preventDefault();
 		return false;
 	});
 
-	$(document).on('click','[exa-type=send-message-to-course]', function(event) {
+	$(document).on('click', '[exa-type=send-message-to-course]', function(event) {
 
 		message = $('textarea[id=message]').val();
 
 		block_exacomp.call_ajax({
-			message : message,
-			action : 'send-message-to-course'
+			message: message,
+			action: 'send-message-to-course'
 		}).done(block_exacomp.popup_close());
 
 		return false;
@@ -1379,39 +1407,40 @@
       var studentid = $(this).attr('studentid');
 
       block_exacomp.call_ajax({
-        descrid : descrid,
-        courseid : courseid,
-        studentid : studentid,
-        action : 'dismiss_gradingisold_warning'
+        descrid: descrid,
+        courseid: courseid,
+        studentid: studentid,
+        action: 'dismiss_gradingisold_warning'
       }).done(function() {
         location.reload();
       });
     }
   });
 
-	$(window).on('beforeunload', function (){
+	$(window).on('beforeunload', function() {
 		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
-				|| Object.keys(examples).length > 0)
-			return M.util.get_string('unload_notice', 'block_exacomp');
+				|| Object.keys(examples).length > 0) {
+ return M.util.get_string('unload_notice', 'block_exacomp');
+}
 	});
 
 	block_exacomp.delete_descriptor = function(id) {
 		block_exacomp.call_ajax({
 			id: id,
-			action : 'delete-descriptor'
+			action: 'delete-descriptor'
 		}).done(function() {
 			location.reload();
 		});
-	}
+	};
 
 	block_exacomp.delete_crosssubj = function(id) {
 		block_exacomp.call_ajax({
-			crosssubjid : id,
-			action : 'delete-crosssubject'
+			crosssubjid: id,
+			action: 'delete-crosssubject'
 		}).done(function() {
 			location.reload();
 		});
-	}
+	};
 
 })(jQueryExacomp);
 
