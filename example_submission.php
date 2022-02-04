@@ -141,7 +141,7 @@ if ($formdata = $form->get_data()) {
     $competences = $DB->get_records('block_exacompdescrexamp_mm', ['exampid' => $exampleid]);
     foreach ($competences as $comp) {
         if ($comp->descrid) {
-            $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
+            $DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('compid' => $comp->descrid, 'comptype' => 0, 'eportfolioitem' => 1, 'activityid' => $itemid));
         }
     }
 

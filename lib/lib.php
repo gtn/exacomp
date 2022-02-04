@@ -5836,7 +5836,7 @@ function block_exacomp_perform_question_grading(){
     }
 
 
-    $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid, max(attempts.timemodified)
+    $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid, max(attempts.timemodified) as timemodified
             FROM {question_attempts} attempts
             JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
             WHERE step.sequencenumber = 2
