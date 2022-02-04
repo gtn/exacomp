@@ -3964,6 +3964,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2021122200, 'exacomp');
     }
+    if ($oldversion < 2022020400) {
+        $table = new xmldb_table('block_exacompdescrquest_mm');
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2022020400, 'exacomp');
+    }
 
     /*
      * insert new upgrade scripts before this comment section

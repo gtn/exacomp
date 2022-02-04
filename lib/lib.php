@@ -5848,10 +5848,14 @@ function block_exacomp_perform_question_grading(){
 
     foreach($attempts as $attempt){
             foreach($descquests as $descquest){
-                if($attempt->questionid == $descquest->questid){
-                    if($descquest->courseid != -1){
-                        $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
-                        block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
+                if($attempt->timemodified > $descquest->timemodified){
+                    if($attempt->questionid == $descquest->questid){
+                        if($descquest->courseid != -1){
+                            $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
+                            block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
+                            $descquest->timemodified = $attempt->timemodified;
+                            $DB->update_record("block_exacompdescrquest_mm", $descquest);
+                        }
                     }
                 }
             }
