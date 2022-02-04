@@ -1970,6 +1970,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		'value' => $value,
 		'evalniveauid' => $evalniveauid,
 		'reviewerid' => $USER->id,
+        'timestamp' => time(),
 	], $savegradinghistory);
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
@@ -5852,6 +5853,11 @@ function block_exacomp_perform_question_grading(){
                     if($attempt->questionid == $descquest->questid){
                         if($descquest->courseid != -1){
                             $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
+
+                            if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid)) {
+                                block_exacomp_save_additional_grading_for_comp($descquest->courseid, $descquest->descrid, $attempt->userid, block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+                            }
+
                             block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
                             $descquest->timemodified = $attempt->timemodified;
                             $DB->update_record("block_exacompdescrquest_mm", $descquest);
