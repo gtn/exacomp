@@ -77,6 +77,14 @@ class block_exacomp_observer
     public static function course_module_completion_updated(\core\event\course_module_completion_updated $event)
     {
         global $CFG, $DB, $USER;
+
+        if(block_exacomp_is_teacher($event->courseid, $USER->id)){
+            $admingrading = false;
+        }else{
+            $admingrading = true; // if the student triggers this event, the grading should be done by the admin
+        }
+
+
         // If this course does not use moodle activities all queries can just be skipped entirely. Also the global admin setting for using autotest must be set.
         if (get_config('exacomp', 'autotest') && block_exacomp_get_settings_by_course($event->courseid)->uses_activities) {
             $topics = array();
@@ -101,12 +109,9 @@ class block_exacomp_observer
             $examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES,array('activityid' => $event->contextinstanceid, 'courseid' => $event->courseid), '', 'id');
 
             // now grade those topics, descriptors and examples
-            // TODO: Problem: The userid is the id of the student that marked it as done... the student is not allowed to grade himself ---> do it as admin, like in cron?
-            block_exacomp_assign_competences($event->courseid, $event->userid, $topics, $descriptors, $examples, null, null, null, BLOCK_EXACOMP_ROLE_SYSTEM);
+            // TODO: ROLE
+            block_exacomp_assign_competences($event->courseid, $event->userid, $topics, $descriptors, $examples, null, null, null, $admingrading);
             //block_exacomp_assign_competences($event->courseid, $event->userid, $topics, $descriptors, null, true, $maxGrade, $studentGradeResult); TODO: quizzes can have more specific grading
-
-            echo "asdf";
-
 
             // For this activity: 1. check if the related example should be visible,
             // 2. check if the activity is completed and set the corresponding competence or example as gained (depending on assign/relate)
