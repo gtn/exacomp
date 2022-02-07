@@ -76,18 +76,36 @@ class block_exacomp_observer
      */
     public static function course_module_completion_updated(\core\event\course_module_completion_updated $event)
     {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
         // If this course does not use moodle activities all queries can just be skipped entirely. Also the global admin setting for using autotest must be set.
         if (get_config('exacomp', 'autotest') && block_exacomp_get_settings_by_course($event->courseid)->uses_activities) {
+            $topics = array();
+            $descriptors = array();
+            $examples = array();
+
             // check if this activity is related or assigned to an exacomp activity. If not, nothing has to be done.
             // relating activities to exacomp competencies creates examples which have an activityid field
             // assigning activities to exacomp competencies creates entries in BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY
-            // assigning specifically quizzes to exacomp competencies creates entries in BLOCK_EXACOMP_DB_AUTOTESTASSIGN
-            // TODO: check if all tables are still needed or if simplification could be possible
+
+            // if the old method is active, there can be assigned topics and descriptors
             if(block_exacomp_use_old_activities_method()){
+                // get all assigned topics and descriptors for this activity
+                // contextinstanceid is the coursemoduleid
+                $descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
+                $topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
+
 
             }
 
+            // the new method is always active: there can be examples with this activityid
+            $examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES,array('activityid' => $event->contextinstanceid, 'courseid' => $event->courseid), '', 'id');
+
+            // now grade those topics, descriptors and examples
+            // TODO: Problem: The userid is the id of the student that marked it as done... the student is not allowed to grade himself ---> do it as admin, like in cron?
+            block_exacomp_assign_competences($event->courseid, $event->userid, $topics, $descriptors, $examples, null, null, null, BLOCK_EXACOMP_ROLE_SYSTEM);
+            //block_exacomp_assign_competences($event->courseid, $event->userid, $topics, $descriptors, null, true, $maxGrade, $studentGradeResult); TODO: quizzes can have more specific grading
+
+            echo "asdf";
 
 
             // For this activity: 1. check if the related example should be visible,

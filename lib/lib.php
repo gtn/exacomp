@@ -80,8 +80,9 @@ const BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION = 'block_exacompexampannotation';
 /**
  * PLUGIN ROLES
  */
-const BLOCK_EXACOMP_ROLE_TEACHER = 1;
 const BLOCK_EXACOMP_ROLE_STUDENT = 0;
+const BLOCK_EXACOMP_ROLE_TEACHER = 1;
+const BLOCK_EXACOMP_ROLE_SYSTEM = 2; // used for automatic grading
 
 const BLOCK_EXACOMP_WS_ROLE_TEACHER = 1;
 const BLOCK_EXACOMP_WS_ROLE_STUDENT = 2;
@@ -1962,7 +1963,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	if ($role == BLOCK_EXACOMP_ROLE_STUDENT && $userid != $USER->id) {
 		return -1;
 	}
-	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+ 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_require_teacher($courseid);
 	}
 
@@ -5780,16 +5781,16 @@ function block_exacomp_perform_auto_test() {
 	return true;
 }
 
-function block_exacomp_assign_competences($courseid, $studentid, $topics, $descriptors, $examples, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null) {
+function block_exacomp_assign_competences($courseid, $studentid, $topics, $descriptors, $examples, $userrealvalue = false, $maxGrade = null, $studentGradeResult = null, $role = BLOCK_EXACOMP_ROLE_TEACHER) {
     if (isset($descriptors)) {
         $grading_scheme = block_exacomp_get_assessment_comp_scheme($courseid);
         foreach ($descriptors as $descriptor) {
             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
-                block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), $comptype = 0);
+                block_exacomp_save_additional_grading_for_comp($courseid, $descriptor->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_DESCRIPTOR, -1, $role);
             }
             //block_exacomp_set_user_competence($studentid, $descriptor->compid, 0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
+            block_exacomp_set_user_competence($studentid, $descriptor->compid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $courseid, $role, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
             mtrace("set competence ".$descriptor->compid." for user ".$studentid.'<br>');
         }
     }
@@ -5798,11 +5799,11 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
         foreach ($topics as $topic) {
             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_TOPIC, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_EXAMPLE);
+                block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_TOPIC, -1, $role);
             }
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $topic->compid, BLOCK_EXACOMP_TYPE_TOPIC, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
+            block_exacomp_set_user_competence($studentid, $topic->compid, BLOCK_EXACOMP_TYPE_TOPIC, $courseid, $role, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
             mtrace("set topic competence ".$topic->compid." for user ".$studentid.'<br>');
 
         }
@@ -5812,11 +5813,11 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
         foreach ($examples as $example) {
             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid)) {
                 //block_exacomp_save_additional_grading_for_comp($courseid, $topic->compid, $studentid, \block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
-                block_exacomp_save_additional_grading_for_comp($courseid, $example->id, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_EXAMPLE);
+                block_exacomp_save_additional_grading_for_comp($courseid, $example->id, $studentid, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid), BLOCK_EXACOMP_TYPE_EXAMPLE, -1, $role);
             }
 
             //block_exacomp_set_user_competence($studentid, $topic->compid, 1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
-            block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
+            block_exacomp_set_user_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid, $role, block_exacomp_get_assessment_max_good_value($grading_scheme, $userrealvalue, $maxGrade, $studentGradeResult, $courseid));
 
             block_exacomp_allow_resubmission($studentid,$example->id,$courseid); // 23.11.2021 this is a quickfix for allowing self grading of students if the example has been graded by auto_test
 
@@ -9304,7 +9305,7 @@ function block_exacomp_get_cm_from_cmid($cmid) {
  * @param unknown $additionalinfo
  * @param unknown $comptype
  */
-function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, $subjectid = -1) {
+function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, $subjectid = -1, $role = null) {
 	global $DB, $USER;
 
 	if (is_string($additionalinfo)) {
@@ -9346,7 +9347,9 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             break;
     }
     $context = context_course::instance($courseid);
-    $role = block_exacomp_is_teacher($context) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT;
+    if(!$role){
+        $role = block_exacomp_is_teacher($context) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT;
+    }
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 	$record = block_exacomp_get_comp_eval($courseid, $role, $studentid, $comptype, $descriptorid);
 
