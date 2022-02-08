@@ -1964,20 +1964,20 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	}
     if ($role == BLOCK_EXACOMP_ROLE_TEACHER && !$admingrading) {
         block_exacomp_require_teacher($courseid);
-        $reviewerid = $USER->id;
+        $revieweruser = $USER;
     }else{
-        $reviewerid = get_admin()->id;
+        $revieweruser = get_admin();
     }
 
 	block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $compid, [
 		'value' => $value,
 		'evalniveauid' => $evalniveauid,
-		'reviewerid' => $reviewerid,
+		'reviewerid' => $revieweruser->id,
         'timestamp' => time(),
 	], $savegradinghistory);
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
-		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $compid, $comptype, @$options['notification_customdata']);
+		block_exacomp_send_grading_notification( $revieweruser, $DB->get_record('user', array('id' => $userid)), $courseid, $compid, $comptype, @$options['notification_customdata']);
         if($subjectid == -1){
             $subject = block_exacomp_get_subject_by_descriptorid($compid);
         }else{

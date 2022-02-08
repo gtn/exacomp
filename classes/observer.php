@@ -18,6 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 defined('MOODLE_INTERNAL') || die();
+require_once __DIR__ . './../inc.php'; // otherwise the course_module_completion_updated does not have access to the exacomp functions in some cases
 
 /**
  * Event observer for block_exacomp.
@@ -34,6 +35,7 @@ class block_exacomp_observer
     public static function course_created(\core\event\course_created $event)
     {
         global $CFG, $DB;
+
 
         $course = $event->get_record_snapshot('course', $event->objectid);
         $addto = get_config('exacomp', 'addblock_to_new_course');
@@ -78,9 +80,9 @@ class block_exacomp_observer
     {
         global $CFG, $DB, $USER;
 
-        if(block_exacomp_is_teacher($event->courseid, $USER->id)){
+        if (block_exacomp_is_teacher($event->courseid, $USER->id)) {
             $admingrading = false;
-        }else{
+        } else {
             $admingrading = true; // if the student triggers this event, the grading should be done by the admin
         }
 
@@ -96,28 +98,50 @@ class block_exacomp_observer
             // assigning activities to exacomp competencies creates entries in BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY
 
             // if the old method is active, there can be assigned topics and descriptors
-            if(block_exacomp_use_old_activities_method()){
+            if (block_exacomp_use_old_activities_method()) {
                 // get all assigned topics and descriptors for this activity
                 // contextinstanceid is the coursemoduleid
-                $descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
-                $topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
+                $descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
+                $topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
 
 
             }
-
             // the new method is always active: there can be examples with this activityid
-            $examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES,array('activityid' => $event->contextinstanceid, 'courseid' => $event->courseid), '', 'id');
+            $examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $event->contextinstanceid, 'courseid' => $event->courseid), '', 'id');
+
 
             // now grade those topics, descriptors and examples
-            // TODO: ROLE
-            block_exacomp_assign_competences($event->courseid, $event->userid, $topics, $descriptors, $examples, null, null, null, $admingrading);
-            //block_exacomp_assign_competences($event->courseid, $event->userid, $topics, $descriptors, null, true, $maxGrade, $studentGradeResult); TODO: quizzes can have more specific grading
-
-            // For this activity: 1. check if the related example should be visible,
-            // 2. check if the activity is completed and set the corresponding competence or example as gained (depending on assign/relate)
-            // 3. NO NEED to update any timestamps in the autotestassign table, since it will never be checked anyways (this field is depreacted when not using tasks anymore but events instead)
-
-
+            $userealvalue = false;
+            $maxgrade = null;
+            $studentgraderesult = null;
+            // get completion info for the activity
+            $activity_completion = $event->get_record_snapshot('course_modules_completion', $event->objectid);
+            // get the module, then check if it is a quiz. If it is a quiz, get the quiz-grading, if not, just grade with max value.
+            $quiz_module = $DB->get_record('course_modules', array('id' => $activity_completion->coursemoduleid, 'module' => 17)); // 17 is the id of the module "quiz"
+            if ($quiz_module) {
+                $quiz = $DB->get_record('quiz', array('id' => $quiz_module->instance));
+                $quiz_grade = $DB->get_record('quiz_grades', array('quiz' => $quiz->id, 'userid' => $event->relateduserid));
+                if ($quiz_grade) {
+                    $userealvalue = true;
+                    $maxgrade = $quiz->grade;
+                    $studentgraderesult = $quiz_grade->grade;
+                }
+            }
+            // TODO if needed some day: the same can be done for anything else with a grade... e.g. assignments can have grades ==> get assignment, get the grade, set maxgrad and studengraderesult and userealvalue
+            if ($activity_completion && ($activity_completion->completionstate == COMPLETION_COMPLETE || $activity_completion->completionstate == COMPLETION_COMPLETE_PASS)) {
+                block_exacomp_assign_competences($event->courseid, $event->relateduserid, $topics, $descriptors, $examples, $userealvalue, $maxgrade, $studentgraderesult, $admingrading);
+                // $event->relateduserid is the id of the student that is graded. $event->userid is the id of the user that triggered the event
+            }
+            //---------------------------- Grading is done. Now: Check if examples that has been created by relating an activity should be visible
+            // This activity can possibly lead to other activities being accessible ==> other examples that have to have their visibility updated
+            $modinfo = get_fast_modinfo($event->courseid, $event->relateduserid);
+            $modnamesused = $modinfo->get_used_module_names();
+            $mods = $modinfo->get_cms();
+            $sections = $modinfo->get_section_info_all();
+            // I need to call those lines because otherwise not all info is present
+            // Then, all the info I need is available in one section
+            // Could be made more perforamnt probably
+            $cms_availability = $sections[0]->modinfo->cms;
 
         }
         return true;
