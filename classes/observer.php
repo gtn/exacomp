@@ -86,7 +86,6 @@ class block_exacomp_observer
             $admingrading = true; // if the student triggers this event, the grading should be done by the admin
         }
 
-
         // If this course does not use moodle activities all queries can just be skipped entirely. Also the global admin setting for using autotest must be set.
         if (get_config('exacomp', 'autotest') && block_exacomp_get_settings_by_course($event->courseid)->uses_activities) {
             $topics = array();
@@ -103,12 +102,9 @@ class block_exacomp_observer
                 // contextinstanceid is the coursemoduleid
                 $descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
                 $topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $event->contextinstanceid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
-
-
             }
             // the new method is always active: there can be examples with this activityid
             $examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $event->contextinstanceid, 'courseid' => $event->courseid), '', 'id');
-
 
             // now grade those topics, descriptors and examples
             $userealvalue = false;
@@ -132,17 +128,6 @@ class block_exacomp_observer
                 block_exacomp_assign_competences($event->courseid, $event->relateduserid, $topics, $descriptors, $examples, $userealvalue, $maxgrade, $studentgraderesult, $admingrading);
                 // $event->relateduserid is the id of the student that is graded. $event->userid is the id of the user that triggered the event
             }
-            //---------------------------- Grading is done. Now: Check if examples that has been created by relating an activity should be visible
-            // This activity can possibly lead to other activities being accessible ==> other examples that have to have their visibility updated
-            $modinfo = get_fast_modinfo($event->courseid, $event->relateduserid);
-            $modnamesused = $modinfo->get_used_module_names();
-            $mods = $modinfo->get_cms();
-            $sections = $modinfo->get_section_info_all();
-            // I need to call those lines because otherwise not all info is present
-            // Then, all the info I need is available in one section
-            // Could be made more perforamnt probably
-            $cms_availability = $sections[0]->modinfo->cms;
-
         }
         return true;
     }
