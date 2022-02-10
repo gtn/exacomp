@@ -804,7 +804,6 @@ class provider implements
         }
         foreach ($exacompcoursescontexts as $context) {
             $courseid = $context->instanceid;
-            $DB->delete_records('block_exacompautotestassign', ['userid' => $userid]);
             // block_exacompcmassign
             // does not need to delete, because this data used only for comparing old<->new data
             // real data is deleting with quiz plugin
@@ -848,7 +847,6 @@ class provider implements
         $params = $inParams;
 
         $select = " userid {$inSql}";
-        $DB->delete_records_select('block_exacompautotestassign', $select, $params);
         $DB->delete_records_select('block_exacompwsdata', $select, $params);
         $DB->delete_records_select('block_exacompprofilesettings', $select, $params);
 

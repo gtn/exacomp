@@ -70,7 +70,6 @@ const BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
 const BLOCK_EXACOMP_DB_EVALUATION_NIVEAU = 'block_exacompeval_niveau';
 const BLOCK_EXACOMP_DB_TOPICVISIBILITY = 'block_exacomptopicvisibility';
 const BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY = 'block_exacompsolutvisibility';
-const BLOCK_EXACOMP_DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
 const BLOCK_EXACOMP_DB_IMPORTTASKS = 'block_exacompimporttasks';
 const BLOCK_EXACOMP_DB_GLOBALGRADINGS = 'block_exacompglobalgradings';
 const BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION = 'block_exacompdescrquest_mm';
@@ -5598,6 +5597,7 @@ function block_exacomp_update_related_examples_visibilities($courseid, $studenti
 /**
  * This function checkes for finished quizes that are associated with competences and automatically gains them if the
  * coresponding setting is activated.
+ * deprecated since 10.02.2022 version 2022021000
  */
 function block_exacomp_perform_auto_test() {
 	global $CFG, $DB;
@@ -5635,13 +5635,7 @@ function block_exacomp_perform_auto_test() {
 
 		foreach ($students as $student) {
             $modinfo = get_fast_modinfo($courseid, $student->id);
-            $modnamesused = $modinfo->get_used_module_names();
-            $mods = $modinfo->get_cms();
-            $sections = $modinfo->get_section_info_all();
-            // I need to call those lines because otherwise not all info is present
-            // Then, all the info I need is available in one section
-            // Could be made more perforamnt probably
-            $cms_availability = $sections[0]->modinfo->cms;
+            $cms_availability = $modinfo->cms;
 
             $changedquizes = array();
 			foreach ($tests as $test) {
@@ -5698,100 +5692,100 @@ function block_exacomp_perform_auto_test() {
             }
 
 			// activities with restrict access   // TODO: why is this needed RW 2021.09.06
-			if ($CFG->enableavailability && count($cms) > 0) {
-                foreach ($cms as $cm) {
-                    if ($cm->availability && block_exacomp_cmodule_is_autocompetence($cm->id)) {
-                        /** course_modinfo $mod_info */
-                        if (array_key_exists($cm->id, $mod_info->cms)) {
-                            $modInfo = $mod_info->cms[$cm->id];
-                        } else {
-                            continue;
-                        }
-
-                        $info = new \core_availability\info_module($modInfo);
-                        $tree = new \core_availability\tree(json_decode($cm->availability));
-                        $result = $tree->check_available(false, $info, true, $student->id); // TODO: here an error occurs in certain situations (using autotest and tick setting in the restricted access tab of an activity)
-                        $information = $tree->get_result_information($info, $result);
-                        if ($result->is_available() && !$information) { // the user have got access to this module
-                            $relatedData = array();
-                            $existing = $DB->get_record('block_exacompcmassign',
-                                    [   'coursemoduleid' => $cm->id,
-                                        'userid' => $student->id
-                                    ], '*');
-                            // the value will be changed if:
-                            // - the timemodified of root activity will be changed
-                            // - the timemodified at least one of child activities will be changed
-                            // - the timemodified of fixed value for student<->activity is changed (now it is only quizes)
-                            // is it ok?
-
-                            //$modIst = get_coursemodule_from_instance();
-
-                            // root activity timemodified
-                            $rootTs = $DB->get_field_sql('SELECT DISTINCT t.timemodified as timemodified
-                                                            FROM {'.$cm->modname.'} t
-                                                            WHERE t.id = ? ', [$cm->instance]);
-                            $relatedData['roottimemodified'] = $rootTs;
-                            // availability settings
-                            $relatedData['availability'] = json_decode($cm->availability);
-                            // data of related activities
-                            $relData = array();
-                            $maxResults = 0;
-                            $studentResults = 0;
-                            foreach($relatedData['availability']->c as $relObj) {
-                                $modparam = $DB->get_record_sql('SELECT DISTINCT cm.instance as modid, m.name as modname
-                                                            FROM {course_modules} cm
-                                                            JOIN {modules} m ON cm.module = m.id
-                                                            WHERE cm.id = ? ', [$relObj->id]);
-                                if ($modparam) {
-                                    // the timemodified gets from last saved student answer or from DB if the user is not changed the grading
-                                    if (!array_key_exists($modparam->modid, $changedquizes)) {
-                                        $modts = $DB->get_field_sql('SELECT DISTINCT t.timemodified as timemodified
-                                                            FROM {'.$modparam->modname.'} t
-                                                            WHERE t.id = ? ', [$modparam->modid]);
-                                    } else {
-                                        $modts = $changedquizes[$modparam->modid];
-                                    }
-                                    $relObj->timemodified = $modts;
-                                    $relatedData[$relObj->id] = array();
-                                    $relatedData[$relObj->id]['timemodified'] = $relObj->timemodified;
-                                    // for calculate average (now only for quizes): sum of max grades and sum of student results
-                                    if ($modparam->modname == 'quiz') {
-                                        $studentResult = $DB->get_field('quiz_grades', 'grade', array('quiz' => $modparam->modid, 'userid' => $student->id));
-                                        if ($studentResult) {
-                                            $studentResults += $studentResult;
-                                        }
-                                        $maxResult = $DB->get_field('quiz', 'grade', array('id' => $modparam->modid));
-                                        if ($maxResult) {
-                                            $maxResults += $maxResult;
-                                        }
-                                    }
-                                }
-                            }
-                            $datatoDB = array();
-                            $datatoDB['coursemoduleid'] = $cm->id;
-                            $datatoDB['userid'] = $student->id;
-                            $datatoDB['timemodified'] = $rootTs;
-                            $datatoDB['relateddata'] = serialize($relatedData);
-                            if (!$existing ||
-                                    ($existing && unserialize($existing->relateddata) != unserialize($datatoDB['relateddata']))) {
-                                // data was changed - save grading to competences!
-                                if (block_exacomp_use_old_activities_method()) {
-                                    block_exacomp_assign_competences($courseid, $student->id, $cm->topics, $cm->descriptors, null, true, $maxResults, $studentResults);
-                                } else {
-                                    block_exacomp_assign_competences($courseid, $student->id, null, null, $cm->examples, true, $maxResults, $studentResults);
-                                }
-                            } else {
-                                // data was not changed. nothing to do
-                            }
-                            $DB->delete_records('block_exacompcmassign',
-                                    ['coursemoduleid' => $cm->id, 'userid' => $student->id]);
-                            $DB->insert_record('block_exacompcmassign', $datatoDB);
-                        }
-                    }
-
-                }
-
-            }
+//			if ($CFG->enableavailability && count($cms) > 0) {
+//                foreach ($cms as $cm) {
+//                    if ($cm->availability && block_exacomp_cmodule_is_autocompetence($cm->id)) {
+//                        /** course_modinfo $mod_info */
+//                        if (array_key_exists($cm->id, $mod_info->cms)) {
+//                            $modInfo = $mod_info->cms[$cm->id];
+//                        } else {
+//                            continue;
+//                        }
+//
+//                        $info = new \core_availability\info_module($modInfo);
+//                        $tree = new \core_availability\tree(json_decode($cm->availability));
+//                        $result = $tree->check_available(false, $info, true, $student->id); // TODO: here an error occurs in certain situations (using autotest and tick setting in the restricted access tab of an activity)
+//                        $information = $tree->get_result_information($info, $result);
+//                        if ($result->is_available() && !$information) { // the user have got access to this module
+//                            $relatedData = array();
+//                            $existing = $DB->get_record('block_exacompcmassign',
+//                                    [   'coursemoduleid' => $cm->id,
+//                                        'userid' => $student->id
+//                                    ], '*');
+//                            // the value will be changed if:
+//                            // - the timemodified of root activity will be changed
+//                            // - the timemodified at least one of child activities will be changed
+//                            // - the timemodified of fixed value for student<->activity is changed (now it is only quizes)
+//                            // is it ok?
+//
+//                            //$modIst = get_coursemodule_from_instance();
+//
+//                            // root activity timemodified
+//                            $rootTs = $DB->get_field_sql('SELECT DISTINCT t.timemodified as timemodified
+//                                                            FROM {'.$cm->modname.'} t
+//                                                            WHERE t.id = ? ', [$cm->instance]);
+//                            $relatedData['roottimemodified'] = $rootTs;
+//                            // availability settings
+//                            $relatedData['availability'] = json_decode($cm->availability);
+//                            // data of related activities
+//                            $relData = array();
+//                            $maxResults = 0;
+//                            $studentResults = 0;
+//                            foreach($relatedData['availability']->c as $relObj) {
+//                                $modparam = $DB->get_record_sql('SELECT DISTINCT cm.instance as modid, m.name as modname
+//                                                            FROM {course_modules} cm
+//                                                            JOIN {modules} m ON cm.module = m.id
+//                                                            WHERE cm.id = ? ', [$relObj->id]);
+//                                if ($modparam) {
+//                                    // the timemodified gets from last saved student answer or from DB if the user is not changed the grading
+//                                    if (!array_key_exists($modparam->modid, $changedquizes)) {
+//                                        $modts = $DB->get_field_sql('SELECT DISTINCT t.timemodified as timemodified
+//                                                            FROM {'.$modparam->modname.'} t
+//                                                            WHERE t.id = ? ', [$modparam->modid]);
+//                                    } else {
+//                                        $modts = $changedquizes[$modparam->modid];
+//                                    }
+//                                    $relObj->timemodified = $modts;
+//                                    $relatedData[$relObj->id] = array();
+//                                    $relatedData[$relObj->id]['timemodified'] = $relObj->timemodified;
+//                                    // for calculate average (now only for quizes): sum of max grades and sum of student results
+//                                    if ($modparam->modname == 'quiz') {
+//                                        $studentResult = $DB->get_field('quiz_grades', 'grade', array('quiz' => $modparam->modid, 'userid' => $student->id));
+//                                        if ($studentResult) {
+//                                            $studentResults += $studentResult;
+//                                        }
+//                                        $maxResult = $DB->get_field('quiz', 'grade', array('id' => $modparam->modid));
+//                                        if ($maxResult) {
+//                                            $maxResults += $maxResult;
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            $datatoDB = array();
+//                            $datatoDB['coursemoduleid'] = $cm->id;
+//                            $datatoDB['userid'] = $student->id;
+//                            $datatoDB['timemodified'] = $rootTs;
+//                            $datatoDB['relateddata'] = serialize($relatedData);
+//                            if (!$existing ||
+//                                    ($existing && unserialize($existing->relateddata) != unserialize($datatoDB['relateddata']))) {
+//                                // data was changed - save grading to competences!
+//                                if (block_exacomp_use_old_activities_method()) {
+//                                    block_exacomp_assign_competences($courseid, $student->id, $cm->topics, $cm->descriptors, null, true, $maxResults, $studentResults);
+//                                } else {
+//                                    block_exacomp_assign_competences($courseid, $student->id, null, null, $cm->examples, true, $maxResults, $studentResults);
+//                                }
+//                            } else {
+//                                // data was not changed. nothing to do
+//                            }
+//                            $DB->delete_records('block_exacompcmassign',
+//                                    ['coursemoduleid' => $cm->id, 'userid' => $student->id]);
+//                            $DB->insert_record('block_exacompcmassign', $datatoDB);
+//                        }
+//                    }
+//
+//                }
+//
+//            }
 		}
 	}
 

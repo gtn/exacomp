@@ -38,15 +38,6 @@ $tasks = array(
 		'month' => '*',
 		'dayofweek' => '*',
 	),
-	array(
-		'classname' => 'block_exacomp\task\autotest',
-		'blocking' => 0,
-		'minute' => '*',
-		'hour' => '*',
-		'day' => '*',
-		'month' => '*',
-		'dayofweek' => '*',
-	),
     array(
         'classname' => 'block_exacomp\task\komettranslator_to_exacomp',
         'blocking' => 0,
