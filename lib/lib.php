@@ -8125,6 +8125,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 			ORDER BY s.id";
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week, $USER->id));
     } else {
+        block_exacomp_update_related_examples_visibilities($courseid, $studentid);
         $sql = "SELECT DISTINCT s.id, s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
@@ -8132,7 +8133,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				e.schedule_marker, e.activityid, e.is_teacherexample
 			FROM {block_exacompschedule} s
 			  JOIN {block_exacompexamples} e ON e.id = s.exampleid
-			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = 0 AND evis.visible = 1 AND evis.courseid = ?
+			  JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evis ON evis.exampleid = e.id AND evis.studentid = ? AND evis.visible = 1 AND evis.courseid = ?
 			    LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid AND eval.courseid = s.courseid
 			WHERE s.studentid = ? AND s.deleted = 0 AND (
 				-- noch nicht auf einen tag geleg
@@ -8141,7 +8142,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
 			)
 			ORDER BY s.id";
-        $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
+        $entries = $DB->get_records_sql($sql, array($studentid, $courseid, $studentid, $beginning_of_week));
     }
 	return $entries;
 }

@@ -3282,6 +3282,10 @@ class block_exacomp_external extends external_api {
             $userid = $USER->id;
         }
 
+        if($userid != 0){
+            block_exacomp_update_related_examples_visibilities($courseid,$userid);
+        }
+
         $return = new stdClass();
         $return->topics = static::dakora_get_topics_by_course_common($courseid, false, $userid, $groupid);
         $return->activitylist = static::return_key_value(block_exacomp_list_possible_activities_for_example($courseid));

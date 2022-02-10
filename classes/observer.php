@@ -128,6 +128,9 @@ class block_exacomp_observer
                 block_exacomp_assign_competences($event->courseid, $event->relateduserid, $topics, $descriptors, $examples, $userealvalue, $maxgrade, $studentgraderesult, $admingrading);
                 // $event->relateduserid is the id of the student that is graded. $event->userid is the id of the user that triggered the event
             }
+            block_exacomp_update_related_examples_visibilities($event->courseid, $event->relateduserid); // update the visibilities
+            // The visibilities are instantly updated if a user e.g. solves a series of assignments that depend on each other.
+            // If the dependency is per date, then the visibilities have to be updated at other places, e.g. when loading examples or in a task for the cronjob
         }
         return true;
     }
