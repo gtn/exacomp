@@ -750,11 +750,6 @@ class block_exacomp_simple_service {
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 
-        // set some language-dependent strings (optional)
-        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-            require_once(dirname(__FILE__).'/lang/eng.php');
-            $pdf->setLanguageArray($l);
-        }
 
         // ---------------------------------------------------------
 
@@ -852,9 +847,25 @@ EOD;
         // ---------------------------------------------------------
 
         //Close and output PDF document
-        $pdf->Output('diwiPass.pdf', 'D');
-    }
+        //$pdf->Output('diwiPass.pdf', 'D');
+        $attachment = $pdf->Output('filename.pdf', 'S');
 
+        global $CFG;
+        require_once $CFG->dirroot.'/lib/phpmailer/moodle_phpmailer.php';
+        $mailer = new moodle_phpmailer();
+
+        $mailer->AddReplyTo($email, 'Reply To');
+        $mailer->SetFrom($email, 'Sent From');
+        $mailer->AddAddress($email, 'Send To');
+        $mailer->Subject = 'Message with PDF';
+        $mailer->AltBody = "To view the message, please use an HTML compatible email viewer";
+        $mailer->MsgHTML('<p>Message contents</p>');
+        if ($attachment) {
+            $mailer->AddStringAttachment($attachment, 'Rechnung.pdf');
+        }
+        $mailer->Send();
+
+    }
 
 
 }
