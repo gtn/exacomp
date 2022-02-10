@@ -3974,7 +3974,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2022020400, 'exacomp');
     }
+    if ($oldversion < 2022021000) {
 
+        // Define field userid to be added to block_exacompprofilesettings
+        $table = new xmldb_table('block_exacompsettings');
+        $field = new xmldb_field('diwiordernumber', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
+
+        // Conditionally launch add field userid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_block_savepoint(true, 2022021000, 'exacomp');
+    }
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

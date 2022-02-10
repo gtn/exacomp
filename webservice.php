@@ -682,6 +682,179 @@ class block_exacomp_simple_service {
 
     }
 
+    static function diggr_create_bill() {
+
+        global $CFG, $DB;
+        $wstoken = required_param('wstoken', PARAM_ALPHANUM);
+
+        $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
+        $userid = $wsDataHandler->getParam('userid');
+        $firstname = $wsDataHandler->getParam('firstname');
+        $lastname = $wsDataHandler->getParam('lastname');
+        $email = $wsDataHandler->getParam('email');
+        $company = $wsDataHandler->getParam('company');
+        $uid = $wsDataHandler->getParam('uid');
+        $telephone = $wsDataHandler->getParam('telephone');
+        $street = $wsDataHandler->getParam('street');
+        $place = $wsDataHandler->getParam('place');
+        $codes = $wsDataHandler->getParam('codes');
+        $single_price = $wsDataHandler->getParam('single_price');
+        $total_price = $wsDataHandler->getParam('total_price');
+
+//test
+        /*
+        $firstname = "Fabio";
+        $lastname = "Pernegger";
+        $email = "fpernegger@gtn-solutions.com";
+        $company = "GTN-Solutions";
+        $uid = "3";
+        $telephone = "077843627543";
+        $street = "Spittelwiese 23";
+        $place = "Linz";
+        $codes = "30";
+        $single_price = "40";
+        $total_price = "1200";
+        */
+
+        if($DB->record_exists("block_exacompsettings", array("courseid" => -43))){
+            $orderid =$DB->get_record("block_exacompsettings", array("courseid" => -43));
+            $DB->update_record("block_exacompsettings", array("id" => $orderid->id, "diwiordernumber" => $orderid->diwiordernumber +1));
+        } else {
+            $DB->insert_record("block_exacompsettings", array("courseid" => -43)); // , "grading" => 0, "profoundness" => 0, "filteredtaxonomies" => "[100000000]"
+        }
+
+        // Include the main TCPDF library (search for installation path).
+        require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
+
+
+        // create new PDF document
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+
+
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $pdf->SetMargins(PDF_MARGIN_LEFT + 10, PDF_MARGIN_TOP + 30, PDF_MARGIN_RIGHT + 10);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+
+        // remove default footer
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+
+        // ---------------------------------------------------------
+
+        // set font
+        $pdf->SetFont('helvetica', '', 25);
+        $pdf->SetTextColor(0,0,0);
+        // add a page
+        $pdf->AddPage();
+
+
+        // -- set new background ---
+
+        // get the current page break margin
+        $bMargin = $pdf->getBreakMargin();
+        // get current auto-page-break mode
+        $auto_page_break = $pdf->getAutoPageBreak();
+        // disable auto-page-break
+        $pdf->SetAutoPageBreak(false, 0);
+        // set bacground image
+
+
+        $img_file = $CFG->dirroot.'/blocks/exacomp/pix/certificate/FrauenstiftungLogo.PNG';
+        $pdf->Image($img_file, 30, 10, 160, 40, 'PNG', '', '', false, 300, '', false, false, 0);
+        // restore auto-page-break status
+        $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
+        // set the starting point for the page content
+        $pdf->setPageMark();
+
+
+
+
+        $pdf->SetTextColor(0,0,0);
+        $pdf->SetFont('helvetica', '', 12);
+
+        $pdf->Write(0, $company, '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Write(0, $firstname . " " . $lastname, '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Write(0, $street, '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Write(0, $place, '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Write(0, $email, '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Write(0, "Steyr, ".date("d.m.Y"), '', 0, 'R', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Write(0, "Rechnung Nr. ".$orderid->diwiordernumber."/ 96 /".date("Y"), '', 0, 'L', true, 0, false, false, 0);
+        $pdf->SetFont('helvetica', '', 12);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Write(0, "DiWi-Pass: Zertifizierung digitaler Kompetenzen", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Write(0, "Für Codes zur Teilnahme an der Zertifizierung verrechnen wir:", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        //$pdf->Write(0, $gradings[0]['name'] . "                                    " . $gradings[0]['score'], '', 0, 'L', true, 0, false, false, 0);
+        //array_shift($gradings);
+        $pdf->Ln();
+
+        $html = <<<EOD
+<table cellspacing="0" cellpadding="1" border="1" style="border-color:gray;">
+    <tr>
+        <td style = "text-align: center">Anzahl Codes</td>
+        <td style = "text-align: center">Preis pro Code in €</td>
+		<td style = "text-align: center">Gesamtbetrag in €</td>
+    </tr>
+	<tr>
+        <td style = "text-align: center">{$codes}</td>
+        <td style = "text-align: center">{$single_price}</td>
+		<td style = "text-align: center">{$total_price}</td>
+    </tr>
+</table>
+EOD;
+
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+        $pdf->Ln();
+        $pdf->Write(0, "Im o.a. Betrag ist keine Mehrwertsteuer enthalten.", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Write(0, "Vielen Dank für Ihre Bestellung. Nach Zahlungseingang mittels Banküberweisung erhalten Sie den/die Codes per email übermittelt.", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Write(0, "Wir wünschen Ihnen viel Erfolg bei der Zertifizierung!", '', 0, 'C', true, 0, false, false, 0);
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Ln();
+        $pdf->Write(0, "Überweisung des Betrages innerhalb 14 Tagen auf unser Konto:", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Write(0, "Verein Frauenarbeit Steyr", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Write(0, "Oberbank Steyr, BIC OBKLAT2L", '', 0, 'L', true, 0, false, false, 0);
+        $pdf->Write(0, "IBAN AT64 1511 0009 1105 0151.", '', 0, 'L', true, 0, false, false, 0);
+
+        // ---------------------------------------------------------
+
+        //Close and output PDF document
+        $pdf->Output('diwiPass.pdf', 'D');
+    }
+
 
 
 }
