@@ -4641,6 +4641,7 @@ function block_exacomp_get_all_associated_activities_by_course($courseid) {
 }
 
 
+
 /**
  * Returns activities, which related to competences
  * @param mixed $courseid
@@ -5544,7 +5545,7 @@ function block_exacomp_settstamp() {
  * This function updates the visibilities of all examples in this course that have been created by relating moodle activities to exacomp competencies.
  * It also puts the examples on the schedule of the student.
  */
-function block_exacomp_update_related_examples_visibilities($courseid, $studentid){
+function block_exacomp_update_related_examples_visibilities_for_single_student($courseid, $studentid){
     global $DB;
 
     // If the automatic grading is not activated in the moodle settings all queries can just be skipped entirely
@@ -5559,25 +5560,37 @@ function block_exacomp_update_related_examples_visibilities($courseid, $studenti
 
     //also get all activities (also quizes)
     $activities = block_exacomp_get_all_associated_activities_by_course($courseid);
+    block_exacomp_update_related_examples_visibilities($activities, $courseid, $studentid);
+}
 
-//  --- in the old task: here do it foreach student. In this function: only for this student
+/**
+ * @param $activities
+ * @param $courseid
+ * @param $studentid
+ * @param $cms_availability
+ * This function is used for performance reasons. If the visibilities should be updated for several students, then the activities should only be loaded once.
+ */
+function block_exacomp_update_related_examples_visibilities($activities, $courseid, $studentid){
+    global $DB;
+    //  --- in the old task: here do it foreach student. In this function: only for this student
     // TODO: just as in the moodle course/view.php, get the information on the availability of the modules
     $modinfo = get_fast_modinfo($courseid, $studentid);
     $cms_availability = $modinfo->cms;
-
     // for every activity: check if it should be visible or not, and if it is on the schedule
     foreach ($activities as $activity) {
         // get availability (visibility) info
-        $available = $cms_availability[$activity->activityid]->available;
-        if (is_array(@$activity->examples)) {
+        if (property_exists($activity, "examples")) {
+            $available = $cms_availability[$activity->activityid]->available;
             if ($available) {
                 foreach ($activity->examples as $example) {
                     g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
                         ['visible' => 1],
                         ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $studentid]
                     );
-                    // if not on schedule: add ( the check happens in the function)
-                    block_exacomp_add_example_to_schedule($studentid, $example->id, $studentid, $courseid, null, null, -1, -1, null, null, null, null);
+                    // if not on schedule: add
+                    if(!$DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $example->id, 'courseid' => $courseid))){
+                        block_exacomp_add_example_to_schedule($studentid, $example->id, $studentid, $courseid, null, null, -1, -1, null, null, null, null);
+                    }
                 }
             } else {
                 // Hide the related exacomp material if not yet hidden
@@ -5593,6 +5606,8 @@ function block_exacomp_update_related_examples_visibilities($courseid, $studenti
         }
     }
 }
+
+
 
 /**
  * This function checkes for finished quizes that are associated with competences and automatically gains them if the
@@ -8119,7 +8134,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 			ORDER BY s.id";
         $entries = $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week, $USER->id));
     } else {
-        block_exacomp_update_related_examples_visibilities($courseid, $studentid);
+        block_exacomp_update_related_examples_visibilities_for_single_student($courseid, $studentid);
         $sql = "SELECT DISTINCT s.id, s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible, e.timeframe,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,

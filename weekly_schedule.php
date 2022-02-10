@@ -40,7 +40,7 @@ if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
 	$studentid = 0;
 
 if($studentid != 0){
-    block_exacomp_update_related_examples_visibilities($courseid, $studentid);
+    block_exacomp_update_related_examples_visibilities_for_single_student($courseid, $studentid);
 }
 
 $selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);

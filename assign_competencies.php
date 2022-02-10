@@ -214,7 +214,7 @@ if ($isTeacher) {	//mind nostudents setting
 
 if(sizeof($students) == 1){
     // if only one student is selected: update the example visibilities for the case that e.g. an activity has been set to available=true because of e.g. the date.
-    block_exacomp_update_related_examples_visibilities($courseid, reset($students)->id); //reset gets the first element (not $student[0] because it is associative)
+    block_exacomp_update_related_examples_visibilities_for_single_student($courseid, reset($students)->id); //reset gets the first element (not $student[0] because it is associative)
 }
 
 

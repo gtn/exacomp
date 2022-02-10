@@ -3283,7 +3283,7 @@ class block_exacomp_external extends external_api {
         }
 
         if($userid != 0){
-            block_exacomp_update_related_examples_visibilities($courseid,$userid);
+            block_exacomp_update_related_examples_visibilities_for_single_student($courseid,$userid);
         }
 
         $return = new stdClass();

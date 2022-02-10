@@ -30,4 +30,19 @@ $observers = array(
         'callback' => 'block_exacomp_observer::course_module_completion_updated',
     ),
 
+    array(
+        'eventname' => '\core\event\course_module_created',
+        'callback' => 'block_exacomp_observer::course_module_created',
+    ),
+
+    array(
+        'eventname' => '\core\event\course_module_updated',
+        'callback' => 'block_exacomp_observer::course_module_updated',
+    ),
+
+   array(
+        'eventname' => '\core\event\course_module_deleted',
+        'callback' => 'block_exacomp_observer::course_module_deleted',
+    ),
+
 );

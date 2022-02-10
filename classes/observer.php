@@ -128,10 +128,63 @@ class block_exacomp_observer
                 block_exacomp_assign_competences($event->courseid, $event->relateduserid, $topics, $descriptors, $examples, $userealvalue, $maxgrade, $studentgraderesult, $admingrading);
                 // $event->relateduserid is the id of the student that is graded. $event->userid is the id of the user that triggered the event
             }
-            block_exacomp_update_related_examples_visibilities($event->courseid, $event->relateduserid); // update the visibilities
+            block_exacomp_update_related_examples_visibilities_for_single_student($event->courseid, $event->relateduserid); // update the visibilities
             // The visibilities are instantly updated if a user e.g. solves a series of assignments that depend on each other.
             // If the dependency is per date, then the visibilities have to be updated at other places, e.g. when loading examples or in a task for the cronjob
         }
+        return true;
+    }
+
+//    /**
+//     * Observer for \core\event\course_module_created event.
+//     *
+//     * @param \core\event\course_module_created $event
+//     * @return void
+//     */
+//    public static function course_module_created(\core\event\course_module_created $event)
+//    {
+//        $students = block_exacomp_get_students_by_course($event->courseid);
+//        $activities = block_exacomp_get_all_associated_activities_by_course($event->courseid);
+//        foreach($students as $student){
+//            block_exacomp_update_related_examples_visibilities($activities, $event->courseid, $student->id);
+//        }
+//        return true;
+//    }
+// This observer is not needed, since when creating an activity it cannot yet be related or assigned to any exacomp competence
+
+    /**
+     * Observer for \core\event\course_module_updated event.
+     *
+     * @param \core\event\course_module_updated $event
+     * @return void
+     */
+    public static function course_module_updated(\core\event\course_module_updated $event)
+    {
+        global $DB;
+        //  $event->other['name']) gives the "name" field of e.g. assign or quiz table entry
+        // block_exacomp_check_relatedactivitydata($event->objectid, $event->other['name']);
+        // this is already done in block_exacomp_coursemodule_edit_post_actions. todo: Where is the better solution?
+
+        $students = block_exacomp_get_students_by_course($event->courseid);
+        $activity = $event->get_record_snapshot('course_modules', $event->objectid);
+        // get the examples.. the assigned descriptors and topics do not matter for the visibility update
+        $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->id, 'courseid' => $event->courseid), '', 'id');
+        foreach ($students as $student) {
+            block_exacomp_update_related_examples_visibilities(array($activity), $event->courseid, $student->id);
+        }
+        return true;
+    }
+
+    /**
+     * Observer for \core\event\course_module_deleted event.
+     *
+     * @param \core\event\course_module_deleted $event
+     * @return void
+     */
+    public static function course_module_deleted(\core\event\course_module_deleted $event)
+    {
+        // TODO: this is not triggered?
+        block_exacomp_checkfordelete_relatedactivity($event->objectid);
         return true;
     }
 
