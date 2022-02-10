@@ -4469,7 +4469,7 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids, $deleteOn
 
 /**
  *
- * Returns quizes assigned to course
+ * Returns quizes related or assigned to competencies in this course
  * @param unknown_type $courseid
  */
 function block_exacomp_get_active_tests_by_course($courseid) {
@@ -4529,7 +4529,7 @@ function block_exacomp_get_active_tests_by_course($courseid) {
 
 /**
  *
- * Returns activities assigned to course
+ * Returns activities related or assigned to competencies in this course
  * @param unknown_type $courseid
  */
 function block_exacomp_get_active_activities_by_course($courseid) {
@@ -4580,6 +4580,60 @@ function block_exacomp_get_active_activities_by_course($courseid) {
         }
 
         $activities = array_merge($activitiesForDescriptors,$activitiesForExamples);
+    } else{
+        $activities = $activitiesForExamples;
+    }
+
+    return $activities;
+}
+
+/**
+ *
+ * Returns all activities related or assigned to competencies in this course (also quizes)
+ * This function is used for updating the visibilities
+ * @param unknown_type $courseid
+ */
+function block_exacomp_get_all_associated_activities_by_course($courseid) {
+    global $DB;
+
+    $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid
+        FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
+          JOIN {course_modules} cm ON cm.id = e.activityid
+        WHERE cm.course = ? ';
+    $activitiesForExamples = $DB->get_records_sql($sql, array($courseid));
+
+    foreach ($activitiesForExamples as $activity) {
+        $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->activityid, 'courseid' => $courseid), '', 'id');
+    }
+
+    if (block_exacomp_use_old_activities_method()) { //if not, use ONLY new method. but if old method is active, use BOTH
+        $sql = "SELECT cm.instance as id, cm.id as activityid
+            FROM {block_exacompcompactiv_mm} activ
+              JOIN {course_modules} cm ON cm.id = activ.activityid
+            WHERE cm.course = ? ";
+
+        $activitiesForDescriptorsAndTopics = $DB->get_records_sql($sql, array($courseid));
+
+        foreach ($activitiesForDescriptorsAndTopics as $activity) {
+            $activity->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                array('activityid' => $activity->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
+            $activity->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY,
+                array('activityid' => $activity->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
+        }
+
+        //Before merging: find any activities which have been related as well as assigned
+        //if both has happended: combine examples and descriptors into one, and remove the other. Otheriwse problems will occur later on (overwriting of timestamps)
+        foreach($activitiesForExamples as $actEx){
+            foreach($activitiesForDescriptorsAndTopics as $key => $actDescr){
+                if($actEx->activityid == $actDescr->activityid){
+                    $actEx->descriptors = $actDescr->descriptors;
+                    $actEx->topics = $actDescr->topics;
+                    unset($activitiesForDescriptorsAndTopics[$key]);
+                }
+            }
+        }
+
+        $activities = array_merge($activitiesForDescriptorsAndTopics,$activitiesForExamples);
     } else{
         $activities = $activitiesForExamples;
     }
@@ -5486,11 +5540,67 @@ function block_exacomp_settstamp() {
 }
 
 /**
+ * @param $courseid
+ * @param $studentid
+ * This function updates the visibilities of all examples in this course that have been created by relating moodle activities to exacomp competencies.
+ * It also puts the examples on the schedule of the student.
+ */
+function block_exacomp_update_related_examples_visibilities($courseid, $studentid){
+    global $DB;
+
+    // If the automatic grading is not activated in the moodle settings all queries can just be skipped entirely
+    $autotest = get_config('exacomp', 'autotest');
+    if (!$autotest) {
+        return;
+    }
+    // If this course does not use moodle activities all queries can just be skipped entirely
+    if (!block_exacomp_get_settings_by_course($courseid)->uses_activities) {
+        return;
+    }
+
+    //also get all activities (also quizes)
+    $activities = block_exacomp_get_all_associated_activities_by_course($courseid);
+
+//  --- in the old task: here do it foreach student. In this function: only for this student
+    // TODO: just as in the moodle course/view.php, get the information on the availability of the modules
+    $modinfo = get_fast_modinfo($courseid, $studentid);
+    $cms_availability = $modinfo->cms;
+
+    // for every activity: check if it should be visible or not, and if it is on the schedule
+    foreach ($activities as $activity) {
+        // get availability (visibility) info
+        $available = $cms_availability[$activity->activityid]->available;
+        if (is_array(@$activity->examples)) {
+            if ($available) {
+                foreach ($activity->examples as $example) {
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
+                        ['visible' => 1],
+                        ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $studentid]
+                    );
+                    // if not on schedule: add ( the check happens in the function)
+                    block_exacomp_add_example_to_schedule($studentid, $example->id, $studentid, $courseid, null, null, -1, -1, null, null, null, null);
+                }
+            } else {
+                // Hide the related exacomp material if not yet hidden
+                foreach ($activity->examples as $example) {
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
+                        ['visible' => 0],
+                        ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $studentid]
+                    );
+                    // if already on schedule: remove
+                    $DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $example->id, 'courseid' => $courseid, 'creatorid' => $studentid));
+                }
+            }
+        }
+    }
+}
+
+/**
  * This function checkes for finished quizes that are associated with competences and automatically gains them if the
  * coresponding setting is activated.
  */
 function block_exacomp_perform_auto_test() {
-	global $CFG, $DB, $USER;
+	global $CFG, $DB;
 
 	$autotest = get_config('exacomp', 'autotest');
 	$testlimit = get_config('exacomp', 'testlimit');
@@ -5559,58 +5669,9 @@ function block_exacomp_perform_auto_test() {
                         }
                     }
                 }
-
-				// get grading for each test and assign topics and descriptors
-				$quiz = $DB->get_record('quiz_grades', array('quiz' => $test->id, 'userid' => $student->id));
-				$quiz_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $test->id, 'userid' => $student->id));
-
-                //$maxGrade = quiz_format_grade($quiz, $quiz->grade);
-                $maxGrade = $test->grade;
-                if ($quiz) {
-                    $studentGradeResult = $quiz->grade;
-                } else {
-                    $studentGradeResult = 0;
-                }
-
-				// assign competencies if test is successfully completed AND test grade updated since last auto assign
-				if (isset($quiz->grade) && floatval($test->grade) > 0
-                        //&& (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade
-                        && ((floatval($quiz->grade) * 100) / floatval($test->grade)) >= $testlimit
-                        && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)
-                ) {
-				    $changedquizes[$quiz->quiz] = $quiz->timemodified;
-
-                    // with this if, there is only one possibilty, but both should work in parallel
-//				    if (block_exacomp_use_old_activities_method()) {
-//                        block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
-//                    } else {
-//                        block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
-//                    }
-
-
-                    if (@$test->descriptors) { // descriptors are associated and should be graded ... "old method"
-                        block_exacomp_assign_competences($courseid, $student->id, $test->topics, $test->descriptors, null, true, $maxGrade, $studentGradeResult);
-                    }
-                    //no "else if" because a test can be assigned or related OR BOTH
-                    if (@$test->examples){ // examples are associated and should be graded ... "new method"
-                        block_exacomp_assign_competences($courseid, $student->id, null, null, $test->examples, true, $maxGrade, $studentGradeResult);
-                        // TODO: set the visibility according to the visibility of the assignment
-                    }
-
-					if (!$quiz_assignment) {
-						$quiz_assignment = new \stdClass();
-						$quiz_assignment->quiz = $test->id;
-						$quiz_assignment->userid = $student->id;
-						$quiz_assignment->timemodified = $quiz->timemodified;
-						$DB->insert_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, $quiz_assignment);
-					} else {
-						$quiz_assignment->timemodified = $quiz->timemodified;
-						$DB->update_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, $quiz_assignment);
-					}
-				}
 			}
 
-			// For every activity that is not a quiz: 1. check if it should be visible, 2. check if completed and set competence as gained
+			// For every activity that is not a quiz: check if it should be visible
             foreach ($otherActivities as $activity) {
                 // get availability (visibility) info
                 $available = $cms_availability[$activity->activityid]->available;
@@ -5631,54 +5692,10 @@ function block_exacomp_perform_auto_test() {
                             ['exampleid' => $example->id, 'courseid' => $courseid, 'studentid' => $student->id]
                         );
                         // if not on schedule: add ( the check happens in the function)
-                        block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid,null,null,-1,-1, null, null, null, null);
-                    }
-                }
-
-                // get completion info for each activity
-                $activity_completion = $DB->get_record('course_modules_completion', array('coursemoduleid' => $activity->activityid, 'userid' => $student->id));
-                $activity_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $activity->activityid, 'userid' => $student->id));
-
-                // assign competencies if activity is completed AND completionstate updated since last autoassign
-                //COMPLETION_COMPLETE COMPLETION_COMPLETE_PASS COMPLETION_COMPLETE_FAIL
-//                var_dump($activity_completion);
-//                var_dump($activity_assignment);
-//                die;
-
-                if ($activity_completion && (@$activity_completion->completionstate == COMPLETION_COMPLETE || @$activity_completion->completionstate == COMPLETION_COMPLETE_PASS)
-                    && (!$activity_assignment || $activity_assignment->timemodified < $activity_completion->timemodified)
-                ) {
-                    $changedactivites[$activity->coursemoduleid] = $activity_completion->timemodified;
-
-
-                    // with this if, there is only one possibilty, but both should work in parallel
-//                    if (block_exacomp_use_old_activities_method()) {
-//                        block_exacomp_assign_competences($courseid, $student->id, $activity->topics, $activity->descriptors, null, false);
-//                    } else {
-//                        block_exacomp_assign_competences($courseid, $student->id, null, null, $activity->examples, false);
-//                    }
-                    if ($activity->descriptors) { // descriptors are associated and should be graded ... "old method"
-                        block_exacomp_assign_competences($courseid, $student->id, $activity->topics, $activity->descriptors, null, false);
-                    }
-                    //no "else if" because a test can be assigned or related OR BOTH
-                    if($activity->examples){ // examples are associated and should be graded ... "new method"
-                        block_exacomp_assign_competences($courseid, $student->id, null, null, $activity->examples, false);
-                    }
-
-                    if (!$activity_assignment) {
-                        $activity_assignment = new \stdClass();
-                        $activity_assignment->quiz = $activity->activityid; // TODO: THIS SHOULD BE RENAMED! Not "quiz" but more general, coursemoduleid
-                        $activity_assignment->userid = $student->id;
-                        $activity_assignment->timemodified = $activity_completion->timemodified;
-                        $DB->insert_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, $activity_assignment);
-                    } else {
-                        $activity_assignment->timemodified = $activity_completion->timemodified;
-                        $DB->update_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, $activity_assignment);
+                        block_exacomp_add_example_to_schedule($student->id, $example->id, $student->id, $courseid, null, null, -1, -1, null, null, null, null);
                     }
                 }
             }
-
-            // TODO: may be add adding of self-completention?
 
 			// activities with restrict access   // TODO: why is this needed RW 2021.09.06
 			if ($CFG->enableavailability && count($cms) > 0) {
