@@ -51,8 +51,6 @@ class import extends \core\task\scheduled_task {
 			mtrace("import failed: ".$e->getMessage());
 		}
 
-		block_exacomp_perform_auto_test();
-
 		return true;
 	}
 }

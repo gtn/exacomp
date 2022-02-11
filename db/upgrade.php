@@ -3975,7 +3975,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022020400, 'exacomp');
     }
     if ($oldversion < 2022021000) {
-
         // Define field userid to be added to block_exacompprofilesettings
         $table = new xmldb_table('block_exacompsettings');
         $field = new xmldb_field('diwiordernumber', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
@@ -3985,6 +3984,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         upgrade_block_savepoint(true, 2022021000, 'exacomp');
+    }
+
+    if ($oldversion < 2022021005) {
+        $table = new xmldb_table('block_exacompautotestassign');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2022021005, 'exacomp');
     }
     /*
      * insert new upgrade scripts before this comment section

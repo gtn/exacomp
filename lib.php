@@ -157,37 +157,38 @@ function is_exacomp_active_in_course(){
 function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
     global $CFG, $COURSE, $DB, $PAGE;
 
-    $exacomp_active = is_exacomp_active_in_course(); // only inject if the block is active in this course
-
-    if (!empty($CFG->enableavailability) && $exacomp_active) {
-        $cmid = optional_param('update', 0, PARAM_INT);
-        $exacompUseAutoCompetencesVal = block_exacomp_cmodule_is_autocompetence($cmid);
-        $mform->addElement('checkbox', 'exacompUseAutoCompetences', block_exacomp_get_string('module_used_availabilitycondition_competences'));
-        $mform->setType('exacompUseAutoCompetences', PARAM_INT);
-        if ($exacompUseAutoCompetencesVal) {
-            $mform->setDefault('exacompUseAutoCompetences', true);
-        }
-        // sorting all elements - we need to add our element before 'Restrict access' element
-        $allelements = $mform->_elementIndex;
-        //$DB->delete_records('block_exacompcmsettings', ['name' => 'exacompUseAutoCompetnces']);
-        $exacompElementInd = $allelements['exacompUseAutoCompetences'];
-        $exacompElement = $mform->_elements[$exacompElementInd];
-        unset($mform->_elements[$exacompElementInd]);
-        if (array_key_exists('availabilityconditionsjson', $allelements)) {
-            $avacondintionsElementInd = $allelements['availabilityconditionsjson'];
-            // go insert
-            array_splice($mform->_elements, $avacondintionsElementInd, 0, array($exacompElement)); // splice in at position 3
-
-            // reformat indexes
-            foreach ($mform->_elements as $key => $el) {
-                if ($el->_attributes && $el->_attributes['name']) {
-                    $mform->_elementIndex[$el->_attributes['name']] = $key;
-                }else if($el->_name){
-                    $mform->_elementIndex[$el->_name] = $key;
-                }
-            }
-        }
-    }
+//    $exacomp_active = is_exacomp_active_in_course(); // only inject if the block is active in this course
+//
+//    // enableavailability is a setting in mdl_config
+//    if (!empty($CFG->enableavailability) && $exacomp_active) {
+//        $cmid = optional_param('update', 0, PARAM_INT);
+//        $exacompUseAutoCompetencesVal = block_exacomp_cmodule_is_autocompetence($cmid);
+//        $mform->addElement('checkbox', 'exacompUseAutoCompetences', block_exacomp_get_string('module_used_availabilitycondition_competences'));
+//        $mform->setType('exacompUseAutoCompetences', PARAM_INT);
+//        if ($exacompUseAutoCompetencesVal) {
+//            $mform->setDefault('exacompUseAutoCompetences', true);
+//        }
+//        // sorting all elements - we need to add our element before 'Restrict access' element
+//        $allelements = $mform->_elementIndex;
+//        //$DB->delete_records('block_exacompcmsettings', ['name' => 'exacompUseAutoCompetnces']);
+//        $exacompElementInd = $allelements['exacompUseAutoCompetences'];
+//        $exacompElement = $mform->_elements[$exacompElementInd];
+//        unset($mform->_elements[$exacompElementInd]);
+//        if (array_key_exists('availabilityconditionsjson', $allelements)) {
+//            $avacondintionsElementInd = $allelements['availabilityconditionsjson'];
+//            // go insert
+//            array_splice($mform->_elements, $avacondintionsElementInd, 0, array($exacompElement)); // splice in at position 3
+//
+//            // reformat indexes
+//            foreach ($mform->_elements as $key => $el) {
+//                if ($el->_attributes && $el->_attributes['name']) {
+//                    $mform->_elementIndex[$el->_attributes['name']] = $key;
+//                }else if($el->_name){
+//                    $mform->_elementIndex[$el->_name] = $key;
+//                }
+//            }
+//        }
+//    }
     return;
 }
 
@@ -200,16 +201,16 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
  */
 function block_exacomp_coursemodule_edit_post_actions($data, $course) {
     global $CFG, $DB;
-    if (!empty($CFG->enableavailability)) {
-        $DB->delete_records('block_exacompcmsettings', ['name' => 'exacompUseAutoCompetences']);
-        if (isset($data->exacompUseAutoCompetences)) {
-            $insert = new stdClass();
-            $insert->coursemoduleid = $data->coursemodule;
-            $insert->name = 'exacompUseAutoCompetences';
-            $insert->value = 1;
-            $DB->insert_record('block_exacompcmsettings', $insert);
-        }
-    }
+//    if (!empty($CFG->enableavailability)) {
+//        $DB->delete_records('block_exacompcmsettings', ['name' => 'exacompUseAutoCompetences']);
+//        if (isset($data->exacompUseAutoCompetences)) {
+//            $insert = new stdClass();
+//            $insert->coursemoduleid = $data->coursemodule;
+//            $insert->name = 'exacompUseAutoCompetences';
+//            $insert->value = 1;
+//            $DB->insert_record('block_exacompcmsettings', $insert);
+//        }
+//    }
 
     block_exacomp_check_relatedactivitydata($data->coursemodule, $data->name);
 

@@ -19,7 +19,7 @@
 
 require __DIR__.'/inc.php';
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 $groupid = optional_param('groupid', 0, PARAM_INT);
@@ -38,6 +38,10 @@ $isTeacher = block_exacomp_is_teacher($context);
 $studentid = block_exacomp_get_studentid();
 if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
 	$studentid = 0;
+
+if($studentid != 0){
+    block_exacomp_update_related_examples_visibilities_for_single_student($courseid, $studentid);
+}
 
 $selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
 
