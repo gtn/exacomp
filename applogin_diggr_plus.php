@@ -98,10 +98,11 @@ function block_exacomp_turn_notifications_on() {
     }
 }
 
-function block_exacomp_login_successfull() {
+function block_exacomp_login_successfull($login_request_data) {
     // actions after login:
     block_exacomp_turn_notifications_on();
-    if (block_exacomp_is_setapp_enabled()) { // && block_exacomp_is_teacher_in_any_course()
+
+    if (@$login_request_data->app == 'setapp' && block_exacomp_is_setapp_enabled()) { // && block_exacomp_is_teacher_in_any_course()
         block_exacomp_diggrv_create_first_course();
     }
 }
@@ -151,7 +152,7 @@ function block_exacomp_init_cors() {
     }
 }
 
-function block_exacomp_send_login_result($user) {
+function block_exacomp_send_login_result($user, $login_request_data) {
     // hack to get tokens
     global $USER, $DB;
     $origUSER = $USER;
@@ -159,7 +160,7 @@ function block_exacomp_send_login_result($user) {
 
     try {
         $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
-        block_exacomp_login_successfull();
+        block_exacomp_login_successfull($login_request_data);
     } catch (\Exception $e) {
         block_exacomp_logout();
 
@@ -178,7 +179,7 @@ function block_exacomp_send_login_result($user) {
         'moodle_redirect_token' => $moodle_redirect_token,
         'moodle_data_token' => $moodle_data_token,
         'created_at' => time(),
-        'request_data' => '',
+        'request_data' => $login_request_data,
         'result_data' => json_encode($result_data),
     ]);
 
@@ -202,8 +203,8 @@ $DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time() -
 $action = optional_param('action', '', PARAM_TEXT);
 
 if ($action == 'get_login_url') {
-    required_param('app', PARAM_TEXT);
-    required_param('app_version', PARAM_TEXT);
+    $app = required_param('app', PARAM_TEXT);
+    $app_version = required_param('app_version', PARAM_TEXT);
 
     $return_uri = required_param('return_uri', PARAM_TEXT);
 
@@ -220,6 +221,8 @@ if ($action == 'get_login_url') {
         'moodle_data_token' => $moodle_data_token,
         'created_at' => time(),
         'request_data' => json_encode([
+            'app' => $app,
+            'app_version' => $app_version,
             'return_uri' => $return_uri,
             'services' => optional_param('services', '', PARAM_TEXT),
         ]),
@@ -233,9 +236,14 @@ if ($action == 'get_login_url') {
 }
 
 if ($action == 'msteams_login') {
-    required_param('app', PARAM_TEXT);
-    required_param('app_version', PARAM_TEXT);
+    $app = required_param('app', PARAM_TEXT);
+    $app_version = required_param('app_version', PARAM_TEXT);
     $access_token = required_param('access_token', PARAM_TEXT);
+
+    $login_request_data = (object)[
+        'app' => $app,
+        'app_version' => $app_version,
+    ];
 
     block_exacomp_init_cors();
 
@@ -302,7 +310,7 @@ if ($action == 'msteams_login') {
     if (get_config('exacomp', 'sso_create_users')) {
         $moodle_user = $DB->get_record('user', ['username' => $email]);
         if ($moodle_user) {
-            block_exacomp_send_login_result($moodle_user);
+            block_exacomp_send_login_result($moodle_user, $login_request_data);
         }
 
         // old logic with creating the user if not existing (for diggrv)
@@ -324,7 +332,7 @@ if ($action == 'msteams_login') {
 
         $moodle_user = get_complete_user_data('id', $userid);
 
-        block_exacomp_send_login_result($moodle_user);
+        block_exacomp_send_login_result($moodle_user, $login_request_data);
     } else {
         // new logic mit o365 user verknüpfen
         $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
@@ -359,7 +367,7 @@ if ($action == 'msteams_login') {
         }
 
         if ($moodle_user) {
-            block_exacomp_send_login_result($moodle_user);
+            block_exacomp_send_login_result($moodle_user, $login_request_data);
         }
 
         $return_uri = required_param('return_uri', PARAM_TEXT);
@@ -377,6 +385,8 @@ if ($action == 'msteams_login') {
             'moodle_data_token' => $moodle_data_token,
             'created_at' => time(),
             'request_data' => json_encode([
+                'app' => $app,
+                'app_version' => $app_version,
                 'usermapid' => $usermap->id,
                 'return_uri' => $return_uri,
                 'services' => optional_param('services', '', PARAM_TEXT),
@@ -512,11 +522,11 @@ if (!$applogin) {
     throw new Error('token not found');
 }
 
-$request_data = json_decode($applogin->request_data);
+$login_request_data = json_decode($applogin->request_data);
 
 try {
     $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
-    block_exacomp_login_successfull();
+    block_exacomp_login_successfull($login_request_data);
 } catch (\Exception $e) {
     block_exacomp_logout();
 
@@ -530,7 +540,7 @@ $DB->update_record('block_exacompapplogin', (object)[
     ]),
 ]);
 
-if (@$request_data->usermapid) {
+if (@$login_request_data->usermapid) {
     $confirm = optional_param('confirm', false, PARAM_BOOL);
 
     if (!$confirm) {
@@ -549,11 +559,11 @@ if (@$request_data->usermapid) {
     }
 
     // came from o365 -> map the user
-    $DB->update_record('block_exacomp_usermap', ['userid' => $USER->id, 'id' => $request_data->usermapid]);
+    $DB->update_record('block_exacomp_usermap', ['userid' => $USER->id, 'id' => $login_request_data->usermapid]);
 }
 
-$return_uri = $request_data->return_uri.
-    (preg_match('!\\?!', $request_data->return_uri) ? '&' : '?').
+$return_uri = $login_request_data->return_uri.
+    (preg_match('!\\?!', $login_request_data->return_uri) ? '&' : '?').
     'moodle_token='.$applogin->moodle_data_token;
 
 if (optional_param('withlogout', '', PARAM_BOOL)) {
