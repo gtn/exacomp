@@ -5578,8 +5578,7 @@ function block_exacomp_update_related_examples_visibilities($activities, $course
     foreach ($activities as $activity) {
         // get availability (visibility) info
         if (property_exists($activity, "examples")) {
-            $available = $cms_availability[$activity->activityid]->available;
-            if ($available) {
+            if ($cms_availability[$activity->activityid]->available && $cms_availability[$activity->activityid]->visible) {
                 foreach ($activity->examples as $example) {
                     g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
                         ['visible' => 1],
