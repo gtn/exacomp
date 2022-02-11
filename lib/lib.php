@@ -13142,6 +13142,11 @@ function block_exacomp_delete_examples_for_crosssubject($crosssubjectid) {
                  block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $subjectObj);
                  $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM, array('subjectid' => $subjectid));
                  $topicsToDelete = array_merge($topicsToDelete, array_keys(block_exacomp_get_topics_by_subject($courseid, $subjectid)));
+                 // get the topicObj with the subject, so the check if the topic is deletable works later on, when the subject is already deleted
+                 $subjectsForTopics = array();
+                 foreach ($topicsToDelete as $topic){
+                     $subjectsForTopics[$topic] = $subjectObj;
+                 }
                  $subjectObj->delete();
              }
          case 'topic':
@@ -13150,6 +13155,7 @@ function block_exacomp_delete_examples_for_crosssubject($crosssubjectid) {
              }
              foreach ($topicsToDelete as $topicid) {
                  $topicObj = \block_exacomp\topic::get($topicid);
+                 $topicObj->subject = $subjectsForTopics[$topicid];
                  block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $topicObj);
                  $DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('topicid' => $topicid, 'courseid' => $courseid));
                  $DB->delete_records(BLOCK_EXACOMP_DB_DESCTOPICS, array('topicid' => $topicid));

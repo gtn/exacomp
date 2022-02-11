@@ -2114,7 +2114,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'new_niveau' => [
         'neuer Lernfortschritt',
-        'New learning progress',
+        'new learning progress',
     ],
     'groupcategory' => [
         'Kategorie',
@@ -2123,6 +2123,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'new_column' => [
         'neue Spalte',
         'new column',
+    ],
+    'new_topic' => [
+        'neuer Kompetenzbereich',
+        'new Topic',
     ],
 
 
@@ -3229,7 +3233,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'descriptor_description' => [
         'Eintrag der ersten Zelle (z.B. Kompetenzbeschreibung)',
-        'Create your first Niveau:',
+        'Create your first descriptor:',
     ],
     'selectcourse_filter' => [
         'Filter',

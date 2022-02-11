@@ -340,13 +340,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'title' => $topic->description,
                     )));
                 }
-            }
-            if ($this->is_edit_mode() && $subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
+             }
+            if ($this->is_edit_mode() && ($subject->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($subject, "is_editable") && $subject->is_editable))) {
                 // only if editing and if subject was added by teacher
-                $content .= html_writer::tag('li', html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_get_string('create_new_area'), array(
+                $content .= html_writer::tag('li', html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp_get_string('new_topic'), array(
                     'exa-type' => 'iframe-popup',
                 )));
-            }
+           }
 		}
 
 		$content .= html_writer::end_tag('ul');
@@ -407,7 +407,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($this->is_edit_mode()) {
 			// add niveau button
 			// nur erlauben, wenn auch ein einzelner topic ausgewählt wurde
-			$addNiveauContent = "<span class=\"niveau-button-add\"><img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /></span>&nbsp;".'<span class="title">'.block_exacomp_trans(['de:Neue Spalte', 'en:new column']).'</span>';
+			$addNiveauContent = "<span class=\"niveau-button-add\"><img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /></span>&nbsp;".'<span class="title">'.block_exacomp_get_string("new_niveau").'</span>';
 
 			if ($selectedTopic) {
 				$content .= html_writer::tag('li',
@@ -2578,11 +2578,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				// EDIT MODE BUTTONS
 				if ($editmode) {
-
 					$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php', array("courseid" => $data->courseid, "descrid" => $descriptor->id)),
                         $this->local_pix_icon("ec_themen_bl.png", block_exacomp_get_string('crosssubject'), array('height' => '18')),
 						array("target" => "_blank", 'exa-type' => 'iframe-popup'));
+
+//                    $titleCell->text .= ' '.html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, [
+//                            'exa-type' => "iframe-popup",
+//                            'exa-url' => 'descriptor.php?courseid='.$data->courseid.'&id='.$descriptor->id]);
 				}
 				//if hidden in course, cannot be shown to one student
 
@@ -2594,7 +2597,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
 						}
 					}
-					if ($editmode && $custom_created_descriptors) {
+					if ($editmode && ($custom_created_descriptors || (property_exists($data->subject, "is_editable") && $data->subject->is_editable))) {
 						$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $this->pix_icon("i/edit", block_exacomp_get_string("edit")), array('exa-type' => 'iframe-popup', 'target' => '_blank'));
 						$titleCell->text .= html_writer::link("", $this->pix_icon("t/delete", block_exacomp_get_string("delete")), array("onclick" => "if (confirm(".json_encode(block_exacomp_get_string('delete_confirmation_descr', null, $descriptor->title)).")) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
 					}

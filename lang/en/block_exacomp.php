@@ -592,9 +592,10 @@ $string['de:Freigabe bearbeiten'] = 'Change Sharing';
 $string['de:Kopie als Vorlage speichern'] = 'Create Copy as Draft';
 $string['de:Vorlage verwenden'] = 'Use Draft';
 $string['crosssubject_files'] = 'crosssubject files';
-$string['new_niveau'] = 'New learning progress';
+$string['new_niveau'] = 'new learning progress';
 $string['groupcategory'] = 'Category';
 $string['new_column'] = 'new column';
+$string['new_topic'] = 'new Topic';
 
 
 // === Associations ===
@@ -885,7 +886,7 @@ $string['report all descriptor examples'] = 'All examples of competence fields, 
 $string['filterlogic'] = 'Filterlogic: ';
 $string['topic_description'] = 'Create your first topic:';
 $string['niveau_description'] = 'Create your first Niveau:';
-$string['descriptor_description'] = 'Create your first Niveau:';
+$string['descriptor_description'] = 'Create your first descriptor:';
 $string['selectcourse_filter'] = 'Filter';
 $string['selectcourse_filter_schooltype'] = 'Schooltype';
 $string['selectcourse_filter_onlyselected'] = 'Show only selected grids';

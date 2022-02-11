@@ -601,6 +601,7 @@ $string['crosssubject_files'] = 'Materialien';
 $string['new_niveau'] = 'neuer Lernfortschritt';
 $string['groupcategory'] = 'Kategorie';
 $string['new_column'] = 'neue Spalte';
+$string['new_topic'] = 'neuer Kompetenzbereich';
 
 
 // === Associations ===
