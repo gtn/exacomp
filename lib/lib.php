@@ -14015,6 +14015,12 @@ function block_exacomp_get_backup_temp_directory() {
 
 
 function block_exacomp_relate_komettranslator_to_exacomp(){
+    global $DB;
+    // if the komettranslator tool is not installed --> don't do anything
+    if(!$DB->get_manager()->table_exists('local_komettranslator')){
+        return;
+    }
+
     //find all activities which have competencies
     //for these competencies: find out if thy are in local_komettranslator
     //if they are, find the related descriptorid
@@ -14024,7 +14030,7 @@ function block_exacomp_relate_komettranslator_to_exacomp(){
 
     //create_related_examples
     // create the examples based on the implicit relation that exists because of the moodlecomp to exacompdescriptor relation.
-    global $DB;
+
     //relate the modules(activities) to descriptors -> create examples
     //First, get all the activityids that are relevant: all activities that have any competency where the competency exists in local_komettranslator
     //DISCTINCT, since I only need to find all modules that have ANY relation. It does not matter how many competencies are linked.
