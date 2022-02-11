@@ -1225,7 +1225,7 @@ create example',
     'methodname' => 'diggrv_create_course',
     'classpath' => 'blocks/exacomp/externallib.setapp.php',
     'description' => '',
-    'type' => 'read',
+    'type' => 'write',
   ),
 );
 

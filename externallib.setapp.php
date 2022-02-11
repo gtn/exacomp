@@ -871,7 +871,7 @@ class block_exacomp_external_setapp extends external_api {
     }
 
     /**
-     * @ws-type-read
+     * @ws-type-write
      */
     public static function diggrv_create_course($courseid, $schoolcode) {
         static::validate_parameters(static::block_exacomp_diggrv_create_course_parameters(), array(
@@ -881,6 +881,8 @@ class block_exacomp_external_setapp extends external_api {
 
         //        block_exacomp_require_teacher($courseid);
         // TODO: check if is teacher --> how?
+
+        die('not finished');
 
         block_exacomp_diggrv_create_first_course($courseid, $schoolcode);
 
