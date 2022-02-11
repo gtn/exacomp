@@ -163,10 +163,11 @@ class block_exacomp_observer
         global $DB;
         //  $event->other['name']) gives the "name" field of e.g. assign or quiz table entry
         // block_exacomp_check_relatedactivitydata($event->objectid, $event->other['name']);
-        // this is already done in block_exacomp_coursemodule_edit_post_actions. todo: Where is the better solution?
+        // this is already done in block_exacomp_coursemodule_edit_post_actions(). todo: Where should it be done?
 
         $students = block_exacomp_get_students_by_course($event->courseid);
         $activity = $event->get_record_snapshot('course_modules', $event->objectid);
+        $activity->activityid = $activity->id;
         // get the examples.. the assigned descriptors and topics do not matter for the visibility update
         $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->id, 'courseid' => $event->courseid), '', 'id');
         foreach ($students as $student) {
@@ -175,17 +176,18 @@ class block_exacomp_observer
         return true;
     }
 
-    /**
-     * Observer for \core\event\course_module_deleted event.
-     *
-     * @param \core\event\course_module_deleted $event
-     * @return void
-     */
-    public static function course_module_deleted(\core\event\course_module_deleted $event)
-    {
-        // TODO: this is not triggered?
-        block_exacomp_checkfordelete_relatedactivity($event->objectid);
-        return true;
-    }
+//    /**
+//     * Observer for \core\event\course_module_deleted event.
+//     *
+//     * @param \core\event\course_module_deleted $event
+//     * @return void
+//     */
+//    public static function course_module_deleted(\core\event\course_module_deleted $event)
+//    {
+//        // This is often not triggered instantly, but for example in the next cron.
+//        block_exacomp_checkfordelete_relatedactivity($event->objectid);
+//        return true;
+//    }
+// this is already done in block_exacomp_pre_course_module_delete(). todo: Where should it be done?
 
 }
