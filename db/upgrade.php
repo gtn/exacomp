@@ -3986,14 +3986,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022021000, 'exacomp');
     }
 
-    if ($oldversion < 2022021005) {
+    if ($oldversion < 2022021100) {
         $table = new xmldb_table('block_exacompautotestassign');
         if ($dbman->table_exists($table)) {
             $dbman->drop_table($table);
         }
 
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2022021005, 'exacomp');
+        upgrade_block_savepoint(true, 2022021100, 'exacomp');
     }
     /*
      * insert new upgrade scripts before this comment section
