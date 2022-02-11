@@ -4944,7 +4944,9 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
     foreach ($descriptorsData as $activityid => $descriptors) {
         $relatedDescriptors = array_filter($descriptors);
         $relatedDescriptors = array_keys($relatedDescriptors);
-        block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
+        if(!empty($relatedDescriptors)){
+            block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
+        }
     }
 
 }
