@@ -107,7 +107,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 $ispreconfig = get_config('exacomp', 'assessment_preconfiguration');
                 // Add needed element attributes for work with preconfiguration.
                 $doc = new DOMDocument();
-                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+//                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                 $selector = new DOMXPath($doc);
                 foreach ($selector->query('//input') as $e) {
                     $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
@@ -130,7 +132,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     case 'assessment_grade_verbose':
                     case 'assessment_verbose_options':
                         $doc = new DOMDocument();
-                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                        $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+//                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                        $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                         $selector = new DOMXPath($doc);
                         $de_value = call_user_func('block_exacomp_get_'.$this->name, 'de');
                         if ($de_value) {
@@ -159,7 +163,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 $ispreconfig = get_config('exacomp', 'assessment_preconfiguration');
                 // Add needed element attributes for work with preconfiguration.
                 $doc = new DOMDocument();
-                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+//                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                 $selector = new DOMXPath($doc);
                 foreach ($selector->query('//input') as $e) {
                     $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
@@ -294,7 +300,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 $this->description, true, '', '', $query);
             // Hide some html for better view of this settings.
             $doc = new DOMDocument();
-            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+//            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             // Clean div with classes.
             $elementsToDelete = array();
@@ -413,7 +421,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $output = parent::output_html($data, $query);
             // Add onChange on input element.
             $doc = new DOMDocument();
-            $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+//            $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             foreach ($selector->query('//select') as $e) {
                 $e->setAttribute("onChange", "setupPreconfiguration(this);");
@@ -830,7 +840,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 
             // Hide some html for better view of this settings.
             $doc = new DOMDocument();
-            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+//            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             // Delete div with classes.
             $deletedivs = array('form-defaultinfo', 'form-description');
@@ -998,7 +1010,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 $this->description, true, '', '', $query);
             // Hide some html for better view of this settings.
             $doc = new DOMDocument();
-            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+//            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             // Delete div with classes.
             $deletedivs = array('form-label', 'form-defaultinfo');
