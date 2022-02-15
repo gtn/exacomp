@@ -243,53 +243,34 @@ class data {
         $tables = array(
             array(
                 'table' => BLOCK_EXACOMP_DB_DESCTOPICS,
-                'needed1' => array(
-                    'descrid',
-                    BLOCK_EXACOMP_DB_DESCRIPTORS
-                ),
-                'needed2' => array(
-                    'topicid',
-                    BLOCK_EXACOMP_DB_TOPICS
-                )
+                'needed1' => array('descrid',BLOCK_EXACOMP_DB_DESCRIPTORS),
+                'needed2' => array('topicid',BLOCK_EXACOMP_DB_TOPICS)
             ),
             array(
                 'table' => BLOCK_EXACOMP_DB_DESCEXAMP,
-                'needed1' => array(
-                    'descrid',
-                    BLOCK_EXACOMP_DB_DESCRIPTORS
-                ),
-                'needed2' => array(
-                    'exampid',
-                    BLOCK_EXACOMP_DB_EXAMPLES
-                )
+                'needed1' => array('descrid',BLOCK_EXACOMP_DB_DESCRIPTORS),
+                'needed2' => array('exampid',BLOCK_EXACOMP_DB_EXAMPLES)
             ),
             array(
                 'table' => BLOCK_EXACOMP_DB_DESCCROSS,
-                'needed1' => array(
-                    'descrid',
-                    BLOCK_EXACOMP_DB_DESCRIPTORS
-                ),
-                'needed2' => array(
-                    'crosssubjid',
-                    BLOCK_EXACOMP_DB_CROSSSUBJECTS
-                )
+                'needed1' => array('descrid',BLOCK_EXACOMP_DB_DESCRIPTORS),
+                'needed2' => array('crosssubjid',BLOCK_EXACOMP_DB_CROSSSUBJECTS)
             ),
             array(
                 'table' => BLOCK_EXACOMP_DB_EXAMPTAX,
-                'needed1' => array(
-                    'exampleid',
-                    BLOCK_EXACOMP_DB_EXAMPLES
-                ),
-                'needed2' => array(
-                    'taxid',
-                    BLOCK_EXACOMP_DB_TAXONOMIES
-                )
+                'needed1' => array('exampleid',BLOCK_EXACOMP_DB_EXAMPLES),
+                'needed2' => array('taxid',BLOCK_EXACOMP_DB_TAXONOMIES)
             ),
             array(
                 'table' => BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
 				'needed1' => array('exampleid', BLOCK_EXACOMP_DB_EXAMPLES),
 				// course / studentid exclusive!
 			),
+            array(
+                'table' => BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY,
+                'needed1' => array('exampleid', BLOCK_EXACOMP_DB_EXAMPLES),
+                // course / studentid exclusive!
+            ),
 			array(
 				'table' => BLOCK_EXACOMP_DB_DESCVISIBILITY,
 				'needed1' => array('descrid', BLOCK_EXACOMP_DB_DESCRIPTORS),
@@ -297,7 +278,7 @@ class data {
 			),
 			array(
 				'table' => BLOCK_EXACOMP_DB_TOPICVISIBILITY,
-				'needed1' => array('topicid', BLOCK_EXACOMP_DB_TOPICS),
+                'needed1' => array('topicid', BLOCK_EXACOMP_DB_TOPICS),
 				// course / studentid exclusive!
 			),
 			array(
@@ -310,6 +291,16 @@ class data {
 				'needed1' => array('topicid', BLOCK_EXACOMP_DB_TOPICS),
 				'needed2' => array('courseid', "course"),
 			),
+            array(
+                'table' => BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION,
+                'needed1' => array('descrid', BLOCK_EXACOMP_DB_DESCRIPTORS),
+                'needed2' => array('questid', "question"),
+            ),
+            array(
+                'table' => BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM,
+                'needed1' => array('subjectid', BLOCK_EXACOMP_DB_SUBJECTS),
+                'needed2' => array('niveauid', BLOCK_EXACOMP_DB_NIVEAUS),
+            ),
 			// after examples and examptax, delete unused BLOCK_EXACOMP_DB_TAXONOMIES
 			array(
 				'table' => BLOCK_EXACOMP_DB_TAXONOMIES,
@@ -325,20 +316,26 @@ class data {
 				'table' => BLOCK_EXACOMP_DB_EXAMPLES,
 				'needed1' => array('id', 'SELECT exampid FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'}'),
 			),
-			// delete topics without descriptors
-			// ist so nicht mehr richtig
-			// eigentlich: topics loeschen, wenn das subject nicht existiert
-			// subjects loeschen, wenn der schooltype nicht existiert
-			/*
-			array(
-				'table' => BLOCK_EXACOMP_DB_TOPICS,
-				'needed1' => array('id', 'SELECT topicid FROM {'.BLOCK_EXACOMP_DB_DESCTOPICS.'}'),
-			),
-			array(
-				'table' => BLOCK_EXACOMP_DB_SUBJECTS,
-				'needed1' => array('id', 'SELECT subjid FROM {'.BLOCK_EXACOMP_DB_TOPICS.'}'),
-			),
 
+            // delete descriptors without topics
+            array(
+                'table' => BLOCK_EXACOMP_DB_DESCRIPTORS,
+                'needed1' => array('id', 'SELECT descrid FROM {'.BLOCK_EXACOMP_DB_DESCTOPICS.'}'),
+            ),
+
+            // delete topics without subjects
+            array(
+                'table' => BLOCK_EXACOMP_DB_TOPICS,
+                'needed1' => array('subjid', 'SELECT id FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'}'),
+            ),
+
+            // delete subjects without schooltypes TODO: what about selfmade subjects? The stid = 0 for those...
+//            array(
+//                'table' => BLOCK_EXACOMP_DB_SUBJECTS,
+//                'needed1' => array('stid', 'SELECT id FROM {'.BLOCK_EXACOMP_DB_SCHOOLTYPES.'}'),
+//            ),
+
+            /*
 			array(
 				'table' => BLOCK_EXACOMP_DB_CATEGORIES,
 				'needed1' => array('id', 'SELECT catid FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'}'),
@@ -352,6 +349,12 @@ class data {
 				'needed1' => array('id', 'SELECT elid FROM {'.BLOCK_EXACOMP_DB_SCHOOLTYPES.'}'),
 			),
 			*/
+
+            // delete example annotations without examples
+            array(
+                'table' => BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION,
+                'needed1' => array('exampleid', 'SELECT id FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'}'),
+            ),
 		);
 
 		$make_select = function($select) {

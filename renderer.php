@@ -7723,7 +7723,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$pool = $this->example_pool();
 
-		$calendar = html_writer::div('', '', array('id' => 'calendar'));
+ 		$calendar = html_writer::div('', '', array('id' => 'calendar'));
 		$trash = $this->example_trash();
 		$clear = html_writer::div('', '', array('style' => 'clear:both')); // what is this?
 
