@@ -341,26 +341,14 @@ class data {
 //                'needed1' => array('stid', 'SELECT id FROM {'.BLOCK_EXACOMP_DB_SCHOOLTYPES.'}'),
 //            ),
 
-            /*
-			array(
-				'table' => BLOCK_EXACOMP_DB_CATEGORIES,
-				'needed1' => array('id', 'SELECT catid FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'}'),
-			),
-			array(
-				'table' => BLOCK_EXACOMP_DB_SCHOOLTYPES,
-				'needed1' => array('id', 'SELECT stid FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'}'),
-			),
-			array(
-				'table' => BLOCK_EXACOMP_DB_EDULEVELS,
-				'needed1' => array('id', 'SELECT elid FROM {'.BLOCK_EXACOMP_DB_SCHOOLTYPES.'}'),
-			),
-			*/
 
             // delete example annotations without examples
             array(
                 'table' => BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION,
                 'needed1' => array('exampleid', 'SELECT id FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'}'),
             ),
+
+            // Keep example gradings, since they are sometimes used in combination with items, and items are exaPORT entries which should not be deleted
 		);
 
 		$make_select = function($select) {
@@ -393,6 +381,15 @@ class data {
 
 			g::$DB->execute($sql);
 		}
+
+        // delete competence gradings of competences that do not exists anymore ==> subjects, topics, descriptors are 3 different tables
+        $sql = "
+			DELETE FROM {".BLOCK_EXACOMP_DB_COMPETENCES."}
+			WHERE comptype = ".BLOCK_EXACOMP_TYPE_DESCRIPTOR." AND compid NOT IN (SELECT id FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."})
+			OR comptype = ".BLOCK_EXACOMP_TYPE_TOPIC." AND compid NOT IN (SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."})
+			OR comptype = ".BLOCK_EXACOMP_TYPE_SUBJECT." AND compid NOT IN (SELECT id FROM {".BLOCK_EXACOMP_DB_SUBJECTS."})
+		";
+        g::$DB->execute($sql);
 
         // delete unused sources
 		/*
