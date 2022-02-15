@@ -2092,7 +2092,7 @@ class data_importer extends data {
                 // select grids for importing
                 if (isset($xml->edulevels)) {
                     $allGridSelected = optional_param('selectedGridAll', null, PARAM_INT);
-                    if ($allGridSelected !== null) {
+                    if ($allGridSelected !== null && $allGridSelected != 0) { // shouldn't !== null work?... it does not
                         self::update_selectedgridsall_for_source($source_local_id, $allGridSelected, ($simulate || $schedulerId > 0 ? true : false));
                     } elseif (!$allGridSelected && $newSelecting && count($newSelecting) > 0) {
                         // update selected grids only if not selected 'all subjects' checkbox
@@ -3230,7 +3230,7 @@ class data_importer extends data {
 
 		foreach($xmlItem->schooltypes->schooltype as $schooltype) {
 			$schooltype->elid = $edulevel->id;
-			self::insert_schooltype($schooltype, $schedulerId);
+			self::insert_schooltype($schooltype, $source_local_id, $schedulerId);
 		}
 
 		return $edulevel;
