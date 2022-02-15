@@ -4248,13 +4248,15 @@ function block_exacomp_normalize_course_visibilities($courseid) {
 		}
 	}
 
-	block_exacomp_update_example_visibilities($courseid, $examples);
-
 	//delete unconnected examples
-	//add blocking events to examples which are not deleted
+	//add blocking events and free materials to examples which are not deleted
 	$blocking_events = g::$DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('blocking_event' => 1));
+    $blocking_events = array_merge($blocking_events, g::$DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('blocking_event' => 2)));
 
-	foreach ($blocking_events as $event) {
+    block_exacomp_update_example_visibilities($courseid, $examples, array_column($blocking_events, "id", "id"));
+
+
+    foreach ($blocking_events as $event) {
 		$examples[$event->id] = $event;
 	}
 
@@ -4367,7 +4369,7 @@ function block_exacomp_update_descriptor_visibilities($courseid, $descriptors) {
  * @param unknown_type $courseid
  * @param unknown_type $descriptors
  */
-function block_exacomp_update_example_visibilities($courseid, $examples) {
+function block_exacomp_update_example_visibilities($courseid, $examples, $blocking_events=array()) {
 	global $DB;
 
 	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=0', array($courseid));
@@ -4418,7 +4420,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples) {
 
 	foreach ($visibilities as $visible) {
 		//delete ununsed descriptors for course and for special students
-		if (!array_key_exists($visible, $finalexamples)) {
+		if (!array_key_exists($visible, $finalexamples) && !array_key_exists($visible, $blocking_events)) {
 			//check if used in cross-subjects --> then it must still be visible
 			if (!in_array($visible, $cross_subject_examples)) {
 				$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array("courseid" => $courseid, "exampleid" => $visible));

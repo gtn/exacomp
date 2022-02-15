@@ -3995,6 +3995,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2022021100, 'exacomp');
     }
+
+    if ($oldversion < 2022021501) {
+        //$sql = 'INSERT INTO {block_exacompdescriptors} (`id`, `title`) VALUES (-1,"free_materials")';
+        //$DB->Execute($sql);
+        $DB->delete_records('block_exacompdescriptors', array("id" => -1));
+        $DB->insert_record_raw('block_exacompdescriptors', ['id' => -1, 'title' => 'free_materials', 'source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR], true, false, true);
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2022021501, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
