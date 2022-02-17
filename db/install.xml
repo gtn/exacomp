@@ -1,785 +1,786 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <XMLDB PATH="blocks/exacomp/db" VERSION="20201003" COMMENT="XMLDB file for Moodle blocks/exacomp"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
-  <TABLES>
-    <TABLE NAME="block_exacompdescriptors" COMMENT="die Bildungsstandards=Deskriptoren">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="der bildungsstandard"/>
-        <FIELD NAME="crdate" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="skillid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server"/>
-        <FIELD NAME="exampletext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="profoundness" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = basic descriptor, 1 = extended descriptor"/>
-        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="requirement" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
-        <FIELD NAME="benefit" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
-        <FIELD NAME="knowledgecheck" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
-        <FIELD NAME="catid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="category id foreign key"/>
-        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom descriptor"/>
-        <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="niveauid" TYPE="foreign" FIELDS="niveauid" REFTABLE="block_exacompniveaus" REFFIELDS="id"/>
-        <KEY NAME="skillid" TYPE="foreign" FIELDS="skillid" REFTABLE="block_exacompskills" REFFIELDS="id"/>
-        <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id" COMMENT="cat id foreign key"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacomptopics" COMMENT="Schwerpunkte, Kategorie der Deskriptoren">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="subjid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
-        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="titleshort" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="numb" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic"/>
-        <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="span" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom topic"/>
-        <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="subjid" TYPE="foreign" FIELDS="subjid" REFTABLE="block_exacompsubjects" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompsubjects" COMMENT="Gegenstände, Kategorie der Schwerpunkte">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="stid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
-        <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="infolink" TYPE="char" LENGTH="400" NOTNULL="false" SEQUENCE="false" COMMENT="link to external description for comp grid"/>
-        <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="is the subject a global subject"/>
-        <FIELD NAME="version" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="grid version"/>
-        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom subject"/>
-        <FIELD NAME="class" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" COMMENT="class"/>
-        <FIELD NAME="is_editable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="can teacher edit grid from komet or not"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="stid" TYPE="foreign" FIELDS="stid" REFTABLE="block_exacompschooltypes" REFFIELDS="id" COMMENT="schooltyp id"/>
-        <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompschooltypes" COMMENT="Schultypen, Kategorie der Gegensände">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="elid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="isoez" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="elid" TYPE="foreign" FIELDS="elid" REFTABLE="block_exacompedulevels" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompedulevels" COMMENT="Ober oder Unterstufe, Kategorie für Schultypen">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescrtopic_mm" COMMENT="zuordnung Deskriptoren zu schwerpunkten">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="topicid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
-        <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompexamples" COMMENT="Beispiele die für bestimmte Deskriptoren bestimmt sind">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="task" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="solution" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="completefile" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="taxid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="timeframe" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="tips" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="externalurl" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="externalsolution" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="externaltask" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server"/>
-        <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="iseditable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="mobile app"/>
-        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom example"/>
-        <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic"/>
-        <FIELD NAME="restorelink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="metalink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="packagelink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="blocking_event" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="ethema_ismain" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Haupaufgabe"/>
-        <FIELD NAME="ethema_issubcategory" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Hauptaufgabe Unterkategorie"/>
-        <FIELD NAME="ethema_parent" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa zugeordnete Hauptaufgabe"/>
-        <FIELD NAME="ethema_important" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Pflichtaufgabe"/>
-        <FIELD NAME="example_icon" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="is_teacherexample" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Lehrermaterial"/>
-        <FIELD NAME="schedule_marker" TYPE="char" LENGTH="25" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="activityid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="activitylink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="activitytitle" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
-        <FIELD NAME="author_origin" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="taxid" TYPE="foreign" FIELDS="taxid" REFTABLE="block_exacomptaxonomies" REFFIELDS="id"/>
-        <KEY NAME="creatorid" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescrexamp_mm" COMMENT="zuordung Deskriptoren zu beispielen">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="exampid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="id_foreign" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="table_foreign" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="descr or cross or topic or subje"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
-        <KEY NAME="exampid" TYPE="foreign" FIELDS="exampid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacomptaxonomies" COMMENT="blumsche taxonomie, attribute zu den beispielen">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcompactiv_mm" COMMENT="zuordnung aufgaben zu deskriptoren oder topics festlegen">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="compid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="activityid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="Entweder course_module id oder Exabis Eportfolio item id"/>
-        <FIELD NAME="activitytitle" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
-        <FIELD NAME="coursetitle" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Dient zum Sichern des Kurstitels, falls dieser gelöscht werden sollte"/>
-        <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-        <FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompskills" COMMENT="ESP, Fähgigkeiten">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcompuser_mm" COMMENT="In dieser Tabelle wird gespeichert, welche User welche Deskriptoren oder Topics von welcher Aufgabe erfüllen und zustäzlich wer den Eintrag gemacht hat, also Lehrer oder Schüler.">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="activityid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Die Zugeordnete Aktivität"/>
-        <FIELD NAME="compid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Zuordnung Deskriptor oder Topic"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Benutzer der die Kompetenz erfüllt"/>
-        <FIELD NAME="reviewerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Benutzerid dessen, der bewertet ob Kompetenz erfüllt ist. Kann entweder ein Schüler sein (Selbsteinschätzung), oder ein Lehrer"/>
-        <FIELD NAME="role" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Speichert ob der Bewertende ein Schüler oder Lehrer ist. 1=Lehrer 0=Schüler"/>
-        <FIELD NAME="value" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="hier ist eine bewertung nach einem schema des lehrers möglich"/>
-        <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-        <FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
-        <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="percentage" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="additional grading value"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
-        <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Bewerter"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompmdltype_mm" COMMENT="Diese Tabelle speichert den Schultyp der jeweiligen Moodleinstanz">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="stid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID des zugeordneten Schultyps"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="used for the alternative data model because here the this configuration is not used globally for the whole moodle instance but for a specific course"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="stid" TYPE="foreign" FIELDS="stid" REFTABLE="block_exacompschooltypes" REFFIELDS="id" COMMENT="Fremdschlüssel Schultyp"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcoutopi_mm" COMMENT="In dieser Tabelle werden die Zuordnungen der einzelnen Kurse zu Schwerpunkten gespeichert">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Zuordnung Kurs"/>
-        <FIELD NAME="topicid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Welcher Schwerpunkt zum Kurs gehört"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kursid"/>
-        <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id" COMMENT="Fremdschlüssel Schwerpunkt-ID"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcompuser" COMMENT="In dieser Tabelle wird gespeichert, welcher Benutzer welchen Deskriptor oder welches Topic erfüllt. Zusätzlich wer die Kompetenzermittlung durchgeführt hat, also Schüler oder Lehrer">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
-        <FIELD NAME="compid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des erfüllten Deskriptors oder Topics"/>
-        <FIELD NAME="reviewerid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des beurteilenden Users"/>
-        <FIELD NAME="role" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beurteilerrolle. 1=Lehrer, 0=schüler"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="value" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="beurteilung"/>
-        <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-        <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="additional info value"/>
-        <FIELD NAME="evalniveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="link to evaluation niveau (eval_niveau)"/>
-        <FIELD NAME="gradingisold" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="shows if the grading is old / if there exists a newer grading in one of the childcompetences"/>
-        <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence, even in different courses"/>
-        <FIELD NAME="gradinghistory" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the history of gradings in this course on this descriptor"/>
-        <FIELD NAME="personalisedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that a teacher can write individually instead of the descriptortitle for every student"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
-        <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Beurteilender"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
-        <KEY NAME="evalniveauid" TYPE="foreign" FIELDS="evalniveauid" REFTABLE="block_exacompeval_niveau" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompsettings" COMMENT="Bewertungsschema des Kurses festlegen">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Kurs"/>
-        <FIELD NAME="grading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Bewertungsschema maximaler Wert"/>
-        <FIELD NAME="activities" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table"/>
-        <FIELD NAME="tstamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="date of import"/>
-        <FIELD NAME="uses_activities" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="show_all_descriptors" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="usedetailpage" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="profoundness" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="filteredtaxonomies" TYPE="char" LENGTH="1333" NOTNULL="true" DEFAULT="[100000000]" SEQUENCE="false" COMMENT="json encoded tax filter"/>
-        <FIELD NAME="nostudents" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="istemplate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="is_editable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="hideglobalsubjects" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="assessmentconfiguration" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of the predefined assessment/grading settings"/>
-        <FIELD NAME="diwiordernumber" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="ID of the last certificate order in diwipass"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Kurs"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="block" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="This field stores the associated block: exacomp, exastud or exaport"/>
-        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="this field stores the associated item, either periodid if block is exastud, courseid if block is exacomp or itemid if block is exaport"/>
-        <FIELD NAME="feedback" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="this field indicates if verbal feedback should be displayed (for exastud reviews)"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores userid"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompniveaus" COMMENT="Niveaus">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title"/>
-        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="id of the parent niveau"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="span" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="span tells if the niveau is a link over multiple niveaus"/>
-        <FIELD NAME="numb" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompexameval" COMMENT="Default comment for the table, please edit me">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="exampleid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Beispiels"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="teacher_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="teacher_reviewerid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="student_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="starttime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="endtime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="studypartner" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="evalniveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="resubmission" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timestamp_teacher" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timestamp_student" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
-        <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id" COMMENT="Fremdschlüssel Exampleid"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Courseid"/>
-        <KEY NAME="teacher_reviewerid" TYPE="foreign" FIELDS="teacher_reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
-        <KEY NAME="evalniveauid" TYPE="foreign" FIELDS="evalniveauid" REFTABLE="block_exacompeval_niveau" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcategories" COMMENT="used for additional info">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="lvl" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="parent category"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescbadge_mm" COMMENT="badges require descriptors to get awarded">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="descid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="badgeid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="descid" TYPE="foreign" FIELDS="descid" REFTABLE="block_exacompdescriptors" REFFIELDS="id" COMMENT="Fremdschlüssel Descid"/>
-        <KEY NAME="badgeid" TYPE="foreign" FIELDS="badgeid" REFTABLE="badge" REFFIELDS="id" COMMENT="Fremdschlüssel Badgeid"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompitem_mm" COMMENT="this table is used to connect exaportitems to exacomp topics, descriptors, examples">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="competence_type" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="4" SEQUENCE="false" COMMENT="4 is BLOCK_EXACOMP_TYPE_EXAMPLE, which was used before the rework, so it is set as default"/>
-        <FIELD NAME="exacomp_record_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="datemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = not evaluated, 1 = accepted, 2 = revoked"/>
-        <FIELD NAME="teachervalue" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="evaluation value from teacher, may range from 0-100"/>
-        <FIELD NAME="studentvalue" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="evaluation student value, may range from 0-100"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompitemcollab_mm" COMMENT="this table is used to connect exaportitems to collaborators via userid and itemid">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompexternaltrainer" COMMENT="is used for assigning students to external trainers for the app">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="trainerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcrosssubjects" COMMENT="Cross-Subjects beinhalten Teilmengen von allen verfügbaren Deskriptoren">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server"/>
-        <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="shared" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Freigabe für ganzen Kurs mit 1"/>
-        <FIELD NAME="subjectid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Zugeordnetes Subject"/>
-        <FIELD NAME="groupcategory" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Kategorie nur zum Ordnen/Sortieren/Gruppieren"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="creatorid" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Courseid"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescrcross_mm" COMMENT="zuordnung Deskriptoren zu Cross-Subjects">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="crosssubjid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
-        <KEY NAME="crosssubjid" TYPE="foreign" FIELDS="crosssubjid" REFTABLE="block_exacompcrosssubjects" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcrossstud_mm" COMMENT="zuordnung Schüler zu Cross-Subjects (Freigabe)">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="crosssubjid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="crosssubjid" TYPE="foreign" FIELDS="crosssubjid" REFTABLE="block_exacompcrosssubjects" REFFIELDS="id"/>
-        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescrvisibility" COMMENT="Visibility of descriptor in context of course, topic and student">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
-        <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
-        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompexampvisibility" COMMENT="Visibility of example in context of course, topic and student">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="exampleid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
-        <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
-        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompschedule" COMMENT="schedule for tasks">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the course in which the example is treated"/>
-        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="start" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="end" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="distributionid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdatasources" COMMENT="Default comment for the table, please edit me">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="source" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="category_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
-        <FIELD NAME="selected_grids" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="selected grids"/>
-        <FIELD NAME="all_grids" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescrcat_mm" COMMENT="zuordnung Deskriptoren zu kategorien">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
-        <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompexampletax_mm" COMMENT="zuordnung Examples zu Taxonomien">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="exampleid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="taxid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
-        <KEY NAME="taxid" TYPE="foreign" FIELDS="taxid" REFTABLE="block_exacomptaxonomies" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompsubjniveau_mm" COMMENT="subj niveau">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="subjectid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="niveauid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="subtitle" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompeval_niveau" COMMENT="evaluation niveau">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="title" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="option_type" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacomptopicvisibility" COMMENT="Visibility of topic in context of course and student">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="topicid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
-        <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id"/>
-        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompsolutvisibility" COMMENT="defines the visibility of example solutions">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
-        <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
-        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompimporttasks" COMMENT="table stores settings for scheduler importing tasks">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title of task"/>
-        <FIELD NAME="link" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="link to the source"/>
-        <FIELD NAME="category_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
-        <FIELD NAME="selected_grids" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="selected grids"/>
-        <FIELD NAME="all_grids" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="source" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="disabled" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompwsdata" COMMENT="table stores different data for web services">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="token" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false" COMMENT="security token, aka private access key"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="owner of the token"/>
-        <FIELD NAME="data" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="data"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcmsettings" COMMENT="table stores settings for course modules">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="coursemoduleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="value" TYPE="char" LENGTH="256" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcmassign" COMMENT="table stores infos for competence assignments from scheduled tasks based on activities (restricted access)">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="coursemoduleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="quiz id"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="10"/>
-        <FIELD NAME="relateddata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="related data"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompcohortcode" COMMENT="table stores cohortcodes for diggr">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="cohortcode" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="skz" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="trainerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompglobalgradings" COMMENT="In dieser Tabelle wird gespeichert, welcher Globalgradignstext zu einem Subject/Topic/Competence gespeichert ist">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
-        <FIELD NAME="compid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Deskriptors oder Topics"/>
-        <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-        <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence, even in different courses"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescrquest_mm" COMMENT="This table stores connections between descripors and questions">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="questid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
-        <FIELD NAME="descrid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Deskriptors oder Topics"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="courseid"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
-        <KEY NAME="questid" TYPE="foreign" FIELDS="questid" REFTABLE="question" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompapplogin" COMMENT="block_exacompapplogin table retrofitted from MySQL">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="app_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="moodle_redirect_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="moodle_data_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="created_at" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="request_data" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="result_data" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompexampannotation" COMMENT="Stores annotations(text) to an example in a course. Examples are the same in different courses, but their annotations can differ.">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="exampleid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="annotationtext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
-        <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompsubjstudconfig" COMMENT="Settings for every student-subject configuration. Used for Diggrplus for priamry School (diggr-v)">
-      <FIELDS>
-          <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-          <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
-          <FIELD NAME="subjectid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-          <FIELD NAME="spf" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-          <FIELD NAME="assess_with_grades" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-          <FIELD NAME="is_pflichtgegenstand" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-          <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-          <FIELD NAME="personalisedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text a teacher can write individually for each student and subject"/>
-      </FIELDS>
-      <KEYS>
-          <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-          <KEY NAME="niveauid" TYPE="foreign" FIELDS="niveauid" REFTABLE="block_exacompniveaus" REFFIELDS="id"/>
-          <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id" COMMENT="foreign key studentid"/>
-          <KEY NAME="subjectid" TYPE="foreign" FIELDS="subjectid" REFTABLE="block_exacompsubjects" REFFIELDS="id" COMMENT="foreign key subjectid"/>
-      </KEYS>
-    </TABLE>
-      <TABLE NAME="block_exacomp_usermap" COMMENT="Mapping of users">
-          <FIELDS>
-              <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="true" COMMENT="id"/>
-              <FIELD NAME="provider" TYPE="char" LENGTH="15" NOTNULL="false" SEQUENCE="false" COMMENT="provider"/>
-              <FIELD NAME="tenant_id" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="tenant_id"/>
-              <FIELD NAME="school" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="school name from provider"/>
-              <FIELD NAME="remoteuserid" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
-              <FIELD NAME="remoteuserrole" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="user role in remote"/>
-              <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="userid in moodle"/>
-              <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="time mapping was created"/>
-              <FIELD NAME="lastaccess" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="timestamp of last access"/>
-              <FIELD NAME="firstname" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
-              <FIELD NAME="lastname" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
-              <FIELD NAME="email" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
-              <FIELD NAME="userinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-              <FIELD NAME="candisconnect" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-          </FIELDS>
-          <KEYS>
-              <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-          </KEYS>
-          <INDEXES>
-              <INDEX NAME="tenant_id_remoteuserid" UNIQUE="true" FIELDS="tenant_id, remoteuserid"/>
-              <INDEX NAME="idx_tenant_id" UNIQUE="false" FIELDS="tenant_id"/>
-          </INDEXES>
-      </TABLE>
-  </TABLES>
+    <TABLES>
+        <TABLE NAME="block_exacompdescriptors" COMMENT="die Bildungsstandards=Deskriptoren">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="der bildungsstandard"/>
+                <FIELD NAME="crdate" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="skillid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server"/>
+                <FIELD NAME="exampletext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="profoundness" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = basic descriptor, 1 = extended descriptor"/>
+                <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="requirement" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
+                <FIELD NAME="benefit" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
+                <FIELD NAME="knowledgecheck" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
+                <FIELD NAME="catid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="category id foreign key"/>
+                <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom descriptor"/>
+                <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="niveauid" TYPE="foreign" FIELDS="niveauid" REFTABLE="block_exacompniveaus" REFFIELDS="id"/>
+                <KEY NAME="skillid" TYPE="foreign" FIELDS="skillid" REFTABLE="block_exacompskills" REFFIELDS="id"/>
+                <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id" COMMENT="cat id foreign key"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacomptopics" COMMENT="Schwerpunkte, Kategorie der Deskriptoren">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="subjid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="titleshort" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="numb" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic"/>
+                <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="span" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom topic"/>
+                <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="subjid" TYPE="foreign" FIELDS="subjid" REFTABLE="block_exacompsubjects" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompsubjects" COMMENT="Gegenstände, Kategorie der Schwerpunkte">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="stid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
+                <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="infolink" TYPE="char" LENGTH="400" NOTNULL="false" SEQUENCE="false" COMMENT="link to external description for comp grid"/>
+                <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="is the subject a global subject"/>
+                <FIELD NAME="version" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="grid version"/>
+                <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom subject"/>
+                <FIELD NAME="class" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" COMMENT="class"/>
+                <FIELD NAME="is_editable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="can teacher edit grid from komet or not"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="stid" TYPE="foreign" FIELDS="stid" REFTABLE="block_exacompschooltypes" REFFIELDS="id" COMMENT="schooltyp id"/>
+                <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompschooltypes" COMMENT="Schultypen, Kategorie der Gegensände">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="elid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="isoez" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="elid" TYPE="foreign" FIELDS="elid" REFTABLE="block_exacompedulevels" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompedulevels" COMMENT="Ober oder Unterstufe, Kategorie für Schultypen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdescrtopic_mm" COMMENT="zuordnung Deskriptoren zu schwerpunkten">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="topicid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
+                <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompexamples" COMMENT="Beispiele die für bestimmte Deskriptoren bestimmt sind">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="task" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="solution" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="completefile" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="taxid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="timeframe" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="tips" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="externalurl" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="externalsolution" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="externaltask" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server"/>
+                <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="iseditable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="mobile app"/>
+                <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom example"/>
+                <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic"/>
+                <FIELD NAME="restorelink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="metalink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="packagelink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="blocking_event" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="author" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="editor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="ethema_ismain" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Haupaufgabe"/>
+                <FIELD NAME="ethema_issubcategory" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Hauptaufgabe Unterkategorie"/>
+                <FIELD NAME="ethema_parent" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa zugeordnete Hauptaufgabe"/>
+                <FIELD NAME="ethema_important" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="eTheMa Pflichtaufgabe"/>
+                <FIELD NAME="example_icon" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="is_teacherexample" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Lehrermaterial"/>
+                <FIELD NAME="schedule_marker" TYPE="char" LENGTH="25" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="activityid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="activitylink" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="activitytitle" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
+                <FIELD NAME="author_origin" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="taxid" TYPE="foreign" FIELDS="taxid" REFTABLE="block_exacomptaxonomies" REFFIELDS="id"/>
+                <KEY NAME="creatorid" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdescrexamp_mm" COMMENT="zuordung Deskriptoren zu beispielen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="exampid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="id_foreign" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="table_foreign" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="descr or cross or topic or subje"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
+                <KEY NAME="exampid" TYPE="foreign" FIELDS="exampid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacomptaxonomies" COMMENT="blumsche taxonomie, attribute zu den beispielen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcompactiv_mm" COMMENT="zuordnung aufgaben zu deskriptoren oder topics festlegen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="compid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="activityid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="Entweder course_module id oder Exabis Eportfolio item id"/>
+                <FIELD NAME="activitytitle" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
+                <FIELD NAME="coursetitle" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Dient zum Sichern des Kurstitels, falls dieser gelöscht werden sollte"/>
+                <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
+                <FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompskills" COMMENT="ESP, Fähgigkeiten">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcompuser_mm" COMMENT="In dieser Tabelle wird gespeichert, welche User welche Deskriptoren oder Topics von welcher Aufgabe erfüllen und zustäzlich wer den Eintrag gemacht hat, also Lehrer oder Schüler.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="activityid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Die Zugeordnete Aktivität"/>
+                <FIELD NAME="compid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Zuordnung Deskriptor oder Topic"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Benutzer der die Kompetenz erfüllt"/>
+                <FIELD NAME="reviewerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Benutzerid dessen, der bewertet ob Kompetenz erfüllt ist. Kann entweder ein Schüler sein (Selbsteinschätzung), oder ein Lehrer"/>
+                <FIELD NAME="role" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Speichert ob der Bewertende ein Schüler oder Lehrer ist. 1=Lehrer 0=Schüler"/>
+                <FIELD NAME="value" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="hier ist eine bewertung nach einem schema des lehrers möglich"/>
+                <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
+                <FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
+                <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="percentage" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="additional grading value"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
+                <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Bewerter"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompmdltype_mm" COMMENT="Diese Tabelle speichert den Schultyp der jeweiligen Moodleinstanz">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="stid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID des zugeordneten Schultyps"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="used for the alternative data model because here the this configuration is not used globally for the whole moodle instance but for a specific course"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="stid" TYPE="foreign" FIELDS="stid" REFTABLE="block_exacompschooltypes" REFFIELDS="id" COMMENT="Fremdschlüssel Schultyp"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcoutopi_mm" COMMENT="In dieser Tabelle werden die Zuordnungen der einzelnen Kurse zu Schwerpunkten gespeichert">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Zuordnung Kurs"/>
+                <FIELD NAME="topicid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Welcher Schwerpunkt zum Kurs gehört"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kursid"/>
+                <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id" COMMENT="Fremdschlüssel Schwerpunkt-ID"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcompuser" COMMENT="In dieser Tabelle wird gespeichert, welcher Benutzer welchen Deskriptor oder welches Topic erfüllt. Zusätzlich wer die Kompetenzermittlung durchgeführt hat, also Schüler oder Lehrer">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
+                <FIELD NAME="compid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des erfüllten Deskriptors oder Topics"/>
+                <FIELD NAME="reviewerid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des beurteilenden Users"/>
+                <FIELD NAME="role" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beurteilerrolle. 1=Lehrer, 0=schüler"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="value" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="beurteilung"/>
+                <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
+                <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="additional info value"/>
+                <FIELD NAME="evalniveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="link to evaluation niveau (eval_niveau)"/>
+                <FIELD NAME="gradingisold" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="shows if the grading is old / if there exists a newer grading in one of the childcompetences"/>
+                <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence, even in different courses"/>
+                <FIELD NAME="gradinghistory" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the history of gradings in this course on this descriptor"/>
+                <FIELD NAME="personalisedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that a teacher can write individually instead of the descriptortitle for every student"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
+                <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Beurteilender"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
+                <KEY NAME="evalniveauid" TYPE="foreign" FIELDS="evalniveauid" REFTABLE="block_exacompeval_niveau" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompsettings" COMMENT="Bewertungsschema des Kurses festlegen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Kurs"/>
+                <FIELD NAME="grading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Bewertungsschema maximaler Wert"/>
+                <FIELD NAME="activities" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table"/>
+                <FIELD NAME="tstamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="date of import"/>
+                <FIELD NAME="uses_activities" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="show_all_descriptors" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="usedetailpage" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="profoundness" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="filteredtaxonomies" TYPE="char" LENGTH="1333" NOTNULL="true" DEFAULT="[100000000]" SEQUENCE="false" COMMENT="json encoded tax filter"/>
+                <FIELD NAME="nostudents" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="istemplate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="isglobal" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="is_editable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="hideglobalsubjects" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="assessmentconfiguration" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of the predefined assessment/grading settings"/>
+                <FIELD NAME="diwiordernumber" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="ID of the last certificate order in diwipass"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Kurs"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="block" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="This field stores the associated block: exacomp, exastud or exaport"/>
+                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="this field stores the associated item, either periodid if block is exastud, courseid if block is exacomp or itemid if block is exaport"/>
+                <FIELD NAME="feedback" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="this field indicates if verbal feedback should be displayed (for exastud reviews)"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores userid"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompniveaus" COMMENT="Niveaus">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title"/>
+                <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="id of the parent niveau"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="span" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="span tells if the niveau is a link over multiple niveaus"/>
+                <FIELD NAME="numb" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompexameval" COMMENT="Default comment for the table, please edit me">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="exampleid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Beispiels"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="teacher_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="teacher_reviewerid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="student_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="starttime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="endtime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="studypartner" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="evalniveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="resubmission" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timestamp_teacher" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timestamp_student" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
+                <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id" COMMENT="Fremdschlüssel Exampleid"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Courseid"/>
+                <KEY NAME="teacher_reviewerid" TYPE="foreign" FIELDS="teacher_reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
+                <KEY NAME="evalniveauid" TYPE="foreign" FIELDS="evalniveauid" REFTABLE="block_exacompeval_niveau" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcategories" COMMENT="used for additional info">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="lvl" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="parent category"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdescbadge_mm" COMMENT="badges require descriptors to get awarded">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="descid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="badgeid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="descid" TYPE="foreign" FIELDS="descid" REFTABLE="block_exacompdescriptors" REFFIELDS="id" COMMENT="Fremdschlüssel Descid"/>
+                <KEY NAME="badgeid" TYPE="foreign" FIELDS="badgeid" REFTABLE="badge" REFFIELDS="id" COMMENT="Fremdschlüssel Badgeid"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompitem_mm" COMMENT="this table is used to connect exaportitems to exacomp topics, descriptors, examples">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="competence_type" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="4" SEQUENCE="false" COMMENT="4 is BLOCK_EXACOMP_TYPE_EXAMPLE, which was used before the rework, so it is set as default"/>
+                <FIELD NAME="exacomp_record_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="datemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = not evaluated, 1 = accepted, 2 = revoked"/>
+                <FIELD NAME="teachervalue" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="evaluation value from teacher, may range from 0-100"/>
+                <FIELD NAME="studentvalue" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="evaluation student value, may range from 0-100"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompitemcollab_mm" COMMENT="this table is used to connect exaportitems to collaborators via userid and itemid">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompexternaltrainer" COMMENT="is used for assigning students to external trainers for the app">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="trainerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcrosssubjects" COMMENT="Cross-Subjects beinhalten Teilmengen von allen verfügbaren Deskriptoren">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
+                <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server"/>
+                <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="shared" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Freigabe für ganzen Kurs mit 1"/>
+                <FIELD NAME="subjectid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Zugeordnetes Subject"/>
+                <FIELD NAME="groupcategory" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Kategorie nur zum Ordnen/Sortieren/Gruppieren"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="creatorid" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Courseid"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdescrcross_mm" COMMENT="zuordnung Deskriptoren zu Cross-Subjects">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="crosssubjid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
+                <KEY NAME="crosssubjid" TYPE="foreign" FIELDS="crosssubjid" REFTABLE="block_exacompcrosssubjects" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcrossstud_mm" COMMENT="zuordnung Schüler zu Cross-Subjects (Freigabe)">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="crosssubjid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="crosssubjid" TYPE="foreign" FIELDS="crosssubjid" REFTABLE="block_exacompcrosssubjects" REFFIELDS="id"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdescrvisibility" COMMENT="Visibility of descriptor in context of course, topic and student">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+                <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompexampvisibility" COMMENT="Visibility of example in context of course, topic and student">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="exampleid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+                <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompschedule" COMMENT="schedule for tasks">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the course in which the example is treated"/>
+                <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="start" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="end" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="distributionid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdatasources" COMMENT="Default comment for the table, please edit me">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="source" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="type" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="category_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
+                <FIELD NAME="selected_grids" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="selected grids"/>
+                <FIELD NAME="all_grids" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdescrcat_mm" COMMENT="zuordnung Deskriptoren zu kategorien">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
+                <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompexampletax_mm" COMMENT="zuordnung Examples zu Taxonomien">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="exampleid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="taxid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
+                <KEY NAME="taxid" TYPE="foreign" FIELDS="taxid" REFTABLE="block_exacomptaxonomies" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompsubjniveau_mm" COMMENT="subj niveau">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="subjectid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="niveauid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="subtitle" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompeval_niveau" COMMENT="evaluation niveau">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="option_type" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacomptopicvisibility" COMMENT="Visibility of topic in context of course and student">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="topicid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+                <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompsolutvisibility" COMMENT="defines the visibility of example solutions">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+                <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompimporttasks" COMMENT="table stores settings for scheduler importing tasks">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title of task"/>
+                <FIELD NAME="link" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="link to the source"/>
+                <FIELD NAME="category_mapping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="categories mapping"/>
+                <FIELD NAME="selected_grids" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="selected grids"/>
+                <FIELD NAME="all_grids" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="source" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="disabled" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompwsdata" COMMENT="table stores different data for web services">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="token" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false" COMMENT="security token, aka private access key"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="owner of the token"/>
+                <FIELD NAME="data" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="data"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcmsettings" COMMENT="table stores settings for course modules">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="coursemoduleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="value" TYPE="char" LENGTH="256" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcmassign" COMMENT="table stores infos for competence assignments from scheduled tasks based on activities (restricted access)">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="coursemoduleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="quiz id"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="10"/>
+                <FIELD NAME="relateddata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="related data"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompcohortcode" COMMENT="table stores cohortcodes for diggr">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="cohortcode" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="skz" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="trainerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompglobalgradings" COMMENT="In dieser Tabelle wird gespeichert, welcher Globalgradignstext zu einem Subject/Topic/Competence gespeichert ist">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
+                <FIELD NAME="compid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Deskriptors oder Topics"/>
+                <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
+                <FIELD NAME="globalgradings" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text that shows the gradings of all teachers on this descriptor/competence, even in different courses"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompdescrquest_mm" COMMENT="This table stores connections between descripors and questions">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="questid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Schülerid"/>
+                <FIELD NAME="descrid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID des Deskriptors oder Topics"/>
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="courseid"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
+                <KEY NAME="questid" TYPE="foreign" FIELDS="questid" REFTABLE="question" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompapplogin" COMMENT="block_exacompapplogin table retrofitted from MySQL">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="app_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="moodle_redirect_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="moodle_data_token" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="created_at" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="request_data" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="result_data" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompexampannotation" COMMENT="Stores annotations(text) to an example in a course. Examples are the same in different courses, but their annotations can differ.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="exampleid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="annotationtext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+                <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacompsubjstudconfig" COMMENT="Settings for every student-subject configuration. Used for Diggrplus for priamry School (diggr-v)">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="subjectid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="spf" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="assess_with_grades" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="is_pflichtgegenstand" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="personalisedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the text a teacher can write individually for each student and subject"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="niveauid" TYPE="foreign" FIELDS="niveauid" REFTABLE="block_exacompniveaus" REFFIELDS="id"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id" COMMENT="foreign key studentid"/>
+                <KEY NAME="subjectid" TYPE="foreign" FIELDS="subjectid" REFTABLE="block_exacompsubjects" REFFIELDS="id" COMMENT="foreign key subjectid"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="block_exacomp_usermap" COMMENT="Mapping of users">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="true" COMMENT="id"/>
+                <FIELD NAME="provider" TYPE="char" LENGTH="15" NOTNULL="false" SEQUENCE="false" COMMENT="provider"/>
+                <FIELD NAME="tenant_id" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="tenant_id"/>
+                <FIELD NAME="school" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="school name from provider"/>
+                <FIELD NAME="remoteuserid" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="remoteuserrole" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="user role in remote"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="userid in moodle"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="time mapping was created"/>
+                <FIELD NAME="lastaccess" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="timestamp of last access"/>
+                <FIELD NAME="firstname" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="lastname" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="email" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="userinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="candisconnect" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="tenant_id_remoteuserid" UNIQUE="true" FIELDS="tenant_id, remoteuserid"/>
+                <INDEX NAME="idx_tenant_id" UNIQUE="false" FIELDS="tenant_id"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
 </XMLDB>

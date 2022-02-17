@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 global $DB, $OUTPUT, $PAGE;
 
@@ -26,10 +26,10 @@ $style = optional_param('style', 0, PARAM_INT);
 $action = optional_param('action', '', PARAM_RAW);
 
 if (!$course = $DB->get_record('course', array(
-	'id' => $courseid,
+    'id' => $courseid,
 ))
 ) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
+    print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -57,8 +57,8 @@ $page_identifier = 'tab_examples';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/view_examples.php', array(
-	'courseid' => $courseid,
-    'style' => $style
+    'courseid' => $courseid,
+    'style' => $style,
 ));
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
@@ -90,33 +90,33 @@ $courseSettings = block_exacomp_get_settings_by_course($courseid); // Reload set
 $outputContent .= $output->view_example_header($courseSettings, $style);
 
 switch ($style) {
-	case 0:
-	    $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+    case 0:
+        $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
         if ($isPrintView) {
             $html_tables[] = $output->competence_based_list_tree($tree, $isTeacher, false);
         } else {
             $outputContent .= $output->competence_based_list_tree($tree, $isTeacher, false);
         }
 
-	    //Crossubjects and crossubjectfiles
-	    //$crossubject_tree = block_exacomp_build_crossubject_example_tree($courseid, array(), 0, 0, true);
+        //Crossubjects and crossubjectfiles
+        //$crossubject_tree = block_exacomp_build_crossubject_example_tree($courseid, array(), 0, 0, true);
 
-	    /*
-	    $crossubjects = block_exacomp_get_cross_subjects_by_course($courseid);
-	    echo $output->print_crosssubjects_and_examples($crossubjects, $isTeacher, false);
-	    */
-	    break;
+        /*
+        $crossubjects = block_exacomp_get_cross_subjects_by_course($courseid);
+        echo $output->print_crosssubjects_and_examples($crossubjects, $isTeacher, false);
+        */
+        break;
     case 1:
         //could be optimized together with block_exacomp_build_example_tree
         //non critical - only 1 additional query for whole loading process
         $examples = \block_exacomp\example::get_objects_sql("
             SELECT DISTINCT e.*
-            FROM {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct
-            JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
-            JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dt.descrid = de.descrid
-            JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
+            FROM {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct
+            JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON ct.topicid = dt.topicid
+            JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON dt.descrid = de.descrid
+            JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e ON e.id = de.exampid
             WHERE ct.courseid = ?
-            ".(!$isTeacher ? " AND e.is_teacherexample = 0 " : "")."
+            " . (!$isTeacher ? " AND e.is_teacherexample = 0 " : "") . "
             ORDER BY e.title
         ", [$courseid]);
 
@@ -148,13 +148,12 @@ switch ($style) {
             //get files from competencies that are added to this cross:
             $examples += \block_exacomp\example::get_objects_sql("
                 SELECT DISTINCT e.*
-                FROM {".BLOCK_EXACOMP_DB_DESCCROSS."} dc
-                    JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dc.descrid = de.descrid
-                    JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
+                FROM {" . BLOCK_EXACOMP_DB_DESCCROSS . "} dc
+                    JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON dc.descrid = de.descrid
+                    JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e ON e.id = de.exampid
                 WHERE dc.crosssubjid = ?
                 ORDER BY e.title
             ", [$cross->id]);
-
 
             //get files from the childcompetencies of the competencies that are added
             //get descriptors and check if they are parents
@@ -162,14 +161,13 @@ switch ($style) {
             $assoc_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross);
 
             foreach ($assoc_descriptors as $descriptor) {
-                if($descriptor->parentid == 0){
+                if ($descriptor->parentid == 0) {
                     $childdescriptors = block_exacomp_get_child_descriptors($descriptor, $courseid);
-                    foreach ($childdescriptors as $childdescriptor){
-                        $examples = array_merge($examples,$childdescriptor->examples);
+                    foreach ($childdescriptors as $childdescriptor) {
+                        $examples = array_merge($examples, $childdescriptor->examples);
                     }
                 }
             }
-
 
             if (!$isTeacher) {
                 $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
@@ -178,7 +176,7 @@ switch ($style) {
             }
             $crossContent .= html_writer::start_tag("tr", array("class" => "rg2-level-0 rg2 rg2-header highlight"));
             $crossContent .= html_writer::start_tag("td", array("class" => "rg2-arrow rg2-indent"));
-                $crossContent .= '<div>'.$cross->title.'</div>';
+            $crossContent .= '<div>' . $cross->title . '</div>';
             $crossContent .= html_writer::end_tag("td");
             $crossContent .= html_writer::end_tag("tr");
             $crossContent .= html_writer::start_tag("tr", array("class" => "rg2-level-1 rg2"));

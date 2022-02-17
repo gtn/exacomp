@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 global $DB, $OUTPUT, $PAGE;
 
@@ -23,7 +23,7 @@ $badgeid = optional_param('badgeid', 0, PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
+    print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -43,51 +43,49 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
-echo $output->header($context,$courseid, 'tab_teacher_settings');
+echo $output->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
 /* CONTENT REGION */
 
 if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
-	if ($action == 'save') {
-		$DB->delete_records('block_exacompdescbadge_mm', array("badgeid" => $badgeid));
-		if (!empty($_POST['descriptors'])){
-			foreach ($_POST['descriptors'] as $value=>$tmp) {
-				$DB->insert_record('block_exacompdescbadge_mm', array("badgeid" => $badgeid, "descid" => intval($value)));
-			}
-		}
-	} else {
-		$tree = block_exacomp_get_competence_tree($courseid);
-		$badge->descriptors = block_exacomp_get_badge_descriptors($badge->id);
-		echo $output->edit_badges($tree, $badge);
-		echo $OUTPUT->footer();
-		return;
-	}
- }
-
+    if ($action == 'save') {
+        $DB->delete_records('block_exacompdescbadge_mm', array("badgeid" => $badgeid));
+        if (!empty($_POST['descriptors'])) {
+            foreach ($_POST['descriptors'] as $value => $tmp) {
+                $DB->insert_record('block_exacompdescbadge_mm', array("badgeid" => $badgeid, "descid" => intval($value)));
+            }
+        }
+    } else {
+        $tree = block_exacomp_get_competence_tree($courseid);
+        $badge->descriptors = block_exacomp_get_badge_descriptors($badge->id);
+        echo $output->edit_badges($tree, $badge);
+        echo $OUTPUT->footer();
+        return;
+    }
+}
 
 $badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
 
 if (!$badges) {
-	echo $OUTPUT->box(text_to_html(block_exacomp_get_string("no_badges_yet")));
-	echo $OUTPUT->footer();
-	return;
+    echo $OUTPUT->box(text_to_html(block_exacomp_get_string("no_badges_yet")));
+    echo $OUTPUT->footer();
+    return;
 }
 
 block_exacomp_award_badges($courseid);
 
 foreach ($badges as $badge) {
-	$descriptors = block_exacomp_get_badge_descriptors($badge->id);
-	$descriptors = $DB->get_records_sql('
+    $descriptors = block_exacomp_get_badge_descriptors($badge->id);
+    $descriptors = $DB->get_records_sql('
 		SELECT d.*
 		FROM {block_exacompdescriptors} d
 		JOIN {block_exacompdescbadge_mm} db ON d.id=db.descid AND db.badgeid=?
 	', array($badge->id));
 
-	$context = context_course::instance($badge->courseid);
-	echo $output->badge($badge, $descriptors, $context);
+    $context = context_course::instance($badge->courseid);
+    echo $output->badge($badge, $descriptors, $context);
 }
-
 
 /* END CONTENT REGION */
 echo $output->footer();

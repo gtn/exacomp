@@ -21,20 +21,20 @@ class block_exacomp_competence_submission_form extends moodleform {
     function definition() {
         global $DB;
 
-        $mform = & $this->_form;
+        $mform = &$this->_form;
         $compid = $this->_customdata['compid'];
         $comptype = $this->_customdata['comptype'];
         $competence = $DB->get_record('block_exacompdescriptors', ['id' => $compid]);
 
         $competenceTitle = '';
-        $competenceTitle .= '<h3 class="exacomp-submission-example-title">'.$competence->title.'</h3>';
+        $competenceTitle .= '<h3 class="exacomp-submission-example-title">' . $competence->title . '</h3>';
         if ($competence->description) {
-            $competenceTitle .= '<span class="exacomp-submission-example-description">'.$competence->description.'</span>';
+            $competenceTitle .= '<span class="exacomp-submission-example-description">' . $competence->description . '</span>';
         }
 
         $mform->addElement('html', $competenceTitle);
 
-        switch($comptype){
+        switch ($comptype) {
             case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
                 $infotext = block_exacomp_get_string("descriptor_submission_info", null, $competence->title);
                 break;
@@ -43,9 +43,7 @@ class block_exacomp_competence_submission_form extends moodleform {
                 break;
         }
 
-
-
-        $mform->addElement('static', 'info', block_exacomp_get_string('description'),$infotext);
+        $mform->addElement('static', 'info', block_exacomp_get_string('description'), $infotext);
 
         $mform->addElement('text', 'name', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
         $mform->setType('name', PARAM_TEXT);
@@ -59,9 +57,9 @@ class block_exacomp_competence_submission_form extends moodleform {
         $mform->addElement('text', 'url', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
         $mform->setType('url', PARAM_TEXT);
 
-        $mform->addElement('hidden','compid');
+        $mform->addElement('hidden', 'compid');
         $mform->setType('compid', PARAM_INT);
-        $mform->setDefault('compid',$compid);
+        $mform->setDefault('compid', $compid);
 
         $this->add_action_buttons(true, block_exacomp_get_string('submit_example'));
     }
@@ -69,10 +67,10 @@ class block_exacomp_competence_submission_form extends moodleform {
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        $errors= array();
+        $errors = array();
 
-        if (!empty($data['url']) && filter_var($data['url'], FILTER_VALIDATE_URL) === FALSE &&
-            filter_var("http://" . $data['url'], FILTER_VALIDATE_URL) === FALSE) {
+        if (!empty($data['url']) && filter_var($data['url'], FILTER_VALIDATE_URL) === false &&
+            filter_var("http://" . $data['url'], FILTER_VALIDATE_URL) === false) {
             $errors['url'] = block_exacomp_get_string('linkerr');
         }
 

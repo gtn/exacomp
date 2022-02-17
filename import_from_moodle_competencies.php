@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+use block_exacomp\data;
+
+require __DIR__ . '/inc.php';
 
 require_capability('block/exacomp:admin', context_system::instance());
 
@@ -24,14 +26,11 @@ require_capability('block/exacomp:admin', context_system::instance());
 
 $courseid = required_param('courseid', PARAM_INT);
 
-
 //TODO: require secret? what for?
 
-\block_exacomp\data::prepare();
+data::prepare();
 
-
-
-block_exacomp\data_exporter::do_moodle_competencies_export(null,$courseid);
+block_exacomp\data_exporter::do_moodle_competencies_export(null, $courseid);
 die;
 
 //$xml = block_exacomp\data_exporter::do_moodle_competencies_export(null);

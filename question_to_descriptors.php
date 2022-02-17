@@ -8,20 +8,20 @@
  * @copyright  1999 onwards Martin Dougiamas {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use core\event\question_category_viewed;
+
 require __DIR__ . '/inc.php';
 require_once('exacomp_view.php');
-
-
 
 global $DB, $CFG, $PAGE, $OUTPUT, $COURSE, $USER;
 global $PAGE;
 $PAGE->requires->jquery();
-$PAGE->requires-> js('/blocks/exacomp/javascript/exacomp.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/simpletreemenu/simpletreemenu.js', true);
 $PAGE->requires->css('/blocks/exacomp/javascript/simpletreemenu/simpletree.css');
 $PAGE->requires->css('/blocks/exacomp/css/colorbox.css');
-$PAGE->requires-> js('/blocks/exacomp/javascript/jquery.colorbox.js', true);
-
+$PAGE->requires->js('/blocks/exacomp/javascript/jquery.colorbox.js', true);
 
 //require_once(__DIR__ . '/../config.php');
 require_once($CFG->dirroot . '/question/editlib.php');
@@ -38,16 +38,14 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-if($action == 'save'){
+if ($action == 'save') {
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
-    foreach($descs as $desc) {
-        if(!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid))){
+    foreach ($descs as $desc) {
+        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid))) {
             $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid));
         }
     }
 }
-
-
 
 require_login($course);
 
@@ -69,7 +67,7 @@ if (get_config('exacomp', 'disable_js_edit_activities')) {
     }
 }
 
-$page_params =  array('courseid' => $courseid);
+$page_params = array('courseid' => $courseid);
 if ($columngroupnumber !== null) {
     $page_params['colgroupid'] = $columngroupnumber;
 }
@@ -90,24 +88,16 @@ $PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 block_exacomp_build_breadcrum_navigation($courseid);
 
-
 // build tab navigation & print header
-echo $OUTPUT->header($context,$courseid, 'tab_teacher_settings');
+echo $OUTPUT->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
-
-
-
 
 //$context = $contexts->lowest();
 //$streditingquestions = get_string('editquestions', 'question');
 //$PAGE->set_title($streditingquestions);
 //$PAGE->set_heading($COURSE->fullname);
 
-
 // build breadcrumbs navigation
-
-
-
 
 //// Print horizontal nav if needed.
 //$renderer = $PAGE->get_renderer('core_question', 'bank');
@@ -123,10 +113,8 @@ echo "</div>\n";
 list($categoryid, $contextid) = explode(',', $pagevars['cat']);
 $category = new stdClass();
 $category->id = $categoryid;
-$catcontext = \context::instance_by_id($contextid);
-$event = \core\event\question_category_viewed::create_from_question_category_instance($category, $catcontext);
+$catcontext = context::instance_by_id($contextid);
+$event = question_category_viewed::create_from_question_category_instance($category, $catcontext);
 $event->trigger();
-
-
 
 echo $OUTPUT->footer();

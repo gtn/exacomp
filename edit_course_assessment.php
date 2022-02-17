@@ -59,7 +59,7 @@ if ($preconfigurations && is_array($preconfigurations)) {
 }
 
 if ($action == 'save') {
-//    $settings = $DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
+    //    $settings = $DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
     $settings = block_exacomp_get_settings_by_course($courseid);
     $settings->assessmentconfiguration = optional_param('selection_preconfig', 0, PARAM_INT);
     $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies); // TODO: why like this? Is this done at every location? Then why not in the function.. copied from edit_course.php

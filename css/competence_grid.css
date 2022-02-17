@@ -1,36 +1,37 @@
 .deactivated {
-	color: black;
+    color: black;
 }
+
 select[name=lis_subjects] {
-	margin-right: 15px;
+    margin-right: 15px;
 }
 
 #block_exacomp .crosssubjects {
-	vertical-align: middle;
-	text-align: center;
-	bottom: 0;
-	display: inline-block;
-	width:100%
+    vertical-align: middle;
+    text-align: center;
+    bottom: 0;
+    display: inline-block;
+    width: 100%
 }
 
 #block_exacomp .tablecell {
-	position: relative;
+    position: relative;
 }
 
 #block_exacomp .reportsstattable {
-	margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 
-#block_exacomp  .crosssubjects .reportsstattable tr td {
-	line-height: 1.2;
+#block_exacomp .crosssubjects .reportsstattable tr td {
+    line-height: 1.2;
 }
 
 #block_exacomp .student-self-eval {
-	display: block;
-	float: left;
+    display: block;
+    float: left;
 }
 
 #block_exacomp .content .eval-footer {
-	display: block;
+    display: block;
 }

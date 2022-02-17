@@ -1,66 +1,65 @@
-
 /* Tabs container */
 .r-tabs {
-	position: relative;
+    position: relative;
 }
 
 .r-tabs .r-tabs-nav {
-	border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 /* Tab element */
 .r-tabs .r-tabs-nav .r-tabs-tab {
-	position: relative;
-	/*background-color: #00c5ad;*/
-	border: 1px solid transparent;
-	border-top-right-radius: 4px;
-	border-top-left-radius: 4px;
+    position: relative;
+    /*background-color: #00c5ad;*/
+    border: 1px solid transparent;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
 }
 
 /* Tab anchor */
 .r-tabs .r-tabs-nav .r-tabs-anchor {
-	display: inline-block;
-	padding: 10px 12px;
-	border: 1px solid #fff;
-	text-decoration: none;
+    display: inline-block;
+    padding: 10px 12px;
+    border: 1px solid #fff;
+    text-decoration: none;
 }
 
 /* Disabled tab */
 .r-tabs .r-tabs-nav .r-tabs-state-disabled {
-	opacity: 0.5;
+    opacity: 0.5;
 }
 
 /* Hover state tab anchor */
 .r-tabs .r-tabs-nav .r-tabs-anchor:hover {
-	border: 1px solid #ddd;
-	border-bottom: none;
-	border-top-right-radius: 4px;
-	border-top-left-radius: 4px;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
 }
 
 /* Active state tab anchor */
 .r-tabs .r-tabs-nav .r-tabs-state-active .r-tabs-anchor {
-	color: #55595c;
-	text-shadow: none;
+    color: #55595c;
+    text-shadow: none;
 
-	background-color: #f4f4f4;
-	border: 1px solid #ddd;
-	border-bottom: none;
-	border-top-right-radius: 4px;
-	border-top-left-radius: 4px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
 }
 
 /* Tab panel */
 .r-tabs .r-tabs-panel {
-	background-color: white;
-	border: 1px solid #ddd;
-	border-top: none;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
 
-	border-bottom-right-radius: 4px;
-	border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 
 .r-tabs .r-tabs-panel .competence_profile_coursedata {
-	border: none !important;
+    border: none !important;
 }
 

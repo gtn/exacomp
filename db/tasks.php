@@ -17,24 +17,24 @@
 defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
-	array(
-		'classname' => 'block_exacomp\task\import',
-		'blocking' => 0,
-		'minute' => '0',
-		'hour' => '3',
-		'day' => '*',
-		'month' => '*',
-		'dayofweek' => '*',
-	),
-	array(
-		'classname' => 'block_exacomp\task\import_additional',
-		'blocking' => 0,
-		'minute' => '0',
-		'hour' => '4',
-		'day' => '*',
-		'month' => '*',
-		'dayofweek' => '*',
-	),
+    array(
+        'classname' => 'block_exacomp\task\import',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '3',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ),
+    array(
+        'classname' => 'block_exacomp\task\import_additional',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '4',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ),
     array(
         'classname' => 'block_exacomp\task\komettranslator_to_exacomp',
         'blocking' => 0,

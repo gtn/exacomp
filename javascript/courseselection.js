@@ -13,20 +13,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(function($){
-	exabis_rg2.options.reopen_checked = true;
+(function ($) {
+  exabis_rg2.options.reopen_checked = true;
 
-	$(function(){
-		// submit warning message
-		var $form = $('#course-selection');
+  $(function () {
+    // submit warning message
+    var $form = $('#course-selection');
 
-		$form.submit(function(){
-			if($form.attr("examplesonschedule")>0){
-				return confirm(M.util.get_string('delete_unconnected_examples', 'block_exacomp'));
-			}
-		});
+    $form.submit(function () {
+      if ($form.attr("examplesonschedule") > 0) {
+        return confirm(M.util.get_string('delete_unconnected_examples', 'block_exacomp'));
+      }
+    });
 
-	});
+  });
 
 })(jQueryExacomp);
 

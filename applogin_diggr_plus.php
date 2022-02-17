@@ -1,8 +1,11 @@
 <?php
 
-require __DIR__.'/inc.php';
-require_once($CFG->libdir.'/externallib.php');
-require_once __DIR__.'/externallib.php';
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
+
+require __DIR__ . '/inc.php';
+require_once($CFG->libdir . '/externallib.php');
+require_once __DIR__ . '/externallib.php';
 
 function block_exacomp_json_result_success($data) {
     header('Content-Type: application/json');
@@ -69,7 +72,7 @@ function block_exacomp_logout() {
 function block_exacomp_turn_notifications_on() {
     global $USER, $CFG;
 
-    require_once($CFG->dirroot.'/user/editlib.php');
+    require_once($CFG->dirroot . '/user/editlib.php');
 
     // require __DIR__.'/db/messages.php';
     $providers = get_message_providers();
@@ -79,19 +82,19 @@ function block_exacomp_turn_notifications_on() {
         }
 
         foreach (['loggedin', 'loggedoff'] as $type) {
-            $preference_name = 'message_provider_'.$provider->component.'_'.$provider->name.'_'.$type;
+            $preference_name = 'message_provider_' . $provider->component . '_' . $provider->name . '_' . $type;
             $value = @$USER->preference[$preference_name];
             if (strpos($value, 'popup') === false) {
                 // only change, if popup isn't turned on
                 if (!$value || $value == 'none') {
                     $newValue = 'popup';
                 } else {
-                    $newValue = 'popup,'.$value;
+                    $newValue = 'popup,' . $value;
                 }
 
                 // echo $preference_name." ".$value." ".$newValue."\n";
                 $userpref = ['id' => $USER->id];
-                $userpref['preference_'.$preference_name] = $newValue;
+                $userpref['preference_' . $preference_name] = $newValue;
                 useredit_update_user_preference($userpref);
             }
         }
@@ -121,10 +124,10 @@ function block_exacomp_is_return_uri_allowed($return_uri) {
     foreach ($allowed_redirect_uris as $allowed_redirect_uri) {
         // add protocol, if needed
         if (strpos($allowed_redirect_uri, '://') === false) {
-            $allowed_redirect_uri = 'https://'.$allowed_redirect_uri;
+            $allowed_redirect_uri = 'https://' . $allowed_redirect_uri;
         }
         // check url, also allow "www." prefix
-        $regexp = '!^(www\\.)?'.preg_quote($allowed_redirect_uri, '!').'(/|$)!';
+        $regexp = '!^(www\\.)?' . preg_quote($allowed_redirect_uri, '!') . '(/|$)!';
         // allow * as wildcard
         $regexp = str_replace('\\*', '.*', $regexp);
         if (preg_match($regexp, $return_uri)) {
@@ -140,7 +143,7 @@ function block_exacomp_init_cors() {
     // from: https://stackoverflow.com/a/7454204
     if (@$_SERVER['HTTP_ORIGIN'] && block_exacomp_is_return_uri_allowed(@$_SERVER['HTTP_ORIGIN'])) {
         // set allowed origin only, if in allowed list
-        header('Access-Control-Allow-Origin: '.$_SERVER['HTTP_ORIGIN']);
+        header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
     }
 
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -161,7 +164,7 @@ function block_exacomp_send_login_result($user, $login_request_data) {
     try {
         $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
         block_exacomp_login_successfull($login_request_data);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         block_exacomp_logout();
 
         block_exacomp_json_result_error($e->getMessage());
@@ -174,7 +177,7 @@ function block_exacomp_send_login_result($user, $login_request_data) {
     ];
 
     $moodle_redirect_token = '';
-    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+    $moodle_data_token = 'data-' . block_exacomp_random_password(24);
     $DB->insert_record('block_exacompapplogin', [
         'moodle_redirect_token' => $moodle_redirect_token,
         'moodle_data_token' => $moodle_data_token,
@@ -187,9 +190,6 @@ function block_exacomp_send_login_result($user, $login_request_data) {
         'moodle_token' => $moodle_data_token,
     ]);
 }
-
-;
-
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
@@ -212,8 +212,8 @@ if ($action == 'get_login_url') {
         block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
     }
 
-    $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
-    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+    $moodle_redirect_token = 'redirect-' . block_exacomp_random_password(24);
+    $moodle_data_token = 'data-' . block_exacomp_random_password(24);
 
     $DB->insert_record('block_exacompapplogin', [
         'app_token' => required_param('app_token', PARAM_TEXT),
@@ -230,7 +230,7 @@ if ($action == 'get_login_url') {
     ]);
 
     block_exacomp_json_result_success([
-        'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
+        'login_url' => $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token=' . $moodle_redirect_token,
     ]);
     exit;
 }
@@ -240,7 +240,7 @@ if ($action == 'msteams_login') {
     $app_version = required_param('app_version', PARAM_TEXT);
     $access_token = required_param('access_token', PARAM_TEXT);
 
-    $login_request_data = (object)[
+    $login_request_data = (object) [
         'app' => $app,
         'app_version' => $app_version,
     ];
@@ -264,20 +264,20 @@ if ($action == 'msteams_login') {
     try {
         // check access_token
         $jwks = json_decode(file_get_contents('https://login.microsoftonline.com/common/discovery/v2.0/keys'), true);
-        $decoded = \Firebase\JWT\JWT::decode($access_token, \Firebase\JWT\JWK::parseKeySet($jwks), array('RS256'));
-    } catch (\Exception $e) {
-        block_exacomp_json_result_error('jwt error: '.$e->getMessage());
+        $decoded = JWT::decode($access_token, JWK::parseKeySet($jwks), array('RS256'));
+    } catch (Exception $e) {
+        block_exacomp_json_result_error('jwt error: ' . $e->getMessage());
     }
 
     // actually checking audience is not needed?
-    if ($decoded->aud != 'api://diggr-plus.at/'.$client_id) {
-        block_exacomp_json_result_error('audience not allowed: '.$decoded->aud);
+    if ($decoded->aud != 'api://diggr-plus.at/' . $client_id) {
+        block_exacomp_json_result_error('audience not allowed: ' . $decoded->aud);
     }
     if (time() > $decoded->exp) {
         block_exacomp_json_result_error('access_token expired');
     }
     if ($decoded->scp != 'access_as_user') {
-        block_exacomp_json_result_error('Wrong scp: '.$decoded->scp);
+        block_exacomp_json_result_error('Wrong scp: ' . $decoded->scp);
     }
     // check config
     // demo tenantid = hak-steyr
@@ -327,7 +327,7 @@ if ($action == 'msteams_login') {
             'confirmed' => 1,
         );
 
-        require_once($CFG->dirroot.'/user/lib.php');
+        require_once($CFG->dirroot . '/user/lib.php');
         $userid = user_create_user($moodle_user);
 
         $moodle_user = get_complete_user_data('id', $userid);
@@ -337,7 +337,7 @@ if ($action == 'msteams_login') {
         // new logic mit o365 user verknüpfen
         $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
         if (!$usermap) {
-            $usermap = (object)[
+            $usermap = (object) [
                 'provider' => 'o365',
                 'tenant_id' => $tenantId,
                 'remoteuserid' => $email,
@@ -376,8 +376,8 @@ if ($action == 'msteams_login') {
             block_exacomp_json_result_error(block_exacomp_trans(['de:Zugriff unter {$a->url} ist nicht erlaubt', 'en:Access from {$a->url} is not allowed'], ['url' => $return_uri]));
         }
 
-        $moodle_redirect_token = 'redirect-'.block_exacomp_random_password(24);
-        $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+        $moodle_redirect_token = 'redirect-' . block_exacomp_random_password(24);
+        $moodle_data_token = 'data-' . block_exacomp_random_password(24);
 
         $DB->insert_record('block_exacompapplogin', [
             'app_token' => required_param('app_token', PARAM_TEXT),
@@ -395,7 +395,7 @@ if ($action == 'msteams_login') {
         ]);
 
         block_exacomp_json_result_success([
-            'login_url' => $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token='.$moodle_redirect_token,
+            'login_url' => $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?moodle_redirect_token=' . $moodle_redirect_token,
         ]);
     }
 }
@@ -423,13 +423,13 @@ if ($action == 'connected_users') {
         echo '<table class="generaltable">';
         foreach ($usermaps as $usermap) {
             echo '<tr>';
-            echo '<td>'.$usermap->provider.'</td>';
-            echo '<td>'.$usermap->firstname.'</td>';
-            echo '<td>'.$usermap->lastname.'</td>';
-            echo '<td>'.$usermap->email.'</td>';
+            echo '<td>' . $usermap->provider . '</td>';
+            echo '<td>' . $usermap->firstname . '</td>';
+            echo '<td>' . $usermap->lastname . '</td>';
+            echo '<td>' . $usermap->email . '</td>';
             echo '<td><form method="post">
-            <input type="hidden" name="disconnect_userid" value="'.$usermap->id.'"/>
-            <input type="submit" class="btn btn-secondary" value="'.block_exacomp_trans(['de:Trennen', 'en:Disconnect']).'"/>
+            <input type="hidden" name="disconnect_userid" value="' . $usermap->id . '"/>
+            <input type="submit" class="btn btn-secondary" value="' . block_exacomp_trans(['de:Trennen', 'en:Disconnect']) . '"/>
         </form></td>';
         }
         echo '</table>';
@@ -483,10 +483,10 @@ if ($action == 'logout') {
     $return_uri = optional_param('return_uri', '', PARAM_TEXT);
     if ($return_uri) {
         if (!block_exacomp_is_return_uri_allowed($return_uri)) {
-            header('Location: '.$CFG->wwwroot);
+            header('Location: ' . $CFG->wwwroot);
             exit;
         } else {
-            header('Location: '.$return_uri);
+            header('Location: ' . $return_uri);
             exit;
         }
     }
@@ -496,24 +496,22 @@ if ($action == 'logout') {
 }
 
 if ($action) {
-    throw new \Exception("action '$action' not found");
+    throw new Exception("action '$action' not found");
 }
-
 
 $PAGE->set_pagelayout('embedded');
 
-$SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'];
+$SESSION->wantsurl = $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?' . $_SERVER['QUERY_STRING'];
 
 require_login(0, false, null, false, false);
 
 if (isguestuser()) {
     // is guest user
     require_login();
-    $SESSION->wantsurl = $CFG->wwwroot.'/blocks/exacomp/applogin_diggr_plus.php?'.$_SERVER['QUERY_STRING'].'&withlogout=1';
-    redirect($CFG->wwwroot.'/login/index.php');
+    $SESSION->wantsurl = $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?' . $_SERVER['QUERY_STRING'] . '&withlogout=1';
+    redirect($CFG->wwwroot . '/login/index.php');
     exit;
 }
-
 
 $moodle_redirect_token = required_param('moodle_redirect_token', PARAM_TEXT);
 
@@ -527,13 +525,13 @@ $login_request_data = json_decode($applogin->request_data);
 try {
     $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
     block_exacomp_login_successfull($login_request_data);
-} catch (\Exception $e) {
+} catch (Exception $e) {
     block_exacomp_logout();
 
     throw $e;
 }
 
-$DB->update_record('block_exacompapplogin', (object)[
+$DB->update_record('block_exacompapplogin', (object) [
     'id' => $applogin->id,
     'result_data' => json_encode([
         'tokens' => $tokens,
@@ -549,9 +547,9 @@ if (@$login_request_data->usermapid) {
         echo '<div style="text-align: center; padding: 60px 20px">';
         echo block_exacomp_trans(['de:Hiermit verknüpfen Sie Ihren MS Teams Benutzer mit dem Moodle Benutzer {$a}', 'en:You are connecting your MS Teams user with the Moodle user {$a}'], fullname($USER));
         echo '<br/><br/>';
-        echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=logout" class="btn btn-secondary">'.block_exacomp_trans(['de:Mit anderem Benutzer einloggen', 'en:Login with another user']).'</a>';
+        echo '<a href="' . $_SERVER['REQUEST_URI'] . '&action=logout" class="btn btn-secondary">' . block_exacomp_trans(['de:Mit anderem Benutzer einloggen', 'en:Login with another user']) . '</a>';
         echo '&nbsp;&nbsp;&nbsp;';
-        echo '<a href="'.$_SERVER['REQUEST_URI'].'&confirm=1" class="btn btn-primary">'.block_exacomp_trans(['de:Weiter', 'en:Continue']).'</a>';
+        echo '<a href="' . $_SERVER['REQUEST_URI'] . '&confirm=1" class="btn btn-primary">' . block_exacomp_trans(['de:Weiter', 'en:Continue']) . '</a>';
         echo '</div>';
 
         echo $OUTPUT->footer();
@@ -562,9 +560,9 @@ if (@$login_request_data->usermapid) {
     $DB->update_record('block_exacomp_usermap', ['userid' => $USER->id, 'id' => $login_request_data->usermapid]);
 }
 
-$return_uri = $login_request_data->return_uri.
-    (preg_match('!\\?!', $login_request_data->return_uri) ? '&' : '?').
-    'moodle_token='.$applogin->moodle_data_token;
+$return_uri = $login_request_data->return_uri .
+    (preg_match('!\\?!', $login_request_data->return_uri) ? '&' : '?') .
+    'moodle_token=' . $applogin->moodle_data_token;
 
 if (optional_param('withlogout', '', PARAM_BOOL)) {
 
@@ -585,6 +583,6 @@ if (optional_param('withlogout', '', PARAM_BOOL)) {
 
     exit;
 } else {
-    header("Location: ".$return_uri);
+    header("Location: " . $return_uri);
     exit;
 }

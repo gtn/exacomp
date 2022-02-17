@@ -41,11 +41,11 @@ function block_exacomp_diggrv_create_first_course() {
     }
 
     $course = new stdClass();
-    $course->shortname = 'Klasse - '.fullname($USER).' '.date('d.m.Y H:i'); // has to be unique!
-    $course->fullname = 'Klasse - '.fullname($USER);
+    $course->shortname = 'Klasse - ' . fullname($USER) . ' ' . date('d.m.Y H:i'); // has to be unique!
+    $course->fullname = 'Klasse - ' . fullname($USER);
     $course->summary = '';
 
-    $course->idnumber = 'diggrv-'.round((microtime(true)-1600000000)*1000);
+    $course->idnumber = 'diggrv-' . round((microtime(true) - 1600000000) * 1000);
     // $course->format = $courseconfig->format;
     $course->visible = 1;
     // $course->newsitems = $courseconfig->newsitems;
@@ -133,11 +133,11 @@ function block_exacomp_diggrv_create_course($coursename, $schoolcode) {
     }
 
     $course = new stdClass();
-    $course->shortname = $coursename.' '.date('d.m.Y H:i'); // has to be unique!
+    $course->shortname = $coursename . ' ' . date('d.m.Y H:i'); // has to be unique!
     $course->fullname = $coursename;
     $course->summary = '';
 
-    $course->idnumber = 'diggrv-'.round((microtime(true)-1600000000)*1000);
+    $course->idnumber = 'diggrv-' . round((microtime(true) - 1600000000) * 1000);
     // $course->format = $courseconfig->format;
     $course->visible = 1;
     // $course->newsitems = $courseconfig->newsitems;

@@ -144,6 +144,7 @@
     min-height: 100px;
     background: #eee;
 }
+
 #block_exacomp #external-events.hover {
     background: #d5ecff;
 }
@@ -243,12 +244,15 @@
     margin: 0;
     vertical-align: middle;
 }
+
 #block_exacomp #wrap {
     margin: 40px auto 0;
 }
+
 #block_exacomp .fc-time-grid .fc-slats td {
     height: 2.9em;
 }
+
 #block_exacomp #calendar {
     float: right;
     /*width: 76%;*/
@@ -420,15 +424,19 @@
 #block_exacomp .event-schedulermarker.marker_structured {
     background-color: blue;
 }
+
 #block_exacomp .event-schedulermarker.marker_free {
     background-color: green;
 }
+
 #block_exacomp .event-schedulermarker.marker_orientation {
     background-color: orange;
 }
+
 #block_exacomp .event-schedulermarker.marker_feedback {
     background-color: red;
 }
+
 #block_exacomp .event-schedulermarker.marker_reflexion {
     background-color: yellow;
 }

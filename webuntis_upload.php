@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
-require_once __DIR__.'/webuntis_upload_form.php';
+require __DIR__ . '/inc.php';
+require_once __DIR__ . '/webuntis_upload_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $studentid = required_param('studentid', PARAM_INT); //not always studentid actually, but id of selected weekly schedule
@@ -51,17 +51,17 @@ $form = new block_exacomp_webuntis_upload_form($_SERVER['REQUEST_URI'],
 
 if ($formdata = $form->get_data()) {
     $type = 'file';
-    if(isset($formdata->file)) {
+    if (isset($formdata->file)) {
         if (!$studentid) {
             $studentid = $USER->id;
-        }else if($studentid==BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+        } else if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
             $studentid = 0;
         }
-        block_exacomp_import_ics_to_weekly_schedule($courseid,$studentid,null,$USER->id,$form->get_file_content('file'));
+        block_exacomp_import_ics_to_weekly_schedule($courseid, $studentid, null, $USER->id, $form->get_file_content('file'));
     }
     echo $output->popup_close_and_reload();
     exit;
-}else if($form->is_cancelled()){
+} else if ($form->is_cancelled()) {
     echo $output->popup_close_and_reload();
     exit;
 }

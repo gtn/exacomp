@@ -1,35 +1,40 @@
 <?php
 
-
 namespace core_question\bank;
+use context;
+use core_question\bank\search\category_condition;
+use core_question\bank\search\hidden_condition;
+use core_question\bank\search\tag_condition;
+use moodle_url;
+use question_edit_contexts;
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once('descriptor_link_column.php');
 
-class exacomp_view extends \core_question\bank\view
-{
+class exacomp_view extends view {
     /** @var bool whether the quiz this is used by has been attemptd. */
     protected $quizhasattempts = false;
-    /** @var \stdClass the quiz settings. */
+    /** @var stdClass the quiz settings. */
     protected $quiz = false;
     /** @var int The maximum displayed length of the category info. */
     const MAX_TEXT_LENGTH = 200;
 
     /**
      * Constructor
-     * @param \question_edit_contexts $contexts
-     * @param \moodle_url $pageurl
-     * @param \stdClass $course course settings
-     * @param \stdClass $cm activity settings.
-     * @param \stdClass $quiz quiz settings.
+     *
+     * @param question_edit_contexts $contexts
+     * @param moodle_url $pageurl
+     * @param stdClass $course course settings
+     * @param stdClass $cm activity settings.
+     * @param stdClass $quiz quiz settings.
      */
-    public function __construct($contexts, $pageurl, $course, $cm)
-    {
+    public function __construct($contexts, $pageurl, $course, $cm) {
         parent::__construct($contexts, $pageurl, $course, $cm);
     }
 
-    protected function wanted_columns()
-    {
+    protected function wanted_columns() {
         global $CFG;
 
         if (empty($CFG->quizquestionbankcolumns)) {
@@ -38,7 +43,7 @@ class exacomp_view extends \core_question\bank\view
                 'question_name_idnumber_tags_column', 'edit_menu_column',
                 'edit_action_column', 'copy_action_column', 'tags_action_column',
                 'preview_action_column', 'delete_action_column', 'export_xml_action_column',
-                'creator_name_column', 'modifier_name_column', 'descriptor_link_column'
+                'creator_name_column', 'modifier_name_column', 'descriptor_link_column',
             );
         } else {
             $quizquestionbankcolumns = explode(',', $CFG->quizquestionbankcolumns);
@@ -65,7 +70,7 @@ class exacomp_view extends \core_question\bank\view
     }
 
     public function display($tabname, $page, $perpage, $cat,
-                            $recurse, $showhidden, $showquestiontext, $tagids = []) {
+        $recurse, $showhidden, $showquestiontext, $tagids = []) {
         global $PAGE, $CFG;
 
         if ($this->process_actions_needing_ui()) {
@@ -73,7 +78,7 @@ class exacomp_view extends \core_question\bank\view
         }
         $editcontexts = $this->contexts->having_one_edit_tab_cap($tabname);
         list(, $contextid) = explode(',', $cat);
-        $catcontext = \context::instance_by_id($contextid);
+        $catcontext = context::instance_by_id($contextid);
         $thiscontext = $this->get_most_specific_context();
         // Category selection form.
         $this->display_question_bank_header();
@@ -81,12 +86,12 @@ class exacomp_view extends \core_question\bank\view
         // Display tag filter if usetags setting is enabled.
         if ($CFG->usetags) {
             array_unshift($this->searchconditions,
-                new \core_question\bank\search\tag_condition([$catcontext, $thiscontext], $tagids));
+                new tag_condition([$catcontext, $thiscontext], $tagids));
             $PAGE->requires->js_call_amd('core_question/edit_tags', 'init', ['#questionscontainer']);
         }
 
-        array_unshift($this->searchconditions, new \core_question\bank\search\hidden_condition(!$showhidden));
-        array_unshift($this->searchconditions, new \core_question\bank\search\category_condition(
+        array_unshift($this->searchconditions, new hidden_condition(!$showhidden));
+        array_unshift($this->searchconditions, new category_condition(
             $cat, $recurse, $editcontexts, $this->baseurl, $this->course));
         $this->display_options_form($showquestiontext, '/blocks/exacomp/question_to_descriptors.php');
 

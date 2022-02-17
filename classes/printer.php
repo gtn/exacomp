@@ -17,13 +17,16 @@
 namespace block_exacomp;
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
+require_once $CFG->dirroot . '/lib/tcpdf/tcpdf.php';
 
 use block_exacomp\globals as g;
+use Exception;
 use PhpOffice\PhpWord\Escaper\RegExp;
 use PhpOffice\PhpWord\Escaper\Xml;
+use PhpOffice\PhpWord\Settings;
+use TCPDF;
 
-class printer_TCPDF extends \TCPDF {
+class printer_TCPDF extends TCPDF {
     private $_header = '';
     private $_style = '';
 
@@ -48,7 +51,8 @@ class printer_TCPDF extends \TCPDF {
         $this->_style = $style;
     }
 
-    public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = array()) {
+    public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false,
+        $fitonpage = false, $alt = false, $altimgs = array()) {
         $args = func_get_args();
 
         // replace moodle image urls with local urls
@@ -81,7 +85,7 @@ class printer_TCPDF extends \TCPDF {
             return $matches[0];
         }, $html);
 
-        return parent::writeHTML($style.$html, $ln, $fill, $reseth, $cell, $align);
+        return parent::writeHTML($style . $html, $ln, $fill, $reseth, $cell, $align);
     }
 
     public function Header() {
@@ -175,7 +179,7 @@ class printer {
             $html_table = str_replace($matches[1], '', $html_table);
             $html_table = str_replace('<tr ', '<tr nobr="true"', $html_table);
 
-            $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
+            $pdf->setHeaderHTML($html_header . $matches[0] . '</table>');
 
             $pdf->AddPage();
 
@@ -289,7 +293,6 @@ class printer {
 
         $pdf = new printer_TCPDF('L');
 
-
         $pdf->setStyle('
 			* {
 				font-size: 9pt;
@@ -317,7 +320,7 @@ class printer {
             // add spacing for examples
 
             $html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches) {
-                return $matches[0].str_repeat('&nbsp;', max(0, $matches[1]) * 4); // .' level '.$matches[1];
+                return $matches[0] . str_repeat('&nbsp;', max(0, $matches[1]) * 4); // .' level '.$matches[1];
             }, $html_table);
 
             $html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
@@ -329,7 +332,7 @@ class printer {
             $html_table = str_replace($matches[1], '', $html_table);
             $html_table = str_replace('<tr ', '<tr nobr="true"', $html_table);
 
-            $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
+            $pdf->setHeaderHTML($html_header . $matches[0] . '</table>');
 
             $pdf->AddPage();
             $pdf->writeHTML($html_table);
@@ -346,7 +349,7 @@ class printer {
         if ($interval == 'week') {
             $first_day = block_exacomp_add_days($first_day, 1 - date('N', $first_day)); // get monday
             $day_cnt = 5;
-        } elseif ($interval == 'day') {
+        } else if ($interval == 'day') {
             $first_day = block_exacomp_add_days($first_day, 0); // get midnight
             $day_cnt = 1;
         } else {
@@ -362,7 +365,7 @@ class printer {
 
             $examples = block_exacomp_get_json_examples($examples);
             $examples = array_map(function($o) {
-                return (object)$o;
+                return (object) $o;
             }, $examples);
 
             foreach ($examples as $example) {
@@ -436,17 +439,16 @@ class printer {
         for ($i = 0; $i < $day_cnt; $i++) {
             // build the day object
             $time = block_exacomp_add_days($first_day, $i);
-            $days[$time] = (object)[
+            $days[$time] = (object) [
                 'time' => $time,
                 'slots' => array_map(function($x) {
-                    return (object)$x;
+                    return (object) $x;
                 }, block_exacomp_build_json_time_slots($time)),
             ];
 
             // load the events and columns for this day
             generate_day($days[$time], $student->id);
         }
-
 
         // Instanciation of inherited class
         $pdf = new printer_TCPDF($interval == 'week' ? 'L' : null /* landscape for weekly print */);
@@ -490,14 +492,14 @@ class printer {
 
         $header = '
 			<table><tr>
-				<td style="font-size: 12pt; font-weight: bold;" align="left">'.block_exacomp_get_string("weekly_schedule").'</td>
-				<td style="font-size: 12pt; font-weight: bold;" align="right">'.block_exacomp_get_string("participating_student").': '.fullname($student).'</td>
+				<td style="font-size: 12pt; font-weight: bold;" align="left">' . block_exacomp_get_string("weekly_schedule") . '</td>
+				<td style="font-size: 12pt; font-weight: bold;" align="right">' . block_exacomp_get_string("participating_student") . ': ' . fullname($student) . '</td>
 			</tr></table>
 			&nbsp;<br />
 			<table border="0.1" style="padding: 1px">';
         $header .= '<tr><td></td>';
         foreach ($days as $day) {
-            $header .= '<td colspan="'.$day->colspan.'" align="center">'.$day->title.'</td>';
+            $header .= '<td colspan="' . $day->colspan . '" align="center">' . $day->title . '</td>';
         }
         $header .= '</tr></table>';
         $pdf->setHeaderHTML($header);
@@ -515,7 +517,7 @@ class printer {
             //if (block_exacomp_get_string($slot['name']) != '[[]]'){
             //    $tbl .= '><td>'.block_exacomp_get_string($slot['name']).'</td>';
             if ($slot['name'] != '') {
-                $tbl .= '><td>'.$slot['name'].'</td>';
+                $tbl .= '><td>' . $slot['name'] . '</td>';
             } else {
                 $tbl .= '><td></td>';
             }
@@ -526,29 +528,28 @@ class printer {
 
                         $class = 'event-default';
                         if (!empty($example->state)) {
-                            $state_text = 'state'.$example->state; // TODO: change state text
-                            $class .= ' state'.$example->state;
-                        } elseif ($example->courseid != $course->id) {
+                            $state_text = 'state' . $example->state; // TODO: change state text
+                            $class .= ' state' . $example->state;
+                        } else if ($example->courseid != $course->id) {
                             $state_text = '';
                             $class .= ' different-course';
                         } else {
                             $state_text = '';
                         }
 
-
                         $course = get_course($example->courseid);
-                        $tbl .= '<td rowspan="'.$example->rowspan.'" class="'.$class.'">';
+                        $tbl .= '<td rowspan="' . $example->rowspan . '" class="' . $class . '">';
                         // for now don't print state_text
                         // if ($state_text) $tbl .= '<b>'.$state_text.':</b><br />';
-                        $tbl .= '<b>'.$course->shortname.':</b><br />';
+                        $tbl .= '<b>' . $course->shortname . ':</b><br />';
                         $tbl .= $example->title;
 
                         if ($example->description) {
-                            $tbl .= '<br />'.$example->description;
+                            $tbl .= '<br />' . $example->description;
                         }
 
                         if ($example->student_evaluation_title) {
-                            $tbl .= '<br />S: '.$example->student_evaluation_title;
+                            $tbl .= '<br />S: ' . $example->student_evaluation_title;
                         }
 
                         $teacher_evaluation = [];
@@ -556,7 +557,7 @@ class printer {
                             $teacher_evaluation[] = $example->teacher_evaluation_title;
                         }
                         if ($teacher_evaluation) {
-                            $tbl .= '<br />L: '.join(' / ', $teacher_evaluation);
+                            $tbl .= '<br />L: ' . join(' / ', $teacher_evaluation);
                         }
                         /*if ($example->descriptors) {
                             $tbl .= '<br />';
@@ -586,7 +587,7 @@ class printer {
     static function block_exacomp_generate_report_annex_docx($courseid, $dataRow) {
         global $CFG;
         $templateContents = '';
-        $templateFile = __DIR__.'/../reports/tmpl_annex.docx';
+        $templateFile = __DIR__ . '/../reports/tmpl_annex.docx';
         $resultFilename = 'gruppenbericht.docx';
         $fs = get_file_storage();
         $files = $fs->get_area_files($courseid, 'block_exacomp', 'report_annex', 0);
@@ -599,11 +600,11 @@ class printer {
         }
 
         if (!file_exists($templateFile)) {
-            throw new \Exception("template 'tmpl_annex' not found");
+            throw new Exception("template 'tmpl_annex' not found");
         }
 
-        \PhpOffice\PhpWord\Settings::setTempDir($CFG->tempdir);
-        $templateProcessor = new \block_exacomp\TemplateProcessor($templateFile);
+        Settings::setTempDir($CFG->tempdir);
+        $templateProcessor = new TemplateProcessor($templateFile);
 
         $columnCount = block_exacomp_get_report_columns_count_by_assessment($courseid);
         $columnStart = 0;
@@ -659,9 +660,9 @@ class printer {
                 $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_subject_scheme($courseid), $subject->evaluation, $courseid);
                 $subjectEntries++;
                 //$templateProcessor->duplicateRow("subject");
-                $templateProcessor->setValue("subject_main", $subject->get_numbering().' '.$subject->title, 1);
+                $templateProcessor->setValue("subject_main", $subject->get_numbering() . ' ' . $subject->title, 1);
                 if ($subject->visible) {
-                    $templateProcessor->setValue("subject", $subject->get_numbering().' '.$subject->title, 1);
+                    $templateProcessor->setValue("subject", $subject->get_numbering() . ' ' . $subject->title, 1);
                     $templateProcessor->setValue("ns", $subject->evaluation->get_evalniveau_title(), 1);
                     for ($i = $columnStart; $i < $columnCount; $i++) {
                         if ($selectedEval == $i) {
@@ -681,7 +682,7 @@ class printer {
                         $subjectEntries++;
                         $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_topic_scheme($courseid), $topic->evaluation, $courseid);
                         if ($selectedEval != '') {
-                            $templateProcessor->setValue("topic", $topic->get_numbering().' '.$topic->title, 1);
+                            $templateProcessor->setValue("topic", $topic->get_numbering() . ' ' . $topic->title, 1);
                             $templateProcessor->setValue("nt", $topic->evaluation->get_evalniveau_title(), 1);
                             for ($i = $columnStart; $i < $columnCount; $i++) {
                                 if ($selectedEval == $i) {
@@ -703,7 +704,7 @@ class printer {
                             $subjectEntries++;
                             $selectedEval = block_exacomp_report_annex_get_selectedcolumn_by_assessment_type(block_exacomp_get_assessment_comp_scheme($courseid), $descriptor->evaluation, $courseid);
                             if ($selectedEval != '') {
-                                $templateProcessor->setValue("descriptor", $descriptor->get_numbering().' '.$descriptor->title, 1);
+                                $templateProcessor->setValue("descriptor", $descriptor->get_numbering() . ' ' . $descriptor->title, 1);
                                 $templateProcessor->setValue("nd", $descriptor->evaluation->get_evalniveau_title(), 1);
                                 for ($i = $columnStart; $i < $columnCount; $i++) {
                                     if ($selectedEval == $i) {
@@ -748,7 +749,7 @@ class printer {
         // save as a random file in temp file
         $temp_file = tempnam($CFG->tempdir, 'exacomp');
         $templateProcessor->saveAs($temp_file);
-        require_once $CFG->dirroot.'/lib/filelib.php';
+        require_once $CFG->dirroot . '/lib/filelib.php';
         send_temp_file($temp_file, $resultFilename);
 
     }
@@ -802,12 +803,12 @@ class printer {
                 $tableContent = '<table>';
                 $currLevel = 0;
                 foreach ($texts as $key2 => $line) {
-                    $tableContent .= '<tr class="'.($levels[$key2] == '</li>' ? '' : 'highlight').'"><td>';
+                    $tableContent .= '<tr class="' . ($levels[$key2] == '</li>' ? '' : 'highlight') . '"><td>';
                     if ($levels[$key2] != '</li>') {
-                        $tableContent .= str_repeat('&nbsp;', $currLevel * 3).trim($line);
+                        $tableContent .= str_repeat('&nbsp;', $currLevel * 3) . trim($line);
                         $currLevel++;
                     } else {
-                        $tableContent .= str_repeat('&nbsp;', 12).trim($line);
+                        $tableContent .= str_repeat('&nbsp;', 12) . trim($line);
                         $currLevel = 1;
                     }
                     $tableContent .= '</td></tr>';
@@ -866,7 +867,6 @@ class printer {
         //}
         //$html_content = str_replace($matches[1], '', $html_content);
 
-
         $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
         //$pdf->setHeaderHTML($html_content.$matches[0].'</table>');
 
@@ -916,7 +916,6 @@ class printer {
 
         $pdf->setHeaderMargin(5);
         $pdf->SetTopMargin(20);
-
 
         //if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*<tr.*</tr>)!isU', $html_content, $matches)) {
         //    die('error #gg98daa');
@@ -983,7 +982,6 @@ class printer {
         exit;
     }
 
-
 }
 
 class Slice {
@@ -1005,7 +1003,7 @@ class Slice {
     }
 
     function join() {
-        return $this->before.$this->slice.$this->after;
+        return $this->before . $this->slice . $this->after;
     }
 }
 
@@ -1044,14 +1042,14 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
     }
 
     function setValueRaw($search, $replace, $limit = self::MAXIMUM_REPLACEMENTS_DEFAULT) {
-        $oldEscaping = \PhpOffice\PhpWord\Settings::isOutputEscapingEnabled();
+        $oldEscaping = Settings::isOutputEscapingEnabled();
 
         // it's a raw value
-        \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(false);
+        Settings::setOutputEscapingEnabled(false);
 
         $ret = parent::setValue($search, $replace, $limit);
 
-        \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled($oldEscaping);
+        Settings::setOutputEscapingEnabled($oldEscaping);
 
         return $ret;
     }
@@ -1072,24 +1070,24 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
 
     function replaceWords($data) {
         foreach ($data as $key => $value) {
-            $this->tempDocumentMainPart = str_replace('>'.$key.'<', '>'.$value.'<', $this->tempDocumentMainPart);
+            $this->tempDocumentMainPart = str_replace('>' . $key . '<', '>' . $value . '<', $this->tempDocumentMainPart);
         }
     }
 
     function check() {
         if (preg_match('!\\$(.*(>|{)(?<name>[a-z{}].*)<)!iU', $this->tempDocumentMainPart, $matches)) {
-            throw new \Exception("fehler in variable ${matches['name']}");
+            throw new Exception("fehler in variable ${matches['name']}");
         }
     }
 
     function tagPos($search) {
         if ('${' !== substr($search, 0, 2) && '}' !== substr($search, -1)) {
-            $search = '${'.$search.'}';
+            $search = '${' . $search . '}';
         }
 
         $tagPos = strpos($this->tempDocumentMainPart, $search);
         if (!$tagPos) {
-            throw new \Exception("Can't find '$search'");
+            throw new Exception("Can't find '$search'");
         }
 
         return $tagPos;
@@ -1100,7 +1098,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
 
         for ($i = 0; $i < $clones; $i++) {
             $regExpEscaper = new RegExp();
-            $this->tempDocumentMainPart = preg_replace($regExpEscaper->escape($clone), str_replace('${', '${'.$varname.$i.'-', $clone), $this->tempDocumentMainPart, 1);
+            $this->tempDocumentMainPart = preg_replace($regExpEscaper->escape($clone), str_replace('${', '${' . $varname . $i . '-', $clone), $this->tempDocumentMainPart, 1);
         }
     }
 
@@ -1138,13 +1136,12 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
         $this->cloneRow($search, 0);
     }
 
-
     function splitByTag($string, $tag) {
         $rest = $string;
         $parts = [];
 
         while ($rest) {
-            if (!preg_match('!^(?<before>.*)(?<tag><w:'.$tag.'[\s>].*</w:'.$tag.'>|<w:'.$tag.'(\s[^>]+)?/>)!Uis', $rest, $matches)) {
+            if (!preg_match('!^(?<before>.*)(?<tag><w:' . $tag . '[\s>].*</w:' . $tag . '>|<w:' . $tag . '(\s[^>]+)?/>)!Uis', $rest, $matches)) {
                 $parts[] = $rest;
                 break;
             }
@@ -1174,20 +1171,20 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
             $searchIn = $this->tempDocumentMainPart;
         }
 
-        $tagStart = strrpos($searchIn, '<w:'.$tag.' ', ((strlen($searchIn) - $offset) * -1));
+        $tagStart = strrpos($searchIn, '<w:' . $tag . ' ', ((strlen($searchIn) - $offset) * -1));
 
         if (!$tagStart) {
-            $tagStart = strrpos($searchIn, '<w:'.$tag.'>', ((strlen($searchIn) - $offset) * -1));
+            $tagStart = strrpos($searchIn, '<w:' . $tag . '>', ((strlen($searchIn) - $offset) * -1));
         }
         if (!$tagStart) {
-            throw new Exception('Can not find the start position of tag '.$tag.'.');
+            throw new Exception('Can not find the start position of tag ' . $tag . '.');
         }
 
         return $tagStart;
     }
 
     function findTagEnd($tag, $offset, $fromContent = '') {
-        $search = '</w:'.$tag.'>';
+        $search = '</w:' . $tag . '>';
         if ($fromContent) {
             $searchIn = $fromContent;
         } else {
@@ -1202,12 +1199,13 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
 
     /**
      * You need to do it with every row
+     *
      * @param string $search
      * @param int $numberOfCells
      */
     function duplicateCell($search, $numberOfCells = 1) {
         if ('${' !== substr($search, 0, 2) && '}' !== substr($search, -1)) {
-            $search = '${'.$search.'}';
+            $search = '${' . $search . '}';
         }
 
         $tagPos = $this->tagPos($search);
@@ -1230,7 +1228,6 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
         $this->tempDocumentMainPart = $table->join();
     }
 
-
     function duplicateCol($search, $numberOfCols = 1) {
         $tagPos = $this->tagPos($search);
 
@@ -1251,8 +1248,8 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
 
         $splits = static::splitByTag(join('', $splits), 'tc');
 
-        $splits[1] = preg_replace('!(w:w=")[0-9]+!', '${1}'.$newWidth, $splits[1]);
-        $splits[4] = preg_replace('!(w:w=")[0-9]+!', '${1}'.$newWidth, $splits[4]);
+        $splits[1] = preg_replace('!(w:w=")[0-9]+!', '${1}' . $newWidth, $splits[1]);
+        $splits[4] = preg_replace('!(w:w=")[0-9]+!', '${1}' . $newWidth, $splits[4]);
 
         $splits[2] = str_repeat($splits[2], $numberOfCols);
         $splits[5] = str_repeat($splits[5], $numberOfCols);
@@ -1289,18 +1286,17 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
     }
 
     public function cloneBlockOnlyFirst($blockname) {
-        $startPos = strpos($this->tempDocumentMainPart, '${'.$blockname.'}');
-        $endPos = strpos($this->tempDocumentMainPart, '${/'.$blockname.'}', $startPos) + 4 + strlen($blockname);
-        $startPosContent = strpos($this->tempDocumentMainPart, '${'.$blockname.'}') + 3 + strlen($blockname);
-        $endPosContent = strpos($this->tempDocumentMainPart, '${/'.$blockname.'}', $startPosContent);
+        $startPos = strpos($this->tempDocumentMainPart, '${' . $blockname . '}');
+        $endPos = strpos($this->tempDocumentMainPart, '${/' . $blockname . '}', $startPos) + 4 + strlen($blockname);
+        $startPosContent = strpos($this->tempDocumentMainPart, '${' . $blockname . '}') + 3 + strlen($blockname);
+        $endPosContent = strpos($this->tempDocumentMainPart, '${/' . $blockname . '}', $startPosContent);
         $content = substr($this->tempDocumentMainPart, $startPosContent, $endPosContent - $startPosContent);
         $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, $content, $startPos, $endPos - $startPos);
     }
 
-
     function replaceBlockOnlyFirst($blockname, $replacement) {
         preg_match(
-            '/(<\?xml.*)(<w:p.*>\${'.$blockname.'}<\/w:.*?p>)(.*)(<w:p.*\${\/'.$blockname.'}<\/w:.*?p>)/is',
+            '/(<\?xml.*)(<w:p.*>\${' . $blockname . '}<\/w:.*?p>)(.*)(<w:p.*\${\/' . $blockname . '}<\/w:.*?p>)/is',
             $this->tempDocumentMainPart,
             $matches
         );
@@ -1308,7 +1304,7 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
         if (isset($matches[3])) {
             //$pos1 = strpos($this->tempDocumentMainPart, '${'.$blockname);
             //$pos2 = strpos($this->tempDocumentMainPart, '${/'.$blockname);
-            $pos1 = strpos($this->tempDocumentMainPart, $matches[2].$matches[3].$matches[4]);
+            $pos1 = strpos($this->tempDocumentMainPart, $matches[2] . $matches[3] . $matches[4]);
             $pos2 = strpos($this->tempDocumentMainPart, $matches[4], $pos1);
             if ($pos1 !== false && $pos2 !== false) {
                 $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, $replacement, $pos1, strlen($matches[2]) + strlen($matches[3]) + strlen($matches[4]));
@@ -1318,14 +1314,14 @@ class TemplateProcessor extends \PhpOffice\PhpWord\TemplateProcessor {
     }
 
     function replaceMarkerName($blockname, $replacement, $onlyFirst = false) {
-        $pos = strpos($this->tempDocumentMainPart, '${'.$blockname.'}');
+        $pos = strpos($this->tempDocumentMainPart, '${' . $blockname . '}');
         if ($pos !== false) {
             if ($onlyFirst) {
-                $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, '${'.$replacement.'}', $pos, strlen($blockname) + 3);
+                $this->tempDocumentMainPart = substr_replace($this->tempDocumentMainPart, '${' . $replacement . '}', $pos, strlen($blockname) + 3);
                 //$count = 1;
                 //$this->tempDocumentMainPart = str_replace('${'.$blockname.'}', '${'.$replacement.'}', $this->tempDocumentMainPart, $count);
             } else {
-                $this->tempDocumentMainPart = str_replace('${'.$blockname.'}', '${'.$replacement.'}', $this->tempDocumentMainPart);
+                $this->tempDocumentMainPart = str_replace('${' . $blockname . '}', '${' . $replacement . '}', $this->tempDocumentMainPart);
             }
         }
     }

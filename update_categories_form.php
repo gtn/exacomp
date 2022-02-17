@@ -21,28 +21,27 @@ require_once $CFG->libdir . '/formslib.php';
 
 class block_exacomp_update_categories_form extends moodleform {
 
-	function definition() {
-	    global $CFG, $DB;
-	    
-	    $output = block_exacomp_get_renderer();
-	    
-	    $mform = $this->_form; // Don't forget the underscore!
-	    
-	    $descrid = $this->_customdata['descrid'];
-	    
-	    $descrTitle = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS,'title',array("id"=>$descrid));
-// 	    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
+    function definition() {
+        global $CFG, $DB;
 
-	    if ($this->_customdata['categories']) {
+        $output = block_exacomp_get_renderer();
+
+        $mform = $this->_form; // Don't forget the underscore!
+
+        $descrid = $this->_customdata['descrid'];
+
+        $descrTitle = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS, 'title', array("id" => $descrid));
+        // 	    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
+
+        if ($this->_customdata['categories']) {
             $categories = ['0' => ' - - - '] + $this->_customdata['categories'];
-	        $cselect = $mform->addElement('select', 'catid', block_exacomp_get_string('descriptor_categories'), $categories);
-	        $cselect->setMultiple(true);
-	        $cselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $this->_customdata['descrid']), "", "catid")));
-	    }
+            $cselect = $mform->addElement('select', 'catid', block_exacomp_get_string('descriptor_categories'), $categories);
+            $cselect->setMultiple(true);
+            $cselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $this->_customdata['descrid']), "", "catid")));
+        }
 
-	    $this->add_action_buttons(true);
-	}
-
+        $this->add_action_buttons(true);
+    }
 
     public function display() {
         ob_start();
@@ -54,14 +53,14 @@ class block_exacomp_update_categories_form extends moodleform {
         $selector = new DOMXPath($doc);
         $newInput = $doc->createDocumentFragment();
         // add "new category" input
-        $newInput->appendXML('<br /><span>'.block_exacomp_get_string('descriptor_add_category').' <input class="form-control" name="newcategory" value="" size="10" /> </span>');
+        $newInput->appendXML('<br /><span>' . block_exacomp_get_string('descriptor_add_category') . ' <input class="form-control" name="newcategory" value="" size="10" /> </span>');
         foreach ($selector->query('//select[@name=\'catid[]\']') as $e) {
-            $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
+            $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
             $e->parentNode->appendChild($newInput);
         }
         // add subtext - description
         $subText = $doc->createDocumentFragment();
-        $subText->appendXML('<span class="exacomp_sublabel">'.block_exacomp_get_string('descriptor_categories_description').'</span>');
+        $subText->appendXML('<span class="exacomp_sublabel">' . block_exacomp_get_string('descriptor_categories_description') . '</span>');
         foreach ($selector->query('//select[@name=\'catid[]\']/ancestor::*[contains(@class, \'form-group\')]//label') as $e) {
             $e->parentNode->appendChild($subText);
         }

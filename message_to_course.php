@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
-require_once __DIR__.'/example_upload_form.php';
+require __DIR__ . '/inc.php';
+require_once __DIR__ . '/example_upload_form.php';
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_exacomp', $courseid);
+    print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
 block_exacomp_require_login($course);

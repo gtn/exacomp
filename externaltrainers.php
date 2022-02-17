@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error("That's an invalid course id");
+    print_error("That's an invalid course id");
 }
 
 block_exacomp_require_login($course);
@@ -37,31 +37,32 @@ $students = get_users_by_capability($coursecontext, 'block/exacomp:student');
 
 $selectstudents = array();
 $selectstudents[0] = block_exacomp_get_string('block_exacomp_external_trainer_allstudents');
-foreach($students as $student) {
-	$selectstudents[$student->id] = fullname($student);
+foreach ($students as $student) {
+    $selectstudents[$student->id] = fullname($student);
 }
 $noneditingteachers = get_users_by_capability($coursecontext, 'block/exacomp:teacher');
-$selectteachers= array();
-foreach($noneditingteachers as $noneditingteacher) {
-	$selectteachers[$noneditingteacher->id] = fullname($noneditingteacher);
+$selectteachers = array();
+foreach ($noneditingteachers as $noneditingteacher) {
+    $selectteachers[$noneditingteacher->id] = fullname($noneditingteacher);
 }
 
 $trainerid = optional_param('trainerid', -1, PARAM_INT);
 $studentid = optional_param('studentid', -1, PARAM_INT);
 
-
-if($trainerid > 0 && $studentid > 0) {
-    if(!$DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid)))
-        $DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid));
-} elseif($trainerid > 0 && $studentid == 0) {
-	foreach($students as $student) {
-		if(!$DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$student->id)))
-			$DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$student->id));
-	}
+if ($trainerid > 0 && $studentid > 0) {
+    if (!$DB->record_exists('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $studentid))) {
+        $DB->insert_record('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $studentid));
+    }
+} else if ($trainerid > 0 && $studentid == 0) {
+    foreach ($students as $student) {
+        if (!$DB->record_exists('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $student->id))) {
+            $DB->insert_record('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $student->id));
+        }
+    }
 }
 
-if(($delete = optional_param('delete',0,PARAM_INT)) > 0) {
-	$DB->delete_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS,array('id'=>$delete));
+if (($delete = optional_param('delete', 0, PARAM_INT)) > 0) {
+    $DB->delete_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array('id' => $delete));
 }
 
 $externaltrainers = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS);
@@ -76,23 +77,23 @@ echo $output->heading(block_exacomp_get_string('block_exacomp_external_trainer_a
 echo '<form method="post">';
 echo block_exacomp_get_string('block_exacomp_external_trainer');
 echo html_writer::select($selectteachers, 'trainerid');
-echo '&nbsp;&nbsp;&nbsp;&nbsp;'.block_exacomp_get_string('block_exacomp_external_trainer_student');
+echo '&nbsp;&nbsp;&nbsp;&nbsp;' . block_exacomp_get_string('block_exacomp_external_trainer_student');
 echo html_writer::select($selectstudents, 'studentid');
 echo '<input type="submit">';
 echo '</form>';
-if($externaltrainers){
-	echo '<table id="user-table" class="generaltable externaltrainerstable">';
-	echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
-	foreach($externaltrainers as $trainer) {
-		echo '<tr>';
-			echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->trainerid))) . '</td>';
-			echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->studentid))) . '</td>';
-			echo '<td> <a href="'.$CFG->wwwroot.'/blocks/exacomp/externaltrainers.php?delete='.$trainer->id.'&courseid='.$courseid.'">'.
-			'<img src="pix/del.png" /></a></td>';
+if ($externaltrainers) {
+    echo '<table id="user-table" class="generaltable externaltrainerstable">';
+    echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
+    foreach ($externaltrainers as $trainer) {
+        echo '<tr>';
+        echo '<td>' . fullname($DB->get_record('user', array('id' => $trainer->trainerid))) . '</td>';
+        echo '<td>' . fullname($DB->get_record('user', array('id' => $trainer->studentid))) . '</td>';
+        echo '<td> <a href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?delete=' . $trainer->id . '&courseid=' . $courseid . '">' .
+            '<img src="pix/del.png" /></a></td>';
 
-		echo '</tr>';
-	}
-	echo '</table>';
+        echo '</tr>';
+    }
+    echo '</table>';
 }
 echo $output->footer();
 

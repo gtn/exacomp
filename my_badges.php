@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 global $DB, $OUTPUT, $PAGE;
 
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
+    print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -41,13 +41,12 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
-echo $output->header($context,$courseid, $page_identifier);
+echo $output->header($context, $courseid, $page_identifier);
 
 /* CONTENT REGION */
 
 block_exacomp_award_badges($courseid, $USER->id);
 $badges = block_exacomp_get_user_badges($courseid, $USER->id);
-
 
 echo $output->my_badges($badges);
 

@@ -18,10 +18,20 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 namespace block_exacomp\privacy;
+
+use block_exacomp\global_config;
+use context;
+use context_user;
 use core_privacy\local\metadata\collection;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
-use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\writer;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -29,46 +39,46 @@ defined('MOODLE_INTERNAL') || die();
  * Privacy Subsystem for block_exacomp implementing null_provider.
  */
 class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\core_userlist_provider,
-        \core_privacy\local\request\plugin\provider {
+    \core_privacy\local\metadata\provider,
+    core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
 
-    public static function get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection): collection {
         // block_exacompcompuser
         $collection->add_database_table('block_exacompcompuser', [
-                'userid' => 'privacy:metadata:block_exacompcompuser:userid',
-                'compid' => 'privacy:metadata:block_exacompcompuser:compid',
-                'reviewerid' => 'privacy:metadata:block_exacompcompuser:reviewerid',
-                'role' => 'privacy:metadata:block_exacompcompuser:role',
-                'courseid' => 'privacy:metadata:block_exacompcompuser:courseid',
-                'value' => 'privacy:metadata:block_exacompcompuser:value',
-                'comptype' => 'privacy:metadata:block_exacompcompuser:comptype',
-                'timestamp' => 'privacy:metadata:block_exacompcompuser:timestamp',
-                'additionalinfo' => 'privacy:metadata:block_exacompcompuser:additionalinfo',
-                'evalniveauid' => 'privacy:metadata:block_exacompcompuser:evalniveauid',
-                'gradingisold ' => 'privacy:metadata:block_exacompcompuser:gradingisold',
+            'userid' => 'privacy:metadata:block_exacompcompuser:userid',
+            'compid' => 'privacy:metadata:block_exacompcompuser:compid',
+            'reviewerid' => 'privacy:metadata:block_exacompcompuser:reviewerid',
+            'role' => 'privacy:metadata:block_exacompcompuser:role',
+            'courseid' => 'privacy:metadata:block_exacompcompuser:courseid',
+            'value' => 'privacy:metadata:block_exacompcompuser:value',
+            'comptype' => 'privacy:metadata:block_exacompcompuser:comptype',
+            'timestamp' => 'privacy:metadata:block_exacompcompuser:timestamp',
+            'additionalinfo' => 'privacy:metadata:block_exacompcompuser:additionalinfo',
+            'evalniveauid' => 'privacy:metadata:block_exacompcompuser:evalniveauid',
+            'gradingisold ' => 'privacy:metadata:block_exacompcompuser:gradingisold',
         ], 'privacy:metadata:block_exacompcompuser');
 
         // block_exacompexameval
         $collection->add_database_table('block_exacompexameval', [
-                'exampleid' => 'privacy:metadata:block_exacompexameval:exampleid',
-                'courseid' => 'privacy:metadata:block_exacompexameval:courseid',
-                'studentid' => 'privacy:metadata:block_exacompexameval:studentid',
-                'teacher_evaluation' => 'privacy:metadata:block_exacompexameval:teacher_evaluation',
-                'additionalinfo' => 'privacy:metadata:block_exacompexameval:additionalinfo',
-                'teacher_reviewerid' => 'privacy:metadata:block_exacompexameval:teacher_reviewerid',
-                'timestamp_teacher' => 'privacy:metadata:block_exacompexameval:timestamp_teacher',
-                'student_evaluation' => 'privacy:metadata:block_exacompexameval:student_evaluation',
-                'timestamp_student' => 'privacy:metadata:block_exacompexameval:timestamp_student',
-                'evalniveauid' => 'privacy:metadata:block_exacompexameval:evalniveauid',
+            'exampleid' => 'privacy:metadata:block_exacompexameval:exampleid',
+            'courseid' => 'privacy:metadata:block_exacompexameval:courseid',
+            'studentid' => 'privacy:metadata:block_exacompexameval:studentid',
+            'teacher_evaluation' => 'privacy:metadata:block_exacompexameval:teacher_evaluation',
+            'additionalinfo' => 'privacy:metadata:block_exacompexameval:additionalinfo',
+            'teacher_reviewerid' => 'privacy:metadata:block_exacompexameval:teacher_reviewerid',
+            'timestamp_teacher' => 'privacy:metadata:block_exacompexameval:timestamp_teacher',
+            'student_evaluation' => 'privacy:metadata:block_exacompexameval:student_evaluation',
+            'timestamp_student' => 'privacy:metadata:block_exacompexameval:timestamp_student',
+            'evalniveauid' => 'privacy:metadata:block_exacompexameval:evalniveauid',
         ], 'privacy:metadata:block_exacompexameval');
 
         // block_exacompcmassign
         $collection->add_database_table('block_exacompcmassign', [
-                'coursemoduleid' => 'privacy:metadata:block_exacompcmassign:coursemoduleid',
-                'userid' => 'privacy:metadata:block_exacompcmassign:userid',
-                'timemodified' => 'privacy:metadata:block_exacompcmassign:timemodified',
-                'relateddata' => 'privacy:metadata:block_exacompcmassign:relateddata',
+            'coursemoduleid' => 'privacy:metadata:block_exacompcmassign:coursemoduleid',
+            'userid' => 'privacy:metadata:block_exacompcmassign:userid',
+            'timemodified' => 'privacy:metadata:block_exacompcmassign:timemodified',
+            'relateddata' => 'privacy:metadata:block_exacompcmassign:relateddata',
         ], 'privacy:metadata:block_exacompcmassign');
 
         // block_exacompcompuser_mm
@@ -76,81 +86,81 @@ class provider implements
 
         // block_exacompcrossstud_mm
         $collection->add_database_table('block_exacompcrossstud_mm', [
-                'crosssubjid' => 'privacy:metadata:block_exacompcrossstud_mm:crosssubjid',
-                'studentid' => 'privacy:metadata:block_exacompcrossstud_mm:studentid',
+            'crosssubjid' => 'privacy:metadata:block_exacompcrossstud_mm:crosssubjid',
+            'studentid' => 'privacy:metadata:block_exacompcrossstud_mm:studentid',
         ], 'privacy:metadata:block_exacompcrossstud_mm');
 
         // block_exacompdescrvisibility
         $collection->add_database_table('block_exacompdescrvisibility', [
-                'courseid' => 'privacy:metadata:block_exacompdescrvisibility:courseid',
-                'descrid' => 'privacy:metadata:block_exacompdescrvisibility:descrid',
-                'studentid' => 'privacy:metadata:block_exacompdescrvisibility:studentid',
-                'visible' => 'privacy:metadata:block_exacompdescrvisibility:visible',
+            'courseid' => 'privacy:metadata:block_exacompdescrvisibility:courseid',
+            'descrid' => 'privacy:metadata:block_exacompdescrvisibility:descrid',
+            'studentid' => 'privacy:metadata:block_exacompdescrvisibility:studentid',
+            'visible' => 'privacy:metadata:block_exacompdescrvisibility:visible',
         ], 'privacy:metadata:block_exacompdescrvisibility');
 
         // block_exacompexampvisibility
         $collection->add_database_table('block_exacompexampvisibility', [
-                'courseid' => 'privacy:metadata:block_exacompexampvisibility:courseid',
-                'exampleid' => 'privacy:metadata:block_exacompexampvisibility:exampleid',
-                'studentid' => 'privacy:metadata:block_exacompexampvisibility:studentid',
-                'visible' => 'privacy:metadata:block_exacompexampvisibility:visible',
+            'courseid' => 'privacy:metadata:block_exacompexampvisibility:courseid',
+            'exampleid' => 'privacy:metadata:block_exacompexampvisibility:exampleid',
+            'studentid' => 'privacy:metadata:block_exacompexampvisibility:studentid',
+            'visible' => 'privacy:metadata:block_exacompexampvisibility:visible',
         ], 'privacy:metadata:block_exacompexampvisibility');
 
         // block_exacompexternaltrainer
         $collection->add_database_table('block_exacompexternaltrainer', [
-                'trainerid' => 'privacy:metadata:block_exacompexternaltrainer:trainerid',
-                'studentid' => 'privacy:metadata:block_exacompexternaltrainer:studentid',
+            'trainerid' => 'privacy:metadata:block_exacompexternaltrainer:trainerid',
+            'studentid' => 'privacy:metadata:block_exacompexternaltrainer:studentid',
         ], 'privacy:metadata:block_exacompexternaltrainer');
 
         // block_exacompprofilesettings
         // now only for courses. But in the future is possible for other things
         $collection->add_database_table('block_exacompprofilesettings', [
-                'itemid' => 'privacy:metadata:block_exacompprofilesettings:itemid',
-                'userid' => 'privacy:metadata:block_exacompprofilesettings:userid',
+            'itemid' => 'privacy:metadata:block_exacompprofilesettings:itemid',
+            'userid' => 'privacy:metadata:block_exacompprofilesettings:userid',
         ], 'privacy:metadata:block_exacompprofilesettings');
 
         // block_exacompschedule
         $collection->add_database_table('block_exacompschedule', [
-                'studentid' => 'privacy:metadata:block_exacompschedule:studentid',
-                'exampleid' => 'privacy:metadata:block_exacompschedule:exampleid',
-                'creatorid' => 'privacy:metadata:block_exacompschedule:creatorid',
-                'timecreated' => 'privacy:metadata:block_exacompschedule:timecreated',
-                'timemodified' => 'privacy:metadata:block_exacompschedule:timemodified',
-                'courseid' => 'privacy:metadata:block_exacompschedule:courseid',
-                'sorting' => 'privacy:metadata:block_exacompschedule:sorting',
-                'start' => 'privacy:metadata:block_exacompschedule:start',
-                'end' => 'privacy:metadata:block_exacompschedule:end',
-                'deleted' => 'privacy:metadata:block_exacompschedule:deleted',
+            'studentid' => 'privacy:metadata:block_exacompschedule:studentid',
+            'exampleid' => 'privacy:metadata:block_exacompschedule:exampleid',
+            'creatorid' => 'privacy:metadata:block_exacompschedule:creatorid',
+            'timecreated' => 'privacy:metadata:block_exacompschedule:timecreated',
+            'timemodified' => 'privacy:metadata:block_exacompschedule:timemodified',
+            'courseid' => 'privacy:metadata:block_exacompschedule:courseid',
+            'sorting' => 'privacy:metadata:block_exacompschedule:sorting',
+            'start' => 'privacy:metadata:block_exacompschedule:start',
+            'end' => 'privacy:metadata:block_exacompschedule:end',
+            'deleted' => 'privacy:metadata:block_exacompschedule:deleted',
         ], 'privacy:metadata:block_exacompschedule');
 
         // block_exacompsolutvisibility
         $collection->add_database_table('block_exacompsolutvisibility', [
-                'courseid' => 'privacy:metadata:block_exacompsolutvisibility:courseid',
-                'exampleid' => 'privacy:metadata:block_exacompsolutvisibility:exampleid',
-                'studentid' => 'privacy:metadata:block_exacompsolutvisibility:studentid',
-                'visible' => 'privacy:metadata:block_exacompsolutvisibility:visible',
+            'courseid' => 'privacy:metadata:block_exacompsolutvisibility:courseid',
+            'exampleid' => 'privacy:metadata:block_exacompsolutvisibility:exampleid',
+            'studentid' => 'privacy:metadata:block_exacompsolutvisibility:studentid',
+            'visible' => 'privacy:metadata:block_exacompsolutvisibility:visible',
         ], 'privacy:metadata:block_exacompsolutvisibility');
 
         // block_exacomptopicvisibility
         $collection->add_database_table('block_exacomptopicvisibility', [
-                'courseid' => 'privacy:metadata:block_exacomptopicvisibility:courseid',
-                'topicid' => 'privacy:metadata:block_exacomptopicvisibility:topicid',
-                'studentid' => 'privacy:metadata:block_exacomptopicvisibility:studentid',
-                'visible' => 'privacy:metadata:block_exacomptopicvisibility:visible',
+            'courseid' => 'privacy:metadata:block_exacomptopicvisibility:courseid',
+            'topicid' => 'privacy:metadata:block_exacomptopicvisibility:topicid',
+            'studentid' => 'privacy:metadata:block_exacomptopicvisibility:studentid',
+            'visible' => 'privacy:metadata:block_exacomptopicvisibility:visible',
         ], 'privacy:metadata:block_exacomptopicvisibility');
 
         // block_exacompwsdata
         $collection->add_database_table('block_exacompwsdata', [
-                'token' => 'privacy:metadata:block_exacompwsdata:token',
-                'userid' => 'privacy:metadata:block_exacompwsdata:userid',
-                'data' => 'privacy:metadata:block_exacompwsdata:data',
+            'token' => 'privacy:metadata:block_exacompwsdata:token',
+            'userid' => 'privacy:metadata:block_exacompwsdata:userid',
+            'data' => 'privacy:metadata:block_exacompwsdata:data',
         ], 'privacy:metadata:block_exacompwsdata');
 
         return $collection;
     }
 
-    public static function get_contexts_for_userid(int $userid): \core_privacy\local\request\contextlist {
-        $contextlist = new \core_privacy\local\request\contextlist();
+    public static function get_contexts_for_userid(int $userid): contextlist {
+        $contextlist = new contextlist();
 
         $contextlist->add_user_context($userid);
 
@@ -199,7 +209,7 @@ class provider implements
         }
     }
 
-    public static function export_user_data(\core_privacy\local\request\approved_contextlist $contextlist) {
+    public static function export_user_data(approved_contextlist $contextlist) {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/blocks/exacomp/lib/lib.php');
         require_once($CFG->dirroot . '/blocks/exacomp/lib/classes.php');
@@ -263,31 +273,31 @@ class provider implements
                             $assessment = block_exacomp_get_user_assesment_wordings($user->id, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid);
                             if ($assessment) {
                                 if (!array_key_exists($example->id,
-                                        $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'])) {
+                                    $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'])) {
                                     $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id] =
-                                            array();
+                                        array();
                                 }
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['assessment_grade'] =
-                                        $assessment->grade;
+                                    $assessment->grade;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['assessment_niveau'] =
-                                        $assessment->niveau;
+                                    $assessment->niveau;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['assessment_selfgrade'] =
-                                        $assessment->self_grade;
+                                    $assessment->self_grade;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['title'] =
-                                        $example->title;
+                                    $example->title;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['description'] =
-                                        $example->description;
+                                    $example->description;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['externalurl'] =
-                                        $example->externalurl;
+                                    $example->externalurl;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['externalsolution'] =
-                                        $example->externalsolution;
+                                    $example->externalsolution;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['externaltask'] =
-                                        $example->externaltask;
+                                    $example->externaltask;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['author'] =
-                                        $example->author;
+                                    $example->author;
 
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id] =
-                                        array_filter($grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]);
+                                    array_filter($grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]);
                             }
                         }
                         // TODO: subdescriptors?
@@ -300,9 +310,9 @@ class provider implements
             if (count($grades)) {
                 $grades = array('competences_overview' => $grades);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $grades);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/gradings'], $contextdata);
             }
         }
@@ -347,9 +357,9 @@ class provider implements
                             $assessments = block_exacomp_get_teacher_assesment_wordings_array($user->id, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $courseid);
                             if ($assessments) {
                                 if (!array_key_exists($example->id,
-                                        $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'])) {
+                                    $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'])) {
                                     $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id] =
-                                            array();
+                                        array();
                                 }
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['my_assessment'] = $assessments;
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['title'] = $example->title;
@@ -360,7 +370,7 @@ class provider implements
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]['author'] = $example->author;
 
                                 $grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id] =
-                                        array_filter($grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]);
+                                    array_filter($grades[$subject->id]['topics'][$topic->id]['descriptors'][$descriptor->id]['examples'][$example->id]);
                             }
                         }
                         // TODO: subdescriptors?
@@ -373,9 +383,9 @@ class provider implements
             if (count($grades)) {
                 $grades = array('competences_reviews' => $grades);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $grades);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/reviews'], $contextdata);
             }
 
@@ -411,9 +421,9 @@ class provider implements
             if (count($crosssubjectsData)) {
                 $crosssubjectsData = array('crossubjects_reviews' => $crosssubjectsData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $crosssubjectsData);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/crossubject gradings'], $contextdata);
             }
         }
@@ -422,9 +432,9 @@ class provider implements
             $courseid = $context->instanceid;
             $crosssubjectsData = array();
             $crosssubjects = $DB->get_fieldset_select('block_exacompcompuser',
-                    'compid',
-                    ' reviewerid = ? AND comptype = ? ',
-                    [$user->id, BLOCK_EXACOMP_TYPE_CROSSSUB]
+                'compid',
+                ' reviewerid = ? AND comptype = ? ',
+                [$user->id, BLOCK_EXACOMP_TYPE_CROSSSUB]
             );
 
             if ($crosssubjects) {
@@ -443,7 +453,7 @@ class provider implements
                         $crosssubjectsData[$cross_subject->id]['subjects'][] = $subject->title;
                     }
                     $assessments = block_exacomp_get_teacher_assesment_wordings_array($user->id, $cross_subject->id,
-                            BLOCK_EXACOMP_TYPE_CROSSSUB, $courseid);
+                        BLOCK_EXACOMP_TYPE_CROSSSUB, $courseid);
                     $crosssubjectsData[$cross_subject->id]['my_assessment'] = $assessments;
                     $crosssubjectsData[$cross_subject->id] = array_filter($crosssubjectsData[$cross_subject->id]);
                     // all other data is in the subject/topic/... data (look above).  Is it true?
@@ -453,9 +463,9 @@ class provider implements
             if (count($crosssubjectsData)) {
                 $crosssubjectsData = array('crossubjects_reviews' => $crosssubjectsData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $crosssubjectsData);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/crossubject reviews'], $contextdata);
             }
         }
@@ -470,12 +480,12 @@ class provider implements
             $descrvisiblesData = array();
             $descrhiddenData = array();
             $visibles = $DB->get_records_sql('SELECT d.title, dv.visible
-                    FROM {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dv
-                        LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON dv.descrid = d.id
+                    FROM {' . BLOCK_EXACOMP_DB_DESCVISIBILITY . '} dv
+                        LEFT JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON dv.descrid = d.id
                     WHERE dv.studentid = ?
                         AND dv.courseid = ?
                     ',
-                    [$user->id, $courseid]
+                [$user->id, $courseid]
             );
             if ($visibles) {
                 foreach ($visibles as $visible) {
@@ -489,11 +499,11 @@ class provider implements
 
             if (count($descrvisiblesData) || count($descrhiddenData)) {
                 $descrvisibles = array('visible_competences' => $descrvisiblesData,
-                                        'hidden_competences' => $descrhiddenData);
+                    'hidden_competences' => $descrhiddenData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $descrvisibles);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/descriptors'], $contextdata);
             }
         }
@@ -508,12 +518,12 @@ class provider implements
             $examvisiblesData = array();
             $examhiddenData = array();
             $visibles = $DB->get_records_sql('SELECT e.title, ev.visible
-                    FROM {'.BLOCK_EXACOMP_DB_EXAMPVISIBILITY.'} ev
-                        LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON ev.exampleid = e.id
+                    FROM {' . BLOCK_EXACOMP_DB_EXAMPVISIBILITY . '} ev
+                        LEFT JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON ev.exampleid = e.id
                     WHERE ev.studentid = ?
                         AND ev.courseid = ?
                     ',
-                    [$user->id, $courseid]
+                [$user->id, $courseid]
             );
             if ($visibles) {
                 foreach ($visibles as $visible) {
@@ -527,25 +537,25 @@ class provider implements
 
             if (count($examvisiblesData) || count($examhiddenData)) {
                 $examvisibles = array('visible_competences' => $examvisiblesData,
-                                        'hidden_competences' => $examhiddenData);
+                    'hidden_competences' => $examhiddenData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $examvisibles);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/examples'], $contextdata);
             }
         }
 
         // block_exacompexternaltrainer
         // external trainers for student
-        $context = \context_user::instance($user->id);
+        $context = context_user::instance($user->id);
         $externaltrainersData = array();
         $externaltrainers = $DB->get_fieldset_sql('SELECT DISTINCT u.id
-                FROM {'.BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS.'} et
+                FROM {' . BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS . '} et
                     LEFT JOIN {user} u ON et.trainerid = u.id
                 WHERE et.studentid = ?
                 ',
-                [$user->id]
+            [$user->id]
         );
         if ($externaltrainers) {
             foreach ($externaltrainers as $trainer) {
@@ -557,20 +567,20 @@ class provider implements
         }
         if (count($externaltrainersData)) {
             $externaltrainersData = array('external_trainers' => $externaltrainersData);
-            $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+            $contextdata = helper::get_context_data($context, $user);
             $contextdata = (object) array_merge((array) $contextdata, $externaltrainersData);
-            $writer = \core_privacy\local\request\writer::with_context($context);
+            $writer = writer::with_context($context);
             $writer->export_data(['Exacomp/external/trainers'], $contextdata);
         }
         // my external students
-        $context = \context_user::instance($user->id);
+        $context = context_user::instance($user->id);
         $externalstudentsData = array();
         $externalstudents = $DB->get_fieldset_sql('SELECT DISTINCT u.id
-                FROM {'.BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS.'} et
+                FROM {' . BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS . '} et
                     LEFT JOIN {user} u ON et.studentid = u.id
                 WHERE et.trainerid = ?
                 ',
-                [$user->id]
+            [$user->id]
         );
         if ($externalstudents) {
             foreach ($externalstudents as $student) {
@@ -582,21 +592,21 @@ class provider implements
         }
         if (count($externalstudentsData)) {
             $externalstudentsData = array('external_students' => $externalstudentsData);
-            $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+            $contextdata = helper::get_context_data($context, $user);
             $contextdata = (object) array_merge((array) $contextdata, $externalstudentsData);
-            $writer = \core_privacy\local\request\writer::with_context($context);
+            $writer = writer::with_context($context);
             $writer->export_data(['Exacomp/external/students'], $contextdata);
         }
 
         // block_exacompprofilesettings
-        $context = \context_user::instance($user->id);
+        $context = context_user::instance($user->id);
         $selectedCourcesData = array();
         $selectedCources = $DB->get_fieldset_sql('SELECT DISTINCT c.fullname
                 FROM {block_exacompprofilesettings} ps
                     LEFT JOIN {course} c ON ps.itemid = c.id AND ps.block = ?
                 WHERE ps.userid = ?
                 ',
-                ['exacomp', $user->id]
+            ['exacomp', $user->id]
         );
         if ($selectedCources) {
             foreach ($selectedCources as $courseTitle) {
@@ -605,9 +615,9 @@ class provider implements
         }
         if (count($selectedCourcesData)) {
             $selectedCourcesData = array('courses_for_profile' => $selectedCourcesData);
-            $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+            $contextdata = helper::get_context_data($context, $user);
             $contextdata = (object) array_merge((array) $contextdata, $selectedCourcesData);
-            $writer = \core_privacy\local\request\writer::with_context($context);
+            $writer = writer::with_context($context);
             $writer->export_data(['Exacomp/Competence profile/courses'], $contextdata);
         }
 
@@ -617,20 +627,20 @@ class provider implements
             $courseid = $context->instanceid;
             $examplesData = array();
             $examples = $DB->get_records_sql(
-                    'SELECT DISTINCT e.title as example_title,
+                'SELECT DISTINCT e.title as example_title,
                                     s.creatorid as creator_id,
                                     s.timecreated as timecreated,
                                     s.timemodified as timemodified,
                                     s.sorting as sorting,
                                     s.start as startts,
                                     s.end as endts
-                        FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'} s
-                            LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = s.exampleid
+                        FROM {' . BLOCK_EXACOMP_DB_SCHEDULE . '} s
+                            LEFT JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = s.exampleid
                         WHERE s.studentid = ?
                             AND s.courseid = ?
                             AND s.deleted = 0
                         ORDER BY s.sorting ',
-                            [$user->id, $courseid]
+                [$user->id, $courseid]
             );
             foreach ($examples as $example) {
                 $creator = $DB->get_record('user', ['id' => $example->creator_id]);
@@ -648,9 +658,9 @@ class provider implements
             if (count($examplesData)) {
                 $examplesData = array('scheduled_examples' => $examplesData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $examplesData);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/scheduled examples'], $contextdata);
             }
         }
@@ -659,20 +669,20 @@ class provider implements
             $courseid = $context->instanceid;
             $examplesData = array();
             $examples = $DB->get_records_sql(
-                    'SELECT DISTINCT e.title as example_title,
+                'SELECT DISTINCT e.title as example_title,
                                     s.studentid as student_id,
                                     s.timecreated as timecreated,
                                     s.timemodified as timemodified,
                                     s.sorting as sorting,
                                     s.start as startts,
                                     s.end as endts
-                        FROM {'.BLOCK_EXACOMP_DB_SCHEDULE.'} s
-                            LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = s.exampleid
+                        FROM {' . BLOCK_EXACOMP_DB_SCHEDULE . '} s
+                            LEFT JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = s.exampleid
                         WHERE s.creatorid = ?
                             AND s.courseid = ?
                             AND s.deleted = 0
                         ORDER BY s.sorting ',
-                            [$user->id, $courseid]
+                [$user->id, $courseid]
             );
             foreach ($examples as $example) {
                 $student = $DB->get_record('user', ['id' => $example->student_id]);
@@ -691,9 +701,9 @@ class provider implements
             if (count($examplesData)) {
                 $examplesData = array('scheduled_examples' => $examplesData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $examplesData);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/my scheduled examples'], $contextdata);
             }
         }
@@ -705,12 +715,12 @@ class provider implements
             $solutvisiblesData = array();
             $soluthiddenData = array();
             $visibles = $DB->get_records_sql('SELECT e.title, sol.visible
-                    FROM {'.BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY.'} sol
-                        LEFT JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON sol.exampleid = e.id
+                    FROM {' . BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY . '} sol
+                        LEFT JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON sol.exampleid = e.id
                     WHERE sol.studentid = ?
                         AND sol.courseid = ?
                     ',
-                    [$user->id, $courseid]
+                [$user->id, $courseid]
             );
             if ($visibles) {
                 foreach ($visibles as $visible) {
@@ -724,11 +734,11 @@ class provider implements
 
             if (count($solutvisiblesData) || count($soluthiddenData)) {
                 $solutvisiblesData = array('visible_solutions' => $solutvisiblesData,
-                        'hidden_solutions' => $soluthiddenData);
+                    'hidden_solutions' => $soluthiddenData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $solutvisiblesData);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/solutions'], $contextdata);
             }
         }
@@ -739,12 +749,12 @@ class provider implements
             $topicvisiblesData = array();
             $topichiddenData = array();
             $visibles = $DB->get_records_sql('SELECT t.title, tv.visible
-                    FROM {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tv
-                        LEFT JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON tv.topicid = t.id
+                    FROM {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tv
+                        LEFT JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON tv.topicid = t.id
                     WHERE tv.studentid = ?
                         AND tv.courseid = ? AND tv.niveauid IS NULL
                     ',
-                    [$user->id, $courseid]
+                [$user->id, $courseid]
             );
             if ($visibles) {
                 foreach ($visibles as $visible) {
@@ -758,11 +768,11 @@ class provider implements
 
             if (count($topicvisiblesData) || count($topichiddenData)) {
                 $topicsvisibles = array('visible_topics' => $topicvisiblesData,
-                        'hidden_topics' => $topichiddenData);
+                    'hidden_topics' => $topichiddenData);
                 //$context = \context_course::instance($courseid);
-                $contextdata = \core_privacy\local\request\helper::get_context_data($context, $user);
+                $contextdata = helper::get_context_data($context, $user);
                 $contextdata = (object) array_merge((array) $contextdata, $topicsvisibles);
-                $writer = \core_privacy\local\request\writer::with_context($context);
+                $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/topics'], $contextdata);
             }
         }
@@ -772,7 +782,7 @@ class provider implements
 
     }
 
-    public static function delete_data_for_all_users_in_context(\context $context) {
+    public static function delete_data_for_all_users_in_context(context $context) {
         global $DB;
         if (get_class($context) != 'context_course') {
             return;
@@ -789,7 +799,7 @@ class provider implements
         return;
     }
 
-    public static function delete_data_for_user(\core_privacy\local\request\approved_contextlist $contextlist) {
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
         if (empty($contextlist->count())) {
             return;
@@ -892,8 +902,7 @@ class provider implements
         return 'privacy:metadata';
     }*/
 
-
-};
+}
 
 function block_exacomp_get_user_assesment_wordings($userid, $competenceid, $competencetype, $courseid, $forRole = BLOCK_EXACOMP_ROLE_STUDENT) {
     //$result = block_exacomp_get_user_assesment($userid, $competenceid, $competencetype, $courseid);
@@ -903,11 +912,11 @@ function block_exacomp_get_user_assesment_wordings($userid, $competenceid, $comp
         $evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, $competencetype, $competenceid);*/
     $teacher_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, $competencetype, $competenceid);
     $self_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $userid, $competencetype, $competenceid);
-    $value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items(false, $competencetype, null, $courseid);
-    $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+    $value_titles_self_assessment = global_config::get_student_eval_items(false, $competencetype, null, $courseid);
+    $teacher_eval_items = global_config::get_teacher_eval_items($courseid, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
     //}
     if ($teacher_evaluation || $self_evaluation) {
-        $evaluation = new \stdClass();
+        $evaluation = new stdClass();
         if (array_key_exists(@$self_evaluation->value, $value_titles_self_assessment)) {
             $evaluation->self_grade = $value_titles_self_assessment[$self_evaluation->value];
         } else {
@@ -944,10 +953,10 @@ function block_exacomp_get_user_assesment_wordings($userid, $competenceid, $comp
             $evaluation->grade = null;
         }
     } else {
-        $evaluation = (object)array(
-                'grade' => null,
-                'niveau' => null,
-                'self_grade' => null,
+        $evaluation = (object) array(
+            'grade' => null,
+            'niveau' => null,
+            'self_grade' => null,
         );
     }
     return $evaluation;
@@ -959,21 +968,21 @@ function block_exacomp_get_teacher_assesment_wordings_array($teacherid, $compete
     switch ($competencetype) {
         case BLOCK_EXACOMP_TYPE_EXAMPLE:
             $evaluations = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLEEVAL,
-                    array('teacher_reviewerid' => $teacherid,
-                            'courseid' => $courseid,
-                            'exampleid' => $competenceid,
-                            ));
+                array('teacher_reviewerid' => $teacherid,
+                    'courseid' => $courseid,
+                    'exampleid' => $competenceid,
+                ));
             break;
         default:
             $evaluations = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES,
-                    array('reviewerid' => $teacherid,
-                            'role' => BLOCK_EXACOMP_ROLE_TEACHER,
-                            'courseid' => $courseid,
-                            'compid' => $competenceid,
-                            'comptype' => $competencetype));
+                array('reviewerid' => $teacherid,
+                    'role' => BLOCK_EXACOMP_ROLE_TEACHER,
+                    'courseid' => $courseid,
+                    'compid' => $competenceid,
+                    'comptype' => $competencetype));
     }
     if ($evaluations) {
-        $teacher_eval_items = \block_exacomp\global_config::get_teacher_eval_items($courseid, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
+        $teacher_eval_items = global_config::get_teacher_eval_items($courseid, false, BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE);
         foreach ($evaluations as $eval) {
             if ($competencetype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 $eval->value = $eval->teacher_evaluation;
@@ -999,7 +1008,7 @@ function block_exacomp_get_teacher_assesment_wordings_array($teacherid, $compete
                     }
                     break;
             }
-            $result[] = $niveau.':'.$result_grade;
+            $result[] = $niveau . ':' . $result_grade;
         }
     }
     return $result;

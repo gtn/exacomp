@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
-require_once $CFG->dirroot.'/lib/datalib.php';
+require __DIR__ . '/inc.php';
+require_once $CFG->dirroot . '/lib/datalib.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
 
-if (! $course = $DB->get_record ( 'course', array ('id' => $courseid) )) {
-	print_error ( 'invalidcourse', 'block_simplehtml', $courseid );
+if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+    print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -31,7 +31,7 @@ block_exacomp_require_admin($context);
 
 $check = block_exacomp\data::has_data();
 if (!$check) {
-	redirect (new moodle_url('/blocks/exacomp/import.php', array('courseid' => $courseid)));
+    redirect(new moodle_url('/blocks/exacomp/import.php', array('courseid' => $courseid)));
 }
 
 $page_identifier = 'tab_admin_taxonomies';
@@ -53,7 +53,7 @@ if (isset($action)) {
                 foreach ($data as $id => $taxonomytitle) {
                     $newtitle = trim($taxonomytitle);
                     if ($id > 0 && $newtitle) {
-                        $DB->execute('UPDATE {'.BLOCK_EXACOMP_DB_TAXONOMIES.'} SET title =? WHERE id = ?', array($newtitle, $id));
+                        $DB->execute('UPDATE {' . BLOCK_EXACOMP_DB_TAXONOMIES . '} SET title =? WHERE id = ?', array($newtitle, $id));
                     }
                 }
             }
@@ -63,25 +63,25 @@ if (isset($action)) {
                 foreach ($data as $id => $taxonomytitle) {
                     $newtitle = trim($taxonomytitle);
                     if ($newtitle) {
-                        $sqlmaxsorting = "SELECT MAX(sorting) as sorting FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} WHERE source = ?";
+                        $sqlmaxsorting = "SELECT MAX(sorting) as sorting FROM {" . BLOCK_EXACOMP_DB_TAXONOMIES . "} WHERE source = ?";
                         $max_sorting = $DB->get_record_sql($sqlmaxsorting, array(BLOCK_EXACOMP_DATA_SOURCE_CUSTOM));
                         $sorting = intval($max_sorting->sorting) + 1;
-                        $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, (object)array(
-                                'title' => $newtitle,
-                                'sourceid' => 0,
-                                'source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM,
-                                'parentid' => 0,
-                                'sorting' => $sorting));
+                        $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, (object) array(
+                            'title' => $newtitle,
+                            'sourceid' => 0,
+                            'source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM,
+                            'parentid' => 0,
+                            'sorting' => $sorting));
                     }
                 }
             }
-            redirect($CFG->wwwroot.'/blocks/exacomp/edit_taxonomies.php?courseid='.$courseid);
+            redirect($CFG->wwwroot . '/blocks/exacomp/edit_taxonomies.php?courseid=' . $courseid);
             die;
             break;
         case 'delete':
             $taxtodelete = required_param('taxid', PARAM_INT);
             $DB->delete_records(BLOCK_EXACOMP_DB_TAXONOMIES, ['id' => $taxtodelete]);
-            redirect($CFG->wwwroot.'/blocks/exacomp/edit_taxonomies.php?courseid='.$courseid, block_exacomp_get_string('taxonomy_was_deleted'), null, 'info');
+            redirect($CFG->wwwroot . '/blocks/exacomp/edit_taxonomies.php?courseid=' . $courseid, block_exacomp_get_string('taxonomy_was_deleted'), null, 'info');
             die;
             break;
         case 'sorting':
@@ -110,18 +110,18 @@ if (isset($action)) {
             switch ($direction) {
                 case 'down':
                     if ($neightbids[1] > 0) {
-                        $DB->execute('UPDATE {'.BLOCK_EXACOMP_DB_TAXONOMIES.'} SET sorting = ? WHERE id = ?', array($neightbsortings[1], $taxtomove));
-                        $DB->execute('UPDATE {'.BLOCK_EXACOMP_DB_TAXONOMIES.'} SET sorting = ? WHERE id = ?', array($originsorting, $neightbids[1]));
+                        $DB->execute('UPDATE {' . BLOCK_EXACOMP_DB_TAXONOMIES . '} SET sorting = ? WHERE id = ?', array($neightbsortings[1], $taxtomove));
+                        $DB->execute('UPDATE {' . BLOCK_EXACOMP_DB_TAXONOMIES . '} SET sorting = ? WHERE id = ?', array($originsorting, $neightbids[1]));
                     }
                     break;
                 case 'up':
                     if ($neightbids[0] > 0) {
-                        $DB->execute('UPDATE {'.BLOCK_EXACOMP_DB_TAXONOMIES.'} SET sorting = ? WHERE id = ?', array($neightbsortings[0], $taxtomove));
-                        $DB->execute('UPDATE {'.BLOCK_EXACOMP_DB_TAXONOMIES.'} SET sorting = ? WHERE id = ?', array($originsorting, $neightbids[0]));
+                        $DB->execute('UPDATE {' . BLOCK_EXACOMP_DB_TAXONOMIES . '} SET sorting = ? WHERE id = ?', array($neightbsortings[0], $taxtomove));
+                        $DB->execute('UPDATE {' . BLOCK_EXACOMP_DB_TAXONOMIES . '} SET sorting = ? WHERE id = ?', array($originsorting, $neightbids[0]));
                     }
                     break;
             }
-            redirect($CFG->wwwroot.'/blocks/exacomp/edit_taxonomies.php?courseid='.$courseid);
+            redirect($CFG->wwwroot . '/blocks/exacomp/edit_taxonomies.php?courseid=' . $courseid);
             die;
             break;
     }
@@ -134,9 +134,9 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($course
 
 /* CONTENT REGION */
 if (block_exacomp_is_skillsmanagement()) {
-	echo $output->notification(block_exacomp_trans('en:This settings is not available in skillsmanagement mode!'));
-	echo $output->footer();
-	exit;
+    echo $output->notification(block_exacomp_trans('en:This settings is not available in skillsmanagement mode!'));
+    echo $output->footer();
+    exit;
 }
 
 // taxonomies from this Moodle

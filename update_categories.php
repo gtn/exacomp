@@ -17,8 +17,10 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require __DIR__.'/inc.php';
-require_once __DIR__.'/update_categories_form.php';
+use block_exacomp\descriptor;
+
+require __DIR__ . '/inc.php';
+require_once __DIR__ . '/update_categories_form.php';
 // require_once __DIR__.'/example_upload_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);
@@ -28,12 +30,10 @@ block_exacomp_require_login($courseid);
 $context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 
-
 /* PAGE URL - MUST BE CHANGED */ //why though? RW
 $PAGE->set_url('/blocks/exacomp/update_categories.php', array('courseid' => $courseid));
 $PAGE->set_title(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
-
 
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
@@ -43,26 +43,26 @@ echo $output->header($context, $courseid, '', false);
 
 $categories = $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, "sorting", "id, title");
 $form = new block_exacomp_update_categories_form($_SERVER['REQUEST_URI'],
-    array("descrid" => $descrid, "categories"=>$categories));
-$item = $descrid ? \block_exacomp\descriptor::get($descrid) : null;
+    array("descrid" => $descrid, "categories" => $categories));
+$item = $descrid ? descriptor::get($descrid) : null;
 
 if ($formdata = $form->get_data()) {
 
     //insert catids in BLOCK_EXACOMP_DB_DESCCAT
-//     $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, ['descrid' => $descrid]);
-//     if (!empty($formdata->catid)) {
-//         foreach($formdata->catid as $cat => $catid)
-//             $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
-//                 'descrid' => $descrid,
-//                 'catid' => $catid
-//             ]);
-//     }
+    //     $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, ['descrid' => $descrid]);
+    //     if (!empty($formdata->catid)) {
+    //         foreach($formdata->catid as $cat => $catid)
+    //             $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
+    //                 'descrid' => $descrid,
+    //                 'catid' => $catid
+    //             ]);
+    //     }
     $item->store_categories($formdata->catid);
 
     // or create a new category from example form
     $newCat = trim(optional_param('newcategory', '', PARAM_RAW));
     if ($newCat != '') {
-        $newCategory = new \stdClass();
+        $newCategory = new stdClass();
         $newCategory->title = $newCat;
         $newCategory->parentid = 0;
         $newCategory->sorting = $DB->get_field(BLOCK_EXACOMP_DB_CATEGORIES, 'MAX(sorting)', array()) + 1;
@@ -72,13 +72,13 @@ if ($formdata = $form->get_data()) {
         $newCategory->id = $DB->insert_record(BLOCK_EXACOMP_DB_CATEGORIES, $newCategory);
         $DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, [
             'descrid' => $descrid,
-            'catid' => $newCategory->id
+            'catid' => $newCategory->id,
         ]);
     }
 
     echo $output->popup_close_and_reload();
     exit;
-}else if($form->is_cancelled()){
+} else if ($form->is_cancelled()) {
     echo $output->popup_close_and_reload();
     exit;
 }

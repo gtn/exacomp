@@ -16,19 +16,24 @@
 
 namespace block_exacomp\task;
 
+use block_exacomp\data;
+use block_exacomp\data_importer;
+use block_exacomp\moodle_exception;
+use core\task\scheduled_task;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/../../inc.php';
+require_once __DIR__ . '/../../inc.php';
 
-class import_additional extends \core\task\scheduled_task {
-	public function get_name() {
-		return block_exacomp_trans(['en:Import Data with additional functionality', 'de:Daten Importieren mit zusätzlicher Funktionalität']);
-	}
+class import_additional extends scheduled_task {
+    public function get_name() {
+        return block_exacomp_trans(['en:Import Data with additional functionality', 'de:Daten Importieren mit zusätzlicher Funktionalität']);
+    }
 
-	public function execute() {
-	    global $DB;
+    public function execute() {
+        global $DB;
 
-		mtrace('Exabis Competence Grid: import task is running (with additional ifunctionality).');
+        mtrace('Exabis Competence Grid: import task is running (with additional ifunctionality).');
 
         $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('disabled' => 0));
         foreach ($tasks as $task) {
@@ -37,19 +42,19 @@ class import_additional extends \core\task\scheduled_task {
                 mtrace('nothing to import');
             }
             try {
-                \block_exacomp\data::prepare();
+                data::prepare();
 
-                if (\block_exacomp\data_importer::do_import_url($task->link, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, $task->id)) {
+                if (data_importer::do_import_url($task->link, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, $task->id)) {
                     mtrace("import done");
                     block_exacomp_settstamp();
                 } else {
                     mtrace("import failed: unknown error");
                 }
-            } catch (\block_exacomp\moodle_exception $e) {
-                mtrace("import failed: ".$e->getMessage());
+            } catch (moodle_exception $e) {
+                mtrace("import failed: " . $e->getMessage());
             }
         }
 
-		return true;
-	}
+        return true;
+    }
 }

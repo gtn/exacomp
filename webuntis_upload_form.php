@@ -21,7 +21,7 @@ class block_exacomp_webuntis_upload_form extends moodleform {
     function definition() {
         global $CFG, $USER, $DB;
 
-        $mform = & $this->_form;
+        $mform = &$this->_form;
 
         $mform->addElement('filepicker', 'file', 'WebUntis-File', null, array('subdirs' => false, 'maxfiles' => 1));
 
@@ -31,7 +31,7 @@ class block_exacomp_webuntis_upload_form extends moodleform {
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        $errors= array();
+        $errors = array();
 
         if (empty($data['file'])) {
             $errors['file'] = block_exacomp_get_string('submissionmissing');

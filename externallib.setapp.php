@@ -16,11 +16,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require __DIR__.'/inc.php';
-require_once $CFG->libdir.'/externallib.php';
-require_once __DIR__.'/externallib.php';
+require __DIR__ . '/inc.php';
+require_once $CFG->libdir . '/externallib.php';
+require_once __DIR__ . '/externallib.php';
 
 use block_exacomp\globals as g;
+use block_exacomp\printer;
+use block_exacomp\printer_TCPDF_student_report;
 
 class block_exacomp_external_setapp extends external_api {
     /**
@@ -39,6 +41,7 @@ class block_exacomp_external_setapp extends external_api {
     /**
      * Create an example or update it
      * create example
+     *
      * @ws-type-write
      *
      * @return array
@@ -53,7 +56,6 @@ class block_exacomp_external_setapp extends external_api {
 
         block_exacomp_require_setapp_enabled();
         block_exacomp_require_teacher($courseid);
-
 
         $course = $DB->get_record('course', array('id' => $courseid));
         $course->fullname = $fullname;
@@ -74,7 +76,6 @@ class block_exacomp_external_setapp extends external_api {
         ));
     }
 
-
     /**
      * Returns description of method parameters
      *
@@ -93,6 +94,7 @@ class block_exacomp_external_setapp extends external_api {
     /**
      * Create an example or update it
      * create example
+     *
      * @ws-type-write
      *
      * @return array
@@ -107,21 +109,21 @@ class block_exacomp_external_setapp extends external_api {
             'ausserordentlich' => $ausserordentlich,
         ));
         global $CFG;
-        require_once $CFG->dirroot.'/lib/enrollib.php';
-        require_once $CFG->dirroot.'/user/lib.php';
+        require_once $CFG->dirroot . '/lib/enrollib.php';
+        require_once $CFG->dirroot . '/user/lib.php';
 
         block_exacomp_require_setapp_enabled();
         block_exacomp_require_teacher($courseid);
 
         if ($userid == 0) {
             // create the student
-            $username = 'diggrv-'.round((microtime(true) - 1600000000) * 1000);
+            $username = 'diggrv-' . round((microtime(true) - 1600000000) * 1000);
             $user = array(
                 'username' => $username,
                 'password' => generate_password(20),
                 'firstname' => $firstname,
                 'lastname' => $lastname,
-                'email' => $username.'@diggr-plus.at',
+                'email' => $username . '@diggr-plus.at',
                 'description' => 'diggrv',
                 'suspended' => 1,
                 'mnethostid' => $CFG->mnet_localhost_id,
@@ -173,7 +175,6 @@ class block_exacomp_external_setapp extends external_api {
         ));
     }
 
-
     /**
      * Returns description of method parameters
      *
@@ -189,6 +190,7 @@ class block_exacomp_external_setapp extends external_api {
     /**
      * Create an example or update it
      * create example
+     *
      * @ws-type-write
      */
     public static function diggrplus_v_delete_student($courseid, $userid) {
@@ -229,7 +231,6 @@ class block_exacomp_external_setapp extends external_api {
         ));
     }
 
-
     /**
      * Returns description of method parameters
      *
@@ -245,6 +246,7 @@ class block_exacomp_external_setapp extends external_api {
     /**
      * Create an example or update it
      * create example
+     *
      * @ws-type-write
      */
     public static function diggrplus_v_get_student_by_id($courseid, $userid) {
@@ -322,7 +324,9 @@ class block_exacomp_external_setapp extends external_api {
         // block_exacomp_get_user_information_by_course($student, $course->id);
 
         // sort subjects by sorting field
-        usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
+        usort($tree, function($a, $b) {
+            return $a->sorting - $b->sorting;
+        });
 
         foreach ($tree as $subject) {
             $subjstudconfig = $DB->get_record('block_exacompsubjstudconfig', ['studentid' => $userid, 'subjectid' => $subject->id]);
@@ -576,7 +580,9 @@ class block_exacomp_external_setapp extends external_api {
 
         // sort subjects by sorting field
         // Fächer anhand des Bildungsplans sortieren (ist in der Datenbank im sorting Feld enthalten)
-        usort($tree, function($a, $b) { return $a->sorting - $b->sorting; });
+        usort($tree, function($a, $b) {
+            return $a->sorting - $b->sorting;
+        });
 
         $get_user_output = function($user) use ($course, $tree, $DB, $schoolname, $assessment_period_title) {
             $subjects_html = '';
@@ -618,11 +624,11 @@ class block_exacomp_external_setapp extends external_api {
                         $subject_content_html_entry_id = sprintf('%010d_%010d_%010d', $descriptor->niveau_numb, $descriptor->niveau_sorting, $descriptor->niveauid);
 
                         if (!$subject_content_html[$subject_content_html_entry_id]) {
-                            $subject_content_html[$subject_content_html_entry_id] = '<b>'.static::custom_htmltrim($descriptor->niveau_title).':</b> ';
+                            $subject_content_html[$subject_content_html_entry_id] = '<b>' . static::custom_htmltrim($descriptor->niveau_title) . ':</b> ';
                         }
 
                         $title = trim($grading->personalisedtext) ? $grading->personalisedtext : $descriptor->title;
-                        $subject_content_html[$subject_content_html_entry_id] .= static::custom_htmltrim($title).', ';
+                        $subject_content_html[$subject_content_html_entry_id] .= static::custom_htmltrim($title) . ', ';
                     }
                 }
 
@@ -654,7 +660,7 @@ class block_exacomp_external_setapp extends external_api {
                 // schulstufe löschen
                 $title = preg_replace('![0-9]+\.\s*Schulstufe$!i', '', $title);
 
-                $subjects_html .= '<tr nobr="true"><td>'.$title.'</td>';
+                $subjects_html .= '<tr nobr="true"><td>' . $title . '</td>';
                 $subjects_html .= '<td>';
                 $subjects_html .= $subject_content_html;
                 $subjects_html .= '</td></tr>';
@@ -665,7 +671,7 @@ class block_exacomp_external_setapp extends external_api {
 	            <br/>
 	            <br/>
 	            <br/>
-	            <div style="text-align: center;">'.$schoolname.'</div>
+	            <div style="text-align: center;">' . $schoolname . '</div>
 	            <br/>
 	            <br/>
 	            <div style="text-align: center; font-size: 20pt;">Schriftliche Erläuterung zur Ziffernbeurteilung</div>
@@ -673,8 +679,8 @@ class block_exacomp_external_setapp extends external_api {
 	            <br/>
 	            <br/>
 	            <table class="header" width="100%" cellspacing="0"><tr>
-	                <td>für '.fullname($user).'</td>
-	                <td style="text-align: right">'.$assessment_period_title.'</td>
+	                <td>für ' . fullname($user) . '</td>
+	                <td style="text-align: right">' . $assessment_period_title . '</td>
 	            </tr></table>
 	            <br/>
 	            <br/>
@@ -683,8 +689,8 @@ class block_exacomp_external_setapp extends external_api {
 	                <tr nobr="true">
 	                    <td style="width: 30%"></td>
 	                    <td style="width: 70%"><b>Die Schülerin/der Schüler hat folgende Anforderungen erfüllt:</b></td>
-	                </tr>'.
-                $subjects_html.
+	                </tr>' .
+                $subjects_html .
                 // '<tr nobr="true">
                 //     <td>Sachunterricht</td>
                 //     <td><b>M:</b>  unterschiedliche Rollen des familiären Zusammenlebens kennen und nennen;  sich an Spielen zur Verbesserung der Kommunikation aktiv beteiligen; unterschiedliche Pflanzen und Tiere benennen; Teile des menschlichen Körpers und deren Funktionen kennen und benennen; die Verwendung von Geräten und Werkzeugen aus der eigenen Umwelt beschreiben; die Wirkungsweise von Kräften beobachten und beschreiben<br/>
@@ -717,7 +723,6 @@ class block_exacomp_external_setapp extends external_api {
             $htmlSegments[] = $get_user_output($user);
         }
 
-
         $style = '
 			* {
 				font-size: 10pt;
@@ -745,12 +750,12 @@ class block_exacomp_external_setapp extends external_api {
         if ($output_format == 'html') {
             header('Access-Control-Allow-Origin: *');
 
-            echo "<style>$style</style>".join('<hr/>', $htmlSegments);
+            echo "<style>$style</style>" . join('<hr/>', $htmlSegments);
             exit;
         } else {
             // $pdf = \block_exacomp\printer::getPdfPrinter('P');
-            \block_exacomp\printer::getPdfPrinter('P');
-            $pdf = new \block_exacomp\printer_TCPDF_student_report('P');
+            printer::getPdfPrinter('P');
+            $pdf = new printer_TCPDF_student_report('P');
 
             $pdf->SetFont('times', '', 9);
             $pdf->setHeaderFont(['times', '', 9]);
@@ -776,7 +781,6 @@ class block_exacomp_external_setapp extends external_api {
             'pdf' => new external_value (PARAM_FILE),
         ));
     }
-
 
     public static function diggrplus_v_get_course_edulevel_schooltype_tree_parameters() {
         return new external_function_parameters (array(
@@ -816,7 +820,9 @@ class block_exacomp_external_setapp extends external_api {
                 $type->subjects = block_exacomp_get_subjects_for_schooltype(0, $type->id);
 
                 // sort subjects by sorting field
-                usort($type->subjects, function($a, $b) { return $a->sorting - $b->sorting; });
+                usort($type->subjects, function($a, $b) {
+                    return $a->sorting - $b->sorting;
+                });
 
                 $data->levels[$level->id]->schooltypes[$type->id] = $type;
                 foreach ($data->levels[$level->id]->schooltypes[$type->id]->subjects as $subjkey => $subject) {
@@ -858,7 +864,6 @@ class block_exacomp_external_setapp extends external_api {
             ))),
         ));
     }
-
 
     public static function diggrv_create_course_parameters() {
         return new external_function_parameters (array(

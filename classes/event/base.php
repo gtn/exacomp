@@ -16,33 +16,35 @@
 
 namespace block_exacomp\event;
 
+use block_exacomp\event;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/../../inc.php';
+require_once __DIR__ . '/../../inc.php';
 
-abstract class base extends \block_exacomp\event {
-	static function log(array $data) {
-		// check if logging is enabled and then trigger the event
-		if (!get_config('exacomp','logging')) {
-			return null;
-		}
+abstract class base extends event {
+    static function log(array $data) {
+        // check if logging is enabled and then trigger the event
+        if (!get_config('exacomp', 'logging')) {
+            return null;
+        }
 
-		// moodle doesn't allow objecttable parameter in $data
-		$objecttable = null;
-		if (!empty($data['objecttable'])) {
-			$objecttable = $data['objecttable'];
-			unset($data['objecttable']);
-		}
+        // moodle doesn't allow objecttable parameter in $data
+        $objecttable = null;
+        if (!empty($data['objecttable'])) {
+            $objecttable = $data['objecttable'];
+            unset($data['objecttable']);
+        }
 
-		static::prepareData($data);
+        static::prepareData($data);
 
-		$obj = static::create($data);
+        $obj = static::create($data);
 
-		// set objecttable here
-		if ($objecttable) {
-			$obj->data['objecttable'] = 'block_exacompdescriptors';
-		}
+        // set objecttable here
+        if ($objecttable) {
+            $obj->data['objecttable'] = 'block_exacompdescriptors';
+        }
 
-		return $obj->trigger();
-	}
+        return $obj->trigger();
+    }
 }

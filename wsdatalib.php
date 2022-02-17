@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__."/../../config.php";
+require_once __DIR__ . "/../../config.php";
 
 class block_exacomp_ws_datahandler {
 
@@ -28,7 +28,7 @@ class block_exacomp_ws_datahandler {
         $this->checkRealToken();
         if (!$DB->record_exists(self::$TABLENAME, ['token' => $this->token])) {
             $userid = $DB->get_field('external_tokens', 'userid', ['token' => $this->token]);
-            $data = new \stdClass();
+            $data = new stdClass();
             $data->token = $this->token;
             $data->userid = $userid;
             $data->data = '';
@@ -45,7 +45,7 @@ class block_exacomp_ws_datahandler {
     public function saveAllWsData($data) {
         global $DB;
         $this->checkRealToken();
-        return $DB->execute('UPDATE {'.self::$TABLENAME.'} SET data = ? WHERE token = ?', [serialize($data), $this->token]);
+        return $DB->execute('UPDATE {' . self::$TABLENAME . '} SET data = ? WHERE token = ?', [serialize($data), $this->token]);
     }
 
     public function setParam($paramName = null, $paramValue = null) {
@@ -82,7 +82,7 @@ class block_exacomp_ws_datahandler {
     public function cleanAll() {
         global $DB;
         $this->checkRealToken();
-        return $DB->execute('UPDATE {'.self::$TABLENAME.'} SET data = ? WHERE token = ?', ['', $this->token]);
+        return $DB->execute('UPDATE {' . self::$TABLENAME . '} SET data = ? WHERE token = ?', ['', $this->token]);
     }
 
     // cleaning of non actual tokens
@@ -90,7 +90,7 @@ class block_exacomp_ws_datahandler {
         global $DB;
         // clean database from deleted data
         // all records which is not actual token will be deleted
-        $cleanSql = 'DELETE FROM {'.self::$TABLENAME.'} 
+        $cleanSql = 'DELETE FROM {' . self::$TABLENAME . '}
                         WHERE token NOT IN (SELECT token FROM {external_tokens})';
         $DB->execute($cleanSql);
     }

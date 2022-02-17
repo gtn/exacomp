@@ -26,99 +26,106 @@
 }
 
 #block_exacomp .tooltip {
-	position: absolute;
-	text-align: center;
-	width: auto;
-	height: auto;
-	padding: 10px;
-	background-color: black;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-	pointer-events: none;
+    position: absolute;
+    text-align: center;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    background-color: black;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
 }
+
 #block_exacomp .tooltip.hidden {
-	display: none;
+    display: none;
 }
+
 #block_exacomp .tooltip p {
-	margin: 0;
-	font-family: sans-serif;
-	font-size: 16px;
-	line-height: 20px;
-	color: #fff;
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    color: #fff;
 }
-#block_exacomp  div.content_div{
-	margin-bottom: 40px;
+
+#block_exacomp div.content_div {
+    margin-bottom: 40px;
 }
 
 #block_exacomp .compprof_barchart {
-	display: inline;
-	width: 40%;
+    display: inline;
+    width: 40%;
 }
 
 #block_exacomp .compprof_barchart span {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 #block_exacomp .compprof_barchart_legend {
-	display: inline;
+    display: inline;
 }
 
 #block_exacomp .compprof_barchart_legend:after {
-	content: ".";
-	clear: both;
-	display: block;
-	visibility: hidden;
-	height: 0px;
-	margin-bottom: 20px;
+    content: ".";
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0px;
+    margin-bottom: 20px;
 }
 
 #block_exacomp .compprof_barchart_legend:before {
-	content: ".";
-	clear: both;
-	display: block;
-	visibility: hidden;
-	height: 0px;
-	margin-bottom: 20px;
+    content: ".";
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0px;
+    margin-bottom: 20px;
 }
 
 #block_exacomp .compprof_barchart_teacher {
-	color: #02a600;
-	display: block;
-}
-#block_exacomp .compprof_barchart_student {
-	margin-bottom: 15px;
-	color: #0075dd;
-	display: block;
-}
-#block_exacomp .compprof_barchart_niveau {
-	color: #df8c0b;
-}
-#block_exacomp .compprof_barchart_inwork {
-	margin-right: 10px;
+    color: #02a600;
+    display: block;
 }
 
-#block_exacomp .compprof_niveau{
-	float: center;
+#block_exacomp .compprof_barchart_student {
+    margin-bottom: 15px;
+    color: #0075dd;
+    display: block;
 }
+
+#block_exacomp .compprof_barchart_niveau {
+    color: #df8c0b;
+}
+
+#block_exacomp .compprof_barchart_inwork {
+    margin-right: 10px;
+}
+
+#block_exacomp .compprof_niveau {
+    float: center;
+}
+
 #block_exacomp .compprof_flrg {
-	float: right;
+    float: right;
 }
 
 #block_exacomp .compprof_niveau, #block_exacomp .compprof_evaluation {
-	text-align: right;
-	margin-bottom: 5px;
+    text-align: right;
+    margin-bottom: 5px;
 }
 
-#block_exacomp .compprof_example{
-	 display: block;
+#block_exacomp .compprof_example {
+    display: block;
 }
 
 #block_exacomp .compprof_barchart_student img, #block_exacomp .compprof_barchart_teacher img, #block_exacomp .compprof_niveau img {
-	margin-left: 5px;
+    margin-left: 5px;
 }
 
 #block_exacomp .compprof_example:before,
@@ -151,116 +158,119 @@
 
 
 #block_exacomp .compprof_descriptor {
-	margin-bottom: 4px;
-	padding-bottom: 4px;
-	border-bottom: 1px solid #ddd;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ddd;
 }
 
 #block_exacomp .compprof_descriptor:after {
-	content: ".";
-	clear: both;
-	display: block;
-	visibility: hidden;
-	height: 0px;
-	margin-bottom: 20px;
+    content: ".";
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0px;
+    margin-bottom: 20px;
 }
 
 #block_exacomp .compprof_descriptor:before {
-	content: ".";
-	clear: both;
-	display: block;
-	visibility: hidden;
-	height: 0px;
-	margin-bottom: 20px;
+    content: ".";
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0px;
+    margin-bottom: 20px;
 }
+
 .competence_profile_exastud table, .competence_profile_exastud tr {
-	padding: 0;
-	margin: 0;
+    padding: 0;
+    margin: 0;
 }
+
 .competence_profile_exastud td, .competence_profile_exastud th {
-	border: 1px solid #999;
+    border: 1px solid #999;
     padding: 6px 10px;
-	margin: 0;
-	min-width: 60px;
+    margin: 0;
+    min-width: 60px;
 }
+
 .competence_profile_exastud th.evaluation-header, .competence_profile_exastud td.evaluation {
     text-align: center;
 }
 
 .competence_profile_exastud table th {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 .competence_profile_exastud #ratingtable td {
-	text-align: left;
-	vertical-align: top;
+    text-align: left;
+    vertical-align: top;
 }
 
 #block_exacomp .legend {
-	color: #a2a2a2 !important;
-	font-size: 0.85em;
-	border: 1px solid #dcdcdc;
-	padding: 2px;
-	border-radius: 4px;
+    color: #a2a2a2 !important;
+    font-size: 0.85em;
+    border: 1px solid #dcdcdc;
+    padding: 2px;
+    border-radius: 4px;
 }
 
 #block_exacomp .compprofiletable {
-	margin-left:0px;
-	margin-bottom: 50px;
-	background-color: transparent;
-	border-style: solid;
-	border-width: 1px;
-	width: auto;
+    margin-left: 0px;
+    margin-bottom: 50px;
+    background-color: transparent;
+    border-style: solid;
+    border-width: 1px;
+    width: auto;
 }
 
 #block_exacomp .compprofiletable td {
-	padding: 5px;
+    padding: 5px;
 }
 
 #block_exacomp .header {
-	background-color: #dcdcdc !important;
+    background-color: #dcdcdc !important;
 }
 
-#block_exacomp .notvisible{
-	background-color: #cccccc;
-	opacity: 0.5;
+#block_exacomp .notvisible {
+    background-color: #cccccc;
+    opacity: 0.5;
 }
 
 /* ####### New Styles ########## */
 
 #block_exacomp .competence_profile_coursetitle a {
-	color: #000;
-	font-size: 18px;
-	margin-bottom: 50px;
-	display: block;
-	padding: 0 10px;
+    color: #000;
+    font-size: 18px;
+    margin-bottom: 50px;
+    display: block;
+    padding: 0 10px;
 }
 
 #block_exacomp .competence_profile_innersection {
-	padding: 10px;
+    padding: 10px;
 }
 
 #block_exacomp .competence_profile_insectitle {
-	background: rgba(0, 0, 0, 0) url("../pix/pfeil_show.png") no-repeat scroll 0;
-	padding-left: 18px;
+    background: rgba(0, 0, 0, 0) url("../pix/pfeil_show.png") no-repeat scroll 0;
+    padding-left: 18px;
 }
 
 #block_exacomp .exa-collapsible-open .competence_profile_insectitle {
-	background: rgba(0, 0, 0, 0) url("../pix/pfeil_hide.png") no-repeat scroll 0;
+    background: rgba(0, 0, 0, 0) url("../pix/pfeil_hide.png") no-repeat scroll 0;
 }
 
 #block_exacomp .competence_profile_coursedata th {
-	font-weight: normal;
+    font-weight: normal;
 }
 
 #block_exacomp .comparison_topic {
-	font-size: 1em;
-	font-weight: bold;
+    font-size: 1em;
+    font-weight: bold;
 }
 
 #block_exacomp .comparison_topic td {
-	padding-top: 20px;
-	background-color: #e6e6e6;
+    padding-top: 20px;
+    background-color: #e6e6e6;
 }
 
 #block_exacomp .comparison_topic .highlight_cell {
@@ -268,73 +278,73 @@
 }
 
 #block_exacomp .comparison_desc .cell.c1 {
-	padding-left: 15px;
+    padding-left: 15px;
 }
 
 #block_exacomp .comparison_mat {
-	font-size: 0.9em;
+    font-size: 0.9em;
 }
 
 #block_exacomp .comparison_mat .cell.c1 {
-	padding-left: 40px;
+    padding-left: 40px;
 }
 
 #block_exacomp .comparison_mat.comparmat_mathead td.cell.c1 {
-	font-weight: bold;
-	padding-left: 30px;
+    font-weight: bold;
+    padding-left: 30px;
 }
 
 #block_exacomp .comparisondiv .comparisontable td.cell.c2,
 #block_exacomp .comparisondiv .comparisontable td.cell.c3,
 #block_exacomp .comparisondiv .comparisontable th.cell.c1,
-#block_exacomp .comparisondiv .comparisontable th.cell.c2  {
-	text-align: center;
+#block_exacomp .comparisondiv .comparisontable th.cell.c2 {
+    text-align: center;
 }
 
 #block_exacomp .statistictables .stat_table table, #block_exacomp .statistictables .stat_table table.flexible {
-	width: inherit
+    width: inherit
 }
 
 #block_exacomp .statistictables .stat_table table th {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 #block_exacomp .statistictables .stat_table table td {
-	min-width: 35px;
-	text-align: center;
+    min-width: 35px;
+    text-align: center;
 }
 
 #block_exacomp .statistictables .stat_table table td.cell-th, #block_exacomp .statistictables .stat_table table .cell-th td {
-	 background-color: #e6e6e6;
-	 font-weight: bold;
+    background-color: #e6e6e6;
+    font-weight: bold;
 }
 
 #block_exacomp .competence_profile_coursedata #charts {
-	width: auto;
+    width: auto;
 }
 
 #block_exacomp .comparison_topic .highlight_cell, #block_exacomp .highlight_cell, #block_exacomp .highlight_cell td {
-	/* background-color: inherit;
-	-webkit-box-shadow: inset 0px 0px 10px 0px rgba(0,158,155,0.75);
+    /* background-color: inherit;
+    -webkit-box-shadow: inset 0px 0px 10px 0px rgba(0,158,155,0.75);
 -moz-box-shadow: inset 0px 0px 10px 0px rgba(0,158,155,0.75);
 box-shadow: inset 0px 0px 10px 0px rgba(0,158,155,0.75); */
-	background-color: #d9edf7;
+    background-color: #d9edf7;
 }
 
 #block_exacomp .comparison_topic.highlight_cell td {
-	background-color: #b5dcf0;
+    background-color: #b5dcf0;
 }
 
 #block_exacomp .compprofpie {
-	float: right;
-	font-weight: normal;
-	color: #000;
-	padding-right: 5px;
+    float: right;
+    font-weight: normal;
+    color: #000;
+    padding-right: 5px;
 }
 
 #block_exacomp .statistictables .statistictable {
-	float: left;
-	margin-right: 20px;
+    float: left;
+    margin-right: 20px;
 }
 
 #block_exacomp .cf:before,

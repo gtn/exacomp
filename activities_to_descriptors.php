@@ -16,22 +16,22 @@
 
 use block_exacomp\data_importer;
 
-require __DIR__.'/inc.php';
-require_once __DIR__.'/classes/data.php';
+require __DIR__ . '/inc.php';
+require_once __DIR__ . '/classes/data.php';
 
 global $DB, $OUTPUT, $PAGE, $CFG, $COURSE, $USER;
 
 // TODO: was macht das? wieso brauchen wir das?
-if (strcmp("mysql",$CFG->dbtype)==0) {
-	$sql5 = "SET @@group_concat_max_len = 10125012";
-	$DB->execute($sql5);
+if (strcmp("mysql", $CFG->dbtype) == 0) {
+    $sql5 = "SET @@group_concat_max_len = 10125012";
+    $DB->execute($sql5);
 }
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
+    print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 require_login($course);
@@ -54,7 +54,7 @@ block_exacomp_require_teacher($context);
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_teacher_settings_activitiestodescriptors';
 
-$page_params =  array('courseid' => $courseid);
+$page_params = array('courseid' => $courseid);
 if ($columngroupnumber !== null) {
     $page_params['colgroupid'] = $columngroupnumber;
 }
@@ -71,47 +71,49 @@ $headertext = "";
 $img = new moodle_url('/blocks/exacomp/pix/three.png');
 
 if ($action == "save") {
-	// RELATED DATA
+    // RELATED DATA
     block_exacomp_update_example_activity_relations(isset($_POST['data']) ? $_POST['data'] : array(), isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid);
 
-	if (!isset($_POST['data']) && !isset($_POST['topicdata'])) {
+    if (!isset($_POST['data']) && !isset($_POST['topicdata'])) {
         $headertext = block_exacomp_get_string('tick_some');
     } else {
-	    $headertext = $output->notification(block_exacomp_get_string("save_success"), 'info');
-		$headertext .= html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
-			.block_exacomp_get_string('completed_config');
+        $headertext = $output->notification(block_exacomp_get_string("save_success"), 'info');
+        $headertext .= html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
+            . block_exacomp_get_string('completed_config');
 
-		$students = block_exacomp_get_students_by_course($courseid);
-		if (empty($students)) {
+        $students = block_exacomp_get_students_by_course($courseid);
+        if (empty($students)) {
             $headertext .= html_writer::empty_tag('br')
-                    .html_writer::link(new moodle_url('/enrol/users.php', array('id' => $courseid)),
-                            block_exacomp_get_string('optional_step'));
+                . html_writer::link(new moodle_url('/enrol/users.php', array('id' => $courseid)),
+                    block_exacomp_get_string('optional_step'));
         }
-	}
+    }
 } else {
-	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
-		.block_exacomp_get_string('teacher_third_configuration_step')
-		.html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), block_exacomp_get_string('teacher_third_configuration_step_link'));
+    $headertext = html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
+        . block_exacomp_get_string('teacher_third_configuration_step')
+        . html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)), block_exacomp_get_string('teacher_third_configuration_step_link'));
 }
 
 if ($action == "import") {
-    $headertext = $output->notification(block_exacomp_get_string("importsuccess"), 'info').$headertext;
+    $headertext = $output->notification(block_exacomp_get_string("importsuccess"), 'info') . $headertext;
     $template = required_param('template', PARAM_INT);
     $relatedDescriptors = array();
     // at first - backup+restore activities:
     $backuprecords = $DB->get_records_sql('
             SELECT DISTINCT e.activityid
-            FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
+            FROM {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e
                 JOIN {course_modules} m ON m.id = e.activityid
-			WHERE m.course = '.$template.' AND m.deletioninprogress = 0
+			WHERE m.course = ' . $template . ' AND m.deletioninprogress = 0
     ');
-    foreach ($backuprecords as $record){
+    foreach ($backuprecords as $record) {
         $backupid = moodle_backup($record->activityid, $USER->id);
         moodle_restore($backupid, $COURSE->id, $USER->id);
         $relatedExample = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $record->activityid, 'courseid' => $template), '*', IGNORE_MULTIPLE);
         $descrs = block_exacomp_get_descriptors_by_example($relatedExample->id);
         if ($descrs) {
-            $relatedDescriptors[$relatedExample->id] = array_map(function($d) {return $d->id;}, $descrs);
+            $relatedDescriptors[$relatedExample->id] = array_map(function($d) {
+                return $d->id;
+            }, $descrs);
         } else {
             $relatedDescriptors[$relatedExample->id] = array(); // no sence for this case?
         }
@@ -120,15 +122,15 @@ if ($action == "import") {
     // at second - relate example (create new) to new activity
     $records = $DB->get_records_sql('
             SELECT e.id, e.activityid, m.name
-            FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
+            FROM {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e
                 JOIN {course_modules} cm ON cm.id = e.activityid
                 LEFT JOIN {modules} m ON m.id = cm.module
-			WHERE cm.course = '.intval($template).' AND cm.deletioninprogress = 0
+			WHERE cm.course = ' . intval($template) . ' AND cm.deletioninprogress = 0
     ');
     foreach ($records as $record) {
         $sourceModule = get_coursemodule_from_id(null, $record->activityid);
         // get ids immediatelly after moodle_restore
-        $newActivityid = data_importer::get_new_activity_id($sourceModule->name, $record->module ?: $sourceModule->modname , $COURSE->id);
+        $newActivityid = data_importer::get_new_activity_id($sourceModule->name, $record->module ?: $sourceModule->modname, $COURSE->id);
         // relate to new activity with using of old list of descriptors
         block_exacomp_relate_example_to_activity($COURSE->id, $newActivityid, $relatedDescriptors[$record->id]);
     }
@@ -136,18 +138,18 @@ if ($action == "import") {
 }
 
 // build tab navigation & print header
-echo $output->header($context,$courseid, 'tab_teacher_settings');
+echo $output->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
 $selected_niveaus = array();
 $selected_modules = array();
 /* CONTENT REGION */
 if ($action == "filter") {
-	if (isset($_POST['niveau_filter'])) {
+    if (isset($_POST['niveau_filter'])) {
         $selected_niveaus = $_POST['niveau_filter'];
     }
 
-	if (isset($_POST['module_filter'])) {
+    if (isset($_POST['module_filter'])) {
         $selected_modules = $_POST['module_filter'];
     }
 }
@@ -157,12 +159,12 @@ if ($action == "export-activity") {
     $zip = ZipArchive::create_temp_file();
     $backupid = moodle_backup(optional_param("activityid", PARAM_INT), $USER->id);
 
-    $source = block_exacomp_get_backup_temp_directory().$backupid;
-    $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::LEAVES_ONLY);
+    $source = block_exacomp_get_backup_temp_directory() . $backupid;
+    $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::LEAVES_ONLY);
 
     foreach ($files as $name => $file) {
         // Skip directories (they would be added automatically)
-        if (! $file->isDir()) {
+        if (!$file->isDir()) {
             // Get real and relative path for current file
             $filePath = $file->getRealPath();
             $relativePath = 'activities/activity' . 1 . '/' . substr($filePath, strlen($source) + 1);
@@ -190,13 +192,13 @@ if ($modules) {
         $modules = array_slice($modules, $slicestartposition, BLOCK_EXACOMP_MODULES_PER_COLUMN);
     }
 
-	foreach ($modules as $module) {
+    foreach ($modules as $module) {
         $module->descriptors = array();
         $module->topics = array();
 
         // examples created by relating moodle-competencies created by the komettranslatortool will NOT be shown here, since the courseid is 0
-		$relatedexample = $DB->get_record('block_exacompexamples', array('activityid'=>$module->id, 'courseid' => $courseid), '*', IGNORE_MULTIPLE);
-		if ($relatedexample) {
+        $relatedexample = $DB->get_record('block_exacompexamples', array('activityid' => $module->id, 'courseid' => $courseid), '*', IGNORE_MULTIPLE);
+        if ($relatedexample) {
             $descriptors = block_exacomp_get_descriptors_by_example($relatedexample->id);
             foreach ($descriptors as $descriptor) {
                 $module->descriptors[$descriptor->id] = $descriptor->id;
@@ -209,33 +211,32 @@ if ($modules) {
             }
         }
 
-		if (empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules)) {
+        if (empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules)) {
             $visible_modules[] = $module;
         }
 
-		$modules_to_filter[] = $module;
-	}
+        $modules_to_filter[] = $module;
+    }
 
-	$niveaus = block_exacomp_extract_niveaus($subjects);
-	block_exacomp_filter_niveaus($subjects, $selected_niveaus);
+    $niveaus = block_exacomp_extract_niveaus($subjects);
+    block_exacomp_filter_niveaus($subjects, $selected_niveaus);
 
+    $topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 
-	$topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
-
-	if (!$topics_set) {
-		echo $output->activity_legend($headertext);
-		echo $output->transfer_activities();
-		echo $output->no_topics_warning();
-	} else if(count($visible_modules)==0) {
-		echo $output->activity_legend($headertext);
-		echo $output->transfer_activities();
-		echo $output->no_course_activities_warning();
-	} else {
-		echo $output->activity_legend($headertext);
-		echo $output->transfer_activities();
+    if (!$topics_set) {
+        echo $output->activity_legend($headertext);
+        echo $output->transfer_activities();
+        echo $output->no_topics_warning();
+    } else if (count($visible_modules) == 0) {
+        echo $output->activity_legend($headertext);
+        echo $output->transfer_activities();
+        echo $output->no_course_activities_warning();
+    } else {
+        echo $output->activity_legend($headertext);
+        echo $output->transfer_activities();
         echo $colselector;
-		echo $output->activity_content($subjects, $visible_modules, $courseid);
-	}
+        echo $output->activity_content($subjects, $visible_modules, $courseid);
+    }
 } else {
     echo $output->transfer_activities();
 }

@@ -15,48 +15,52 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace block_exacomp\event;
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * @license	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright  gtn gmbh <office@gtn-solutions.com>
  */
 class example_graded extends base {
 
-	/**
-	 * Init
-	 * @return nothing
-	 */
-	protected function init() {
-		$this->data['crud'] = 'u';
-		$this->data['edulevel'] = self::LEVEL_TEACHING;
-		$this->data['objecttable'] = 'block_exacompexamples';
-	}
+    /**
+     * Init
+     *
+     * @return nothing
+     */
+    protected function init() {
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+        $this->data['objecttable'] = 'block_exacompexamples';
+    }
 
-	/**
-	 * Return localised event name.
-	 *
-	 * @return string
-	 */
-	public static function get_name() {
-		return block_exacomp_get_string('eventsexamplegraded');
-	}
+    /**
+     * Return localised event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return block_exacomp_get_string('eventsexamplegraded');
+    }
 
-	/**
-	 * Get description
-	 * @return string
-	 */
-	public function get_description() {
-		return "User {$this->userid} graded the example {$this->objectid} for user {$this->relateduserid} in course {$this->courseid}";
-	}
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function get_description() {
+        return "User {$this->userid} graded the example {$this->objectid} for user {$this->relateduserid} in course {$this->courseid}";
+    }
 
-	/**
-	 * Get URL related to the action
-	 *
-	 * @return \moodle_url
-	 */
-	public function get_url() {
-		return new \moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $this->courseid));
-	}
+    /**
+     * Get URL related to the action
+     *
+     * @return moodle_url
+     */
+    public function get_url() {
+        return new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $this->courseid));
+    }
 
 }

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/../inc.php';
+require __DIR__ . '/../inc.php';
 
 $searchPath = dirname(__DIR__);
 $Directory = new RecursiveDirectoryIterator($searchPath);
@@ -23,57 +23,61 @@ $Iterator = new RecursiveIteratorIterator($Directory);
 $overwriteAll = true;
 
 foreach ($Iterator as $file) {
-	$file = $file->getPathname();
-	if (!preg_match('/^.+\.(php|js)$/i', $file, $matches)) continue;
+    $file = $file->getPathname();
+    if (!preg_match('/^.+\.(php|js)$/i', $file, $matches)) {
+        continue;
+    }
 
-	$filetype = strtolower($matches[1]);
+    $filetype = strtolower($matches[1]);
 
-	echo $filetype.': '.$file."<br />\n";
+    echo $filetype . ': ' . $file . "<br />\n";
 
-	$content = file_get_contents($file);
+    $content = file_get_contents($file);
 
-	$content = preg_replace('!^<\?php\s+!', '', $content);
-	$content = preg_replace('!\?>\s*$!', '', $content);
+    $content = preg_replace('!^<\?php\s+!', '', $content);
+    $content = preg_replace('!\?>\s*$!', '', $content);
 
-	$copyrightFound = false;
+    $copyrightFound = false;
 
-	while (true) {
-		$content = trim($content);
+    while (true) {
+        $content = trim($content);
 
-		if (false) {
-			if (preg_match('!^/\*.*exabis.*\*/!isU', $content, $matches)) {
-				$copyrightFound = true;
-				echo $matches[0]."\n";
-				$content = preg_replace('!^/\*.*\*/!sU', '', $content);
-				continue;
-			}
-			if (preg_match('!^(//.*\n)*//.*exabis.*\n(//.*\n)*!i', $content, $matches)) {
-				$copyrightFound = true;
-				echo $matches[0]."\n";
-				$content = preg_replace('!^(//.*\n)*//.*exabis.*\n(//.*\n)*!i', '', $content);
-				continue;
-			}
-		} else {
-			$copyrightFound = true;
-			if (preg_match('!^/\*.*\*/!sU', $content, $matches)) {
-				echo $matches[0]."\n";
-				$content = preg_replace('!^/\*.*\*/!sU', '', $content);
-				continue;
-			}
-			if (preg_match('!^//.*\n!', $content, $matches)) {
-				echo $matches[0];
-				$content = preg_replace('!^//.*\n!', '', $content);
-				continue;
-			}
-		}
-		break;
-	}
+        if (false) {
+            if (preg_match('!^/\*.*exabis.*\*/!isU', $content, $matches)) {
+                $copyrightFound = true;
+                echo $matches[0] . "\n";
+                $content = preg_replace('!^/\*.*\*/!sU', '', $content);
+                continue;
+            }
+            if (preg_match('!^(//.*\n)*//.*exabis.*\n(//.*\n)*!i', $content, $matches)) {
+                $copyrightFound = true;
+                echo $matches[0] . "\n";
+                $content = preg_replace('!^(//.*\n)*//.*exabis.*\n(//.*\n)*!i', '', $content);
+                continue;
+            }
+        } else {
+            $copyrightFound = true;
+            if (preg_match('!^/\*.*\*/!sU', $content, $matches)) {
+                echo $matches[0] . "\n";
+                $content = preg_replace('!^/\*.*\*/!sU', '', $content);
+                continue;
+            }
+            if (preg_match('!^//.*\n!', $content, $matches)) {
+                echo $matches[0];
+                $content = preg_replace('!^//.*\n!', '', $content);
+                continue;
+            }
+        }
+        break;
+    }
 
-	if (!$copyrightFound) continue;
+    if (!$copyrightFound) {
+        continue;
+    }
 
-	// copyright
-	$copyright =
-trim("
+    // copyright
+    $copyright =
+        trim("
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -90,18 +94,18 @@ trim("
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 ");
 
-	$content = "$copyright\n\n".$content."\n";
+    $content = "$copyright\n\n" . $content . "\n";
 
-	if ($filetype == 'php') {
-		$content = "<?php\n".$content;
-	}
+    if ($filetype == 'php') {
+        $content = "<?php\n" . $content;
+    }
 
-	file_put_contents($file, $content);
-	/*
-	echo "-----------------------------------\n";
-	echo $content;
-	exit;
-	// $i++;
-	// if ($i> 4) exit;
-	/* */
+    file_put_contents($file, $content);
+    /*
+    echo "-----------------------------------\n";
+    echo $content;
+    exit;
+    // $i++;
+    // if ($i> 4) exit;
+    /* */
 }

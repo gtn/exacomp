@@ -13,12 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$(function(){
-	$('input[name=uses_activities]').change(function(){
-		if ($(this).is(':checked')) {
-			$('input[name=show_all_descriptors]').prop('disabled', false);
-		} else {
-			$('input[name=show_all_descriptors]').prop('disabled', true).prop('checked', true);
-		}
-	}).triggerHandler('change');
+$(function () {
+  $('input[name=uses_activities]').change(function () {
+    if ($(this).is(':checked')) {
+      $('input[name=show_all_descriptors]').prop('disabled', false);
+    } else {
+      $('input[name=show_all_descriptors]').prop('disabled', true).prop('checked', true);
+    }
+  }).triggerHandler('change');
 });

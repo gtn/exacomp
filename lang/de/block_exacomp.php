@@ -38,7 +38,6 @@ $string['tab_admin_configuration'] = 'Vorauswahl der Kompetenzraster';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 $string['tab_admin_taxonomies'] = 'Niveaustufen';
 
-
 // === Teacher Tabs ===
 $string['tab_teacher_settings'] = 'Kurs-Einstellungen';
 $string['tab_teacher_settings_configuration'] = 'Einstellungen';
@@ -71,7 +70,6 @@ $string['tab_teacher_report_annex_delete_template'] = 'löschen';
 // === Student Tabs ===
 $string['tab_student_all'] = 'Alle erworbenen Kompetenzen';
 
-
 // === Generic Tabs (used by Teacher and Students) ===
 $string['tab_competence_gridoverview'] = 'Übersicht';
 $string['tab_competence_overview'] = 'Kompetenzraster';
@@ -101,7 +99,6 @@ $string['completed_config'] = 'Die Exabis Kompetenzraster Konfiguration wurde ab
 $string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, betätigen Sie diesen Link wenn Sie das jetzt machen möchten.';
 $string['enrol_users'] = 'Schreiben sie Teilnehmer/innen ein, um Exacomp verwenden zu können.';
 $string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum nächsten Schritt zu gelangen.';
-
 
 // === Block Settings ===
 $string['settings_xmlserverurl'] = 'Server-URL';
@@ -210,14 +207,12 @@ $string['settings_disable_js_editactivities_description'] = 'Aktivieren, falls s
 $string['settings_example_autograding'] = 'übergeordnete Materialien automatische Beurteilung';
 $string['settings_example_autograding_description'] = 'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
 
-
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
 $string['de:unittest_string2'] = 'result_unittest_string2';
 $string['de:unittest_string3'] = 'unittest_string3';
 $string['de:unittest_param {$a} unittest_param'] = 'result_unittest_param {$a} result_unittest_param';
 $string['de:unittest_param2 {$a->val} unittest_param2'] = 'result_unittest_param2 {$a->val} result_unittest_param2';
-
 
 // === Learning agenda ===
 $string['LA_MON'] = 'Mo';
@@ -242,12 +237,10 @@ $string['LA_to'] = ' bis zum ';
 $string['LA_enddate'] = 'Enddatum';
 $string['LA_startdate'] = 'Startdatum';
 
-
 // === Help ===
 $string['help_content'] = '<h1>Video zur Einführung</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ';
-
 
 // === Import ===
 $string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="http://www.edustandards.org">wwww.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Kompetenzraster besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>';
@@ -278,12 +271,10 @@ $string['dest_course'] = 'Ziel der importierten Aktivitäten';
 $string['import_activities'] = 'Importieren Sie Aktivitäten vom Vorlagekurs in Ihren Kurs';
 $string['download_activites'] = 'Download activities';
 
-
 // === Configuration ===
 $string['explainconfig'] = 'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.';
 $string['save_selection'] = 'Bestätigen';
 $string['save_success'] = 'Änderungen erfolgreich übernommen';
-
 
 // === Course-Configuration ===
 $string['grading_scheme'] = 'Bewertungsschema';
@@ -316,7 +307,6 @@ $string['show_all_taxonomies'] = 'Alle Taxonomien';
 $string['warning_use_activities'] = 'Hinweis: Sie arbeiten jetzt mit Moodle-Aktivitäten die mit Kompetenzen verknüpft sind. Stellen Sie sicher, dass in diesem Kurs mit den selben Kompetenzen weitergearbeitet wird.';
 $string['delete_unconnected_examples'] = 'Wenn Sie Themenbereiche abwählen, mit denen Lernmaterialien verknüpft sind die noch am Wochenplan liegen, werden diese aus dem Wochenplan entfernt.';
 
-
 // === Badges ===
 $string['mybadges'] = 'Meine Auszeichnungen';
 $string['pendingbadges'] = 'Anstehende Auszeichnungen';
@@ -327,7 +317,6 @@ $string['to_award_role'] = 'Um diese Auszeichnung zu erwerben, müssen sie das "
 $string['ready_to_activate'] = 'Diese Auszeichnung kann aktiviert werden: ';
 $string['conf_badges'] = 'Auszeichnungen konfigurieren';
 $string['conf_comps'] = 'Kompetenzen zuordnen';
-
 
 // === Examples ===
 $string['example'] = 'Lernmaterial';
@@ -348,7 +337,6 @@ $string['assigned_example'] = 'Zugeteiltes Lernmaterial';
 $string['task_example'] = 'Aufgabenstellung';
 $string['extern_task'] = 'Externe Aufgabenstellung';
 $string['total_example'] = 'Gesamtmaterial';
-
 
 // === Example Upload ===
 $string['example_upload_header'] = 'Eigenes Lernmaterial hochladen';
@@ -371,7 +359,6 @@ $string['linkerr'] = 'Bitte geben Sie einen korrekten Link ein!';
 $string['isgraded'] = 'Die Aufgabe wurde bereits beurteilt und kann daher nicht mehr eingereicht werden.';
 $string['allow_resubmission'] = 'Aufgabe zur erneuten Abgabe freigeben';
 $string['allow_resubmission_info'] = 'Die Aufgabe wurde zur erneuten Abgabe freigegeben.';
-
 
 // === Assign competencies ===
 $string['header_edit_mode'] = 'Sie befinden sich im Bearbeitungsmodus';
@@ -474,7 +461,6 @@ $string['instruction_content'] = 'Hier können Sie für Ihre Lerngruppen / Klass
 				müssen dann keine zugehörigen Lernmaterialien
 				bearbeiten.';
 
-
 // === Activities ===
 $string['explaineditactivities_subjects'] = 'Hier können Sie den erstellten Aufgaben Kompetenzen zuordnen.';
 $string['niveau_filter'] = 'Niveaus filtern';
@@ -486,7 +472,6 @@ $string['no_activities_selected_student'] = 'In diesem Bereich sind derzeit kein
 $string['no_course_activities'] = 'In diesem Kurs wurden noch keine Moodle-Aktivitäten erstellt, klicken Sie hier um dies nun zu tun.';
 $string['all_modules'] = 'Alle Aktivitäten';
 $string['tick_some'] = 'Bitte treffen Sie eine Auswahl!';
-
 
 // === Competence Grid ===
 $string['infolink'] = 'Weiter Informationen: ';
@@ -538,7 +523,6 @@ $string['profoundness_extended'] = 'Erweiterte Kompetenz';
 $string['profoundness_mainly'] = 'Überwiegend erfüllt';
 $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
-
 // === External trainer & eLove ===
 $string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermöglichen';
 $string['block_exacomp_external_trainer_assign_body'] = 'Erforderlich für die Benutzung der elove App';
@@ -556,7 +540,6 @@ $string['block_exacomp_external_trainer_assign'] = 'Externe TrainerIn zuordnen';
 $string['block_exacomp_external_trainer'] = 'AusbilderIn: ';
 $string['block_exacomp_external_trainer_student'] = 'Auszubildende: ';
 $string['block_exacomp_external_trainer_allstudents'] = 'Alle Kursteilnehmer/innen';
-
 
 // === Crosssubjects ===
 $string['add_drafts_to_course'] = 'Ausgewählte Vorlagen im Kurs verwenden';
@@ -600,11 +583,9 @@ $string['groupcategory'] = 'Kategorie';
 $string['new_column'] = 'neue Spalte';
 $string['new_topic'] = 'neuer Kompetenzbereich';
 
-
 // === Associations ===
 $string['competence_associations'] = 'Verknüpfungen';
 $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknüpft:';
-
 
 // === Weeky schedule ===
 $string['weekly_schedule'] = 'Wochenplan';
@@ -687,7 +668,6 @@ $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmateri
 $string['block_exacomp_assign_activities_old_method_head'] = 'Tab Moodle-Aktivitäten zuordnen alt anzeigen';
 $string['block_exacomp_assign_activities_old_method_body'] = 'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.';
 $string['distribute_weekly_schedule'] = 'Wochenplan verteilen';
-
 
 // === Logging ===
 $string['block_exacomp_logging_head'] = 'Logging aktivieren';
@@ -799,7 +779,6 @@ $string['globalgradings'] = 'Überfachliche Bewertungen';
 $string['assign_dakora_teacher'] = 'Lehrkraft für überfachliche Kompetenzen zuweisen';
 $string['assign_dakora_teacher_link'] = 'Hier klicken um Lehrkraft für überfachliche Kompetenzen zuzuweisen';
 $string['transferable_skills'] = 'Überfachliche Kompetenzen';
-
 
 //Dakora strings
 $string['dakora_string1'] = 'deutscher string1';

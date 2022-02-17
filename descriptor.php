@@ -14,14 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+use block_exacomp\descriptor;
+
+require __DIR__ . '/inc.php';
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_exacomp', $courseid);
+    print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -30,7 +32,7 @@ $context = context_course::instance($courseid);
 $output = block_exacomp_get_renderer();
 
 $id = optional_param('id', 0, PARAM_INT);
-$item = $id ? \block_exacomp\descriptor::get($id) : null;
+$item = $id ? descriptor::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
@@ -43,83 +45,83 @@ $PAGE->set_pagelayout('embedded');
 
 block_exacomp_require_teacher($context);
 if ($item) {
-	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $item);
+    block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $item);
 }
 
 // TODO: check permissions, check if item is BLOCK_EXACOMP_DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
-	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
-	$item->delete();
+    block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
+    $item->delete();
 
-	echo $output->popup_close_and_reload();
-	exit;
+    echo $output->popup_close_and_reload();
+    exit;
 }
 
 require_once $CFG->libdir . '/formslib.php';
 
 class block_exacomp_local_item_form extends moodleform {
 
-	function definition() {
-		global $CFG, $USER, $DB, $PAGE;
+    function definition() {
+        global $CFG, $USER, $DB, $PAGE;
 
-		$output = block_exacomp_get_renderer();
+        $output = block_exacomp_get_renderer();
 
-		$mform = & $this->_form;
+        $mform = &$this->_form;
 
-		//$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="1000" size="100"');
-		$mform->addElement('textarea', 'title', block_exacomp_get_string('name'), 'rows="6" cols="100" size="60"');
-		$mform->setType('title', PARAM_TEXT);
-		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+        //$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="1000" size="100"');
+        $mform->addElement('textarea', 'title', block_exacomp_get_string('name'), 'rows="6" cols="100" size="60"');
+        $mform->setType('title', PARAM_TEXT);
+        $mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
-		if ($this->_customdata['hasNiveau']) {
-			$mform->addElement('selectgroups', 'niveauid', block_exacomp_get_string('niveau'), block_exacomp_get_select_niveau_items(false));
-		}
+        if ($this->_customdata['hasNiveau']) {
+            $mform->addElement('selectgroups', 'niveauid', block_exacomp_get_string('niveau'), block_exacomp_get_select_niveau_items(false));
+        }
 
-		$element = $mform->addElement('select', 'categories', block_exacomp_get_string('competence_grid_niveau'), $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, 'title', 'id, title'));
-		$element->setMultiple(true);
+        $element = $mform->addElement('select', 'categories', block_exacomp_get_string('competence_grid_niveau'), $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, 'title', 'id, title'));
+        $element->setMultiple(true);
 
-		$this->add_action_buttons(false);
-	}
+        $this->add_action_buttons(false);
+    }
 }
 
-$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], [ 'hasNiveau' => !$item->parentid ]);
+$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], ['hasNiveau' => !$item->parentid]);
 
 if ($item) {
-	$data = $item->get_data();
-	// also load category ids for form
-	$data->categories = $item->category_ids;
-	$form->set_data($data);
+    $data = $item->get_data();
+    // also load category ids for form
+    $data->categories = $item->category_ids;
+    $form->set_data($data);
 }
 
-if($formdata = $form->get_data()) {
+if ($formdata = $form->get_data()) {
 
-	$new = new stdClass();
-	$new->title = $formdata->title;
-	$new->niveauid = $formdata->niveauid;
+    $new = new stdClass();
+    $new->title = $formdata->title;
+    $new->niveauid = $formdata->niveauid;
     $new->author = fullname($USER);
     $new->editor = fullname($USER);
 
-	if (!$item) {
-		die('TODO');
-		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
-		$new->sourceid = 0;
-		$new->subjid = required_param('subjectid', PARAM_INT);
+    if (!$item) {
+        die('TODO');
+        $new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
+        $new->sourceid = 0;
+        $new->subjid = required_param('subjectid', PARAM_INT);
 
-		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
+        $new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
 
-		// add topic to course
-		$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
-			'courseid' => $courseid,
-			'topicid' => $new->id
-		));
-	} else {
-	    $item->update($new);
-	}
-	$item->store_categories($formdata->categories);
+        // add topic to course
+        $DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
+            'courseid' => $courseid,
+            'topicid' => $new->id,
+        ));
+    } else {
+        $item->update($new);
+    }
+    $item->store_categories($formdata->categories);
 
- 	echo $output->popup_close_and_reload();
-	exit;
+    echo $output->popup_close_and_reload();
+    exit;
 }
 
 echo $output->header($context, $courseid, '', false);

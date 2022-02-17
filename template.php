@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 

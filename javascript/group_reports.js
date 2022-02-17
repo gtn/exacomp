@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(function($) {
+(function ($) {
 
-	window.group_reports_print = function() {
-		window.open(document.location.href+'&print=1');
-	}
+  window.group_reports_print = function () {
+    window.open(document.location.href + '&print=1');
+  }
 })(jQueryExacomp);

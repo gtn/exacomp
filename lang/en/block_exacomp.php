@@ -38,7 +38,6 @@ $string['tab_admin_configuration'] = 'Competence grids pre-selection';
 $string['admin_config_pending'] = 'Competence grids pre-selection needs to be performed by the Moodle administrator';
 $string['tab_admin_taxonomies'] = 'Difficulty levels';
 
-
 // === Teacher Tabs ===
 $string['tab_teacher_settings'] = 'Settings';
 $string['tab_teacher_settings_configuration'] = 'Configuration';
@@ -71,7 +70,6 @@ $string['tab_teacher_report_annex_delete_template'] = 'delete';
 // === Student Tabs ===
 $string['tab_student_all'] = 'All gained competencies';
 
-
 // === Generic Tabs (used by Teacher and Students) ===
 $string['tab_competence_gridoverview'] = 'Overview';
 $string['tab_competence_overview'] = 'Competence grid';
@@ -101,7 +99,6 @@ $string['completed_config'] = 'The configuration of Exabis Competence Grid is co
 $string['optional_step'] = 'There are no participants in your course yet. If you want to enrol some please use this link.';
 $string['enrol_users'] = 'Enrol users to be able to use exacomp.';
 $string['next_step_first_teacher_step'] = 'Click here to continue configuration.';
-
 
 // === Block Settings ===
 $string['settings_xmlserverurl'] = 'Server-URL';
@@ -210,14 +207,12 @@ $string['settings_disable_js_editactivities_description'] = 'If "Assign Moodle a
 $string['settings_example_autograding'] = 'automatic assessment of parent materials';
 $string['settings_example_autograding_description'] = 'When all child examples have been graded, the parent material should be assessed automatically.';
 
-
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
 $string['de:unittest_string2'] = 'result_unittest_string2';
 $string['de:unittest_string3'] = 'result_unittest_string3';
 $string['de:unittest_param {$a} unittest_param'] = 'result_unittest_param {$a} result_unittest_param';
 $string['de:unittest_param2 {$a->val} unittest_param2'] = 'result_unittest_param2 {$a->val} result_unittest_param2';
-
 
 // === Learning agenda ===
 $string['LA_MON'] = 'MON';
@@ -242,12 +237,10 @@ $string['LA_to'] = ' to ';
 $string['LA_enddate'] = 'end date';
 $string['LA_startdate'] = 'start date';
 
-
 // === Help ===
 $string['help_content'] = '<h1>Introduction Video</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ';
-
 
 // === Import ===
 $string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
@@ -278,12 +271,10 @@ $string['dest_course'] = 'Destiantion of imported activities';
 $string['import_activities'] = 'Import activities of a template course into your course';
 $string['download_activites'] = 'Download activities';
 
-
 // === Configuration ===
 $string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of the main competence grids you would like to use in this Moodle installation.';
 $string['save_selection'] = 'Confirm';
 $string['save_success'] = 'changes were successful';
-
 
 // === Course-Configuration ===
 $string['grading_scheme'] = 'grading scheme';
@@ -316,7 +307,6 @@ $string['show_all_taxonomies'] = 'All taxonomies';
 $string['warning_use_activities'] = 'Warning: you are now working with Moodle-activites that are associated with competences. Please verify that the same outcomes are used as before.';
 $string['delete_unconnected_examples'] = 'If you are deselecting topics which are associated with examples used in the weekly schedule, these examples will be removed.';
 
-
 // === Badges ===
 $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';
@@ -327,7 +317,6 @@ $string['to_award_role'] = 'To award this badge in exacomp you have to add the "
 $string['ready_to_activate'] = 'This badge is ready to be activated: ';
 $string['conf_badges'] = 'configure badges';
 $string['conf_comps'] = 'configure competences';
-
 
 // === Examples ===
 $string['example'] = 'Example';
@@ -348,7 +337,6 @@ $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Tasks';
 $string['extern_task'] = 'External Task';
 $string['total_example'] = 'Complete Example';
-
 
 // === Example Upload ===
 $string['example_upload_header'] = 'Upload my own task/example';
@@ -371,7 +359,6 @@ $string['linkerr'] = 'The given link is not valid!';
 $string['isgraded'] = 'The example is already graded and therefore a submission is not possible anymore';
 $string['allow_resubmission'] = 'Allow a new submission for this example';
 $string['allow_resubmission_info'] = 'The example is now allowed to be resubmited.';
-
 
 // === Assign competencies ===
 $string['header_edit_mode'] = 'Editing mode is turned on';
@@ -468,7 +455,6 @@ $string['instruction_content'] = 'This is an overview for learning resources tha
 				students are displayed with a red icon. ePortfolio-artifacts of students
 				are displayed in blue icons.';
 
-
 // === Activities ===
 $string['explaineditactivities_subjects'] = '';
 $string['niveau_filter'] = 'Filter difficulty levels';
@@ -480,7 +466,6 @@ $string['no_activities_selected_student'] = 'There is no data available yet';
 $string['no_course_activities'] = 'No Moodle activities found in this course - click here to create some.';
 $string['all_modules'] = 'all activities';
 $string['tick_some'] = 'Please make a selection!';
-
 
 // === Competence Grid ===
 $string['infolink'] = 'Additional information: ';
@@ -532,7 +517,6 @@ $string['profoundness_extended'] = 'Extended competence';
 $string['profoundness_mainly'] = 'Mainly achieved';
 $string['profoundness_entirely'] = 'Entirely achieved';
 
-
 // === External trainer & eLove ===
 $string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning of external trainers for students.';
 $string['block_exacomp_external_trainer_assign_body'] = 'This is required for using the elove app.';
@@ -550,7 +534,6 @@ $string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';
 $string['block_exacomp_external_trainer'] = 'Trainer';
 $string['block_exacomp_external_trainer_student'] = 'Student';
 $string['block_exacomp_external_trainer_allstudents'] = 'All Students';
-
 
 // === Crosssubjects ===
 $string['add_drafts_to_course'] = 'Add drafts to course';
@@ -594,11 +577,9 @@ $string['groupcategory'] = 'Category';
 $string['new_column'] = 'new column';
 $string['new_topic'] = 'new Topic';
 
-
 // === Associations ===
 $string['competence_associations'] = 'Associations';
 $string['competence_associations_explaination'] = 'The material {$a} is associated wih the following standards:';
-
 
 // === Weeky schedule ===
 $string['weekly_schedule'] = 'Weekly schedule';
@@ -681,7 +662,6 @@ $string['block_exacomp_notifications_body'] = 'Users will get notified after rel
 $string['block_exacomp_assign_activities_old_method_head'] = 'Show Tab "Assign Moodle activities" old';
 $string['block_exacomp_assign_activities_old_method_body'] = 'This Tab was default replaced with Tab "Relate Moodle activities"';
 $string['distribute_weekly_schedule'] = 'Distribute weekly schedule';
-
 
 // === Logging ===
 $string['block_exacomp_logging_head'] = 'Activate logging';
@@ -791,7 +771,6 @@ $string['globalgradings'] = 'global gradings';
 $string['assign_dakora_teacher'] = 'assign teacher for interdisciplinary subjects';
 $string['assign_dakora_teacher_link'] = 'Click here to assign teacher for interdisciplinary subjects';
 $string['transferable_skills'] = 'Transferable skills';
-
 
 //Dakora strings
 $string['dakora_string1'] = 'english string1';

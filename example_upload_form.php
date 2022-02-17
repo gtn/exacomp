@@ -18,15 +18,15 @@ require_once $CFG->libdir . '/formslib.php';
 
 class block_exacomp_example_upload_form extends moodleform {
 
-	function definition() {
-		global $CFG, $USER, $DB, $PAGE;
+    function definition() {
+        global $CFG, $USER, $DB, $PAGE;
 
-		$output = block_exacomp_get_renderer();
+        $output = block_exacomp_get_renderer();
 
-		$mform = & $this->_form;
+        $mform = &$this->_form;
 
-		$descrid = @$this->_customdata['descrid'] ? $this->_customdata['descrid'] : null;
-		$questionid = @$this->_customdata['questionid'] ? $this->_customdata['questionid'] : null;
+        $descrid = @$this->_customdata['descrid'] ? $this->_customdata['descrid'] : null;
+        $questionid = @$this->_customdata['questionid'] ? $this->_customdata['questionid'] : null;
         if (array_key_exists('crosssubjid', $this->_customdata)) {
             $crosssubjid = $this->_customdata['crosssubjid'];
         } else {
@@ -34,51 +34,51 @@ class block_exacomp_example_upload_form extends moodleform {
         }
 
         if ($descrid || $questionid) {
-		    if($descrid){
-		      $descrTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$descrid));
-		      $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
-		    } else {
-		      $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, null));
-		    }
+            if ($descrid) {
+                $descrTitle = $DB->get_field('block_exacompdescriptors', 'title', array("id" => $descrid));
+                $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
+            } else {
+                $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, null));
+            }
 
-		    $mform->addElement('hidden', 'id');
-		    $mform->setType('id', PARAM_INT);
-		    $mform->setDefault('id', 0);
+            $mform->addElement('hidden', 'id');
+            $mform->setType('id', PARAM_INT);
+            $mform->setDefault('id', 0);
 
-		    //add html tree -> different treated in example_upload -> mform does not support a tree structure
-		    $treetitle = html_writer::start_div('fitem');
-		    $treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(block_exacomp_get_string('descriptors'), 'tree'). html_writer::end_div();
-		    $treetitle .= html_writer::start_div('felement ftext');
-		    $tree = $this->_customdata['tree'];
-		    $html_tree = $output->competence_based_list_tree($tree, true, 1, false);
-		    $mform->addElement('html', $treetitle);
-		    $mform->addElement('html', $html_tree);
+            //add html tree -> different treated in example_upload -> mform does not support a tree structure
+            $treetitle = html_writer::start_div('fitem');
+            $treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(block_exacomp_get_string('descriptors'), 'tree') . html_writer::end_div();
+            $treetitle .= html_writer::start_div('felement ftext');
+            $tree = $this->_customdata['tree'];
+            $html_tree = $output->competence_based_list_tree($tree, true, 1, false);
+            $mform->addElement('html', $treetitle);
+            $mform->addElement('html', $html_tree);
 
-		    $treetitle = html_writer::end_div() . html_writer::end_div();
-		    $mform->addElement('html', $treetitle);
+            $treetitle = html_writer::end_div() . html_writer::end_div();
+            $mform->addElement('html', $treetitle);
 
-		    $mform->addElement('hidden', 'action');
-		    $mform->setType('action', PARAM_ACTION);
-		    $mform->setDefault('action', 'add');
-		} else if($crosssubjid) {
-		    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header"));
-		}
-		if(!$questionid){
-    		$mform->addElement('text', 'title', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
-    		$mform->setType('title', PARAM_TEXT);
-    		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+            $mform->addElement('hidden', 'action');
+            $mform->setType('action', PARAM_ACTION);
+            $mform->setDefault('action', 'add');
+        } else if ($crosssubjid) {
+            $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header"));
+        }
+        if (!$questionid) {
+            $mform->addElement('text', 'title', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
+            $mform->setType('title', PARAM_TEXT);
+            $mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
-    		$mform->addElement('text', 'description', block_exacomp_get_string("description_example"), 'maxlength="255" size="60"');
-    		$mform->setType('description', PARAM_TEXT);
+            $mform->addElement('text', 'description', block_exacomp_get_string("description_example"), 'maxlength="255" size="60"');
+            $mform->setType('description', PARAM_TEXT);
 
             $mform->addElement('text', 'timeframe', block_exacomp_get_string("timeframe_example"), 'maxlength="255" size="60"');
             $mform->setType('timeframe', PARAM_TEXT);
 
-    		//if (@$this->_customdata['taxonomies']) {
-    			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),@$this->_customdata['taxonomies']);
-    			$tselect->setMultiple(true);
-    			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => @$this->_customdata['exampleid']),"","taxid")));
-    		//}
+            //if (@$this->_customdata['taxonomies']) {
+            $tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'), @$this->_customdata['taxonomies']);
+            $tselect->setMultiple(true);
+            $tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX, array("exampleid" => @$this->_customdata['exampleid']), "", "taxid")));
+            //}
 
             $mform->addElement('checkbox', 'isTeacherexample', block_exacomp_get_string('is_teacherexample'));
             $mform->setType('isTeacherexample', PARAM_INT);
@@ -86,122 +86,131 @@ class block_exacomp_example_upload_form extends moodleform {
                 $mform->setDefault('isTeacherexample', true);
             }
 
-    		$mform->addElement('header', 'link', block_exacomp_get_string('link'));
+            $mform->addElement('header', 'link', block_exacomp_get_string('link'));
 
-    		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
-    		$mform->setType('externalurl', PARAM_TEXT);
+            $mform->addElement('text', 'externalurl', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
+            $mform->setType('externalurl', PARAM_TEXT);
 
-    		$mform->addElement('header', 'filesheader', block_exacomp_get_string('files'));
+            $mform->addElement('header', 'filesheader', block_exacomp_get_string('files'));
 
-    		$mform->addElement('filemanager', 'files', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 2));
-    		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
+            $mform->addElement('filemanager', 'files', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 2));
+            $mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
             $mform->addElement('filemanager', 'completefile', block_exacomp_get_string('completefile'), null, array('subdirs' => false, 'maxfiles' => 1));
 
-    		if( @$this->_customdata['uses_activities'] ) {
+            if (@$this->_customdata['uses_activities']) {
 
-    			$mform->addElement('header', 'assignments', block_exacomp_get_string('assignments'));
-    			$mform->addElement('select', 'assignment', block_exacomp_get_string('assignments'), @$this->_customdata['activities']);
-    		}
-    		/* if(block_exacomp_is_altversion()) {
-    			$mform->addElement('checkbox', 'lisfilename', block_exacomp_get_string('lisfilename'));
-    			$mform->setDefault('lisfilename', 1);
-    		} */
+                $mform->addElement('header', 'assignments', block_exacomp_get_string('assignments'));
+                $mform->addElement('select', 'assignment', block_exacomp_get_string('assignments'), @$this->_customdata['activities']);
+            }
+            /* if(block_exacomp_is_altversion()) {
+                $mform->addElement('checkbox', 'lisfilename', block_exacomp_get_string('lisfilename'));
+                $mform->setDefault('lisfilename', 1);
+            } */
 
-    		$mform->addElement('hidden','topicid');
-    		$mform->setType('topicid', PARAM_INT);
-    		$mform->setDefault('topicid', @$this->_customdata['topicid']);
+            $mform->addElement('hidden', 'topicid');
+            $mform->setType('topicid', PARAM_INT);
+            $mform->setDefault('topicid', @$this->_customdata['topicid']);
 
-    		$mform->addElement('hidden','exampleid');
-    		$mform->setType('exampleid', PARAM_INT);
-    		$mform->setDefault('exampleid', @$this->_customdata['exampleid']);
-		}
-		$this->add_action_buttons(true);
-	}
+            $mform->addElement('hidden', 'exampleid');
+            $mform->setType('exampleid', PARAM_INT);
+            $mform->setDefault('exampleid', @$this->_customdata['exampleid']);
+        }
+        $this->add_action_buttons(true);
+    }
 
-	function validation($data, $files) {
-		$errors = parent::validation($data, $files);
+    function validation($data, $files) {
+        $errors = parent::validation($data, $files);
 
-		$errors= array();
+        $errors = array();
 
-		if (!empty($data['link']) && filter_var($data['link'], FILTER_VALIDATE_URL) === FALSE
-				&& filter_var("http://" . $data['link'], FILTER_VALIDATE_URL) === FALSE) {
-			$errors['link'] = block_exacomp_get_string('linkerr');
-		}
+        if (!empty($data['link']) && filter_var($data['link'], FILTER_VALIDATE_URL) === false
+            && filter_var("http://" . $data['link'], FILTER_VALIDATE_URL) === false) {
+            $errors['link'] = block_exacomp_get_string('linkerr');
+        }
 
-		return $errors;
-	}
-	public function print_competence_based_list_tree_for_form($tree, $mform) {
-		global $PAGE;
+        return $errors;
+    }
 
-		$mform->addElement('html', '<ul>');
-		foreach($tree as $skey => $subject) {
-			$mform->addElement('html', '<li>');
-			$mform->addElement('static', 'subjecttitle', $subject->title);
+    public function print_competence_based_list_tree_for_form($tree, $mform) {
+        global $PAGE;
 
-			if(!empty($subject->topics))
-				$mform->addElement('html', '<ul>');
+        $mform->addElement('html', '<ul>');
+        foreach ($tree as $skey => $subject) {
+            $mform->addElement('html', '<li>');
+            $mform->addElement('static', 'subjecttitle', $subject->title);
 
-			foreach ( $subject->topics as $tkey => $topic ) {
-					$mform->addElement('html', '<li>');
-					$mform->addElement('static', 'subjecttitle', $subject->title);
+            if (!empty($subject->topics)) {
+                $mform->addElement('html', '<ul>');
+            }
 
-					if(!empty($topic->descriptors))
-						$mform->addElement('html', '<ul>');
+            foreach ($subject->topics as $tkey => $topic) {
+                $mform->addElement('html', '<li>');
+                $mform->addElement('static', 'subjecttitle', $subject->title);
 
-					foreach ( $topic->descriptors as $dkey => $descriptor ) {
-						$mform = $this->print_competence_for_list_tree_for_form($descriptor, $mform);
-					}
+                if (!empty($topic->descriptors)) {
+                    $mform->addElement('html', '<ul>');
+                }
 
-					if(!empty($topic->descriptors))
-						$mform->addElement('html', '</ul>');
+                foreach ($topic->descriptors as $dkey => $descriptor) {
+                    $mform = $this->print_competence_for_list_tree_for_form($descriptor, $mform);
+                }
 
-			}
-			if(!empty($subject->topics))
-				$mform->addElement('html', '</ul>');
+                if (!empty($topic->descriptors)) {
+                    $mform->addElement('html', '</ul>');
+                }
 
-			$mform->addElement('html', '</li>');
+            }
+            if (!empty($subject->topics)) {
+                $mform->addElement('html', '</ul>');
+            }
 
-		}
-		$mform->addElement('html', '</ul>');
-		return $mform;
-	}
+            $mform->addElement('html', '</li>');
 
-	private function print_competence_for_list_tree_for_form($descriptor, $mform) {
-		$mform->addElement('html', '<li>');
+        }
+        $mform->addElement('html', '</ul>');
+        return $mform;
+    }
 
-		if(isset($descriptor->direct_associated))
-			$mform->addElement('advcheckbox', 'descriptor[]', 'Kompetenzen', $descriptor->title, array('group'=>'descriptor'));
-			//$mform->setDefault('d');
-			/*$html_tree .= html_writer::div(html_writer::div(
-				html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false, $descriptor->title),
-				"felement fcheckbox"), "fitem fitem_fcheckbox ", array('id'=>'fitem_id_descriptor'));
-	*/	else
-			$mform->addElement('static', 'descriptortitle', $descriptor->title);
+    private function print_competence_for_list_tree_for_form($descriptor, $mform) {
+        $mform->addElement('html', '<li>');
 
-		if(!empty($descriptor->examples))
-			$mform->addElement('html', '<ul>');
+        if (isset($descriptor->direct_associated)) {
+            $mform->addElement('advcheckbox', 'descriptor[]', 'Kompetenzen', $descriptor->title, array('group' => 'descriptor'));
+        }
+        //$mform->setDefault('d');
+        /*$html_tree .= html_writer::div(html_writer::div(
+            html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false, $descriptor->title),
+            "felement fcheckbox"), "fitem fitem_fcheckbox ", array('id'=>'fitem_id_descriptor'));
+*/ else {
+            $mform->addElement('static', 'descriptortitle', $descriptor->title);
+        }
 
-		foreach($descriptor->examples as $example) {
-			$mform->addElement('html', '<li>');
-			$mform->addElement('static', 'exampletitle', $example->title);
-		}
+        if (!empty($descriptor->examples)) {
+            $mform->addElement('html', '<ul>');
+        }
 
-		if(!empty($descriptor->examples))
-			$mform->addElement('html', '</ul>');
+        foreach ($descriptor->examples as $example) {
+            $mform->addElement('html', '<li>');
+            $mform->addElement('static', 'exampletitle', $example->title);
+        }
 
-		if(!empty($descriptor->children)) {
-			$mform->addElement('html', '<ul>');
+        if (!empty($descriptor->examples)) {
+            $mform->addElement('html', '</ul>');
+        }
 
-			foreach($descriptor->children as $child)
-				$mform = $this->print_competence_for_list_tree_for_form($child, $mform);
+        if (!empty($descriptor->children)) {
+            $mform->addElement('html', '<ul>');
 
-			$mform->addElement('html', '</ul>');
-		}
-		$mform->addElement('html', '</li>');
+            foreach ($descriptor->children as $child) {
+                $mform = $this->print_competence_for_list_tree_for_form($child, $mform);
+            }
 
-		return $mform;
-	}
+            $mform->addElement('html', '</ul>');
+        }
+        $mform->addElement('html', '</li>');
 
+        return $mform;
+    }
 
     public function display() {
         ob_start();
@@ -212,9 +221,9 @@ class block_exacomp_example_upload_form extends moodleform {
         @$doc->loadHTML(utf8_decode($out), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
         $newInput = $doc->createDocumentFragment();
-        $newInput->appendXML('<br /><span>'.block_exacomp_get_string('example_add_taxonomy').'</span> <input class="form-control" name="newtaxonomy" value="" size="10" />');
+        $newInput->appendXML('<br /><span>' . block_exacomp_get_string('example_add_taxonomy') . '</span> <input class="form-control" name="newtaxonomy" value="" size="10" />');
         foreach ($selector->query('//select[@name=\'taxid[]\']') as $e) {
-            $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
+            $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
             $e->parentNode->appendChild($newInput);
         }
         $output = $doc->saveHTML($doc->documentElement);

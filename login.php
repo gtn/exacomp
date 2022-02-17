@@ -14,28 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use block_exacomp\globals as g;
-
 // we want cookies, so moodle remembers the login
 define('NO_MOODLE_COOKIES', false);
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 require_once $CFG->dirroot . '/webservice/lib.php';
 
 //authenticate the user
 $wstoken = required_param('wstoken', PARAM_ALPHANUM);
 $url = required_param('url', PARAM_LOCALURL);
 if (!$url) {
-	// if not localurl, moodle returns empty string
-	$url = '/';
+    // if not localurl, moodle returns empty string
+    $url = '/';
 }
 
-$webservicelib = new \webservice();
+$webservicelib = new webservice();
 $authenticationinfo = $webservicelib->authenticate_user($wstoken);
 
 // check if it is a exacomp token
 if ($authenticationinfo['service']->name != 'exacompservices') {
-	throw new moodle_exception('not an exacomp webservice token');
+    throw new moodle_exception('not an exacomp webservice token');
 }
 
-redirect(new \moodle_url($url));
+redirect(new moodle_url($url));

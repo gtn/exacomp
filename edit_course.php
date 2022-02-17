@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 
 global $DB, $OUTPUT, $PAGE;
@@ -23,7 +23,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHAEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
+    print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
 block_exacomp_require_login($course);
@@ -47,34 +47,35 @@ $headertext = '';
 
 if ($action == 'save_coursesettings') {
     $settings = block_exacomp_get_settings_by_course($courseid);
-	//$settings = new stdClass;
-	$settings->grading = optional_param('grading', 0, PARAM_INT);
-	/*if ($settings->grading == 0)
-		$settings->grading = 3;*/
+    //$settings = new stdClass;
+    $settings->grading = optional_param('grading', 0, PARAM_INT);
+    /*if ($settings->grading == 0)
+        $settings->grading = 3;*/
 
-	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
-	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
-	$settings->nostudents = optional_param('nostudents', 0, PARAM_INT);
+    $settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
+    $settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
+    $settings->nostudents = optional_param('nostudents', 0, PARAM_INT);
     $settings->isglobal = optional_param('isglobal', 0, PARAM_INT);
     $settings->hideglobalsubjects = optional_param('hideglobalsubjects', 0, PARAM_INT);
     $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies);
 
-	block_exacomp_save_coursesettings($courseid, $settings);
+    block_exacomp_save_coursesettings($courseid, $settings);
 
-	$url = 'courseselection.php';
+    $url = 'courseselection.php';
 
-	$headertext = "";
-	if($settings->uses_activities==1 && block_exacomp_check_user_evaluation_exists($courseid))
-		$headertext .= html_writer::div(block_exacomp_get_string("warning_use_activities"), 'alert alert-warning');
+    $headertext = "";
+    if ($settings->uses_activities == 1 && block_exacomp_check_user_evaluation_exists($courseid)) {
+        $headertext .= html_writer::div(block_exacomp_get_string("warning_use_activities"), 'alert alert-warning');
+    }
 
-	$headertext .= html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
-		. html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
-		. html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), block_exacomp_get_string('next_step'));
+    $headertext .= html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
+        . html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/one.png'), 'alt' => '', 'width' => '60px', 'height' => '60px'))
+        . html_writer::link(new moodle_url($url, array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
 } else {
-	$url = 'courseselection.php';
+    $url = 'courseselection.php';
 
-	$headertext = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('teacher_first_configuration_step')
-		.' '.html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), block_exacomp_get_string('next_step_first_teacher_step'));
+    $headertext = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/one.png'), 'alt' => '', 'width' => '60px', 'height' => '60px')) . block_exacomp_get_string('teacher_first_configuration_step')
+        . ' ' . html_writer::link(new moodle_url($url, array('courseid' => $courseid)), block_exacomp_get_string('next_step_first_teacher_step'));
 }
 
 // build tab navigation & print header
@@ -83,7 +84,6 @@ echo $output->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 /* CONTENT REGION */
 $courseSettings = block_exacomp_get_settings_by_course($courseid);
-
 
 echo $output->edit_course($courseSettings, $courseid, $headertext);
 

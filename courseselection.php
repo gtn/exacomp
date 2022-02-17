@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 global $SESSION;
 
@@ -53,8 +53,8 @@ if ($changeFilter) {
     $SESSION->courseselection_filter = $filter;
 } else {
     // default filters
-    if (file_exists($CFG->dirroot.'blocks/eduvidual/block_eduvidual.php')) {
-        require_once($CFG->dirroot.'blocks/eduvidual/block_eduvidual.php');
+    if (file_exists($CFG->dirroot . 'blocks/eduvidual/block_eduvidual.php')) {
+        require_once($CFG->dirroot . 'blocks/eduvidual/block_eduvidual.php');
         $org = block_eduvidual::get_org_by_courseid($courseid);
         $schulkennzahl = $org->orgid; // Die orgid ist die schulkennzahl
         $userSchoolType = intval(substr($schulkennzahl, -1));
@@ -66,42 +66,44 @@ if ($changeFilter) {
                 $SESSION->courseselection_filter = $filter;
             }
         }
-    };
+    }
 }
 
 if ($action == 'save') {
-	$topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
-	block_exacomp_set_coursetopics($courseid, $topics);
+    $topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
+    block_exacomp_set_coursetopics($courseid, $topics);
 
-	if(empty($topics)) {
-		$headertext = block_exacomp_get_string('tick_some');
-	} else {
-		$course_settings = block_exacomp_get_settings_by_course($courseid);
-		if ($course_settings->uses_activities){
-			if (block_exacomp_is_activated($courseid)) {
-			    if (block_exacomp_use_old_activities_method()) {
-			        $linkTo = html_writer::link(new moodle_url('edit_activities.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
+    if (empty($topics)) {
+        $headertext = block_exacomp_get_string('tick_some');
+    } else {
+        $course_settings = block_exacomp_get_settings_by_course($courseid);
+        if ($course_settings->uses_activities) {
+            if (block_exacomp_is_activated($courseid)) {
+                if (block_exacomp_use_old_activities_method()) {
+                    $linkTo = html_writer::link(new moodle_url('edit_activities.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
                 } else {
                     $linkTo = html_writer::link(new moodle_url('activities_to_descriptors.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
                 }
-                $headertext = block_exacomp_get_string("save_success").html_writer::empty_tag('br')
-                        .html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
-                        .$linkTo;
+                $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br')
+                    . html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
+                    . $linkTo;
             }
-		} else {
-			 $headertext = block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
-				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('completed_config');
+        } else {
+            $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br')
+                . html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px')) . block_exacomp_get_string('completed_config');
 
-	   		 $students = block_exacomp_get_students_by_course($courseid);
-	   		 if(empty($students))
-//				$headertext .= html_writer::empty_tag('br')
-//					.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), block_exacomp_get_string('optional_step'));
+            $students = block_exacomp_get_students_by_course($courseid);
+            if (empty($students))
+                //				$headertext .= html_writer::empty_tag('br')
+                //					.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), block_exacomp_get_string('optional_step'));
+            {
                 $headertext .= html_writer::empty_tag('br')
-                    .html_writer::span(block_exacomp_get_string('enrol_users'));
-		}
-	}
+                    . html_writer::span(block_exacomp_get_string('enrol_users'));
+            }
+        }
+    }
 } else {
-	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('teacher_second_configuration_step');
+    $headertext = html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px')) . block_exacomp_get_string('teacher_second_configuration_step');
 }
 
 // build tab navigation & print header
@@ -119,8 +121,8 @@ $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
 // filtering by "only selected grids'
 if (isset($SESSION->courseselection_filter)
-        && array_key_exists('only_selected', $SESSION->courseselection_filter)
-        && $SESSION->courseselection_filter['only_selected'] == 1) {
+    && array_key_exists('only_selected', $SESSION->courseselection_filter)
+    && $SESSION->courseselection_filter['only_selected'] == 1) {
     $newSchooltypes = array();
     foreach ($schooltypes as $stid => $schooltype) {
         $addSchooltype = false;

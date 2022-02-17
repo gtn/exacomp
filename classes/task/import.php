@@ -16,38 +16,44 @@
 
 namespace block_exacomp\task;
 
+use block_exacomp\data;
+use block_exacomp\data_importer;
+use block_exacomp\moodle_exception;
+use core\task\scheduled_task;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/../../inc.php';
-class import extends \core\task\scheduled_task {
-	public function get_name() {
-//		return block_exacomp_trans(['en:Import Data', 'de:Daten Importieren']);
-		return block_exacomp_get_string('data_imported_title');
-	}
+require_once __DIR__ . '/../../inc.php';
 
-	public function execute() {
-		$xmlserverurl = get_config('exacomp', 'xmlserverurl');
+class import extends scheduled_task {
+    public function get_name() {
+        //		return block_exacomp_trans(['en:Import Data', 'de:Daten Importieren']);
+        return block_exacomp_get_string('data_imported_title');
+    }
 
-		mtrace('Exabis Competence Grid: import task is running.');
+    public function execute() {
+        $xmlserverurl = get_config('exacomp', 'xmlserverurl');
 
-		//import xml with provided server url
-		if (!$xmlserverurl) {
-			mtrace('nothing to import');
-		}
+        mtrace('Exabis Competence Grid: import task is running.');
 
-		try {
-			\block_exacomp\data::prepare();
+        //import xml with provided server url
+        if (!$xmlserverurl) {
+            mtrace('nothing to import');
+        }
 
-			if (\block_exacomp\data_importer::do_import_url($xmlserverurl, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, -1)) {
-				mtrace("import done");
-				block_exacomp_settstamp();
-			} else {
-				mtrace("import failed: unknown error");
-			}
-		} catch (\block_exacomp\moodle_exception $e) {
-			mtrace("import failed: ".$e->getMessage());
-		}
+        try {
+            data::prepare();
 
-		return true;
-	}
+            if (data_importer::do_import_url($xmlserverurl, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, -1)) {
+                mtrace("import done");
+                block_exacomp_settstamp();
+            } else {
+                mtrace("import failed: unknown error");
+            }
+        } catch (moodle_exception $e) {
+            mtrace("import failed: " . $e->getMessage());
+        }
+
+        return true;
+    }
 }

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -37,11 +37,11 @@ $output = block_exacomp_get_renderer();
 echo $output->header_v2('tab_cross_subjects');
 
 if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
-	$course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
-	echo $output->cross_subjects_overview_teacher($course_crosssubs);
+    $course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
+    echo $output->cross_subjects_overview_teacher($course_crosssubs);
 } else {
-	$course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid, $USER->id);
-	echo $output->cross_subjects_overview_student($course_crosssubs);
+    $course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid, $USER->id);
+    echo $output->cross_subjects_overview_student($course_crosssubs);
 }
 
 /* END CONTENT REGION */

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
@@ -37,10 +37,10 @@ $page_identifier = 'tab_competence_gridoverview';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_grid.php', [
-	'courseid' => $courseid,
-	'subjectid' => $subjectid,
-	'studentid' => $studentid,
-//	'report' => $report
+    'courseid' => $courseid,
+    'subjectid' => $subjectid,
+    'studentid' => $studentid,
+    //	'report' => $report
 ]);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
@@ -63,34 +63,33 @@ if ($dropdown_subjects && $subjectid == 0) {
 }
 
 list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid,
-        $subjectid,
-        $studentid,
-        (@block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher),
-        block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
+    $subjectid,
+    $studentid,
+    (@block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher),
+    block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
 
-echo $output->subject_dropdown(block_exacomp_get_schooltypetree_by_topics($dropdown_subjects,true), $subjectid);
+echo $output->subject_dropdown(block_exacomp_get_schooltypetree_by_topics($dropdown_subjects, true), $subjectid);
 
 if ($data) {
-	if ($isTeacher && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
-		echo ' '.block_exacomp_get_string("choosestudent").' ';
-		echo $output->studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
-	}
+    if ($isTeacher && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
+        echo ' ' . block_exacomp_get_string("choosestudent") . ' ';
+        echo $output->studentselector(block_exacomp_get_students_by_course($courseid), $studentid, $output::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+    }
 
-	//if($course_settings->nostudents != 1)
-	//	echo $output->competence_grid_reports_dropdown();
+    //if($course_settings->nostudents != 1)
+    //	echo $output->competence_grid_reports_dropdown();
 
-	echo html_writer::start_div();
+    echo html_writer::start_div();
 
-	if (isset($dropdown_subjects[$subjectid]->infolink)) {
+    if (isset($dropdown_subjects[$subjectid]->infolink)) {
         echo html_writer::tag("p", block_exacomp_get_string('infolink') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink, array('target' => '_blank')));
     }
 
-	echo $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid, $studentid, $subjectid);
+    echo $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid, $studentid, $subjectid);
 
-	echo html_writer::end_div();
-}
-else {
-	echo html_writer::div(block_exacomp_get_string('competencegrid_nodata'));
+    echo html_writer::end_div();
+} else {
+    echo html_writer::div(block_exacomp_get_string('competencegrid_nodata'));
 }
 
 /* END CONTENT REGION */

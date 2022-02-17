@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
-require_once __DIR__.'/competence_submission_form.php';
+use block_exacomp\event\example_submitted;
+
+require __DIR__ . '/inc.php';
+require_once __DIR__ . '/competence_submission_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $compid = required_param('compid', PARAM_INT);
@@ -35,7 +37,7 @@ block_exacomp_require_login($course);
 $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/competence_submission.php', array('courseid' => $courseid,'compid' => $compid));
+$PAGE->set_url('/blocks/exacomp/competence_submission.php', array('courseid' => $courseid, 'compid' => $compid));
 $PAGE->set_heading(block_exacomp_get_string('submission'));
 $PAGE->set_pagelayout('embedded');
 
@@ -53,7 +55,7 @@ require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 
 $isTeacher = block_exacomp_is_teacher();
 $form = new block_exacomp_competence_submission_form($_SERVER['REQUEST_URI'],
-    array(  'compid' => $compid,
+    array('compid' => $compid,
         'isTeacher' => $isTeacher,
         'studentid' => $USER->id,
         'comptype' => $comptype));
@@ -65,37 +67,38 @@ if ($formdata = $form->get_data()) {
     //store item in the right portfolio category
     $course_category = block_exaport_get_user_category($course->fullname, $USER->id);
 
-    if(!$course_category) {
-        $course_category = block_exaport_create_user_category($course->fullname, $USER->id,0, $course->id);
+    if (!$course_category) {
+        $course_category = block_exaport_create_user_category($course->fullname, $USER->id, 0, $course->id);
     }
 
-
-    switch($comptype) {
+    switch ($comptype) {
         case BLOCK_EXACOMP_TYPE_TOPIC:
             $subjecttitle = block_exacomp_get_subjecttitle_by_topic($compid);
 
             //autogenerate a published view for the new item
-            $compTitle = $DB->get_field('block_exacomptopics','title',array("id"=>$compid));
+            $compTitle = $DB->get_field('block_exacomptopics', 'title', array("id" => $compid));
             break;
         case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
             $subjecttitle = block_exacomp_get_subjecttitle_by_descriptor($compid);
 
             //autogenerate a published view for the new item
-            $compTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$compid));
+            $compTitle = $DB->get_field('block_exacompdescriptors', 'title', array("id" => $compid));
             break;
     }
 
     $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
 
-    if(!$subject_category) {
+    if (!$subject_category) {
         $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
     }
 
-    if(!empty($formdata->url))
-        $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == TRUE) ? $formdata->url : "http://" . $formdata->url;
+    if (!empty($formdata->url)) {
+        $formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == true) ? $formdata->url : "http://" . $formdata->url;
+    }
 
-    $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id, 'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
-
+    $itemid = $DB->insert_record("block_exaportitem",
+        array('userid' => $USER->id, 'name' => $formdata->name, 'url' => $formdata->url, 'intro' => $formdata->intro, 'type' => $type, 'timemodified' => time(), 'categoryid' => $subject_category->id, 'teachervalue' => null,
+            'studentvalue' => null, 'courseid' => $courseid));
 
     $dbView = new stdClass();
     $dbView->userid = $USER->id;
@@ -105,7 +108,7 @@ if ($formdata = $form->get_data()) {
     // generate view hash
     do {
         $hash = substr(md5(microtime()), 3, 8);
-    } while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
+    } while ($DB->record_exists("block_exaportview", array("hash" => $hash)));
     $dbView->hash = $hash;
 
     $dbView->id = $DB->insert_record('block_exaportview', $dbView);
@@ -114,7 +117,7 @@ if ($formdata = $form->get_data()) {
     block_exaport_share_view_to_teachers($dbView->id, $courseid);
 
     // add item to view
-    $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id,' positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid' => $itemid));
+    $DB->insert_record('block_exaportviewblock', array('viewid' => $dbView->id, ' positionx' => 1, 'positiony' => 1, 'type' => 'item', 'itemid' => $itemid));
 
     if (isset($formdata->file)) {
         $filename = $form->get_new_filename('file');
@@ -130,14 +133,14 @@ if ($formdata = $form->get_data()) {
 
     block_exacomp_notify_all_teachers_about_submission($courseid, $compid, $timecreated);
 
-    \block_exacomp\event\example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
+    example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
 
     // add "activity" relations to competences: TODO: is this ok?
     $DB->insert_record('block_exacompcompactiv_mm', array('compid' => $compid, 'comptype' => $comptype, 'eportfolioitem' => 1, 'activityid' => $itemid));
 
     echo $output->popup_close();
     exit;
-} else if($form->is_cancelled()) {
+} else if ($form->is_cancelled()) {
     echo $output->popup_close();
     exit;
 }

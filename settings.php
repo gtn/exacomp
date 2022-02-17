@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use block_exacomp\url;
+
 defined('MOODLE_INTERNAL') || die;
 
-require_once __DIR__.'/lib/exabis_special_id_generator.php';
-require_once __DIR__.'/inc.php';
+require_once __DIR__ . '/lib/exabis_special_id_generator.php';
+require_once __DIR__ . '/inc.php';
 
 if (!class_exists('block_exacomp_admin_setting_source')) {
     // check needed, because moodle includes this file twice
@@ -105,18 +107,18 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 // Add needed element attributes for work with preconfiguration.
                 $doc = new DOMDocument();
                 $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
-//                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                //                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                 $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                 $selector = new DOMXPath($doc);
                 foreach ($selector->query('//input') as $e) {
-                    $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
+                    $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
                     if ($ispreconfig > 0) {
                         $e->setAttribute('readOnly', 'readonly');
                     }
                 }
                 // add onChange listener: for 'assessment_grade_verbose_negative'
                 foreach ($selector->query('//input[@id=\'id_s_exacomp_assessment_verbose_options\'][1]') as $e) {
-                    $e->setAttribute('onChange', $e->getAttribute('onChange').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
+                    $e->setAttribute('onChange', $e->getAttribute('onChange') . '; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
                     //$script = $doc->createElement('script', 'reloadVerboseNegativeSelectbox();');
                     //$e->parentNode->appendChild($script);
                 }
@@ -130,14 +132,14 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     case 'assessment_verbose_options':
                         $doc = new DOMDocument();
                         $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
-//                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                        //                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                         $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                         $selector = new DOMXPath($doc);
-                        $de_value = call_user_func('block_exacomp_get_'.$this->name, 'de');
+                        $de_value = call_user_func('block_exacomp_get_' . $this->name, 'de');
                         if ($de_value) {
-                            $message = block_exacomp_get_string('settings_default_de_value').$de_value;
+                            $message = block_exacomp_get_string('settings_default_de_value') . $de_value;
                             $br = $doc->createElement('br');
-                            foreach ($selector->query('//*[@name="s_exacomp_'.$this->name.'"]') as $e) {
+                            foreach ($selector->query('//*[@name="s_exacomp_' . $this->name . '"]') as $e) {
                                 $span = $doc->createElement('span', $message);
                                 $span->setAttribute('class', 'text-info small');
                                 $e->parentNode->insertBefore($br, $e->nextSibling);
@@ -161,11 +163,11 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 // Add needed element attributes for work with preconfiguration.
                 $doc = new DOMDocument();
                 $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
-//                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                //                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                 $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                 $selector = new DOMXPath($doc);
                 foreach ($selector->query('//input') as $e) {
-                    $e->setAttribute("class", $e->getAttribute('class').' exacomp_forpreconfig');
+                    $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
                     if ($ispreconfig > 0) {
                         $e->setAttribute('readOnly', 'readonly');
                     }
@@ -222,37 +224,12 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             //    $e->setAttribute('onFocus', $e->getAttribute('onFocus').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
             //}
             //$output = $doc->saveHTML($doc->documentElement);
-            $output .= '<script>
-                function reloadVerboseNegativeSelectbox() {
-                    var new_list = document.getElementById(\'id_s_exacomp_assessment_verbose_options\').value;
-                    var new_options = new_list.split(\',\');
-                    var selectbox = document.getElementById(\'id_s_exacomp_assessment_verbose_negative\');
-                    var selected_value = selectbox.value;
-                    var j;
-                    for(j = selectbox.options.length - 1 ; j >= 0 ; j--) {
-                        selectbox.remove(j);
-                    }
-                    new_options.forEach(function(elem, i) {
-                        var doc = selectbox.ownerDocument;
-                        var option = doc.createElement("option");
-                        option.text = elem.trim();
-                        option.value = i;
-                        doc = null;
-                        if (selectbox.add.length === 2){
-                            selectbox.add(option, null); // standards compliant
-                        } else{
-                            selectbox.add(option); // IE only
-                        }
-                    });
-                    selectbox.value = selected_value;
-
-                    // if preconfig is selected ==> the id_s_exacomp_assessment_preconfiguration.value is not 0, but any other number ==> disable this field
-                    if(document.getElementById(\'id_s_exacomp_assessment_preconfiguration\').value != 0){
+            $output .= ').value != 0){
                         selectbox.setAttribute("disabled","true");
                     }else{
                         selectbox.removeAttribute("disabled");
                     }
-                };
+                }
             reloadVerboseNegativeSelectbox();
             </script>';
             return $output;
@@ -298,7 +275,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             // Hide some html for better view of this settings.
             $doc = new DOMDocument();
             $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
-//            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             // Clean div with classes.
@@ -307,7 +284,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $labeldivs = array('form-label');
             if (!$this->keptLabel) {
                 foreach ($labeldivs as $deletediv) {
-                    foreach ($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e) {
+                    foreach ($selector->query('//div[contains(attribute::class, "' . $deletediv . '")]') as $e) {
                         $e->textContent = '';
                     }
                 }
@@ -318,7 +295,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             // another divs
             $infodivs = array('form-defaultinfo');
             foreach ($infodivs as $deletediv) {
-                foreach ($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e) {
+                foreach ($selector->query('//div[contains(attribute::class, "' . $deletediv . '")]') as $e) {
                     $e->textContent = '';
                 }
             }
@@ -419,12 +396,12 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             // Add onChange on input element.
             $doc = new DOMDocument();
             $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
-//            $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            //            $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             foreach ($selector->query('//select') as $e) {
                 $e->setAttribute("onChange", "setupPreconfiguration(this);");
-                $e->setAttribute('onChange', $e->getAttribute('onChange').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
+                $e->setAttribute('onChange', $e->getAttribute('onChange') . '; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
             }
             $output = $doc->saveHTML($doc->documentElement);
             // Add JS code, generated from settings_preconfiguration.xml.
@@ -445,12 +422,12 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                             $config[$param] = '';
                         }
                     }
-                    $output .= 'preconfigurations['.$key.'] = \''.json_encode($config).'\';'."\r\n";
+                    $output .= 'preconfigurations[' . $key . '] = \'' . json_encode($config) . '\';' . "\r\n";
                 }
                 $output .= 'function setupPreconfiguration(select) {
                     var selectedValue = select.value;
                     // Confirm:
-                    if (selectedValue > 0 && !confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {
+                    if (selectedValue > 0 && !confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') . '\')) {
                         return false;
                     }
                     // Enable all elements before any doings
@@ -586,7 +563,6 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
         }
     }
 
-
     class admin_setting_configcheckbox_grading extends admin_setting_configcheckbox {
         public function write_setting($data) {
             $ret = parent::write_setting($data);
@@ -633,10 +609,10 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     foreach ($this->params as $param) {
                         switch ($target) {
                             case 'example':
-                                $value = block_exacomp_get_string('selfEvalVerboseExample.defaultValue_'.$param);
+                                $value = block_exacomp_get_string('selfEvalVerboseExample.defaultValue_' . $param);
                                 break;
                             default:
-                                $value = block_exacomp_get_string('selfEvalVerbose.defaultValue_'.$param);
+                                $value = block_exacomp_get_string('selfEvalVerbose.defaultValue_' . $param);
                                 break;
                         }
                         $verbosesdefault[$target][$param] = $value;
@@ -652,7 +628,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $result = array();
             foreach ($this->targets as $target) {
                 foreach ($this->params as $param) {
-                    $targetparam = 'assessment_selfEvalVerbose_'.$target.'_'.$param;
+                    $targetparam = 'assessment_selfEvalVerbose_' . $target . '_' . $param;
                     $value = $this->config_read($targetparam);
 
                     $newvalue = null;
@@ -671,7 +647,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         $result[$target][$param] = $newvalue;
                     } else {
                         $result[$target][$param] = $this->defaultsetting[$target][$param];
-                    };
+                    }
                 }
             }
             return $result;
@@ -688,7 +664,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                     if ($validated !== true) {
                         return $validated;
                     }
-                    $paramname = 'assessment_selfEvalVerbose_'.$target.'_'.$param;
+                    $paramname = 'assessment_selfEvalVerbose_' . $target . '_' . $param;
                     $olddata = get_config('exacomp', $paramname);
                     $copyofold = trim($olddata);
                     $olddata = json_decode($olddata, true);
@@ -760,13 +736,13 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             // if we have an error - disply the table
             if (!(count($inputerrors) > 0)) {
                 @$table->attributes['style'] .= ' display: none; ';
-                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" />';
-                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" style="display:none;"/>';
+                $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" />';
+                $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" style="display:none;"/>';
             } else {
-                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" style="display:none;"/>';
-                $return .= '<img src="'.$CFG->wwwroot.'/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" />';
+                $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" style="display:none;"/>';
+                $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" />';
             }
-            $return .= block_exacomp_get_string('settings_assessment_SelfEval_verboses_edit').'</a>';
+            $return .= block_exacomp_get_string('settings_assessment_SelfEval_verboses_edit') . '</a>';
             $table->attributes['class'] .= 'exacomp-selfEval-settings table table-condensed table-sm';
             $table->id = 'editSelfEvalVerbosesTable';
             $table->head = array();
@@ -777,10 +753,10 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             // Targets:
             foreach ($this->targets as $key => $target) {
                 $row = new html_table_row();
-                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_assessment_target_'.$target));
+                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_assessment_target_' . $target));
                 foreach ($this->params as $key => $paramname) {
-                    $id = $this->get_id().'_'.$target.'_'.$paramname.'_'.$key;
-                    $name = $this->get_full_name().'['.$target.']['.$paramname.']';
+                    $id = $this->get_id() . '_' . $target . '_' . $paramname . '_' . $key;
+                    $name = $this->get_full_name() . '[' . $target . '][' . $paramname . ']';
                     $haserror = '';
                     if (array_key_exists($target, $inputerrors)
                         && array_key_exists($paramname, $inputerrors[$target])
@@ -794,13 +770,13 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                             'name' => $name,
                             'value' => $data[$target][$paramname],
                             'size' => ($paramname == 'long' ? 45 : 12),
-                            'class' => 'form-control exacomp_forpreconfig'.$haserror,
+                            'class' => 'form-control exacomp_forpreconfig' . $haserror,
                         ));
 
                     // add mesage about default (DE) value if the user uses not DE interface language
                     if ($this->lang != 'de' && block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de')) { // only for NON DE
-                        $message = block_exacomp_get_string('settings_default_de_value').block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de');
-                        $input .= '<span class="text-info small">'.$message.'</span>';
+                        $message = block_exacomp_get_string('settings_default_de_value') . block_exacomp_get_assessment_selfEval_verboses($target, $paramname, 'de');
+                        $input .= '<span class="text-info small">' . $message . '</span>';
                     }
 
                     $cell = new html_table_cell($input);
@@ -838,13 +814,13 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             // Hide some html for better view of this settings.
             $doc = new DOMDocument();
             $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
-//            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             // Delete div with classes.
             $deletedivs = array('form-defaultinfo', 'form-description');
             foreach ($deletedivs as $deletediv) {
-                foreach ($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e) {
+                foreach ($selector->query('//div[contains(attribute::class, "' . $deletediv . '")]') as $e) {
                     $e->parentNode->removeChild($e);
                 }
             }
@@ -854,9 +830,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             return $template;
         }
 
-
     }
-
 
     // Table with Evaluation settings
     class block_exacomp_assessment_configtable extends admin_setting {
@@ -897,13 +871,13 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $result = array();
             foreach ($this->targets as $target) {
                 foreach ($this->params as $param) {
-                    $targetparam = 'assessment_'.$target.'_'.$param;
+                    $targetparam = 'assessment_' . $target . '_' . $param;
                     $value = $this->config_read($targetparam);
                     if ($value !== null) {
                         $result[$target][$param] = $value;
                     } else {
                         $result[$target][$param] = $this->defaultsetting[$target][$param];
-                    };
+                    }
                 }
             }
             $this->ispreconfig = $this->config_read('assessment_preconfiguration');
@@ -917,7 +891,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             $result = '';
             foreach ($data as $target => $parameters) {
                 foreach ($parameters as $param => $value) {
-                    if (!$this->config_write('assessment_'.$target.'_'.$param, trim($value))) {
+                    if (!$this->config_write('assessment_' . $target . '_' . $param, trim($value))) {
                         $result = get_string('errorsetting', 'admin');
                     }
                 }
@@ -938,27 +912,27 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 if ($key == 0) {
                     // Schemescount with ZERO.
                     for ($i = 0; $i <= $this->schemescount; $i++) {
-                        $table->head[] = block_exacomp_get_string('settings_assessment_'.$param.'_'.$i);
+                        $table->head[] = block_exacomp_get_string('settings_assessment_' . $param . '_' . $i);
                     }
                 } else {
-                    $table->head[] = block_exacomp_get_string('settings_assessment_'.$param);
+                    $table->head[] = block_exacomp_get_string('settings_assessment_' . $param);
                 }
             }
             // Targets:
             foreach ($this->targets as $key => $target) {
                 $row = new html_table_row();
-                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_assessment_target_'.$target));
+                $row->cells[] = new html_table_cell(block_exacomp_get_string('settings_assessment_target_' . $target));
                 // Schemes.
                 for ($i = 0; $i <= $this->schemescount; $i++) {
-                    $id = $this->get_id().'_'.$target.'_scheme_'.$i;
-                    $name = $this->get_full_name().'['.$target.'][scheme]';
+                    $id = $this->get_id() . '_' . $target . '_scheme_' . $i;
+                    $name = $this->get_full_name() . '[' . $target . '][scheme]';
                     $schemeradioattributes = array(
                         'type' => 'radio',
                         'id' => $id,
                         'name' => $name,
                         'value' => $i,
                         'class' => 'exacomp_forpreconfig',
-                        'onClick' => ' if (!confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {return false};',
+                        'onClick' => ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') . '\')) {return false};',
                     );
                     if ($data[$target]['scheme'] == $i) {
                         $schemeradioattributes['checked'] = 'checked';
@@ -974,8 +948,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 $otherparams = array_slice($this->params, 1);
 
                 foreach ($otherparams as $key => $paramname) {
-                    $id = $this->get_id().'_'.$target.'_'.$paramname.'_'.$key;
-                    $name = $this->get_full_name().'['.$target.']['.$paramname.']';
+                    $id = $this->get_id() . '_' . $target . '_' . $paramname . '_' . $key;
+                    $name = $this->get_full_name() . '[' . $target . '][' . $paramname . ']';
                     // We need "0" for non-checked checkboxes before checkbox element.
                     $hiddeninput = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $name, 'value' => '0'));
                     $checkboxattributes = array(
@@ -987,15 +961,15 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                         $checkboxattributes['onClick'] = 'return false;';
                         $checkboxattributes['onKeydown'] = 'return false;';
                     } else {
-                        $checkboxattributes['onClick'] = ' if (!confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {return false};';
-                        $checkboxattributes['onKeydown'] = ' if (!confirm(\''.block_exacomp_get_string('settings_assessment_are_you_sure_to_change').'\')) {return false};';
+                        $checkboxattributes['onClick'] = ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') . '\')) {return false};';
+                        $checkboxattributes['onKeydown'] = ' if (!confirm(\'' . block_exacomp_get_string('settings_assessment_are_you_sure_to_change') . '\')) {return false};';
                     }
                     $checkbox = html_writer::checkbox($name,
                         '1',
                         $data[$target][$paramname],
                         '',
                         $checkboxattributes);
-                    $cell = new html_table_cell($hiddeninput.$checkbox);
+                    $cell = new html_table_cell($hiddeninput . $checkbox);
                     $cell->attributes['align'] = 'center';
                     $row->cells[] = $cell;
                 }
@@ -1008,13 +982,13 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
             // Hide some html for better view of this settings.
             $doc = new DOMDocument();
             $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
-//            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
             // Delete div with classes.
             $deletedivs = array('form-label', 'form-defaultinfo');
             foreach ($deletedivs as $deletediv) {
-                foreach ($selector->query('//div[contains(attribute::class, "'.$deletediv.'")]') as $e) {
+                foreach ($selector->query('//div[contains(attribute::class, "' . $deletediv . '")]') as $e) {
                     $e->parentNode->removeChild($e);
                 }
             }
@@ -1040,7 +1014,7 @@ $settings->add(new block_exacomp_link_to('exacomp/dakora_teacher',
     block_exacomp_get_string('assign_dakora_teacher'),
     '',
     '',
-    \block_exacomp\url::create('/cohort/assign.php'),
+    url::create('/cohort/assign.php'),
     block_exacomp_get_string('assign_dakora_teacher_link'),
     ['id' => block_exacomp_get_dakora_teacher_cohort()->id],
     ['target' => '_blank'],

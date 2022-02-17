@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+use block_exacomp\data;
+
+require __DIR__ . '/inc.php';
 require_once('lib/lib.php');
 
 $courseid = required_param('courseid', PARAM_INT);
@@ -25,27 +27,28 @@ $lang = optional_param('lang', 'en', PARAM_TEXT);
 global $DB;
 
 $data = file_get_contents($xmlname);
-\block_exacomp\data::prepare();
+data::prepare();
 $success = block_exacomp\data_importer::do_import_string($data);
-foreach($schooltypes as &$schooltype)
-	$schooltype = $DB->get_field('block_exacompschooltypes','id',array('sourceid'=>$schooltype));
-
-if($lang == "en") {
-	$schooltypes[] = 1; //Social Competencies and Personal Competencies
-	$schooltypes[] = 2;
-}
-else {
-	$schooltypes[] = 3; //Soziale Kompetenzen, Personale Kompetenzen
-	$schooltypes[] = 4;
+foreach ($schooltypes as &$schooltype) {
+    $schooltype = $DB->get_field('block_exacompschooltypes', 'id', array('sourceid' => $schooltype));
 }
 
-block_exacomp_set_mdltype($schooltypes,$courseid);
+if ($lang == "en") {
+    $schooltypes[] = 1; //Social Competencies and Personal Competencies
+    $schooltypes[] = 2;
+} else {
+    $schooltypes[] = 3; //Soziale Kompetenzen, Personale Kompetenzen
+    $schooltypes[] = 4;
+}
+
+block_exacomp_set_mdltype($schooltypes, $courseid);
 
 $subjects = block_exacomp_get_subjects_for_schooltype($courseid);
 $coursetopics = array();
-foreach($subjects as $subject) {
-	$topics = block_exacomp_get_all_topics($subject->id);
-	foreach($topics as $topic)
-		$coursetopics[] = $topic->id;
+foreach ($subjects as $subject) {
+    $topics = block_exacomp_get_all_topics($subject->id);
+    foreach ($topics as $topic) {
+        $coursetopics[] = $topic->id;
+    }
 }
 block_exacomp_set_coursetopics($courseid, $coursetopics, true);

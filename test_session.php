@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__."/../../config.php";
+use core\session\manager;
+
+require_once __DIR__ . "/../../config.php";
 
 class dakoraVariableWs {
 
@@ -18,10 +20,10 @@ class dakoraVariableWs {
             $currentSession = '---'; // no moodle session. Will use empty session
         }
 
-        if (\core\session\manager::session_exists($currentSession)) {
+        if (manager::session_exists($currentSession)) {
             $currentSession = $currentSession;
         } else {
-            \core\session\manager::init_empty_session();
+            manager::init_empty_session();
             $currentSession = session_id();
         }
         $this->sessionId = $currentSession;
@@ -44,7 +46,6 @@ class dakoraVariableWs {
         if (!isset($_SESSION['SESSION']->{self::$sessionPartName})) {
             $_SESSION['SESSION']->{self::$sessionPartName} = array();
         }
-
 
     }
 

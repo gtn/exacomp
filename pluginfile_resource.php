@@ -25,13 +25,12 @@ if (!defined('NO_DEBUG_DISPLAY')) {
     define('NO_DEBUG_DISPLAY', true);
 }
 
-require_once(__DIR__.'/inc.php');
+require_once(__DIR__ . '/inc.php');
 
 global $DB, $CFG, $USER;
 
-require_once($CFG->dirroot.'/config.php');
-require_once($CFG->dirroot.'/lib/filelib.php');
-
+require_once($CFG->dirroot . '/config.php');
+require_once($CFG->dirroot . '/lib/filelib.php');
 
 if (empty($relativepath)) {
     $relativepath = get_file_argument();
@@ -60,9 +59,9 @@ if (count($args) < 3) { // always at least context, component and filearea
     print_error('invalidarguments');
 }
 
-$contextid = (int)array_shift($args);
+$contextid = (int) array_shift($args);
 $component = clean_param(array_shift($args), PARAM_COMPONENT);
-$filearea  = clean_param(array_shift($args), PARAM_AREA);
+$filearea = clean_param(array_shift($args), PARAM_AREA);
 
 list($context, $course, $cm) = get_context_info_array($contextid);
 
@@ -103,8 +102,8 @@ if ($filearea === 'intro') {
 
     // all users may access it
     $filename = array_pop($args);
-    $filepath = $args ? '/'.implode('/', $args).'/' : '/';
-    if (!$file = $fs->get_file($context->id, 'mod_'.$modname, 'intro', 0, $filepath, $filename) or $file->is_directory()) {
+    $filepath = $args ? '/' . implode('/', $args) . '/' : '/';
+    if (!$file = $fs->get_file($context->id, 'mod_' . $modname, 'intro', 0, $filepath, $filename) or $file->is_directory()) {
         send_file_not_found();
     }
 
@@ -113,17 +112,17 @@ if ($filearea === 'intro') {
 }
 
 //$filefunction = $component.'_pluginfile';
-$filefunctionold = $modname.'_pluginfile'; // resource_pluginfile
+$filefunctionold = $modname . '_pluginfile'; // resource_pluginfile
 //if (function_exists($filefunction)) {
 //    // if the function exists, it must send the file and terminate. Whatever it returns leads to "not found"
 //    $filefunction($course, $cm, $context, $filearea, $args, $forcedownload, $sendfileoptions);
 //} else if (function_exists($filefunctionold)) {
-    // if the function exists, it must send the file and terminate. Whatever it returns leads to "not found"
+// if the function exists, it must send the file and terminate. Whatever it returns leads to "not found"
 $filefunctionold($course, $cm, $context, $filearea, $args, $forcedownload, $sendfileoptions);
 //}
 
 // based on resource_pluginfile from moodle/mod/resource/lib but without activity visible check
-function resource_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function resource_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -161,11 +160,11 @@ function resource_pluginfile($course, $cm, $context, $filearea, $args, $forcedow
                     break;
                 }
             }
-            $resource = $DB->get_record('resource', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
+            $resource = $DB->get_record('resource', array('id' => $cm->instance), 'id, legacyfiles', MUST_EXIST);
             if ($resource->legacyfiles != RESOURCELIB_LEGACYFILES_ACTIVE) {
                 return false;
             }
-            if (!$file = resourcelib_try_file_migration('/'.$relativepath, $cm->id, $cm->course, 'mod_resource', 'content', 0)) {
+            if (!$file = resourcelib_try_file_migration('/' . $relativepath, $cm->id, $cm->course, 'mod_resource', 'content', 0)) {
                 return false;
             }
             // file migrate - update flag
@@ -177,7 +176,7 @@ function resource_pluginfile($course, $cm, $context, $filearea, $args, $forcedow
     // should we apply filters?
     $mimetype = $file->get_mimetype();
     if ($mimetype === 'text/html' or $mimetype === 'text/plain' or $mimetype === 'application/xhtml+xml') {
-        $filter = $DB->get_field('resource', 'filterfiles', array('id'=>$cm->instance));
+        $filter = $DB->get_field('resource', 'filterfiles', array('id' => $cm->instance));
         $CFG->embeddedsoforcelinktarget = true;
     } else {
         $filter = 0;

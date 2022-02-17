@@ -62,7 +62,7 @@
 
 #block_exacomp .exabis_competencies_lis div.exabis_comp_top_indentation {
 	margin-left: 20px;
-} 
+}
 
 #block_exacomp .exabis_competencies_lis div.exabis_comp_top_indentation_nr {
 	width: 20px;
@@ -166,12 +166,13 @@
 
 /* the table buttons */
 #block_exacomp .generaltable td.c1.lastcol {
-	white-space: nowrap;
-	text-align: right;
-	width: 1px;
+    white-space: nowrap;
+    text-align: right;
+    width: 1px;
 }
+
 #block_exacomp .generaltable td.c1.lastcol a {
-	margin: 4px;
+    margin: 4px;
 }
 
 /*

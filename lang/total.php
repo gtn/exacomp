@@ -90,7 +90,6 @@ return [
         'Difficulty levels',
     ],
 
-
     // === Teacher Tabs ===
     'tab_teacher_settings' => [
         'Kurs-Einstellungen',
@@ -202,7 +201,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'All gained competencies',
     ],
 
-
     // === Generic Tabs (used by Teacher and Students) ===
     'tab_competence_gridoverview' => [
         'Übersicht',
@@ -313,12 +311,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Enrol users to be able to use exacomp.',
     ],
 
-
     'next_step_first_teacher_step' => [
         'Klicken Sie hier um zum nächsten Schritt zu gelangen.',
         'Click here to continue configuration.',
     ],
-
 
     // === Block Settings ===
     'settings_xmlserverurl' => [
@@ -746,7 +742,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'When all child examples have been graded, the parent material should be assessed automatically.',
     ],
 
-
     // === Unit Tests ===
     'unittest_string' => [
         'result_unittest_string',
@@ -768,7 +763,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'result_unittest_param2 {$a->val} result_unittest_param2',
         'result_unittest_param2 {$a->val} result_unittest_param2',
     ],
-
 
     // === Learning agenda ===
     'LA_MON' => [
@@ -856,7 +850,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'start date',
     ],
 
-
     // === Help ===
     'help_content' => [
         '<h1>Video zur Einführung</h1>
@@ -866,7 +859,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ',
     ],
-
 
     // === Import ===
     'importinfo' => [
@@ -982,7 +974,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Download activities',
     ],
 
-
     // === Configuration ===
     'explainconfig' => [
         'Um das Modul Exabis Kompetenzraster verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.',
@@ -996,7 +987,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Änderungen erfolgreich übernommen',
         'changes were successful',
     ],
-
 
     // === Course-Configuration ===
     'grading_scheme' => [
@@ -1116,7 +1106,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'If you are deselecting topics which are associated with examples used in the weekly schedule, these examples will be removed.',
     ],
 
-
     // === Badges ===
     'mybadges' => [
         'Meine Auszeichnungen',
@@ -1154,7 +1143,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Kompetenzen zuordnen',
         'configure competences',
     ],
-
 
     // === Examples ===
     'example' => [
@@ -1223,7 +1211,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Gesamtmaterial',
         'Complete Example',
     ],
-
 
     // === Example Upload ===
     'example_upload_header' => [
@@ -1306,7 +1293,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Die Aufgabe wurde zur erneuten Abgabe freigegeben.',
         'The example is now allowed to be resubmited.',
     ],
-
 
     // === Assign competencies ===
     'header_edit_mode' => [
@@ -1671,7 +1657,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 				are displayed in blue icons.',
     ],
 
-
     // === Activities ===
     'explaineditactivities_subjects' => [
         'Hier können Sie den erstellten Aufgaben Kompetenzen zuordnen.',
@@ -1713,7 +1698,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Bitte treffen Sie eine Auswahl!',
         'Please make a selection!',
     ],
-
 
     // === Competence Grid ===
     'infolink' => [
@@ -1896,7 +1880,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Entirely achieved',
     ],
 
-
     // === External trainer & eLove ===
     'block_exacomp_external_trainer_assign_head' => [
         'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen ermöglichen',
@@ -1962,7 +1945,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Alle Kursteilnehmer/innen',
         'All Students',
     ],
-
 
     // === Crosssubjects ===
     'add_drafts_to_course' => [
@@ -2126,7 +2108,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'new Topic',
     ],
 
-
     // === Associations ===
     'competence_associations' => [
         'Verknüpfungen',
@@ -2136,7 +2117,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknüpft:',
         'The material {$a} is associated wih the following standards:',
     ],
-
 
     // === Weeky schedule ===
     'weekly_schedule' => [
@@ -2454,7 +2434,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Distribute weekly schedule',
     ],
 
-
     // === Logging ===
     'block_exacomp_logging_head' => [
         'Logging aktivieren',
@@ -2518,7 +2497,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Lehrer/in kommentiert ein Beispiel',
         'Teacher comments an example',
     ],
-
 
     'description_example' => [
         'Beschreibung / Schulbuchverweis',
@@ -2852,7 +2830,6 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Überfachliche Kompetenzen',
         'Transferable skills',
     ],
-
 
     //Dakora strings
     'dakora_string1' => [

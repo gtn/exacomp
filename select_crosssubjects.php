@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/inc.php';
+require __DIR__ . '/inc.php';
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
@@ -23,7 +23,7 @@ $descrid = optional_param('descrid', 0, PARAM_INT);
 
 // error if example does not exist or was created by somebody else
 if ($descrid > 0 && (!$descriptor = $DB->get_record('block_exacompdescriptors', array('id' => $descrid)))) {
-	print_error('invalidexample', 'block_exacomp', $exampleid);
+    print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
 block_exacomp_require_login($courseid);
@@ -42,39 +42,39 @@ echo $output->header($context, $courseid, '', false);
 
 $subjects = block_exacomp_get_cross_subjects_grouped_by_subjects();
 
-$assigned_crosssubjects = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCROSS,array('descrid'=>$descrid),'','crosssubjid,descrid');
+$assigned_crosssubjects = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCROSS, array('descrid' => $descrid), '', 'crosssubjid,descrid');
 
 $content = "";
 $crosssubjects_exist = false;
-$content .= html_writer::start_tag('ul', array("class"=>"exa-tree exa-tree-open-all"));
+$content .= html_writer::start_tag('ul', array("class" => "exa-tree exa-tree-open-all"));
 
-foreach($subjects as $subject){
-	$content .= html_writer::start_tag('li');
-	$content .= $subject->title;
+foreach ($subjects as $subject) {
+    $content .= html_writer::start_tag('li');
+    $content .= $subject->title;
 
-	$content .= html_writer::start_tag('ul');
+    $content .= html_writer::start_tag('ul');
 
-	foreach($subject->crosssubjects as $crosssubject){
+    foreach ($subject->crosssubjects as $crosssubject) {
 
-		$course = $DB->get_record('course', array('id'=>$crosssubject->courseid));
+        $course = $DB->get_record('course', array('id' => $crosssubject->courseid));
 
-		$crosssubjects_exist = true;
-		$content .= html_writer::start_tag('li');
-		$content .= html_writer::checkbox('crosssubject', $crosssubject->id, isset($assigned_crosssubjects[$crosssubject->id]),
-			$crosssubject->title." (".@$course->fullname.') ');
-		$content .= html_writer::end_tag('li');
-	}
-	$content .= html_writer::end_tag('ul');
-	$content .= html_writer::end_tag('li');
+        $crosssubjects_exist = true;
+        $content .= html_writer::start_tag('li');
+        $content .= html_writer::checkbox('crosssubject', $crosssubject->id, isset($assigned_crosssubjects[$crosssubject->id]),
+            $crosssubject->title . " (" . @$course->fullname . ') ');
+        $content .= html_writer::end_tag('li');
+    }
+    $content .= html_writer::end_tag('ul');
+    $content .= html_writer::end_tag('li');
 }
 $content .= html_writer::end_tag('ul');
 
-if(!$crosssubjects_exist) {
-	echo block_exacomp_get_string('assign_descriptor_no_crosssubjects_available');
-	echo $OUTPUT->footer();
-	exit;
+if (!$crosssubjects_exist) {
+    echo block_exacomp_get_string('assign_descriptor_no_crosssubjects_available');
+    echo $OUTPUT->footer();
+    exit;
 }
-echo block_exacomp_get_string('assign_descriptor_to_crosssubject', null,$descriptor->title);
+echo block_exacomp_get_string('assign_descriptor_to_crosssubject', null, $descriptor->title);
 echo html_writer::empty_tag('br');
 
 echo "<div>";
@@ -83,10 +83,10 @@ echo $content;
 echo "</div>";
 
 echo html_writer::div(html_writer::tag("input", '', array("type" => "button",
-                                                        "value" => block_exacomp_get_string('add_descriptors_to_crosssub'),
-                                                        "id" => "crosssubjects",
-                                                        'class' => 'btn btn-default'
-                                                        )
-                    ), '', array('id'=>'exabis_save_button'));
+        "value" => block_exacomp_get_string('add_descriptors_to_crosssub'),
+        "id" => "crosssubjects",
+        'class' => 'btn btn-default',
+    )
+), '', array('id' => 'exabis_save_button'));
 
 echo $output->footer();

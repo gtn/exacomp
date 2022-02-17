@@ -1,31 +1,24 @@
 <?php
 
-
 namespace core_question\bank;
 defined('MOODLE_INTERNAL') || die();
 require_once('../exaport/lib/lib.php');
 
-
-class descriptor_link_column extends column_base
-{
-    public function get_name()
-    {
+class descriptor_link_column extends column_base {
+    public function get_name() {
         return 'descriptorlink';
     }
 
-    protected function get_title()
-    {
+    protected function get_title() {
         return '';
     }
 
-    protected function display_content($question, $rowclasses)
-    {
-    global $USER, $DB;
-    echo'<a href="#" class=" btn btn-primary btn-sm competences'.$question->id.'" role="button"> '.block_exacomp_get_string("questlink").' </a>';
+    protected function display_content($question, $rowclasses) {
+        global $USER, $DB;
+        echo '<a href="#" class=" btn btn-primary btn-sm competences' . $question->id . '" role="button"> ' . block_exacomp_get_string("questlink") . ' </a>';
 
         $conditions = array("id" => 1, "userid" => $USER->id);
         $existing = $DB->get_record('block_exaportitem', $conditions)
-
 
         ?>
         <div style="display: none">
@@ -98,8 +91,7 @@ class descriptor_link_column extends column_base
 
     }
 
-    public function get_required_fields()
-    {
+    public function get_required_fields() {
         return array('q.id');
     }
 }

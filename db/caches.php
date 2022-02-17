@@ -15,8 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $definitions = array(
-		'visibility_cache' => array(
-				'mode' => cache_store::MODE_APPLICATION
-		)
+    'visibility_cache' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+    ),
 );
 ?>
