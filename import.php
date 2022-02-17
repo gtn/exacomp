@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__.'/inc.php';
 
@@ -79,7 +76,7 @@ class generalxml_upload_form extends \moodleform {
 		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
 		$this->_form->_attributes['class'] = "mform exacomp_import";
 		$check = \block_exacomp\data::has_data();
-		
+
         if ($importtype == 'custom') {
 			$mform->addElement('header', 'comment', block_exacomp_get_string("doimport_own"));
 		} elseif ($importtype == 'scheduler') {
@@ -224,7 +221,7 @@ class generalxml_upload_form extends \moodleform {
                     $mform->addElement('html', '</div');
                     break;
             }
-            
+
             // hide general fields if it is a step of importing
             if (@$data['result']) {
                 // file
@@ -256,8 +253,8 @@ class generalxml_upload_form extends \moodleform {
                 $mform->setType('password', PARAM_TEXT);
                 $mform->setDefault('password', $currPasswordValue);
             }
-        }        
-        
+        }
+
         if ($forSchedulerTask) {
             $this->add_action_buttons(false, block_exacomp_get_string('save')); // settings of scheduler importing
         } else {
@@ -322,14 +319,14 @@ try {
         $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $import_data->password);
 	} elseif ($isAdmin && ($importtype == 'demo')) {
 		//do demo import
-		
+
 		// TODO: catch exception
 		$file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
 		if ($importSuccess = block_exacomp\data_importer::do_import_url($file, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
 			block_exacomp_settstamp();
 		}
 	}
-	
+
 	if ($importSuccess) {
 		\block_exacomp\event\import_completed::log(['objectid' => $courseid, 'courseid' => $courseid]);
 	}
@@ -357,7 +354,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($course
 
 /* Admins are allowed to import data, or a special capability for custom imports */
 if ($isAdmin || block_exacomp_check_customupload()) {
-	
+
 	if ($importtype) {
 	    switch ($importtype) {
             case 'normal':
@@ -606,7 +603,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
 			if (!$isAdmin) {
 				print_error('pls contact your admin');
 			}
-			
+
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
                                                 array('courseid'=>$courseid,
                                                         'importtype'=>'normal')),
@@ -615,14 +612,14 @@ if ($isAdmin || block_exacomp_check_customupload()) {
 			if (!$isAdmin) {
 				print_error('pls contact your admin');
 			}
-		
+
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php',
                                                 array('courseid'=>$courseid,
                                                         'importtype'=>'custom')),
                                                 'For the latest exacomp version you need to reimport school/company specific standards'));
 		} else {
 			$hasData = block_exacomp\data::has_data();
-			
+
 			if ($delete) {
                 echo $OUTPUT->box(block_exacomp_get_string("delete_success"));
             }
@@ -667,15 +664,15 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         array('courseid'=>$courseid, 'importtype'=>'scheduler')),
                         block_exacomp_get_string('schedulerimport')));
 			}
-	
+
 			// export
 			if($hasData) {
 				echo '<hr />';
 				echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'export_all', 'courseid'=>$courseid)), block_exacomp_get_string("export_all_standards")));
 				echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'select', 'courseid'=>$courseid)), block_exacomp_get_string("export_selective")));
 			}
-			
-			
+
+
 			if ($isAdmin) {
 				echo '<hr />';
 				echo $output->sources();

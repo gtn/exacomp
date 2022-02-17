@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__.'/inc.php';
 
@@ -78,12 +75,12 @@ if ($data) {
 		echo ' '.block_exacomp_get_string("choosestudent").' ';
 		echo $output->studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 	}
-	
+
 	//if($course_settings->nostudents != 1)
 	//	echo $output->competence_grid_reports_dropdown();
 
 	echo html_writer::start_div();
-	
+
 	if (isset($dropdown_subjects[$subjectid]->infolink)) {
         echo html_writer::tag("p", block_exacomp_get_string('infolink') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink, array('target' => '_blank')));
     }

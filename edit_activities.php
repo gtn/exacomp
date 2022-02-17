@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 use block_exacomp\data_importer;
 
@@ -77,7 +74,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $headertext = "";
 $img = new moodle_url('/blocks/exacomp/pix/three.png');
-	 
+
 if ($action == "save") {
     // delete old relations only from this page (some can be hidden)
     if (isset($_POST['data'])) {
@@ -100,14 +97,14 @@ if ($action == "save") {
 	block_exacomp_save_competences_activities(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, 0);
 	// TOPIC DATA
 	block_exacomp_save_competences_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
-	
+
 	if (!isset($_POST['data']) && !isset($_POST['topicdata'])) {
         $headertext = block_exacomp_get_string('tick_some');
     } else {
 		$headertext = block_exacomp_get_string("save_success").html_writer::empty_tag('br')
 			.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
 			.block_exacomp_get_string('completed_config');
-	
+
 		$students = block_exacomp_get_students_by_course($courseid);
 		if (empty($students)) {
             $headertext .= html_writer::empty_tag('br')
@@ -156,7 +153,7 @@ if ($action == "filter") {
 	if (isset($_POST['niveau_filter'])) {
         $selected_niveaus = $_POST['niveau_filter'];
     }
-		
+
 	if (isset($_POST['module_filter'])) {
         $selected_modules = $_POST['module_filter'];
     }
@@ -181,10 +178,10 @@ if ($modules) {
 
 	foreach ($modules as $module) {
 		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
-			
+
 		$module->descriptors = array();
 		$module->topics = array();
-		
+
 		foreach ($compsactiv as $comp){
 			if ($comp->comptype == 0) {
                 $module->descriptors[$comp->compid] = $comp->compid;
@@ -192,17 +189,17 @@ if ($modules) {
                 $module->topics[$comp->compid] = $comp->compid;
             }
 		}
-		
+
 		if (empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules)) {
             $visible_modules[] = $module;
         }
-		
+
 		$modules_to_filter[] = $module;
 	}
-	
+
 	$niveaus = block_exacomp_extract_niveaus($subjects);
 	block_exacomp_filter_niveaus($subjects, $selected_niveaus);
-	
+
 
 	$topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 

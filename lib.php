@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -276,16 +273,16 @@ function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
             SET title = ?,
               activitytitle = ?
             WHERE activityid = ?
-              AND title != ? 
-              AND activitytitle != ?         
+              AND title != ?
+              AND activitytitle != ?
         ', [$newtitle, $newtitle, $cmid, $newtitle, $newtitle]); // TODO: title is also changed or only activitytitle?
     // 2. old method - with MM table
     if (block_exacomp_use_old_activities_method()) {
         $DB->execute('
             UPDATE {block_exacompcompactiv_mm}
                 SET activitytitle = ?
-                WHERE activityid = ?                 
-                  AND activitytitle != ?         
+                WHERE activityid = ?
+                  AND activitytitle != ?
             ', [$newtitle, $cmid, $newtitle]);
     }
     return true;
@@ -297,8 +294,8 @@ function block_exacomp_checkfordelete_relatedactivity($cmid) {
     // 1. new method of relation - the relation is EXAMPLE
     // TODO: right now is deleted related example. May we need to stay the example, but change activity fields
     $DB->execute('
-            DELETE FROM {block_exacompexamples}                
-                WHERE activityid = ?                                          
+            DELETE FROM {block_exacompexamples}
+                WHERE activityid = ?
             ', [$cmid]);
     // if we need to change activity fields only, not delete the example at all
    /* $DB->execute('
@@ -307,13 +304,13 @@ function block_exacomp_checkfordelete_relatedactivity($cmid) {
               activitytitle = ?,
               activitylink = ?,
               courseid = ?
-            WHERE activityid = ?              
+            WHERE activityid = ?
         ', [0, '', '', 0, $cmid]);*/
     // 2. old method - with MM table
     if (block_exacomp_use_old_activities_method()) {
         $DB->execute('
-            DELETE FROM {block_exacompcompactiv_mm}                
-                WHERE activityid = ?                                          
+            DELETE FROM {block_exacompcompactiv_mm}
+                WHERE activityid = ?
             ', [$cmid]);
     }
 }

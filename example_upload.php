@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__.'/inc.php';
 require_once __DIR__.'/example_upload_form.php';
@@ -119,7 +116,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
                     "activities" => $example_activities));
     }
     elseif ($questionid){
-        
+
         $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
             array("questionid" => $questionid,
                 "tree" => $tree));
@@ -146,7 +143,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
             } else {
                 $newExample->is_teacherexample = 0;
             }
-    
+
         	$newExample->externaltask = '';
         	if (!empty($formdata->assignment)) {
         		if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
@@ -176,7 +173,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
             } else {
                 $newExample->example_icon = '';
             }
-    
+
         	if ($formdata->exampleid == 0) {
         	    // insert new example
         		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
@@ -188,7 +185,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
         		$DB->update_record('block_exacompexamples', $newExample);
         		$DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $newExample->id));
         	}
-    
+
         	//insert taxid in exampletax_mm
         	$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, ['exampleid' => $newExample->id]);
         	if (!empty($formdata->taxid)) {
@@ -226,7 +223,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
         				$insert->descrid = $descriptorid;
         				$insert->exampid = $newExample->id;
         				$insert->sorting = $sorting;
-    
+
         				$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
         			}
         			//block_exacomp_globals::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
@@ -240,14 +237,14 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
         	    //$insert->sorting = $sorting;
         	    $DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
         	}
-    
+
         	// other courses
         	$otherCourseids = block_exacomp_get_courseids_by_example($newExample->id);
         	// add myself (should be in there anyway)
         	if (!in_array($courseid, $otherCourseids)) {
         		$otherCourseids[] = $courseid;
         	}
-    
+
         	foreach ($otherCourseids as $otherCourseid) {
         		//add visibility if not exists
         		if (!$DB->get_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
@@ -257,9 +254,9 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
         			$DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
         		}
         	}
-    
+
         	block_exacomp_settstamp();
-    
+
         	// save file
         	file_save_draft_area_files($formdata->files, context_system::instance()->id, 'block_exacomp', 'example_task',
         			$newExample->id, array('subdirs' => 0, 'maxfiles' => 2));
@@ -268,7 +265,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
         	file_save_draft_area_files($formdata->completefile, context_system::instance()->id, 'block_exacomp', 'example_completefile',
         			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
         } else {
-            
+
             //add descriptor association
             $descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
             $descrids = array();
@@ -287,7 +284,7 @@ $crosssubjid = optional_param('crosssubjid', -1, PARAM_INT);
                     if(!$desc_quest){
                         $insert->descrid = $descriptorid;
                         $insert->questid = $questionid;
-                        
+
                         $DB->insert_record(BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION, $insert);
                     }
                 }

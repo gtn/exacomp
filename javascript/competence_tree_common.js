@@ -1,20 +1,17 @@
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 (function($){
 	window.block_exacomp.reload_action = function() {
@@ -57,7 +54,7 @@
 			$('.colgroup-'+group).show();
 		}
 
-		//chage form 
+		//chage form
 		$('#assign-competencies').attr('action', function(i, value) {
 			//if group is contained -> change value
 			if(value.indexOf("group") > -1){
@@ -92,7 +89,7 @@
 		var $this = $(this);
 		$('select[name="'+$this.attr("name")+'"]').val($this.val());
 	});
-	
+
 	$(function(){
 		function additionlgrading_int_val(value, add) {
 			value += ''; // to string
@@ -120,19 +117,19 @@
 		.click(function(){
 			// remove old dialog
 			$('#exa-additionalgrading-dialog').remove();
-			
+
 			$(this).parent().css('position', 'relative');
 			$('<div id="exa-additionalgrading-dialog" style="position: absolute; z-index: 10000; top: 34px; right: 0; width: 120px; padding: 6px 8px; background: white; border: 1px solid black;"></div>')
 				.appendTo($(this).parent())
 				.mousedown(function(e){ /* prevent from bubbling and closing again */ e.stopPropagation(); return true; });
-			
+
 			var sid = $(this).attr('id').split("-")[1];
 			var eid = $(this).attr('id').split("-")[2];
 			var did = $(this).attr('id').split("-")[3];
 
 			var input = $(this);
 			var allInputs = $('input[id^=additionalinfo\-'+sid+'\-'+eid+']');
-	
+
 			$('<div />').appendTo('#exa-additionalgrading-dialog').slider({
 			  min: 0,
 			  max: 100,

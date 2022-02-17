@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -115,7 +112,7 @@ class block_exacomp extends block_list {
 				    $this->content->items[] = '<a title="'.block_exacomp_get_string('tab_examples').'" '.
 								    ' href="'.$CFG->wwwroot.'/blocks/exacomp/view_examples.php?courseid='.$courseid.'">'.
 								    $icon.block_exacomp_get_string('tab_examples').'</a>';
-					
+
 					//Lernagenda
 					//$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_learning_agenda'), array('title'=>block_exacomp_get_string('tab_learning_agenda')));
 					//$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -133,8 +130,8 @@ class block_exacomp extends block_list {
 			    $this->content->items[] = '<a title="'.block_exacomp_get_string('reports').'" '.
 			 			    ' href="'.$CFG->wwwroot.'/blocks/exacomp/group_reports.php?courseid='.$courseid.'">'.
 			 			    $icon.block_exacomp_get_string('reports').'</a>';
-			 			    
-			 
+
+
 				if ($isTeacher && !$courseSettings->nostudents) {
 					if ($courseSettings->useprofoundness) {
 					    $icon = '<img src="'.$CFG->wwwroot.'/blocks/exacomp/pix/basicextendedskills.svg'.'" class="icon" alt="" />';
@@ -157,7 +154,7 @@ class block_exacomp extends block_list {
 			    $this->content->items[] = '<a title="'.block_exacomp_get_string('tab_teacher_settings').'" '.
 			 			    ' href="'.$CFG->wwwroot.'/blocks/exacomp/edit_course.php?courseid='.$courseid.'">'.
 			 			    $icon.block_exacomp_get_string('tab_teacher_settings').'</a>';
-				
+
 				if (!$ready_for_use) {
 				    $icon = '<img src="'.$CFG->wwwroot.'/blocks/exacomp/pix/basicextendedskills.svg'.'" class="icon" alt="" />';
 				    $this->content->items[] = '<a title="'.block_exacomp_get_string('tab_teacher_settings_new_subject').'" '.
@@ -177,7 +174,7 @@ class block_exacomp extends block_list {
 				$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/info.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 			}*/
 		} else {
-		    
+
 		    if ($isTeacher) {
     		    if (!$ready_for_use) {
     		        $icon = '<img src="'.$CFG->wwwroot.'/blocks/exacomp/pix/basicextendedskills.svg'.'" class="icon" alt="" />';

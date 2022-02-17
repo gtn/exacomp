@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__.'/inc.php';
 
@@ -91,19 +88,19 @@ $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
 if ($item) $form->set_data($item);
 
 if($formdata = $form->get_data()) {
-	
+
 	$new = new stdClass();
 	$new->title = $formdata->title;
 	$new->numb = $formdata->numb;
-	
+
 	if (!$item) {
 		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 		$new->subjid = required_param('subjectid', PARAM_INT);
         $new->creatorid = $USER->id;
-		
+
 		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
-		
+
 		// add topic to course
 		$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
 			'courseid' => $courseid,
@@ -117,7 +114,7 @@ if($formdata = $form->get_data()) {
 		$subjectid = $item->subjid;
 		$item->update($new);
 	}
-	
+
 	echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&subjectid={$item->subjid}&topicid={$item->id}");
 	exit;
 }

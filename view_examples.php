@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__.'/inc.php';
 
@@ -100,10 +97,10 @@ switch ($style) {
         } else {
             $outputContent .= $output->competence_based_list_tree($tree, $isTeacher, false);
         }
-	    
+
 	    //Crossubjects and crossubjectfiles
 	    //$crossubject_tree = block_exacomp_build_crossubject_example_tree($courseid, array(), 0, 0, true);
-	    
+
 	    /*
 	    $crossubjects = block_exacomp_get_cross_subjects_by_course($courseid);
 	    echo $output->print_crosssubjects_and_examples($crossubjects, $isTeacher, false);
@@ -144,36 +141,36 @@ switch ($style) {
         }
         $outputContent .= html_writer::start_tag("table", array("class" => 'rg2'));
         foreach ($crosssubs as $cross) {
-            
+
             $crossContent = '';
             //get files specifically for this cross:
             $examples = block_exacomp_get_examples_for_crosssubject($cross->id);
-            //get files from competencies that are added to this cross: 
+            //get files from competencies that are added to this cross:
             $examples += \block_exacomp\example::get_objects_sql("
                 SELECT DISTINCT e.*
-                FROM {".BLOCK_EXACOMP_DB_DESCCROSS."} dc                    
+                FROM {".BLOCK_EXACOMP_DB_DESCCROSS."} dc
                     JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dc.descrid = de.descrid
                     JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
                 WHERE dc.crosssubjid = ?
                 ORDER BY e.title
             ", [$cross->id]);
-            
-            
+
+
             //get files from the childcompetencies of the competencies that are added
             //get descriptors and check if they are parents
             //if they are parent --> get the examples of their children
             $assoc_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross);
- 
+
             foreach ($assoc_descriptors as $descriptor) {
                 if($descriptor->parentid == 0){
                     $childdescriptors = block_exacomp_get_child_descriptors($descriptor, $courseid);
                     foreach ($childdescriptors as $childdescriptor){
-                        $examples = array_merge($examples,$childdescriptor->examples); 
-                    }   
+                        $examples = array_merge($examples,$childdescriptor->examples);
+                    }
                 }
             }
- 
-           
+
+
             if (!$isTeacher) {
                 $examples = array_filter($examples, function($example) use ($courseid, $studentid) {
                     return block_exacomp_is_example_visible($courseid, $example, $studentid);

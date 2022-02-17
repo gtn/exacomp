@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__.'/inc.php';
 
@@ -81,7 +78,7 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$element = $mform->addElement('select', 'categories', block_exacomp_get_string('competence_grid_niveau'), $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, 'title', 'id, title'));
 		$element->setMultiple(true);
-		
+
 		$this->add_action_buttons(false);
 	}
 }
@@ -96,21 +93,21 @@ if ($item) {
 }
 
 if($formdata = $form->get_data()) {
-	
+
 	$new = new stdClass();
 	$new->title = $formdata->title;
 	$new->niveauid = $formdata->niveauid;
     $new->author = fullname($USER);
     $new->editor = fullname($USER);
-	
+
 	if (!$item) {
 		die('TODO');
 		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 		$new->subjid = required_param('subjectid', PARAM_INT);
-		
+
 		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
-		
+
 		// add topic to course
 		$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
 			'courseid' => $courseid,
@@ -120,7 +117,7 @@ if($formdata = $form->get_data()) {
 	    $item->update($new);
 	}
 	$item->store_categories($formdata->categories);
-	
+
  	echo $output->popup_close_and_reload();
 	exit;
 }

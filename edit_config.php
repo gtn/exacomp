@@ -1,21 +1,18 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__.'/inc.php';
 require_once $CFG->dirroot.'/lib/datalib.php';
@@ -25,7 +22,7 @@ $action = optional_param ( 'action', "", PARAM_ALPHA );
 $fromimport = optional_param ( 'fromimport', 0, PARAM_INT );
 
 if (! $course = $DB->get_record ( 'course', array (
-		'id' => $courseid 
+		'id' => $courseid
 ) )) {
 	print_error ( 'invalidcourse', 'block_simplehtml', $courseid );
 }
@@ -38,7 +35,7 @@ block_exacomp_require_admin($context);
 $check = block_exacomp\data::has_data();
 if (! $check) {
 	redirect ( new moodle_url ( '/blocks/exacomp/import.php', array (
-			'courseid' => $courseid 
+			'courseid' => $courseid
 	) ) );
 }
 
@@ -47,7 +44,7 @@ $page_identifier = 'tab_admin_configuration';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url ( '/blocks/exacomp/edit_config.php', array (
-		'courseid' => $courseid 
+		'courseid' => $courseid
 ) );
 $PAGE->set_heading ( block_exacomp_get_string('blocktitle') );
 $PAGE->set_title ( block_exacomp_get_string($page_identifier) );
@@ -67,23 +64,23 @@ if ($fromimport == 1) {
 // Falls Formular abgesendet, speichern
 if (isset ( $action ) && $action == 'save') {
 	$values = isset ( $_POST['data'] ) ? $_POST['data'] : array ();
-	
+
 	block_exacomp_set_mdltype ( $values );
-	
+
 	if (! isset ( $_POST['data'] ))
 		$headertext = block_exacomp_get_string('tick_some');
 	else {
 		$string = block_exacomp_get_string('next_step');
-		
+
 		$url = 'edit_course.php';
-		
+
 		$headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag ( 'br' ) . html_writer::empty_tag ( 'img', array (
 				'src' => new moodle_url ( '/blocks/exacomp/pix/' . $img ),
 				'alt' => '',
 				'width' => '60px',
-				'height' => '60px' 
+				'height' => '60px'
 		) ) . html_writer::link ( new moodle_url ( $url, array (
-				'courseid' => $courseid 
+				'courseid' => $courseid
 		) ), $string );
 	}
 } else {
@@ -91,7 +88,7 @@ if (isset ( $action ) && $action == 'save') {
 			'src' => new moodle_url ( '/blocks/exacomp/pix/' . $img ),
 			'alt' => '',
 			'width' => '60px',
-			'height' => '60px' 
+			'height' => '60px'
 	) ) . block_exacomp_get_string('second_configuration_step') . html_writer::empty_tag ( 'br' ) . block_exacomp_get_string("explainconfig");
 }
 
@@ -119,12 +116,12 @@ foreach ( $levels as $level ) {
 	$data->levels[$level->id] = new stdClass ();
 	$data->levels[$level->id]->level = $level;
 	$data->levels[$level->id]->schooltypes = array ();
-	
+
 	$types = block_exacomp_get_schooltypes ( $level->id );
-	
+
 	foreach ( $types as $type ) {
 		$ticked = block_exacomp_get_mdltypes ( $type->id );
-		
+
 		$data->levels[$level->id]->schooltypes[$type->id] = new stdClass ();
 		$data->levels[$level->id]->schooltypes[$type->id]->schooltype = $type;
 		$data->levels[$level->id]->schooltypes[$type->id]->ticked = $ticked;

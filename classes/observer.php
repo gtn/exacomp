@@ -1,21 +1,22 @@
 <?php
-// This file is part of Exabis Competence Grid
+// This file is part of Moodle - http://moodle.org/
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
-//
-// Exabis Competence Grid is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This script is distributed in the hope that it will be useful,
+// Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
-//
-// This copyright notice MUST APPEAR in all copies of the script!
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+use core\event\course_created;
+use core\event\course_module_completion_updated;
+use core\event\course_module_updated;
 
 defined('MOODLE_INTERNAL') || die();
 require_once __DIR__ . './../inc.php'; // otherwise the course_module_completion_updated does not have access to the exacomp functions in some cases
@@ -23,19 +24,16 @@ require_once __DIR__ . './../inc.php'; // otherwise the course_module_completion
 /**
  * Event observer for block_exacomp.
  */
-class block_exacomp_observer
-{
+class block_exacomp_observer {
 
     /**
      * Observer for \core\event\course_created event.
      *
-     * @param \core\event\course_created $event
+     * @param course_created $event
      * @return void
      */
-    public static function course_created(\core\event\course_created $event)
-    {
+    public static function course_created(course_created $event) {
         global $CFG, $DB;
-
 
         $course = $event->get_record_snapshot('course', $event->objectid);
         $addto = get_config('exacomp', 'addblock_to_new_course');
@@ -69,15 +67,13 @@ class block_exacomp_observer
         }
     }
 
-
     /**
      * Observer for \core\event\course_module_completion_updated event.
      *
-     * @param \core\event\course_module_completion_updated $event
+     * @param course_module_completion_updated $event
      * @return void
      */
-    public static function course_module_completion_updated(\core\event\course_module_completion_updated $event)
-    {
+    public static function course_module_completion_updated(course_module_completion_updated $event) {
         global $CFG, $DB, $USER;
 
         if (block_exacomp_is_teacher($event->courseid, $USER->id)) {
@@ -135,31 +131,30 @@ class block_exacomp_observer
         return true;
     }
 
-//    /**
-//     * Observer for \core\event\course_module_created event.
-//     *
-//     * @param \core\event\course_module_created $event
-//     * @return void
-//     */
-//    public static function course_module_created(\core\event\course_module_created $event)
-//    {
-//        $students = block_exacomp_get_students_by_course($event->courseid);
-//        $activities = block_exacomp_get_all_associated_activities_by_course($event->courseid);
-//        foreach($students as $student){
-//            block_exacomp_update_related_examples_visibilities($activities, $event->courseid, $student->id);
-//        }
-//        return true;
-//    }
-// This observer is not needed, since when creating an activity it cannot yet be related or assigned to any exacomp competence
+    //    /**
+    //     * Observer for \core\event\course_module_created event.
+    //     *
+    //     * @param \core\event\course_module_created $event
+    //     * @return void
+    //     */
+    //    public static function course_module_created(\core\event\course_module_created $event)
+    //    {
+    //        $students = block_exacomp_get_students_by_course($event->courseid);
+    //        $activities = block_exacomp_get_all_associated_activities_by_course($event->courseid);
+    //        foreach($students as $student){
+    //            block_exacomp_update_related_examples_visibilities($activities, $event->courseid, $student->id);
+    //        }
+    //        return true;
+    //    }
+    // This observer is not needed, since when creating an activity it cannot yet be related or assigned to any exacomp competence
 
     /**
      * Observer for \core\event\course_module_updated event.
      *
-     * @param \core\event\course_module_updated $event
+     * @param course_module_updated $event
      * @return void
      */
-    public static function course_module_updated(\core\event\course_module_updated $event)
-    {
+    public static function course_module_updated(course_module_updated $event) {
         global $DB;
         //  $event->other['name']) gives the "name" field of e.g. assign or quiz table entry
         // block_exacomp_check_relatedactivitydata($event->objectid, $event->other['name']);
@@ -176,18 +171,18 @@ class block_exacomp_observer
         return true;
     }
 
-//    /**
-//     * Observer for \core\event\course_module_deleted event.
-//     *
-//     * @param \core\event\course_module_deleted $event
-//     * @return void
-//     */
-//    public static function course_module_deleted(\core\event\course_module_deleted $event)
-//    {
-//        // This is often not triggered instantly, but for example in the next cron.
-//        block_exacomp_checkfordelete_relatedactivity($event->objectid);
-//        return true;
-//    }
-// this is already done in block_exacomp_pre_course_module_delete(). todo: Where should it be done?
+    //    /**
+    //     * Observer for \core\event\course_module_deleted event.
+    //     *
+    //     * @param \core\event\course_module_deleted $event
+    //     * @return void
+    //     */
+    //    public static function course_module_deleted(\core\event\course_module_deleted $event)
+    //    {
+    //        // This is often not triggered instantly, but for example in the next cron.
+    //        block_exacomp_checkfordelete_relatedactivity($event->objectid);
+    //        return true;
+    //    }
+    // this is already done in block_exacomp_pre_course_module_delete(). todo: Where should it be done?
 
 }
