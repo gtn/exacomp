@@ -854,12 +854,22 @@ EOD;
         require_once $CFG->dirroot.'/lib/phpmailer/moodle_phpmailer.php';
         $mailer = new moodle_phpmailer();
 
-        $mailer->AddReplyTo($email, 'Reply To');
-        $mailer->SetFrom($email, 'Sent From');
-        $mailer->AddAddress($email, 'Send To');
-        $mailer->Subject = 'Message with PDF';
-        $mailer->AltBody = "To view the message, please use an HTML compatible email viewer";
-        $mailer->MsgHTML('<p>Message contents</p>');
+        $mailer->AddReplyTo('office@frauenstiftung.at', 'Reply To');
+        $mailer->SetFrom("office@frauenstiftung.at", 'office@frauenstiftung.at');
+        $mailer->AddAddress($email, $email);
+        $mailer->Subject = 'Text Begleitmail Rechnung Codes fÃ¼r Zertifizierung';
+        $mailer->AddEmbeddedImage($CFG->dirroot.'/blocks/exacomp/pix/certificate/frauenstiftungadresse.PNG', 'logo_1');
+        $mailer->AddEmbeddedImage($CFG->dirroot.'/blocks/exacomp/pix/certificate/diwipass.PNG', 'logo_2');
+        $mailer->AltBody = "";
+        $mailer->MsgHTML('
+			<img src="cid:logo_2">
+			<br>
+			<b>Vielen Dank fÃ¼r Ihre Bestellung!</b>
+			<p>Die Rechnung zur Bestellung finden Sie im Anhang.</p>
+			<p> Nach Zahlungseingang mittels BankÃ¼berweisung erhalten Sie den/die Codes per E-Mail Ã¼bermittelt</p>.
+            <p> Wir wÃ¼nschen Ihnen viel Erfolg bei der diwipass-Zertifizierung!</p>
+			<img src="cid:logo_1">');
+
         if ($attachment) {
             $mailer->AddStringAttachment($attachment, 'Rechnung.pdf');
         }
