@@ -1398,7 +1398,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                                 if (!$example_used) {
                                     $titleCell->text .= html_writer::link(new url('example_upload.php',
-                                        ['action' => 'delete', 'exampleid' => $example->id, 'courseid' => $COURSE->id, 'returnurl' => g::$PAGE->url->out_as_local_url(false)]),
+                                        ['action' => 'delete', 'exampleid' => $example->id, 'courseid' => $COURSE->id, 'returnurl' => g::$PAGE->url->out_as_local_url(false, array('sesskey' => sesskey()))]),
                                         $this->pix_icon("t/delete", block_exacomp_get_string("delete")),
                                         array("onclick" => "return confirm(" . json_encode(block_exacomp_get_string('delete_confirmation', null, $example->title)) . ")"));
                                 }
@@ -3051,7 +3051,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 if (!$example_used) {
                                     $titleCell->text .= html_writer::link(new url('example_upload.php',
                                         ['action' => 'delete', 'exampleid' => $example->id, 'courseid' => $COURSE->id,
-                                            'returnurl' => g::$PAGE->url->out_as_local_url(false)]),
+                                            'returnurl' => g::$PAGE->url->out_as_local_url(false), 'sesskey' => sesskey()]),
                                         $this->pix_icon("t/delete", block_exacomp_get_string("delete")),
                                         array("onclick" => "return confirm(" .
                                             json_encode(block_exacomp_get_string('delete_confirmation', null,
@@ -5580,7 +5580,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $import_activities = '<p>' . block_exacomp_get_string("import_activities") . '</p>';
         $import_activities .= html_writer::select(['' => ''] + get_all_template_courses_key_value(), "template", '', false, array('id' => 'template', 'style' => 'float:left'));
         $import_activities .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'import', 'class' => 'btn btn-primary')), '', array('id' => 'import'));
-        $ret = html_writer::tag('form', $import_activities, array('id' => 'edit-activities', 'action' => $PAGE->url . '&action=import', 'method' => 'post'));
+        $ret = html_writer::tag('form', $import_activities, array('id' => 'edit-activities', 'action' => $PAGE->url->out(false, array('sesskey' => sesskey())) . '&action=import', 'method' => 'post'));
         $ret .= '<br/>';
         return $ret;
     }
@@ -5684,12 +5684,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
         } else {
             $js = '';
         }
-        $pageurl = $PAGE->url;
+        $formurl = new moodle_url($PAGE->url, array('sesskey' => sesskey()));
         return $js . html_writer::tag('form',
                 $div,
                 array('id' => 'edit-activities',
                     //'action' => $PAGE->url.'&action=save', // adds '&amp' if the $PAGE->url has more than 1 param
-                    'action' => $pageurl,
+                    'action' => $formurl,
                     'method' => 'post',
                     'class' => 'checksaving_on_leavepage'));
 

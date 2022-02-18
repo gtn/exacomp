@@ -47,6 +47,7 @@ $form = new block_exacomp_update_categories_form($_SERVER['REQUEST_URI'],
 $item = $descrid ? descriptor::get($descrid) : null;
 
 if ($formdata = $form->get_data()) {
+    require_sesskey();
 
     //insert catids in BLOCK_EXACOMP_DB_DESCCAT
     //     $DB->delete_records(BLOCK_EXACOMP_DB_DESCCAT, ['descrid' => $descrid]);

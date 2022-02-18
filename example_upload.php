@@ -47,6 +47,7 @@ if ($action == 'serve') {
 }
 
 if ($action == 'delete') {
+    require_sesskey();
     if (!$example) {
         print_error('invalidexample', 'block_exacomp', $exampleid);
     }
@@ -122,6 +123,7 @@ if ($descrid != -1) {
 }
 
 if ($formdata = $form->get_data()) {
+    require_sesskey();
     if (!$questionid) {
         $example_icons = array(); // it is possible to have different icons for different fields
         $newExample = new stdClass();
@@ -265,7 +267,7 @@ if ($formdata = $form->get_data()) {
         file_save_draft_area_files($formdata->completefile, context_system::instance()->id, 'block_exacomp', 'example_completefile',
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
     } else {
-
+        require_sesskey();
         //add descriptor association
         $descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT => PARAM_INT));
         $descrids = array();

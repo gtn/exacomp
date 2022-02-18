@@ -71,6 +71,7 @@ $headertext = "";
 $img = new moodle_url('/blocks/exacomp/pix/three.png');
 
 if ($action == "save") {
+    require_sesskey();
     // RELATED DATA
     block_exacomp_update_example_activity_relations(isset($_POST['data']) ? $_POST['data'] : array(), isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid);
 
@@ -95,6 +96,7 @@ if ($action == "save") {
 }
 
 if ($action == "import") {
+    require_sesskey();
     $headertext = $output->notification(block_exacomp_get_string("importsuccess"), 'info') . $headertext;
     $template = required_param('template', PARAM_INT);
     $relatedDescriptors = array();
