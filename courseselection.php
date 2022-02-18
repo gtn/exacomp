@@ -70,6 +70,7 @@ if ($changeFilter) {
 }
 
 if ($action == 'save') {
+    require_sesskey();
     $topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
     block_exacomp_set_coursetopics($courseid, $topics);
 

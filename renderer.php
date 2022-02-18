@@ -5149,9 +5149,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $examples_on_schedule = block_exacomp_any_examples_on_schedule($COURSE->id);
 
+            $formurl = new moodle_url($PAGE->url, array('sesskey' => sesskey()));
+
             return $header . $filterform . html_writer::tag("form", $table_html,
                     array("method" => "post",
-                        "action" => $PAGE->url,
+                        "action" => $formurl,
                         "id" => "course-selection",
                         "examplesonschedule" => $examples_on_schedule,
                         'class' => 'checksaving_on_leavepage'));
