@@ -5768,9 +5768,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $descriptorRow->cells[] = $moduleCell;
             }
 
-            $rows[] = $descriptorRow;
-        }
-    }
+			$rows[] = $descriptorRow;
+
+			// Child descriptors
+            if ($descriptor->children) {
+                $this->descriptors_activities($rows, $level + 1, $descriptor->children, $modules, $topicid);
+            }
+		}
+	}
 
     public function badge($badge, $descriptors, $context) {
         global $COURSE, $CFG;
