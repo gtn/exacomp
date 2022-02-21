@@ -4249,7 +4249,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
             }
         } else { //if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR || $comptype == BLOCK_EXACOMP_TYPE_TOPIC){
-            //TODO: Removed for now, because this functionality is not needed. Student could uplaod items to descriptors or topics. This is only done viea webservices in diggrplus right now RW
+            //TODO: Removed for now, because this functionality is not needed. Student could upload items to descriptors or topics. This is only done via webservices in diggrplus right now RW
             //            if (!$isTeacher){
             ////                $itemExists = block_exacomp_get_current_item_for_competence($studentid, $compid);
             //                $result = html_writer::link(
@@ -7318,10 +7318,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
         if ($cross_subject && !$this->is_edit_mode() && $cross_subject->has_capability(BLOCK_EXACOMP_CAP_MODIFY) && !$cross_subject->is_draft()) {
             if ($nostudents) {
                 $left_content .= html_writer::tag("input", " ", array("type" => "button", "value" => block_exacomp_get_string("share_crosssub"), 'exa-type' => 'iframe-popup',
-                    'exa-url' => 'cross_subjects.php?courseid=' . g::$COURSE->id . '&crosssubjid=' . $cross_subject->id . '&action=share'));
+                    'exa-url' => 'cross_subjects.php?courseid=' . g::$COURSE->id . '&crosssubjid=' . $cross_subject->id . '&action=share' . '&sesskey=' . sesskey()));
             }
             $left_content .= html_writer::tag("input", " ", array("type" => "button", "value" => block_exacomp_get_string("save_as_draft"), 'exa-type' => 'link',
-                'exa-url' => 'cross_subjects.php?courseid=' . g::$COURSE->id . '&crosssubjid=' . $cross_subject->id . '&action=save_as_draft'));
+                'exa-url' => 'cross_subjects.php?courseid=' . g::$COURSE->id . '&crosssubjid=' . $cross_subject->id . '&action=save_as_draft' . '&sesskey=' . sesskey()));
 
             //Add the two style buttons
             $page_url = html_entity_decode($PAGE->url);
@@ -7384,7 +7384,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             'value' => block_exacomp_get_string('manage_crosssubs'),
             'class' => 'btn btn-default',
             "onclick" => "document.location.href='" . block_exacomp\url::create('/blocks/exacomp/cross_subjects_overview.php',
-                    array('courseid' => $COURSE->id)) . "'"));
+                    array('courseid' => $COURSE->id, 'sesskey' => sesskey())) . "'"));
 
         $content = '';
         $content .= $left_content;
@@ -8080,7 +8080,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     array('class' => 'crosssub-icons')) .
                 (($work_with_students) ? html_writer::link('#', $this->pix_icon("i/enrolusers", block_exacomp_trans("de:Freigabe bearbeiten")),
                     ['exa-type' => 'iframe-popup', 'exa-url' => 'cross_subjects.php?courseid=' . g::$COURSE->id . '&crosssubjid=' . $crosssub->id . '&action=share']) : '') .
-                html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'save_as_draft')),
+                html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'save_as_draft', 'sesskey' => sesskey())),
                     $this->pix_icon("i/repository", block_exacomp_trans("de:Kopie als Vorlage speichern"))),
             ];
         }
@@ -8115,7 +8115,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     array("onclick" => "if( confirm('" . block_exacomp_get_string('confirm_delete') . "')) block_exacomp.delete_crosssubj(" . $crosssub->id . "); return false;")) .
                 (($work_with_students) ? html_writer::link('#', $this->pix_icon("i/enrolusers", block_exacomp_trans("de:Freigabe bearbeiten")),
                     ['exa-type' => 'iframe-popup', 'exa-url' => 'cross_subjects.php?courseid=' . g::$COURSE->id . '&crosssubjid=' . $crosssub->id . '&action=share']) : '') .
-                html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'save_as_draft')),
+                html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssub->id, 'action' => 'save_as_draft', 'sesskey' => sesskey())),
                     $this->pix_icon("i/repository", block_exacomp_trans("de:Kopie als Vorlage speichern"))),
             ];
         }

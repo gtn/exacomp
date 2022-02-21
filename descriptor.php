@@ -51,6 +51,7 @@ if ($item) {
 // TODO: check permissions, check if item is BLOCK_EXACOMP_DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
+    require_sesskey();
     block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
     $item->delete();
 
@@ -95,7 +96,7 @@ if ($item) {
 }
 
 if ($formdata = $form->get_data()) {
-
+    require_sesskey();
     $new = new stdClass();
     $new->title = $formdata->title;
     $new->niveauid = $formdata->niveauid;

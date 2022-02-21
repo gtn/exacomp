@@ -76,6 +76,7 @@ $headertext = "";
 $img = new moodle_url('/blocks/exacomp/pix/three.png');
 
 if ($action == "save") {
+    require_sesskey();
     // delete old relations only from this page (some can be hidden)
     if (isset($_POST['data'])) {
         foreach ($_POST['data'] as $cmoduleKey => $comps) {
@@ -119,6 +120,7 @@ if ($action == "save") {
 }
 
 if ($action == "import") {
+    require_sesskey();
     $template = required_param('template', PARAM_INT);
     $backuprecords = $DB->get_records_sql('
             SELECT DISTINCT mm.activityid

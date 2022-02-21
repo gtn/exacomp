@@ -70,6 +70,7 @@ if ($action == 'share') {
     $cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 
     if (optional_param('save', '', PARAM_TEXT)) {
+        require_sesskey();
         $share_all = optional_param('share_all', false, PARAM_BOOL);
         $studentids = block_exacomp\param::optional_array('studentids', PARAM_INT);
 
@@ -84,7 +85,7 @@ if ($action == 'share') {
         exit;
     }
 
-    $PAGE->set_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $courseid, 'action' => $action, 'crosssubjid' => $crosssubjid));
+    $PAGE->set_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $courseid, 'action' => $action, 'crosssubjid' => $crosssubjid, 'sesskey' => sesskey()));
     $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
     $PAGE->set_pagelayout('embedded');
 
@@ -103,6 +104,7 @@ if ($action == 'share') {
 
     echo '<form method="post" id="share">';
     echo '<input type="hidden" name="save" value="save" />';
+    echo '<input type="hidden" name="sesskey" value='.sesskey().' />';
     echo html_writer::checkbox('share_all', 'share_all', $shared, '');
     echo block_exacomp_get_string('share_crosssub_with_all', null, $cross_subject->title);
     echo html_writer::empty_tag('br') . html_writer::empty_tag('br');
@@ -191,6 +193,7 @@ if ($action == 'descriptor_selector') {
     $cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 
     if (optional_param('save', '', PARAM_TEXT)) {
+        require_sesskey();
         $descriptors = block_exacomp\param::optional_array('descriptors', PARAM_INT);
         $old_descriptors = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid), null, 'descrid, descrid AS tmp');
 
@@ -273,6 +276,7 @@ if ($action == 'descriptor_selector') {
 
     echo '<form method="post">';
     echo $print_tree($subjects);
+    echo '<input type="hidden" name="sesskey" value='.sesskey().' />';
     echo '<input type="submit" name="save" value="' . block_exacomp_get_string('add_descriptors_to_crosssub') . '" class="btn btn-default"/>';
     echo '</form>';
 
@@ -281,6 +285,7 @@ if ($action == 'descriptor_selector') {
 }
 
 if ($isTeacher && optional_param('save', '', PARAM_TEXT)) {
+    require_sesskey();
     if ($cross_subject) {
         $cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
     } else {
@@ -311,12 +316,14 @@ if ($isTeacher && optional_param('save', '', PARAM_TEXT)) {
     exit;
 }
 if ($isTeacher && $action == 'use_draft') {
+    require_sesskey();
     $cross_subject->require_capability(BLOCK_EXACOMP_CAP_VIEW);
 
     $new_id = block_exacomp_save_drafts_to_course([$cross_subject->id], $COURSE->id);
     redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $courseid, 'crosssubjid' => $new_id, 'editmode' => 1)));
 }
 if ($isTeacher && $action == 'save_as_draft') {
+    require_sesskey();
     $cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 
     $new_id = block_exacomp_save_drafts_to_course([$cross_subject->id], 0);
@@ -380,7 +387,7 @@ foreach ($students as $student) {
 }
 
 if ($editmode) {
-    echo html_writer::start_tag('form', array('id' => 'cross-subject-data', "action" => $PAGE->url, 'method' => 'post'));
+    echo html_writer::start_tag('form', array('id' => 'cross-subject-data', "action" => $PAGE->url->out(false, array('sesskey' => sesskey())), 'method' => 'post'));
     echo '<input type="hidden" name="save" value="save" />';
 }
 

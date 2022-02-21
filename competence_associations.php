@@ -58,6 +58,7 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, "", false);
 
 if ($editmode && optional_param("action", "", PARAM_TEXT) == "save") {
+    require_sesskey();
     $descriptorids = param::optional_array('descriptor', PARAM_INT);
 
     if ($descriptorids) {
@@ -99,7 +100,8 @@ if ($editmode) {
     $content .= html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save_selection')));
 }
 
-echo html_writer::tag('form', $content, array('method' => 'post', 'action' => $PAGE->url . '&exampleid=' . $exampleid . '&editmode=' . $editmode . '&action=save', 'name' => 'add_association'));
+
+echo html_writer::tag('form', $content, array('method' => 'post', 'action' => $PAGE->url->out(false, array('sesskey' => sesskey())) . '&exampleid=' . $exampleid . '&editmode=' . $editmode . '&action=save', 'name' => 'add_association'));
 
 /* END CONTENT REGION */
 echo $output->footer();
