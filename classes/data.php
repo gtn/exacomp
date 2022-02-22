@@ -330,10 +330,10 @@ class data {
             ),
 
             // delete descriptors without topics
-            array(
-                'table' => BLOCK_EXACOMP_DB_DESCRIPTORS,
-                'needed1' => array('id', 'SELECT descrid FROM {' . BLOCK_EXACOMP_DB_DESCTOPICS . '}'),
-            ),
+            //array(
+            //    'table' => BLOCK_EXACOMP_DB_DESCRIPTORS,
+            //    'needed1' => array('id', 'SELECT descrid FROM {' . BLOCK_EXACOMP_DB_DESCTOPICS . '}'),
+            //),
 
             // delete topics without subjects
             array(
