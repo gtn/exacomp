@@ -822,17 +822,17 @@ EOD;
         $mailer->AddReplyTo('office@frauenstiftung.at', 'Reply To');
         $mailer->SetFrom("office@frauenstiftung.at", 'office@frauenstiftung.at');
         $mailer->AddAddress($email, $email);
-        $mailer->Subject = 'Text Begleitmail Rechnung Codes fÃ¼r Zertifizierung';
+        $mailer->Subject = 'Text Begleitmail Rechnung Codes für Zertifizierung';
         $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/frauenstiftungadresse.PNG', 'logo_1');
         $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/diwipass.PNG', 'logo_2');
         $mailer->AltBody = "";
         $mailer->MsgHTML('
 			<img src="cid:logo_2">
 			<br>
-			<b>Vielen Dank fÃ¼r Ihre Bestellung!</b>
+			<b>Vielen Dank für Ihre Bestellung!</b>
 			<p>Die Rechnung zur Bestellung finden Sie im Anhang.</p>
-			<p> Nach Zahlungseingang mittels BankÃ¼berweisung erhalten Sie den/die Codes per E-Mail Ã¼bermittelt</p>.
-            <p> Wir wÃ¼nschen Ihnen viel Erfolg bei der diwipass-Zertifizierung!</p>
+			<p> Nach Zahlungseingang mittels Banküberweisung erhalten Sie den/die Codes per E-Mail Übermittelt</p>.
+            <p> Wir wünschen Ihnen viel Erfolg bei der diwipass-Zertifizierung!</p>
 			<img src="cid:logo_1">');
 
         if ($attachment) {
