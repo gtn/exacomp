@@ -840,6 +840,9 @@ EOD;
         }
         $mailer->Send();
 
+        //Close and output PDF document
+        $pdf->Output('Rechnung.pdf', 'D');
+
     }
 
 }

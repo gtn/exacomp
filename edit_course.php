@@ -46,6 +46,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $headertext = '';
 
 if ($action == 'save_coursesettings') {
+    require_sesskey();
     $settings = block_exacomp_get_settings_by_course($courseid);
     //$settings = new stdClass;
     $settings->grading = optional_param('grading', 0, PARAM_INT);

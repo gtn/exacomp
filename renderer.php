@@ -4821,7 +4821,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $table->data = $rows;
 
-        $div = html_writer::div(html_writer::tag('form', html_writer::table($table) . $hiddenaction . $innerdiv, array('action' => 'edit_config.php?courseid=' . $courseid . '&fromimport=' . $fromimport, 'method' => 'post')),
+        $div = html_writer::div(html_writer::tag('form', html_writer::table($table) . $hiddenaction . $innerdiv, array('action' => 'edit_config.php?courseid=' . $courseid . '&fromimport=' . $fromimport . '&sesskey=' . sesskey(), 'method' => 'post')),
             'exabis_competencies_lis');
 
         $content = html_writer::tag("div", $header . $div, array("id" => "exabis_competences_block"));
@@ -4994,7 +4994,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $div = html_writer::div(html_writer::tag('form',
             $input_grading . $input_activities . $input_descriptors ./*$input_examples.*/ $hiddenaction . $input_nostudents . $input_isglobal . $input_hideglobalsubjects . $input_submit,
-            array('action' => 'edit_course.php?courseid=' . $courseid, 'method' => 'post')), 'block_excomp_center');
+            array('action' => 'edit_course.php?courseid=' . $courseid . '&sesskey=' . sesskey(), 'method' => 'post')), 'block_excomp_center');
 
         $content = html_writer::tag("div", $header . $div, array("id" => "exabis_competences_block"));
 
