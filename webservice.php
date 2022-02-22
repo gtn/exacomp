@@ -665,18 +665,18 @@ class block_exacomp_simple_service {
         $wstoken = required_param('wstoken', PARAM_ALPHANUM);
 
         $wsDataHandler = new block_exacomp_ws_datahandler($wstoken);
-        $userid = $wsDataHandler->getParam('userid');
-        $firstname = $wsDataHandler->getParam('firstname');
-        $lastname = $wsDataHandler->getParam('lastname');
-        $email = $wsDataHandler->getParam('email');
-        $company = $wsDataHandler->getParam('company');
-        $uid = $wsDataHandler->getParam('uid');
-        $telephone = $wsDataHandler->getParam('telephone');
-        $street = $wsDataHandler->getParam('street');
-        $place = $wsDataHandler->getParam('place');
-        $codes = $wsDataHandler->getParam('codes');
-        $single_price = $wsDataHandler->getParam('single_price');
-        $total_price = $wsDataHandler->getParam('total_price');
+        $userid = $_POST['userid'];
+        $firstname = $_POST['firstname'];
+        $lastname = $_POST['lastname'];
+        $email = $_POST['email'];
+        $company = $_POST['company'];
+        $uid = $_POST['uid'];
+        $telephone = $_POST['telephone'];
+        $street = $_POST['street'];
+        $place = $_POST['place'];
+        $codes = $_POST['codes'];
+        $single_price = $_POST['single_price'];
+        $total_price = $_POST['total_price'];
 
         //test
         /*
