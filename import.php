@@ -316,16 +316,16 @@ try {
     $filecontent = ''; // Needed for next using, because $mform->get_file_content('file') can not work in the future
     if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
         $filecontent = $data;
-        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC, $import_data->password);
+        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC, $import_data->password, true);
     } else if ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
         $filecontent = $data;
-        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $import_data->password);
+        $importSuccess = block_exacomp\data_importer::do_import_string($data, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $import_data->password, true);
     } else if ($isAdmin && ($importtype == 'demo')) {
         //do demo import
 
         // TODO: catch exception
         $file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
-        if ($importSuccess = block_exacomp\data_importer::do_import_url($file, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
+        if ($importSuccess = block_exacomp\data_importer::do_import_url($file, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, 0, true)) {
             block_exacomp_settstamp();
         }
     }
@@ -569,7 +569,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         if ($taskid) {
                             $taskdata = $DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
                             $url = $taskdata->link;
-                            $importSuccess = block_exacomp\data_importer::do_import_url($url, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, true, $taskid);
+                            $importSuccess = block_exacomp\data_importer::do_import_url($url, $course_template, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, true, $taskid, false);
                             if (is_array($importSuccess)) {
                                 // no errors for now, but the user needs to configure importing
                                 switch ($importSuccess['result']) {

@@ -1828,7 +1828,7 @@ class data_importer extends data {
 
     private static $unzippedPath = '';
 
-    public static function do_import_string($data = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null) {
+    public static function do_import_string($data = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $manualImport = false) {
         global $CFG;
 
         if (!$data) {
@@ -1838,7 +1838,7 @@ class data_importer extends data {
         $file = tempnam($CFG->tempdir, "zip");
         file_put_contents($file, $data);
 
-        $ret = self::do_import_file($file, $course_template, $par_source, $password);
+        $ret = self::do_import_file($file, $course_template, $par_source, $password, false, 0, $manualImport);
 
         @unlink($file);
 
@@ -1853,7 +1853,7 @@ class data_importer extends data {
      * @param int $schedulerId 0 - not from scheduler; > 0 - scheduler task id, -1 - from main scheduler task '\block_exacomp\task\import'
      * @return bool
      */
-    public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0) {
+    public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0, $manualImport = false) {
         global $CFG;
 
         if (!$url) {
@@ -1861,7 +1861,7 @@ class data_importer extends data {
         }
         if (file_exists($url)) {
             // it's a file
-            return self::do_import_file($url, $course_template, $par_source, null, $simulate, $schedulerId);
+            return self::do_import_file($url, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
         }
 
         $file = tempnam($CFG->tempdir, "zip");
@@ -1871,7 +1871,7 @@ class data_importer extends data {
         }
 
         file_put_contents($file, $handle);
-        $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId);
+        $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
 
         @unlink($file);
 
@@ -1889,7 +1889,7 @@ class data_importer extends data {
      * @param int $schedulerId if it is for scheduler task - id of task; -1 if it is main scheduler task: \block_exacomp\task\import
      * @return bool
      */
-    public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $simulate = false, $schedulerId = 0) {
+    public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $simulate = false, $schedulerId = 0, $manualImport = false) {
         global $USER, $CFG, $DB;
 
         if (!$file) {
@@ -2041,86 +2041,88 @@ class data_importer extends data {
 
         // if the script is called from CLI, for example /cli/import.php: PATH_TO_PHP/php.exe PATH_TO_MOODLE\blocks\exacomp\cli\import.php PATH_TO_XML_FILE
         // we need to ignore steps
-        $is_web = http_response_code() !== false;
-        if (!$is_web) { // no any http response. TODO: is this enough condition?
-            $currentImportStep = '-- cli-script --';
-        }
-
-        switch ($currentImportStep) {
-            case 'compareCategories':
-                // we need to compare assessment_diffLevel_options with XML categories and rename it if needed
-                if (isset($xml->categories)) {
-                    // work with GetPost, because additional form settings are not initialized yet
-                    $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
-                    if ($newMapping) {
-                        self::update_categorymapping_for_source($source_local_id, $newMapping, $simulate);
-                    } else {
-                        $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted();
-                        $categoryMapping = self::get_categorymapping_for_source($source_local_id,
-                            ($simulate || $schedulerId > 0 ? true : false));
-                        $categories = array();
-                        $theSame = true;
-                        if (!$newMapping) {
-                            foreach ($xml->categories->category as $category) {
-                                $categories[] = $category;
-                                // mapping must be from real plugin settings
-                                /*$mappingExists = $categoryMapping
-                                        && array_key_exists(intval($category->attributes()->id), $categoryMapping)
-                                        && in_array($categoryMapping[intval($category->attributes()->id)], $difflevels);*/
-                                if (!in_array(trim($category->title), $difflevels)/* && !$mappingExists*/) {
-                                    $theSame = false;
-                                }
-                            }
-                        }
-                        if ((count($categories) > 0 && !$theSame) // for common importing
-                            || ($simulate && (!$newMapping && !$newSelecting))) // for scheduler importing
-                        {
-                            return array('result' => 'compareCategories', 'list' => $categories, 'sourceId' => $source_local_id);
-                        }
-                    }
-                }
-            case 'selectGrids':
-                // select grids for importing
-                if (isset($xml->edulevels)) {
-                    $allGridSelected = optional_param('selectedGridAll', null, PARAM_INT);
-                    if ($allGridSelected !== null && $allGridSelected != 0) { // shouldn't !== null work?... it does not
-                        self::update_selectedgridsall_for_source($source_local_id, $allGridSelected, ($simulate || $schedulerId > 0 ? true : false));
-                    } else if (!$allGridSelected && $newSelecting && count($newSelecting) > 0) {
-                        // update selected grids only if not selected 'all subjects' checkbox
-                        self::update_selectedgrids_for_source($source_local_id, $newSelecting, ($simulate || $schedulerId > 0 ? true : false));
-                    } else {
-                        $selectedGrids = self::get_selectedgrids_for_source($source_local_id,
-                            ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
-                        $grids = array();
-                        if ($schedulerId != -1 && (!$newSelecting && $allGridSelected === null && $schedulerId == 0) ||
-                            ($simulate && !$newSelecting && $allGridSelected === null)) {
-                            foreach ($xml->edulevels->edulevel as $edulevel) {
-                                foreach ($edulevel->schooltypes->schooltype as $schooltype) {
-                                    foreach ($schooltype->subjects->subject as $subject) {
-                                        $subjectUid = intval($subject->attributes()->id);
-                                        $subject->pathname = $edulevel->title . ' &#9656; ' . $schooltype->title;
-                                        // selected on previous importing
-                                        if ($selectedGrids && array_key_exists($subjectUid, $selectedGrids) &&
-                                            $selectedGrids[$subjectUid] == 1) {
-                                            $subject->selected = true;
-                                        } else if (!$selectedGrids && !$newSelecting) { // first importing for this source
-                                            $subject->selected = true; // all subjects are selected
-                                        }
-                                        // it is new for importing from this source
-                                        if ($selectedGrids && !array_key_exists($subjectUid, $selectedGrids)) {
-                                            $subject->newForSelected = true;
-                                        }
-                                        $grids[$subjectUid] = $subject;
+        //$is_web = http_response_code() !== false;
+        //if (!$is_web) { // no any http response. TODO: is this enough condition?
+        //    $currentImportStep = '-- cli-script --';
+        //}
+        // Always ignore steps, EXCEPT when the import is done manually:
+        if ($manualImport) {
+            switch ($currentImportStep) {
+                case 'compareCategories':
+                    // we need to compare assessment_diffLevel_options with XML categories and rename it if needed
+                    if (isset($xml->categories)) {
+                        // work with GetPost, because additional form settings are not initialized yet
+                        $newMapping = optional_param_array('changeTo', null, PARAM_RAW);
+                        if ($newMapping) {
+                            self::update_categorymapping_for_source($source_local_id, $newMapping, $simulate);
+                        } else {
+                            $difflevels = block_exacomp_get_assessment_diffLevel_options_splitted();
+                            $categoryMapping = self::get_categorymapping_for_source($source_local_id,
+                                ($simulate || $schedulerId > 0 ? true : false));
+                            $categories = array();
+                            $theSame = true;
+                            if (!$newMapping) {
+                                foreach ($xml->categories->category as $category) {
+                                    $categories[] = $category;
+                                    // mapping must be from real plugin settings
+                                    /*$mappingExists = $categoryMapping
+                                            && array_key_exists(intval($category->attributes()->id), $categoryMapping)
+                                            && in_array($categoryMapping[intval($category->attributes()->id)], $difflevels);*/
+                                    if (!in_array(trim($category->title), $difflevels)/* && !$mappingExists*/) {
+                                        $theSame = false;
                                     }
                                 }
                             }
-                            $resultByGrids = 'selectGrids';
-                            return array('result' => $resultByGrids, 'list' => $grids, 'sourceId' => $source_local_id);
+                            if ((count($categories) > 0 && !$theSame) // for common importing
+                                || ($simulate && (!$newMapping && !$newSelecting))) // for scheduler importing
+                            {
+                                return array('result' => 'compareCategories', 'list' => $categories, 'sourceId' => $source_local_id);
+                            }
                         }
                     }
-                }
-            //default:
-            //    return array('result' => 'goRealImporting');
+                case 'selectGrids':
+                    // select grids for importing
+                    if (isset($xml->edulevels)) {
+                        $allGridSelected = optional_param('selectedGridAll', null, PARAM_INT);
+                        if ($allGridSelected !== null && $allGridSelected != 0) { // shouldn't !== null work?... it does not
+                            self::update_selectedgridsall_for_source($source_local_id, $allGridSelected, ($simulate || $schedulerId > 0 ? true : false));
+                        } else if (!$allGridSelected && $newSelecting && count($newSelecting) > 0) {
+                            // update selected grids only if not selected 'all subjects' checkbox
+                            self::update_selectedgrids_for_source($source_local_id, $newSelecting, ($simulate || $schedulerId > 0 ? true : false));
+                        } else {
+                            $selectedGrids = self::get_selectedgrids_for_source($source_local_id,
+                                ($simulate || $schedulerId > 0 ? ($schedulerId > 0 ? $schedulerId : true) : false));
+                            $grids = array();
+                            if ($schedulerId != -1 && (!$newSelecting && $allGridSelected === null && $schedulerId == 0) ||
+                                ($simulate && !$newSelecting && $allGridSelected === null)) {
+                                foreach ($xml->edulevels->edulevel as $edulevel) {
+                                    foreach ($edulevel->schooltypes->schooltype as $schooltype) {
+                                        foreach ($schooltype->subjects->subject as $subject) {
+                                            $subjectUid = intval($subject->attributes()->id);
+                                            $subject->pathname = $edulevel->title . ' &#9656; ' . $schooltype->title;
+                                            // selected on previous importing
+                                            if ($selectedGrids && array_key_exists($subjectUid, $selectedGrids) &&
+                                                $selectedGrids[$subjectUid] == 1) {
+                                                $subject->selected = true;
+                                            } else if (!$selectedGrids && !$newSelecting) { // first importing for this source
+                                                $subject->selected = true; // all subjects are selected
+                                            }
+                                            // it is new for importing from this source
+                                            if ($selectedGrids && !array_key_exists($subjectUid, $selectedGrids)) {
+                                                $subject->newForSelected = true;
+                                            }
+                                            $grids[$subjectUid] = $subject;
+                                        }
+                                    }
+                                }
+                                $resultByGrids = 'selectGrids';
+                                return array('result' => $resultByGrids, 'list' => $grids, 'sourceId' => $source_local_id);
+                            }
+                        }
+                    }
+                //default:
+                //    return array('result' => 'goRealImporting');
+            }
         }
 
         if ($simulate) {
