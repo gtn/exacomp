@@ -330,6 +330,8 @@ class data {
             ),
 
             // delete descriptors without topics
+            // TODO: sometimes not all children are added to the mm table... todo in komet.
+            // the mm connection is not necessary, because childdrescriptors are reachable through the parentdescriptors
             //array(
             //    'table' => BLOCK_EXACOMP_DB_DESCRIPTORS,
             //    'needed1' => array('id', 'SELECT descrid FROM {' . BLOCK_EXACOMP_DB_DESCTOPICS . '}'),
@@ -375,10 +377,9 @@ class data {
             if (!empty($table['needed3'])) {
                 $sql .= " OR {$table['needed3'][0]} NOT IN ({$make_select($table['needed3'][1])})";
             }
-            // keep the -1 descriptor for the free materials
-            if ($table['table'] == BLOCK_EXACOMP_DB_DESCRIPTORS) {
-                $sql .= " AND NOT id < 0";
-            }
+            // keep the -1 descriptor for the free materials... and every other similar case
+            $sql .= " AND NOT id < 0";
+
             // keep the blocking events (termine) created in the weekly schedule.. those entries are not connected to descriptors
             if ($table['table'] == BLOCK_EXACOMP_DB_EXAMPLES) {
                 $sql .= " AND NOT blocking_event = 1";
