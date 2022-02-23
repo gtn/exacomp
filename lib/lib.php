@@ -3175,10 +3175,11 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
         if ($courseSettings->uses_activities) {
             if (block_exacomp_use_old_activities_method()) {
                 $settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
+            } else {
+                $settings_subtree[] =
+                    new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null,
+                        true);
             }
-            $settings_subtree[] =
-                new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null,
-                    true);
             $settings_subtree[] =
                 new tabobject('tab_teacher_settings_questiontodescriptors', new moodle_url('/blocks/exacomp/question_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_questiontodescriptors"), null, true);
         }
