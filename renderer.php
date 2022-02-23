@@ -286,7 +286,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if (!$topicSelectedAnother || count($topicSelectedAnother) == 0) {
                     $forwardUrl = new moodle_url('/blocks/exacomp/edit_course.php', ['courseid' => $courseid]);
                 }
-                $deleteUrl = html_entity_decode(new block_exacomp\url('subject.php', ['courseid' => $COURSE->id, 'id' => $subject->id, 'action' => 'delete', 'forward' => $forwardUrl]));
+                $deleteUrl = html_entity_decode(new block_exacomp\url('subject.php', ['courseid' => $COURSE->id, 'id' => $subject->id, 'action' => 'delete', 'forward' => $forwardUrl, 'sesskey' => sesskey()]));
                 // subject delete button
                 $extra .= ' ' . html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                         null, [
@@ -325,7 +325,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 'exa-type' => "iframe-popup",
                                 'exa-url' => 'topic.php?courseid=' . $COURSE->id . '&id=' . $topic->id,
                             ]);
-                        $deleteUrl = html_entity_decode(new block_exacomp\url('topic.php', ['courseid' => $COURSE->id, 'id' => $topic->id, 'action' => 'delete', 'forward' => g::$PAGE->url . '&editmode=1']));
+                        $deleteUrl = html_entity_decode(new block_exacomp\url('topic.php', ['courseid' => $COURSE->id, 'id' => $topic->id, 'sesskey' => sesskey(), 'action' => 'delete', 'forward' => g::$PAGE->url . '&editmode=1']));
                         // topic delete button
                         $extra .= ' ' . html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                                 null, [
@@ -371,7 +371,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 $extra = '';
                 if ($this->is_edit_mode() && ($niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($selectedSubject, "is_editable") && $selectedSubject->is_editable))) {
-                    $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'forward' => g::$PAGE->url . '&editmode=1']));
+                    $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'sesskey' => sesskey(), 'forward' => g::$PAGE->url . '&editmode=1']));
                     // Niveau delete button
                     $extra .= '&nbsp;' . html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
                             null, [
@@ -4821,7 +4821,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $table->data = $rows;
 
-        $div = html_writer::div(html_writer::tag('form', html_writer::table($table) . $hiddenaction . $innerdiv, array('action' => 'edit_config.php?courseid=' . $courseid . '&fromimport=' . $fromimport . '&sesskey=' . sesskey(), 'method' => 'post')),
+        $div = html_writer::div(html_writer::tag('form', html_writer::table($table) . $hiddenaction . $innerdiv,
+            array('action' => 'edit_config.php?courseid=' . $courseid . '&fromimport=' . $fromimport . '&sesskey=' . sesskey(), 'method' => 'post')),
             'exabis_competencies_lis');
 
         $content = html_writer::tag("div", $header . $div, array("id" => "exabis_competences_block"));
@@ -4830,6 +4831,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     public function edit_taxonomies($courseid) {
+        global $PAGE;
         $content = '';
         // local moodle taxonomies
         $tablecontent = '';
@@ -4853,7 +4855,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 // up/down buttons
                 end($taxonomies);
                 if ($taxkey !== key($taxonomies)) {
-                    $row->cells[] = '<a href="' . $_SERVER['REQUEST_URI'] . '&action=sorting&dir=down&taxid=' . intval($taxonomy->id) . '"
+                    $row->cells[] = '<a href="' . $_SERVER['REQUEST_URI'] . '&action=sorting&dir=down&taxid=' . intval($taxonomy->id) . '&sesskey=' . sesskey() . '"
                                     class="small">'
                         . html_writer::span($this->pix_icon("i/down", block_exacomp_get_string("move_down")))
                         . '</a>';
@@ -4862,7 +4864,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 reset($taxonomies);
                 if ($taxkey !== key($taxonomies)) {
-                    $row->cells[] = '<a href="' . $_SERVER['REQUEST_URI'] . '&action=sorting&dir=up&taxid=' . intval($taxonomy->id) . '"
+                    $row->cells[] = '<a href="' . $_SERVER['REQUEST_URI'] . '&action=sorting&dir=up&taxid=' . intval($taxonomy->id) . '&sesskey=' . sesskey() . '"
                                     class="small">'
                         . html_writer::span($this->pix_icon("i/up", block_exacomp_get_string("move_up")))
                         . '</a>';
@@ -4872,7 +4874,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 // Delimeter
                 $row->cells[] = '&nbsp;';
                 // Delete button
-                $row->cells[] = '<a href="' . $_SERVER['REQUEST_URI'] . '&action=delete&taxid=' . intval($taxonomy->id) . '"
+                $row->cells[] = '<a href="' . $_SERVER['REQUEST_URI'] . '&action=delete&taxid=' . intval($taxonomy->id) . '&sesskey=' . sesskey() . '"
                                     onclick="return confirm(\'' . block_exacomp_get_string('really_delete') . '\');"
                                     class="small">'
                     . html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")))
@@ -4904,7 +4906,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $form = html_writer::div(
             html_writer::tag('form',
                 $tablecontent . $buttons,
-                array('action' => 'edit_taxonomies.php?courseid=' . $courseid,
+                array('action' => $PAGE->url->out(false, array('courseid' => $courseid, 'sesskey' => sesskey())),
                     'method' => 'post',
                     'class' => 'form-vertical')));
 
@@ -5041,6 +5043,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     public function edit_course_assessment($choices, $courseid, $currentSelection) {
+        global $PAGE;
         $output = html_writer::tag('h3', block_exacomp_get_string('course_assessment_settings'));
         $output .= '<p>' . block_exacomp_get_string("course_assessment_config_infotext") . '</p>';
 
@@ -5064,7 +5067,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $form = html_writer::tag('form', html_writer::table($table) . $input_submit . $hiddenaction,
             array("method" => "post",
-                "action" => "edit_course_assessment.php?courseid=" . $courseid,
+                "action" => $PAGE->url->out(false, array('courseid' => $courseid, 'sesskey' => sesskey())),
                 "id" => "course-assessment-configuration"));
 
         //        $div = html_writer::div(html_writer::tag('form',
@@ -5497,7 +5500,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 'onClick' => 'return confirm(\'' . block_exacomp_get_string('really_delete') . '\');')),
             '', array('id' => 'exabis_save_button'));
 
-        return html_writer::tag("form", $header . $table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'delete_selected')), "id" => "exa-selector"));
+        return html_writer::tag("form", $header . $table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'delete_selected', 'sesskey' => sesskey())), "id" => "exa-selector"));
     }
 
     public function subject_preselection_source_delete($source, $subjects, $courseid) {
@@ -5768,14 +5771,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $descriptorRow->cells[] = $moduleCell;
             }
 
-			$rows[] = $descriptorRow;
+            $rows[] = $descriptorRow;
 
-			// Child descriptors
+            // Child descriptors
             if ($descriptor->children) {
                 $this->descriptors_activities($rows, $level + 1, $descriptor->children, $modules, $topicid);
             }
-		}
-	}
+        }
+    }
 
     public function badge($badge, $descriptors, $context) {
         global $COURSE, $CFG;

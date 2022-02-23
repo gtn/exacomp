@@ -59,6 +59,7 @@ if ($preconfigurations && is_array($preconfigurations)) {
 }
 
 if ($action == 'save') {
+    require_sesskey();
     //    $settings = $DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
     $settings = block_exacomp_get_settings_by_course($courseid);
     $settings->assessmentconfiguration = optional_param('selection_preconfig', 0, PARAM_INT);

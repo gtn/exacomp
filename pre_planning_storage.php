@@ -52,6 +52,7 @@ if (!$students) {
 }
 
 if (strcmp($action, 'empty') == 0) {
+    require_sesskey();
     block_exacomp_empty_pre_planning_storage($courseid);
 }
 
@@ -72,7 +73,7 @@ foreach ($schedules as $schedule) {
 }
 
 /* CONTENT REGION */
-echo html_writer::start_tag('form', array('action' => $PAGE->url->out(false) . '&action=empty', 'method' => 'post'));
+echo html_writer::start_tag('form', array('action' => $PAGE->url->out(false, array('action' => 'empty', 'sesskey' => sesskey())), 'method' => 'post'));
 
 echo $output->pre_planning_storage_pool();
 echo $output->pre_planning_storage_students($students, $examples, $groups);

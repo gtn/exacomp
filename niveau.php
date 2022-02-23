@@ -113,7 +113,7 @@ class block_exacomp_local_item_edit_form extends moodleform {
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
-        $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveauid, 'action' => 'delete', 'forward' => optional_param('backurl', '', PARAM_URL) . '&editmode=1']));
+        $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveauid, 'action' => 'delete', 'sesskey' => sesskey(),'forward' => optional_param('backurl', '', PARAM_URL) . '&editmode=1']));
         //$buttonarray[] = &$mform->createElement('button', 'delete', get_string('delete'));
         $buttonarray[] = &$mform->createElement('static', '', '',
             '<a href="#" onClick="if (confirm(\'' . block_exacomp_get_string('really_delete') . '\')) { window.location.href = \'' . $deleteUrl . '\'; return false;} else {return false;};" class="btn btn-danger">' . get_string('delete') .
@@ -133,6 +133,7 @@ if ($item) {
 }
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
+    require_sesskey();
     block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
     //$item->delete();
     block_exacomp_delete_tree($courseid, 'niveau', $item->id);
@@ -162,7 +163,7 @@ if (!$item) {
     $form->set_data($data);
 
     if ($formdata = $form->get_data()) {
-
+        require_sesskey();
         //if ($formdata->niveau_type == 'new') {
         if (empty($formdata->niveau_id)) {
             $niveau = new stdClass;
@@ -204,7 +205,7 @@ if (!$item) {
     }
 
     if ($formdata = $form->get_data()) {
-
+        require_sesskey();
         $new = new stdClass();
         $new->title = $formdata->title;
         $new->numb = $formdata->numb;

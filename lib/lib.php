@@ -14321,6 +14321,7 @@ function block_exacomp_build_comp_tree($question) {
     $content .= $printtree($comptree);
     $content .= '<input type="hidden" value="' . $question->id . '" name="questid">';
     $content .= '<input type="hidden" value="save" name="action">';
+    $content .= '<input type="hidden" value=' . sesskey() . ' name="sesskey">';
     $content .= '<input type="submit" id="id_submitbutton" type="submit" value="' . get_string('savechanges') .
         '" name="submitbutton">';
 

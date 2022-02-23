@@ -76,7 +76,7 @@ $form = new block_exacomp_example_upload_student_form($_SERVER['REQUEST_URI'],
         "solution" => ($solution = block_exacomp_get_file_url($example, 'example_solution')) ? $solution : null));
 
 if ($formdata = $form->get_data()) {
-
+    require_sesskey();
     $newExample = new stdClass();
     $newExample->title = $formdata->title;
     $newExample->description = $formdata->description;

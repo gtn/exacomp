@@ -78,7 +78,7 @@ $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'],
         'visible_solution' => $visible_solution));
 
 if ($formdata = $form->get_data()) {
-
+    require_sesskey();
     $type = 'file';
 
     //store item in the right portfolio category

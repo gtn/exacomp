@@ -47,6 +47,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 if (isset($action)) {
     switch ($action) {
         case 'save':
+            require_sesskey();
             // save existing taxonomies
             if (isset($_POST['data'])) {
                 $data = $_POST['data'];
@@ -79,12 +80,14 @@ if (isset($action)) {
             die;
             break;
         case 'delete':
+            require_sesskey();
             $taxtodelete = required_param('taxid', PARAM_INT);
             $DB->delete_records(BLOCK_EXACOMP_DB_TAXONOMIES, ['id' => $taxtodelete]);
             redirect($CFG->wwwroot . '/blocks/exacomp/edit_taxonomies.php?courseid=' . $courseid, block_exacomp_get_string('taxonomy_was_deleted'), null, 'info');
             die;
             break;
         case 'sorting':
+            require_sesskey();
             $taxtomove = required_param('taxid', PARAM_INT);
             $direction = optional_param('dir', 'down', PARAM_ALPHA);
             $taxonomies = block_exacomp_get_taxonomies(BLOCK_EXACOMP_DATA_SOURCE_CUSTOM);

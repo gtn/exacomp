@@ -54,6 +54,7 @@ function block_exacomp_source_delete_get_subjects_for_preselection($source) {
 }
 
 if ($action == 'delete_selected') {
+    require_sesskey();
     $json_data = block_exacomp\param::required_json('json_data', (object) array(
         'subjects' => [PARAM_INT],
         'topics' => [PARAM_INT],

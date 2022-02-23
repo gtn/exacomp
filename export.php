@@ -100,6 +100,7 @@ function block_exacomp_require_secret() {
     echo '<form method="post">
 		' . $other_params . '
 		<input type="hidden" name="secret" value="' . $secret . '" />
+		<input type="hidden" name="sesskey" value="' . sesskey() . '" />
 		<input type="submit" class="btn btn-primary" value="' . block_exacomp_get_string('next') . '" />
 	</form>';
 
@@ -108,10 +109,12 @@ function block_exacomp_require_secret() {
 }
 
 if ($action == 'export_all') {
+    require_sesskey();
     $secret = block_exacomp_require_secret();
 
     block_exacomp\data_exporter::do_export($secret);
 } else if ($action == 'export_selected') {
+    require_sesskey();
     $secret = block_exacomp_require_secret();
     $descriptors = block_exacomp\param::optional_array('descriptors', array(PARAM_INT => PARAM_INT));
 
@@ -122,7 +125,7 @@ if ($action == 'export_all') {
     $page_identifier = 'tab_admin_import';
 
     /* PAGE URL - MUST BE CHANGED */
-    $PAGE->set_url('/blocks/exacomp/export.php', array('courseid' => $courseid));
+    $PAGE->set_url('/blocks/exacomp/export.php', array('courseid' => $courseid, 'sesskey' => sesskey()));
     $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
     $PAGE->set_title(block_exacomp_get_string($page_identifier));
 

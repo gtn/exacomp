@@ -670,7 +670,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
             // export
             if ($hasData) {
                 echo '<hr />';
-                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action' => 'export_all', 'courseid' => $courseid)), block_exacomp_get_string("export_all_standards")));
+                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action' => 'export_all', 'courseid' => $courseid, 'sesskey' => sesskey())), block_exacomp_get_string("export_all_standards")));
                 echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action' => 'select', 'courseid' => $courseid)), block_exacomp_get_string("export_selective")));
             }
 

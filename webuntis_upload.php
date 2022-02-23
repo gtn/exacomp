@@ -50,6 +50,7 @@ $form = new block_exacomp_webuntis_upload_form($_SERVER['REQUEST_URI'],
     array());
 
 if ($formdata = $form->get_data()) {
+    require_sesskey();
     $type = 'file';
     if (isset($formdata->file)) {
         if (!$studentid) {
