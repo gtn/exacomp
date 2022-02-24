@@ -50,10 +50,12 @@ $trainerid = optional_param('trainerid', -1, PARAM_INT);
 $studentid = optional_param('studentid', -1, PARAM_INT);
 
 if ($trainerid > 0 && $studentid > 0) {
+    require_sesskey();
     if (!$DB->record_exists('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $studentid))) {
         $DB->insert_record('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $studentid));
     }
 } else if ($trainerid > 0 && $studentid == 0) {
+    require_sesskey();
     foreach ($students as $student) {
         if (!$DB->record_exists('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $student->id))) {
             $DB->insert_record('block_exacompexternaltrainer', array('trainerid' => $trainerid, 'studentid' => $student->id));
@@ -62,6 +64,7 @@ if ($trainerid > 0 && $studentid > 0) {
 }
 
 if (($delete = optional_param('delete', 0, PARAM_INT)) > 0) {
+    require_sesskey();
     $DB->delete_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array('id' => $delete));
 }
 
@@ -79,8 +82,19 @@ echo block_exacomp_get_string('block_exacomp_external_trainer');
 echo html_writer::select($selectteachers, 'trainerid');
 echo '&nbsp;&nbsp;&nbsp;&nbsp;' . block_exacomp_get_string('block_exacomp_external_trainer_student');
 echo html_writer::select($selectstudents, 'studentid');
+echo '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
 echo '<input type="submit">';
 echo '</form>';
+
+//echo '<form method="post">
+//		' . $other_params . '
+//		<input type="hidden" name="secret" value="' . $secret . '" />
+//		<input type="hidden" name="sesskey" value="' . sesskey() . '" />
+//		<input type="submit" class="btn btn-primary" value="' . block_exacomp_get_string('next') . '" />
+//	</form>';
+
+
+
 if ($externaltrainers) {
     echo '<table id="user-table" class="generaltable externaltrainerstable">';
     echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';

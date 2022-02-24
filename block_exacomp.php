@@ -162,7 +162,7 @@ class block_exacomp extends block_list {
                 if (get_config('exacomp', 'external_trainer_assign')) {
                     $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/externaltrainer.svg' . '" class="icon" alt="" />';
                     $this->content->items[] = '<a title="' . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '" ' .
-                        ' href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $courseid . '">' .
+                        ' href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $courseid . '&sesskey=' . sesskey() .'">' .
                         $icon . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '</a>';
                 }
             }

@@ -78,6 +78,7 @@ list($tmp2, $subjects, $topics, $tmp, $selectedSubject, $selectedTopic) = block_
 
 // SAVA DATA
 if (($action = optional_param("action", "", PARAM_TEXT)) == "save") {
+    require_sesskey();
     // DESCRIPTOR DATA
     block_exacomp_save_competences(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $selectedTopic->id,
         $selectedSubject->id);

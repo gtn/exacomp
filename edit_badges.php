@@ -50,6 +50,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 
 if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
     if ($action == 'save') {
+        require_sesskey();
         $DB->delete_records('block_exacompdescbadge_mm', array("badgeid" => $badgeid));
         if (!empty($_POST['descriptors'])) {
             foreach ($_POST['descriptors'] as $value => $tmp) {
