@@ -309,6 +309,7 @@ try {
     // check category renaming
     $import_data = $mform->get_data();
     if ($import_data) {
+        require_sesskey();
         $course_template = intval($import_data->template);
     } else {
         $course_template = null;
@@ -345,6 +346,7 @@ $pagenode->make_active();
 
 $delete = false;
 if (($isAdmin || block_exacomp_check_customupload()) && ($action == 'delete' && $importtype != 'scheduler')) {
+    require_sesskey();
     block_exacomp\data::delete_source(required_param('source', PARAM_INT));
     $delete = true;
 }
@@ -484,20 +486,20 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         $cell = new html_table_cell();
                         $cell->attributes['class'] = 'exacomp_importtask_buttons';
                         $edit = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
-                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'edit', 'id' => $task->id)),
+                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'edit', 'id' => $task->id, 'sesskey' => sesskey())),
                             html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/edit.png'))),
                             array('class' => ''));
                         $settings = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
-                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'settings', 'id' => $task->id)),
+                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'settings', 'id' => $task->id, 'sesskey' => sesskey())),
                             html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/document_properties.png'))),
                             array('class' => ''));
                         $button_pic = $task->disabled ? 'completion-auto-fail.png' : 'completion-auto-enabled.png';
                         $disable = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
-                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'disable', 'id' => $task->id)),
+                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'disable', 'id' => $task->id, 'sesskey' => sesskey())),
                             html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/' . $button_pic))),
                             array('class' => ''));
                         $delete = html_writer::link(new moodle_url('/blocks/exacomp/import.php',
-                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'delete', 'id' => $task->id)),
+                            array('courseid' => $courseid, 'importtype' => 'scheduler', 'action' => 'delete', 'id' => $task->id, 'sesskey' => sesskey())),
                             html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/delete.png'))),
                             array('class' => ''));
                         $cell->text = $disable . '&nbsp;' . $edit . '&nbsp;' . $settings . '&nbsp;' . $delete . '&nbsp;';
@@ -511,8 +513,9 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                 };
 
                 switch ($action) {
-                    case 'add': // add new task
+                    case 'add':// add new task
                         if ($taskdata = $taskform->get_data()) {
+                            require_sesskey();
                             $taskdata->disabled = 1;
                             // save data
                             $DB->insert_record(BLOCK_EXACOMP_DB_IMPORTTASKS, $taskdata);
@@ -527,6 +530,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         $taskid = required_param('id', PARAM_INT);
                         if ($taskid) {
                             if ($taskdata = $taskform->get_data()) {
+                                require_sesskey();
                                 // save data
                                 $taskdata->id = $taskid;
                                 if (!isset($taskdata->disabled)) { // form does not send unchecked checkboxes
@@ -544,6 +548,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         }
                         break;
                     case 'disable': // disable task
+                        require_sesskey();
                         $taskid = required_param('id', PARAM_INT);
                         if ($taskid) {
                             $taskdata = $DB->get_record(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
@@ -553,6 +558,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         $taskslist();
                         break;
                     case 'delete': // delete task
+                        require_sesskey();
                         $taskid = required_param('id', PARAM_INT);
                         if ($taskid) {
                             $DB->delete_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('id' => $taskid));
@@ -560,6 +566,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         $taskslist();
                         break;
                     case 'settings': // edit settings: category_mapping, selected_grids
+                        require_sesskey();
                         // it is simulating of importing:
                         // - download xml from link
                         // - try to import

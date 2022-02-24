@@ -5880,7 +5880,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return html_writer::div(block_exacomp_get_string('description_edit_badge_comps'))
             . html_writer::empty_tag('br')
             .
-            html_writer::tag('form', $div, array('id' => 'edit-activities', 'action' => new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $COURSE->id, 'badgeid' => $badge->id, 'action' => 'save')), 'method' => 'post'));
+            html_writer::tag('form', $div, array('id' => 'edit-activities', 'action' => new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $COURSE->id, 'badgeid' => $badge->id, 'sesskey' => sesskey(), 'action' => 'save')), 'method' => 'post'));
 
     }
 
