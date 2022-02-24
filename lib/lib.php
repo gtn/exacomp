@@ -4981,10 +4981,9 @@ function block_exacomp_get_activitiy_by_id($activityid) {
 
 /**
  * @param array $descriptorsData
- * @param array $topicsData // not used - needed descriptors will be selected via JS in the frontend
  * @param integer $courseid
  */
-function block_exacomp_update_example_activity_relations($descriptorsData = array(), $topicsData = array(), $courseid) {
+function block_exacomp_update_example_activity_relations($descriptorsData = array(), $courseid) {
     global $DB, $CFG, $USER;
 
     foreach ($descriptorsData as $activityid => $descriptors) {

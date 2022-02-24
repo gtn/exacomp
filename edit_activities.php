@@ -77,16 +77,43 @@ $img = new moodle_url('/blocks/exacomp/pix/three.png');
 
 if ($action == "save") {
     require_sesskey();
+
+    $activitiesData = array();
+    if($_POST['data']){
+        foreach ($_POST['data'] as $activityid => $activity){
+            $newActivity = array(); // to throw away all bad keys
+            $activityid = clean_param($activityid, PARAM_INT);
+            foreach ($activity as $descriptorid => $descriptor){
+                $descriptorid = clean_param($descriptorid, PARAM_INT);
+                $newActivity[$descriptorid] = clean_param($descriptor, PARAM_INT);
+            }
+            $activitiesData[$activityid] = $newActivity;
+        }
+    }
+
+    $activitiesTopicData = array();
+    if($_POST['topicdata']){
+        foreach ($_POST['topicdata'] as $activityid => $activity){
+            $newActivity = array(); // to throw away all bad keys
+            $activityid = clean_param($activityid, PARAM_INT);
+            foreach ($activity as $topicid => $topic){
+                $topicid = clean_param($topicid, PARAM_INT);
+                $newActivity[$topicid] = clean_param($topic, PARAM_INT);
+            }
+            $activitiesTopicData[$activityid] = $newActivity;
+        }
+    }
+
     // delete old relations only from this page (some can be hidden)
-    if (isset($_POST['data'])) {
-        foreach ($_POST['data'] as $cmoduleKey => $comps) {
+    if (isset($activitiesData)) {
+        foreach ($activitiesData as $cmoduleKey => $comps) {
             if (!empty($cmoduleKey)) {
                 block_exacomp_delete_competences_activities($cmoduleKey, 0);
             }
         }
     }
-    if (isset($_POST['topicdata'])) {
-        foreach ($_POST['topicdata'] as $cmoduleKey => $comps) {
+    if (isset($activitiesTopicData)) {
+        foreach ($activitiesTopicData as $cmoduleKey => $comps) {
             if (!empty($cmoduleKey)) {
                 block_exacomp_delete_competences_activities($cmoduleKey, 1);
             }
@@ -95,9 +122,9 @@ if ($action == "save") {
     // delete all realtion for course
     //block_exacomp_delete_competences_activities();
     // DESCRIPTOR DATA
-    block_exacomp_save_competences_activities(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, 0);
+    block_exacomp_save_competences_activities($activitiesData, $courseid, 0);
     // TOPIC DATA
-    block_exacomp_save_competences_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
+    block_exacomp_save_competences_activities($activitiesTopicData, $courseid, 1);
 
     if (!isset($_POST['data']) && !isset($_POST['topicdata'])) {
         $headertext = block_exacomp_get_string('tick_some');
@@ -148,25 +175,11 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
-$selected_niveaus = array();
-$selected_modules = array();
-/* CONTENT REGION */
-if ($action == "filter") {
-    if (isset($_POST['niveau_filter'])) {
-        $selected_niveaus = $_POST['niveau_filter'];
-    }
-
-    if (isset($_POST['module_filter'])) {
-        $selected_modules = $_POST['module_filter'];
-    }
-}
-
 $subjects = block_exacomp_get_competence_tree($courseid, null, null, true, null, false, array(), false, true);
 
 $modules = $allModules = block_exacomp_get_allowed_course_modules_for_course($COURSE->id);
 
 $visible_modules = [];
-$modules_to_filter = [];
 
 $colselector = $output->students_column_selector(count($allModules), 'edit_activities');
 
@@ -192,15 +205,9 @@ if ($modules) {
             }
         }
 
-        if (empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules)) {
-            $visible_modules[] = $module;
-        }
-
-        $modules_to_filter[] = $module;
+        $visible_modules[] = $module;
     }
 
-    $niveaus = block_exacomp_extract_niveaus($subjects);
-    block_exacomp_filter_niveaus($subjects, $selected_niveaus);
 
     $topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 
@@ -216,7 +223,7 @@ if ($modules) {
         echo $output->activity_legend($headertext);
         echo $output->transfer_activities();
         echo $colselector;
-        echo $output->activity_content($subjects, $visible_modules);
+        echo $output->activity_content($subjects, $visible_modules, $courseid);
     }
 } else {
     echo $output->transfer_activities();

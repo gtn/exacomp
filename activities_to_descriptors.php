@@ -30,6 +30,8 @@ if (strcmp("mysql", $CFG->dbtype) == 0) {
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
 
+
+
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
@@ -73,9 +75,22 @@ $img = new moodle_url('/blocks/exacomp/pix/three.png');
 if ($action == "save") {
     require_sesskey();
     // RELATED DATA
-    block_exacomp_update_example_activity_relations(isset($_POST['data']) ? $_POST['data'] : array(), isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid);
+    $activitiesData = array();
+    if($_POST['data']){
+        foreach ($_POST['data'] as $activityid => $activity){
+            $newActivity = array(); // to throw away all bad keys
+            $activityid = clean_param($activityid, PARAM_INT);
+            foreach ($activity as $descriptorid => $descriptor){
+                $descriptorid = clean_param($descriptorid, PARAM_INT);
+                $newActivity[$descriptorid] = clean_param($descriptor, PARAM_INT);
+            }
+            $activitiesData[$activityid] = $newActivity;
+        }
+    }
 
-    if (!isset($_POST['data']) && !isset($_POST['topicdata'])) {
+    block_exacomp_update_example_activity_relations($activitiesData, $courseid);
+
+    if (!isset($_POST['data'])) {
         $headertext = block_exacomp_get_string('tick_some');
     } else {
         $headertext = $output->notification(block_exacomp_get_string("save_success"), 'info');
@@ -143,18 +158,10 @@ if ($action == "import") {
 echo $output->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
-$selected_niveaus = array();
-$selected_modules = array();
-/* CONTENT REGION */
-if ($action == "filter") {
-    if (isset($_POST['niveau_filter'])) {
-        $selected_niveaus = $_POST['niveau_filter'];
-    }
 
-    if (isset($_POST['module_filter'])) {
-        $selected_modules = $_POST['module_filter'];
-    }
-}
+
+/* CONTENT REGION */
+
 
 if ($action == "export-activity") {
 
@@ -182,7 +189,6 @@ $subjects = block_exacomp_get_competence_tree($courseid, null, null, true, null,
 $modules = $allModules = block_exacomp_get_allowed_course_modules_for_course($COURSE->id);
 
 $visible_modules = [];
-$modules_to_filter = [];
 
 $colselector = $output->students_column_selector(count($allModules), 'activities_to_descriptors');
 
@@ -213,15 +219,8 @@ if ($modules) {
             }
         }
 
-        if (empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules)) {
-            $visible_modules[] = $module;
-        }
-
-        $modules_to_filter[] = $module;
+        $visible_modules[] = $module;
     }
-
-    $niveaus = block_exacomp_extract_niveaus($subjects);
-    block_exacomp_filter_niveaus($subjects, $selected_niveaus);
 
     $topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 
