@@ -2925,7 +2925,7 @@ class data_importer extends data {
         if ($parent > 0) {
             $descriptor->parentid = $parent;
             $descriptor->sorting = $sorting;
-        }else{
+        }else if ($parent == 0){
             // If the descriptor WAS a childdescriptor, but now the suject is updated, and this descriptor is now a parent --> set it to 0, not to NULL which would result in 0 in a new descriptor
             $descriptor->parentid = 0;
         }
