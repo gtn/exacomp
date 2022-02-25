@@ -3685,11 +3685,11 @@ function block_exacomp_get_output_fields($topic) {
     $output_title = str_replace($remove, ' ', $output_title); // new lines to space
     $output_title = preg_replace('!\s+!', ' ', $output_title); // multiple spaces to single
     $output_title = fix_utf8($output_title);
-    if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $output_title, $matches)) {
-        //$output_id = $matches[1];
-        $output_id = '';
-        $output_title = $matches[2];
-    }
+    //if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $output_title, $matches)) {
+    //    //$output_id = $matches[1];
+    //    $output_id = '';
+    //    $output_title = $matches[2];
+    //}
 
     return array($output_id, $output_title);
 }
