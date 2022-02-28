@@ -61,7 +61,7 @@ if ($fromimport == 1) {
 // Falls Formular abgesendet, speichern
 if (isset ($action) && $action == 'save') {
     require_sesskey();
-    $values = isset ($_POST['data']) ? $_POST['data'] : array();
+    $values = optional_param_array('data', array(), PARAM_INT);
 
     block_exacomp_set_mdltype($values);
 
