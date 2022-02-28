@@ -77,13 +77,15 @@ foreach ($students as $student) {
 list($tmp2, $subjects, $topics, $tmp, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, null, optional_param('topicid', 0, PARAM_INT), optional_param('niveauid', 0, PARAM_INT), false);
 
 // SAVA DATA
-if (($action = optional_param("action", "", PARAM_TEXT)) == "save") {
-    require_sesskey();
-    // DESCRIPTOR DATA
-    block_exacomp_save_competences(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $selectedTopic->id,
-        $selectedSubject->id);
+//if (($action = optional_param("action", "", PARAM_TEXT)) == "save") {
+//    require_sesskey();
+//    // DESCRIPTOR DATA
+//    block_exacomp_save_competences(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $selectedTopic->id,
+//        $selectedSubject->id);
+//
+//}
+// RW 20220228: This save is never called (done in ajax.php now)
 
-}
 //Delete timestamp (end|start) from example
 /*
 if($example_del = optional_param('exampleid', 0, PARAM_INT)){

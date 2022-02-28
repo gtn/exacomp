@@ -80,12 +80,14 @@ function block_exacomp_require_secret() {
     $flatten_params = function($params, $level = 0) use (&$flatten_params) {
         $ret = [];
         foreach ($params as $key => $value) {
+            $key = clean_param($key, PARAM_TEXT);
             $key = $level > 0 ? '[' . $key . ']' : $key;
             if (is_array($value)) {
                 foreach ($flatten_params($value, $level + 1) as $subKey => $value) {
                     $ret[$key . $subKey] = $value;
                 }
             } else {
+                $value = clean_param($value, PARAM_TEXT);
                 $ret[$key] = $value;
             }
         }

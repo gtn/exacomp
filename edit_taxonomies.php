@@ -50,7 +50,7 @@ if (isset($action)) {
             require_sesskey();
             // save existing taxonomies
             if (isset($_POST['data'])) {
-                $data = $_POST['data'];
+                $data = clean_param_array($_POST['data'], PARAM_TEXT);
                 foreach ($data as $id => $taxonomytitle) {
                     $newtitle = trim($taxonomytitle);
                     if ($id > 0 && $newtitle) {
@@ -60,7 +60,7 @@ if (isset($action)) {
             }
             // add new taxonomies
             if (isset($_POST['datanew'])) {
-                $data = $_POST['datanew'];
+                $data = clean_param_array($_POST['datanew'], PARAM_TEXT);
                 foreach ($data as $id => $taxonomytitle) {
                     $newtitle = trim($taxonomytitle);
                     if ($newtitle) {

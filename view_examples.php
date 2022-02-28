@@ -44,8 +44,11 @@ $studentid = block_exacomp_get_studentid();
 // save filtering (now in the course settings, as it was before)
 $courseSettings = block_exacomp_get_settings_by_course($courseid);
 if ($action == 'save_filtersettings') {
-    $selectedTaxonomies = (isset($_POST['filteredtaxonomies'])) ? array_values($_POST['filteredtaxonomies']) : BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES;
-    if ($_POST['filterClear']) {
+    $selectedTaxonomies = BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES;
+    if (isset($_POST['filteredtaxonomies'])) {
+        $selectedTaxonomies = array_values(clean_param_array($_POST['filteredtaxonomies'],PARAM_TEXT));
+    }
+    if (isset($_POST['filterClear'])) {
         $selectedTaxonomies = BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES;
     }
     $courseSettings->filteredtaxonomies = json_encode($selectedTaxonomies);

@@ -332,9 +332,9 @@ namespace block_exacomp\common {
         public static function get_param($parname) {
             // POST has precedence.
             if (isset($_POST[$parname])) {
-                return $_POST[$parname];
+                return clean_param($_POST[$parname],PARAM_TEXT);
             } else if (isset($_GET[$parname])) {
-                return $_GET[$parname];
+                return clean_param($_GET[$parname],PARAM_TEXT);
             } else {
                 return null;
             }
