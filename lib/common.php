@@ -329,12 +329,20 @@ namespace block_exacomp\common {
             }
         }
 
-        public static function get_param($parname) {
+        public static function get_param($parname, $definition = null) {
             // POST has precedence.
             if (isset($_POST[$parname])) {
-                return clean_param($_POST[$parname],PARAM_TEXT);
+                if(is_array($_POST[$parname])){
+                    return static::clean_array($_POST[$parname], $definition);
+                }else{
+                    return clean_param($_POST[$parname],PARAM_TEXT);
+                }
             } else if (isset($_GET[$parname])) {
-                return clean_param($_GET[$parname],PARAM_TEXT);
+                if(is_array($_GET[$parname])){
+                    return static::clean_array($_GET[$parname], $definition);
+                }else {
+                    return clean_param($_GET[$parname], PARAM_TEXT);
+                }
             } else {
                 return null;
             }
@@ -351,12 +359,11 @@ namespace block_exacomp\common {
         }
 
         public static function optional_array($parname, $definition) {
-            $param = static::get_param($parname);
-
+            $param = static::get_param($parname, $definition);
             if ($param === null) {
                 return array();
             } else {
-                return static::clean_array($param, $definition);
+                return $param;
             }
         }
 
