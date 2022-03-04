@@ -277,7 +277,7 @@ if ($action == 'descriptor_selector') {
     echo '<form method="post">';
     echo $print_tree($subjects);
     echo '<input type="hidden" name="sesskey" value='.sesskey().' />';
-    echo '<input type="submit" name="save" value="' . block_exacomp_get_string('add_descriptors_to_crosssub') . '" class="btn btn-default"/>';
+    echo '<input type="submit" name="save" value="' . block_exacomp_get_string('add_descriptors_to_crosssub') . '" class="btn btn-primary"/>';
     echo '</form>';
 
     echo $output->footer();
