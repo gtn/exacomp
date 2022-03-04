@@ -261,7 +261,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $url->params($params);
 
         return html_writer::empty_tag('input', array('type' => 'button', 'id' => 'edit_mode_submit', 'name' => 'edit_mode_submit', 'value' => block_exacomp_get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
-            "exa-type" => 'link', 'exa-url' => $url, 'class' => 'btn btn-default'));
+            "exa-type" => 'link', 'exa-url' => $url, 'class' => 'btn btn-secondary'));
     }
 
     public function subjects_menu($subjects, $selectedSubject, $selectedTopic, $students = array(), $editmode = false) {
@@ -443,6 +443,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $cell = new html_table_cell();
         $cell->attributes['class'] = 'comp_grey_97';
 
+        if(!empty($subject->description) && $subject->description != strip_tags($subject->description)) {
+            // contains HTML ==> remove it, because it cannot be displayed correctly
+            $subject->description = null;
+        }
         $cell->text = html_writer::tag('b', block_exacomp_get_string('instruction'))
             . html_writer::tag('p', (!empty($subject->description) ? $subject->description . '<br/>' : '') . (!empty($topic->description) ? $topic->description : ''));
 
@@ -815,7 +819,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         array(
                             'id' => 'btn_submit',
                             'type' => 'submit',
-                            'class' => 'btn btn-default',
+                            'class' => 'btn btn-primary',
                             'value' => block_exacomp_get_string('save_selection'))),
                     '',
                     ['id' => 'exabis_save_button']
@@ -951,7 +955,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
         if (!$forReport) {
             $table_html .= html_writer::div(html_writer::tag("input", "",
-                array("id" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection"))), '',
+                array("class"=> "btn btn-primary", "id" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection"))), '',
                 array('id' => 'exabis_save_button'));
         }
 
@@ -2110,7 +2114,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $buttons = html_writer::tag("input", "", array("id" => $submitid,
                     "name" => "btn_submit",
                     "type" => "submit",
-                    "class" => "btn btn-default",
+                    "class" => "btn btn-primary",
                     "value" => block_exacomp_get_string("save_selection")));
                 $table_html .= html_writer::div($buttons, '', array('id' => 'exabis_save_button'));
             }
@@ -4105,7 +4109,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         if (!$this->is_print_mode()) {
             if ($rows && !$this->is_edit_mode() && $students) {
-                $buttons = html_writer::tag("input", "", array("id" => "btn_submit", "name" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection")));
+                $buttons = html_writer::tag("input", "", array("class" => "btn btn-primary", "id" => "btn_submit", "name" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection")));
                 $table_html .= html_writer::div($buttons, '', array('id' => 'exabis_save_button'));
             }
 
@@ -4814,7 +4818,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save'));
         $innerdiv = html_writer::div(html_writer::empty_tag('input',
             array('type' => 'submit',
-                'class' => 'btn btn-default',
+                'class' => 'btn btn-primary',
                 'value' => block_exacomp_get_string('save_selection'))),
             '',
             array('id' => 'exabis_save_button'));
@@ -4891,7 +4895,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $buttons = html_writer::tag('button',
             block_exacomp_get_string('add_new_taxonomie'),
-            ['class' => 'btn btn-default',
+            ['class' => 'btn btn-secondary',
                 'id' => 'exacomp_add_taxonomy_button',
                 'name' => 'add',
                 'value' => 'add',
@@ -4899,7 +4903,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $buttons .= '&nbsp;' . html_writer::tag('button',
                 block_exacomp_get_string('save'),
                 ['type' => 'submit',
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-primary',
                     'name' => 'action',
                     'value' => 'save']);
         $buttons = html_writer::div($buttons);
@@ -4990,7 +4994,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $input_hideglobalsubjects = html_writer::checkbox('hideglobalsubjects', 1, @$settings->hideglobalsubjects == 1, '&nbsp;' . block_exacomp_get_string('usehideglobalsubjects'))
             . html_writer::empty_tag('br');
 
-        $input_submit = html_writer::empty_tag('br') . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-default'));
+        $input_submit = html_writer::empty_tag('br') . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-primary'));
 
         $hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save_coursesettings'));
 
@@ -5060,7 +5064,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $row->cells[] = $cell;
         $table->data[] = $row;
 
-        $input_submit = html_writer::empty_tag('br') . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-default'));
+        $input_submit = html_writer::empty_tag('br') . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('save', 'admin'), 'class' => 'btn btn-primary'));
 
         // why hiddenaction? I copied this from edit_course
         $hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save'));
@@ -5145,7 +5149,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")),
                 array("id" => "exabis_competences_block"));
             $table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit',
-                'class' => 'btn btn-default',
+                'class' => 'btn btn-primary',
                 'value' => block_exacomp_get_string('save_selection'))),
                 '', array('id' => 'exabis_save_button'));
             $table_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
@@ -5214,7 +5218,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $cell->attributes['class'] = ' no-border ';
         $cell->text = html_writer::tag('button',
             block_exacomp_get_string('selectcourse_filter_submit'),
-            ['type' => 'submit', 'name' => 'filter_submit', 'value' => 'filter_submit', 'class' => 'btn btn-default']);
+            ['type' => 'submit', 'name' => 'filter_submit', 'value' => 'filter_submit', 'class' => 'btn btn-secondary']);
         $row->cells[] = $cell;
         $filtertable->data[] = $row;
         $filtercontent .= html_writer::tag('form',
@@ -5673,7 +5677,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
         $div .= html_writer::div(html_writer::empty_tag('input', array(
             'type' => 'submit',
-            'class' => 'btn btn-default',
+            'class' => 'btn btn-primary',
             'value' => block_exacomp_get_string('save_selection'))),
             '', array('id' => 'exabis_save_button'));
         $div .= html_writer::tag('input', '', array("type" => "hidden", 'name' => 'action', 'value' => 'save'));
@@ -5875,7 +5879,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
         $div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
-        $div .= html_writer::div(html_writer::empty_tag('input', array('class' => 'btn btn-default', 'type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), '', array('id' => 'exabis_save_button'));
+        $div .= html_writer::div(html_writer::empty_tag('input', array('class' => 'btn btn-primary', 'type' => 'submit', 'value' => block_exacomp_get_string('save_selection'))), '', array('id' => 'exabis_save_button'));
 
         return html_writer::div(block_exacomp_get_string('description_edit_badge_comps'))
             . html_writer::empty_tag('br')
@@ -7818,8 +7822,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         if (!block_exacomp_is_skillsmanagement() && $style == 0) { // TODO: only for $style==0 ?
             $hidden = html_writer::empty_tag('input', ['name' => 'action', 'value' => 'save_filtersettings', 'type' => 'hidden']);
-            $input_submit = html_writer::empty_tag('br') . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filter'), 'class' => 'btn btn-default'));
-            $input_submit .= '&nbsp;' . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filterClear'), 'class' => 'btn btn-default', 'name' => 'filterClear'));
+            $input_submit = html_writer::empty_tag('br') . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filter'), 'class' => 'btn btn-primary'));
+            $input_submit .= '&nbsp;' . html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('filterClear'), 'class' => 'btn btn-secondary', 'name' => 'filterClear'));
 
             //$alltax = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES => block_exacomp_get_string('show_all_taxonomies'));
             //$taxonomies = $DB->get_records_menu('block_exacomptaxonomies', null, 'sorting', 'id, title');
@@ -8431,9 +8435,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 </div>
             </div>
             <?php
-            echo html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'generate', 'value' => block_exacomp_get_string('create_report'), 'name' => 'generate', 'class' => 'btn btn-default'));
+            echo html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'generate', 'value' => block_exacomp_get_string('create_report'), 'name' => 'generate', 'class' => 'btn btn-primary'));
             echo '&nbsp;';
-            echo html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'formatPdf', 'value' => block_exacomp_get_string('create_pdf'), 'name' => 'formatPdf', 'class' => 'btn btn-default'));
+            echo html_writer::empty_tag('input', array('type' => 'submit', 'id' => 'formatPdf', 'value' => block_exacomp_get_string('create_pdf'), 'name' => 'formatPdf', 'class' => 'btn btn-primary'));
             //echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'print report', 'name' => 'print'));
             //echo '<input type="submit" value='.block_exacomp_get_string('create_report').'/>'
             ?>
@@ -8531,11 +8535,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 </div>
             </div>
             <?php
-            echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html_report'), 'class' => 'btn btn-default'));
+            echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html_report'), 'class' => 'btn btn-primary'));
             echo '&nbsp;';
             //echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_docx'), 'class' => 'btn btn-default', 'name' => 'formatDocx'));
             //echo '&nbsp;';
-            echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html_report'), 'class' => 'btn btn-default', 'name' => 'formatPdf'));
+            echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => block_exacomp_get_string('create_html_report'), 'class' => 'btn btn-primary', 'name' => 'formatPdf'));
             ?>
         </form>
         <?php

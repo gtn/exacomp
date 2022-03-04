@@ -259,7 +259,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Group Reports',
     ],
     'assign_descriptor_to_crosssubject' => [
-        'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:',
+        'Die Kompetenz "{$a}" den folgenden Themen zuordnen:',
         'Assign the competence "{$a}" to the following interdisciplinary subjects:',
     ],
     'assign_descriptor_no_crosssubjects_available' => [
@@ -3348,7 +3348,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Course assessment',
     ],
     'course_assessment_config_infotext' => [
-        'Wählen Sie das gewüntsche Beurteilungsschema aus.',
+        'Wählen Sie das gewünschte Beurteilungsschema aus.',
         'Choose an assessment scheme',
     ],
     'course_assessment_use_global' => [
