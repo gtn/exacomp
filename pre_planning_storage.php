@@ -82,12 +82,12 @@ echo $output->create_blocking_event();
 
 echo html_writer::div(html_writer::empty_tag('input', array('type' => 'button',
         'id' => 'save_pre_planning_storage',
-        'class' => 'btn btn-default',
+        'class' => 'btn btn-primary',
         'value' => block_exacomp_get_string('save_pre_planning_selection'))) .
     html_writer::empty_tag('input', array('type' => 'submit',
         'id' => 'empty_pre_planning_storage',
         'value' => block_exacomp_get_string('empty_pre_planning_storage'),
-        'class' => 'btn btn-default',
+        'class' => '',
         'onclick' => "return confirm('" . block_exacomp_get_string('empty_pre_planning_confirm') . "')")),
     '',
     array('id' => 'save_button'));
