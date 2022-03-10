@@ -840,6 +840,29 @@ EOD;
         }
         $mailer->Send();
 
+        $mailer = new moodle_phpmailer();
+
+        $mailer->AddReplyTo('office@frauenstiftung.at', 'Reply To');
+        $mailer->SetFrom("office@frauenstiftung.at", 'office@frauenstiftung.at');
+        $mailer->AddAddress('office@frauenstiftung.at', 'office@frauenstiftung.at');
+        $mailer->Subject = 'Diwipass Rechnungsbestätigung';
+        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/frauenstiftungadresse.PNG', 'logo_1');
+        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/diwipass.PNG', 'logo_2');
+        $mailer->AltBody = "";
+        $mailer->MsgHTML('
+			<img src="cid:logo_2">
+			<br>
+			<b>Vielen Dank für Ihre Bestellung!</b>
+			<p>Die Rechnung zur Bestellung finden Sie im Anhang.</p>
+			<p> Nach Zahlungseingang mittels Banküberweisung erhalten Sie den/die Codes per E-Mail Übermittelt</p>.
+            <p> Wir wünschen Ihnen viel Erfolg bei der diwipass-Zertifizierung!</p>
+			<img src="cid:logo_1">');
+
+        if ($attachment) {
+            $mailer->AddStringAttachment($attachment, 'Rechnung.pdf');
+        }
+        $mailer->Send();
+
         //Close and output PDF document
         $pdf->Output('Rechnung.pdf', 'D');
 
