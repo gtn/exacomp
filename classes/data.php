@@ -517,7 +517,7 @@ class data {
         ";
         g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
     }
-}ß
+}
 
 class data_exporter extends data {
 
