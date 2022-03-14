@@ -518,9 +518,9 @@ function block_exacomp_get_assessment_points_limit($onlyGlobal = true, $courseid
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return $configurations[$assessment_config]["assessment_points_limit"];
+        return (int)$configurations[$assessment_config]["assessment_points_limit"];
     } else {
-        return get_config('exacomp', 'assessment_points_limit');
+        return (int)get_config('exacomp', 'assessment_points_limit');
     }
 }
 
@@ -543,7 +543,7 @@ function block_exacomp_get_assessment_grade_limit($courseid = 0) {
         $value = get_config('exacomp', 'assessment_grade_limit');
     }
 
-    return $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_grade_limit');
 }
 
@@ -627,9 +627,9 @@ function block_exacomp_get_assessment_points_negative_threshold($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return $configurations[$assessment_config]["assessment_points_negativ"];
+        return (int)$configurations[$assessment_config]["assessment_points_negativ"];
     } else {
-        return get_config('exacomp', 'assessment_points_negativ');
+        return (int)get_config('exacomp', 'assessment_points_negativ');
     }
 }
 
@@ -641,9 +641,9 @@ function block_exacomp_get_assessment_grade_negative_threshold($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return $configurations[$assessment_config]["assessment_grade_negativ"];
+        return (int)$configurations[$assessment_config]["assessment_grade_negativ"];
     } else {
-        return get_config('exacomp', 'assessment_grade_negativ');
+        return (int)get_config('exacomp', 'assessment_grade_negativ');
     }
 
 }
@@ -656,9 +656,9 @@ function block_exacomp_get_assessment_verbose_negative_threshold($courseid = 0) 
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return $configurations[$assessment_config]["assessment_verbose_negative"];
+        return (int)$configurations[$assessment_config]["assessment_verbose_negative"];
     } else {
-        return get_config('exacomp', 'assessment_verbose_negative');
+        return (int)get_config('exacomp', 'assessment_verbose_negative');
     }
 
 }
@@ -758,9 +758,9 @@ function block_exacomp_get_assessment_example_scheme($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        $value = $configurations[$assessment_config]["assessment_example_scheme"];
+        $value = (int)$configurations[$assessment_config]["assessment_example_scheme"];
     } else {
-        $value = get_config('exacomp', 'assessment_example_scheme');
+        $value = (int)get_config('exacomp', 'assessment_example_scheme');
     }
 
     return $value;
@@ -828,7 +828,7 @@ function block_exacomp_get_assessment_childcomp_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_childcomp_scheme');
     }
 
-    return $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_childcomp_scheme');
 }
 
@@ -895,7 +895,7 @@ function block_exacomp_get_assessment_comp_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_comp_scheme');
     }
 
-    return $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_comp_scheme');
 }
 
@@ -963,7 +963,7 @@ function block_exacomp_get_assessment_topic_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_topic_scheme');
     }
 
-    return $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_topic_scheme');
 }
 
@@ -1030,7 +1030,7 @@ function block_exacomp_get_assessment_subject_scheme($courseid = 0) {
     } else {
         $value = get_config('exacomp', 'assessment_subject_scheme');
     }
-    return $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_subject_scheme');
 }
 
@@ -1095,7 +1095,7 @@ function block_exacomp_get_assessment_theme_scheme($courseid = 0) {
     } else {
         $value = get_config('exacomp', 'assessment_theme_scheme');
     }
-    return $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_theme_scheme');
 }
 
@@ -13765,7 +13765,7 @@ function block_exacomp_get_config_dakora_language_file($returnContent = false) {
 }
 
 function block_exacomp_get_config_dakora_timeout() {
-    return get_config('exacomp', 'dakora_timeout');
+    return (int)get_config('exacomp', 'dakora_timeout');
 }
 
 function block_exacomp_get_config_dakora_show_overview() {
