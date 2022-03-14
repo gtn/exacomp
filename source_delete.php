@@ -19,6 +19,8 @@ require_once __DIR__ . "/classes/data.php";
 
 $courseid = required_param('courseid', PARAM_INT);
 
+global $DB, $OUTPUT, $PAGE, $CFG;
+
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_simplehtml', $courseid);
 }

@@ -323,7 +323,7 @@ class data {
                 'needed1' => array('exampleid', BLOCK_EXACOMP_DB_EXAMPLES),
             ),
 
-            // delete examples without descriptors
+            // delete examples that are not related to anything (normally descriptors, sometimes crosssubjects)
             array(
                 'table' => BLOCK_EXACOMP_DB_EXAMPLES,
                 'needed1' => array('id', 'SELECT exampid FROM {' . BLOCK_EXACOMP_DB_DESCEXAMP . '}'),
@@ -517,7 +517,7 @@ class data {
         ";
         g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
     }
-}
+}ß
 
 class data_exporter extends data {
 
@@ -2991,39 +2991,39 @@ class data_importer extends data {
             }
 
             //// Get the descriptorids of the children of the current descriptor from the xml
-            //if ($xmlItem->children->descriptor->count() > 1) { //is_array() does not work here, because SimpleXMLElement is a special object
-            //    // $xmlItem->topics->topic is an array ob objects, each with an @attributes field
-            //    $xmlDescriptorSourceData = array_map(function($t) {
-            //        return array_map(function($top) {
-            //            return $top["@attributes"];
-            //        }, $t);
-            //    }, self::parse_xml_item($xmlItem)->children)["descriptor"];
-            //} else {
-            //    // $xmlItem->topics->topic is an object with an @attributes field
-            //    $xmlDescriptorSourceData = array(array_map(function($t) {
-            //        return $t["@attributes"];
-            //    }, self::parse_xml_item($xmlItem)->children)["descriptor"]);
-            //}
-            //
-            //// get all childdescriptors of the current descriptor.
-            //$existingDescriptors = g::$DB->get_records_sql("SELECT s.*
-            //    FROM {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} s
-            //    WHERE parentid = :parentid
-            //    ", array('parentid' => $descriptor->id)); // TODO: is the id, the id of the exacomptable? or source?? insert_or_update_item(BLOCK_EXACOMP_DB_DESCRIPTORS, $descriptor) maybe changed it
-            //foreach ($existingDescriptors as $descr) {
-            //    // We need a $comparedescriptor array for the in_array() function
-            //    $comparedescriptor = array();
-            //    // get the source as a name, instead of just die id referencing to the datasources table:
-            //    $comparedescriptor["source"] = g::$DB->get_record(BLOCK_EXACOMP_DB_DATASOURCES, array('id' => $descr->source), 'source')->source;
-            //    $comparedescriptor["id"] = $descr->sourceid; //SOURCEID !
-            //    // array('source' => $item->source, 'sourceid' => $item->sourceid) is the check that is done in insert_or_update() as well.
-            //    // and this is what I compare here... the source and the sourceid. I got it for the descriptor from exacomp tables, as well as from the topics from the xml files
-            //    // if the descriptor from exacomp does NOT exist in the xml --> delete it
-            //    if (!in_array($comparedescriptor, $xmlDescriptorSourceData)) { // the descriptor is NOT in the xmlData
-            //        // delete the descriptor --> use the exacompid, not the sourceid
-            //        g::$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descr->id)); // id is already unique => no need to check for source and sourceid
-            //    }
-            //}
+            if ($xmlItem->children->descriptor->count() > 1) { //is_array() does not work here, because SimpleXMLElement is a special object
+                // $xmlItem->descriptors->descriptor is an array of objects, each with an @attributes field
+                $xmlDescriptorSourceData = array_map(function($d) {
+                    return array_map(function($desc) {
+                        return ["source" => $desc["@attributes"]["source"], "id" => $desc["@attributes"]["id"]];
+                    }, $d);
+                }, self::parse_xml_item($xmlItem)->children)["descriptor"];
+            } else {
+                // $xmlItem->descriptors->descriptor is an object with an @attributes field
+                $xmlDescriptorSourceData = array(array_map(function($d) {
+                    return ["source" => $d["@attributes"]["source"], "id" => $d["@attributes"]["id"]];
+                }, self::parse_xml_item($xmlItem)->children)["descriptor"]);
+            }
+
+            // get all childdescriptors of the current descriptor.
+            $existingDescriptors = g::$DB->get_records_sql("SELECT s.*
+                FROM {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} s
+                WHERE parentid = :parentid
+                ", array('parentid' => $descriptor->id)); // The id of the exacomptable, not source. insert_or_update_item(BLOCK_EXACOMP_DB_DESCRIPTORS, $descriptor) added this id
+            foreach ($existingDescriptors as $descr) {
+                // We need a $comparedescriptor array for the in_array() function
+                $comparedescriptor = array();
+                // get the source as a name, instead of just die id referencing to the datasources table:
+                $comparedescriptor["source"] = g::$DB->get_record(BLOCK_EXACOMP_DB_DATASOURCES, array('id' => $descr->source), 'source')->source;
+                $comparedescriptor["id"] = $descr->sourceid; //SOURCEID !
+                // array('source' => $item->source, 'sourceid' => $item->sourceid) is the check that is done in insert_or_update() as well.
+                // and this is what I compare here... the source and the sourceid. I got it for the descriptor from exacomp tables, as well as from the topics from the xml files
+                // if the descriptor from exacomp does NOT exist in the xml --> delete it
+                if (!in_array($comparedescriptor, $xmlDescriptorSourceData)) { // the descriptor is NOT in the xmlData
+                    // delete the descriptor --> use the exacompid, not the sourceid
+                    g::$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descr->id)); // id is already unique => no need to check for source and sourceid
+                }
+            }
         }
         return $descriptor;
     }
@@ -3148,39 +3148,40 @@ class data_importer extends data {
             self::insert_topic($topic);
         }
 
-        //// if a topic has been in a previous version of this subject (and therefore in the exacomp tables) but is not in this xml: remove
-        //// the following code should actually have been done in just ONE array_map of $xmlItem->topics->topic, but it just did not work => double array_map
-        //// it gets the topicids of the current subject from the xml
-        //if ($xmlItem->topics->topic->count() > 1) { //is_array() does not work here, because SimpleXMLElement is a special object
-        //    // $xmlItem->topics->topic is an array ob objects, each with an @attributes field
-        //    $xmlTopicSourceData = array_map(function($t) {
-        //        return array_map(function($top) {
-        //            return $top["@attributes"];
-        //        }, $t);
-        //    }, self::parse_xml_item($xmlItem)->topics)["topic"];
-        //} else {
-        //    // $xmlItem->topics->topic is an object with an @attributes field
-        //    $xmlTopicSourceData = array(array_map(function($t) {
-        //        return $t["@attributes"];
-        //    }, self::parse_xml_item($xmlItem)->topics)["topic"]);
-        //}
-        //
-        //// get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wront
-        //$existingTopics = g::$DB->get_records(BLOCK_EXACOMP_DB_TOPICS, array('subjid' => $subject->id, 'source' => $subject->source), '', 'id, sourceid, source');
-        //foreach ($existingTopics as $topic) {
-        //    // We need a comparetopic array for the in_array() function
-        //    $comparetopic = array();
-        //    // get the source as a name, instead of just die id referencing to the datasources table:
-        //    $comparetopic["source"] = g::$DB->get_record(BLOCK_EXACOMP_DB_DATASOURCES, array('id' => $topic->source), 'source')->source;
-        //    $comparetopic["id"] = $topic->sourceid; //SOURCEID !
-        //    // array('source' => $item->source, 'sourceid' => $item->sourceid) is the check that is done in insert_or_update() as well.
-        //    // and this is what I compare here... the source and the sourceid. I got it for the topic from exacomp tables, as well as from the topics from the xml files
-        //    // if the topics from exacomp does NOT exist in the xml --> delete it
-        //    if (!in_array($comparetopic, $xmlTopicSourceData)) { // the topic is NOT in the xmlData
-        //        // delete the topic
-        //        g::$DB->delete_records(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topic->id)); // id is already unique => no need to check for source and sourceid
-        //    }
-        //}
+        // if a topic has been in a previous version of this subject (and therefore in the exacomp tables) but is not in this xml: remove
+        // the following code should actually have been done in just ONE array_map of $xmlItem->topics->topic, but due to the SimpleXMLElement structure this does not work => double array_map
+        // it gets the topicids and source of the current subject from the xml
+        if ($xmlItem->topics->topic->count() > 1) { //is_array() does not work here, because SimpleXMLElement is a special object
+            // $xmlItem->topics->topic is an array of objects, each with an @attributes field
+            $xmlTopicSourceData = array_map(function($t) {
+                return array_map(function($top) {
+                    // in some cases, the attributes contain more than source and id --> only get source and id
+                    return ["source" => $top["@attributes"]["source"], "id" => $top["@attributes"]["id"]];
+                }, $t);
+            }, self::parse_xml_item($xmlItem)->topics)["topic"];
+        } else {
+            // $xmlItem->topics->topic is an object with an @attributes field
+            $xmlTopicSourceData = array(array_map(function($t) {
+                return ["source" => $t["@attributes"]["source"], "id" => $t["@attributes"]["id"]];
+            }, self::parse_xml_item($xmlItem)->topics)["topic"]);
+        }
+
+        // get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wront
+        $existingTopics = g::$DB->get_records(BLOCK_EXACOMP_DB_TOPICS, array('subjid' => $subject->id, 'source' => $subject->source), '', 'id, sourceid, source');
+        foreach ($existingTopics as $topic) {
+            // We need a comparetopic array for the in_array() function
+            $comparetopic = array();
+            // get the source as a name, instead of just the id referencing to the datasources table:
+            $comparetopic["source"] = g::$DB->get_record(BLOCK_EXACOMP_DB_DATASOURCES, array('id' => $topic->source), 'source')->source;
+            $comparetopic["id"] = $topic->sourceid; //SOURCEID !
+            // array('source' => $item->source, 'sourceid' => $item->sourceid) is the check that is done in insert_or_update() as well.
+            // and this is what I compare here... the source and the sourceid. I got it for the topic from exacomp tables, as well as from the topics from the xml files
+            // if the topics from exacomp does NOT exist in the xml --> delete it
+            if (!in_array($comparetopic, $xmlTopicSourceData)) { // the topic is NOT in the xmlData
+                // delete the topic
+                g::$DB->delete_records(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topic->id)); // id is already unique => no need to check for source and sourceid
+            }
+        }
 
         if ($subject->source == self::$import_source_local_id) {
             // delete and reinsert if coming from same source
@@ -3200,6 +3201,8 @@ class data_importer extends data {
 
         return $subject;
     }
+
+
 
     private static function insert_schooltype($xmlItem, $source_local_id, $schedulerId = 0) {
         $schooltype = self::parse_xml_item($xmlItem);
