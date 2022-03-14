@@ -7161,13 +7161,18 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
 
     $timecreated = $timemodified = time();
 
+    $returnvalue = true; // most of the time returning "true" is good enough, sometimes this will be overwritten by the scheduleid
+
     // prüfen, ob element schon zur gleichen zeit im wochenplan ist
     if ($studentid == 0) { // 2 teachers of same course should be able to add example in there planing scheduler, so creatorid have to be asked here. for student below this is not necessary
         if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'creatorid' => $creatorid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
             return true;
         }
-    } else if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start))) {
-        return true;
+    } else {
+        $scheduleentry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start));
+        if($scheduleentry){
+            return $scheduleentry->id;
+        }
     }
     // if not given by the function call, find out the ethema parameter:
     if ($ethema_ismain == -1 && $ethema_issubcategory == -1) {
@@ -7192,7 +7197,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
             block_exacomp_add_example_to_schedule($studentid, $example->id, $creatorid, $courseid, null, null, 0, 0, $source, false, $distributionid, $customdata);
         }
     } else {
-        $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array(
+        $returnvalue = $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array(
             'studentid' => $studentid,
             'exampleid' => $exampleid,
             'courseid' => $courseid,
@@ -7216,7 +7221,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
         }
         \block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
     }
-    return true;
+    return $returnvalue;
 }
 
 /**

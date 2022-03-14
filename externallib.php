@@ -3922,10 +3922,9 @@ class block_exacomp_external extends external_api {
         static::require_can_access_course_user($courseid, $userid);
         static::require_can_access_example($exampleid, $courseid);
 
-        $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
-
+        //$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+        $scheduleid = 0;
         $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'add_example_to_learning_calendar', 'exampleid' => $exampleid];
-
         if ($forall) {
             $source = 'C';
             $students = block_exacomp_get_students_by_course($courseid);
@@ -3945,12 +3944,13 @@ class block_exacomp_external extends external_api {
                 }
             } else { // add for single student
                 if (block_exacomp_is_example_visible($courseid, $exampleid, $userid)) {
-                    block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, -1, -1, $source, null, null, $customdata);
+                    $scheduleid = block_exacomp_add_example_to_schedule($userid, $exampleid, $creatorid, $courseid, null, null, -1, -1, $source, null, null, $customdata);
                 }
             }
         }
 
         return array(
+            "scheduleid" => $scheduleid,
             "success" => true,
         );
     }
@@ -3962,6 +3962,7 @@ class block_exacomp_external extends external_api {
      */
     public static function dakora_add_example_to_learning_calendar_returns() {
         return new external_single_structure (array(
+            'scheduleid' => new external_value (PARAM_INT, 'id of the single added example', PARAM_OPTIONAL),
             'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
