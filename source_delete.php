@@ -132,8 +132,8 @@ if ($action == 'delete_selected') {
     if ($post_subjects) {
         $DB->delete_records_list(BLOCK_EXACOMP_DB_SUBJECTS, 'id', $post_subjects);
     }
-    // TODO: delete gradings etc
-    block_exacomp\data::normalize_database();
+
+    //block_exacomp\data::normalize_database(); // not needed here, since it is done in cronjobs
     //    $time_elapsed_secs = microtime(true) - $start;
     redirect($CFG->wwwroot . '/blocks/exacomp/import.php?courseid=' . $courseid);
     exit;
