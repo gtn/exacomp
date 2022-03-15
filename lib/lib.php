@@ -4943,13 +4943,17 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = BLO
  * Get activities avaiable in current course
  *
  * @param unknown $courseid
+ * @param string $fields
  */
-function block_exacomp_get_activities_by_course($courseid) {
+function block_exacomp_get_activities_by_course($courseid, $fields = 'camm.activityid as id, camm.activitytitle as title') {
     global $DB;
-    $query = 'SELECT DISTINCT mm.activityid as id, mm.activitytitle as title
-        FROM {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} mm
-		    INNER JOIN {course_modules} a ON a.id = mm.activityid
-		WHERE a.course = ? AND mm.eportfolioitem = 0';
+    $query = 'SELECT DISTINCT '.$fields.'
+        FROM {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} camm
+		    INNER JOIN {course_modules} cm ON cm.id = camm.activityid
+		    LEFT JOIN {block_exacompdescriptors} d ON d.id = camm.compid
+		    LEFT JOIN {block_exacomptopics} t ON t.id = camm.compid
+		    
+		WHERE cm.course = ? AND camm.eportfolioitem = 0';
 
     return $DB->get_records_sql($query, array($courseid));
 }
@@ -5383,6 +5387,15 @@ function block_exacomp_exaportexists() {
     global $DB;
 
     return !!$DB->get_record('block', array('name' => 'exaport'));
+}
+
+/**
+ * checks is block Exabis Planning tool is installed
+ */
+function block_exacomp_exaplanexists() {
+    global $DB;
+
+    return !!$DB->get_record('block', array('name' => 'exaplan'));
 }
 
 /**
@@ -11094,8 +11107,12 @@ function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 
 /**
  * create tree for one example, similar like block_exacomp_build_example_association_tree()
  * but with improved performance
+ * @param int $courseid
+ * @param int $exampleid
+ * @param \block_exacomp\example $exampleObj for using with  virtual example and moodle action relation (old method)
  */
-function block_exacomp_build_example_parent_names($courseid, $exampleid) {
+function block_exacomp_build_example_parent_names($courseid, $exampleid, $exampleObj = null) {
+
     $sql = "SELECT d.id as descrid, d.title as descrtitle, d.parentid as parentid, s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle,
 				e.id as exampleid, e.title as exampletitle
 			FROM {" . BLOCK_EXACOMP_DB_SUBJECTS . "} s
@@ -11105,9 +11122,38 @@ function block_exacomp_build_example_parent_names($courseid, $exampleid) {
 			JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON d.id = dt.descrid
 			JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON d.id = de.descrid
 			JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e ON e.id = de.exampid
-			WHERE e.id = ? AND ct.courseid = ?";
+			WHERE ct.courseid = ? AND e.id = ? ";
+    $sqlParams = [$courseid, $exampleid];
 
-    $records = iterator_to_array(g::$DB->get_recordset_sql($sql, array($exampleid, $courseid)));
+    // use another $sql if it is a virtual example - for old realtion to moodle activity - we know only id of descriptor or topic
+    if ($exampleObj && property_exists($exampleObj, 'isVirtualExample') && $exampleObj->isVirtualExample) {
+
+        $select = " s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle ";
+        $where = " ct.courseid = ? ";
+        $sqlParams = [$courseid, $exampleObj->idOfVirtualParent];
+        $from = " FROM {" . BLOCK_EXACOMP_DB_SUBJECTS . "} s
+			        JOIN {" . BLOCK_EXACOMP_DB_TOPICS . "} t ON t.subjid = s.id
+			        JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON t.id = ct.topicid ";
+
+        switch ($exampleObj->levelOfVirtualParent) {
+            case BLOCK_EXACOMP_TYPE_DESCRIPTOR:
+                $select .= ", d.id as descrid, d.title as descrtitle, d.parentid as parentid, 0 as exampleid, '' as exampletitle ";
+                $from .= "  JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON dt.topicid = t.id
+			                JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON d.id = dt.descrid ";
+                $where .= " AND d.id = ? ";
+                break;
+            case BLOCK_EXACOMP_TYPE_TOPIC:
+                $select .= ", 0 as descrid, '' as descrtitle, 0 as parentid, 0 as exampleid, '' as exampletitle ";
+                $where .= " AND t.id = ? ";
+                break;
+        }
+
+
+        $sql = " SELECT " . $select . " " . $from . " WHERE " . $where;
+
+    }
+
+    $records = iterator_to_array(g::$DB->get_recordset_sql($sql, $sqlParams));
 
     $flatTree = array();
     foreach ($records as $record) {
@@ -11120,14 +11166,16 @@ function block_exacomp_build_example_parent_names($courseid, $exampleid) {
             $titles[] = block_exacomp_get_descriptor_numbering($parent_descriptor) . ' ' . $parent_descriptor->title;
         }
 
-        $descriptor = \block_exacomp\descriptor::get($record->descrid);
-        $descriptor->topicid = $record->topicid;
-        $titles[] = block_exacomp_get_descriptor_numbering($descriptor) . ' ' . $record->descrtitle;
+        if ($record->descrid > 0) {
+            $descriptor = \block_exacomp\descriptor::get($record->descrid);
+            $descriptor->topicid = $record->topicid;
+            $titles[] = block_exacomp_get_descriptor_numbering($descriptor) . ' ' . $record->descrtitle;
+        }
 
         $flatTree[join(' | ', $titles)] = $titles;
     }
 
-    if ($records == null) {
+    if ($records == null && $exampleid > 0) {
         $record = g::$DB->get_record_sql(
             "SELECT c.title
 			  FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} e

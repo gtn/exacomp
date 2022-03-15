@@ -20,17 +20,180 @@ require_once __DIR__ . '/../moodleblock.class.php';
 require_once __DIR__ . '/inc.php';
 
 class block_exacomp extends block_list {
+
     function init() {
         $this->title = block_exacomp_get_string('blocktitle');
     }
 
+    function specialization()
+    {
+        if ($this->isExaplanDashboardBlock()) {
+            $this->title = block_exacomp_get_string('overview_examples_report_title');
+        }
+    }
+
     function applicable_formats() {
         // block can only be installed in courses
-        return array('all' => true, 'mod' => false, 'tag' => false, 'my' => false);
+        $formats = array('all' => true,
+            'mod' => false,
+            'tag' => false,
+            'my' => false);
+        // allow to add block in the dashboard if 'exaplan' is installed
+        if (block_exacomp_exaplanexists()) {
+            $formats['my'] = true;
+        }
+        return $formats;
+    }
+
+    function hide_header() {
+        if ($this->isExaplanDashboardBlock()) {
+//            return true; // used another title
+        }
+        return false;
+    }
+
+    function isExaplanDashboardBlock() {
+        global $DB;
+        $instanceId = $this->context->instanceid;
+        $blockData = $DB->get_record('block_instances', ['id' => $instanceId], '*');
+        if ($blockData->defaultregion == 'content' && $blockData->pagetypepattern == 'my-index') {
+            return true;
+        }
+        return false;
     }
 
     function get_content() {
-        global $CFG, $USER, $COURSE;
+        global $CFG, $USER, $COURSE, $DB, $PAGE;
+
+        if ($this->isExaplanDashboardBlock()) {
+            // content for exaplan dashboard
+
+            $content = '';
+            $output = block_exacomp_get_renderer();
+            $studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+
+            // get all courses where the user is a teacher
+            $teacherCourses = block_exacomp_get_courses_of_teacher($USER->id);
+            // get all students from these courses
+            $coursestudents = [];
+            foreach ($teacherCourses as $cId) {
+                $coursestudents = array_merge($coursestudents, block_exacomp_get_students_by_course($cId));
+            }
+            // sort by last name + first name
+            usort($coursestudents, function($a, $b) {
+                $aName = $a->lastname.' '.$a->firstname;
+                $bName = $b->lastname.' '.$b->firstname;
+                return strcmp($aName, $bName);
+            });
+
+            $content .= '<div style="padding-bottom: 15px;" id="reportExamples">';
+            // student selector
+            $content .= '<form action="" method="get">';
+            if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+                $content .= html_writer::tag("p", block_exacomp_get_string("select_student"));
+            }
+            $content .= block_exacomp_get_string('choosestudent');
+            $content .= $output->studentselector($coursestudents, $studentid, null, null, ['name' => 'studentid', 'onChange' => 'this.form.submit()']);
+            $content .= '</form>';
+
+            // dashboard of students data
+            if ($studentid > 0) {
+
+                $student = $DB->get_record('user', array('id' => $studentid));
+
+                $courseid = optional_param('courseid', 0, PARAM_INT);
+                // by default show first course as selected
+                $possible_courses = block_exacomp_get_exacomp_courses($student);
+                if (!$courseid) {
+                    $courseid = reset($possible_courses)->id;
+                }
+
+                $mod_info = get_fast_modinfo($courseid);
+
+                // main report content
+                $content .= '<div>';
+
+                // student's overview
+                $content .= $output->competence_profile_metadata($student);
+
+                // tabs with course titles for selected student
+                $content .= '<ul class="nav nav-tabs mb-3">';
+                foreach ($possible_courses as $tempCourseId => $course) {
+                    $active = ($course->id == $courseid ? 'active' : '');
+                    $courseLink = new moodle_url('/my', array('studentid' => $studentid, 'courseid' => $course->id));
+                    $content .= '<li class="nav-item"><a class="nav-link ' . $active . '" href="' . $courseLink . '#reportExamples">' . $course->fullname . '</a></li>';
+                }
+                $content .= '</ul>';
+
+                $course = $possible_courses[$courseid];
+
+                $examples = \block_exacomp\example::get_objects_sql("
+                            SELECT DISTINCT e.*
+                              FROM {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct
+                                JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON ct.topicid = dt.topicid
+                                JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON dt.descrid = de.descrid
+                                JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e ON e.id = de.exampid
+                              WHERE ct.courseid = ?
+                              ORDER BY e.title
+                        ", [$courseid]);
+                // add related activities (with old method)
+                // then such activities will be used for creating virtual examples to get parent names for better view
+                if (block_exacomp_use_old_activities_method()) {
+                    $virtualExamples = [];
+                    $activities = block_exacomp_get_activities_by_course($courseid, 'camm.*');
+
+                    $i = 1;
+                    foreach ($activities as $act) {
+                        $module = get_coursemodule_from_id(null, $act->activityid);
+                        $activitylink = block_exacomp_get_activityurl($module)->out(false);
+
+                        $example_icons = null;
+                        $finished = COMPLETION_INCOMPLETE;
+                        if (@$cm = $mod_info->cms[$act->activityid]) {
+                            $example_icons = $cm->get_icon_url()->out(false);
+                            $example_icons = serialize(array('externaltask' => $example_icons));
+                            $completionFunc = $cm->modname.'_get_completion_state';
+                            if (function_exists($completionFunc)) {
+                                $finished = $completionFunc($course, $cm, $studentid, 'not-defined'); // not-defined - if the activity has not conditions to get complete status
+                            }
+                        }
+//                            echo "<pre>debug:<strong>block_exacomp.php:130</strong>\r\n"; print_r($act->activitytitle); echo '</pre>'; // !!!!!!!!!! delete it
+//                            echo "<pre>debug:<strong>block_exacomp.php:130</strong>\r\n"; var_dump($finished); echo '</pre>'; // !!!!!!!!!! delete it
+
+                        $newExample = new \block_exacomp\example([
+                            'id' => -$i,
+                            'title' => $act->activitytitle,
+                            'isVirtualExample' => true,
+                            'levelOfVirtualParent' => $act->comptype,
+                            'idOfVirtualParent' => $act->compid,
+                            'externaltask' => $activitylink, // link to activity
+                            'externalurl' => '',
+                            'externalsolution' => '',
+                            'example_icon' => $example_icons,
+                            'finished' => $finished,
+                        ]);
+                        $examples[-$i] = $newExample;
+                        $i++;
+                    }
+
+                }
+
+                // main report for selectd student and selected course
+                $cont = $output->example_based_list_tree($examples, $courseid, $courseid, $studentid, true);
+                if ($cont) {
+                    $content .= html_writer::div($cont, '', ['id' => 'exacomp_tabbed_course_' . $course->id]);
+                }
+
+                $content .= '</div>';
+            }
+            $content .= '</div>';
+
+
+            $this->content = new stdClass();
+            $this->content->icons = array();
+            $this->content->items[] = $content;
+            return $this->content;
+        }
 
         if ($this->content !== null) {
             return $this->content;

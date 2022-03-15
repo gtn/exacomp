@@ -906,3 +906,4 @@ $string['expandcomps'] = 'Expand all';
 $string['contactcomps'] = 'Contract all';
 $string['questlink'] = 'Relate questions';
 $string['select_subjects'] = 'Select Subjects';
+$string['overview_examples_report_title'] = 'Overview of the examples';

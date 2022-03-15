@@ -7877,16 +7877,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return html_writer::div($content, '', array('id' => 'view_examples_header'));
     }
 
-    public function example_based_list_tree($examples, $tableid = '') {
+    public function example_based_list_tree($examples, $tableid = '', $courseId = 0, $studentId = 0, $withActivitiesResult = false) {
+        global $OUTPUT;
+        if (!$courseId) {
+            $courseId = g::$COURSE->id;
+        }
+        if (!$studentId) {
+            $studentId = g::$USER->id;
+        }
+
         $isTeacher = block_exacomp_is_teacher();
 
         $content = '<table class="default-table" id="listTree' . $tableid . '">';
 
-        $content .= '<tr><th>' . block_exacomp_get_string('example') . '</th><th>' . block_exacomp_get_string('descriptors') . '</th></tr>';
+        $content .= '<tr><th>' . block_exacomp_get_string('example') . '</th>';
+        if ($withActivitiesResult) {
+            $content .= '<th></th>';
+        }
+        $content .= '<th>' . block_exacomp_get_string('descriptors') . '</th></tr>';
 
         foreach ($examples as $example) {
             $exampleIcons = " ";
-
             if ($url = $example->get_task_file_url()) {
                 $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
                 for ($i = 0; $i < $numberOfFiles; $i++) {
@@ -7894,20 +7905,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $exampleIcons->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                 }
             } else if ($example->externaltask) {
-
                 $exampleIcons = html_writer::link($example->externaltask,
                     block_exacomp_get_example_icon_simple($this, $example, 'externaltask', 'filesearch.png'),
                     array("target" => "_blank"));
             }
 
             if ($example->externalurl) {
-
                 $exampleIcons .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl), array(
                     "target" => "_blank",
                 ));
             }
 
-            $visible_solution = block_exacomp_is_example_solution_visible(g::$COURSE->id, $example, g::$USER->id);
+            $visible_solution = block_exacomp_is_example_solution_visible($courseId, $example, $studentId);
             if ($isTeacher || $visible_solution) {
                 if ($url = $example->get_solution_file_url()) {
                     $exampleIcons .= $this->example_solution_icon($url);
@@ -7926,17 +7935,38 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
             }
 
-            $content .= '<tr><td>';
+            $content .= '<tr>';
 
-            $content .= $example->title . ' ' . $example->id . ' ' . $exampleIcons;
+            // example title + links + icons
+            $content .= '<td valign="top">';
+            $content .= $example->title . ' '. $exampleIcons;
+            $example_parent_names = block_exacomp_build_example_parent_names($courseId, $example->id, $example);
+            $content .= '</td>';
+            // activity: done or not
+            if ($withActivitiesResult) {
+                $content .= '<td valign="top">';
+                if (property_exists($example, 'isVirtualExample')) {
+                    if ($example->finished) {
+                        if ($example->finished === 'not-defined') {
+                            $content .= ''; // the activity has not defined conditions to be completed
+                        } else {
+                            $content .= '<img src="'.$OUTPUT->image_url('i/valid').'" />';
+                        }
+                    } else {
+                        $content .= '<img src="'.$OUTPUT->image_url('i/invalid').'" />';
+                    }
+                }
+                $content .= '</td>';
+            }
 
-            $example_parent_names = block_exacomp_build_example_parent_names(g::$COURSE->id, $example->id);
-
-            $content .= '</td><td>' . join('<br/>', array_map(function($names) {
+            // path to example: topic -> descriptor
+            $content .= '<td valign="top">';
+            $content .= join('<br/>', array_map(function($names) {
                     return '<span>' . join('</span><span> &#x25B8; ', $names) . '</span>';
                 }, $example_parent_names));
 
-            $content .= '</td></tr>';
+            $content .= '</td>';
+            $content .= '</tr>';
         }
 
         $content .= '</table>';
@@ -8255,9 +8285,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
      *
      * @param array $students
      * @param object $selected
-     * @param moodle_url $url
+     * @param int $option
+     * @param array $groups
+     * @return string
      */
-    function studentselector($students, $selected, $option = null, $groups = null) {
+    function studentselector($students, $selected, $option = null, $groups = null, $attributes = []) {
         $studentsAssociativeArray = array();
         $spacer = true;
 
@@ -8290,8 +8322,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
         }
 
-        return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student', $selected, true,
-            array("disabled" => $this->is_edit_mode() ? "disabled" : ""));
+        // select name
+        $selectName = 'exacomp_competence_grid_select_student';
+        if (isset($attributes['name'])) { // possible to change the name of the selectbox
+            $selectName = $attributes['name'];
+            unset($attributes['name']);
+        }
+
+        // tag attributes
+        $selectAttributes = array("disabled" => $this->is_edit_mode() ? "disabled" : "");
+        $selectAttributes = array_merge($selectAttributes, $attributes);
+
+        return html_writer::select($studentsAssociativeArray, $selectName, $selected, true,
+            $selectAttributes);
     }
 
     function daterangepicker() {
