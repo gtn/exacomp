@@ -5526,6 +5526,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $cell->text = html_writer::div('<input type="checkbox"
 			                                        exa-name="subjects"
+			                                        sourceid="' . $subject->sourceid . '"
                                                     id="subject_' . $subject->id . '"
 			                                        value="' . $subject->id . '"' .
                 ' />' .
