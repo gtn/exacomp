@@ -5344,10 +5344,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
 
             $cell = new html_table_cell();
+            $notes = '';
             if ($subject->has_another_source) {
+                $notes .= $another_childern_source_message;
+            }
+            if ($subject->gradgings) {
                 $notes = $another_childern_source_message;
-            } else {
-                $notes = '';
             }
             $cell->text = html_writer::div('<input type="checkbox"
 			                                        exa-name="subjects"
