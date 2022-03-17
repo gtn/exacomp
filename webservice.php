@@ -587,9 +587,9 @@ class block_exacomp_simple_service {
         $pdf->SetAutoPageBreak(false, 0);
         // set bacground image
 
-        $img_file = $CFG->dirroot . '/blocks/exacomp/pix/certificate/diwipass_zertifikat_logo.jpg';
+        $img_file = $CFG->dirroot . '/blocks/exacomp/pix2/diwipass_zertifikat_logo.jpg';
         $pdf->Image($img_file, 0, 20, 190, 297, 'JPG', '', '', false, 300, '', false, false, 0);
-        $diwilogo = $CFG->dirroot . '/blocks/exacomp/pix/certificate/combined.PNG';
+        $diwilogo = $CFG->dirroot . '/blocks/exacomp/pix2/combined.PNG';
         $pdf->Image($diwilogo, 0, 225, 210, 50, 'PNG', '', '', false, 300, '', false, false, 0);
         // restore auto-page-break status
         $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
@@ -739,7 +739,7 @@ class block_exacomp_simple_service {
         $pdf->SetAutoPageBreak(false, 0);
         // set bacground image
 
-        $img_file = $CFG->dirroot . '/blocks/exacomp/pix/certificate/FrauenstiftungLogo.PNG';
+        $img_file = $CFG->dirroot . '/blocks/exacomp/pix2/FrauenstiftungLogo.PNG';
         $pdf->Image($img_file, 30, 10, 160, 40, 'PNG', '', '', false, 300, '', false, false, 0);
         // restore auto-page-break status
         $pdf->SetAutoPageBreak($auto_page_break, $bMargin);
@@ -817,14 +817,16 @@ EOD;
 
         global $CFG;
         require_once $CFG->dirroot . '/lib/phpmailer/moodle_phpmailer.php';
+
+        $officemail = parse_ini_file($CFG->dirroot . "/blocks/exacomp/pix2/info.ini")["email"];
         $mailer = new moodle_phpmailer();
 
-        $mailer->AddReplyTo('office@frauenstiftung.at', 'Reply To');
-        $mailer->SetFrom("office@frauenstiftung.at", 'office@frauenstiftung.at');
+        $mailer->AddReplyTo($officemail, 'Reply To');
+        $mailer->SetFrom($officemail, $officemail);
         $mailer->AddAddress($email, $email);
         $mailer->Subject = 'Diwipass Rechnungsbestätigung';
-        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/frauenstiftungadresse.PNG', 'logo_1');
-        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/diwipass.PNG', 'logo_2');
+        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix2/frauenstiftungadresse.PNG', 'logo_1');
+        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix2/diwipass.PNG', 'logo_2');
         $mailer->AltBody = "";
         $mailer->MsgHTML('
 			<img src="cid:logo_2">
@@ -840,14 +842,15 @@ EOD;
         }
         $mailer->Send();
 
+
         $mailer = new moodle_phpmailer();
 
-        $mailer->AddReplyTo('office@frauenstiftung.at', 'Reply To');
-        $mailer->SetFrom("office@frauenstiftung.at", 'office@frauenstiftung.at');
-        $mailer->AddAddress('office@frauenstiftung.at', 'office@frauenstiftung.at');
+        $mailer->AddReplyTo($officemail, 'Reply To');
+        $mailer->SetFrom($officemail, $officemail);
+        $mailer->AddAddress($officemail, $officemail);
         $mailer->Subject = 'Diwipass Rechnungsbestätigung';
-        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/frauenstiftungadresse.PNG', 'logo_1');
-        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix/certificate/diwipass.PNG', 'logo_2');
+        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix2/frauenstiftungadresse.PNG', 'logo_1');
+        $mailer->AddEmbeddedImage($CFG->dirroot . '/blocks/exacomp/pix2/diwipass.PNG', 'logo_2');
         $mailer->AltBody = "";
         $mailer->MsgHTML('
 			<img src="cid:logo_2">
@@ -869,6 +872,7 @@ EOD;
     }
 
 }
+
 
 if (is_callable(['block_exacomp_simple_service', $function])) {
     ob_start();
