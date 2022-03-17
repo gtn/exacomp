@@ -170,7 +170,7 @@ class data {
 
         g::$DB->delete_records(BLOCK_EXACOMP_DB_DATASOURCES, array('id' => $source));
 
-        self::normalize_database();
+        //self::normalize_database();
 
         return true;
     }
@@ -2285,7 +2285,7 @@ class data_importer extends data {
         // besprechung 2015-10-06, logic zu delete source uebernehmen und kann dann geloescht werden.
         // self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
 
-        self::normalize_database();
+        //self::normalize_database();
 
         block_exacomp_settstamp();
 

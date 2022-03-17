@@ -14129,7 +14129,7 @@ function block_exacomp_relate_komettranslator_to_exacomp() {
     }
 
     //find all activities which have competencies
-    //for these competencies: find out if thy are in local_komettranslator
+    //for these competencies: find out if they are in local_komettranslator
     //if they are, find the related descriptorid
     //for each activityid call the function with the related descriptorids
     //done
