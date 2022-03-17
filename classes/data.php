@@ -3021,7 +3021,9 @@ class data_importer extends data {
                 // if the descriptor from exacomp does NOT exist in the xml --> delete it
                 if (!in_array($comparedescriptor, $xmlDescriptorSourceData)) { // the descriptor is NOT in the xmlData
                     // delete the descriptor --> use the exacompid, not the sourceid
-                    g::$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descr->id)); // id is already unique => no need to check for source and sourceid
+                    if (!g::$DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array("compid" => $descr->id, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR))) { // don't delete if grading exists
+                        g::$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descr->id)); // id is already unique => no need to check for source and sourceid
+                    }
                 }
             }
         }
@@ -3179,7 +3181,9 @@ class data_importer extends data {
             // if the topics from exacomp does NOT exist in the xml --> delete it
             if (!in_array($comparetopic, $xmlTopicSourceData)) { // the topic is NOT in the xmlData
                 // delete the topic
-                g::$DB->delete_records(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topic->id)); // id is already unique => no need to check for source and sourceid
+                if (!g::$DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array("compid" => $topic->id, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC))) { // don't delete if grading exists
+                    g::$DB->delete_records(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topic->id)); // id is already unique => no need to check for source and sourceid
+                }
             }
         }
 
