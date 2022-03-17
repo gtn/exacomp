@@ -4952,7 +4952,7 @@ function block_exacomp_get_activities_by_course($courseid, $fields = 'camm.activ
 		    INNER JOIN {course_modules} cm ON cm.id = camm.activityid
 		    LEFT JOIN {block_exacompdescriptors} d ON d.id = camm.compid
 		    LEFT JOIN {block_exacomptopics} t ON t.id = camm.compid
-		    
+
 		WHERE cm.course = ? AND camm.eportfolioitem = 0';
 
     return $DB->get_records_sql($query, array($courseid));
@@ -14177,7 +14177,7 @@ function block_exacomp_relate_komettranslator_to_exacomp() {
     }
 
     //find all activities which have competencies
-    //for these competencies: find out if thy are in local_komettranslator
+    //for these competencies: find out if they are in local_komettranslator
     //if they are, find the related descriptorid
     //for each activityid call the function with the related descriptorids
     //done
