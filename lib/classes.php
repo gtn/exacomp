@@ -253,6 +253,7 @@ class db_layer {
 
 class db_layer_whole_moodle extends db_layer {
     function get_subjects_for_source($source, $subjects_preselection = null) {
+        global $DB;
         $subjects = $this->get_subjects();
         // $subjects = array_values($subjects);
         // $subjects = array($subjects[10]); // , $subjects[1]);
@@ -274,34 +275,50 @@ class db_layer_whole_moodle extends db_layer {
                 unset($subjects[$subject->id]);
                 continue;
             }
-            $subject->can_delete = ($subject->source == $source);
+            $subject->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $subject->id, 'comptype' => BLOCK_EXACOMP_TYPE_SUBJECT));
+            $subject->can_delete = ($subject->source == $source) && !$subject->gradings;
             $subject->has_another_source = false;
+            $subject->has_gradings = false; // has_another_source/has_gradings means, that for a lower level e.g. topics  $topic->another_source/$topic->gradings is true
+
+
 
             foreach ($subject->topics as $topic) {
-                $topic->can_delete = ($topic->source == $source);
+                $topic->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $topic->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC));
+                $topic->can_delete = ($topic->source == $source) && !$topic->gradings;
                 $topic->another_source = (!($topic->source == $source));
                 $topic->has_another_source = false;
+                $topic->has_gradings = false;
+
 
                 foreach ($topic->descriptors as $descriptor) {
-                    $descriptor->can_delete = ($descriptor->source == $source);
+                    $descriptor->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $descriptor->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+                    $descriptor->can_delete = ($descriptor->source == $source) && !$descriptor->gradings;
                     $descriptor->another_source = (!($descriptor->source == $source));
                     $descriptor->has_another_source = false;
+                    $descriptor->has_gradings = false;
+
 
                     // child descriptors
                     foreach ($descriptor->children as $child_descriptor) {
-                        $child_descriptor->can_delete = ($child_descriptor->source == $source);
+                        $child_descriptor->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $child_descriptor->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+                        $child_descriptor->can_delete = ($child_descriptor->source == $source) && !$child_descriptor->gradings;
                         $child_descriptor->another_source = (!($child_descriptor->source == $source));
                         $child_descriptor->has_another_source = false;
+                        $child_descriptor->has_gradings = false;
 
                         //						//$examples = array();
                         foreach ($child_descriptor->examples as $example) {
-                            $example->can_delete = ($example->source == $source);
+                            $example->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('exampleid' => $example->id));
+                            $example->can_delete = ($example->source == $source) && !$example->gradings;
                             $example->another_source = (!($example->source == $source));
                             if (!$example->can_delete) {
                                 $child_descriptor->can_delete = false;
                             }
                             if ($example->another_source) {
                                 $child_descriptor->has_another_source = true;
+                            }
+                            if ($example->gradings) {
+                                $descriptor->has_gradings = true;
                             }
                             //if ($example->source != $source) {
                             //	unset($child_descriptor->examples[$example->id]);
@@ -315,19 +332,26 @@ class db_layer_whole_moodle extends db_layer {
                         if ($child_descriptor->another_source || $child_descriptor->has_another_source) {
                             $descriptor->has_another_source = true;
                         }
+                        if ($child_descriptor->gradings || $child_descriptor->has_gradings) {
+                            $descriptor->has_gradings = true;
+                        }
                         //if ($child_descriptor->source != $source && empty($child_descriptor->examples)) {
                         //	unset($descriptor->children[$child_descriptor->id]);
                         //}
                     }
 
                     foreach ($descriptor->examples as $example) {
-                        $example->can_delete = ($example->source == $source);
+                        $example->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('exampleid' => $example->id));
+                        $example->can_delete = ($example->source == $source) && !$example->gradings;
                         $example->another_source = (!($example->source == $source));
                         if (!$example->can_delete) {
                             $descriptor->can_delete = false;
                         }
                         if ($example->another_source) {
                             $descriptor->has_another_source = true;
+                        }
+                        if ($example->gradings) {
+                            $descriptor->has_gradings = true;
                         }
                         //if ($example->source != $source) {
                         //	unset($descriptor->examples[$example->id]);
@@ -343,6 +367,9 @@ class db_layer_whole_moodle extends db_layer {
                     if ($descriptor->another_source || $descriptor->has_another_source) {
                         $topic->has_another_source = true;
                     }
+                    if ($descriptor->gradings || $descriptor->has_gradings) {
+                        $topic->has_gradings = true;
+                    }
                     //if ($descriptor->source != $source && empty($descriptor->examples)) {
                     //	unset($topic->descriptors[$descriptor->id]);
                     //}
@@ -353,6 +380,9 @@ class db_layer_whole_moodle extends db_layer {
                 }
                 if ($topic->another_source || $topic->has_another_source) {
                     $subject->has_another_source = true;
+                }
+                if ($topic->gradings || $topic->has_gradings) {
+                    $subject->has_gradings = true;
                 }
                 //if ($topic->source != $source && empty($topic->descriptors)) {
                 //	unset($subject->topics[$topic->id]);

@@ -443,7 +443,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $cell = new html_table_cell();
         $cell->attributes['class'] = 'comp_grey_97';
 
-        if(!empty($subject->description) && $subject->description != strip_tags($subject->description)) {
+        if (!empty($subject->description) && $subject->description != strip_tags($subject->description)) {
             // contains HTML ==> remove it, because it cannot be displayed correctly
             $subject->description = null;
         }
@@ -955,7 +955,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
         if (!$forReport) {
             $table_html .= html_writer::div(html_writer::tag("input", "",
-                array("class"=> "btn btn-primary", "id" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection"))), '',
+                array("class" => "btn btn-primary", "id" => "btn_submit", "type" => "submit", "value" => block_exacomp_get_string("save_selection"))), '',
                 array('id' => 'exabis_save_button'));
         }
 
@@ -5339,16 +5339,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $another_source_message = '<span class="exacomp-has-another-source">&nbsp;' . block_exacomp_get_string('delete_level_from_another_source') . '</span>';
         $another_childern_source_message = '<span class="exacomp-has-another-source">&nbsp;' . block_exacomp_get_string('delete_level_has_children_from_another_source') . '</span>';
 
+        $gradings_message = '<span class="exacomp-has-another-source">&nbsp;  !!!  ' . block_exacomp_get_string('delete_competency_that_has_gradings') . '</span>';
+        $has_gradings_message = '<span class="exacomp-has-another-source">&nbsp;  !!!  ' . block_exacomp_get_string('delete_competency_that_has_children_with_gradings') . '</span>';
+
         foreach ($subjects as $subject) {
             $row = new html_table_row();
             $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
 
             $cell = new html_table_cell();
+            $notes = '';
             if ($subject->has_another_source) {
-                $notes = $another_childern_source_message;
-            } else {
-                $notes = '';
+                $notes .= $another_childern_source_message;
             }
+            if ($subject->gradings) {
+                $notes .= $gradings_message;
+            } else if ($subject->has_gradings) {
+                $notes .= $has_gradings_message;
+            }
+
             $cell->text = html_writer::div('<input type="checkbox"
 			                                        exa-name="subjects"
                                                     id="subject_' . $subject->id . '"
@@ -5372,6 +5380,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 if (!$topic->another_source && $topic->has_another_source) {
                     $notes .= $another_childern_source_message;
+                }
+                if ($topic->gradings) {
+                    $notes .= $gradings_message;
+                } else if ($topic->has_gradings) {
+                    $notes .= $has_gradings_message;
                 }
                 $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                 $cell->text = html_writer::div('<input type="checkbox"
@@ -5398,6 +5411,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     }
                     if (!$descriptor->another_source && $descriptor->has_another_source) {
                         $notes .= $another_childern_source_message;
+                    }
+                    if ($descriptor->gradings) {
+                        $notes .= $gradings_message;
+                    } else if ($descriptor->has_gradings) {
+                        $notes .= $has_gradings_message;
                     }
                     $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                     $cell->text = html_writer::div('<input type="checkbox"
@@ -5426,6 +5444,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if (!$child_descriptor->another_source && $child_descriptor->has_another_source) {
                             $notes .= $another_childern_source_message;
                         }
+                        if ($child_descriptor->gradings) {
+                            $notes .= $gradings_message;
+                        } else if ($child_descriptor->has_gradings) {
+                            $notes .= $has_gradings_message;
+                        }
                         $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                         $cell->text = html_writer::div('<input type="checkbox"
 						                                        exa-name="descriptors"
@@ -5449,6 +5472,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $notes = '';
                             if ($example->another_source) {
                                 $notes .= $another_source_message;
+                            }
+                            if ($example->gradings) {
+                                $notes .= $gradings_message;
                             }
                             $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                             $cell->text = html_writer::div('<input type="checkbox"
@@ -5475,6 +5501,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $notes = '';
                         if ($example->another_source) {
                             $notes .= $another_source_message;
+                        }
+                        if ($example->gradings) {
+                            $notes .= $gradings_message;
                         }
                         $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                         $cell->text = html_writer::div('<input type="checkbox"
@@ -5885,7 +5914,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return html_writer::div(block_exacomp_get_string('description_edit_badge_comps'))
             . html_writer::empty_tag('br')
             .
-            html_writer::tag('form', $div, array('id' => 'edit-activities', 'action' => new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $COURSE->id, 'badgeid' => $badge->id, 'sesskey' => sesskey(), 'action' => 'save')), 'method' => 'post'));
+            html_writer::tag('form', $div,
+                array('id' => 'edit-activities', 'action' => new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $COURSE->id, 'badgeid' => $badge->id, 'sesskey' => sesskey(), 'action' => 'save')), 'method' => 'post'));
 
     }
 
@@ -7940,7 +7970,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             // example title + links + icons
             $content .= '<td valign="top">';
-            $content .= $example->title . ' '. $exampleIcons;
+            $content .= $example->title . ' ' . $exampleIcons;
             $example_parent_names = block_exacomp_build_example_parent_names($courseId, $example->id, $example);
             $content .= '</td>';
             // activity: done or not
@@ -7951,10 +7981,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if ($example->finished === 'not-defined') {
                             $content .= ''; // the activity has not defined conditions to be completed
                         } else {
-                            $content .= '<img src="'.$OUTPUT->image_url('i/valid').'" />';
+                            $content .= '<img src="' . $OUTPUT->image_url('i/valid') . '" />';
                         }
                     } else {
-                        $content .= '<img src="'.$OUTPUT->image_url('i/invalid').'" />';
+                        $content .= '<img src="' . $OUTPUT->image_url('i/invalid') . '" />';
                     }
                 }
                 $content .= '</td>';
@@ -7963,8 +7993,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
             // path to example: topic -> descriptor
             $content .= '<td valign="top">';
             $content .= join('<br/>', array_map(function($names) {
-                    return '<span>' . join('</span><span> &#x25B8; ', $names) . '</span>';
-                }, $example_parent_names));
+                return '<span>' . join('</span><span> &#x25B8; ', $names) . '</span>';
+            }, $example_parent_names));
 
             $content .= '</td>';
             $content .= '</tr>';
