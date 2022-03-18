@@ -2805,6 +2805,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Importierter Kompetenzraster wurde in dieser Installation weiterbearbeitet. Diese Ergänzungen sollten vor dem Löschen ausgewiesen werden. Ansonsten werden potenziell auch die Inhalte anderer Raster gelöscht wenn sie diesen Raster löschen! ',
         'Has children from another source! If you do not remove the children first and delete this subject, you will also delete from the other source!',
     ],
+    'delete_competency_that_has_gradings' => [
+        'Diese Kompetenz hat bereits Beurteilungen! Nur löschen wenn Sie sicher sind!',
+        'This competence already has gradings! Only delete if you are sure!',
+    ],
+    'delete_competency_that_has_children_with_gradings' => [
+        'Darunterliegende Kompetenzen haben bereits Beurteilungen! Nur löschen wenn Sie sicher sind!',
+        'Children of this competence already have gradings! Only delete if you are sure!',
+    ],
 
     'module_used_availabilitycondition_competences' => [
         'Verknüpfte Exabis Kompetenzen automatisch erreichen, wenn die Bedingungen erfüllt sind.',
