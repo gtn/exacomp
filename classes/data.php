@@ -237,6 +237,7 @@ class data {
  */
     public static function normalize_database() {
         // delete entries with no source anymore
+        $start = microtime(true);
         foreach (self::$sourceTables as $table) {
             $sql = "DELETE FROM {{$table}}
 						WHERE source >= " . data::MIN_SOURCE_ID . "
@@ -244,6 +245,8 @@ class data {
 					";
             g::$DB->execute($sql);
         }
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on deleting entries without source: " . $time_elapsed_secs);
 
         // delete unused mms
         $tables = array(
@@ -358,6 +361,7 @@ class data {
             // Keep example gradings, since they are sometimes used in combination with items, and items are exaPORT entries which should not be deleted
         );
 
+        $start = microtime(true);
         $make_select = function($select) {
             if (strpos($select, ' ')) {
                 return $select;
@@ -387,8 +391,12 @@ class data {
 
             g::$DB->execute($sql);
         }
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on deleting unused mms: " . $time_elapsed_secs);
+
 
         // delete competence gradings of competences that do not exists anymore ==> subjects, topics, descriptors are 3 different tables
+        $start = microtime(true);
         $sql = "
 			DELETE FROM {" . BLOCK_EXACOMP_DB_COMPETENCES . "}
 			WHERE comptype = " . BLOCK_EXACOMP_TYPE_DESCRIPTOR . " AND compid NOT IN (SELECT id FROM {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "})
@@ -396,6 +404,8 @@ class data {
 			OR comptype = " . BLOCK_EXACOMP_TYPE_SUBJECT . " AND compid NOT IN (SELECT id FROM {" . BLOCK_EXACOMP_DB_SUBJECTS . "})
 		";
         g::$DB->execute($sql);
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on deleting unrelated gradings: " . $time_elapsed_secs);
 
         // delete unused sources
         /*
@@ -413,6 +423,7 @@ class data {
          )";
          */
         // add topic visibility to course if associated
+        $start = microtime(true);
         $sql = "
 			INSERT INTO {" . BLOCK_EXACOMP_DB_TOPICVISIBILITY . "}
 			(courseid, topicid, studentid, visible)
@@ -422,8 +433,11 @@ class data {
 			WHERE tv.id IS NULL AND tv.niveauid IS NULL -- only for those, who have no visibility yet
 		";
         g::$DB->execute($sql);
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on topicvisibility update: " . $time_elapsed_secs);
 
         // add subdescriptors to topics
+        $start = microtime(true);
         $sql = "
 			INSERT INTO {" . BLOCK_EXACOMP_DB_DESCTOPICS . "}
 			(topicid, descrid)
@@ -434,10 +448,13 @@ class data {
 			WHERE dt.id IS NULL -- only for those, who have no topic yet
 		";
         g::$DB->execute($sql);
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on subdescriptors to topics update: " . $time_elapsed_secs);
 
         // after topics, descriptors and their mm are imported
         // check if new descriptors should be visible in the courses
         // 1. descriptors directly under the topic
+        $start = microtime(true);
         $sql = "
 			INSERT INTO {" . BLOCK_EXACOMP_DB_DESCVISIBILITY . "}
 			(courseid, descrid, studentid, visible)
@@ -448,8 +465,11 @@ class data {
 			WHERE dv.id IS NULL -- only for those, who have no visibility yet
 		";
         g::$DB->execute($sql);
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on descriptorvisibility under topics update: " . $time_elapsed_secs);
 
         // 2. cross course descriptors used in crosssubjects
+        $start = microtime(true);
         $sql = "
 			INSERT INTO {" . BLOCK_EXACOMP_DB_DESCVISIBILITY . "}
 			(courseid, descrid, studentid, visible)
@@ -460,8 +480,11 @@ class data {
 			WHERE dv.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
 		";
         g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on descriptorvisibility in crosssubject update: " . $time_elapsed_secs);
 
         //example visibility
+        $start = microtime(true);
         $sql = "
 			INSERT INTO {" . BLOCK_EXACOMP_DB_EXAMPVISIBILITY . "}
 			(courseid, exampleid, studentid, visible)
@@ -474,8 +497,11 @@ class data {
 			WHERE ev.id IS NULL -- only for those, who have no visibility yet
 		";
         g::$DB->execute($sql);
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on examplevisibility update: " . $time_elapsed_secs);
 
         //example solutions visibility
+        $start = microtime(true);
         $sql = "
             INSERT INTO {" . BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY . "}
             (courseid, exampleid, studentid, visible)
@@ -488,8 +514,11 @@ class data {
             WHERE ev.id IS NULL -- only for those, who have no visibility yet
         ";
         g::$DB->execute($sql);
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on solutionvisibility update: " . $time_elapsed_secs);
 
         //example visibility crosssubjects
+        $start = microtime(true);
         $sql = "
 			INSERT INTO {" . BLOCK_EXACOMP_DB_EXAMPVISIBILITY . "}
 			(courseid, exampleid, studentid, visible)
@@ -502,8 +531,11 @@ class data {
 			WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
 		";
         g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on examplevisibility in crosssubjects update: " . $time_elapsed_secs);
 
         //example solution visibility： crosssubjects
+        $start = microtime(true);
         $sql = "
             INSERT INTO {" . BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY . "}
             (courseid, exampleid, studentid, visible)
@@ -516,6 +548,8 @@ class data {
             WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
         ";
         g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+        $time_elapsed_secs = microtime(true) - $start;
+        mtrace("Seconds spent on solutionvisibility in crosssubjects update: " . $time_elapsed_secs);
     }
 }
 
