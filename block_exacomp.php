@@ -110,6 +110,9 @@ class block_exacomp extends block_list {
 
                 $mod_info = get_fast_modinfo($courseid);
 
+                // students data (evaluations of examples)
+                $studentExampleEvaluations = block_exacomp_get_user_examples_by_course($student, $courseid);
+
                 // main report content
                 $content .= '<div>';
 
@@ -136,6 +139,23 @@ class block_exacomp extends block_list {
                               WHERE ct.courseid = ?
                               ORDER BY e.title
                         ", [$courseid]);
+
+                // set example 'finished' value
+                foreach ($examples as $exInd => $example) {
+                    $finished = COMPLETION_INCOMPLETE;
+                    // first: use teacher evaluation
+                    if (isset($studentExampleEvaluations->teacher[$example->id])) {
+                        $finished = $studentExampleEvaluations->teacher[$example->id];
+                    } else if (@$cm = $mod_info->cms[$example->activityid]) {
+                        // second: use default sactivity completion method
+                        $completionFunc = $cm->modname.'_get_completion_state';
+                        if (function_exists($completionFunc)) {
+                            $finished = $completionFunc($course, $cm, $studentid, 'not-defined'); // not-defined - if the activity has not conditions to get complete status
+                        }
+                    }
+                    $examples[$exInd]->finished = $finished;
+                }
+
                 // add related activities (with old method)
                 // then such activities will be used for creating virtual examples to get parent names for better view
                 if (block_exacomp_use_old_activities_method()) {
@@ -152,6 +172,7 @@ class block_exacomp extends block_list {
                         if (@$cm = $mod_info->cms[$act->activityid]) {
                             $example_icons = $cm->get_icon_url()->out(false);
                             $example_icons = serialize(array('externaltask' => $example_icons));
+                            // completion by default activity completion method
                             $completionFunc = $cm->modname.'_get_completion_state';
                             if (function_exists($completionFunc)) {
                                 $finished = $completionFunc($course, $cm, $studentid, 'not-defined'); // not-defined - if the activity has not conditions to get complete status

@@ -7976,7 +7976,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             // activity: done or not
             if ($withActivitiesResult) {
                 $content .= '<td valign="top">';
-                if (property_exists($example, 'isVirtualExample')) {
+                if (property_exists($example, 'finished')) {
                     if ($example->finished) {
                         if ($example->finished === 'not-defined') {
                             $content .= ''; // the activity has not defined conditions to be completed
