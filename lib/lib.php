@@ -2652,8 +2652,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
         if (!property_exists($topic, "used_niveaus")) {
             $topic->used_niveaus = array();
         }
-        if (!in_array($descriptor->niveauid, $topic->used_niveaus)) {
-            $topic->used_niveaus[] = $descriptor->niveauid;
+        if (!isset($topic->used_niveaus[$descriptor->niveauid])) {
+            $topic->used_niveaus[$descriptor->niveauid] = ["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title];
         }
 
         if ($niveauid != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $calledfromoverview) {
@@ -2667,9 +2667,11 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
     $subjects = array();
 
+
     foreach ($allSubjects as $subject) {
         $subject->topics = [];
     }
+
 
     foreach ($allTopics as $topic) {
         //topic must be coursetopic if courseid <> 0
@@ -2689,6 +2691,17 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
             $topic->used_niveaus = array();
         }
         $topic = block_exacomp\topic::create($topic);
+
+        // add the used_niveaus of the topics of this subject to the subject.
+        // the used_niveaus are needed for webservices e.g. diggrplus_get_all_subjects_for_course_as_tree() to not send the niveautitles with every single descriptor
+        if (!property_exists($subject, "used_niveaus")) {
+            $subject->used_niveaus = array();
+        }
+        foreach ($topic->used_niveaus as $niveauid => $niveautitle){
+            if (!isset($subject->used_niveaus[$niveauid])) {
+                $subject->used_niveaus[$niveauid] = $niveautitle;
+            }
+        }
 
         // found: add it to the subject result
         $subject->topics[$topic->id] = $topic;
@@ -9736,8 +9749,10 @@ function block_exacomp_create_blocking_event($courseid, $title, $description, $t
         $visibility->studentid = 0;
         $visibility->visible = 1;
 
-        $vibilityid = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
+        $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, $visibility);
     }
+
+    return $scheduleid;
 
 }
 

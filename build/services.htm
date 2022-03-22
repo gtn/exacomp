@@ -322,7 +322,7 @@ Returns:<pre>[
 ]</pre>
 <h2>diggrplus_get_subjects_and_topics_for_user</h2>
 <div>Get Subjects
-get subjects from one user for all his courses</div>
+get subjects from one user for all his courses or for one specific course.</div>
 <div>type: read</div>
 Params: <table>
 <tr>
@@ -3667,29 +3667,46 @@ Params: <table>
 <td></td>
 <td>id of course</td>
 <td></td>
+<tr>
+<td>subjectid</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td></td>
+<td>id of subject, if you only want one specific subject</td>
+<td></td>
 </table>
 Returns:<pre>[
     {
         "id": "int null ('id of subject')",
         "title": "text null ('title of subject')",
+        "used_niveaus": [
+            {
+                "id": "text null ('id of niveau')",
+                "title": "text null ('title of niveau')"
+            },
+            "..."
+        ],
         "courseid": "int null ('id of course')",
         "courseshortname": "text null ('courseshortname')",
         "coursefullname": "text null ('coursefullname')",
         "topics": [
             {
-                "id": "int null ('id of example')",
+                "id": "int null ('id of topic')",
                 "title": "text null ('title of topic')",
                 "visible": "bool null ('visibility of topic in current context ')",
                 "used": "bool null ('if topic is used')",
                 "descriptors": [
                     {
-                        "id": "int null ('id of example')",
+                        "id": "int null ('id of descriptor')",
+                        "niveauid": "int null ('id of the niveau (column) of this descriptor')",
                         "title": "text null ('title of descriptor')",
                         "visible": "bool null ('visibility of descriptor in current context ')",
                         "used": "bool null ('if descriptor is used')",
                         "childdescriptors": [
                             {
                                 "id": "int null ('id of example')",
+                                "niveauid": "int null ('id of the niveau (column) of this descriptor')",
                                 "title": "text null ('title of example')",
                                 "visible": "bool null ('visibility of descriptor in current context ')",
                                 "used": "bool null ('if descriptor is used')",
@@ -4575,7 +4592,7 @@ Params: <table>
 <td></td>
 </table>
 Returns:<pre>{
-    "success": "bool null ('status')"
+    "scheduleid": "int null ('scheduleid')"
 }</pre>
 <h2>dakora_get_examples_by_descriptor_and_grading</h2>
 <div>returns examples for given descriptor and grading

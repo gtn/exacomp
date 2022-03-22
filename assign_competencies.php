@@ -152,7 +152,7 @@ if ($topicid && $topicid != -1) {
     $used_niveaus = $competence_tree[$selectedSubject->id]->topics[$topicid]->used_niveaus;
     foreach ($niveaus as $k => $niveau) {
         if (!$editmode) {
-            if (!in_array($niveau->id, $used_niveaus) && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
+            if (!isset($used_niveaus[$niveau->id]) && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
                 if ($selectedNiveau->id == $niveau->id) {
                     $selectedNiveau = $niveaus[BLOCK_EXACOMP_SHOW_ALL_NIVEAUS]; // if e.g. niveau with id 6 is clicked, then the topic is switched and niveau 6 does not exist ==> go to "show all"
                     $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [

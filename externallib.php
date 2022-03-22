@@ -1105,7 +1105,7 @@ class block_exacomp_external extends external_api {
 
     /**
      * Get Subjects
-     * get subjects from one user for all his courses
+     * get subjects from one user for all his courses or for one specific course.
      *
      * @ws-type-read
      * @return array of user courses
@@ -7410,6 +7410,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'subjectid' => new external_value (PARAM_INT, 'id of subject, if you only want one specific subject', VALUE_OPTIONAL, null),
         ));
     }
 
@@ -7420,12 +7421,13 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of user courses
      */
-    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid) {
+    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid, $subjectid = null) {
         global $USER;
 
         static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
             'userid' => $userid,
             'courseid' => $courseid,
+            'subjectid' => $subjectid,
         ));
 
         if (!$userid) {
@@ -7437,13 +7439,14 @@ class block_exacomp_external extends external_api {
 
         $course = get_course($courseid);
 
-        $tree = block_exacomp_get_competence_tree($courseid, null, null, true, null, true, null, false, false, false, false, false);
+        $tree = block_exacomp_get_competence_tree($courseid, $subjectid, null, true, null, true, null, false, false, false, false, false);
 
-        //        var_dump(count($tree));
+
 
         foreach ($tree as $subject) {
             $elem_sub = new stdClass ();
             $elem_sub->id = $subject->id;
+            $elem_sub->used_niveaus = $subject->used_niveaus;
             $elem_sub->title = static::custom_htmltrim(strip_tags($subject->title));
             $elem_sub->courseid = $courseid;
             $elem_sub->courseshortname = $course->shortname;
@@ -7459,6 +7462,7 @@ class block_exacomp_external extends external_api {
                 foreach ($topic->descriptors as $descriptor) {
                     $elem_desc = new stdClass ();
                     $elem_desc->id = $descriptor->id;
+                    $elem_desc->niveauid = $descriptor->niveauid;
                     $elem_desc->title = static::custom_htmltrim(strip_tags($descriptor->title));
                     $elem_desc->childdescriptors = array();
                     $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
@@ -7466,6 +7470,7 @@ class block_exacomp_external extends external_api {
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
+                        $elem_child->niveauid = $child->niveauid;
                         $elem_child->title = static::custom_htmltrim(strip_tags($child->title));
                         $elem_child->examples = array();
                         $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
@@ -7512,21 +7517,27 @@ class block_exacomp_external extends external_api {
         return new external_multiple_structure (new external_single_structure (array(
             'id' => new external_value (PARAM_INT, 'id of subject'),
             'title' => new external_value (PARAM_TEXT, 'title of subject'),
+            'used_niveaus' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_TEXT, 'id of niveau'),
+                'title' => new external_value (PARAM_TEXT, 'title of niveau'),
+            ))),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
             'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
             'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
             'topics' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of example'),
+                'id' => new external_value (PARAM_INT, 'id of topic'),
                 'title' => new external_value (PARAM_TEXT, 'title of topic'),
                 'visible' => new external_value (PARAM_BOOL, 'visibility of topic in current context '),
                 'used' => new external_value (PARAM_BOOL, 'if topic is used'),
                 'descriptors' => new external_multiple_structure (new external_single_structure (array(
-                    'id' => new external_value (PARAM_INT, 'id of example'),
+                    'id' => new external_value (PARAM_INT, 'id of descriptor'),
+                    'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
                     'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
                     'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
                     'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
                     'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
                         'id' => new external_value (PARAM_INT, 'id of example'),
+                        'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
                         'title' => new external_value (PARAM_TEXT, 'title of example'),
                         'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
                         'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
@@ -9146,9 +9157,9 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        block_exacomp_create_blocking_event($courseid, $title, $description, $timeframe, $externalurl, $USER->id, $userid);
+        $scheduleid = block_exacomp_create_blocking_event($courseid, $title, $description, $timeframe, $externalurl, $USER->id, $userid);
 
-        return array("success" => true);
+        return array("scheduleid" => $scheduleid);
     }
 
     /**
@@ -9158,7 +9169,7 @@ class block_exacomp_external extends external_api {
      */
     public static function dakora_create_blocking_event_returns() {
         return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+            'scheduleid' => new external_value (PARAM_INT, 'scheduleid'),
         ));
     }
 

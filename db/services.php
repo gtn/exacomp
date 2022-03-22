@@ -95,7 +95,7 @@ get subjects from one user for all his courses',
     'methodname' => 'diggrplus_get_subjects_and_topics_for_user',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => 'Get Subjects
-get subjects from one user for all his courses',
+get subjects from one user for all his courses or for one specific course.',
     'type' => 'read',
   ),
   'diggrplus_get_niveaus_for_subject' => 
