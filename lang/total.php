@@ -1482,7 +1482,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'submissionmissing' => [
         'Es müssen zumindest ein Link oder eine Datei abgegeben werden',
-        'Es müssen zumindest ein Link oder eine Datei abgegeben werden',
+        'At least one link or file must be submitted',
     ],
     'associated_activities' => [
         'Zugeordnete Moodle-Aktivitäten:',
