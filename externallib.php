@@ -75,7 +75,7 @@ class block_exacomp_external extends external_api {
         $time = time();
 
         foreach ($mycourses as $mycourse) {
-            if ($mycourse->visible == 0 || $mycourse->enddate < $time && $mycourse->enddate != 0) { //enddate is a smaller number than today ==> NOT visible, since it is over already
+            if ($mycourse->visible == 0 || isset($mycourse->enddate) && isset($mycourse->enddate) && $mycourse->enddate < $time && $mycourse->enddate != 0) { //enddate is a smaller number than today ==> NOT visible, since it is over already
                 continue;
             }
 

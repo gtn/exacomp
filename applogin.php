@@ -57,13 +57,15 @@ function block_exacomp_get_login_data() {
 }
 
 function block_exacomp_logout() {
-    $authsequence = get_enabled_auth_plugins(); // auths, in sequence
-    foreach ($authsequence as $authname) {
-        $authplugin = get_auth_plugin($authname);
-        $authplugin->logoutpage_hook();
-    }
-
-    require_logout();
+    //mtrace("logout");
+    // This is deprecated... logout is only done for diggrplus
+    //require_sesskey();
+    //$authsequence = get_enabled_auth_plugins(); // auths, in sequence
+    //foreach ($authsequence as $authname) {
+    //    $authplugin = get_auth_plugin($authname);
+    //    $authplugin->logoutpage_hook();
+    //}
+    //require_logout();
 }
 
 // Allow CORS requests.
