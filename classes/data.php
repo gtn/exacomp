@@ -2241,9 +2241,7 @@ class data_importer extends data {
             }
 
             foreach ($xml->examples->example as $example) {
-
                 if (in_array((int) $example->attributes()->id, $examplesFromSelected)) {
-
                     self::insert_example($example, 0, $course_template);
                 }
             }
@@ -2891,26 +2889,60 @@ class data_importer extends data {
             }
         }
 
-        self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_EXAMPTAX, 'exampleid', $item->id);
+        // TODO: test tax and descriptors edgecases. What happens if none exists. What happens if oldmethod was used and now newmethod is used. What happens if old komet grids are used.
+        //self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_EXAMPTAX, 'exampleid', $item->id);
+        //if ($xmlItem->taxonomies) {
+        //    foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
+        //        if ($taxonomyid = self::get_database_id($taxonomy)) {
+        //            g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPTAX, array("exampleid" => $item->id, "taxid" => $taxonomyid));
+        //        }
+        //    }
+        //}
+
         if ($xmlItem->taxonomies) {
+            $taxonomylist = array();
             foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
                 if ($taxonomyid = self::get_database_id($taxonomy)) {
                     g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPTAX, array("exampleid" => $item->id, "taxid" => $taxonomyid));
+                    $taxonomylist[] = $taxonomyid;
                 }
             }
+            list($insql, $inparams) = g::$DB->get_in_or_equal($taxonomylist, SQL_PARAMS_NAMED, 'taxonomylist', false, false);
+            $sql = "DELETE FROM {" . BLOCK_EXACOMP_DB_EXAMPTAX . "}
+                WHERE exampleid = :itemid
+                AND taxid $insql";
+            $params = array_merge(array("itemid"=>$item->id), $inparams);
+            g::$DB->execute($sql, $params);
         }
 
-        self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_DESCEXAMP, 'exampid', $item->id);
+        //self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_DESCEXAMP, 'exampid', $item->id);
+        //if ($xmlItem->descriptors) {
+        //    foreach ($xmlItem->descriptors->descriptorid as $descriptor) {
+        //        if ($descriptorid = self::get_database_id($descriptor)) {
+        //            $sql = "SELECT MAX(sorting) as sorting FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} WHERE descrid=?";
+        //            $max_sorting = g::$DB->get_record_sql($sql, array($descriptorid));
+        //            $sorting = intval($max_sorting->sorting) + 1;
+        //            g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array("exampid" => $item->id, "descrid" => $descriptorid, "sorting" => $sorting));
+        //        }
+        //    }
+        //}
+
         if ($xmlItem->descriptors) {
+            $descriptorlist = array();
             foreach ($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    $sql = "SELECT MAX(sorting) as sorting FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} WHERE descrid=?";
-                    $max_sorting = g::$DB->get_record_sql($sql, array($descriptorid));
-                    $sorting = intval($max_sorting->sorting) + 1;
-                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array("exampid" => $item->id, "descrid" => $descriptorid, "sorting" => $sorting));
+                    $sorting = isset($descriptor->sorting) ? $descriptor->sorting : 0;
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array("exampid" => $item->id, "descrid" => $descriptorid, "sorting" => $sorting), array("exampid" => $item->id, "descrid" => $descriptorid));
+                    $descriptorlist[] = $descriptorid;
                 }
             }
-        }
+            list($insql, $inparams) = g::$DB->get_in_or_equal($descriptorlist, SQL_PARAMS_NAMED, 'descriptorlist', false, false);
+            $sql = "DELETE FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "}
+                WHERE exampid = :itemid
+                AND descrid $insql";
+            $params = array_merge(array("itemid"=>$item->id), $inparams);
+            g::$DB->execute($sql, $params);
+          }
 
         if ($xmlItem->children) {
             foreach ($xmlItem->children->example as $child) {
