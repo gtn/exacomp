@@ -170,16 +170,23 @@ class block_exacomp extends block_list {
                         $example_icons = null;
                         $finished = COMPLETION_INCOMPLETE;
                         if (@$cm = $mod_info->cms[$act->activityid]) {
+                            // completion by default activity completion method
+                            if ($cm->completion == COMPLETION_TRACKING_MANUAL) {
+                                // if the student set up completion manually}
+                                $completionData = $DB->get_record('course_modules_completion', array('coursemoduleid' => $cm->id, 'userid' => $studentid));
+                                if ($completionData && $completionData->completionstate == COMPLETION_COMPLETE) {
+                                    $finished = true;
+                                }
+                            } else {
+                                // for automatic completion methods
+                                $completionFunc = $cm->modname.'_get_completion_state';
+                                if (function_exists($completionFunc)) {
+                                    $finished = $completionFunc($course, $cm, $studentid, 'not-defined'); // not-defined - if the activity has not conditions to get complete status
+                                }
+                            }
                             $example_icons = $cm->get_icon_url()->out(false);
                             $example_icons = serialize(array('externaltask' => $example_icons));
-                            // completion by default activity completion method
-                            $completionFunc = $cm->modname.'_get_completion_state';
-                            if (function_exists($completionFunc)) {
-                                $finished = $completionFunc($course, $cm, $studentid, 'not-defined'); // not-defined - if the activity has not conditions to get complete status
-                            }
                         }
-//                            echo "<pre>debug:<strong>block_exacomp.php:130</strong>\r\n"; print_r($act->activitytitle); echo '</pre>'; // !!!!!!!!!! delete it
-//                            echo "<pre>debug:<strong>block_exacomp.php:130</strong>\r\n"; var_dump($finished); echo '</pre>'; // !!!!!!!!!! delete it
 
                         $newExample = new \block_exacomp\example([
                             'id' => -$i,
