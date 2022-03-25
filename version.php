@@ -20,10 +20,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_exacomp';
 $plugin->release = '4.6.6';
-<<<<<<< HEAD
-$plugin->version = 2022031702;
-=======
-$plugin->version = 2022031801;
->>>>>>> 8bf4a52f (mtrace for normalize_database())
+$plugin->version = 2022032500;
 $plugin->requires = 2015051100;
 $plugin->maturity = MATURITY_STABLE;
