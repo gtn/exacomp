@@ -437,6 +437,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         '',
         '',
     ],
+    'settings_applogin_enabled' => [
+        'App-Login aktivieren',
+        'Enable App Login',
+    ],
+    'settings_applogin_enabled_description' => [
+        'Erlaubt den Login von Exabis Apps (Diggr+, usw.)',
+        'Allows the login from Exabis Apps (Diggr+, etc.)',
+    ],
     'settings_setapp_enabled' => [
         'SET-App Funktionen aktivieren',
         'Enable SET-App Functions',
