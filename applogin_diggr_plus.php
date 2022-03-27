@@ -194,23 +194,31 @@ function block_exacomp_send_login_result($user, $login_request_data) {
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
 
-if (!get_config('exacomp', 'applogin_enabled')) {
-    echo $OUTPUT->header();
-
-    echo '<div style="width: 100%; text-align: center; padding-top: 100px;">'.block_exacomp_trans(['de:App Login ist deaktiviert!', 'en:App Login is disabled!']).'</div>';
-
-    echo $OUTPUT->footer();
-    exit;
-}
-
+$action = optional_param('action', '', PARAM_TEXT);
 
 // Allow CORS requests.
 header('Access-Control-Allow-Origin: *');
 
+
+if (!get_config('exacomp', 'applogin_enabled')) {
+    $error = block_exacomp_trans(['de:App Login ist deaktiviert!', 'en:App Login is disabled!']);
+
+    if ($action == 'get_login_url' || $action == 'msteams_login') {
+        block_exacomp_init_cors();
+        block_exacomp_json_result_error($error);
+    } else {
+        echo $OUTPUT->header();
+
+        echo '<div style="width: 100%; text-align: center; padding-top: 100px;">'.$error.'</div>';
+
+        echo $OUTPUT->footer();
+        exit;
+    }
+}
+
+
 // always delete old login data
 $DB->execute("DELETE FROM {block_exacompapplogin} WHERE created_at<?", [time() - 60 * 30]);
-
-$action = optional_param('action', '', PARAM_TEXT);
 
 if ($action == 'get_login_url') {
     $app = required_param('app', PARAM_TEXT);
