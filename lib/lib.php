@@ -518,9 +518,9 @@ function block_exacomp_get_assessment_points_limit($onlyGlobal = true, $courseid
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int)$configurations[$assessment_config]["assessment_points_limit"];
+        return (int) $configurations[$assessment_config]["assessment_points_limit"];
     } else {
-        return (int)get_config('exacomp', 'assessment_points_limit');
+        return (int) get_config('exacomp', 'assessment_points_limit');
     }
 }
 
@@ -543,7 +543,7 @@ function block_exacomp_get_assessment_grade_limit($courseid = 0) {
         $value = get_config('exacomp', 'assessment_grade_limit');
     }
 
-    return (int)$value;
+    return (int) $value;
     //return get_config('exacomp', 'assessment_grade_limit');
 }
 
@@ -627,9 +627,9 @@ function block_exacomp_get_assessment_points_negative_threshold($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int)$configurations[$assessment_config]["assessment_points_negativ"];
+        return (int) $configurations[$assessment_config]["assessment_points_negativ"];
     } else {
-        return (int)get_config('exacomp', 'assessment_points_negativ');
+        return (int) get_config('exacomp', 'assessment_points_negativ');
     }
 }
 
@@ -641,9 +641,9 @@ function block_exacomp_get_assessment_grade_negative_threshold($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int)$configurations[$assessment_config]["assessment_grade_negativ"];
+        return (int) $configurations[$assessment_config]["assessment_grade_negativ"];
     } else {
-        return (int)get_config('exacomp', 'assessment_grade_negativ');
+        return (int) get_config('exacomp', 'assessment_grade_negativ');
     }
 
 }
@@ -656,9 +656,9 @@ function block_exacomp_get_assessment_verbose_negative_threshold($courseid = 0) 
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int)$configurations[$assessment_config]["assessment_verbose_negative"];
+        return (int) $configurations[$assessment_config]["assessment_verbose_negative"];
     } else {
-        return (int)get_config('exacomp', 'assessment_verbose_negative');
+        return (int) get_config('exacomp', 'assessment_verbose_negative');
     }
 
 }
@@ -758,9 +758,9 @@ function block_exacomp_get_assessment_example_scheme($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        $value = (int)$configurations[$assessment_config]["assessment_example_scheme"];
+        $value = (int) $configurations[$assessment_config]["assessment_example_scheme"];
     } else {
-        $value = (int)get_config('exacomp', 'assessment_example_scheme');
+        $value = (int) get_config('exacomp', 'assessment_example_scheme');
     }
 
     return $value;
@@ -828,7 +828,7 @@ function block_exacomp_get_assessment_childcomp_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_childcomp_scheme');
     }
 
-    return (int)$value;
+    return (int) $value;
     //return get_config('exacomp', 'assessment_childcomp_scheme');
 }
 
@@ -895,7 +895,7 @@ function block_exacomp_get_assessment_comp_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_comp_scheme');
     }
 
-    return (int)$value;
+    return (int) $value;
     //return get_config('exacomp', 'assessment_comp_scheme');
 }
 
@@ -963,7 +963,7 @@ function block_exacomp_get_assessment_topic_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_topic_scheme');
     }
 
-    return (int)$value;
+    return (int) $value;
     //return get_config('exacomp', 'assessment_topic_scheme');
 }
 
@@ -1030,7 +1030,7 @@ function block_exacomp_get_assessment_subject_scheme($courseid = 0) {
     } else {
         $value = get_config('exacomp', 'assessment_subject_scheme');
     }
-    return (int)$value;
+    return (int) $value;
     //return get_config('exacomp', 'assessment_subject_scheme');
 }
 
@@ -1095,7 +1095,7 @@ function block_exacomp_get_assessment_theme_scheme($courseid = 0) {
     } else {
         $value = get_config('exacomp', 'assessment_theme_scheme');
     }
-    return (int)$value;
+    return (int) $value;
     //return get_config('exacomp', 'assessment_theme_scheme');
 }
 
@@ -2667,11 +2667,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
     $subjects = array();
 
-
     foreach ($allSubjects as $subject) {
         $subject->topics = [];
     }
-
 
     foreach ($allTopics as $topic) {
         //topic must be coursetopic if courseid <> 0
@@ -2697,7 +2695,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
         if (!property_exists($subject, "used_niveaus")) {
             $subject->used_niveaus = array();
         }
-        foreach ($topic->used_niveaus as $niveauid => $niveautitle){
+        foreach ($topic->used_niveaus as $niveauid => $niveautitle) {
             if (!isset($subject->used_niveaus[$niveauid])) {
                 $subject->used_niveaus[$niveauid] = $niveautitle;
             }
@@ -3235,7 +3233,8 @@ function block_exacomp_build_navigation_tabs_admin_settings($courseid) {
     // "Assign external trainers" submenu
     if (get_config('exacomp', 'external_trainer_assign') && has_capability('block/exacomp:assignstudents', context_system::instance())) {
         $settings_subtree[] =
-            new tabobject('tab_external_trainer_assign', new moodle_url('/blocks/exacomp/externaltrainers.php', array('courseid' => $courseid, 'sesskey' => sesskey())), block_exacomp_get_string("block_exacomp_external_trainer_assign"), null, true);
+            new tabobject('tab_external_trainer_assign', new moodle_url('/blocks/exacomp/externaltrainers.php', array('courseid' => $courseid, 'sesskey' => sesskey())), block_exacomp_get_string("block_exacomp_external_trainer_assign"),
+                null, true);
     }
     // Webservices submenu
     $settings_subtree[] = new tabobject('tab_webservice_status', new moodle_url('/blocks/exacomp/webservice_status.php', array('courseid' => $courseid)), block_exacomp_trans(['de:Webservice Status', 'en:Check Webservices']), null, true);
@@ -4648,7 +4647,7 @@ function block_exacomp_get_active_activities_by_course($courseid) {
 function block_exacomp_get_all_associated_activities_by_course($courseid) {
     global $DB;
 
-    $sql = 'SELECT DISTINCT cm.instance as id, cm.id as activityid
+    $sql = 'SELECT DISTINCT cm.id as activityid, cm.instance as id
         FROM {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e
           JOIN {course_modules} cm ON cm.id = e.activityid
         WHERE cm.course = ? ';
@@ -4960,7 +4959,7 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = BLO
  */
 function block_exacomp_get_activities_by_course($courseid, $fields = 'camm.activityid as id, camm.activitytitle as title') {
     global $DB;
-    $query = 'SELECT DISTINCT '.$fields.'
+    $query = 'SELECT DISTINCT ' . $fields . '
         FROM {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} camm
 		    INNER JOIN {course_modules} cm ON cm.id = camm.activityid
 		    LEFT JOIN {block_exacompdescriptors} d ON d.id = camm.compid
@@ -7196,7 +7195,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
         }
     } else {
         $scheduleentry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'start' => $start));
-        if($scheduleentry){
+        if ($scheduleentry) {
             return $scheduleentry->id;
         }
     }
@@ -11122,6 +11121,7 @@ function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 
 /**
  * create tree for one example, similar like block_exacomp_build_example_association_tree()
  * but with improved performance
+ *
  * @param int $courseid
  * @param int $exampleid
  * @param \block_exacomp\example $exampleObj for using with  virtual example and moodle action relation (old method)
@@ -11162,7 +11162,6 @@ function block_exacomp_build_example_parent_names($courseid, $exampleid, $exampl
                 $where .= " AND t.id = ? ";
                 break;
         }
-
 
         $sql = " SELECT " . $select . " " . $from . " WHERE " . $where;
 
@@ -13833,7 +13832,7 @@ function block_exacomp_get_config_dakora_language_file($returnContent = false) {
 }
 
 function block_exacomp_get_config_dakora_timeout() {
-    return (int)get_config('exacomp', 'dakora_timeout');
+    return (int) get_config('exacomp', 'dakora_timeout');
 }
 
 function block_exacomp_get_config_dakora_show_overview() {
