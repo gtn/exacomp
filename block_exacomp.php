@@ -117,7 +117,7 @@ class block_exacomp extends block_list {
                 $content .= '<div>';
 
                 // student's overview
-                $content .= $output->competence_profile_metadata($student);
+                $content .= $output->competence_profile_metadata($student,1);
 
                 // tabs with course titles for selected student
                 $content .= '<ul class="nav nav-tabs mb-3">';

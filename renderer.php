@@ -5994,7 +5994,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
      *
      * @param unknown $student
      */
-    function competence_profile_metadata($student) {
+    function competence_profile_metadata($student,$isExaplanDashboardBlock=0) {
         if (!$student || !$student instanceof stdClass) {
             return '';
         }
@@ -6023,10 +6023,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $table->data = $rows;
             return html_writer::table($table);
         } else {
-            $namediv = html_writer::div(html_writer::tag('b', $student->firstname . ' ' . $student->lastname)
-                . html_writer::div(block_exacomp_get_string('name'), ''), '');
-
-            $imgdiv = html_writer::div($this->user_picture($student, array("size" => 100)), '');
+            $namediv = html_writer::div(html_writer::tag('b', $student->firstname . ' ' . $student->lastname), '');
+			$imgdiv = '';
+            if ($isExaplanDashboardBlock==0) {$imgdiv = html_writer::div($this->user_picture($student, array("size" => 100)), '');}
 
             (!empty($student->city)) ? $citydiv = html_writer::div($student->city
                 . html_writer::div(block_exacomp_get_string('city'), ''), '') : $citydiv = '';

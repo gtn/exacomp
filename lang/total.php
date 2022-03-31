@@ -437,6 +437,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         '',
         '',
     ],
+    'settings_applogin_enabled' => [
+        'App-Login aktivieren',
+        'Enable App Login',
+    ],
+    'settings_applogin_enabled_description' => [
+        'Erlaubt den Login von Exabis Apps (Diggr+, usw.)',
+        'Allows the login from Exabis Apps (Diggr+, etc.)',
+    ],
     'settings_setapp_enabled' => [
         'SET-App Funktionen aktivieren',
         'Enable SET-App Functions',
@@ -963,7 +971,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'dest_course' => [
         'Ziel der importierten Aktivitäten',
-        'Destiantion of imported activities',
+        'Destination of imported activities',
     ],
     'import_activities' => [
         'Importieren Sie Aktivitäten vom Vorlagekurs in Ihren Kurs',
@@ -2156,8 +2164,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Select course: ',
     ],
     'choosecoursetemplate' => [
-        'Bitte Vorlagenkurs für zu importierende Moodle Aktivitäten auswählen: ',
-        'Select template course: ',
+        'Bitte wählen Sie den Kurs, in den die Moodle Aktivitäten des Kompetenzrasters importiert werden: ',
+        'Select course to import moodle activities from competence grid to: ',
     ],
     'weekly_schedule_added_all' => [
         'Die Aufgabe wurde bei allen Kursteilnehmer/innen auf den Planungsspeicher im Wochenplan gelegt.',

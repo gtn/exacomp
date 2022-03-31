@@ -1210,6 +1210,10 @@ $settings->add(new admin_setting_configtextarea('exacomp/applogin_redirect_urls'
     block_exacomp_get_string('settings_applogin_redirect_urls'),
     block_exacomp_get_string('settings_applogin_redirect_urls_description'), ''));
 
+$settings->add(new admin_setting_configcheckbox('exacomp/applogin_enabled',
+    block_exacomp_get_string('settings_applogin_enabled'),
+    block_exacomp_get_string('settings_applogin_enabled_description'), 1));
+
 $settings->add(new admin_setting_configcheckbox('exacomp/setapp_enabled',
     block_exacomp_get_string('settings_setapp_enabled'),
     block_exacomp_get_string('settings_setapp_enabled_description'), 0, 1, 0));

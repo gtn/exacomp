@@ -68,6 +68,20 @@ function block_exacomp_logout() {
     //require_logout();
 }
 
+
+$PAGE->set_context(context_system::instance());
+$PAGE->set_url('/blocks/exacomp/applogin.php', array('app' => required_param('app', PARAM_TEXT), 'app_version' => required_param('app_version', PARAM_TEXT)));
+$PAGE->set_pagelayout('embedded');
+
+if (!get_config('exacomp', 'applogin_enabled')) {
+    echo $OUTPUT->header();
+
+    echo '<div style="width: 100%; text-align: center; padding-top: 100px;">'.block_exacomp_trans(['de:App Login ist deaktiviert!', 'en:App Login is disabled!']).'</div>';
+
+    echo $OUTPUT->footer();
+    exit;
+}
+
 // Allow CORS requests.
 header('Access-Control-Allow-Origin: *');
 
@@ -96,10 +110,6 @@ if ($action == 'logout') {
     $SESSION->wantsurl = $CFG->wwwroot . '/blocks/exacomp/applogin.php?' . $_SERVER['QUERY_STRING'] . '&withlogout=1';
     redirect(str_replace('action=logout', '', $_SERVER['REQUEST_URI']));
 }
-
-$PAGE->set_context(context_system::instance());
-$PAGE->set_url('/blocks/exacomp/applogin.php', array('app' => required_param('app', PARAM_TEXT), 'app_version' => required_param('app_version', PARAM_TEXT)));
-$PAGE->set_pagelayout('embedded');
 
 block_exacomp_require_login(0, false, null, true, false);
 
