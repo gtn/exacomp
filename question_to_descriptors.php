@@ -78,8 +78,23 @@ if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
     $url->param('lastchanged', $lastchanged);
 }
 
-$questionbank = new core_question\bank\exacomp_view($contexts, $url, $COURSE, $cm);
-$questionbank->process_actions();
+
+// Create a question in the default category.
+
+$cat = question_make_default_categories($contexts->all());
+
+$questionbank = new core_question\local\bank\exacomp_view($contexts, $url, $COURSE, $cm);
+ob_start();
+/*$pagevars = [
+    'qpage' => 0,
+    'qperpage' => 20,
+    'cat' => $cat->id . ',' . $context->id,
+    'recurse' => false,
+    'showhidden' => false,
+    'qbshowtext' => false
+
+];
+$questionbank->display($pagevars, 'editq');*/
 
 $PAGE->set_url($url);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
@@ -105,9 +120,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 //echo $renderer->extra_horizontal_navigation();
 
 echo '<div class="questionbankwindow boxwidthwide boxaligncenter">';
-$questionbank->display('questions', $pagevars['qpage'], 500,
-    $pagevars['cat'], $pagevars['recurse'], $pagevars['showhidden'],
-    $pagevars['qbshowtext'], $pagevars['qtagids']);
+$questionbank->display($pagevars, 'editq');
 echo "</div>\n";
 
 // Log the view of this category.

@@ -1,24 +1,46 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace core_question\bank;
-defined('MOODLE_INTERNAL') || die();
-require_once('../exaport/lib/lib.php');
+namespace qbank_questiontodescriptor;
 
+use core_question\local\bank\column_base;
+
+/**
+ * A column type for the name of the question creator.
+ *
+ * @package   qbank_viewcreator
+ * @copyright 2009 Tim Hunt
+ * @author    2021 Ghaly Marc-Alexandre <marc-alexandreghaly@catalyst-ca.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class descriptor_link_column extends column_base {
-    public function get_name() {
-        return 'descriptorlink';
+
+    public function get_name(): string {
+        return 'questiontodescriptor';
     }
 
-    protected function get_title() {
-        return '';
+    public function get_title(): string {
+        return "Link";
     }
 
-    protected function display_content($question, $rowclasses) {
+    protected function display_content($question, $rowclasses): void {
         global $USER, $DB;
         echo '<a href="#" class=" btn btn-primary btn-sm competences' . $question->id . '" role="button"> ' . block_exacomp_get_string("questlink") . ' </a>';
 
         $conditions = array("id" => 1, "userid" => $USER->id);
-        $existing = $DB->get_record('block_exaportitem', $conditions)
 
         ?>
         <div style="display: none">
@@ -88,10 +110,6 @@ class descriptor_link_column extends column_base {
             //]]>
         </script>
         <?php
-
     }
 
-    public function get_required_fields() {
-        return array('q.id');
-    }
 }
