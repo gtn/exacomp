@@ -15,7 +15,7 @@ require __DIR__ . '/inc.php';
 require_once(__DIR__ . '/questiontodescriptor/exacomp_view.php');
 
 global $DB, $CFG, $PAGE, $OUTPUT, $COURSE, $USER;
-global $PAGE;
+
 $PAGE->requires->jquery();
 $PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/simpletreemenu/simpletreemenu.js', true);
@@ -85,16 +85,6 @@ $cat = question_make_default_categories($contexts->all());
 
 $questionbank = new core_question\local\bank\exacomp_view($contexts, $url, $COURSE, $cm);
 ob_start();
-/*$pagevars = [
-    'qpage' => 0,
-    'qperpage' => 20,
-    'cat' => $cat->id . ',' . $context->id,
-    'recurse' => false,
-    'showhidden' => false,
-    'qbshowtext' => false
-
-];
-$questionbank->display($pagevars, 'editq');*/
 
 $PAGE->set_url($url);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
@@ -120,7 +110,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 //echo $renderer->extra_horizontal_navigation();
 
 echo '<div class="questionbankwindow boxwidthwide boxaligncenter">';
-$questionbank->display($pagevars, 'editq');
+//$questionbank->display($pagevars, 'editq');
 echo "</div>\n";
 
 // Log the view of this category.
