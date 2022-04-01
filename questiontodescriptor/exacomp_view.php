@@ -16,8 +16,8 @@ use qbank_questiontodescriptor;
 
 
 
-require_once($CFG->dirroot . '/blocks/exacomp/questiontodescriptor/classes/descriptor_link_column.php');
-require_once($CFG->dirroot . '/blocks/exacomp/questiontodescriptor/classes/plugin_feature.php');
+require_once('descriptor_link_column.php');
+require_once('plugin_feature.php');
 
 class exacomp_view extends view {
 
