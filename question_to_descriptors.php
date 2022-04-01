@@ -110,7 +110,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 //echo $renderer->extra_horizontal_navigation();
 
 echo '<div class="questionbankwindow boxwidthwide boxaligncenter">';
-//$questionbank->display($pagevars, 'editq');
+$questionbank->display($pagevars, 'editq');
 echo "</div>\n";
 
 // Log the view of this category.
