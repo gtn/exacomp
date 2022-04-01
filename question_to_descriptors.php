@@ -12,7 +12,7 @@
 use core\event\question_category_viewed;
 
 require __DIR__ . '/inc.php';
-require_once('exacomp_view.php');
+require_once(__DIR__ . '/questiontodescriptor/exacomp_view.php');
 
 global $DB, $CFG, $PAGE, $OUTPUT, $COURSE, $USER;
 global $PAGE;
@@ -42,8 +42,8 @@ if ($action == 'save') {
     require_sesskey();
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
     foreach ($descs as $desc) {
-        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid))) {
-            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid));
+        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid))) {
+            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid));
         }
     }
 }

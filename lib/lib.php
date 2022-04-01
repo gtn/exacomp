@@ -3190,6 +3190,7 @@ function block_exacomp_get_user_activities_competences_by_course($user, $coursei
  * @return \block_exacomp\tabobject[]
  */
 function block_exacomp_build_navigation_tabs_settings($courseid) {
+    global $CFG;
     $usebadges = get_config('exacomp', 'usebadges');
     $courseSettings = block_exacomp_get_settings_by_course($courseid);
     $settings_subtree = array();
@@ -3208,8 +3209,10 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
                     new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null,
                         true);
             }
-            $settings_subtree[] =
-                new tabobject('tab_teacher_settings_questiontodescriptors', new moodle_url('/blocks/exacomp/question_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_questiontodescriptors"), null, true);
+            if(intval($CFG->version) >= 2022031500){
+                $settings_subtree[] =
+                    new tabobject('tab_teacher_settings_questiontodescriptors', new moodle_url('/blocks/exacomp/question_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_questiontodescriptors"), null, true);
+            }
         }
     }
     // Badges submenu
