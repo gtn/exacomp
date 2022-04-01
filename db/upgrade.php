@@ -3914,7 +3914,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $table = new xmldb_table('block_exacomp_usermap');
 
         // Adding fields to table block_exacomp_usermap.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, null, XMLDB_SEQUENCE, null);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('provider', XMLDB_TYPE_CHAR, '15', null, null, null, null);
         $table->add_field('tenant_id', XMLDB_TYPE_CHAR, '50', null, null, null, null);
         $table->add_field('school', XMLDB_TYPE_CHAR, '50', null, null, null, null);

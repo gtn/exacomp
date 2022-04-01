@@ -759,7 +759,7 @@
         </TABLE>
         <TABLE NAME="block_exacomp_usermap" COMMENT="Mapping of users">
             <FIELDS>
-                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="true" COMMENT="id"/>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="id"/>
                 <FIELD NAME="provider" TYPE="char" LENGTH="15" NOTNULL="false" SEQUENCE="false" COMMENT="provider"/>
                 <FIELD NAME="tenant_id" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="tenant_id"/>
                 <FIELD NAME="school" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="school name from provider"/>
