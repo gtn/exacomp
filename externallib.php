@@ -522,7 +522,7 @@ class block_exacomp_external extends external_api {
      * @return example
      * @throws invalid_parameter_exception
      */
-    public static function get_example_by_id($exampleid) {
+    public static function get_example_by_id($exampleid, $courseid=null) {
         global $DB;
 
         if (empty ($exampleid)) {
@@ -533,7 +533,9 @@ class block_exacomp_external extends external_api {
             'exampleid' => $exampleid,
         ));
 
-        $courseid = static::find_courseid_for_example($exampleid);
+        if(!$courseid){
+            $courseid = static::find_courseid_for_example($exampleid);
+        }
         static::require_can_access_example($exampleid, $courseid);
 
         $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
@@ -3808,7 +3810,7 @@ class block_exacomp_external extends external_api {
             $userid = g::$USER->id;
         }
 
-        $example = static::get_example_by_id($exampleid);
+        $example = static::get_example_by_id($exampleid, $courseid);
 
         //Taxonomies:
         $taxonomies = '';
