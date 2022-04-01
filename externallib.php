@@ -1147,7 +1147,7 @@ class block_exacomp_external extends external_api {
         ]);
 
         foreach ($courses as $course) {
-            $tree = block_exacomp_get_competence_tree($course["courseid"], null, null, false, null, true, null, false, false, true, false, true);
+            $tree = block_exacomp_get_competence_tree($course["courseid"], null, null, false, null, true, null, false, false, true, true, true);
 
             foreach ($tree as $subject) {
                 $elem_sub = new stdClass ();
