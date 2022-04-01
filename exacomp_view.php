@@ -1,105 +1,122 @@
 <?php
 
-namespace core_question\bank;
-use context;
-use core_question\bank\search\category_condition;
-use core_question\bank\search\hidden_condition;
-use core_question\bank\search\tag_condition;
-use moodle_url;
-use question_edit_contexts;
-use stdClass;
+namespace core_question\local\bank;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('descriptor_link_column.php');
+global $CFG;
+
+require_once($CFG->dirroot . '/question/editlib.php');
+use core_plugin_manager;
+use core_question\bank\search\condition;
+use qbank_columnsortorder\column_manager;
+use qbank_editquestion\editquestion_helper;
+use qbank_managecategories\helper;
+use qbank_questiontodescriptor;
+
+
+
+require_once($CFG->dirroot . '/blocks/exacomp/questiontodescriptor/classes/descriptor_link_column.php');
+require_once($CFG->dirroot . '/blocks/exacomp/questiontodescriptor/classes/plugin_feature.php');
 
 class exacomp_view extends view {
-    /** @var bool whether the quiz this is used by has been attemptd. */
-    protected $quizhasattempts = false;
-    /** @var stdClass the quiz settings. */
-    protected $quiz = false;
-    /** @var int The maximum displayed length of the category info. */
-    const MAX_TEXT_LENGTH = 200;
 
-    /**
-     * Constructor
-     *
-     * @param question_edit_contexts $contexts
-     * @param moodle_url $pageurl
-     * @param stdClass $course course settings
-     * @param stdClass $cm activity settings.
-     * @param stdClass $quiz quiz settings.
-     */
-    public function __construct($contexts, $pageurl, $course, $cm) {
+
+    public function __construct($contexts, $pageurl, $course, $cm = null) {
         parent::__construct($contexts, $pageurl, $course, $cm);
     }
 
-    protected function wanted_columns() {
-        global $CFG;
 
-        if (empty($CFG->quizquestionbankcolumns)) {
-            $quizquestionbankcolumns = array(
-                'checkbox_column', 'question_type_column',
-                'question_name_idnumber_tags_column', 'edit_menu_column',
-                'edit_action_column', 'copy_action_column', 'tags_action_column',
-                'preview_action_column', 'delete_action_column', 'export_xml_action_column',
-                'creator_name_column', 'modifier_name_column', 'descriptor_link_column',
-            );
-        } else {
-            $quizquestionbankcolumns = explode(',', $CFG->quizquestionbankcolumns);
+    protected function get_question_bank_plugins(): array {
+        $questionbankclasscolumns = [];
+        $newpluginclasscolumns = [];
+        $corequestionbankcolumns = [
+            'checkbox_column',
+            'question_type_column',
+            'question_name_idnumber_tags_column',
+            'edit_menu_column',
+            'edit_action_column',
+            'copy_action_column',
+            'tags_action_column',
+            'preview_action_column',
+            'history_action_column',
+            'delete_action_column',
+            'export_xml_action_column',
+            'question_status_column',
+            'version_number_column',
+            'creator_name_column',
+            'comment_count_column',
+            'descriptor_link_column'
+        ];
+        if (question_get_display_preference('qbshowtext', 0, PARAM_BOOL, new \moodle_url(''))) {
+            $corequestionbankcolumns[] = 'question_text_row';
         }
 
-        foreach ($quizquestionbankcolumns as $fullname) {
-            if (!class_exists($fullname)) {
-                if (class_exists('mod_quiz\\question\\bank\\' . $fullname)) {
-                    $fullname = 'mod_quiz\\question\\bank\\' . $fullname;
-                } else if (class_exists('core_question\\bank\\' . $fullname)) {
-                    $fullname = 'core_question\\bank\\' . $fullname;
-                } else if (class_exists('question_bank_' . $fullname)) {
-                    debugging('Legacy question bank column class question_bank_' .
-                        $fullname . ' should be renamed to mod_quiz\\question\\bank\\' .
-                        $fullname, DEBUG_DEVELOPER);
-                    $fullname = 'question_bank_' . $fullname;
-                } else {
-                    throw new coding_exception("No such class exists: $fullname");
+        foreach ($corequestionbankcolumns as $fullname) {
+            $shortname = $fullname;
+            if (class_exists('core_question\\local\\bank\\' . $fullname)) {
+                $fullname = 'core_question\\local\\bank\\' . $fullname;
+                $questionbankclasscolumns[$shortname] = new $fullname($this);
+            } else {
+                $questionbankclasscolumns[$shortname] = '';
+            }
+        }
+        $plugins = \core_component::get_plugin_list_with_class('qbank', 'plugin_feature', 'plugin_feature.php');
+        $plugins["qbank_questiontodescriptor"] = "\qbank_questiontodescriptor\plugin_feature";
+        foreach ($plugins as $componentname => $plugin) {
+            $pluginentrypointobject = new $plugin();
+            $plugincolumnobjects = $pluginentrypointobject->get_question_columns($this);
+            // Don't need the plugins without column objects.
+            if (empty($plugincolumnobjects)) {
+                unset($plugins[$componentname]);
+                continue;
+            }
+            foreach ($plugincolumnobjects as $columnobject) {
+                $columnname = $columnobject->get_column_name();
+                foreach ($corequestionbankcolumns as $key => $corequestionbankcolumn) {
+                    if (!\core\plugininfo\qbank::is_plugin_enabled($componentname)) {
+                        unset($questionbankclasscolumns[$columnname]);
+                        continue;
+                    }
+                    // Check if it has custom preference selector to view/hide.
+                    if ($columnobject->has_preference()) {
+                        if (!$columnobject->get_preference()) {
+                            continue;
+                        }
+                    }
+                    if ($corequestionbankcolumn === $columnname) {
+                        $questionbankclasscolumns[$columnname] = $columnobject;
+                    } else {
+                        // Any community plugin for column/action.
+                        $newpluginclasscolumns[$columnname] = $columnobject;
+                    }
                 }
             }
-            $this->requiredcolumns[$fullname] = new $fullname($this);
         }
-        return $this->requiredcolumns;
+
+        // New plugins added at the end of the array, will change in sorting feature.
+        foreach ($newpluginclasscolumns as $key => $newpluginclasscolumn) {
+            $questionbankclasscolumns[$key] = $newpluginclasscolumn;
+        }
+
+        // Check if qbank_columnsortorder is enabled.
+        if (array_key_exists('columnsortorder', core_plugin_manager::instance()->get_enabled_plugins('qbank'))) {
+            $columnorder = new column_manager();
+            $questionbankclasscolumns = $columnorder->get_sorted_columns($questionbankclasscolumns);
+        }
+
+        // Mitigate the error in case of any regression.
+        foreach ($questionbankclasscolumns as $shortname => $questionbankclasscolumn) {
+            if (empty($questionbankclasscolumn)) {
+                unset($questionbankclasscolumns[$shortname]);
+            }
+        }
+
+        $specialpluginentrypointobject = new \qbank_questiontodescriptor\plugin_feature();
+        $specialplugincolumnobjects = $specialpluginentrypointobject->get_question_columns($this);
+        $questionbankclasscolumns["descriptor_link_column"] = $specialplugincolumnobjects[0];
+
+        return $questionbankclasscolumns;
     }
 
-    public function display($tabname, $page, $perpage, $cat,
-        $recurse, $showhidden, $showquestiontext, $tagids = []) {
-        global $PAGE, $CFG;
-
-        if ($this->process_actions_needing_ui()) {
-            return;
-        }
-        $editcontexts = $this->contexts->having_one_edit_tab_cap($tabname);
-        list(, $contextid) = explode(',', $cat);
-        $catcontext = context::instance_by_id($contextid);
-        $thiscontext = $this->get_most_specific_context();
-        // Category selection form.
-        $this->display_question_bank_header();
-
-        // Display tag filter if usetags setting is enabled.
-        if ($CFG->usetags) {
-            array_unshift($this->searchconditions,
-                new tag_condition([$catcontext, $thiscontext], $tagids));
-            $PAGE->requires->js_call_amd('core_question/edit_tags', 'init', ['#questionscontainer']);
-        }
-
-        array_unshift($this->searchconditions, new hidden_condition(!$showhidden));
-        array_unshift($this->searchconditions, new category_condition(
-            $cat, $recurse, $editcontexts, $this->baseurl, $this->course));
-        $this->display_options_form($showquestiontext, '/blocks/exacomp/question_to_descriptors.php');
-
-        // Continues with list of questions.
-        $this->display_question_list($editcontexts,
-            $this->baseurl, $cat, $this->cm,
-            null, $page, $perpage, $showhidden, $showquestiontext,
-            $this->contexts->having_cap('moodle/question:add'));
-
-    }
 }
