@@ -31,6 +31,7 @@ class normalize_exacomp_tables extends scheduled_task {
 
     public function execute() {
         data::normalize_database();
+        mtrace("Normalize exacomp tables done");
     }
 }
 

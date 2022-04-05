@@ -43,13 +43,14 @@ class import extends scheduled_task {
 
         try {
             data::prepare();
-
             if (data_importer::do_import_url($xmlserverurl, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, -1)) {
                 mtrace("import done");
                 block_exacomp_settstamp();
             } else {
                 mtrace("import failed: unknown error");
             }
+            data::normalize_database();
+            mtrace("Normalize exacomp tables done");
         } catch (moodle_exception $e) {
             mtrace("import failed: " . $e->getMessage());
         }
