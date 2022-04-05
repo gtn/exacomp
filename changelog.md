@@ -1,3 +1,15 @@
+v4.6.6 (2022040500)
+- Performance upgrades for Diggrplus webservices.
+- Sesskeys required to prevent XSS attacks.
+- Examples created by relating activities to descriptors are only visible if the activities are visible and available. This allows "unlocking" examples by solving previous examples.
+- Autotest has been reworked. The grading of examples/descriptors after completing moodle-assignments now does not work with tasks anymore. Instead, events are used. Whenever an assignment is completed, an event is triggered and the related example/descriptor is graded instantly.
+- Performance of deleting imported grids has been significantly improved. Warnings if grading data exists have been added.
+- Subjects with the field "eidtable" from comet can be edited in exacomp, just like subjects that have been created in exacomp only.
+- Updating grids in comet and importing them in exacomp now removes old topics and descriptors from exacomp, if they have been removed in comet.
+- Quiz-Questions can now be related to exacomp descriptors. Successfully answering a question leads to automatic grading of the related descriptor.
+- Unused/Empty Niveaus in the competence grid are hidden
+- MS-Teams users can login to Diggr+ from MS-Teams
+
 v4.6.6 (2021091100)
 - Diggrplus functionalities added: Create or update student, create and edit course, personalise competence grading text, create competence based verbal certificate (Zeugnis) for students
 - Added fields to students (SPF, ausserordentlicher_schueler) and subjects (is_pflichtgegenstand)
