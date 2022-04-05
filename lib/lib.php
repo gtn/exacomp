@@ -1856,6 +1856,21 @@ function block_exacomp_sort_items(&$items, $sortings) {
 function block_exacomp_get_all_topics($subjectid = null, $showonlyvisible = false) {
     global $DB;
 
+    //$start = microtime(true);
+    //$sql = 'SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+	//		  FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
+	//		JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON t.subjid = s.id ';
+    //if (is_array($subjectid) && count($subjectid) > 0) {
+    //    $sql .= ' WHERE s.id IN (' . implode(',', $subjectid) . ') ';
+    //} else if ($subjectid !== null) {
+    //    $sql .= ' WHERE s.id = ? ';
+    //}
+    //$topics = $DB->get_records_sql($sql, array($subjectid));
+    //$sorted = block_exacomp_sort_items($topics, ['subj_' => BLOCK_EXACOMP_DB_SUBJECTS, '' => BLOCK_EXACOMP_DB_TOPICS]);
+    //echo "time spent old sorting:";
+    //echo microtime(true) - $start;
+
+    //$start = microtime(true);
     $sql = 'SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 			  FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 			JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON t.subjid = s.id ';
@@ -1864,9 +1879,11 @@ function block_exacomp_get_all_topics($subjectid = null, $showonlyvisible = fals
     } else if ($subjectid !== null) {
         $sql .= ' WHERE s.id = ? ';
     }
-    $topics = $DB->get_records_sql($sql, array($subjectid));
-
-    return block_exacomp_sort_items($topics, ['subj_' => BLOCK_EXACOMP_DB_SUBJECTS, '' => BLOCK_EXACOMP_DB_TOPICS]);
+    $sql .= 'ORDER BY s.source, s.sorting, s.title, t.numb, t.sorting, t.title';
+    $sorted_sql_results = $DB->get_records_sql($sql, array($subjectid));
+    //echo "time spent new sorting:";
+    //echo microtime(true) - $start;
+    return $sorted_sql_results;
 }
 
 /**
