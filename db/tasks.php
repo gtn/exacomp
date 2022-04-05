@@ -20,8 +20,8 @@ $tasks = array(
     array(
         'classname' => 'block_exacomp\task\import',
         'blocking' => 0,
-        'minute' => '0',
-        'hour' => '3',
+        'minute' => '7',
+        'hour' => '23',
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
@@ -29,8 +29,8 @@ $tasks = array(
     array(
         'classname' => 'block_exacomp\task\import_additional',
         'blocking' => 0,
-        'minute' => '0',
-        'hour' => '4',
+        'minute' => '30',
+        'hour' => '1',
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
@@ -56,8 +56,8 @@ $tasks = array(
     array(
         'classname' => 'block_exacomp\task\normalize_exacomp_tables',
         'blocking' => 0,
-        'minute' => '0',
-        'hour' => '2',
+        'minute' => '55',
+        'hour' => '3',
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
