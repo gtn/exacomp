@@ -19,9 +19,8 @@ use block_exacomp\url;
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once __DIR__ . '/lib/exabis_special_id_generator.php';
 require_once __DIR__ . '/inc.php';
-require_once __DIR__ . '/classes/settings_helper.php';
+require_once __DIR__ . '/lib/settings_helper.php';
 
 // Generate id if not set.
 block_exacomp\data::generate_my_source();
