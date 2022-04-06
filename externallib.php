@@ -3964,7 +3964,7 @@ class block_exacomp_external extends external_api {
      */
     public static function dakora_add_example_to_learning_calendar_returns() {
         return new external_single_structure (array(
-            'scheduleid' => new external_value (PARAM_INT, 'id of the single added example', PARAM_OPTIONAL),
+            'scheduleid' => new external_value (PARAM_INT, 'id of the single added example', VALUE_OPTIONAL),
             'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
