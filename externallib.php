@@ -13513,7 +13513,7 @@ class block_exacomp_external extends external_api {
         $item->timestampstudent = null;
     }
 
-    public function custom_htmltrim($string) {
+    public static function custom_htmltrim($string) {
         //$string = strip_tags($string);
         $string = nl2br($string);
         $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>", "<sup>", "</sup>");
