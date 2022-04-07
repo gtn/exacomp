@@ -7281,7 +7281,7 @@ class block_exacomp_external extends external_api {
             $examplesAndItems = array_merge($examplesAndItems, $studentExamplesAndItems);
         }
 
-        // array_unique with SORT_REGULAR comapres using "==", not "===". It compares the properties, not for object identity. We want to compare the properties --> good
+        // array_unique with SORT_REGULAR compares using "==", not "===". It compares the properties, not for object identity. We want to compare the properties --> good
         // also tested: it goes deep, it e.g. compared the item->timemodified.. if those are not ==, the whole thing is not ==
         $examplesAndItems = array_unique($examplesAndItems, SORT_REGULAR);
         foreach ($examplesAndItems as $key => $exampleItem) {
@@ -11801,6 +11801,7 @@ class block_exacomp_external extends external_api {
                 // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
                 foreach ($descriptorWithExamples->examples as $example) {
                     $example = static::block_excomp_get_example_details($example, $example->courseid, false);
+                    unset($example->descriptor); // this information is not needed and leads to problem when sorting, because it loops example->descriptor->example->etc
                     $example->subjecttitle = $information->subjecttitle;
                     $example->subjectid = $information->subjectid;
                     $example->topictitle = $information->topictitle;
