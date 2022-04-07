@@ -2026,29 +2026,46 @@ class block_exacomp_external extends external_api {
             'teamid' => $teamid,
         ));
 
+        $access_token_parts = explode('.', $access_token);
+        $tenantId = json_decode(base64_decode($access_token_parts[1]))->tid;
+
         block_exacomp_require_teacher($courseid);
 
-        $ch = curl_init('https://graph.microsoft.com/v1.0/groups/' . $teamid . '/members');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $access_token,
-        ]);
+        $o365_request = function($path) use ($access_token) {
+            $ch = curl_init('https://graph.microsoft.com/v1.0/'.$path);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . $access_token,
+            ]);
 
-        $result = curl_exec($ch);
-        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 
-        curl_close($ch);
+            $result = curl_exec($ch);
+            $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($status_code != 200) {
-            throw new moodle_exception('request failed, status_code: ' . $status_code);
-        }
+            curl_close($ch);
 
-        $result = json_decode($result);
+            if ($status_code != 200) {
+                throw new moodle_exception('request failed, status_code: ' . $status_code);
+            }
+
+            $result = json_decode($result);
+
+            return $result;
+        };
+
+        $result = $o365_request('groups/' . $teamid . '/members');
+        $resultOwners = $o365_request('groups/' . $teamid . '/owners');
+
         if (!is_array($result->value)) {
             throw new moodle_exception('result is not array');
         }
+        if (!is_array($resultOwners->value)) {
+            throw new moodle_exception('resultOwners is not array');
+        }
+
+        $ownerIds = array_map(function($o) { return $o->id; }, $resultOwners->value);
 
         $importedCount = 0;
 
@@ -2057,9 +2074,22 @@ class block_exacomp_external extends external_api {
             // uppercase email addresses on hak-steyr
             $email = strtolower($email);
 
-            $user = $DB->get_record('user', ['email' => $email]);
+            $user = null;
+
+            if (!get_config('exacomp', 'sso_create_users')) {
+                // new logic mit o365 user verknüpfen
+                // ggf ist der user schon verknüpft und wir nehmen diesen
+                $usermap = $DB->get_record('block_exacomp_usermap', ['provider' => 'o365', 'tenant_id' => $tenantId, 'remoteuserid' => $email]);
+                if ($usermap) {
+                    $user = $DB->get_record('user', ['id' => $usermap->userid]);
+                }
+            }
+
             if (!$user) {
-                // create the student
+                $user = $DB->get_record('user', ['email' => $email]);
+            }
+            if (!$user) {
+                // create the user
                 $user = array(
                     'username' => $email,
                     'password' => generate_password(20),
@@ -2082,7 +2112,8 @@ class block_exacomp_external extends external_api {
                 }
             }
 
-            // enrol the student
+
+            // enrol the user
             $enrol = enrol_get_plugin("manual"); //enrolment = manual
             $instances = enrol_get_instances($courseid, true);
             $manualinstance = null;
@@ -2093,7 +2124,13 @@ class block_exacomp_external extends external_api {
                 }
             }
 
-            $enrol->enrol_user($manualinstance, $userid, 5); //The roleid of "student" is 5 in mdl_role table
+            if (in_array($teamsUser->id, $ownerIds)) {
+                $roleid = 3; // "editingteacher" role
+            } else {
+                $roleid = 5; //The roleid of "student" is 5 in mdl_role table
+            }
+
+            $enrol->enrol_user($manualinstance, $userid, $roleid);
 
             $importedCount++;
         }
