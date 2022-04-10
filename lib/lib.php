@@ -77,6 +77,7 @@ const BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION = 'block_exacompexampannotation';
  */
 const BLOCK_EXACOMP_ROLE_STUDENT = 0;
 const BLOCK_EXACOMP_ROLE_TEACHER = 1;
+const BLOCK_EXACOMP_ROLE_SYSTEM = 2; // used for automatic grading
 
 const BLOCK_EXACOMP_WS_ROLE_TEACHER = 1;
 const BLOCK_EXACOMP_WS_ROLE_STUDENT = 2;
