@@ -6923,6 +6923,7 @@ class block_exacomp_external extends external_api {
      */
     public static function diggrplus_get_examples_and_items_parameters() {
         return new external_function_parameters (array(
+            'courseid' => new external_value(PARAM_INT, 'courseid. Used if a topic is selected as filter', VALUE_DEFAULT, -1),
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'compid' => new external_value (PARAM_INT, 'id of subject(3)/topic(1)/descriptor(0)/example(4)   if <= 0 then show all items for user'),
             'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
@@ -6941,7 +6942,7 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of items
      */
-    public static function diggrplus_get_examples_and_items($userid, $compid, $comptype, $type = "", $search = "", $niveauid = -1, $status = "") {
+    public static function diggrplus_get_examples_and_items($courseid = -1, $userid, $compid, $comptype, $type = "", $search = "", $niveauid = -1, $status = "") {
         global $USER;
 
         if ($userid == 0) {
@@ -6949,6 +6950,7 @@ class block_exacomp_external extends external_api {
         }
 
         static::validate_parameters(static::diggrplus_get_examples_and_items_parameters(), array(
+            'courseid' => $courseid,
             'userid' => $userid,
             'compid' => $compid,
             'comptype' => $comptype,
@@ -7002,7 +7004,7 @@ class block_exacomp_external extends external_api {
             if ($comptype != BLOCK_EXACOMP_TYPE_EXAMPLE) {
                 // TODO: how do we check if the user is a teacher? It is not oriented on courses
                 //            $isTeacher = false;
-                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status);
+                $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status, $courseid);
                 $examplesAndItems = array_merge($examplesAndItems, $examples);
             }
         }
@@ -11779,12 +11781,22 @@ class block_exacomp_external extends external_api {
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
 
-            $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one course, use one of those courses, since it does not matter for the descriptors
-            $descriptors = block_exacomp_get_descriptors_by_topic($courseids[0], $compid, false, true, true); // this only gets parents
+            if($courseid == -1){
+                $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one course, use one of those courses, since it does not matter for the descriptors
+                // only use courseids where this user is enrolled, since it DOES matter for the examples
+                //there can be examples in one course, but not in the other, even though it is the same subject
+                $usercourses = array_keys(enrol_get_all_users_courses($userid));
+                $courseids = array_filter($courseids, function($courseid) use ($usercourses) {
+                    return in_array($courseid, $usercourses);
+                });
+                $courseid = $courseids[array_key_first($courseids)];
+                // TODO: $courseids should now only contain ONE course. Otherwise, this means, that 1 student is in 2 courses that have the SAME Subject ---> Problem, but should never occur
+            }
+            $descriptors = block_exacomp_get_descriptors_by_topic($courseid, $compid, false, true, true); // this only gets parents
 
             //Ignore childdescriptors for diggrplus   not anymore 02.07.2021
             foreach ($descriptors as $descriptor) {
-                $childdescriptors = block_exacomp_get_child_descriptors($descriptor, $courseids[0], false, null, true, true, true);
+                $childdescriptors = block_exacomp_get_child_descriptors($descriptor, $courseid, false, null, true, true, true);
                 // niveauid and cattitle of the PARENT descriptor objects contain the LFS information --> add that information to the childdescriptors as well
                 foreach ($childdescriptors as $child) {
                     $child->niveauid = $descriptor->niveauid;
@@ -11793,14 +11805,6 @@ class block_exacomp_external extends external_api {
                 $descriptors += $childdescriptors;
             }
 
-            // only use courseids where this user is enrolled, since it DOES matter for the examples
-            //there can be examples in one course, but not in the other, even though it is the same subject
-            $usercourses = array_keys(enrol_get_all_users_courses($userid));
-            $courseids = array_filter($courseids, function($courseid) use ($usercourses) {
-                return in_array($courseid, $usercourses);
-            });
-            // TODO: $courseids should now only contain ONE course. Otherwise, this means, that 1 student is in 2 courses that have the SAME Subject ---> Problem, but should never occur
-
             foreach ($descriptors as $key => $descriptor) {
                 if ($niveauid != -1) {
                     if ($descriptor->niveauid != $niveauid) {
@@ -11808,7 +11812,7 @@ class block_exacomp_external extends external_api {
                         continue;
                     }
                 }
-                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id, null, true, $courseids[0], true, true, null, $search);
+                $descriptorWithExamples = block_exacomp_get_examples_for_descriptor($descriptor->id, null, true, $courseid, true, true, null, $search);
                 // niveauid and cattitle of the descriptor objects contain the LFS information --> add that information to the example
                 foreach ($descriptorWithExamples->examples as $example) {
                     $example = static::block_excomp_get_example_details($example, $example->courseid, false);
