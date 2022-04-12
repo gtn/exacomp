@@ -7779,7 +7779,7 @@ class block_exacomp_external extends external_api {
     }
 
     /**
-     *
+     * teacher grades and item in diggrplus
      * @ws-type-write
      */
     public static function diggrplus_grade_item($itemid, $teachervalue = -1, $descriptorgradings = []) {
@@ -7839,7 +7839,7 @@ class block_exacomp_external extends external_api {
         $notificationContext = block_exacomp_get_string('notification_submission_context');
         block_exacomp_send_notification("grading", $USER, $item->userid, $subject, '', $notificationContext, '', false, 0, $customdata);
 
-        // if the grading is good, tick the example in exacomp TODO: NOT FOR DIGGRPLUS, hopefully never.
+        // if the grading is good, tick the example in exacomp TODO: NOT FOR DIGGRPLUS   examples are NOT graded, the grade is saved with the item ==> not compatible with dakora
         //		$exameval = $DB->get_record('block_exacompexameval', array(
         //			'exampleid' => $exampleid,
         //			'courseid' => $courseid,
@@ -7857,81 +7857,9 @@ class block_exacomp_external extends external_api {
         //			));
         //		}
         //
-        //        TODO: maybe later add commets for diggrplus
-        //		$insert = new stdClass ();
-        //		$insert->itemid = $itemid;
-        //		$insert->userid = $USER->id;
-        //		$insert->entry = $comment;
-        //		$insert->timemodified = time();
-        //
-        //		$DB->delete_records('block_exaportitemcomm', array(
-        //			'itemid' => $itemid,
-        //			'userid' => $USER->id,
-        //		));
-        //		$DB->insert_record('block_exaportitemcomm', $insert);
-        //
-        //		// get all available descriptors and unset them who are not received via web service
-        //		$descriptors_exam_mm = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array(
-        //			'exampid' => $exampleid,
-        //		));
-        //
-        //        TODO: add for diggrplus most probably
-        //		$descriptors = explode(',', $comps);
-        //
-        //		$unset_descriptors = array();
-        //		foreach ($descriptors_exam_mm as $descr_examp) {
-        //			if (!in_array($descr_examp->descrid, $descriptors)) {
-        //				$unset_descriptors[] = $descr_examp->descrid;
-        //			}
-        //		}
-        //
-        //		// set positive graded competencies
-        //		foreach ($descriptors as $descriptor) {
-        //			if ($descriptor != 0) {
-        //				$entry = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor);
-        //
-        //				if ($entry) {
-        //					$entry->reviewerid = $USER->id;
-        //					$entry->value = 1;
-        //					$entry->timestamp = time();
-        //					$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $entry);
-        //				} else {
-        //					$insert = new stdClass ();
-        //					$insert->userid = $userid;
-        //					$insert->compid = $descriptor;
-        //					$insert->reviewerid = $USER->id;
-        //					$insert->role = BLOCK_EXACOMP_ROLE_TEACHER;
-        //					$insert->courseid = $courseid;
-        //					$insert->value = 1;
-        //					$insert->timestamp = time();
-        //
-        //					$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
-        //				}
-        //			}
-        //		}
-        //
-        //		// set negative graded competencies
-        //		foreach ($unset_descriptors as $descriptor) {
-        //			$entry = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor);
-        //
-        //			if ($entry) {
-        //				$entry->reviewerid = $USER->id;
-        //				$entry->value = 0;
-        //				$entry->timestamp = time();
-        //				$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $entry);
-        //			} else {
-        //				$insert = new stdClass ();
-        //				$insert->userid = $userid;
-        //				$insert->compid = $descriptor;
-        //				$insert->reviewerid = $USER->id;
-        //				$insert->role = BLOCK_EXACOMP_ROLE_TEACHER;
-        //				$insert->courseid = $courseid;
-        //				$insert->value = 0;
-        //				$insert->timestamp = time();
-        //
-        //				$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, $insert);
-        //			}
-        //		}
+
+        // Compared to grade_item() the descriptorgradings and comments are NOT done here, but the comments are done in a separate webservice
+        // while the descriptors are done with block_exacomp_set_upser_competence
 
         return array(
             "success" => true,
