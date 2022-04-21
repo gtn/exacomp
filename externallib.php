@@ -2468,7 +2468,7 @@ class block_exacomp_external extends external_api {
      */
     public static function get_user_profile($userid) {
         global $CFG, $DB, $USER;
-        require_once("$CFG->dirroot/lib/enrollib.php");
+        require_once($CFG->dirroot."/lib/enrollib.php");
 
         static::validate_parameters(static::get_user_profile_parameters(), array(
             'userid' => $userid,

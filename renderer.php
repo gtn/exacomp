@@ -5233,7 +5233,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         global $CFG;
         $isEduvidual = false;
         // only for eduvidual!
-        if (file_exists($CFG->dirroot . 'blocks/eduvidual/block_eduvidual.php')) {
+        if (file_exists($CFG->dirroot . '/blocks/eduvidual/block_eduvidual.php')) {
             $isEduvidual = true;
             $eduvidalDefaults = block_exacomp_eduvidual_defaultSchooltypes();
             $eduvidalTitles = array();
