@@ -8254,7 +8254,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '') .
                         ($crosssubj->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")),
                             array("onclick" => "if( confirm('" . block_exacomp_get_string('confirm_delete') . "')) block_exacomp.delete_crosssubj(" . $crosssubj->id . "); return false;")) : '') .
-                        html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'action' => 'use_draft')),
+                        html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'action' => 'use_draft', 'sesskey' => sesskey())),
                             $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
                     ]);
                     $row->attributes['class'] = 'rg2-level-2';
