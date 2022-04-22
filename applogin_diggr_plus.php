@@ -182,7 +182,7 @@ function block_exacomp_send_login_result($user, $login_request_data) {
         'moodle_redirect_token' => $moodle_redirect_token,
         'moodle_data_token' => $moodle_data_token,
         'created_at' => time(),
-        'request_data' => $login_request_data,
+        'request_data' => json_encode($login_request_data),
         'result_data' => json_encode($result_data),
     ]);
 

@@ -53,8 +53,8 @@ if ($changeFilter) {
     $SESSION->courseselection_filter = $filter;
 } else {
     // default filters
-    if (file_exists($CFG->dirroot . 'blocks/eduvidual/block_eduvidual.php')) {
-        require_once($CFG->dirroot . 'blocks/eduvidual/block_eduvidual.php');
+    if (file_exists($CFG->dirroot . '/blocks/eduvidual/block_eduvidual.php')) {
+        require_once($CFG->dirroot . '/blocks/eduvidual/block_eduvidual.php');
         $org = block_eduvidual::get_org_by_courseid($courseid);
         $schulkennzahl = $org->orgid; // Die orgid ist die schulkennzahl
         $userSchoolType = intval(substr($schulkennzahl, -1));

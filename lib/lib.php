@@ -77,6 +77,7 @@ const BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION = 'block_exacompexampannotation';
  */
 const BLOCK_EXACOMP_ROLE_STUDENT = 0;
 const BLOCK_EXACOMP_ROLE_TEACHER = 1;
+const BLOCK_EXACOMP_ROLE_SYSTEM = 2; // used for automatic grading
 
 const BLOCK_EXACOMP_WS_ROLE_TEACHER = 1;
 const BLOCK_EXACOMP_WS_ROLE_STUDENT = 2;
@@ -1306,7 +1307,7 @@ function block_exacomp_get_translatable_parameter($parameter = '', $getforlangua
     } else {
         $language = current_language();
     }
-    if ($language && array_key_exists($language, $configdata) && $configdata[$language] != '') {
+    if ($language && is_array($configdata) && array_key_exists($language, $configdata) && $configdata[$language] != '') {
         return $configdata[$language];
     } else {
         return $configdata['de'];
@@ -1855,35 +1856,33 @@ function block_exacomp_sort_items(&$items, $sortings) {
  */
 function block_exacomp_get_all_topics($subjectid = null, $showonlyvisible = false) {
     global $DB;
-
-    //$start = microtime(true);
-    //$sql = 'SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
-	//		  FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
-	//		JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON t.subjid = s.id ';
-    //if (is_array($subjectid) && count($subjectid) > 0) {
-    //    $sql .= ' WHERE s.id IN (' . implode(',', $subjectid) . ') ';
-    //} else if ($subjectid !== null) {
-    //    $sql .= ' WHERE s.id = ? ';
-    //}
-    //$topics = $DB->get_records_sql($sql, array($subjectid));
-    //$sorted = block_exacomp_sort_items($topics, ['subj_' => BLOCK_EXACOMP_DB_SUBJECTS, '' => BLOCK_EXACOMP_DB_TOPICS]);
-    //echo "time spent old sorting:";
-    //echo microtime(true) - $start;
-
-    //$start = microtime(true);
-    $sql = 'SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+    if ($subjectid) {
+        // if there is a subjectid, then for large databases, sorting with block_exacomp_sort_items is better for performance
+        // $start = microtime(true);
+        $sql = 'SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 			  FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 			JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON t.subjid = s.id ';
-    if (is_array($subjectid) && count($subjectid) > 0) {
-        $sql .= ' WHERE s.id IN (' . implode(',', $subjectid) . ') ';
-    } else if ($subjectid !== null) {
-        $sql .= ' WHERE s.id = ? ';
+        if (is_array($subjectid) && count($subjectid) > 0) {
+            $sql .= ' WHERE s.id IN (' . implode(',', $subjectid) . ') ';
+        } else if ($subjectid !== null) {
+            $sql .= ' WHERE s.id = ? ';
+        }
+        $topics = $DB->get_records_sql($sql, array($subjectid));
+        $sorted_results = block_exacomp_sort_items($topics, ['subj_' => BLOCK_EXACOMP_DB_SUBJECTS, '' => BLOCK_EXACOMP_DB_TOPICS]);
+        // echo "old sorting (block_exacomp_sort_items after sql):";
+        // echo (microtime(true) - $start)*1000;
+    } else {
+        // if there is no subjectid, then sorting with ORDER BY is better for performance
+        // $start = microtime(true);
+        $sql = 'SELECT t.id, t.sorting, t.numb, t.title, t.description, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+			  FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
+			JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON t.subjid = s.id ';
+        $sql .= ' ORDER BY s.source, s.sorting, s.title, t.numb, t.sorting, t.title';
+        $sorted_results = $DB->get_records_sql($sql, array($subjectid));
+        // echo "new sorting (ORDER BY)";
+        // echo (microtime(true) - $start)*1000;
     }
-    $sql .= 'ORDER BY s.source, s.sorting, s.title, t.numb, t.sorting, t.title';
-    $sorted_sql_results = $DB->get_records_sql($sql, array($subjectid));
-    //echo "time spent new sorting:";
-    //echo microtime(true) - $start;
-    return $sorted_sql_results;
+    return $sorted_results;
 }
 
 /**
