@@ -12,10 +12,10 @@
 use core\event\question_category_viewed;
 
 require __DIR__ . '/inc.php';
-require_once('exacomp_view.php');
+require_once(__DIR__ . '/questiontodescriptor/exacomp_view.php');
 
 global $DB, $CFG, $PAGE, $OUTPUT, $COURSE, $USER;
-global $PAGE;
+
 $PAGE->requires->jquery();
 $PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/simpletreemenu/simpletreemenu.js', true);
@@ -42,8 +42,8 @@ if ($action == 'save') {
     require_sesskey();
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
     foreach ($descs as $desc) {
-        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid))) {
-            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid));
+        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid))) {
+            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid));
         }
     }
 }
@@ -78,8 +78,13 @@ if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
     $url->param('lastchanged', $lastchanged);
 }
 
-$questionbank = new core_question\bank\exacomp_view($contexts, $url, $COURSE, $cm);
-$questionbank->process_actions();
+
+// Create a question in the default category.
+
+$cat = question_make_default_categories($contexts->all());
+
+$questionbank = new core_question\local\bank\exacomp_view($contexts, $url, $COURSE, $cm);
+ob_start();
 
 $PAGE->set_url($url);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
@@ -105,9 +110,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 //echo $renderer->extra_horizontal_navigation();
 
 echo '<div class="questionbankwindow boxwidthwide boxaligncenter">';
-$questionbank->display('questions', $pagevars['qpage'], 500,
-    $pagevars['cat'], $pagevars['recurse'], $pagevars['showhidden'],
-    $pagevars['qbshowtext'], $pagevars['qtagids']);
+$questionbank->display($pagevars, 'editq');
 echo "</div>\n";
 
 // Log the view of this category.
