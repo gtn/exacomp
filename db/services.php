@@ -719,7 +719,7 @@ get subjects from one user for one course',
     'classname' => 'block_exacomp_external',
     'methodname' => 'diggrplus_grade_item',
     'classpath' => 'blocks/exacomp/externallib.php',
-    'description' => '',
+    'description' => 'teacher grades and item in diggrplus',
     'type' => 'write',
   ),
   'diggrplus_get_competence_profile_statistic' => 
