@@ -3209,7 +3209,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
                     new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null,
                         true);
             }
-            if(intval($CFG->version) >= 2022031500){
+            if(intval($CFG->version) >= 2022030300){
                 $settings_subtree[] =
                     new tabobject('tab_teacher_settings_questiontodescriptors', new moodle_url('/blocks/exacomp/question_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_questiontodescriptors"), null, true);
             }
@@ -14360,27 +14360,26 @@ function block_exacomp_check_profile_fields() {
     }
 }
 
-function block_exacomp_build_comp_tree($question) {
+function block_exacomp_build_comp_tree() {
     global $CFG, $USER, $COURSE, $DB;
     $content = '<form></form>';
-    $content .= '<form id="treeform' . $question->id . '" method="post" ' .
+    $content .= '<form id="treeform" method="post" ' .
         ' action="' . $CFG->wwwroot . '/blocks/exacomp/question_to_descriptors.php?courseid=' . $COURSE->id . '">';
-    $activedescriptors = $DB->get_fieldset_select("block_exacompdescrquest_mm", 'descrid', 'questid = ' . $question->id);
 
-    $printtree = function($items, $level = 0) use (&$printtree, $activedescriptors, $question) {
+    $printtree = function($items, $level = 0) use (&$printtree) {
         if (!$items) {
             return '';
         }
 
         $content = '';
         if ($level == 0) {
-            $content .= '<ul id="comptree' . $question->id . '" class="treeview">';
+            $content .= '<ul id="comptree" class="treeview">';
         } else {
             $content .= '<ul>';
         }
 
         foreach ($items as $item) {
-            if ($item instanceof \block_exacomp\descriptor && in_array($item->id, $activedescriptors)) {
+            if ($item instanceof \block_exacomp\descriptor) {
                 $checked = 'checked="checked"';
             } else {
                 $checked = '';
@@ -14405,7 +14404,7 @@ function block_exacomp_build_comp_tree($question) {
     $comptree = \block_exacomp\api::get_comp_tree_for_exaport($USER->id);
 
     $content .= $printtree($comptree);
-    $content .= '<input type="hidden" value="' . $question->id . '" name="questid">';
+    $content .= '<input type="hidden" value="" name="questid">';
     $content .= '<input type="hidden" value="save" name="action">';
     $content .= '<input type="hidden" value=' . sesskey() . ' name="sesskey">';
     $content .= '<input type="submit" id="id_submitbutton" type="submit" value="' . get_string('savechanges') .
@@ -14414,5 +14413,38 @@ function block_exacomp_build_comp_tree($question) {
     $content .= '</form>';
 
     return $content;
+}
+
+function block_exacomp_fill_comp_tree($question, $comptree) {
+    global $CFG, $USER, $COURSE, $DB;
+
+    $activedescriptors = $DB->get_fieldset_select("block_exacompdescrquest_mm", 'descrid', 'questid = ' . $question->id);
+
+
+    $dom = new DOMDocument;
+    $dom->loadHTML(mb_convert_encoding($comptree, 'HTML-ENTITIES', "UTF-8"));
+    $xpath = new DOMXPath($dom);
+    $nodes = $xpath->query('//form[@id="treeform"]');
+    foreach($nodes as $node) {
+        $node->setAttribute('id', 'treeform'. $question->id);
+    }
+    $nodes = $xpath->query('//ul[@id="comptree"]');
+    foreach($nodes as $node) {
+        $node->setAttribute('id', 'comptree'. $question->id);
+    }
+    $nodes = $xpath->query('//input[@type="checkbox"]');
+    foreach($nodes as $node) {
+        $node->removeAttribute('checked');
+        $node->setAttribute('class', $node->getAttribute('value'));
+        if(in_array(intval($node->getAttribute('value')), $activedescriptors)){
+            $node->setAttribute('checked', 'checked'. $question->id);
+        }
+    }
+    $nodes = $xpath->query('//input[@name="questid"]');
+    foreach($nodes as $node) {
+        $node->setAttribute('value', $question->id);
+    }
+
+    return $dom->saveHTML();
 }
 

@@ -79,6 +79,10 @@ if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
 }
 
 
+$cache = cache::make('block_exacomp', 'visibility_cache');
+$result = $cache->set('comptree', block_exacomp_build_comp_tree());
+
+
 // Create a question in the default category.
 
 $cat = question_make_default_categories($contexts->all());
