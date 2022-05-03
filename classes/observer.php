@@ -156,9 +156,9 @@ class block_exacomp_observer {
      */
     public static function course_module_updated(course_module_updated $event) {
         global $DB;
-        //  $event->other['name']) gives the "name" field of e.g. assign or quiz table entry
-        // block_exacomp_check_relatedactivitydata($event->objectid, $event->other['name']);
-        // this is already done in block_exacomp_coursemodule_edit_post_actions(). todo: Where should it be done?
+        $event->other['name']; // gives the "name" field of e.g. assign or quiz table entry
+        block_exacomp_check_relatedactivitydata($event->objectid, $event->other['name']);
+        // this was done in block_exacomp_coursemodule_edit_post_actions() and  block_exacomp_override_webservice_execution before
 
         $students = block_exacomp_get_students_by_course($event->courseid);
         $activity = $event->get_record_snapshot('course_modules', $event->objectid);
@@ -171,18 +171,18 @@ class block_exacomp_observer {
         return true;
     }
 
-    //    /**
-    //     * Observer for \core\event\course_module_deleted event.
-    //     *
-    //     * @param \core\event\course_module_deleted $event
-    //     * @return void
-    //     */
-    //    public static function course_module_deleted(\core\event\course_module_deleted $event)
-    //    {
-    //        // This is often not triggered instantly, but for example in the next cron.
-    //        block_exacomp_checkfordelete_relatedactivity($event->objectid);
-    //        return true;
-    //    }
-    // this is already done in block_exacomp_pre_course_module_delete(). todo: Where should it be done?
+        /**
+         * Observer for \core\event\course_module_deleted event.
+         *
+         * @param \core\event\course_module_deleted $event
+         * @return void
+         */
+        public static function course_module_deleted(\core\event\course_module_deleted $event)
+        {
+            // This is often not triggered instantly, but for example in the next cron.
+            block_exacomp_checkfordelete_relatedactivity($event->objectid);
+            return true;
+        }
+    // this is has been done in block_exacomp_pre_course_module_delete() before.
 
 }

@@ -14415,3 +14415,61 @@ function block_exacomp_build_comp_tree($question) {
     return $content;
 }
 
+/**
+ * Check related activities were changed/deleted - change example datas
+ *
+ * @param integer $cmid
+ * @param string $newtitle
+ * @return boolean
+ */
+function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
+    global $DB, $CFG;
+    //require_once $CFG->dirroot . '/blocks/exacomp/inc.php'; was needed when it was in exacomp/lib
+    // 1. new method of relation - the relation is EXAMPLE
+    $DB->execute('
+        UPDATE {block_exacompexamples}
+            SET title = ?,
+              activitytitle = ?
+            WHERE activityid = ?
+              AND title != ?
+              AND activitytitle != ?
+        ', [$newtitle, $newtitle, $cmid, $newtitle, $newtitle]); // TODO: title is also changed or only activitytitle?
+    // 2. old method - with MM table
+    if (block_exacomp_use_old_activities_method()) {
+        $DB->execute('
+            UPDATE {block_exacompcompactiv_mm}
+                SET activitytitle = ?
+                WHERE activityid = ?
+                  AND activitytitle != ?
+            ', [$newtitle, $cmid, $newtitle]);
+    }
+    return true;
+}
+
+function block_exacomp_checkfordelete_relatedactivity($cmid) {
+    global $DB, $CFG;
+    //require_once $CFG->dirroot . '/blocks/exacomp/inc.php'; was needed when it was in exacomp/lib
+    // 1. new method of relation - the relation is EXAMPLE
+    // TODO: right now is deleted related example. May we need to stay the example, but change activity fields
+    $DB->execute('
+            DELETE FROM {block_exacompexamples}
+                WHERE activityid = ?
+            ', [$cmid]);
+    // if we need to change activity fields only, not delete the example at all
+    /* $DB->execute('
+         UPDATE {block_exacompexamples}
+             SET activityid = ?,
+               activitytitle = ?,
+               activitylink = ?,
+               courseid = ?
+             WHERE activityid = ?
+         ', [0, '', '', 0, $cmid]);*/
+    // 2. old method - with MM table
+    if (block_exacomp_use_old_activities_method()) {
+        $DB->execute('
+            DELETE FROM {block_exacompcompactiv_mm}
+                WHERE activityid = ?
+            ', [$cmid]);
+    }
+}
+
