@@ -371,7 +371,7 @@ function block_exacomp_get_courses_of_teacher($userid) {
     return $teachersCourses;
 }
 
-//Get all courses a student is enrolled
+// Get all courses a student is enrolled
 function block_exacomp_get_courses_of_student($userid) {
     $courses = block_exacomp_get_courseids();
     $studentCourses = array();
