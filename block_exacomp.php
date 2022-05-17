@@ -96,7 +96,9 @@ class block_exacomp extends block_list {
                 }
                 $content .= block_exacomp_get_string('choosestudent');
                 $content .= $output->studentselector($coursestudents, $studentid, null, null, ['name' => 'studentid', 'onChange' => 'this.form.submit()']);
-                $content .= '</form>';
+                if ($studentid) $content .= '<span><a href="blocks/exacomp/competence_grid.php?studentid='.$studentid.'&courseid='.$courseid.'">Kompetenzbewertung</a> </span>';
+				
+				$content .= '</form>';
             } else {
                 // TODO: block_exacomp_is_student() does not work - why?
                 // get 'is a student' by his courses
