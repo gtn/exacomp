@@ -3400,7 +3400,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Select Subjects',
     ],
     'overview_examples_report_title' => [
-        'Übersicht über die Aufgaben',
+        'Aufgabenübersicht zum Kompetenzerwerb',
         'Overview of the examples'
     ]
 

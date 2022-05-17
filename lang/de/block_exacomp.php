@@ -920,4 +920,4 @@ $string['expandcomps'] = 'Alle öffnen';
 $string['contactcomps'] = 'Alle schließen';
 $string['questlink'] = 'Fragen verknüpfen';
 $string['select_subjects'] = 'Raster auswählen';
-$string['overview_examples_report_title'] = 'Übersicht über die Aufgaben';
+$string['overview_examples_report_title'] = 'Aufgabenübersicht zum Kompetenzerwerb';
