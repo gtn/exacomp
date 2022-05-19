@@ -5242,7 +5242,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
                     $cm_temp[] = $course_mods[$cmid];
                 }
 
-                $icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user", array("id" => $studentid)), $supported);
+                $icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user", array("id" => $studentid)), @$supported);
                 $descriptor->icon = '<span title="' . $icon->text . '" class="exabis-tooltip">' . $icon->img . '</span>';
             }
         }

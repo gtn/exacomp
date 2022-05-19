@@ -88,15 +88,16 @@ class block_exacomp extends block_list {
             });
 
             $content .= '<div style="padding-bottom: 15px;" id="reportExamples">';
+
             // student selector
             if (block_exacomp_is_teacher_in_any_course()) {
                 $content .= '<form action="" method="get">';
+
                 if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
                     $content .= html_writer::tag("p", block_exacomp_get_string("select_student"));
                 }
                 $content .= block_exacomp_get_string('choosestudent');
                 $content .= $output->studentselector($coursestudents, $studentid, null, null, ['name' => 'studentid', 'onChange' => 'this.form.submit()']);
-                if ($studentid) $content .= '<span><a href="blocks/exacomp/competence_grid.php?studentid='.$studentid.'&courseid='.$courseid.'">Kompetenzbewertung</a> </span>';
 				
 				$content .= '</form>';
             } else {
@@ -108,7 +109,7 @@ class block_exacomp extends block_list {
                 }
             }
 
-            // dashboard of students data
+            // dashboard of students data (tabs with courses)
             if ($studentid > 0) {
 
                 $student = $DB->get_record('user', array('id' => $studentid));
@@ -215,6 +216,15 @@ class block_exacomp extends block_list {
                         $i++;
                     }
 
+                }
+
+                if ($studentid) {
+                    $urlParams = ['courseid' => $courseid];
+                    if (block_exacomp_is_teacher_in_any_course() && $studentid != $USER->id) { // 'studentid' is only for admins
+                        $urlParams['studentid'] = $studentid;
+                    }
+                    $overviewLink = new moodle_url('/blocks/exacomp/competence_grid.php', $urlParams);
+                    $content .= '<div class="pull-right"><a href="'.$overviewLink.'" class="btn btn-sm btn-info">Kompetenzbewertung</a> </div>';
                 }
 
                 // main report for selected student and selected course
