@@ -11813,6 +11813,8 @@ class block_exacomp_external extends external_api {
             } else {
                 $example->description = static::custom_htmltrim($example->description);
                 $example->description = strip_tags($example->description);
+                $example->title = static::custom_htmltrim($example->title);
+                $example->title = strip_tags($example->title);
             }
 
             // Adding annotationinformation    TODO: Again: What IF the user has the same subject in two different courses.. which courseid to take?
