@@ -9627,12 +9627,12 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
 
             LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLEEVAL . "} exameval ON exameval.exampleid = ex.id AND exameval.courseid = :courseidexameval AND exameval.studentid = :userid
             LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION . "} examannot ON examannot.exampleid = ex.id AND examannot.courseid = :courseidexamannot
-
             WHERE ct.courseid = :courseid
             AND dvis.visible = true
             AND tvis.visible = true
             AND evis.visible = true
-            AND (ex.courseid = 0 OR ex.courseid = :courseidexample OR ex.courseid IS NULL)
+            AND (ex.courseid = 0 OR ex.courseid = :courseidexample OR ex.courseid IS NULL)"
+                . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
             AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
             GROUP BY ex.id
             ";
@@ -9661,7 +9661,8 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
 			FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex
 			JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
 			JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
-			WHERE ct.courseid = :courseid
+			WHERE ct.courseid = :courseid"
+            . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
 		)";
     }
 
