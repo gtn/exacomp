@@ -9649,7 +9649,8 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
             JOIN {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n ON n.id = d.niveauid
 
             WHERE ct.courseid = :courseid
-            AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
+            AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)"
+                . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
             GROUP BY ex.id
             ";
         }
