@@ -129,7 +129,7 @@ class provider implements
             'courseid' => 'privacy:metadata:block_exacompschedule:courseid',
             'sorting' => 'privacy:metadata:block_exacompschedule:sorting',
             'start' => 'privacy:metadata:block_exacompschedule:start',
-            'end' => 'privacy:metadata:block_exacompschedule:end',
+            'endtime' => 'privacy:metadata:block_exacompschedule:endtime',
             'deleted' => 'privacy:metadata:block_exacompschedule:deleted',
         ], 'privacy:metadata:block_exacompschedule');
 
@@ -633,7 +633,7 @@ class provider implements
                                     s.timemodified as timemodified,
                                     s.sorting as sorting,
                                     s.start as startts,
-                                    s.end as endts
+                                    s.endtime as endts
                         FROM {' . BLOCK_EXACOMP_DB_SCHEDULE . '} s
                             LEFT JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = s.exampleid
                         WHERE s.studentid = ?
@@ -675,7 +675,7 @@ class provider implements
                                     s.timemodified as timemodified,
                                     s.sorting as sorting,
                                     s.start as startts,
-                                    s.end as endts
+                                    s.endtime as endts
                         FROM {' . BLOCK_EXACOMP_DB_SCHEDULE . '} s
                             LEFT JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = s.exampleid
                         WHERE s.creatorid = ?

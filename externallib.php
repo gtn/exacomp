@@ -4973,8 +4973,8 @@ class block_exacomp_external extends external_api {
         //Get the other scheduled instances of this example
         $schedule = g::$DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, ['exampleid' => $entry->exampleid]);
         foreach ($schedule as $scheduledmaterials) {
-            $remainingtime -= ($scheduledmaterials->end - $scheduledmaterials->start);
-            $timeplanned += ($scheduledmaterials->end - $scheduledmaterials->start);
+            $remainingtime -= ($scheduledmaterials->endtime - $scheduledmaterials->start);
+            $timeplanned += ($scheduledmaterials->endtime - $scheduledmaterials->start);
         }
         if ($remainingtime > 0) {
             $remaininghours = floor($remainingtime / 3600);
@@ -6291,7 +6291,7 @@ class block_exacomp_external extends external_api {
         foreach ($returnToTeacherStorage as $exampleId => $example) {
             $courseid = $example->courseid;
             // student = 0, source = 0, distributionid = 0 !
-            block_exacomp_add_example_to_schedule(0, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'T', false, null);
+            block_exacomp_add_example_to_schedule(0, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->endtime, $example->ethema_ismain, $example->ethema_issubcategory, 'T', false, null);
         }
 
         return array(

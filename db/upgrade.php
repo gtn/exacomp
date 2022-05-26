@@ -2122,11 +2122,11 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('end', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        /*$field = new xmldb_field('end', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
-        }
+        }*/
 
         function upgrade_block_exacomp_2015082000_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true,
             $showonlyvisible = false) {
@@ -4006,6 +4006,31 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2022021501, 'exacomp');
+    }
+
+    if ($oldversion < 2022052603) {
+        // change mdl_block_exacompschedule.end to mdl_block_exacompschedule.endtime
+        $table = new xmldb_table('block_exacompschedule');
+        try {
+            if ($dbman->table_exists($table)) {
+                if ($DB instanceof pgsql_native_moodle_database) {
+                    $field = new xmldb_field('`end`'); // char '`' is important!
+                } else {
+                    $field = new xmldb_field('end');
+                }
+                if ($dbman->field_exists($table, $field)) {
+                    $field->set_attributes(XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+                    // Rename it to 'endtime'.
+                    $dbman->rename_field($table, $field, 'endtime');
+                }
+            }
+        } catch (Exception $e) {
+            echo '<div class="alert alert-warning alert-block fade in">If you are using PostgreSql as DB - you may have an issue with updating. <br><strong>Please rename manually field \'<i>'.$CFG->prefix.'block_exacompschedule.end</i>\' into \'<i>endtime</i>\'</strong></div>';
+            upgrade_log(UPGRADE_LOG_ERROR, 'block_exacomp', 'Warning: impossible to rename the field \'block_exacompschedule.end\' into \'endtime\'. Make it manually!', null, null);
+        } finally {
+            // Exacomp savepoint reached.
+            upgrade_block_savepoint(true, 2022052603, 'exacomp');
+        }
     }
 
     /*

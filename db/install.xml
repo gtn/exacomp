@@ -526,7 +526,7 @@
                 <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the course in which the example is treated"/>
                 <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="start" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="end" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="endtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="source" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="distributionid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>

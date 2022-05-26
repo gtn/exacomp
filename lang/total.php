@@ -3106,7 +3106,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Start time',
         'Start time',
     ],
-    'privacy:metadata:block_exacompschedule:end' => [
+    'privacy:metadata:block_exacompschedule:endtime' => [
         'End time',
         'End time',
     ],
