@@ -2111,7 +2111,7 @@ function block_exacomp_save_competences($data, $courseid, $role, $comptype, $top
  * @param int $userid
  * @param int $subjectid
  */
-function block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype = 1, $userid, $subjectid) {
+function block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, $userid, $subjectid) {
     global $DB;
 
     $select = " courseid = ? AND role = ? AND COMPTYPE = ? AND userid = ? AND
@@ -5018,7 +5018,7 @@ function block_exacomp_get_activitiy_by_id($activityid) {
  * @param array $descriptorsData
  * @param integer $courseid
  */
-function block_exacomp_update_example_activity_relations($descriptorsData = array(), $courseid) {
+function block_exacomp_update_example_activity_relations($descriptorsData = array(), $courseid = 0) {
     global $DB, $CFG, $USER;
 
     foreach ($descriptorsData as $activityid => $descriptors) {
@@ -11114,7 +11114,7 @@ function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $us
  *
  * @return: {{id}, {...}}
  */
-function block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $userid = 0, $topicid) {
+function block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $userid, $topicid) {
     return Cache::staticCallback(__FUNCTION__, function($courseid, $userid, $topicid) {
         return g::$DB->get_records_sql_menu("
 			SELECT DISTINCT tv.niveauid, tv.visible
@@ -12124,7 +12124,7 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
     }
 }
 
-function block_exacomp_group_reports_result($filter, $isPdf = false, $isTeacher) {
+function block_exacomp_group_reports_result($filter, $isPdf, $isTeacher) {
 
     $content = block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher);
     if ($isPdf) {
@@ -12134,7 +12134,7 @@ function block_exacomp_group_reports_result($filter, $isPdf = false, $isTeacher)
     }
 }
 
-function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isTeacher) {
+function block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher) {
     global $USER;
     $courseid = g::$COURSE->id;
 
@@ -12798,7 +12798,7 @@ function block_exacomp_group_reports_profoundness_result($filter) {
 
 }
 
-function block_exacomp_formulaColumnByValue($maxColumn = 4, $minColumn = 1, $maxValue = 6, $minValue = 1, $value) {
+function block_exacomp_formulaColumnByValue($maxColumn = 4, $minColumn = 1, $maxValue = 6, $minValue = 1, $value = 0) {
     // formula for additionalinfo (grading by value)
     // Y = aX + B
     // y = grading by 1-3 (as in the report columns)

@@ -6052,7 +6052,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     //    }
 
     // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet
-    function competence_profile_course($course = -1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj = null, $withoutHeaders = false) {
+    function competence_profile_course($course, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj = null, $withoutHeaders = false) {
         global $CFG;
         static $allStats = null;
         $content = '';
@@ -6738,7 +6738,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     //TODO: make generic
-    function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true, $assessmentScheme) {
+    function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true, $assessmentScheme = null) {
         $content = '';
 
         $evaluation_niveaus = global_config::get_evalniveaus(true, $courseid);
@@ -8422,7 +8422,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
     }
 
-    function group_report_filters($type, $filter, $action, $extra = '', $courseid, $isTeacher) {
+    function group_report_filters($type, $filter, $action, $extra, $courseid, $isTeacher) {
         ob_start();
         global $USER;
         ?>
@@ -8520,7 +8520,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return ob_get_clean();
     }
 
-    function group_report_annex_filters($type, $filter, $action, $extra = '', $courseid, $isTeacher) {
+    function group_report_annex_filters($type, $filter, $action, $extra, $courseid, $isTeacher) {
         global $USER;
         ob_start();
         ?>
@@ -8580,7 +8580,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return ob_get_clean();
     }
 
-    function group_report_profoundness_filters($type, $filter, $action, $extra = '', $courseid) {
+    function group_report_profoundness_filters($type, $filter, $action, $extra, $courseid) {
         ob_start();
         ?>
         <form method="post" action="<?php echo $action; ?>">

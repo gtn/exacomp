@@ -1446,7 +1446,7 @@ class data_exporter extends data {
     //Competencies can be linked to activities. These activities are added to the xml as examples (they first have to be created), and the activities are also added to the zip.
     //and on activities_to_descriptors
     //based on export_examples and export_assignments
-    private static function export_moodlecomp_examples(SimpleXMLElement $xmlParent, $parentid = 0, $courseid) {
+    private static function export_moodlecomp_examples(SimpleXMLElement $xmlParent, $parentid, $courseid) {
         global $DB;
 
         //first: create the examples like when relating acitivities to competencies
@@ -2170,9 +2170,10 @@ class data_importer extends data {
 
         // used for next lists
         $descriptorsFromSelectedGrids = self::get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
-        $topicsFromSelectedGrids = self::get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
+//        $topicsFromSelectedGrids = self::get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
 
         $skillsFromSelected = self::get_property_for_descriptors_from_xml($xml, 'skillid', $descriptorsFromSelectedGrids);
+
         //self::truncate_table(self::$import_source_local_id, BLOCK_EXACOMP_DB_SKILLS);
         if (isset($xml->skills)) {
             foreach ($xml->skills->skill as $skill) {
@@ -2460,12 +2461,21 @@ class data_importer extends data {
             }
             // add child descriptors to the array
             if (count($result) > 0) {
-                $subjectsIds = self::DOM_convert_valuearray_to_xpath_query($result, 'id');
-                $childQuery = '//descriptors/descriptor[' . $subjectsIds . ']/children/descriptor';
-                $subDescriptors = $xpath->query($childQuery);
-                if ($subDescriptors->length) {
-                    foreach ($subDescriptors as $subDescriptor) {
-                        $result[] = $subDescriptor->getAttribute('id');
+                // sometimes we have an error if here is a lot of descriptors, so use different ways
+                if (count($result) > 50) { // TODO: 50 or greater?
+                    $descriptorIdsDoses = array_chunk($result, 50);
+                } else {
+                    $descriptorIdsDoses = [0 => $result];
+                }
+                foreach ($descriptorIdsDoses as $descriptorIdsDose) {
+                    // use single xpath query for whole result
+                    $descriptorIds = self::DOM_convert_valuearray_to_xpath_query($descriptorIdsDose, 'id');
+                    $childQuery = '//descriptors/descriptor[' . $descriptorIds . ']/children/descriptor';
+                    $subDescriptors = $xpath->query($childQuery);
+                    if ($subDescriptors->length) {
+                        foreach ($subDescriptors as $subDescriptor) {
+                            $result[] = $subDescriptor->getAttribute('id');
+                        }
                     }
                 }
             }
@@ -2521,16 +2531,24 @@ class data_importer extends data {
     // used for importing only needed skills, niveus... (from selected grids)
     private static function get_property_for_descriptors_from_xml($xml, $propertyName = 'skillid', $descriptors = array()) {
         $result = array();
-        $descriptors = self::DOM_convert_valuearray_to_xpath_query($descriptors, 'id');
-        if ($descriptors != '') {
-            $query = "//descriptors/descriptor[" . $descriptors . "]/" . $propertyName;
-            $tempXML = new DOMDocument();
-            $tempXML->loadXML($xml->asXML());
-            $xpath = new DOMXpath($tempXML);
-            $properties = $xpath->query($query);
-            if ($properties->length) {
-                foreach ($properties as $prop) {
-                    $result[] = $prop->getAttribute('id');
+        if (count($descriptors) > 50) { // TODO: 50 or greater?
+            $descriptorIdsDoses = array_chunk($descriptors, 50);
+        } else {
+            $descriptorIdsDoses = [0 => $descriptors];
+        }
+        $tempXML = new DOMDocument();
+        $tempXML->loadXML($xml->asXML());
+        $xpath = new DOMXpath($tempXML);
+        foreach ($descriptorIdsDoses as $descriptorIdsDose) {
+            // single xpath query for whole result
+            $descriptors = self::DOM_convert_valuearray_to_xpath_query($descriptorIdsDose, 'id');
+            if ($descriptors != '') {
+                $query = "//descriptors/descriptor[" . $descriptors . "]/" . $propertyName;
+                $properties = $xpath->query($query);
+                if ($properties->length) {
+                    foreach ($properties as $prop) {
+                        $result[] = $prop->getAttribute('id');
+                    }
                 }
             }
         }
@@ -2539,20 +2557,27 @@ class data_importer extends data {
 
     private static function get_examples_for_descriptors_from_xml($xml, $descriptors = array()) {
         $result = array();
-        $descriptors = self::DOM_convert_valuearray_to_xpath_query($descriptors, 'id');
-        if ($descriptors != '') {
-            $query = "//examples/example/descriptors/descriptorid[" . $descriptors . "]";
-            $tempXML = new DOMDocument();
-            $tempXML->loadXML($xml->asXML());
-            $xpath = new DOMXpath($tempXML);
-            $descriptors = $xpath->query($query);
-            if ($descriptors->length) {
-                /** @var DOMNodeList $descr */
-                foreach ($descriptors as $descr) {
-                    $result[] = $descr->parentNode->parentNode->getAttribute('id');
+        if (count($descriptors) > 50) { // TODO: 50 or greater?
+            $descriptorIdsDoses = array_chunk($descriptors, 50);
+        } else {
+            $descriptorIdsDoses = [0 => $descriptors];
+        }
+        $tempXML = new DOMDocument();
+        $tempXML->loadXML($xml->asXML());
+        $xpath = new DOMXpath($tempXML);
+        foreach ($descriptorIdsDoses as $descriptorIdsDose) {
+            $descriptors = self::DOM_convert_valuearray_to_xpath_query($descriptorIdsDose, 'id');
+            if ($descriptors != '') {
+                $query = "//examples/example/descriptors/descriptorid[" . $descriptors . "]";
+                $descriptors = $xpath->query($query);
+                if ($descriptors->length) {
+                    /** @var DOMNodeList $descr */
+                    foreach ($descriptors as $descr) {
+                        $result[] = $descr->parentNode->parentNode->getAttribute('id');
+                    }
                 }
+                $result = array_unique($result);
             }
-            $result = array_unique($result);
         }
         return $result;
     }
@@ -2836,7 +2861,7 @@ class data_importer extends data {
         return $item;
     }
 
-    private static function insert_example($xmlItem, $parent = 0, $course_template) {
+    private static function insert_example($xmlItem, $parent, $course_template) {
         $item = self::parse_xml_item($xmlItem);
         $item->parentid = $parent;
 
@@ -2951,7 +2976,7 @@ class data_importer extends data {
         return $item;
     }
 
-    private static function insert_descriptor($xmlItem, $parent = 0, $sorting = 0, $categoryMapping) {
+    private static function insert_descriptor($xmlItem, $parent = 0, $sorting = 0, $categoryMapping = []) {
         $descriptor = self::parse_xml_item($xmlItem);
         $descriptor->crdate = self::$import_time;
 
