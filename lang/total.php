@@ -1913,6 +1913,18 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         '',
         '',
     ],
+    'settings_dakora_url' => [
+        'Url zur Dakora-App',
+        'Url to Dakora-App',
+    ],
+    'settings_dakora_url_description' => [
+        '',
+        '',
+    ],
+    'settings_dakora_timeout_description' => [
+        '',
+        '',
+    ],
     'settings_dakora_show_overview' => [
         'Überblick anzeigen',
         'show overview',
@@ -3402,6 +3414,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'overview_examples_report_title' => [
         'Aufgabenübersicht zum Kompetenzerwerb',
         'Overview of the examples'
+    ],
+    'block_exacomp_link_to_dakora_app' => [
+        'zur Dakora-App',
+        'to Dakora-App'
     ]
 
 ];

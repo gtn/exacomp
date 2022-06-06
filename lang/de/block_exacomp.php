@@ -532,6 +532,8 @@ $string['block_exacomp_dakora_language_file_head'] = 'Alternative Sprachdatei f�
 $string['block_exacomp_dakora_language_file_body'] = 'Verwenden Sie den <a href="https://exabis.at/sprachgenerator" target="_blank">Sprachengenerator</a> um eigene Sprachdateien zu erstellen';
 $string['settings_dakora_timeout'] = 'Dakora Timeout (Sekunden)';
 $string['settings_dakora_timeout_description'] = '';
+$string['settings_dakora_url'] = 'Url zur Dakora-App';
+$string['settings_dakora_url_description'] = '';
 $string['settings_dakora_show_overview'] = 'Überblick anzeigen';
 $string['settings_dakora_show_overview_description'] = '';
 $string['settings_dakora_show_eportfolio'] = 'ePortfolio anzeigen';
@@ -921,3 +923,4 @@ $string['contactcomps'] = 'Alle schließen';
 $string['questlink'] = 'Fragen verknüpfen';
 $string['select_subjects'] = 'Raster auswählen';
 $string['overview_examples_report_title'] = 'Aufgabenübersicht zum Kompetenzerwerb';
+$string['block_exacomp_link_to_dakora_app'] = 'zur Dakora-App';

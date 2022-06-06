@@ -419,7 +419,16 @@ class block_exacomp extends block_list {
                 ' href="' . $CFG->wwwroot . '/blocks/exacomp/import.php?courseid=' . $courseid . '">' .
                 $icon . block_exacomp_get_string('tab_admin_import') . '</a>';
         }
-
+        // link to dakora_url
+        $dakoraUrl = trim(get_config('exacomp', 'dakora_url'));
+        if ($dakoraUrl) {
+            $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/dakora.png' . '" class="icon" alt="" />';
+            $queryExists = parse_url($dakoraUrl, PHP_URL_QUERY);
+            $dakoraUrl .= ($queryExists ? '&' : '?') . 'pathtomoodle=' . $CFG->wwwroot;
+            $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_admin_import') . '" ' .
+                ' href="' . $dakoraUrl . '">' .
+                $icon . block_exacomp_get_string('block_exacomp_link_to_dakora_app') . '</a>';
+        }
         return $this->content;
     }
 

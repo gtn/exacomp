@@ -526,6 +526,8 @@ $string['block_exacomp_dakora_language_file_head'] = 'Custom language file for D
 $string['block_exacomp_dakora_language_file_body'] = 'Use <a href="https://exabis.at/sprachgenerator" target="_blank">language generator</a> for creating custom language file';
 $string['settings_dakora_timeout'] = 'Dakora Timeout (Seconds)';
 $string['settings_dakora_timeout_description'] = '';
+$string['settings_dakora_url'] = 'Url to Dakora-App';
+$string['settings_dakora_url_description'] = '';
 $string['settings_dakora_show_overview'] = 'show overview';
 $string['settings_dakora_show_overview_description'] = '';
 $string['settings_dakora_show_eportfolio'] = 'show ePortfolio';
@@ -911,3 +913,4 @@ $string['contactcomps'] = 'Contract all';
 $string['questlink'] = 'Relate questions';
 $string['select_subjects'] = 'Select Subjects';
 $string['overview_examples_report_title'] = 'Overview of the examples';
+$string['block_exacomp_link_to_dakora_app'] = 'to Dakora-App';
