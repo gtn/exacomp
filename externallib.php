@@ -5155,6 +5155,7 @@ class block_exacomp_external extends external_api {
             }
 
             $example->title = static::custom_htmltrim(strip_tags($example->title));
+			$example->end = $example->endtime;  //because field was renamed to endtime in exacomp, not in dakora
             // 		    //Taxonomies:
             $taxonomies = '';
             $taxids = '';
