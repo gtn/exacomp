@@ -1,3 +1,9 @@
+v4.6.7 (20220606)
+- Dashboard view of the exacomp Block (exampüles of student)
+- direct link to dakora app in plugin configuration
+- moodle 4.0 adaptions
+- php 8.0 adaptions
+
 v4.6.6 (2022040500)
 - Performance upgrades for Diggrplus webservices.
 - Sesskeys required to prevent XSS attacks.
