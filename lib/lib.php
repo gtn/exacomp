@@ -4010,7 +4010,7 @@ function block_exacomp_get_assigments_of_examples($filter_descriptors) {
             SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} mm
 			JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = mm.exampid
-			LEFT JOIN mdl_course_modules cm ON cm.id = activityid
+			LEFT JOIN {course_modules} cm ON cm.id = activityid
 			WHERE (descrid IN (' . join(',', $filter_descriptors) . ') )
 			    AND NOT activityid = 0
 			    AND cm.course IS NOT NULL');
@@ -4019,7 +4019,7 @@ function block_exacomp_get_assigments_of_examples($filter_descriptors) {
             SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} mm
 			JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = mm.exampid
-			LEFT JOIN mdl_course_modules cm ON cm.id = activityid
+			LEFT JOIN {course_modules} cm ON cm.id = activityid
             WHERE NOT activityid = 0
                   AND cm.course IS NOT NULL');
     }
