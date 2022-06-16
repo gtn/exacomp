@@ -46,13 +46,6 @@ function block_exacomp_get_login_data() {
     // clean output
     $data = external_api::clean_returnvalue(block_exacomp_external::login_returns(), $data);
 
-    // $data = json_encode($data, JSON_PRETTY_PRINT);
-
-    $data = [
-        'type' => 'login_successful',
-        'data' => $data,
-    ];
-
     return $data;
 }
 
@@ -67,6 +60,40 @@ function block_exacomp_logout() {
     //}
     //require_logout();
 }
+
+
+$action = optional_param('action', '', PARAM_TEXT);
+
+if ($action == 'dakora_sso') {
+    require_sesskey();
+
+    try {
+        $data = block_exacomp_get_login_data();
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit;
+    }
+
+    $moodle_redirect_token = '';
+    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+    $DB->insert_record('block_exacompapplogin', [
+        'moodle_redirect_token' => $moodle_redirect_token,
+        'moodle_data_token' => $moodle_data_token,
+        'created_at' => time(),
+        'request_data' => '',
+        'result_data' => json_encode($data),
+    ]);
+
+    $dakora_url = trim(get_config('exacomp', 'dakora_url'));
+
+    $redirect_url = $dakora_url.'/page/sso.html?moodle_url='.$CFG->wwwroot.'&moodle_token='.$moodle_data_token;
+
+    redirect($redirect_url);
+
+    exit;
+}
+
+
 
 
 $PAGE->set_context(context_system::instance());
@@ -121,7 +148,10 @@ if (isguestuser()) {
     exit;
 }
 
-$loginData = block_exacomp_get_login_data();
+$loginData = [
+    'type' => 'login_successful',
+    'data' => block_exacomp_get_login_data(),
+];
 
 //Here after the user is logged in
 //Check if this user is a teacher from eeducation. If they are: add to course with id=700

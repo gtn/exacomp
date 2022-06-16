@@ -98,7 +98,7 @@ class block_exacomp extends block_list {
                 }
                 $content .= block_exacomp_get_string('choosestudent');
                 $content .= $output->studentselector($coursestudents, $studentid, null, null, ['name' => 'studentid', 'onChange' => 'this.form.submit()']);
-				
+
 				$content .= '</form>';
             } else {
                 // TODO: block_exacomp_is_student() does not work - why?
@@ -423,8 +423,8 @@ class block_exacomp extends block_list {
         $dakoraUrl = trim(get_config('exacomp', 'dakora_url'));
         if ($dakoraUrl) {
                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/dakora2.svg' . '" class="icon" alt="" />';
-            $queryExists = parse_url($dakoraUrl, PHP_URL_QUERY);
-            $dakoraUrl .= '/page/start.html'.($queryExists ? '&' : '?') . 'pathtomoodle=' . $CFG->wwwroot;
+
+            $dakoraUrl = $CFG->wwwroot . '/blocks/exacomp/applogin.php?action=dakora_sso&sesskey='.sesskey();
             $this->content->items[] = '<a target="_blank" title="' . block_exacomp_get_string('tab_admin_import') . '" ' .
                 ' href="' . $dakoraUrl . '">' .
                 $icon . block_exacomp_get_string('block_exacomp_link_to_dakora_app') . '</a>';
