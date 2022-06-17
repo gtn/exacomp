@@ -188,6 +188,11 @@ $settings->add(new admin_setting_configstoredfile('exacomp/dakora_language_file'
     'exacomp_dakora_language_file',
     0,
     array('maxfiles' => 1, 'accepted_types' => array('.json'))));
+$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/dakora_url',
+    block_exacomp_get_string('settings_dakora_url'),
+    block_exacomp_get_string('settings_dakora_url_description'),
+    '',
+    PARAM_TEXT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/dakora_timeout',
     block_exacomp_get_string('settings_dakora_timeout'),
     block_exacomp_get_string('settings_dakora_timeout_description'),

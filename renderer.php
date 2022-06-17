@@ -6052,7 +6052,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     //    }
 
     // prints e.g. the statistics in the competence profile... NOT able to handle generic grading schemes yet
-    function competence_profile_course($course = -1, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj = null, $withoutHeaders = false) {
+    function competence_profile_course($course, $student, $showall = true, $max_scheme = 3, $forGlobalReport = false, $crosssubj = null, $withoutHeaders = false) {
         global $CFG;
         static $allStats = null;
         $content = '';
@@ -6738,7 +6738,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     //TODO: make generic
-    function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true, $assessmentScheme) {
+    function subject_statistic_table($courseid, $stat, $stat_title, $showdifflevel = true, $assessmentScheme = null) {
         $content = '';
 
         $evaluation_niveaus = global_config::get_evalniveaus(true, $courseid);
@@ -8254,7 +8254,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             $this->pix_icon("i/edit", block_exacomp_get_string("edit"))) : '') .
                         ($crosssubj->has_capability(BLOCK_EXACOMP_CAP_DELETE) ? html_writer::link('#', $this->pix_icon("t/delete", block_exacomp_get_string("delete")),
                             array("onclick" => "if( confirm('" . block_exacomp_get_string('confirm_delete') . "')) block_exacomp.delete_crosssubj(" . $crosssubj->id . "); return false;")) : '') .
-                        html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'action' => 'use_draft')),
+                        html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid' => g::$COURSE->id, 'crosssubjid' => $crosssubj->id, 'action' => 'use_draft', 'sesskey' => sesskey())),
                             $this->pix_icon("e/copy", block_exacomp_trans("de:Vorlage verwenden"))),
                     ]);
                     $row->attributes['class'] = 'rg2-level-2';
@@ -8422,7 +8422,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
     }
 
-    function group_report_filters($type, $filter, $action, $extra = '', $courseid, $isTeacher) {
+    function group_report_filters($type, $filter, $action, $extra, $courseid, $isTeacher) {
         ob_start();
         global $USER;
         ?>
@@ -8520,7 +8520,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return ob_get_clean();
     }
 
-    function group_report_annex_filters($type, $filter, $action, $extra = '', $courseid, $isTeacher) {
+    function group_report_annex_filters($type, $filter, $action, $extra, $courseid, $isTeacher) {
         global $USER;
         ob_start();
         ?>
@@ -8580,7 +8580,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return ob_get_clean();
     }
 
-    function group_report_profoundness_filters($type, $filter, $action, $extra = '', $courseid) {
+    function group_report_profoundness_filters($type, $filter, $action, $extra, $courseid) {
         ob_start();
         ?>
         <form method="post" action="<?php echo $action; ?>">

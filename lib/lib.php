@@ -371,7 +371,7 @@ function block_exacomp_get_courses_of_teacher($userid) {
     return $teachersCourses;
 }
 
-//Get all courses a student is enrolled
+// Get all courses a student is enrolled
 function block_exacomp_get_courses_of_student($userid) {
     $courses = block_exacomp_get_courseids();
     $studentCourses = array();
@@ -2111,7 +2111,7 @@ function block_exacomp_save_competences($data, $courseid, $role, $comptype, $top
  * @param int $userid
  * @param int $subjectid
  */
-function block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype = 1, $userid, $subjectid) {
+function block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, $userid, $subjectid) {
     global $DB;
 
     $select = " courseid = ? AND role = ? AND COMPTYPE = ? AND userid = ? AND
@@ -4010,7 +4010,7 @@ function block_exacomp_get_assigments_of_examples($filter_descriptors) {
             SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} mm
 			JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = mm.exampid
-			LEFT JOIN mdl_course_modules cm ON cm.id = activityid
+			LEFT JOIN {course_modules} cm ON cm.id = activityid
 			WHERE (descrid IN (' . join(',', $filter_descriptors) . ') )
 			    AND NOT activityid = 0
 			    AND cm.course IS NOT NULL');
@@ -4019,7 +4019,7 @@ function block_exacomp_get_assigments_of_examples($filter_descriptors) {
             SELECT mm.id, mm.exampid, descrid, activityid, activitytitle
 			FROM {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} mm
 			JOIN {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e ON e.id = mm.exampid
-			LEFT JOIN mdl_course_modules cm ON cm.id = activityid
+			LEFT JOIN {course_modules} cm ON cm.id = activityid
             WHERE NOT activityid = 0
                   AND cm.course IS NOT NULL');
     }
@@ -4676,8 +4676,8 @@ function block_exacomp_get_all_associated_activities_by_course($courseid) {
         $activity->examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('activityid' => $activity->activityid, 'courseid' => $courseid), '', 'id');
     }
 
-    if (block_exacomp_use_old_activities_method()) { //if not, use ONLY new method. but if old method is active, use BOTH
-        $sql = "SELECT cm.instance as id, cm.id as activityid
+    if (block_exacomp_use_old_activities_method()) { // if not, use ONLY new method. but if old method is active, use BOTH
+        $sql = "SELECT DISTINCT concat(cm.instance, '-', cm.id) as uniqieId, cm.instance as id, cm.id as activityid
             FROM {block_exacompcompactiv_mm} activ
               JOIN {course_modules} cm ON cm.id = activ.activityid
             WHERE cm.course = ? ";
@@ -5018,7 +5018,7 @@ function block_exacomp_get_activitiy_by_id($activityid) {
  * @param array $descriptorsData
  * @param integer $courseid
  */
-function block_exacomp_update_example_activity_relations($descriptorsData = array(), $courseid) {
+function block_exacomp_update_example_activity_relations($descriptorsData = array(), $courseid = 0) {
     global $DB, $CFG, $USER;
 
     foreach ($descriptorsData as $activityid => $descriptors) {
@@ -5242,7 +5242,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
                     $cm_temp[] = $course_mods[$cmid];
                 }
 
-                $icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user", array("id" => $studentid)), $supported);
+                $icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user", array("id" => $studentid)), @$supported);
                 $descriptor->icon = '<span title="' . $icon->text . '" class="exabis-tooltip">' . $icon->img . '</span>';
             }
         }
@@ -7249,7 +7249,7 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
             'timecreated' => $timecreated,
             'timemodified' => $timemodified,
             'start' => $start,
-            'end' => $end,
+            'endtime' => $end,
             'deleted' => 0,
             'ethema_ismain' => $ethema_ismain,
             'ethema_issubcategory' => $ethema_issubcategory,
@@ -7290,7 +7290,7 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
     block_exacomp_require_teacher($courseid);
     // Get all examples to add:
     //    -> studentid 0: on teachers schedule
-    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
+    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND endtime IS NOT NULL AND deleted = 0", array($courseid));
 
     // Get all students for the given course
     $students = block_exacomp_get_students_by_course($courseid);
@@ -7298,7 +7298,7 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
     foreach ($examples as $example) {
         foreach ($students as $student) {
             if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
-                block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory);
+                block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->endtime, $example->ethema_ismain, $example->ethema_issubcategory);
             }
         }
     }
@@ -7322,7 +7322,7 @@ function block_exacomp_add_examples_to_schedule_for_group($courseid, $groupid, $
     block_exacomp_require_teacher($courseid);
     // Get all examples to add:
     //    -> studentid 0: on teachers schedule
-    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
+    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND endtime IS NOT NULL AND deleted = 0", array($courseid));
 
     // Get all students for the given group
     $groupmembers = block_exacomp_groups_get_members($courseid, $groupid);
@@ -7331,7 +7331,7 @@ function block_exacomp_add_examples_to_schedule_for_group($courseid, $groupid, $
     foreach ($examples as $example) {
         foreach ($groupmembers as $student) {
             if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
-                block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'C', false, $distributionid);
+                block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->endtime, $example->ethema_ismain, $example->ethema_issubcategory, 'C', false, $distributionid);
             }
         }
     }
@@ -7355,13 +7355,13 @@ function block_exacomp_add_examples_to_schedule_for_students($courseid, $student
     block_exacomp_require_teacher($courseid);
     // Get all examples to add:
     //    -> studentid 0: on teachers schedule
-    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted = 0", array($courseid));
+    $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND endtime IS NOT NULL AND deleted = 0", array($courseid));
 
     // Add examples for all users of group
     foreach ($examples as $example) {
         foreach ($students as $student) {
             if (block_exacomp_is_example_visible($courseid, $example->exampleid, $student->id)) {
-                block_exacomp_add_example_to_schedule($student, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end, $example->ethema_ismain, $example->ethema_issubcategory, 'C', false, $distributionid);
+                block_exacomp_add_example_to_schedule($student, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->endtime, $example->ethema_ismain, $example->ethema_issubcategory, 'C', false, $distributionid);
             }
         }
     }
@@ -8324,15 +8324,15 @@ function block_exacomp_get_examples_for_trash($studentid, $courseid) {
  *
  * @param unknown $scheduleid
  * @param unknown $start
- * @param unknown $end
+ * @param unknown $endtime
  * @param number $deleted
  */
-function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted = 0) {
+function block_exacomp_set_example_start_end($scheduleid, $start, $endtime, $deleted = 0) {
     global $DB, $USER;
 
     $entry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('id' => $scheduleid));
     $entry->start = $start;
-    $entry->end = $end;
+    $entry->endtime = $endtime;
     $entry->deleted = $deleted;
 
     if ($entry->studentid != $USER->id) {
@@ -8342,8 +8342,8 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 
     if ($DB instanceof pgsql_native_moodle_database) {
         // HACK: because moodle doesn't quote pgsql identifiers and pgsql doesn't allow end as column name
-        $DB->execute('UPDATE {' . BLOCK_EXACOMP_DB_SCHEDULE . '} SET "end"=? WHERE id=?', [$entry->end, $entry->id]);
-        unset($entry->end);
+        $DB->execute('UPDATE {' . BLOCK_EXACOMP_DB_SCHEDULE . '} SET "endtime"=? WHERE id=?', [$entry->endtime, $entry->id]);
+        unset($entry->endtime);
     }
 
     $DB->update_record(BLOCK_EXACOMP_DB_SCHEDULE, $entry);
@@ -8365,7 +8365,7 @@ function block_exacomp_copy_example_from_schedule($scheduleid) {
 
     unset($entry->id);
     unset($entry->start);
-    unset($entry->end);
+    unset($entry->endtime);
 
     $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, $entry);
 }
@@ -8413,7 +8413,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 			-- LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid -- moved to exacomp plugin settings
 			WHERE s.studentid = ? AND s.courseid = ? AND (
 				-- innerhalb end und start
-				(s.start > ? AND s.end < ?)
+				(s.start > ? AND s.endtime < ?)
 			) AND s.creatorid = ?
 			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
@@ -8432,7 +8432,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 			-- LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid -- moved to exacomp plugin settings
 			WHERE s.studentid = ? AND s.courseid = ? AND (
 				-- innerhalb end und start
-				(s.start > ? AND s.end < ?)
+				(s.start > ? AND s.endtime < ?)
 			)
 			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
@@ -8511,7 +8511,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
         $example_array['id'] = $example->scheduleid;
         $example_array['title'] = $example->title;
         $example_array['start'] = $example->start;
-        $example_array['end'] = $example->end;
+        $example_array['end'] = $example->endtime;
         $example_array['exampleid'] = $example->exampleid;
         $example_array['niveau'] = isset($example->niveau) ? $example->niveau : null;
         $example_array['description'] = isset($example->description) ? $example->description : "";
@@ -8739,7 +8739,7 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
     if ($schedule) {
         $in_work = false;
         foreach ($schedule as $entry) {
-            if ($entry->start > 0 && $entry->end > 0) {
+            if ($entry->start > 0 && $entry->endtime > 0) {
                 $in_work = true;
             }
         }
@@ -9627,12 +9627,12 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
 
             LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLEEVAL . "} exameval ON exameval.exampleid = ex.id AND exameval.courseid = :courseidexameval AND exameval.studentid = :userid
             LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION . "} examannot ON examannot.exampleid = ex.id AND examannot.courseid = :courseidexamannot
-
             WHERE ct.courseid = :courseid
             AND dvis.visible = true
             AND tvis.visible = true
             AND evis.visible = true
-            AND (ex.courseid = 0 OR ex.courseid = :courseidexample OR ex.courseid IS NULL)
+            AND (ex.courseid = 0 OR ex.courseid = :courseidexample OR ex.courseid IS NULL)"
+                . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
             AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
             GROUP BY ex.id
             ";
@@ -9649,7 +9649,8 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
             JOIN {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n ON n.id = d.niveauid
 
             WHERE ct.courseid = :courseid
-            AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
+            AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)"
+                . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
             GROUP BY ex.id
             ";
         }
@@ -9661,7 +9662,8 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
 			FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex
 			JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
 			JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
-			WHERE ct.courseid = :courseid
+			WHERE ct.courseid = :courseid"
+            . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
 		)";
     }
 
@@ -11112,7 +11114,7 @@ function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $us
  *
  * @return: {{id}, {...}}
  */
-function block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $userid = 0, $topicid) {
+function block_exacomp_get_niveau_visibilities_for_course_and_topic_and_user($courseid, $userid, $topicid) {
     return Cache::staticCallback(__FUNCTION__, function($courseid, $userid, $topicid) {
         return g::$DB->get_records_sql_menu("
 			SELECT DISTINCT tv.niveauid, tv.visible
@@ -12122,7 +12124,7 @@ function block_exacomp_tree_walk(&$items, $data, $callback) {
     }
 }
 
-function block_exacomp_group_reports_result($filter, $isPdf = false, $isTeacher) {
+function block_exacomp_group_reports_result($filter, $isPdf, $isTeacher) {
 
     $content = block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher);
     if ($isPdf) {
@@ -12132,7 +12134,7 @@ function block_exacomp_group_reports_result($filter, $isPdf = false, $isTeacher)
     }
 }
 
-function block_exacomp_group_reports_return_result($filter, $isPdf = false, $isTeacher) {
+function block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher) {
     global $USER;
     $courseid = g::$COURSE->id;
 
@@ -12796,7 +12798,7 @@ function block_exacomp_group_reports_profoundness_result($filter) {
 
 }
 
-function block_exacomp_formulaColumnByValue($maxColumn = 4, $minColumn = 1, $maxValue = 6, $minValue = 1, $value) {
+function block_exacomp_formulaColumnByValue($maxColumn = 4, $minColumn = 1, $maxValue = 6, $minValue = 1, $value = 0) {
     // formula for additionalinfo (grading by value)
     // Y = aX + B
     // y = grading by 1-3 (as in the report columns)
@@ -14414,8 +14416,66 @@ function block_exacomp_build_comp_tree() {
     return $content;
 }
 
+/**
+ * Check related activities were changed/deleted - change example datas
+ *
+ * @param integer $cmid
+ * @param string $newtitle
+ * @return boolean
+ */
+function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
+    global $DB, $CFG;
+    //require_once $CFG->dirroot . '/blocks/exacomp/inc.php'; was needed when it was in exacomp/lib
+    // 1. new method of relation - the relation is EXAMPLE
+    $DB->execute('
+        UPDATE {block_exacompexamples}
+            SET title = ?,
+              activitytitle = ?
+            WHERE activityid = ?
+              AND title != ?
+              AND activitytitle != ?
+        ', [$newtitle, $newtitle, $cmid, $newtitle, $newtitle]); // TODO: title is also changed or only activitytitle?
+    // 2. old method - with MM table
+    if (block_exacomp_use_old_activities_method()) {
+        $DB->execute('
+            UPDATE {block_exacompcompactiv_mm}
+                SET activitytitle = ?
+                WHERE activityid = ?
+                  AND activitytitle != ?
+            ', [$newtitle, $cmid, $newtitle]);
+    }
+    return true;
+}
 function block_exacomp_fill_comp_tree($question, $comptree) {
     global $CFG, $USER, $COURSE, $DB;
+
+function block_exacomp_checkfordelete_relatedactivity($cmid) {
+    global $DB, $CFG;
+    //require_once $CFG->dirroot . '/blocks/exacomp/inc.php'; was needed when it was in exacomp/lib
+    // 1. new method of relation - the relation is EXAMPLE
+    // TODO: right now is deleted related example. May we need to stay the example, but change activity fields
+    $DB->execute('
+            DELETE FROM {block_exacompexamples}
+                WHERE activityid = ?
+            ', [$cmid]);
+    // if we need to change activity fields only, not delete the example at all
+    /* $DB->execute('
+         UPDATE {block_exacompexamples}
+             SET activityid = ?,
+               activitytitle = ?,
+               activitylink = ?,
+               courseid = ?
+             WHERE activityid = ?
+         ', [0, '', '', 0, $cmid]);*/
+    // 2. old method - with MM table
+    if (block_exacomp_use_old_activities_method()) {
+        $DB->execute('
+            DELETE FROM {block_exacompcompactiv_mm}
+                WHERE activityid = ?
+            ', [$cmid]);
+    }
+}
+
 
     $activedescriptors = $DB->get_fieldset_select("block_exacompdescrquest_mm", 'descrid', 'questid = ' . $question->id);
 

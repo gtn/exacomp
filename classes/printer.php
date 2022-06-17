@@ -384,7 +384,7 @@ class printer {
 
                 // find end slot
                 for ($i = $example->start_slot; $i < count($day->slots); $i++) {
-                    if ($day->slots[$i]->start_time >= $example->end) {
+                    if ($day->slots[$i]->start_time >= $example->endtime) {
                         break;
                     }
                     $example->end_slot = $i;

@@ -15,7 +15,7 @@ exacomp_nextgen
 ===============
 GTN-Solutions
 
-This block is for Moodle 3.1+ versions, it will not work for versions below 2015051100
+This block is for Moodle 3.1+ and 4.0 versions, it will not work for versions below 2015051100
 
 * Exabis Competence Grid Block - Bugs, Feature Requests, and Improvements *
 

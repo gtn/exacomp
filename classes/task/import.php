@@ -52,13 +52,6 @@ class import extends scheduled_task {
         } catch (moodle_exception $e) {
             mtrace("import failed: " . $e->getMessage());
         }
-        try{
-            mtrace("Exabis Competence Grid: normalize task is running:");
-            data::normalize_database();
-            mtrace("Normalize exacomp tables done");
-        } catch (moodle_exception $e){
-            mtrace("Normalize exacomp tables: " . $e->getMessage());
-        }
         return true;
     }
 }

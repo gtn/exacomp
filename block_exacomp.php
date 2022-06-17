@@ -71,6 +71,7 @@ class block_exacomp extends block_list {
             $content = '';
             $output = block_exacomp_get_renderer();
             $studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+            $courseid = optional_param('courseid', 0, PARAM_INT);
 
             // get all courses where the user is a teacher
             $teacherCourses = block_exacomp_get_courses_of_teacher($USER->id);
@@ -87,21 +88,32 @@ class block_exacomp extends block_list {
             });
 
             $content .= '<div style="padding-bottom: 15px;" id="reportExamples">';
-            // student selector
-            $content .= '<form action="" method="get">';
-            if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-                $content .= html_writer::tag("p", block_exacomp_get_string("select_student"));
-            }
-            $content .= block_exacomp_get_string('choosestudent');
-            $content .= $output->studentselector($coursestudents, $studentid, null, null, ['name' => 'studentid', 'onChange' => 'this.form.submit()']);
-            $content .= '</form>';
 
-            // dashboard of students data
+            // student selector
+            if (block_exacomp_is_teacher_in_any_course()) {
+                $content .= '<form action="" method="get">';
+
+                if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+                    $content .= html_writer::tag("p", block_exacomp_get_string("select_student"));
+                }
+                $content .= block_exacomp_get_string('choosestudent');
+                $content .= $output->studentselector($coursestudents, $studentid, null, null, ['name' => 'studentid', 'onChange' => 'this.form.submit()']);
+				
+				$content .= '</form>';
+            } else {
+                // TODO: block_exacomp_is_student() does not work - why?
+                // get 'is a student' by his courses
+                $studentCourses = enrol_get_users_courses($USER->id, true, '*');
+                if (count($studentCourses) > 0) { // this is a student
+                    $studentid = $USER->id;
+                }
+            }
+
+            // dashboard of students data (tabs with courses)
             if ($studentid > 0) {
 
                 $student = $DB->get_record('user', array('id' => $studentid));
 
-                $courseid = optional_param('courseid', 0, PARAM_INT);
                 // by default show first course as selected
                 $possible_courses = block_exacomp_get_exacomp_courses($student);
                 if (!$courseid) {
@@ -206,10 +218,21 @@ class block_exacomp extends block_list {
 
                 }
 
-                // main report for selectd student and selected course
-                $cont = $output->example_based_list_tree($examples, $courseid, $courseid, $studentid, true);
-                if ($cont) {
+                if ($studentid) {
+                    $urlParams = ['courseid' => $courseid];
+                    if (block_exacomp_is_teacher_in_any_course() && $studentid != $USER->id) { // 'studentid' is only for admins
+                        $urlParams['studentid'] = $studentid;
+                    }
+                    $overviewLink = new moodle_url('/blocks/exacomp/competence_grid.php', $urlParams);
+                    $content .= '<div class="pull-right"><a href="'.$overviewLink.'" class="btn btn-sm btn-info">Kompetenzbewertung</a> </div>';
+                }
+
+                // main report for selected student and selected course
+                if (count($examples) > 0) {
+                    $cont = $output->example_based_list_tree($examples, $courseid, $courseid, $studentid, true);
                     $content .= html_writer::div($cont, '', ['id' => 'exacomp_tabbed_course_' . $course->id]);
+                } else {
+                    $content .= html_writer::div('kein Lernmaterial hier', 'alert alert-warning', ['id' => 'exacomp_tabbed_course_' . $course->id]);
                 }
 
                 $content .= '</div>';
@@ -396,7 +419,16 @@ class block_exacomp extends block_list {
                 ' href="' . $CFG->wwwroot . '/blocks/exacomp/import.php?courseid=' . $courseid . '">' .
                 $icon . block_exacomp_get_string('tab_admin_import') . '</a>';
         }
-
+        // link to dakora_url
+        $dakoraUrl = trim(get_config('exacomp', 'dakora_url'));
+        if ($dakoraUrl) {
+                       $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/dakora2.svg' . '" class="icon" alt="" />';
+            $queryExists = parse_url($dakoraUrl, PHP_URL_QUERY);
+            $dakoraUrl .= '/page/start.html'.($queryExists ? '&' : '?') . 'pathtomoodle=' . $CFG->wwwroot;
+            $this->content->items[] = '<a target="_blank" title="' . block_exacomp_get_string('tab_admin_import') . '" ' .
+                ' href="' . $dakoraUrl . '">' .
+                $icon . block_exacomp_get_string('block_exacomp_link_to_dakora_app') . '</a>';
+        }
         return $this->content;
     }
 
