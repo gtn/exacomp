@@ -14446,8 +14446,7 @@ function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
     }
     return true;
 }
-function block_exacomp_fill_comp_tree($question, $comptree) {
-    global $CFG, $USER, $COURSE, $DB;
+
 
 function block_exacomp_checkfordelete_relatedactivity($cmid) {
     global $DB, $CFG;
@@ -14476,7 +14475,8 @@ function block_exacomp_checkfordelete_relatedactivity($cmid) {
     }
 }
 
-
+function block_exacomp_fill_comp_tree($question, $comptree) {
+    global $CFG, $USER, $COURSE, $DB;
     $activedescriptors = $DB->get_fieldset_select("block_exacompdescrquest_mm", 'descrid', 'questid = ' . $question->id);
 
 
