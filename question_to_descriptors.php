@@ -42,8 +42,8 @@ if ($action == 'save') {
     require_sesskey();
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
     foreach ($descs as $desc) {
-        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid))) {
-            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid));
+        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid))) {
+            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid));
         }
     }
 }
