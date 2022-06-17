@@ -27,6 +27,7 @@ if (strcmp("mysql", $CFG->dbtype) == 0) {
     $DB->execute($sql5);
 }
 
+
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
 

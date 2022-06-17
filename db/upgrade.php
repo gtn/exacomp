@@ -4008,6 +4008,38 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022021501, 'exacomp');
     }
 
+    if ($oldversion < 2022050302) {
+        $table = new xmldb_table('block_exacompdescrquest_mm');
+        $fieldold = new xmldb_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
+        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
+        $field2 = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
+
+        if ($dbman->field_exists($table, $fieldold) && !$dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $fieldold, $field);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2022050302, 'exacomp');
+    }
+
+    if ($oldversion < 2022050302) {
+        $table = new xmldb_table('block_exacompschedule');
+        $fieldold = new xmldb_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
+        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
+        $field2 = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
+
+        if ($dbman->field_exists($table, $fieldold) && !$dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $fieldold, $field);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2022050302, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

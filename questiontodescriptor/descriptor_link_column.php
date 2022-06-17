@@ -34,13 +34,17 @@ class descriptor_link_column extends column_base {
 
     public function get_title(): string {
         return "Link";
+
     }
 
     protected function display_content($question, $rowclasses): void {
         global $USER, $DB;
         echo '<a href="#" class=" btn btn-primary btn-sm competences' . $question->id . '" role="button"> ' . block_exacomp_get_string("questlink") . ' </a>';
 
-        $conditions = array("id" => 1, "userid" => $USER->id);
+
+        $cache = \cache::make('block_exacomp', 'visibility_cache');
+        $comptree = $cache->get('comptree');
+
 
         ?>
         <div style="display: none">
@@ -53,7 +57,7 @@ class descriptor_link_column extends column_base {
                 </a> | <a href="javascript:ddtreemenu.flatten('comptree<?php echo $question->id; ?>', 'contact')"><?php echo block_exacomp_get_string("contactcomps") ?>
                 </a>
 
-                <?php echo block_exacomp_build_comp_tree($question); ?>
+                <?php echo block_exacomp_fill_comp_tree($question, $comptree); ?>
             </div>
         </div>
 

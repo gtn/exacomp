@@ -42,8 +42,8 @@ if ($action == 'save') {
     require_sesskey();
     $DB->delete_records("block_exacompdescrquest_mm", array('questid' => $questid));
     foreach ($descs as $desc) {
-        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid))) {
-            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'course' => $courseid));
+        if (!$DB->record_exists("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid))) {
+            $DB->insert_record("block_exacompdescrquest_mm", array('questid' => $questid, 'descrid' => $desc, 'courseid' => $courseid));
         }
     }
 }
@@ -77,6 +77,10 @@ $url = new moodle_url('/blocks/exacomp/question_to_descriptors.php', $page_param
 if (($lastchanged = optional_param('lastchanged', 0, PARAM_INT)) !== 0) {
     $url->param('lastchanged', $lastchanged);
 }
+
+
+$cache = cache::make('block_exacomp', 'visibility_cache');
+$result = $cache->set('comptree', block_exacomp_build_comp_tree());
 
 
 // Create a question in the default category.
