@@ -255,6 +255,10 @@ $settings->add(new admin_setting_configtext('exacomp/msteams_client_secret',
     block_exacomp_get_string('settings_msteams_client_secret'),
     block_exacomp_get_string('settings_msteams_client_secret_description'), '', PARAM_TEXT));
 
+$settings->add(new admin_setting_configcheckbox('exacomp/example_upload_global',
+    block_exacomp_get_string('settings_example_upload_global'),
+    block_exacomp_get_string('settings_example_upload_global_description'), 1));
+
 // To delete?
 //$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme',
 //        block_exacomp_get_string('settings_admin_scheme'),

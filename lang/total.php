@@ -3279,6 +3279,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         '',
         '',
     ],
+    'settings_example_upload_global' => [
+        'Materialien global hochladen',
+        'Global material upload',
+    ],
+    'settings_example_upload_global_description' => [
+        'Von Lehrern hochgeladene Materialien sind global verfüger. Die Materialien sind damit auch in anderen Kursen mit dem gleichen Raster sichtbar.',
+        'Materials uploaded by a teacher are available globally. If the same grid is used ina  different course, the material will be visible.',
+    ],
     'settings_export_password' => [
         'Sicherung von Kompetenzrastern mit Passwort schützen (AES-256 Verschlüsselung)',
         'Passwort protection (AES-256 encryption) for competence grid export',

@@ -1833,8 +1833,17 @@ class block_exacomp_external extends external_api {
             'is_teacherexample' => $is_teacherexample,
         ));
 
+        if(!get_config('exacomp', 'example_upload_global')){
+            // courseid HAS to be set because the admin setting says so. If there is no $courseid ==> error
+            if($courseid != 0){
+                $onlyForThisCourse = true;
+            }else{
+                throw new invalid_parameter_exception ('Parameter courseid can not be empty, because of example_upload_global setting set to false.');
+            }
+        }
+
         return self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, $filename, $crosssubjectid, $activityid,
-            $is_teacherexample);
+            $is_teacherexample, 0, true, $onlyForThisCourse);
     }
 
     /**
@@ -1909,9 +1918,10 @@ class block_exacomp_external extends external_api {
             'is_teacherexample' => $is_teacherexample,
         ));
 
+        // careful: if we ever change $onlyForThisCourse --> check the admin setting, just like for dakora
         $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid,
             $is_teacherexample, $removefiles, null, true);
-        return array("success" => true, "exampleid" => $example[exampleid]);
+        return array("success" => true, "exampleid" => $example["exampleid"]);
     }
 
     /**

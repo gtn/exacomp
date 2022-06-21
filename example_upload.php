@@ -175,15 +175,26 @@ if ($formdata = $form->get_data()) {
             $newExample->example_icon = '';
         }
 
+        if(!get_config('exacomp', 'example_upload_global')){
+            // courseid HAS to be set because the admin setting says so. If there is no $courseid ==> error
+            if($COURSE->id != 0){
+                if($newExample->courseid == Null || $newExample->courseid == 0){
+                    $newExample->courseid = $COURSE->id;
+                }
+            }else{
+                throw new invalid_parameter_exception ('Courseid can not be empty, because of example_upload_global setting set to false.');
+            }
+        }
+
         if ($formdata->exampleid == 0) {
             // insert new example
-            $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
+            $newExample->id = $DB->insert_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
             $newExample->sorting = $newExample->id;
-            $DB->update_record('block_exacompexamples', $newExample);
+            $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
         } else {
             // update example
             $newExample->id = $formdata->exampleid;
-            $DB->update_record('block_exacompexamples', $newExample);
+            $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, $newExample);
             $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $newExample->id));
         }
 
