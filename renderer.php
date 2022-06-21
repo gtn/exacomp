@@ -5341,6 +5341,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $gradings_message = '<span class="exacomp-has-another-source">&nbsp;  !!!  ' . block_exacomp_get_string('delete_competency_that_has_gradings') . '</span>';
         $has_gradings_message = '<span class="exacomp-has-another-source">&nbsp;  !!!  ' . block_exacomp_get_string('delete_competency_that_has_children_with_gradings') . '</span>';
+        $used_in_courses_message = '<span class="exacomp-has-another-source">&nbsp;  !!!  ' . block_exacomp_get_string('delete_competency_that_is_used_in_course') . '</span>';
 
         foreach ($subjects as $subject) {
             $row = new html_table_row();
@@ -5353,8 +5354,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
             if ($subject->gradings) {
                 $notes .= $gradings_message;
-            } else if ($subject->has_gradings) {
+            }
+            if ($subject->has_gradings) {
                 $notes .= $has_gradings_message;
+            }
+            if ($subject->used_in_courses) {
+                $notes .= $used_in_courses_message;
+                foreach ($subject->used_in_courses as $used_in_course){ // append the courseids of the courses this grid is used in
+                    $notes .= $used_in_course.", ";
+                }
             }
 
             $cell->text = html_writer::div('<input type="checkbox"

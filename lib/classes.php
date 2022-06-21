@@ -279,6 +279,7 @@ class db_layer_whole_moodle extends db_layer {
             $subject->can_delete = ($subject->source == $source) && !$subject->gradings;
             $subject->has_another_source = false;
             $subject->has_gradings = false; // has_another_source/has_gradings means, that for a lower level e.g. topics  $topic->another_source/$topic->gradings is true
+            $subject->used_in_courses = [];
 
 
 
@@ -288,6 +289,14 @@ class db_layer_whole_moodle extends db_layer {
                 $topic->another_source = (!($topic->source == $source));
                 $topic->has_another_source = false;
                 $topic->has_gradings = false;
+
+                // find out in which courses this topic is used ==> add this info to the subject to make a warning
+                $topic->used_in_courses = [];
+                $used_in_courses = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('topicid' => $topic->id));
+                foreach ($used_in_courses as $used_in_course) {
+                    $topic->used_in_courses[] = $used_in_course->courseid;
+                }
+
 
 
                 foreach ($topic->descriptors as $descriptor) {
@@ -383,6 +392,10 @@ class db_layer_whole_moodle extends db_layer {
                 }
                 if ($topic->gradings || $topic->has_gradings) {
                     $subject->has_gradings = true;
+                }
+
+                if ($topic->used_in_courses) {
+                    $subject->used_in_courses = array_unique(array_merge($topic->used_in_courses, $subject->used_in_courses));
                 }
                 //if ($topic->source != $source && empty($topic->descriptors)) {
                 //	unset($subject->topics[$topic->id]);

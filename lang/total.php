@@ -2833,6 +2833,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Darunterliegende Kompetenzen haben bereits Beurteilungen! Nur löschen wenn Sie sicher sind!',
         'Children of this competence already have gradings! Only delete if you are sure!',
     ],
+    'delete_competency_that_is_used_in_course' => [
+        'Achtung! Dieser Raster ist in folgenden Kursen in Verwendung: ',
+        'Warning! This grid is used in the following courses: ',
+    ],
 
     'module_used_availabilitycondition_competences' => [
         'Verknüpfte Exabis Kompetenzen automatisch erreichen, wenn die Bedingungen erfüllt sind.',

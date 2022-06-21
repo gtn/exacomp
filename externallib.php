@@ -7452,7 +7452,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject, if you only want one specific subject', VALUE_OPTIONAL, null),
+            'subjectid' => new external_value (PARAM_INT, 'id of subject, if you only want one specific subject', VALUE_DEFAULT, null),
         ));
     }
 

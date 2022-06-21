@@ -771,6 +771,7 @@ $string['delete_level_from_another_source'] = 'Content from another source. If y
 $string['delete_level_has_children_from_another_source'] = 'Has children from another source! If you do not remove the children first and delete this subject, you will also delete from the other source!';
 $string['delete_competency_that_has_gradings'] = 'This competence already has gradings! Only delete if you are sure!';
 $string['delete_competency_that_has_children_with_gradings'] = 'Children of this competence already have gradings! Only delete if you are sure!';
+$string['delete_competency_that_is_used_in_course'] = 'Warning! This grid is used in the following courses: ';
 $string['module_used_availabilitycondition_competences'] = 'Grant related exabis competencies when condition is met';
 $string['use_isglobal'] = 'global course';
 $string['globalgradings'] = 'global gradings';
