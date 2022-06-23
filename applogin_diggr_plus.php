@@ -25,7 +25,7 @@ function block_exacomp_json_result_error($error) {
 }
 
 function block_exacomp_load_service($serviceshortname) {
-    global $DB;
+    global $DB, $USER;
 
     //check if the service exists and is enabled
     $service = $DB->get_record('external_services', array('shortname' => $serviceshortname, 'enabled' => 1));
@@ -35,7 +35,15 @@ function block_exacomp_load_service($serviceshortname) {
     }
 
     // Get an existing token or create a new one.
-    $token = external_generate_token_for_current_user($service);
+    $context = context_system::instance();
+    // a part core code to prevent erorr message to own
+    if (!is_siteadmin($USER) && has_capability('moodle/webservice:createtoken', $context)) {
+        $token = external_generate_token_for_current_user($service);
+    } else {
+        throw new moodle_exception('diggrapp_cannotcreatetoken', 'block_exacomp');
+    }
+
+
     //$privatetoken = $token->privatetoken;
     external_log_token_request($token);
 

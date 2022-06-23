@@ -927,3 +927,4 @@ $string['questlink'] = 'Fragen verknüpfen';
 $string['select_subjects'] = 'Raster auswählen';
 $string['overview_examples_report_title'] = 'Aufgabenübersicht zum Kompetenzerwerb';
 $string['block_exacomp_link_to_dakora_app'] = 'zur Dakora-App';
+$string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';

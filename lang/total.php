@@ -3430,6 +3430,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'block_exacomp_link_to_dakora_app' => [
         'zur Dakora-App',
         'to Dakora-App'
+    ],
+    'diggrapp_cannotcreatetoken' => [
+        'Can not have access to this moodle installation',
+        'Can not have access to this moodle installation'
     ]
 
 ];
