@@ -927,4 +927,4 @@ $string['questlink'] = 'Fragen verknüpfen';
 $string['select_subjects'] = 'Raster auswählen';
 $string['overview_examples_report_title'] = 'Aufgabenübersicht zum Kompetenzerwerb';
 $string['block_exacomp_link_to_dakora_app'] = 'zur Dakora-App';
-$string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';
+$string['diggrapp_cannotcreatetoken'] = 'Rechteverletzung, keine Anmeldung mit dieser Rolle möglich. Bestimmte Gruppen, zb Administratoren können sich aus sicherheitsgründen nicht an die App anmelden.';
