@@ -6267,12 +6267,16 @@ function block_exacomp_get_crosssubject_by_id($id) {
 }
 
 /**
- * @param $courseid
+ * @param $courseid if = 0 - get all crossubjects
  * @param null $studentid
  * @return block_exacomp\cross_subject[]
  */
 function block_exacomp_get_cross_subjects_by_course($courseid, $studentid = null) {
-    $crosssubs = block_exacomp\cross_subject::get_objects(['courseid' => $courseid], 'title');
+    if ($courseid > 0) {
+        $crosssubs = block_exacomp\cross_subject::get_objects(['courseid' => $courseid], 'title');
+    } else {
+        $crosssubs = block_exacomp\cross_subject::get_objects(null, 'title'); // from all courses
+    }
 
     if (!$studentid) {
         return $crosssubs;
