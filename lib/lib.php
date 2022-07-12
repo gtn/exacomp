@@ -6275,7 +6275,14 @@ function block_exacomp_get_cross_subjects_by_course($courseid, $studentid = null
     if ($courseid > 0) {
         $crosssubs = block_exacomp\cross_subject::get_objects(['courseid' => $courseid], 'title');
     } else {
-        $crosssubs = block_exacomp\cross_subject::get_objects(null, 'title'); // from all courses
+        $allCrosssubs = block_exacomp\cross_subject::get_objects(null, 'title'); // from all courses
+        // filter by 'only my' (for courses where I am a teacher)
+        $crosssubs = [];
+        foreach ($allCrosssubs as $crosssub) {
+            if (block_exacomp_is_teacher($crosssub->courseid)) {
+                $crosssubs[] = $crosssub;
+            }
+        }
     }
 
     if (!$studentid) {
