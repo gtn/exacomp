@@ -13082,7 +13082,7 @@ class block_exacomp_external extends external_api {
         if ($courseid > 0) {
             $courseIds = [$courseid];
         } else { // check all cources where I am a teacher
-            $courseIds = block_exacomp_get_courses_of_teacher($USER->id); // TODO: looks like this function is not working with courseid!
+            $courseIds = block_exacomp_get_courses_of_teacher($USER->id); // TODO: looks like this function is not working with userid!
         }
         foreach ($courseIds as $courseid) {
             $course = g::$DB->get_record('course', ['id' => $courseid]);
