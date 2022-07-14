@@ -5325,10 +5325,18 @@ class block_exacomp_external extends external_api {
                 } else {
                     $shared_for_all = true;
                     $cross_sub_students = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_CROSSSTUD, 'studentid', 'crosssubjid=?', array($cross_subject->id));
-                    $students = block_exacomp_get_students_by_course($courseid);
+                    if ($courseid > 0) {
+                        $students = block_exacomp_get_students_by_course($courseid);
+                    } else {
+                        // use courseid from crosssubject
+                        if ($cross_subject->courseid) { // TODO: if cross_subject has not courseid - is this shared for all?
+                            $students = block_exacomp_get_students_by_course($cross_subject->courseid);
+                        }
+                    }
                     foreach ($students as $student) {
                         if (!in_array($student->id, $cross_sub_students)) {
                             $shared_for_all = false;
+                            break;
                         }
                     }
 
@@ -13070,12 +13078,20 @@ class block_exacomp_external extends external_api {
     }
 
     static function require_can_access_course($courseid) {
-        $course = g::$DB->get_record('course', ['id' => $courseid]);
-        if (!$course) {
-            throw new invalid_parameter_exception ('Course not found');
+        global $USER;
+        if ($courseid > 0) {
+            $courseIds = [$courseid];
+        } else { // check all cources where I am a teacher
+            $courseIds = block_exacomp_get_courses_of_teacher($USER->id); // TODO: looks like this function is not working with courseid!
         }
-        if (!can_access_course($course)) {
-            throw new invalid_parameter_exception ('Not allowed to access this course');
+        foreach ($courseIds as $courseid) {
+            $course = g::$DB->get_record('course', ['id' => $courseid]);
+            if (!$course) {
+                throw new invalid_parameter_exception ('Course not found');
+            }
+            if (!can_access_course($course)) {
+                throw new invalid_parameter_exception ('Not allowed to access this course');
+            }
         }
     }
 
