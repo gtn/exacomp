@@ -5281,6 +5281,7 @@ class block_exacomp_external extends external_api {
             'courseid' => new external_value (PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'allcrosssubjects' => new external_value(PARAM_BOOL, 'for all allcross subjects = true (no course selected)'),
         ));
     }
 
@@ -5290,44 +5291,60 @@ class block_exacomp_external extends external_api {
      *
      * @ws-type-read
      * @param int courseid
-     *            int userid
-     * @return array list of descriptors
+     * @param int userid
+     * @param int $allcrosssubjects
+     * @return array list of crosssubjects
      */
-    public static function dakora_get_cross_subjects_by_course($courseid, $userid, $forall) {
+    public static function dakora_get_cross_subjects_by_course($courseid, $userid, $forall, $allcrosssubjects) {
         global $USER, $DB;
 
         static::validate_parameters(static::dakora_get_cross_subjects_by_course_parameters(), array(
             'courseid' => $courseid,
             'userid' => $userid,
             'forall' => $forall,
+            'allcrosssubjects' => $allcrosssubjects,
         ));
 
         if ($userid == 0 && !$forall) {
             $userid = $USER->id;
         }
 
+        //		$cross_subjects_all = block_exacomp_get_cross_subjects_by_course($courseid);
+        if ($allcrosssubjects) {
+            $cross_subjects = block_exacomp_get_crossubjects_by_teacher($USER->id);
+        } else {
+            $cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
+        }
+
         if ($forall) {
-            static::require_can_access_course($courseid);
+            static::require_can_access_course($courseid, $allcrosssubjects);
+        } elseif ($allcrosssubjects) {
+            foreach ($cross_subjects as $cross_subject) {
+                static::require_can_access_course_user($cross_subject->courseid, $userid);
+            }
         } else {
             static::require_can_access_course_user($courseid, $userid);
         }
 
-        //		$cross_subjects_all = block_exacomp_get_cross_subjects_by_course($courseid);
-        $cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
         $cross_subjects_visible = $cross_subjects;
+        $all_cross_subjects = $cross_subjects;
 
         //if for all return only common cross subjects
         if ($forall) {
             $cross_subjects_visible = array();
+            $students = [];
+            if ($courseid > 0) {
+                // get students for selected course. If we have $allcrossubjects - list of students will be changed to list of crossubject course in foreach
+                $students = block_exacomp_get_students_by_course($courseid);
+            }
             foreach ($cross_subjects as $cross_subject) {
                 if ($cross_subject->shared == 1) {
                     $cross_subjects_visible[$cross_subject->id] = $cross_subject;
                 } else {
                     $shared_for_all = true;
                     $cross_sub_students = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_CROSSSTUD, 'studentid', 'crosssubjid=?', array($cross_subject->id));
-                    if ($courseid > 0) {
-                        $students = block_exacomp_get_students_by_course($courseid);
-                    } else {
+                    if ($allcrosssubjects) {
+                        $students = [];
                         // use courseid from crosssubject
                         if ($cross_subject->courseid) { // TODO: if cross_subject has not courseid - is this shared for all?
                             $students = block_exacomp_get_students_by_course($cross_subject->courseid);
@@ -5347,7 +5364,7 @@ class block_exacomp_external extends external_api {
             }
         }
 
-        $all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
+//        $all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
         foreach ($all_cross_subjects as $cross_subject) {
             $cross_subject->visible = 0;
             if (array_key_exists($cross_subject->id, $cross_subjects_visible)) {
@@ -5360,9 +5377,9 @@ class block_exacomp_external extends external_api {
                 $cross_subject->hasmaterial = false;
             }
 
-            $example_non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+            $example_non_visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($cross_subject->courseid, 0));
             if (!$forall) {
-                $example_non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+                $example_non_visibilities_student = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($cross_subject->courseid, $userid));
             }
 
             $examples_return = array();
@@ -5370,7 +5387,7 @@ class block_exacomp_external extends external_api {
                 $example_return = new stdClass();
                 $example_return->exampleid = $example->id;
                 $example_return->exampletitle = static::custom_htmltrim($example->title);
-                $example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
+                $example_return->examplestate = ($forall) ? 0 : block_exacomp_get_dakora_state_for_example($cross_subject->courseid, $example->id, $userid);
 
                 if ($forall) {
                     $example_return->teacherevaluation = -1;
@@ -5380,16 +5397,16 @@ class block_exacomp_external extends external_api {
                     $example_return->timestampstudent = 0;
                     $example_return->solution_visible = 0;
                 } else {
-                    $evaluation = (object) static::_get_example_information($courseid, $userid, $example->id);
+                    $evaluation = (object) static::_get_example_information($cross_subject->courseid, $userid, $example->id);
                     $example_return->teacherevaluation = $evaluation->teachervalue;
                     $example_return->studentevaluation = $evaluation->studentvalue;
                     $example_return->evalniveauid = $evaluation->evalniveauid;
                     $example_return->timestampteacher = $evaluation->timestampteacher;
                     $example_return->timestampstudent = $evaluation->timestampstudent;
-                    $example_return->solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+                    $example_return->solution_visible = block_exacomp_is_example_solution_visible($cross_subject->courseid, $example, $userid);
                 }
                 $example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student)) || $forall)) ? 1 : 0;
-                $example_return->used = (block_exacomp_example_used($courseid, $example, $userid)) ? 1 : 0;
+                $example_return->used = (block_exacomp_example_used($cross_subject->courseid, $example, $userid)) ? 1 : 0;
                 if (!array_key_exists($example->id, $examples_return)) {
                     $examples_return[$example->id] = $example_return;
                 }
@@ -5400,7 +5417,7 @@ class block_exacomp_external extends external_api {
 
         if (!$forall && $userid) {
             foreach ($all_cross_subjects as $cross_subject) {
-                static::add_comp_eval($cross_subject, $courseid, $userid);
+                static::add_comp_eval($cross_subject, $cross_subject->courseid, $userid);
             }
         } else {
             foreach ($all_cross_subjects as $cross_subject) {
@@ -13077,12 +13094,14 @@ class block_exacomp_external extends external_api {
         return $require_actions;
     }
 
-    static function require_can_access_course($courseid) {
+    static function require_can_access_course($courseid, $allcrosssubjects = 0) {
         global $USER;
         if ($courseid > 0) {
             $courseIds = [$courseid];
-        } else { // check all cources where I am a teacher
+        } elseif ($allcrosssubjects) { // check all cources where I am a teacher
             $courseIds = block_exacomp_get_courses_of_teacher($USER->id); // TODO: looks like this function is not working with userid!
+        } else {
+            $courseIds = [-1111]; // wrong crosssubject id, for secure
         }
         foreach ($courseIds as $courseid) {
             $course = g::$DB->get_record('course', ['id' => $courseid]);

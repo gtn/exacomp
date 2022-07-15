@@ -6301,6 +6301,27 @@ function block_exacomp_get_cross_subjects_by_course($courseid, $studentid = null
 }
 
 /**
+ * @param null $userid
+ * @return block_exacomp\cross_subject[]
+ */
+function block_exacomp_get_crossubjects_by_teacher($userid = null) {
+    global $USER;
+    if (!$userid) {
+        $userid = $USER->id;
+    }
+    $allCrosssubs = block_exacomp\cross_subject::get_objects(null, 'title'); // get crossubjects from all courses
+    // filter by 'user is a teacher'
+    $crosssubs = [];
+    foreach ($allCrosssubs as $crosssub) {
+        if (block_exacomp_is_teacher($crosssub->courseid, $userid)) {
+            $crosssubs[] = $crosssub;
+        }
+    }
+
+    return $crosssubs;
+}
+
+/**
  * check crosssubject student association
  *
  * @param unknown $crosssubjid
