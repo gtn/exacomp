@@ -6313,8 +6313,10 @@ function block_exacomp_get_crossubjects_by_teacher($userid = null) {
     // filter by 'user is a teacher'
     $crosssubs = [];
     foreach ($allCrosssubs as $crosssub) {
-        if (block_exacomp_is_teacher($crosssub->courseid, $userid)) {
-            $crosssubs[] = $crosssub;
+        if ($crosssub->courseid > 0) {
+            if (block_exacomp_is_teacher($crosssub->courseid, $userid)) {
+                $crosssubs[] = $crosssub;
+            }
         }
     }
 
