@@ -177,6 +177,10 @@ $settings->add(new admin_setting_configselect('exacomp/addblock_to_new_course',
 $settings->add(new admin_setting_configcheckbox('exacomp/assign_activities_old_method',
     block_exacomp_get_string('block_exacomp_assign_activities_old_method_head'),
     block_exacomp_get_string('block_exacomp_assign_activities_old_method_body'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/disable_create_grid',
+    block_exacomp_get_string('block_exacomp_disable_create_grid_head'),
+    block_exacomp_get_string('block_exacomp_disable_create_grid_body'), 0));
+
 
 // Apps-Einstellungen (configuration for apps).
 $settings->add(new admin_setting_heading('exacomp/heading_apps',

@@ -389,10 +389,12 @@ class block_exacomp extends block_list {
 
             if ($isTeacher) {
                 if (!$ready_for_use) {
-                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" class="icon" alt="" />';
-                    $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_settings_new_subject') . '" ' .
-                        ' href="' . $CFG->wwwroot . '/blocks/exacomp/subject.php?courseid=' . $courseid . '&embedded=false' . '">' .
-                        $icon . block_exacomp_get_string('tab_teacher_settings_new_subject') . '</a>';
+                    if (!block_exacomp_is_disabled_create_grid()) {
+                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" class="icon" alt="" />';
+                        $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_settings_new_subject') . '" ' .
+                            ' href="' . $CFG->wwwroot . '/blocks/exacomp/subject.php?courseid=' . $courseid . '&embedded=false' . '">' .
+                            $icon . block_exacomp_get_string('tab_teacher_settings_new_subject') . '</a>';
+                    }
                 }
             }
             if ($isTeacher && !has_capability('block/exacomp:admin', $globalcontext)) {

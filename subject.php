@@ -43,6 +43,15 @@ if ($embedded) {
     $PAGE->set_pagelayout('embedded');
 }
 
+// hacker?
+//echo "<pre>debug:<strong>subject.php:47</strong>\r\n"; print_r($item); echo '</pre>'; exit; // !!!!!!!!!! delete it
+if (block_exacomp_is_disabled_create_grid() && $item === null) {
+    echo $output->header($context, $courseid, '', false);
+    echo '<div class="alert alert-danger">Why are you here?</div>';
+    echo $output->footer();
+    exit;
+}
+
 // build tab navigation & print header
 
 /* CONTENT REGION */

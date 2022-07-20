@@ -14541,3 +14541,6 @@ function block_exacomp_fill_comp_tree($question, $comptree) {
     return $dom->saveHTML();
 }
 
+function block_exacomp_is_disabled_create_grid() {
+    return get_config('exacomp', 'disable_create_grid');
+}

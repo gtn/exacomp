@@ -671,6 +671,8 @@ $string['block_exacomp_notifications_head'] = 'Benachrichtigungen aktivieren';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 $string['block_exacomp_assign_activities_old_method_head'] = 'Tab Moodle-Aktivitäten zuordnen alt anzeigen';
 $string['block_exacomp_assign_activities_old_method_body'] = 'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.';
+$string['block_exacomp_disable_create_grid_head'] = '"Neues Kompetenzraster anlegen" deaktivieren';
+$string['block_exacomp_disable_create_grid_body'] = 'The users will not be able to create new grids';
 $string['distribute_weekly_schedule'] = 'Wochenplan verteilen';
 
 // === Logging ===
@@ -927,4 +929,4 @@ $string['questlink'] = 'Fragen verknüpfen';
 $string['select_subjects'] = 'Raster auswählen';
 $string['overview_examples_report_title'] = 'Aufgabenübersicht zum Kompetenzerwerb';
 $string['block_exacomp_link_to_dakora_app'] = 'zur Dakora-App';
-$string['diggrapp_cannotcreatetoken'] = 'Rechteverletzung, keine Anmeldung mit dieser Rolle möglich. Bestimmte Gruppen, zb Administratoren können sich aus sicherheitsgründen nicht an die App anmelden.';
+$string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';

@@ -2449,6 +2449,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Diese Funktionalität wird über den neuen Tab "Moodle-Aktivitäten verknüpfen" abgedeckt.',
         'This Tab was default replaced with Tab "Relate Moodle activities"',
     ],
+    'block_exacomp_disable_create_grid_head' => [
+        '"Neues Kompetenzraster anlegen" deaktivieren',
+        'Disable grid creating',
+    ],
+    'block_exacomp_disable_create_grid_body' => [
+        'The users will not be able to create new grids',
+        'The users will not be able to create new grids',
+    ],
     'distribute_weekly_schedule' => [
         'Wochenplan verteilen',
         'Distribute weekly schedule',
