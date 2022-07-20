@@ -994,7 +994,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $table->attributes['exa-rg2-storageid'] .= '-topic-' . $topic->id;
             }
         }
-
         if ($this->exaportExists) {
             $eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
         } else {
@@ -2424,7 +2423,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     // 				    echo "<br>";
                     // 				    echo "<br>";
                     // 				    echo "<br>";
-
                     $this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, false, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport, $hideAllActionButtons);
                     $this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, true, true, $crosssubjid, $parent_visible, $isEditingTeacher, $forReport, $hideAllActionButtons);
                 }
@@ -2466,10 +2464,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
         global $USER, $COURSE, $DB;
 
         $evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
-
         $showstudents = block_exacomp_get_studentid();
         foreach ($descriptors as $descriptor) {
             $descriptor_parent_visible = $parent_visible;
+
+            // if plugin setting 'show_teacherdescriptors_global' is disabled - hide descriptors from other creators
+            if (!get_config('exacomp', 'show_teacherdescriptors_global') && isset($descriptor->descriptor_creatorid) && $descriptor->descriptor_creatorid != $USER->id) {
+                continue;
+            }
 
             if (!$editmode) {
                 if ($custom_created_descriptors) {

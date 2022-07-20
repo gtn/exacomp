@@ -180,6 +180,9 @@ $settings->add(new admin_setting_configcheckbox('exacomp/assign_activities_old_m
 $settings->add(new admin_setting_configcheckbox('exacomp/disable_create_grid',
     block_exacomp_get_string('block_exacomp_disable_create_grid_head'),
     block_exacomp_get_string('block_exacomp_disable_create_grid_body'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/show_teacherdescriptors_global',
+    block_exacomp_get_string('settings_show_teacherdescriptors_global'),
+    block_exacomp_get_string('settings_show_teacherdescriptors_global_description'), 1));
 
 
 // Apps-Einstellungen (configuration for apps).
