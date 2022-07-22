@@ -3450,6 +3450,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'diggrapp_cannotcreatetoken' => [
         'Can not have access to this moodle installation',
         'Can not have access to this moodle installation'
+    ],
+    'grid_creating_is_disabled' => [
+        'Die Neuanlage von Rastern ist deaktiviert!',
+        'Grid creation is disabled!'
     ]
 
 ];

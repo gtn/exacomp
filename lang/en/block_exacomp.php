@@ -922,3 +922,4 @@ $string['select_subjects'] = 'Select Subjects';
 $string['overview_examples_report_title'] = 'Overview of the examples';
 $string['block_exacomp_link_to_dakora_app'] = 'to Dakora-App';
 $string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';
+$string['grid_creating_is_disabled'] = 'Grid creation is disabled!';

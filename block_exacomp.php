@@ -368,10 +368,12 @@ class block_exacomp extends block_list {
                     $icon . block_exacomp_get_string('tab_teacher_settings') . '</a>';
 
                 if (!$ready_for_use) {
-                    $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" class="icon" alt="" />';
-                    $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_settings_new_subject') . '" ' .
-                        ' href="' . $CFG->wwwroot . '/blocks/exacomp/subject.php?courseid=' . $courseid . '&embedded=false' . '">' .
-                        $icon . block_exacomp_get_string('tab_teacher_settings_new_subject') . '</a>';
+                    if (!block_exacomp_is_disabled_create_grid()) {
+                        $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/basicextendedskills.svg' . '" class="icon" alt="" />';
+                        $this->content->items[] = '<a title="' . block_exacomp_get_string('tab_teacher_settings_new_subject') . '" ' .
+                            ' href="' . $CFG->wwwroot . '/blocks/exacomp/subject.php?courseid=' . $courseid . '&embedded=false' . '">' .
+                            $icon . block_exacomp_get_string('tab_teacher_settings_new_subject') . '</a>';
+                    }
                 }
                 if (get_config('exacomp', 'external_trainer_assign')) {
                     $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/externaltrainer.svg' . '" class="icon" alt="" />';

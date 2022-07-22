@@ -47,7 +47,7 @@ if ($embedded) {
 //echo "<pre>debug:<strong>subject.php:47</strong>\r\n"; print_r($item); echo '</pre>'; exit; // !!!!!!!!!! delete it
 if (block_exacomp_is_disabled_create_grid() && $item === null) {
     echo $output->header($context, $courseid, '', false);
-    echo '<div class="alert alert-danger">Why are you here?</div>';
+    echo '<div class="alert alert-danger">'.block_exacomp_get_string('grid_creating_is_disabled').'</div>';
     echo $output->footer();
     exit;
 }
