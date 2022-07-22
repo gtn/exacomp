@@ -87,7 +87,7 @@ class db_layer {
 
         $sql = "
 			SELECT DISTINCT d.id, d.title, d.source, d.sourceid, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
-				n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting, d.author, d.editor
+				n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting, d.author, d.editor, d.creatorid as descriptor_creatorid
 			FROM {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} desctopmm
 			JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON desctopmm.descrid=d.id AND d.parentid=0
 			-- left join, because courseid=0 has no descvisibility!
@@ -131,7 +131,7 @@ class db_layer {
         }
 
         $sql = 'SELECT d.id, d.title, d.niveauid, d.source, d.sourceid, ' . $parent->topicid . ' as topicid, d.profoundness, d.parentid, ' .
-            ($this->mindvisibility ? 'dvis.visible as visible, ' : '') . ' d.sorting, d.author, d.editor
+            ($this->mindvisibility ? 'dvis.visible as visible, ' : '') . ' d.sorting, d.author, d.editor, d.creatorid as descriptor_creatorid
 			FROM {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d '
             . ($this->mindvisibility ? 'JOIN {' . BLOCK_EXACOMP_DB_DESCVISIBILITY . '} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
                 . ($this->showonlyvisible ? 'AND dvis.visible=1 ' : '') : '');

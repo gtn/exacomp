@@ -2284,7 +2284,7 @@ function block_exacomp_get_categories_for_descriptor($descriptor) {
  * @return unknown
  */
 function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalldescriptors = false, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible = false) {
-    global $DB;
+    global $DB, $USER;
 
     // old:
     // $DB->record_exists(BLOCK_EXACOMP_DB_DESCRIPTORS, array("parentid" => $parent->id))
@@ -2304,7 +2304,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
     }
 
     $sql = 'SELECT d.id, d.title, d.niveauid, d.source, ' . $parent->topicid . ' as topicid, d.profoundness, d.parentid, ' .
-        ($mindvisibility ? 'dvis.visible as visible, ' : '') . ' d.sorting, d.author, d.editor
+        ($mindvisibility ? 'dvis.visible as visible, ' : '') . ' d.sorting, d.author, d.editor, d.creatorid as descriptor_creatorid
 			FROM {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d '
         . ($mindvisibility ? 'JOIN {' . BLOCK_EXACOMP_DB_DESCVISIBILITY . '} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
             . ($showonlyvisible ? 'AND dvis.visible=1 ' : '') : '');
@@ -2323,6 +2323,18 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
         $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid, $mindvisibility, $showonlyvisible);
         $descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, null /* unused */, $filteredtaxonomies, $showallexamples, $mindvisibility, $showonlyvisible);
         $descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
+    }
+
+    // filter descriptors if show_teacherdescriptors_global is disabled and creatorid is not the current user
+    if (!get_config('exacomp', 'show_teacherdescriptors_global')) {
+        $newDescriptors = [];
+        foreach ($descriptors as $descriptor) {
+            if (isset($descriptor->descriptor_creatorid) && $descriptor->descriptor_creatorid != $USER->id) {
+                continue;
+            }
+            $newDescriptors[] = $descriptor;
+        }
+        $descriptors = $newDescriptors;
     }
 
     return block_exacomp_sort_items($descriptors, BLOCK_EXACOMP_DB_DESCRIPTORS);
@@ -2596,7 +2608,7 @@ function block_exacomp_get_descriptors_by_niveau($courseid, $niveauid, $topicid 
 function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES),
     $calledfromoverview = false,
     $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true, $filteredDescriptors = null, $editmode = false) {
-    global $DB;
+    global $DB, $USER;
 
     if (!$showalldescriptors) {
         $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
@@ -2656,6 +2668,11 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
     foreach ($allDescriptors as $descriptor) {
         // get descriptor topic
         if (empty($allTopics[$descriptor->topicid])) {
+            continue;
+        }
+
+        // if this descriptor is from other teacher and 'show_teacherdescriptors_global' is not enabled
+        if (!get_config('exacomp', 'show_teacherdescriptors_global') && isset($descriptor->descriptor_creatorid) && $descriptor->descriptor_creatorid != $USER->id) {
             continue;
         }
 

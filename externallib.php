@@ -12475,7 +12475,7 @@ class block_exacomp_external extends external_api {
     }
 
     private static function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated, $editmode = false, $showonlyvisible = true) {
-        global $DB;
+        global $DB, $USER;
 
         if ($forall) {
             static::require_can_access_course($courseid);
@@ -12496,6 +12496,10 @@ class block_exacomp_external extends external_api {
             foreach ($subject->topics as $topic) {
                 if ($topic->id == $topicid) {
                     foreach ($topic->descriptors as $descriptor) {
+                        // ignore this descriptor if show_teacherdescriptors_global is disabled and creatorid is not the current user
+                        if (!get_config('exacomp', 'show_teacherdescriptors_global') && isset($descriptor->descriptor_creatorid) && $descriptor->descriptor_creatorid != $USER->id) {
+                            continue;
+                        }  
                         if (!$only_associated || ($only_associated && $descriptor->associated == 1)) {
                             $descriptor_return = new stdClass();
                             $descriptor_return->descriptorid = $descriptor->id;
