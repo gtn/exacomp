@@ -2523,6 +2523,14 @@ Params: <table>
 <td></td>
 <td>for all users = true, for one user = false</td>
 <td></td>
+<tr>
+<td>allcrosssubjects</td>
+<td>bool</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td>for all allcross subjects = true (no course selected)</td>
+<td></td>
 </table>
 Returns:<pre>[
     {
@@ -6539,7 +6547,8 @@ Returns:<pre>{
     "exacompversion": "float null ('exacomp version number in YYYYMMDDXX format')",
     "moodleversion": "float null ('moodle version number in YYYYMMDDXX format')",
     "msteams_import_enabled": "bool null",
-    "msteams_azure_app_client_id": "text null"
+    "msteams_azure_app_client_id": "text null",
+    "enrolcode_enabled": "bool null"
 }</pre>
 <h2>diggrplus_annotate_example</h2>
 <div>Create an example or update it
@@ -6572,6 +6581,56 @@ Params: <table>
 <td>default: string(0) ""
 </td>
 <td>title of example</td>
+<td></td>
+</table>
+Returns:<pre>{
+    "success": "bool null ('status')"
+}</pre>
+<h2>diggrplus_get_student_enrolcode</h2>
+<div>get active code for student enrollment</div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "code": "text null",
+    "valid_until": "text null"
+}</pre>
+<h2>diggrplus_create_student_enrolcode</h2>
+<div>Create new enrolcode and delete old ones</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "code": "text null",
+    "valid_until": "text null"
+}</pre>
+<h2>diggrplus_enrol_by_enrolcode</h2>
+<div>Use a QR-Code to enrol</div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>code</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
 <td></td>
 </table>
 Returns:<pre>{

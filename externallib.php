@@ -14058,7 +14058,7 @@ class block_exacomp_external extends external_api {
         static::validate_parameters(static::diggrplus_get_config_parameters(), array());
 
         $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
-
+        $info_block_enrolcode = core_plugin_manager::instance()->get_plugin_info('block_enrolcode');
         $msteams_client_id = get_config("exacomp", 'msteams_client_id');
 
         return array(
@@ -14066,6 +14066,7 @@ class block_exacomp_external extends external_api {
             'moodleversion' => $CFG->version,
             'msteams_import_enabled' => !!trim($msteams_client_id),
             'msteams_azure_app_client_id' => $msteams_client_id,
+            'enrolcode_enabled' => !!$info_block_enrolcode,
         );
     }
 
@@ -14080,6 +14081,7 @@ class block_exacomp_external extends external_api {
             'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
             'msteams_import_enabled' => new external_value (PARAM_BOOL, ''),
             'msteams_azure_app_client_id' => new external_value (PARAM_TEXT, ''),
+            'enrolcode_enabled' => new external_value (PARAM_BOOL, ''),
         ));
     }
 
@@ -14143,6 +14145,147 @@ class block_exacomp_external extends external_api {
      * @return external_multiple_structure
      */
     public static function diggrplus_annotate_example_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_get_student_enrolcode_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, '', VALUE_REQUIRED),
+        ));
+    }
+
+    /**
+     * get active code for student enrollment
+     *
+     * @ws-type-read
+     *
+     * @return array
+     */
+    public static function diggrplus_get_student_enrolcode($courseid) {
+        static::validate_parameters(static::diggrplus_get_student_enrolcode_parameters(), array(
+            'courseid' => $courseid,
+        ));
+        global $DB;
+
+        block_exacomp_require_teacher($courseid);
+
+        $oldcodes = $DB->get_records_sql("SELECT * FROM {block_enrolcode} WHERE courseid=? AND roleid=? ORDER BY maturity DESC", array($courseid, block_exacomp_get_student_roleid()));
+        $lastCode = current($oldcodes);
+
+        return array("code" => @$lastCode->code, 'valid_until' => @$lastCode->maturity);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_student_enrolcode_returns() {
+        return new external_single_structure (array(
+            'code' => new external_value (PARAM_TEXT, ''),
+            'valid_until' => new external_value (PARAM_TEXT, ''),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_create_student_enrolcode_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value (PARAM_INT, '', VALUE_REQUIRED),
+        ));
+    }
+
+    /**
+     * Create new enrolcode and delete old ones
+     *
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_create_student_enrolcode($courseid) {
+        static::validate_parameters(static::diggrplus_create_student_enrolcode_parameters(), array(
+            'courseid' => $courseid,
+        ));
+
+        global $DB, $CFG;
+
+        block_exacomp_require_teacher($courseid);
+
+        $roleid = block_exacomp_get_student_roleid();
+        $maturity = time()+60*60*24*7;
+
+        // delete old codes
+        $DB->delete_records('block_enrolcode', array('roleid' => $roleid, 'courseid' => $courseid));
+
+        // create new code
+        require_once $CFG->dirroot.'/blocks/enrolcode/locallib.php';
+        $code = block_enrolcode_lib::create_code($courseid, $roleid, 0, 1, $maturity, 0, 0);
+
+        return array("code" => $code, 'valid_until' => $maturity);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_create_student_enrolcode_returns() {
+        return new external_single_structure (array(
+            'code' => new external_value (PARAM_TEXT, ''),
+            'valid_until' => new external_value (PARAM_TEXT, ''),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function diggrplus_enrol_by_enrolcode_parameters() {
+        return new external_function_parameters (array(
+            'code' => new external_value (PARAM_TEXT, '', VALUE_REQUIRED),
+        ));
+    }
+
+    /**
+     * Use a QR-Code to enrol
+     *
+     * @ws-type-write
+     *
+     * @return array
+     */
+    public static function diggrplus_enrol_by_enrolcode($code) {
+        static::validate_parameters(static::diggrplus_enrol_by_enrolcode_parameters(), array(
+            'code' => $code,
+        ));
+        global $CFG;
+
+        require_once $CFG->dirroot.'/blocks/enrolcode/locallib.php';
+        $courseid = block_enrolcode_lib::enrol_by_code($code);
+
+        if (!$courseid) {
+            return ['success' => false];
+        }
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_enrol_by_enrolcode_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));

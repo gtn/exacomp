@@ -14561,3 +14561,12 @@ function block_exacomp_fill_comp_tree($question, $comptree) {
 function block_exacomp_is_disabled_create_grid() {
     return get_config('exacomp', 'disable_create_grid');
 }
+
+function block_exacomp_get_student_roleid() {
+    // TODO: change it to possibly read the roles of a course?
+    // $context = \context_course::instance($courseid);
+    // $roles = get_all_roles($context);
+    // var_dump($roles);
+
+    return 5;
+}
