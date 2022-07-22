@@ -4033,7 +4033,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
     }
 
-    if ($oldversion < 2022050302) {
+    if ($oldversion < 2022072300) {
         $table = new xmldb_table('block_exacompdescrquest_mm');
         $fieldold = new xmldb_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
         $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
@@ -4045,11 +4045,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field2)) {
             $dbman->add_field($table, $field2);
         }
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2022050302, 'exacomp');
-    }
 
-    if ($oldversion < 2022050302) {
         $table = new xmldb_table('block_exacompschedule');
         $fieldold = new xmldb_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
         $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, -1);
@@ -4062,7 +4058,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             $dbman->add_field($table, $field2);
         }
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2022050302, 'exacomp');
+        upgrade_block_savepoint(true, 2022072300, 'exacomp');
     }
 
     /*
