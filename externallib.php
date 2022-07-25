@@ -12499,7 +12499,7 @@ class block_exacomp_external extends external_api {
                         // ignore this descriptor if show_teacherdescriptors_global is disabled and creatorid is not the current user
                         if (!get_config('exacomp', 'show_teacherdescriptors_global') && isset($descriptor->descriptor_creatorid) && $descriptor->descriptor_creatorid != $USER->id) {
                             continue;
-                        }  
+                        }
                         if (!$only_associated || ($only_associated && $descriptor->associated == 1)) {
                             $descriptor_return = new stdClass();
                             $descriptor_return->descriptorid = $descriptor->id;
@@ -14190,7 +14190,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_student_enrolcode_returns() {
         return new external_single_structure (array(
             'code' => new external_value (PARAM_TEXT, ''),
-            'valid_until' => new external_value (PARAM_TEXT, ''),
+            'valid_until' => new external_value (PARAM_INT, ''),
         ));
     }
 
@@ -14242,7 +14242,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_create_student_enrolcode_returns() {
         return new external_single_structure (array(
             'code' => new external_value (PARAM_TEXT, ''),
-            'valid_until' => new external_value (PARAM_TEXT, ''),
+            'valid_until' => new external_value (PARAM_INT, ''),
         ));
     }
 
