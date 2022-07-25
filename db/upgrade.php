@@ -4040,7 +4040,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $field2 = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
 
         if ($dbman->field_exists($table, $fieldold) && !$dbman->field_exists($table, $field)) {
-            $dbman->rename_field($table, $fieldold, $field);
+            $dbman->rename_field($table, $fieldold, 'courseid');
         }
         if (!$dbman->field_exists($table, $field2)) {
             $dbman->add_field($table, $field2);
