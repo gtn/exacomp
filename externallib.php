@@ -1113,6 +1113,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'courseid' => new external_value (PARAM_INT, 'id of course. This is used for teachers.', VALUE_DEFAULT, -1),
+            'showonlywithexamples' => new external_value (PARAM_BOOL, 'id of course. This is used for teachers.', VALUE_DEFAULT, true),
         ));
     }
 
@@ -1123,12 +1124,13 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of user courses
      */
-    public static function diggrplus_get_subjects_and_topics_for_user($userid, $courseid) {
+    public static function diggrplus_get_subjects_and_topics_for_user($userid, $courseid, $showonlywithexamples) {
         global $CFG, $USER, $DB;
 
         static::validate_parameters(static::diggrplus_get_subjects_and_topics_for_user_parameters(), array(
             'userid' => $userid,
             'courseid' => $courseid,
+            'showonlywithexamples' => $showonlywithexamples,
         ));
 
         if (!$userid) {
@@ -1147,15 +1149,18 @@ class block_exacomp_external extends external_api {
             $courses = static::get_courses($userid); // this is better than enrol_get_users_courses($userid);, because it checks for existance of exabis Blocks as well as for visibility
         }
 
-        $topicIdsWithExamples = $DB->get_records_sql_menu("SELECT DISTINCT dt.topicid, dt.topicid AS tmp
+        if ($showonlywithexamples) {
+            $topicIdsWithExamples = $DB->get_records_sql_menu("SELECT DISTINCT dt.topicid, dt.topicid AS tmp
 			FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
 			JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON e.id=de.exampid
 			JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON dt.descrid=de.descrid
 			-- WHERE e.creatorid=X
 		", [
-            // TODO: auch auf user abfragen!
-            //$userid,
-        ]);
+                // TODO: auch auf user abfragen!
+                //$userid,
+            ]);
+        }
+
 
         foreach ($courses as $course) {
             $tree = block_exacomp_get_competence_tree($course["courseid"], null, null, false, null, true, null, false, false, true, true, true);
@@ -1169,8 +1174,10 @@ class block_exacomp_external extends external_api {
                 $elem_sub->coursefullname = $course['fullname'];
                 $elem_sub->topics = array();
                 foreach ($subject->topics as $topic) {
-                    if (!$topicIdsWithExamples[$topic->id]) {
-                        continue;
+                    if ($showonlywithexamples) {
+                        if (!$topicIdsWithExamples[$topic->id]) {
+                            continue;
+                        }
                     }
                     $elem_topic = new stdClass ();
                     $elem_topic->id = $topic->id;
