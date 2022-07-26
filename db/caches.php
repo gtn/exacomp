@@ -18,5 +18,12 @@ $definitions = array(
     'visibility_cache' => array(
         'mode' => cache_store::MODE_APPLICATION,
     ),
+    // not used anymore:
+    // 'course_topics_configured' => array(
+    //     'mode' => cache_store::MODE_APPLICATION,
+    //     'ttl' => 60*60*30,
+    //     'simpledata' => true,
+    //     'simplekeys' => true,
+    // ),
 );
 ?>

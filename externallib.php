@@ -95,12 +95,22 @@ class block_exacomp_external extends external_api {
                     $teachercanedit = false;
                 }
 
+                // $cache = \cache::make('block_exacomp', 'course_topics_configured');
+                //
+                // if ($val = $cache->get($mycourse->id)) {
+                //     $course_topics_configured = $val == 'set';
+                // } else {
+                $course_topics_configured = !!block_exacomp_get_topics_by_subject($mycourse->id, null, true);
+                //     $cache->set($mycourse->id, $course_topics_configured ? 'set' : 'notset');
+                // }
+
                 $course = array(
                     "courseid" => $mycourse->id,
                     "fullname" => $mycourse->fullname,
                     "shortname" => $mycourse->shortname,
                     "assessment_config" => $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $mycourse->id]),
                     "exarole" => $exarole,
+                    'course_topics_configured' => $course_topics_configured,
                     "teachercanedit" => $teachercanedit,
                 );
                 $courses[] = $course;
@@ -122,6 +132,7 @@ class block_exacomp_external extends external_api {
             'shortname' => new external_value (PARAM_RAW, 'shortname of course'),
             'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
             'teachercanedit' => new external_value (PARAM_BOOL),
+            'course_topics_configured' => new external_value (PARAM_BOOL, 'only available for teachers (used in diggr+)', PARAM_OPTIONAL),
             'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
         )));
     }
@@ -14035,6 +14046,10 @@ class block_exacomp_external extends external_api {
             }
         }
 
+        // invalidate cache
+        // $cache = \cache::make('block_exacomp', 'course_topics_configured');
+        // $cache->delete($courseid);
+
         return array("success" => true);
     }
 
@@ -14176,7 +14191,11 @@ class block_exacomp_external extends external_api {
 
         block_exacomp_require_teacher($courseid);
 
-        $oldcodes = $DB->get_records_sql("SELECT * FROM {block_enrolcode} WHERE courseid=? AND roleid=? ORDER BY maturity DESC", array($courseid, block_exacomp_get_student_roleid()));
+        // get latest code which is still valid
+        $oldcodes = $DB->get_records_sql(
+            "SELECT * FROM {block_enrolcode} WHERE courseid=? AND roleid=? AND maturity>=? ORDER BY maturity DESC",
+            array($courseid, block_exacomp_get_student_roleid(), time())
+        );
         $lastCode = current($oldcodes);
 
         return array("code" => @$lastCode->code, 'valid_until' => @$lastCode->maturity);
