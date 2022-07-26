@@ -5292,7 +5292,7 @@ class block_exacomp_external extends external_api {
             'courseid' => new external_value (PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
-            'allcrosssubjects' => new external_value(PARAM_BOOL, 'for all allcross subjects = true (no course selected)'),
+            'allcrosssubjects' => new external_value(PARAM_BOOL, 'for all allcross subjects = true (no course selected)', VALUE_DEFAULT, 0),
         ));
     }
 
