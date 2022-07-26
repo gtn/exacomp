@@ -215,7 +215,7 @@ if ($action == 'descriptor_selector') {
 
     $active_descriptors = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCROSS, ['crosssubjid' => $crosssubjid], null, 'id, descrid');
 
-    $print_tree = function($items, $level = 0) use (&$print_tree, $active_descriptors) {
+    $print_tree = function($items, $level = 0) use (&$print_tree, $active_descriptors, $USER) {
         if (!$items) {
             return '';
         }
@@ -226,6 +226,13 @@ if ($action == 'descriptor_selector') {
         }
 
         foreach ($items as $item) {
+            // only for descriptors: settings parameter 'show_teacherdescriptors_global'
+            if (in_array($level, [2, 3])) {
+                if (!get_config('exacomp', 'show_teacherdescriptors_global') && isset($item->descriptor_creatorid) && $item->descriptor_creatorid != $USER->id) {
+                    continue;
+                }
+            }
+
             $output .= '<tr class="' . ($item instanceof block_exacomp\descriptor ? '' : 'highlight') . ' rg2-level-' . $level . '">';
 
             if ($item instanceof block_exacomp\subject) {

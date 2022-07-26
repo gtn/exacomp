@@ -11344,6 +11344,7 @@ function block_exacomp_is_external_trainer($trainerid) {
  * @return array
  */
 function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
+    global $USER;
     $subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
     if (!trim($q)) {
@@ -11356,10 +11357,17 @@ function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
         unset($q);
     }
 
-    $find = function($object) use ($queryItems) {
+    $find = function($object) use ($queryItems, $USER) {
         if (!$queryItems) {
             // no filter, so got found!
             return true;
+        }
+
+        // settings parameter 'show_teacherdescriptors_global':
+        if ($object instanceof \block_exacomp\descriptor) {
+            if (!get_config('exacomp', 'show_teacherdescriptors_global') && isset($object->descriptor_creatorid) && $object->descriptor_creatorid != $USER->id) {
+                return false;
+            }
         }
 
         foreach ($queryItems as $q) {
@@ -11379,7 +11387,6 @@ function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
                 return false;
             }
         }
-
         return true;
     };
 
