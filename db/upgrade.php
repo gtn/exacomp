@@ -4061,6 +4061,26 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022072300, 'exacomp');
     }
 
+    if ($oldversion < 2022072700) {
+        $table = new xmldb_table('block_exacompexamples');
+        $field = new xmldb_field('externalurl', XMLDB_TYPE_TEXT);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }
+        $field = new xmldb_field('externalsolution', XMLDB_TYPE_TEXT);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }
+        $field = new xmldb_field('externaltask', XMLDB_TYPE_TEXT);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2022072700, 'exacomp');
+    }
+
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
