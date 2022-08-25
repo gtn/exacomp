@@ -3933,6 +3933,8 @@ class block_exacomp_external extends external_api {
                 'type' => new external_value (PARAM_TEXT, 'mime type for file'),
                 //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
             )), 'taskfiles of the example', VALUE_OPTIONAL),
+            'completefile' => new external_value (PARAM_TEXT, 'completefile (url/description) of example', VALUE_OPTIONAL),
+            'completefilefilename' => new external_value (PARAM_TEXT, 'completefile filename', VALUE_OPTIONAL),
         ));
     }
 
@@ -12059,6 +12061,14 @@ class block_exacomp_external extends external_api {
 
             // $example->description = strip_tags($example->description);
             // $example->description = static::custom_htmltrim($example->description);
+
+            // complete file
+            $completefile = block_exacomp_get_file($example, 'example_completefile');
+            if ($completefile) {
+                $exampleData->completefile = (string) static::get_webservice_url_for_file($completefile, $courseid)->out(false);
+                $exampleData->completefilefilename = $completefile->get_filename();
+            }
+
         }
 
         foreach ($exampleData as $key => $value) {
