@@ -14577,3 +14577,26 @@ function block_exacomp_get_student_roleid() {
 
     return 5;
 }
+
+/**
+ * @param $statusId
+ */
+function block_exacomp_get_human_readable_item_status($statusId) {
+    if ($statusId === null) {
+        return "new";
+    }
+
+    switch ($statusId) {
+        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
+            return "inprogress";
+            break;
+        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
+            return "submitted";
+            break;
+        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
+            return "completed";
+            break;
+        default:
+            return "errornostate";
+    }
+}

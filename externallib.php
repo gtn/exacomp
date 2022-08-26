@@ -7108,19 +7108,7 @@ class block_exacomp_external extends external_api {
                 if ($status == "new") { // if filtered by "new" then only examples without items should be shown
                     unset($examplesAndItems[$key]);
                 } else {
-                    switch ($exampleItem->item->status) {
-                        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
-                            $exampleItem->status = "inprogress";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
-                            $exampleItem->status = "submitted";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
-                            $exampleItem->status = "completed";
-                            break;
-                        default:
-                            $exampleItem->status = "errornostate";
-                    }
+                    $exampleItem->status = block_exacomp_get_human_readable_item_status($exampleItem->item->status);
                 }
             } else { //no item but the object exists ==> there must be an example, no condition needed
                 $exampleItem->status = "new";
@@ -7384,19 +7372,7 @@ class block_exacomp_external extends external_api {
                 if ($status == "new") { // if filtered by "new" then only examples without items should be shown
                     unset($examplesAndItems[$key]);
                 } else {
-                    switch ($exampleItem->item->status) {
-                        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
-                            $exampleItem->status = "inprogress";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
-                            $exampleItem->status = "submitted";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
-                            $exampleItem->status = "completed";
-                            break;
-                        default:
-                            $exampleItem->status = "errornostate";
-                    }
+                    $exampleItem->status = block_exacomp_get_human_readable_item_status($exampleItem->item->status);
                 }
             } else { //no item but the object exists ==> there must be an example, no condition needed
                 $exampleItem->status = "new";
@@ -7538,7 +7514,15 @@ class block_exacomp_external extends external_api {
 
         $tree = block_exacomp_get_competence_tree($courseid, $subjectid, null, true, null, true, null, false, false, false, false, false);
 
+        $getExampleStatus = function($example) use ($userid) {
+            if (!$userid) {
+                // only available when selecting one student
+                return '';
+            }
 
+            $item = block_exacomp_get_current_item_for_example($userid, $example->id);
+            return block_exacomp_get_human_readable_item_status($item ? $item->status : null);
+        };
 
         foreach ($tree as $subject) {
             $elem_sub = new stdClass ();
@@ -7578,6 +7562,7 @@ class block_exacomp_external extends external_api {
                             $elem_example->title = $example->title;
                             $elem_example->creatorid = $example->creatorid;
                             $elem_example->visible = $example->visible;
+                            $elem_example->status = $getExampleStatus($example);
                             //                            $elem_example->used = $example->used;
                             $elem_child->examples[] = $elem_example;
                         }
@@ -7590,6 +7575,7 @@ class block_exacomp_external extends external_api {
                         $elem_example->title = $example->title;
                         $elem_example->creatorid = $example->creatorid;
                         $elem_example->visible = $example->visible;
+                        $elem_example->status = $getExampleStatus($example);
                         //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
                     }
@@ -7643,6 +7629,7 @@ class block_exacomp_external extends external_api {
                             'title' => new external_value (PARAM_TEXT, 'title of example'),
                             'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                             'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
+                            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
                         ))),
                     ))),
                     'examples' => new external_multiple_structure (new external_single_structure (array(
@@ -7650,6 +7637,7 @@ class block_exacomp_external extends external_api {
                         'title' => new external_value (PARAM_TEXT, 'title of example'),
                         'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                         'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
+                        'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
                     ))),
                 ))),
             ))),

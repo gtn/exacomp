@@ -1981,7 +1981,9 @@ Returns:<pre>{
             "type": "text null ('mime type for file')"
         },
         "... taskfiles of the example ..."
-    ]
+    ],
+    "completefile": "text null ('completefile (url\/description) of example')",
+    "completefilefilename": "text null ('completefile filename')"
 }</pre>
 <h2>dakora_add_example_to_learning_calendar</h2>
 <div>add example to learning calendar for dakora
@@ -3745,7 +3747,8 @@ Returns:<pre>[
                                         "id": "int null ('id of example')",
                                         "title": "text null ('title of example')",
                                         "creatorid": "int null ('creator of this example')",
-                                        "visible": "bool null ('visibility of example in current context ')"
+                                        "visible": "bool null ('visibility of example in current context ')",
+                                        "status": "text null ('new, inprogress, submitted, completed')"
                                     },
                                     "..."
                                 ]
@@ -3757,7 +3760,8 @@ Returns:<pre>[
                                 "id": "int null ('id of example')",
                                 "title": "text null ('title of example')",
                                 "creatorid": "int null ('creator of this example')",
-                                "visible": "bool null ('visibility of example in current context ')"
+                                "visible": "bool null ('visibility of example in current context ')",
+                                "status": "text null ('new, inprogress, submitted, completed')"
                             },
                             "..."
                         ]
