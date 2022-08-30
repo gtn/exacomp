@@ -218,7 +218,9 @@ class block_exacomp_example_upload_form extends moodleform {
         $out = ob_get_contents();
         ob_end_clean();
         $doc = new DOMDocument();
-        @$doc->loadHTML(utf8_decode($out), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+//        $out = utf8_decode($out); // needed for umlauts, but problems with cyrillic
+//        @$doc->loadHTML($out, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        @$doc->loadHTML(mb_convert_encoding($out, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
         $newInput = $doc->createDocumentFragment();
         $newInput->appendXML('<br /><span>' . block_exacomp_get_string('example_add_taxonomy') . '</span> <input class="form-control" name="newtaxonomy" value="" size="10" />');
@@ -229,5 +231,6 @@ class block_exacomp_example_upload_form extends moodleform {
         $output = $doc->saveHTML($doc->documentElement);
         print $output;
     }
+
 
 }
