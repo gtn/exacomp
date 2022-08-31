@@ -56,7 +56,10 @@ class provider implements
             'timestamp' => 'privacy:metadata:block_exacompcompuser:timestamp',
             'additionalinfo' => 'privacy:metadata:block_exacompcompuser:additionalinfo',
             'evalniveauid' => 'privacy:metadata:block_exacompcompuser:evalniveauid',
-            'gradingisold ' => 'privacy:metadata:block_exacompcompuser:gradingisold',
+            'gradingisold' => 'privacy:metadata:block_exacompcompuser:gradingisold',
+            'globalgradings' => 'privacy:metadata:block_exacompcompuser:globalgradings',
+            'gradinghistory' => 'privacy:metadata:block_exacompcompuser:gradinghistory',
+            'personalisedtext' => 'privacy:metadata:block_exacompcompuser:personalisedtext',
         ], 'privacy:metadata:block_exacompcompuser');
 
         // block_exacompexameval
@@ -71,6 +74,7 @@ class provider implements
             'student_evaluation' => 'privacy:metadata:block_exacompexameval:student_evaluation',
             'timestamp_student' => 'privacy:metadata:block_exacompexameval:timestamp_student',
             'evalniveauid' => 'privacy:metadata:block_exacompexameval:evalniveauid',
+            'resubmission' => 'privacy:metadata:block_exacompexameval:resubmission',
         ], 'privacy:metadata:block_exacompexameval');
 
         // block_exacompcmassign
@@ -117,6 +121,8 @@ class provider implements
         $collection->add_database_table('block_exacompprofilesettings', [
             'itemid' => 'privacy:metadata:block_exacompprofilesettings:itemid',
             'userid' => 'privacy:metadata:block_exacompprofilesettings:userid',
+            'block' => 'privacy:metadata:block_exacompprofilesettings:block',
+            'feedback' => 'privacy:metadata:block_exacompprofilesettings:feedback',
         ], 'privacy:metadata:block_exacompprofilesettings');
 
         // block_exacompschedule
@@ -131,6 +137,8 @@ class provider implements
             'start' => 'privacy:metadata:block_exacompschedule:start',
             'endtime' => 'privacy:metadata:block_exacompschedule:endtime',
             'deleted' => 'privacy:metadata:block_exacompschedule:deleted',
+            'distributionid' => 'privacy:metadata:block_exacompschedule:distributionid',
+            'source' => 'privacy:metadata:block_exacompschedule:source',
         ], 'privacy:metadata:block_exacompschedule');
 
         // block_exacompsolutvisibility
@@ -147,6 +155,7 @@ class provider implements
             'topicid' => 'privacy:metadata:block_exacomptopicvisibility:topicid',
             'studentid' => 'privacy:metadata:block_exacomptopicvisibility:studentid',
             'visible' => 'privacy:metadata:block_exacomptopicvisibility:visible',
+            'niveauid' => 'privacy:metadata:block_exacomptopicvisibility:niveauid',
         ], 'privacy:metadata:block_exacomptopicvisibility');
 
         // block_exacompwsdata
@@ -156,9 +165,43 @@ class provider implements
             'data' => 'privacy:metadata:block_exacompwsdata:data',
         ], 'privacy:metadata:block_exacompwsdata');
 
+        // block_exacompcrosssubjects
+        $collection->add_database_table('block_exacompcrosssubjects', [
+            'title' => 'privacy:metadata:block_exacompcrosssubjects:title',
+            'description' => 'privacy:metadata:block_exacompcrosssubjects:description',
+            'courseid' => 'privacy:metadata:block_exacompcrosssubjects:courseid',
+            'creatorid' => 'privacy:metadata:block_exacompcrosssubjects:creatorid',
+            'shared' => 'privacy:metadata:block_exacompcrosssubjects:shared',
+            'subjectid' => 'privacy:metadata:block_exacompcrosssubjects:subjectid',
+            'groupcategory' => 'privacy:metadata:block_exacompcrosssubjects:groupcategory',
+        ], 'privacy:metadata:block_exacompcrosssubjects');
+
+        // block_exacompglobalgradings
+        $collection->add_database_table('block_exacompglobalgradings', [
+            'userid' => 'privacy:metadata:block_exacompglobalgradings:userid',
+            'compid' => 'privacy:metadata:block_exacompglobalgradings:compid',
+            'comptype' => 'privacy:metadata:block_exacompglobalgradings:comptype',
+            'globalgradings' => 'privacy:metadata:block_exacompglobalgradings:globalgradings',
+        ], 'privacy:metadata:block_exacompglobalgradings');
+
+        // block_exacompsubjstudconfig
+        // do not store/return? it is only for Diggr
+        // but delete the data
+
+        // block_exacomp_usermap
+        // do not store/return? it is only for Diggr
+        // but delete the data
+
+
         return $collection;
     }
 
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     *
+     * @param int $userid  The user to search.
+     * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
+     */
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
 
@@ -318,7 +361,7 @@ class provider implements
         }
 
         // get user's grades (reviews AS a teacher)
-        // does not kept real data of reviewd student. Only values. Is it correct?
+        // does not kept real data of reviewed student. Only values. Is it correct?
         foreach ($exacompcoursescontexts as $context) {
             $courseid = $context->instanceid;
             $grades = array();
@@ -780,6 +823,73 @@ class provider implements
         // block_exacompwsdata
         // does not need to export, because it is temporary data for working of webservices
 
+        // block_exacompcrosssubjects
+        // which cross-subjects was added by me
+        foreach ($exacompcoursescontexts as $context) {
+            $courseid = $context->instanceid;
+            $crossData = array();
+            $crosssubjects = $DB->get_records_sql(
+                'SELECT DISTINCT cs.title as cs_title,
+                                    cs.description as cs_description,
+                                    cs.shared as cs_shared,
+                                    s.title as cs_subject,
+                                    cs.groupcategory as cs_groupcategory 
+                        FROM {' . BLOCK_EXACOMP_DB_CROSSSUBJECTS . '} cs
+                            LEFT JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON s.id = cs.subjectid                            
+                        WHERE cs.creatorid = ?
+                            AND cs.courseid = ?                            
+                        ORDER BY cs.sorting ',
+                [$user->id, $courseid]
+            );
+            foreach ($crosssubjects as $crosssubject) {
+                $crossData[] = array_filter(array(
+                    'title' => $crosssubject->cs_title,
+                    'description' => $crosssubject->cs_description,
+                    'shared' => $crosssubject->cs_shared,
+                    'groupcategory ' => $crosssubject->cs_groupcategory,
+                    'related_subject' => $crosssubject->cs_subject,
+                ));
+            }
+
+            if (count($crossData)) {
+                $crossData = array('crosssubjects' => $crossData);
+                $contextdata = helper::get_context_data($context, $user);
+                $contextdata = (object) array_merge((array) $contextdata, $crossData);
+                $writer = writer::with_context($context);
+                $writer->export_data(['Exacomp/my cross-subjects'], $contextdata);
+            }
+        }
+
+        // block_exacompglobalgradings
+        // global gradings for the students
+        foreach ($exacompcoursescontexts as $context) {
+            $gradingsData = array();
+            $gradings = $DB->get_records_sql(
+                'SELECT DISTINCT g.compid as compid,
+                                    g.comptype as comptype,
+                                    g.globalgradings as globalgradings                                     
+                        FROM {' . BLOCK_EXACOMP_DB_GLOBALGRADINGS . '} g                                                        
+                        WHERE g.userid = ?',
+                [$user->id]
+            );
+            foreach ($gradings as $grading) {
+                $gradingsData[] = array_filter(array(
+                    'compid' => $grading->compid,
+                    'comptype' => $grading->comptype,
+                    'globalgradings' => $grading->globalgradings,
+                ));
+            }
+
+            if (count($gradingsData)) {
+                $gradingsData = array('globalgradings' => $gradingsData);
+                $contextdata = helper::get_context_data($context, $user);
+                $contextdata = (object) array_merge((array) $contextdata, $gradingsData);
+                $writer = writer::with_context($context);
+                $writer->export_data(['Exacomp/my global gradings data'], $contextdata);
+            }
+        }
+
+
     }
 
     public static function delete_data_for_all_users_in_context(context $context) {
@@ -795,6 +905,7 @@ class provider implements
             $DB->delete_records('block_exacompexameval', ['courseid' => $courseid]); // for students
             //$DB->delete_records('block_exacompexameval', ['courseid' => $courseid]); // for teachers
             $DB->delete_records('block_exacompexampvisibility', ['courseid' => $courseid]);
+            $DB->delete_records('block_exacompcrosssubjects', ['courseid' => $courseid]);
         }
         return;
     }
@@ -837,6 +948,8 @@ class provider implements
             $DB->delete_records('block_exacompsolutvisibility', ['studentid' => $userid]);
             $DB->delete_records('block_exacomptopicvisibility', ['studentid' => $userid]);
             $DB->delete_records('block_exacompwsdata', ['userid' => $userid]);
+            $DB->delete_records('block_exacompglobalgradings', ['userid' => $userid]);
+            $DB->delete_records('block_exacomp_usermap', ['userid' => $userid]);
         }
     }
 
@@ -859,6 +972,8 @@ class provider implements
         $select = " userid {$inSql}";
         $DB->delete_records_select('block_exacompwsdata', $select, $params);
         $DB->delete_records_select('block_exacompprofilesettings', $select, $params);
+        $DB->delete_records_select('block_exacompglobalgradings', $select, $params);
+        $DB->delete_records_select('block_exacomp_usermap', $select, $params);
 
         $select = " studentid {$inSql}";
         $DB->delete_records_select('block_exacompcrossstud_mm', $select, $params);
@@ -866,6 +981,7 @@ class provider implements
         $DB->delete_records_select('block_exacompschedule', $select, $params);
         $DB->delete_records_select('block_exacompsolutvisibility', $select, $params);
         $DB->delete_records_select('block_exacomptopicvisibility', $select, $params);
+        $DB->delete_records_select('block_exacompsubjstudconfig', $select, $params);
 
         $select = " creatorid {$inSql}";
         $DB->delete_records_select('block_exacompschedule', $select, $params);
