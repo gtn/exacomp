@@ -20,6 +20,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_exacomp';
 $plugin->release = '4.6.7';
-$plugin->version = 2022072700;
+$plugin->version = 2022090600;
 $plugin->requires = 2015051100;
 $plugin->maturity = MATURITY_STABLE;

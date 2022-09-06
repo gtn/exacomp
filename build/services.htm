@@ -6742,6 +6742,184 @@ Returns:<pre>{
         "..."
     ]
 }</pre>
+<h2>dakoraplus_get_example_and_item</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "courseid": "int null",
+    "status": "text null ('new, inprogress, submitted, completed')",
+    "subjectid": "int null ('id of subject')",
+    "subjecttitle": "text null ('title of subject')",
+    "topicid": "int null ('id of topic')",
+    "topictitle": "text null ('title of topic')",
+    "niveautitle": "text null ('title of niveau')",
+    "niveauid": "int null ('id of niveau')",
+    "timemodified": "int null ('time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)')",
+    "example": {
+        "id": "int null ('id of example')",
+        "title": "text null ('title of example')",
+        "description": "text null ('description of example')",
+        "annotation": "text null ('annotation by the teacher for this example in this course')",
+        "solutionfilename": "text null ('task filename')",
+        "externalurl": "text null ('externalurl of example')",
+        "externaltask": "text null ('url of associated module')",
+        "solution": "text null ('solution(url\/description) of example')",
+        "timeframe": "text null ('timeframe as string')",
+        "hassubmissions": "bool null ('true if example has already submissions')",
+        "solution_visible": "bool null ('visibility for example solution in current context')",
+        "taskfiles": [
+            {
+                "name": "text null ('title of taskfile')",
+                "url": "url null ('file url')",
+                "type": "text null ('mime type for file')"
+            },
+            "... taskfiles of the example ..."
+        ],
+        "teacher_evaluation": "int null ('teacher_evaluation')",
+        "student_evaluation": "int null ('student_evaluation')"
+    },
+    "item": {
+        "id": "int null ('id of item ')",
+        "name": "text null ('title of item')",
+        "solutiondescription": "text null ('description of item')",
+        "type": "text null ('type of item (note,file,link)')",
+        "url": "text null ('url')",
+        "effort": "raw null ('description of the effort')",
+        "teachervalue": "int null ('teacher grading')",
+        "studentvalue": "int null ('student grading')",
+        "teachercomment": "text null ('teacher comment')",
+        "studentcomment": "text null ('student comment')",
+        "studentfiles": [
+            {
+                "id": "int null ('id')",
+                "filename": "text null ('filename')",
+                "file": "url null ('file url')",
+                "mimetype": "text null ('mime type for file')",
+                "fileindex": "text null ('fileindex, used for deleting this file')"
+            },
+            "... files of the student's submission ..."
+        ],
+        "collaborators": [
+            {
+                "userid": "int null ('userid of collaborator')",
+                "fullname": "text null",
+                "profileimageurl": "text null"
+            },
+            "... collaborators ..."
+        ]
+    }
+}</pre>
+<h2>dakoraplus_get_teacher_example_and_item</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+<tr>
+<td>exampleid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>studentid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "courseid": "int null",
+    "status": "text null ('new, inprogress, submitted, completed')",
+    "subjectid": "int null ('id of subject')",
+    "subjecttitle": "text null ('title of subject')",
+    "topicid": "int null ('id of topic')",
+    "topictitle": "text null ('title of topic')",
+    "niveautitle": "text null ('title of niveau')",
+    "niveauid": "int null ('id of niveau')",
+    "timemodified": "int null ('time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)')",
+    "example": {
+        "id": "int null ('id of example')",
+        "title": "text null ('title of example')",
+        "description": "text null ('description of example')",
+        "annotation": "text null ('annotation by the teacher for this example in this course')",
+        "solutionfilename": "text null ('task filename')",
+        "externalurl": "text null ('externalurl of example')",
+        "externaltask": "text null ('url of associated module')",
+        "solution": "text null ('solution(url\/description) of example')",
+        "timeframe": "text null ('timeframe as string')",
+        "hassubmissions": "bool null ('true if example has already submissions')",
+        "solution_visible": "bool null ('visibility for example solution in current context')",
+        "taskfiles": [
+            {
+                "name": "text null ('title of taskfile')",
+                "url": "url null ('file url')",
+                "type": "text null ('mime type for file')"
+            },
+            "... taskfiles of the example ..."
+        ],
+        "teacher_evaluation": "int null ('teacher_evaluation')",
+        "student_evaluation": "int null ('student_evaluation')"
+    },
+    "item": {
+        "id": "int null ('id of item ')",
+        "name": "text null ('title of item')",
+        "solutiondescription": "text null ('description of item')",
+        "type": "text null ('type of item (note,file,link)')",
+        "url": "text null ('url')",
+        "effort": "raw null ('description of the effort')",
+        "teachervalue": "int null ('teacher grading')",
+        "studentvalue": "int null ('student grading')",
+        "teachercomment": "text null ('teacher comment')",
+        "studentcomment": "text null ('student comment')",
+        "studentfiles": [
+            {
+                "id": "int null ('id')",
+                "filename": "text null ('filename')",
+                "file": "url null ('file url')",
+                "mimetype": "text null ('mime type for file')",
+                "fileindex": "text null ('fileindex, used for deleting this file')"
+            },
+            "... files of the student's submission ..."
+        ],
+        "collaborators": [
+            {
+                "userid": "int null ('userid of collaborator')",
+                "fullname": "text null",
+                "profileimageurl": "text null"
+            },
+            "... collaborators ..."
+        ]
+    }
+}</pre>
 <hr/><h1>Class: block_exacomp_external_setapp</h1><hr/>
 <h2>diggrplus_v_edit_course</h2>
 <div>Create an example or update it

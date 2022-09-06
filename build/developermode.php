@@ -59,7 +59,7 @@ call_user_func(function() {
             $description = trim(preg_replace('!@.*!sm', '', $description));
 
             $func = $method->getName();
-            if (strpos($func, 'dakora_') === false && strpos($func, 'diggrplus_') === false) {
+            if (strpos($func, 'dakora_') === false && strpos($func, 'diggrplus_') === false && strpos($func, 'dakoraplus_') === false) {
                 $func = 'block_exacomp_'.$func;
             }
 
