@@ -5259,6 +5259,8 @@ Returns:<pre>{
     ],
     "configs": [
         {
+            "id": "int null",
+            "name": "text null",
             "points_limit": "int null ('points_limit')",
             "grade_limit": "int null ('grade_limit')",
             "points_negative_threshold": "int null ('points_negative_threshold. Values below this value are negative')",
@@ -5440,6 +5442,8 @@ Returns:<pre>{
         ],
         "configs": [
             {
+                "id": "int null",
+                "name": "text null",
                 "points_limit": "int null ('points_limit')",
                 "grade_limit": "int null ('grade_limit')",
                 "points_negative_threshold": "int null ('points_negative_threshold. Values below this value are negative')",
@@ -6919,6 +6923,76 @@ Returns:<pre>{
             "... collaborators ..."
         ]
     }
+}</pre>
+<h2>dakoraplus_save_coursesettings</h2>
+<div></div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>courseid</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>assessment_config</td>
+<td>int</td>
+<td>null</td>
+<td>optional</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "success": "bool null ('status')"
+}</pre>
+<h2>dakoraplus_get_learning_diary</h2>
+<div></div>
+<div>type: read</div>
+Params: <table>
+</table>
+Returns:<pre>[
+    {
+        "id": "int null",
+        "timemodified": "int null",
+        "title": "text null",
+        "text": "text null"
+    },
+    "..."
+]</pre>
+<h2>dakoraplus_save_learning_diary</h2>
+<div></div>
+<div>type: write</div>
+Params: <table>
+<tr>
+<td>id</td>
+<td>int</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>title</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+<tr>
+<td>text</td>
+<td>text</td>
+<td>null</td>
+<td>required</td>
+<td></td>
+<td></td>
+<td></td>
+</table>
+Returns:<pre>{
+    "success": "bool null ('status')"
 }</pre>
 <hr/><h1>Class: block_exacomp_external_setapp</h1><hr/>
 <h2>diggrplus_v_edit_course</h2>

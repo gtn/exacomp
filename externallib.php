@@ -10460,6 +10460,8 @@ class block_exacomp_external extends external_api {
 
         $configs = array();
         $configs[] = array(
+            'id' => 0,
+            'name' => '',
             'points_limit' => block_exacomp_get_assessment_points_limit(),
             'grade_limit' => block_exacomp_get_assessment_grade_limit(),
             'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
@@ -10507,8 +10509,10 @@ class block_exacomp_external extends external_api {
             'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES, null, 'source', 'id, title, source'),
         );
 
-        foreach ($assessment_configurations as $configuration) {
+        foreach ($assessment_configurations as $id => $configuration) {
             $configs[] = array(
+                'id' => $id, // array is indexed by id
+                'name' => $configuration['name'],
                 'points_limit' => $configuration["assessment_points_limit"],
                 'grade_limit' => $configuration["assessment_grade_limit"],
                 'points_negative_threshold' => $configuration["assessment_points_negativ"],
@@ -10630,6 +10634,8 @@ class block_exacomp_external extends external_api {
                 'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
             ))),
             'configs' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, ''),
+                'name' => new external_value (PARAM_TEXT, ''),
                 'points_limit' => new external_value (PARAM_INT, 'points_limit'),
                 'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
                 'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
@@ -14709,6 +14715,177 @@ class block_exacomp_external extends external_api {
                     'profileimageurl' => new external_value (PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_DEFAULT, 'xxx'),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_save_coursesettings_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value(PARAM_INT, ''),
+            'assessment_config' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
+        ));
+    }
+
+    /**
+     * @ws-type-write
+     * @return success
+     */
+    public static function dakoraplus_save_coursesettings($courseid, $assessment_config = null) {
+        static::validate_parameters(static::dakoraplus_save_coursesettings_parameters(), array(
+            'courseid' => $courseid,
+            'assessment_config' => $assessment_config,
+        ));
+
+        block_exacomp_require_teacher($courseid);
+
+        if ($assessment_config !== null) {
+            if ($assessment_config) {
+                // check if is available
+                $assessment_configurations = block_exacomp_get_assessment_configurations();
+                if (empty($assessment_configurations[$assessment_config])) {
+                    throw new invalid_parameter_exception ("assessment config with id '{$assessment_config}' not found");
+                }
+            }
+
+            $settings = block_exacomp_get_settings_by_course($courseid);
+            $settings->assessmentconfiguration = $assessment_config;
+            $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies); // TODO: why like this? Is this done at every location? Then why not in the function.. copied from edit_course.php
+            block_exacomp_save_coursesettings($courseid, $settings);
+        }
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function dakoraplus_save_coursesettings_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_get_learning_diary_parameters() {
+        return new external_function_parameters (array());
+    }
+
+    /**
+     * @ws-type-read
+     * @return array
+     */
+    public static function dakoraplus_get_learning_diary() {
+        global $USER, $DB;
+
+        $category = $DB->get_record('block_exaportcate', ['userid' => $USER->id, 'name' => 'Lerntagebuch'], '*', IGNORE_MULTIPLE);
+        if (!$category) {
+            return [];
+        }
+
+        $items = $DB->get_records('block_exaportitem', ['userid' => $USER->id, 'type' => 'note', 'categoryid' => $category->id], 'timemodified DESC');
+
+        array_walk($items, function($item) {
+            $item->title = $item->name;
+            $item->text = $item->intro;
+        });
+
+        return $items;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakoraplus_get_learning_diary_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(array(
+                'id' => new external_value(PARAM_INT),
+                'timemodified' => new external_value(PARAM_INT),
+                'title' => new external_value(PARAM_TEXT),
+                'text' => new external_value(PARAM_TEXT),
+            ))
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_save_learning_diary_parameters() {
+        return new external_function_parameters (array(
+            'id' => new external_value(PARAM_INT),
+            'title' => new external_value(PARAM_TEXT),
+            'text' => new external_value(PARAM_TEXT),
+        ));
+    }
+
+    /**
+     * @ws-type-write
+     * @return success
+     */
+    public static function dakoraplus_save_learning_diary($id, $title, $text) {
+        global $DB, $USER;
+
+        static::validate_parameters(static::dakoraplus_save_learning_diary_parameters(), array(
+            'id' => $id,
+            'title' => $title,
+            'text' => $text,
+        ));
+
+        $category = $DB->get_record('block_exaportcate', ['userid' => $USER->id, 'name' => 'Lerntagebuch'], '*', IGNORE_MULTIPLE);
+        if (!$category) {
+            $category = new stdClass();
+            $category->name = "Lerntagebuch";
+            $category->description = "Erstellt in DakoraPlus";
+            $category->userid = $USER->id;
+
+            $category->id = $DB->insert_record('block_exaportcate', $category);
+        }
+
+        $newItem = new stdClass();
+        $newItem->userid = $USER->id;
+        $newItem->name = $title;
+        $newItem->intro = $text;
+        $newItem->categoryid = $category->id;
+        $newItem->type = 'note';
+        $newItem->timemodified = time();
+
+        if ($id) {
+            $oldItem = $DB->get_record('block_exaportitem', ['userid' => $USER->id, 'id' => $id, 'type' => 'note', 'categoryid' => $category->id]);
+            // check if is owner
+            if (!$oldItem) {
+                throw new invalid_parameter_exception ("learning_diary entry not found or not allowed");
+            }
+
+            $newItem->id = $id;
+            $DB->update_record("block_exaportitem", $newItem);
+        } else {
+            $DB->insert_record('block_exaportitem', $newItem);
+        }
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function dakoraplus_save_learning_diary_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
 }
