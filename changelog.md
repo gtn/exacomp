@@ -1,3 +1,8 @@
+v4.6.7 (20220726)
+- enhancements of webservices for diggr+ and dakora+apps
+- new setting: enable/disable create new grids
+- new setting: visibility of teachermade competencies global or only in course
+
 v4.6.7 (20220606)
 - Dashboard view of the exacomp Block (exampüles of student)
 - direct link to dakora app in plugin configuration
