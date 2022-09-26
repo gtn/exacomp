@@ -16,12 +16,19 @@
 
 /* this file is used for elove app to save items in mahara */
 
+defined('MOODLE_INTERNAL') || die();
+@$filename && @$CFG || die();
+
 $file_params = array();
 $file_params['component'] = 'user';
 $file_params['filearea'] = 'private';
 $file_params['filename'] = $filename;
 $file_params['filepath'] = '/';
 $file_params['itemid'] = 0;
+
+if (!file_exists($CFG->dirroot . '/mnet/xmlrpc/client.php')) {
+    die();
+}
 
 require_once($CFG->dirroot . '/mnet/xmlrpc/client.php');
 
