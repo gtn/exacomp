@@ -28,7 +28,6 @@ function moodle_restore($data, $courseid, $userdoingrestore) {
     // $courseid: destination course of this restore
     // Restore backup into course.
     $controller = new restore_controller($data, $courseid, backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore, backup::TARGET_NEW_COURSE);
-
 //    $user = $controller->get_plan()->get_setting('users')->get_value();
     $controller->get_plan()->get_setting('users')->set_value(0); // 2021.09.16 this should be the setting "Include enrolled users"
 //    $user = $controller->get_plan()->get_setting('users')->get_value();

@@ -2905,7 +2905,7 @@ class data_importer extends data {
         if ($xmlItem->filecompletefile) {
             self::insert_file('example_completefile', $xmlItem->filecompletefile, $item);
         }
-        if ($xmlItem->activitytype) {
+        if ($xmlItem->activitytype || $xmlItem->is_moodle_activity /* from komet */) {
 
             if ($course_template > 0) {
                 $item->courseid = $course_template; // TODO: right? (need for correct relation of activities)
@@ -3376,23 +3376,46 @@ class data_importer extends data {
         global $CFG, $USER;
         $example = self::parse_xml_item($xmlItem);
 
-        if ($example->activityid != 0) {
-            $key = array_search($example->activityid, $GLOBALS['activexamples']['old_activityid']);
-            if ($key !== false) { // is possible, that found key is '0'
-                array_push($GLOBALS['activexamples']['old_activityid'], $example->activityid);
-                array_push($GLOBALS['activexamples']['new_activityid'], $example->activitytitle); //array_push($GLOBALS['activexamples']['new_activityid'], $GLOBALS['activexamples']['new_activityid'][$key]);
-                array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
-                array_push($GLOBALS['activexamples']['activitytype'], $example->activitytype);
-            } else {
-                array_push($GLOBALS['activexamples']['old_activityid'], $example->activityid);
-                @rename($CFG->tempdir . '/backup/activities/activity' . $example->activityid, $CFG->tempdir . '/backup/activity' . $example->activityid);
+        if ($example->activityid != 0 || $example->is_moodle_activity != 0) {
+            if ($example->activityid != 0) {
+                $activityId = $example->activityid;
+                $activityTitle = $example->activitytitle;
+                $activityType = $example->activitytype;
+            } else if ($example->is_moodle_activity != 0) {
+                // If example was created in komet - folder's structure has not activities folder, but has .zip file for every activity.
+                // Also - such example xml-item has not needed values in activityid, activitytitle and other
+                $activityData = self::extract_activity_files_from_komet($xmlItem, $exampleid);
+                $activityId = @$activityData['id'];
+                $activityTitle = @$activityData['title'];
+                $activityType = @$activityData['type'];
+            }
 
-                //if (file_exists($CFG->tempdir . '/backup/activity'.$example->activityid)) {
-                moodle_restore('activity' . $example->activityid, $course_template, $USER->id);
-                //}
-                array_push($GLOBALS['activexamples']['new_activityid'], $example->activitytitle);
+            if (!$activityId) {
+                return $example;
+            }
+
+            $key = array_search($activityId, $GLOBALS['activexamples']['old_activityid']);
+            if ($key !== false) { // is possible, that found key is '0'
+                array_push($GLOBALS['activexamples']['old_activityid'], $activityId);
+                array_push($GLOBALS['activexamples']['new_activityid'], $activityTitle); //array_push($GLOBALS['activexamples']['new_activityid'], $GLOBALS['activexamples']['new_activityid'][$key]);
                 array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
-                array_push($GLOBALS['activexamples']['activitytype'], $example->activitytype);
+                array_push($GLOBALS['activexamples']['activitytype'], $activityType);
+            } else {
+                array_push($GLOBALS['activexamples']['old_activityid'], $activityId);
+
+                if ($example->activityid != 0) {
+                    @rename($CFG->tempdir . '/backup/activities/activity' . $activityId, $CFG->tempdir . '/backup/activity' . $activityId);
+                } else if ($example->is_moodle_activity != 0) {
+                    // self::extract_activity_files_from_komet already called before.
+                }
+                if (file_exists($CFG->tempdir . '/backup/activity'.$activityId)) {
+                    moodle_restore('activity' . $activityId, $course_template, $USER->id);
+                //                moodle_restore($CFG->tempdir . '/backup/activity'.$example->activityid, $course_template, $USER->id);
+                }
+
+                array_push($GLOBALS['activexamples']['new_activityid'], $activityTitle);
+                array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
+                array_push($GLOBALS['activexamples']['activitytype'], $activityType);
             }
 
         }
@@ -3481,6 +3504,55 @@ class data_importer extends data {
 
     private static function kompetenzraster_mark_item_used($table, $item) {
         // deactivated for now
+    }
+
+    private static function extract_activity_files_from_komet($xmlItem, $exampleId) {
+        global $CFG;
+        // return: data with extracted activity data
+        $activityData = [];
+        // get file from example (must be already in file storage)
+        $fs = get_file_storage();
+        // from task
+        $taskFile = $fs->get_file(context_system::instance()->id, 'block_exacomp', 'example_task', $exampleId, '/', $xmlItem->filetask->filename);
+        if (!$taskFile) {
+            // from solution
+            $taskFile = $fs->get_file(context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleId, '/', $xmlItem->filetask->filename);
+        }
+        if (!$taskFile) {
+            // from complete file
+            $taskFile = $fs->get_file(context_system::instance()->id, 'block_exacomp', 'example_completefile', $exampleId, '/', $xmlItem->filetask->filename);
+        }
+        if (!$taskFile) {
+            return $activityData;
+        }
+        // only for zip
+        $mymeType = $taskFile->get_mimetype();
+        if ($mymeType != 'application/zip') {
+            return $activityData;
+        }
+
+        // unpack to temp folder, related to example
+        $tempActivityFolder = $CFG->tempdir . '/backup/example_activity' . $exampleId;
+        $packer = get_file_packer('application/zip');
+        $arch = $packer->extract_to_pathname($taskFile, $tempActivityFolder);
+        if ($arch !== false) {
+            // get activity data from unpacked xml
+            $activityXmlFile = $tempActivityFolder.'/activity/moodle_backup.xml';
+            if (file_exists($activityXmlFile)) {
+                $activityXml = @simplexml_load_file($activityXmlFile, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
+                $activityDetailsXml = $activityXml->information->contents->activities->activity;
+                $activityId = $activityDetailsXml->moduleid->__toString();
+                $activityData['id'] = $activityId;
+                $activityData['type'] = $activityDetailsXml->modulename->__toString();
+                $activityData['title'] = $activityDetailsXml->title->__toString();
+                // move extracted files to folder with relation to extracted activityId
+                @rename($tempActivityFolder.'/activity', $CFG->tempdir . '/backup/activity' . $activityId);
+                @rmdir($tempActivityFolder);
+
+            }
+        }
+
+        return $activityData;
     }
 
 }
