@@ -22,6 +22,7 @@ use Super\Cache;
 require_once __DIR__ . '/common.php';
 require_once __DIR__ . '/classes.php';
 require_once __DIR__ . '/../block_exacomp.php';
+require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->libdir . '/badgeslib.php');
 require_once($CFG->dirroot . '/badges/lib/awardlib.php');
 require_once($CFG->dirroot . '/cohort/lib.php');
@@ -337,10 +338,10 @@ function block_exacomp_is_editingteacher($context = null, $userid = null) {
 }
 
 function block_exacomp_is_teacher_in_any_course() {
-    $courses = block_exacomp_get_courseids();
+    $courses = course_get_enrolled_courses_for_logged_in_user();
 
     foreach ($courses as $course) {
-        if (block_exacomp_is_teacher($course)) {
+        if (block_exacomp_is_teacher($course->id)) {
             return true;
         }
     }
