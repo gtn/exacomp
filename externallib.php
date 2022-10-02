@@ -14888,5 +14888,63 @@ class block_exacomp_external extends external_api {
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
     }
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_lang_parameters() {
+        return new external_function_parameters (array(
+            'lang' => new external_value(PARAM_TEXT),
+            'app' => new external_value(PARAM_TEXT),
+        ));
+    }
+
+    /**
+     * Get language definitions in json format for diggr-plus and dakora-plus apps
+     * @ws-type-read
+     * @return success
+     */
+    public static function get_lang($lang, $app) {
+        global $DB, $USER;
+
+        static::validate_parameters(static::get_lang_parameters(), array(
+            'lang' => $lang,
+            'app' => $app,
+        ));
+
+        header("Content-Type: application/json");
+        header('Access-Control-Allow-Origin: *');
+
+        if (!in_array($app, ['diggr-plus', 'dakora-plus', 'setapp'])) {
+            $data = ['error' => "app {$app} not allowed"];
+        } elseif (!preg_match('!^[a-z]+$!', $lang)) {
+            $data = ['error' => "lang {$lang} not allowed"];
+        } else {
+            $langFile = __DIR__ . "/lang/{$lang}/{$app}.json";
+            if (!file_exists($langFile)) {
+                $data = ['info' => 'no lang data found'];
+            } else {
+                $data = json_decode(file_get_contents($langFile));
+            }
+        }
+
+        echo json_encode($data);
+        exit;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function get_lang_returns() {
+        return new external_single_structure (array(
+            'string_id' => new external_value (PARAM_TEXT, 'translation'),
+        ));
+    }
+
 }
 
