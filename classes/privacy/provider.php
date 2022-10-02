@@ -199,7 +199,7 @@ class provider implements
     /**
      * Get the list of contexts that contain user information for the specified user.
      *
-     * @param int $userid  The user to search.
+     * @param int $userid The user to search.
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
@@ -354,7 +354,7 @@ class provider implements
                 $grades = array('competences_overview' => $grades);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $grades);
+                $contextdata = (object)array_merge((array)$contextdata, $grades);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/gradings'], $contextdata);
             }
@@ -427,7 +427,7 @@ class provider implements
                 $grades = array('competences_reviews' => $grades);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $grades);
+                $contextdata = (object)array_merge((array)$contextdata, $grades);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/reviews'], $contextdata);
             }
@@ -465,7 +465,7 @@ class provider implements
                 $crosssubjectsData = array('crossubjects_reviews' => $crosssubjectsData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $crosssubjectsData);
+                $contextdata = (object)array_merge((array)$contextdata, $crosssubjectsData);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/crossubject gradings'], $contextdata);
             }
@@ -507,7 +507,7 @@ class provider implements
                 $crosssubjectsData = array('crossubjects_reviews' => $crosssubjectsData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $crosssubjectsData);
+                $contextdata = (object)array_merge((array)$contextdata, $crosssubjectsData);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/crossubject reviews'], $contextdata);
             }
@@ -545,7 +545,7 @@ class provider implements
                     'hidden_competences' => $descrhiddenData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $descrvisibles);
+                $contextdata = (object)array_merge((array)$contextdata, $descrvisibles);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/descriptors'], $contextdata);
             }
@@ -583,7 +583,7 @@ class provider implements
                     'hidden_competences' => $examhiddenData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $examvisibles);
+                $contextdata = (object)array_merge((array)$contextdata, $examvisibles);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/examples'], $contextdata);
             }
@@ -611,7 +611,7 @@ class provider implements
         if (count($externaltrainersData)) {
             $externaltrainersData = array('external_trainers' => $externaltrainersData);
             $contextdata = helper::get_context_data($context, $user);
-            $contextdata = (object) array_merge((array) $contextdata, $externaltrainersData);
+            $contextdata = (object)array_merge((array)$contextdata, $externaltrainersData);
             $writer = writer::with_context($context);
             $writer->export_data(['Exacomp/external/trainers'], $contextdata);
         }
@@ -636,7 +636,7 @@ class provider implements
         if (count($externalstudentsData)) {
             $externalstudentsData = array('external_students' => $externalstudentsData);
             $contextdata = helper::get_context_data($context, $user);
-            $contextdata = (object) array_merge((array) $contextdata, $externalstudentsData);
+            $contextdata = (object)array_merge((array)$contextdata, $externalstudentsData);
             $writer = writer::with_context($context);
             $writer->export_data(['Exacomp/external/students'], $contextdata);
         }
@@ -659,7 +659,7 @@ class provider implements
         if (count($selectedCourcesData)) {
             $selectedCourcesData = array('courses_for_profile' => $selectedCourcesData);
             $contextdata = helper::get_context_data($context, $user);
-            $contextdata = (object) array_merge((array) $contextdata, $selectedCourcesData);
+            $contextdata = (object)array_merge((array)$contextdata, $selectedCourcesData);
             $writer = writer::with_context($context);
             $writer->export_data(['Exacomp/Competence profile/courses'], $contextdata);
         }
@@ -702,7 +702,7 @@ class provider implements
                 $examplesData = array('scheduled_examples' => $examplesData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $examplesData);
+                $contextdata = (object)array_merge((array)$contextdata, $examplesData);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/scheduled examples'], $contextdata);
             }
@@ -745,7 +745,7 @@ class provider implements
                 $examplesData = array('scheduled_examples' => $examplesData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $examplesData);
+                $contextdata = (object)array_merge((array)$contextdata, $examplesData);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/my scheduled examples'], $contextdata);
             }
@@ -780,7 +780,7 @@ class provider implements
                     'hidden_solutions' => $soluthiddenData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $solutvisiblesData);
+                $contextdata = (object)array_merge((array)$contextdata, $solutvisiblesData);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/solutions'], $contextdata);
             }
@@ -814,7 +814,7 @@ class provider implements
                     'hidden_topics' => $topichiddenData);
                 //$context = \context_course::instance($courseid);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $topicsvisibles);
+                $contextdata = (object)array_merge((array)$contextdata, $topicsvisibles);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/visible competences/topics'], $contextdata);
             }
@@ -833,11 +833,11 @@ class provider implements
                                     cs.description as cs_description,
                                     cs.shared as cs_shared,
                                     s.title as cs_subject,
-                                    cs.groupcategory as cs_groupcategory 
+                                    cs.groupcategory as cs_groupcategory
                         FROM {' . BLOCK_EXACOMP_DB_CROSSSUBJECTS . '} cs
-                            LEFT JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON s.id = cs.subjectid                            
+                            LEFT JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON s.id = cs.subjectid
                         WHERE cs.creatorid = ?
-                            AND cs.courseid = ?                            
+                            AND cs.courseid = ?
                         ORDER BY cs.sorting ',
                 [$user->id, $courseid]
             );
@@ -854,7 +854,7 @@ class provider implements
             if (count($crossData)) {
                 $crossData = array('crosssubjects' => $crossData);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $crossData);
+                $contextdata = (object)array_merge((array)$contextdata, $crossData);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/my cross-subjects'], $contextdata);
             }
@@ -867,8 +867,8 @@ class provider implements
             $gradings = $DB->get_records_sql(
                 'SELECT DISTINCT g.compid as compid,
                                     g.comptype as comptype,
-                                    g.globalgradings as globalgradings                                     
-                        FROM {' . BLOCK_EXACOMP_DB_GLOBALGRADINGS . '} g                                                        
+                                    g.globalgradings as globalgradings
+                        FROM {' . BLOCK_EXACOMP_DB_GLOBALGRADINGS . '} g
                         WHERE g.userid = ?',
                 [$user->id]
             );
@@ -883,7 +883,7 @@ class provider implements
             if (count($gradingsData)) {
                 $gradingsData = array('globalgradings' => $gradingsData);
                 $contextdata = helper::get_context_data($context, $user);
-                $contextdata = (object) array_merge((array) $contextdata, $gradingsData);
+                $contextdata = (object)array_merge((array)$contextdata, $gradingsData);
                 $writer = writer::with_context($context);
                 $writer->export_data(['Exacomp/my global gradings data'], $contextdata);
             }
@@ -1069,7 +1069,7 @@ function block_exacomp_get_user_assesment_wordings($userid, $competenceid, $comp
             $evaluation->grade = null;
         }
     } else {
-        $evaluation = (object) array(
+        $evaluation = (object)array(
             'grade' => null,
             'niveau' => null,
             'self_grade' => null,

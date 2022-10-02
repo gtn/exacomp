@@ -52,7 +52,7 @@ class printer_TCPDF extends TCPDF {
     }
 
     public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false,
-        $fitonpage = false, $alt = false, $altimgs = array()) {
+                          $fitonpage = false, $alt = false, $altimgs = array()) {
         $args = func_get_args();
 
         // replace moodle image urls with local urls
@@ -365,7 +365,7 @@ class printer {
 
             $examples = block_exacomp_get_json_examples($examples);
             $examples = array_map(function($o) {
-                return (object) $o;
+                return (object)$o;
             }, $examples);
 
             foreach ($examples as $example) {
@@ -439,10 +439,10 @@ class printer {
         for ($i = 0; $i < $day_cnt; $i++) {
             // build the day object
             $time = block_exacomp_add_days($first_day, $i);
-            $days[$time] = (object) [
+            $days[$time] = (object)[
                 'time' => $time,
                 'slots' => array_map(function($x) {
-                    return (object) $x;
+                    return (object)$x;
                 }, block_exacomp_build_json_time_slots($time)),
             ];
 

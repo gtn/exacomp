@@ -46,7 +46,7 @@ $courseSettings = block_exacomp_get_settings_by_course($courseid);
 if ($action == 'save_filtersettings') {
     $selectedTaxonomies = BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES;
     if (isset($_POST['filteredtaxonomies'])) {
-        $selectedTaxonomies = array_values(clean_param_array($_POST['filteredtaxonomies'],PARAM_TEXT));
+        $selectedTaxonomies = array_values(clean_param_array($_POST['filteredtaxonomies'], PARAM_TEXT));
     }
     if (isset($_POST['filterClear'])) {
         $selectedTaxonomies = BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES;

@@ -24,8 +24,8 @@ use core_h5p\factory;
 use core_h5p\player;
 use core_h5p\helper;
 
-require(__DIR__.'/../../config.php');
-require_once(__DIR__.'/lib.php');
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 $id = required_param('id', PARAM_INT);
 
@@ -58,7 +58,7 @@ $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_co
 $PAGE->set_url('/blocks/exacomp/mod_h5p_stripped.php', ['id' => $cm->id]);
 
 $shortname = format_string($course->shortname, true, ['context' => $context]);
-$pagetitle = strip_tags($shortname.': '.format_string($moduleinstance->name));
+$pagetitle = strip_tags($shortname . ': ' . format_string($moduleinstance->name));
 $PAGE->set_title(format_string($pagetitle));
 
 $PAGE->set_heading(format_string($course->fullname));

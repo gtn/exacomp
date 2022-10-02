@@ -67,7 +67,7 @@ if (isset($action)) {
                         $sqlmaxsorting = "SELECT MAX(sorting) as sorting FROM {" . BLOCK_EXACOMP_DB_TAXONOMIES . "} WHERE source = ?";
                         $max_sorting = $DB->get_record_sql($sqlmaxsorting, array(BLOCK_EXACOMP_DATA_SOURCE_CUSTOM));
                         $sorting = intval($max_sorting->sorting) + 1;
-                        $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, (object) array(
+                        $DB->insert_record(BLOCK_EXACOMP_DB_TAXONOMIES, (object)array(
                             'title' => $newtitle,
                             'sourceid' => 0,
                             'source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM,

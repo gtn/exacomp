@@ -218,8 +218,8 @@ class block_exacomp_example_upload_form extends moodleform {
         $out = ob_get_contents();
         ob_end_clean();
         $doc = new DOMDocument();
-//        $out = utf8_decode($out); // needed for umlauts, but problems with cyrillic
-//        @$doc->loadHTML($out, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        //        $out = utf8_decode($out); // needed for umlauts, but problems with cyrillic
+        //        @$doc->loadHTML($out, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         @$doc->loadHTML(mb_convert_encoding($out, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
         $newInput = $doc->createDocumentFragment();

@@ -113,7 +113,7 @@ class block_exacomp_local_item_edit_form extends moodleform {
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
-        $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveauid, 'action' => 'delete', 'sesskey' => sesskey(),'forward' => optional_param('backurl', '', PARAM_URL) . '&editmode=1']));
+        $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveauid, 'action' => 'delete', 'sesskey' => sesskey(), 'forward' => optional_param('backurl', '', PARAM_URL) . '&editmode=1']));
         //$buttonarray[] = &$mform->createElement('button', 'delete', get_string('delete'));
         $buttonarray[] = &$mform->createElement('static', '', '',
             '<a href="#" onClick="if (confirm(\'' . block_exacomp_get_string('really_delete') . '\')) { window.location.href = \'' . $deleteUrl . '\'; return false;} else {return false;};" class="btn btn-danger">' . get_string('delete') .

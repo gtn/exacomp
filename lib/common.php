@@ -40,7 +40,7 @@ namespace block_exacomp\common {
         protected function merge_overrideparams(array $overrideparams = null) {
             $params = parent::merge_overrideparams($overrideparams);
 
-            $overrideparams = (array) $overrideparams;
+            $overrideparams = (array)$overrideparams;
             foreach ($overrideparams as $key => $value) {
                 if ($value === null) {
                     unset($params[$key]);
@@ -53,7 +53,7 @@ namespace block_exacomp\common {
         public function params(array $params = null) {
             parent::params($params);
 
-            $params = (array) $params;
+            $params = (array)$params;
             foreach ($params as $key => $value) {
                 if ($value === null) {
                     unset($this->params[$key]);
@@ -199,16 +199,16 @@ namespace block_exacomp\common {
                 return parent::update_record($table, $data);
             }
 
-            $where = (array) $where;
-            $data = (array) $data;
+            $where = (array)$where;
+            $data = (array)$data;
 
             if ($dbItem = $this->get_record($table, $where)) {
                 if ($data) {
                     $data['id'] = $dbItem->id;
-                    parent::update_record($table, (object) $data);
+                    parent::update_record($table, (object)$data);
                 }
 
-                return (object) ($data + (array) $dbItem);
+                return (object)($data + (array)$dbItem);
             }
 
             return null;
@@ -222,7 +222,7 @@ namespace block_exacomp\common {
          * @throws moodle_exception
          */
         public function insert_or_update_record($table, $data, $where = null) {
-            $data = (array) $data;
+            $data = (array)$data;
 
             if ($dbItem = $this->get_record($table, $where !== null ? $where : $data)) {
                 if (empty($data)) {
@@ -230,18 +230,18 @@ namespace block_exacomp\common {
                 }
 
                 $data['id'] = $dbItem->id;
-                $this->update_record($table, (object) $data);
+                $this->update_record($table, (object)$data);
 
-                return (object) ($data + (array) $dbItem);
+                return (object)($data + (array)$dbItem);
             } else {
                 unset($data['id']);
                 if ($where !== null) {
                     $data = $data + $where; // first the values of $data, then of $where, but don't override $data
                 }
-                $id = $this->insert_record($table, (object) $data);
+                $id = $this->insert_record($table, (object)$data);
                 $data['id'] = $id;
 
-                return (object) $data;
+                return (object)$data;
             }
         }
 
@@ -269,8 +269,8 @@ namespace block_exacomp\common {
 
             // some value => type
             $ret = new \stdClass;
-            $values = (object) $values;
-            $definition = (array) $definition;
+            $values = (object)$values;
+            $definition = (array)$definition;
 
             foreach ($definition as $key => $valueType) {
                 $value = isset($values->$key) ? $values->$key : null;
@@ -282,10 +282,10 @@ namespace block_exacomp\common {
         }
 
         public static function clean_array($values, $definition) {
-            $definition = (array) $definition;
+            $definition = (array)$definition;
 
             if (is_object($values)) {
-                $values = (array) $values;
+                $values = (array)$values;
             } else if (!is_array($values)) {
                 return array();
             }
@@ -332,15 +332,15 @@ namespace block_exacomp\common {
         public static function get_param($parname, $definition = null) {
             // POST has precedence.
             if (isset($_POST[$parname])) {
-                if(is_array($_POST[$parname])){
+                if (is_array($_POST[$parname])) {
                     return static::clean_array($_POST[$parname], $definition);
-                }else{
-                    return clean_param($_POST[$parname],PARAM_TEXT);
+                } else {
+                    return clean_param($_POST[$parname], PARAM_TEXT);
                 }
             } else if (isset($_GET[$parname])) {
-                if(is_array($_GET[$parname])){
+                if (is_array($_GET[$parname])) {
                     return static::clean_array($_GET[$parname], $definition);
-                }else {
+                } else {
                     return clean_param($_GET[$parname], PARAM_TEXT);
                 }
             } else {
@@ -611,7 +611,7 @@ namespace block_exacomp\common {
         // copy from moodle/lib/classes/string_manager_standard.php
         // Process array's and objects (except lang_strings).
         if (is_array($a) or (is_object($a) && !($a instanceof \lang_string))) {
-            $a = (array) $a;
+            $a = (array)$a;
             $search = array();
             $replace = array();
             foreach ($a as $key => $value) {
@@ -624,13 +624,13 @@ namespace block_exacomp\common {
                     continue;
                 }
                 $search[] = '{$a->' . $key . '}';
-                $replace[] = (string) $value;
+                $replace[] = (string)$value;
             }
             if ($search) {
                 $string = str_replace($search, $replace, $string);
             }
         } else {
-            $string = str_replace('{$a}', (string) $a, $string);
+            $string = str_replace('{$a}', (string)$a, $string);
         }
 
         return $string;

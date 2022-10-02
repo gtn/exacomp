@@ -533,7 +533,7 @@ class block_exacomp_external extends external_api {
      * @return example
      * @throws invalid_parameter_exception
      */
-    public static function get_example_by_id($exampleid, $courseid=null) {
+    public static function get_example_by_id($exampleid, $courseid = null) {
         global $DB;
 
         if (empty ($exampleid)) {
@@ -544,7 +544,7 @@ class block_exacomp_external extends external_api {
             'exampleid' => $exampleid,
         ));
 
-        if(!$courseid){
+        if (!$courseid) {
             $courseid = static::find_courseid_for_example($exampleid);
         }
         static::require_can_access_example($exampleid, $courseid);
@@ -824,7 +824,7 @@ class block_exacomp_external extends external_api {
             'trainerid' => $USER->id,
         ));
         if ($trainer) {
-            return (object) [
+            return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr,
             ];
         }
@@ -838,11 +838,11 @@ class block_exacomp_external extends external_api {
             $context = context_course::instance($course["courseid"]);
             $isTeacher = block_exacomp_is_teacher($context);
             if ($isTeacher) {
-                return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr];
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr];
             }
         }
 
-        return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr];
 
         //        // neither student or trainer depricated
         //        return (object)[
@@ -899,7 +899,7 @@ class block_exacomp_external extends external_api {
             'trainerid' => $USER->id,
         ));
         if ($trainer) {
-            return (object) [
+            return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr,
             ];
         }
@@ -909,7 +909,7 @@ class block_exacomp_external extends external_api {
         ));
 
         if ($student) {
-            return (object) [
+            return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr,
             ];
         }
@@ -922,12 +922,12 @@ class block_exacomp_external extends external_api {
             $context = context_course::instance($course["courseid"]);
             $isTeacher = block_exacomp_is_teacher($context);
             if ($isTeacher) {
-                return (object) [
+                return (object)[
                     "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr,
                 ];
             }
         }
-        return (object) [
+        return (object)[
             "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr,
         ];
 
@@ -1828,7 +1828,7 @@ class block_exacomp_external extends external_api {
      * @return array
      */
     public static function create_or_update_example($exampleid, $name, $description, $timeframe = '', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $filename,
-        $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0) {
+                                                    $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0) {
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -1851,11 +1851,11 @@ class block_exacomp_external extends external_api {
             'is_teacherexample' => $is_teacherexample,
         ));
 
-        if(!get_config('exacomp', 'example_upload_global')){
+        if (!get_config('exacomp', 'example_upload_global')) {
             // courseid HAS to be set because the admin setting says so. If there is no $courseid ==> error
-            if($courseid != 0){
+            if ($courseid != 0) {
                 $onlyForThisCourse = true;
-            }else{
+            } else {
                 throw new invalid_parameter_exception ('Parameter courseid can not be empty, because of example_upload_global setting set to false.');
             }
         }
@@ -1914,7 +1914,7 @@ class block_exacomp_external extends external_api {
      * @return array
      */
     public static function diggrplus_create_or_update_example($exampleid = -1, $name, $description, $timeframe = '', $externalurl = 'www', $comps = '0', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $crosssubjectid = -1,
-        $fileitemids = '', $removefiles = '', $solutionfileitemid = '', $activityid = 0, $is_teacherexample = 0) {
+                                                              $fileitemids = '', $removefiles = '', $solutionfileitemid = '', $activityid = 0, $is_teacherexample = 0) {
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
@@ -2060,7 +2060,7 @@ class block_exacomp_external extends external_api {
         block_exacomp_require_teacher($courseid);
 
         $o365_request = function($path) use ($access_token) {
-            $ch = curl_init('https://graph.microsoft.com/v1.0/'.$path);
+            $ch = curl_init('https://graph.microsoft.com/v1.0/' . $path);
 
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Authorization: Bearer ' . $access_token,
@@ -2533,7 +2533,7 @@ class block_exacomp_external extends external_api {
      */
     public static function get_user_profile($userid) {
         global $CFG, $DB, $USER;
-        require_once($CFG->dirroot."/lib/enrollib.php");
+        require_once($CFG->dirroot . "/lib/enrollib.php");
 
         static::validate_parameters(static::get_user_profile_parameters(), array(
             'userid' => $userid,
@@ -4615,11 +4615,11 @@ class block_exacomp_external extends external_api {
             $isTeacher = block_exacomp_is_teacher($context);
 
             if ($isTeacher) {
-                return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
             }
         }
 
-        return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
     }
 
     /**
@@ -5222,7 +5222,7 @@ class block_exacomp_external extends external_api {
             }
 
             $example->title = static::custom_htmltrim(strip_tags($example->title));
-			$example->end = $example->endtime;  //because field was renamed to endtime in exacomp, not in dakora
+            $example->end = $example->endtime;  //because field was renamed to endtime in exacomp, not in dakora
             // 		    //Taxonomies:
             $taxonomies = '';
             $taxids = '';
@@ -5384,7 +5384,7 @@ class block_exacomp_external extends external_api {
             }
         }
 
-//        $all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
+        //        $all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
         foreach ($all_cross_subjects as $cross_subject) {
             $cross_subject->visible = 0;
             if (array_key_exists($cross_subject->id, $cross_subjects_visible)) {
@@ -5417,7 +5417,7 @@ class block_exacomp_external extends external_api {
                     $example_return->timestampstudent = 0;
                     $example_return->solution_visible = 0;
                 } else {
-                    $evaluation = (object) static::_get_example_information($cross_subject->courseid, $userid, $example->id);
+                    $evaluation = (object)static::_get_example_information($cross_subject->courseid, $userid, $example->id);
                     $example_return->teacherevaluation = $evaluation->teachervalue;
                     $example_return->studentevaluation = $evaluation->studentvalue;
                     $example_return->evalniveauid = $evaluation->evalniveauid;
@@ -6277,7 +6277,7 @@ class block_exacomp_external extends external_api {
         $students = json_decode($students);
         $groups = json_decode($groups);
 
-        $distributionid = (int) $distributionid;
+        $distributionid = (int)$distributionid;
 
         foreach ($groups as $group) {
             block_exacomp_add_examples_to_schedule_for_group($courseid, $group, $distributionid);
@@ -6615,7 +6615,7 @@ class block_exacomp_external extends external_api {
      * @return array of course subjects
      */
     public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle = '', $collabuserids = '',
-        $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
+                                                 $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
@@ -7121,7 +7121,7 @@ class block_exacomp_external extends external_api {
                 $userpicture = new user_picture($student);
                 $userpicture->size = 1; // Size f1.
 
-                $exampleItem->item->owner = (object) [
+                $exampleItem->item->owner = (object)[
                     'userid' => $student->id,
                     'fullname' => fullname($student),
                     'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
@@ -7293,7 +7293,7 @@ class block_exacomp_external extends external_api {
 
         $students = [];
         foreach ($courses as $course) {
-            $course = (object) $course;
+            $course = (object)$course;
             $courseStudents = block_exacomp_get_students_by_course($course->courseid);
             foreach ($courseStudents as $student) {
                 if ($studentid && $student->id != $studentid) {
@@ -7351,7 +7351,7 @@ class block_exacomp_external extends external_api {
                     $userpicture = new user_picture($student);
                     $userpicture->size = 1; // Size f1.
 
-                    $studentExamplesAndItem->item->owner = (object) [
+                    $studentExamplesAndItem->item->owner = (object)[
                         'userid' => $student->id,
                         'fullname' => fullname($student),
                         'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
@@ -7793,7 +7793,7 @@ class block_exacomp_external extends external_api {
 
         $role = block_exacomp_is_teacher_in_any_course() ? 'teacher' : 'student';
 
-        return (object) [
+        return (object)[
             "role" => $role,
         ];
     }
@@ -8397,7 +8397,7 @@ class block_exacomp_external extends external_api {
         static::require_can_access_example($exampleid, $courseid);
         block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid, $additionalInfo);
         if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
-            $example = (object) array(
+            $example = (object)array(
                 'userid' => $userid,
                 'exampleid' => $exampleid,
                 'value' => $examplevalue,
@@ -8958,7 +8958,7 @@ class block_exacomp_external extends external_api {
                         $data['teachercomment'] = $itemcomment->entry;
                         if ($itemcomment->file) { //the most recent file is being kept, so if there is a newer comment without a file, the last file is still shown
                             $tFile = $itemcomment->file;
-                            $fileurl = (string) new moodle_url("/blocks/exaport/portfoliofile.php", [
+                            $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
                                 'userid' => $userid,
                                 'itemid' => $itemInformation->id,
                                 'commentid' => $itemcomment->id,
@@ -9516,7 +9516,7 @@ class block_exacomp_external extends external_api {
                 //                    $niveauid = -1;
                 //                }
                 $niveau = new stdClass();
-                $niveau->id = (int) $niveauid; // quick bugfix: when "points" is set in the plugin settings, the last niveaus is "".. this would lead to an error since int is expected
+                $niveau->id = (int)$niveauid; // quick bugfix: when "points" is set in the plugin settings, the last niveaus is "".. this would lead to an error since int is expected
                 $evaluations = array();
                 foreach ($niveaustat as $evalvalue => $sum) {
                     $eval = new stdClass();
@@ -10709,10 +10709,10 @@ class block_exacomp_external extends external_api {
             $context = context_course::instance($course["courseid"]);
             $isTeacher = block_exacomp_is_teacher($context);
             if ($isTeacher) {
-                return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
             }
         }
-        return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
     }
 
     public static function login_parameters() {
@@ -11796,7 +11796,7 @@ class block_exacomp_external extends external_api {
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
 
-            if($courseid == -1){
+            if ($courseid == -1) {
                 $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one course, use one of those courses, since it does not matter for the descriptors
                 // only use courseids where this user is enrolled, since it DOES matter for the examples
                 //there can be examples in one course, but not in the other, even though it is the same subject
@@ -11979,7 +11979,7 @@ class block_exacomp_external extends external_api {
         if (isset($cachedExampleDatas[$courseid][$example->id])) {
             $exampleData = $cachedExampleDatas[$courseid][$example->id];
         } else {
-            $exampleData = $cachedExampleDatas[$courseid][$example->id] = (object) [];
+            $exampleData = $cachedExampleDatas[$courseid][$example->id] = (object)[];
 
             $exampleData->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $example->id));
 
@@ -12047,7 +12047,7 @@ class block_exacomp_external extends external_api {
             $solution = block_exacomp_get_file($example, 'example_solution');
 
             if ($solution) {
-                $exampleData->solution = (string) static::get_webservice_url_for_file($solution, $courseid)->out(false);
+                $exampleData->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
                 $exampleData->solutionfilename = $solution->get_filename();
             } else if ($example->externalsolution) {
                 $exampleData->solution = $example->externalsolution;
@@ -12059,7 +12059,7 @@ class block_exacomp_external extends external_api {
             // complete file
             $completefile = block_exacomp_get_file($example, 'example_completefile');
             if ($completefile) {
-                $exampleData->completefile = (string) static::get_webservice_url_for_file($completefile, $courseid)->out(false);
+                $exampleData->completefile = (string)static::get_webservice_url_for_file($completefile, $courseid)->out(false);
                 $exampleData->completefilefilename = $completefile->get_filename();
             }
 
@@ -12751,7 +12751,7 @@ class block_exacomp_external extends external_api {
                 $example_return->timestampteacher = 0;
                 $example_return->timestampstudent = 0;
             } else {
-                $evaluation = (object) static::_get_example_information($courseid, $userid, $example->id);
+                $evaluation = (object)static::_get_example_information($courseid, $userid, $example->id);
                 $example_return->teacherevaluation = $evaluation->teachervalue;
                 $example_return->studentevaluation = $evaluation->studentvalue;
                 $example_return->evalniveauid = $evaluation->evalniveauid;
@@ -12776,7 +12776,7 @@ class block_exacomp_external extends external_api {
     }
 
     private static function create_or_update_example_common($exampleid, $name, $description, $timeframe = '', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $filename,
-        $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0, $removefiles = 0, $visible = true, $onlyForThisCourse = false) {
+                                                            $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0, $removefiles = 0, $visible = true, $onlyForThisCourse = false) {
         global $DB, $USER, $CFG, $COURSE;
 
         $COURSE->id = $courseid; // TODO: copied this from  update_descriptor_category.. why is the CONTEXT wrong?
@@ -13520,7 +13520,7 @@ class block_exacomp_external extends external_api {
         $return = [];
 
         foreach ($values as $key => $value) {
-            $return[] = [$nameKey => (int) $key, $nameValue => $value];
+            $return[] = [$nameKey => (int)$key, $nameValue => $value];
         }
 
         return $return;
@@ -13645,7 +13645,7 @@ class block_exacomp_external extends external_api {
                     $categories .= ',';
                 }
                 $categories .= $newCategory->id;
-                $newCategoryReturn = (object) [
+                $newCategoryReturn = (object)[
                     'id' => $newCategory->id,
                     'title' => $newCategory->title,
                     'source' => $newCategory->source,
@@ -14252,13 +14252,13 @@ class block_exacomp_external extends external_api {
         block_exacomp_require_teacher($courseid);
 
         $roleid = block_exacomp_get_student_roleid();
-        $maturity = time()+60*60*24*7;
+        $maturity = time() + 60 * 60 * 24 * 7;
 
         // delete old codes
         $DB->delete_records('block_enrolcode', array('roleid' => $roleid, 'courseid' => $courseid));
 
         // create new code
-        require_once $CFG->dirroot.'/blocks/enrolcode/locallib.php';
+        require_once $CFG->dirroot . '/blocks/enrolcode/locallib.php';
         $code = block_enrolcode_lib::create_code($courseid, $roleid, 0, 1, $maturity, 0, 0);
 
         return array("code" => $code, 'valid_until' => $maturity);
@@ -14300,7 +14300,7 @@ class block_exacomp_external extends external_api {
         ));
         global $CFG;
 
-        require_once $CFG->dirroot.'/blocks/enrolcode/locallib.php';
+        require_once $CFG->dirroot . '/blocks/enrolcode/locallib.php';
         $courseid = block_enrolcode_lib::enrol_by_code($code);
 
         if (!$courseid) {
@@ -14726,7 +14726,7 @@ class block_exacomp_external extends external_api {
     public static function dakoraplus_save_coursesettings_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value(PARAM_INT, ''),
-            'assessment_config' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
+            'assessment_config' => new external_value (PARAM_INT, '', VALUE_DEFAULT),
         ));
     }
 

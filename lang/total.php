@@ -3531,19 +3531,19 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'overview_examples_report_title' => [
         'Aufgabenübersicht zum Kompetenzerwerb',
-        'Overview of the examples'
+        'Overview of the examples',
     ],
     'block_exacomp_link_to_dakora_app' => [
         'zur Dakora-App',
-        'to Dakora-App'
+        'to Dakora-App',
     ],
     'diggrapp_cannotcreatetoken' => [
         'Can not have access to this moodle installation',
-        'Can not have access to this moodle installation'
+        'Can not have access to this moodle installation',
     ],
     'grid_creating_is_disabled' => [
         'Die Neuanlage von Rastern ist deaktiviert!',
-        'Grid creation is disabled!'
-    ]
+        'Grid creation is disabled!',
+    ],
 
 ];

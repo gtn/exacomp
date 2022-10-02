@@ -57,7 +57,7 @@ function block_exacomp_source_delete_get_subjects_for_preselection($source) {
 
 if ($action == 'delete_selected') {
     require_sesskey();
-    $json_data = block_exacomp\param::required_json('json_data', (object) array(
+    $json_data = block_exacomp\param::required_json('json_data', (object)array(
         'subjects' => [PARAM_INT],
         'topics' => [PARAM_INT],
         'descriptors' => [PARAM_INT],
@@ -170,7 +170,7 @@ if ($action == 'delete_selected') {
     echo $output->footer();
 } else if ($action == 'select_from_preselection') {
     // The user has selected 1 or several subjects from a source. Now the user can choose the details of what exactly they want to delete.
-    $json_data = block_exacomp\param::required_json('json_data', (object) array(
+    $json_data = block_exacomp\param::required_json('json_data', (object)array(
         'subjects' => [PARAM_INT],
     ));
     $preselected_subjects = array_combine($json_data->subjects, $json_data->subjects);

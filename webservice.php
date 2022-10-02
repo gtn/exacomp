@@ -478,20 +478,20 @@ class block_exacomp_simple_service {
 
         foreach ($items as $item) {
             if ($item instanceof subject) {
-                $results[$item->id] = (object) [
+                $results[$item->id] = (object)[
                     'id' => $item->id,
                     'title' => $item->title,
                     'topics' => static::json_items($item->topics, $by),
                 ];
             } else if ($item instanceof topic) {
-                $results[$item->id] = (object) [
+                $results[$item->id] = (object)[
                     'id' => $item->id,
                     'numbering' => $item->get_numbering(),
                     'title' => $item->title,
                     'descriptors' => static::json_items($item->descriptors, $by),
                 ];
             } else if ($item instanceof descriptor) {
-                $results[$item->id] = (object) [
+                $results[$item->id] = (object)[
                     'id' => $item->id,
                     'numbering' => $item->get_numbering(true),
                     'title' => $item->title,
@@ -502,7 +502,7 @@ class block_exacomp_simple_service {
                     $results[$item->id]->examples = static::json_items($item->examples, $by);
                 }
             } else if ($item instanceof \block_exacomp\example) {
-                $results[$item->id] = (object) [
+                $results[$item->id] = (object)[
                     'id' => $item->id,
                     'title' => $item->title,
                 ];

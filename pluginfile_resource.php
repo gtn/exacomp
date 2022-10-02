@@ -59,7 +59,7 @@ if (count($args) < 3) { // always at least context, component and filearea
     print_error('invalidarguments');
 }
 
-$contextid = (int) array_shift($args);
+$contextid = (int)array_shift($args);
 $component = clean_param(array_shift($args), PARAM_COMPONENT);
 $filearea = clean_param(array_shift($args), PARAM_AREA);
 

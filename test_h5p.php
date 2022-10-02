@@ -1,4 +1,5 @@
 <?php
+
 namespace core_h5p\external;
 
 use core_h5p\external;
@@ -11,9 +12,9 @@ require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
 
-$filename='arithmetic-quiz-4-4.h5p';
+$filename = 'arithmetic-quiz-4-4.h5p';
 
-$url  = \moodle_url::make_pluginfile_url(
+$url = \moodle_url::make_pluginfile_url(
     1,
     'core_h5p',
     'export',

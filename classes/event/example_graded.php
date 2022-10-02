@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace block_exacomp\event;
+
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();

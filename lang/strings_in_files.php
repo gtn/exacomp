@@ -38,7 +38,7 @@ foreach ($translations as $key => $strings) {
     if (!$strings) {
         unset($translations[$key]);
     } else {
-        $translations[$key] = (object) [
+        $translations[$key] = (object)[
             'key' => $key,
             'strings' => $strings,
             'is_used' => false,
@@ -64,7 +64,7 @@ foreach ($Iterator as $file) {
 
     foreach ($tokens as $token) {
         if (is_array($token)) {
-            $token = (object) [
+            $token = (object)[
                 'type' => $token[0],
                 'content' => $token[1],
                 'line' => $token[2],

@@ -52,9 +52,9 @@ $PAGE->set_pagelayout('embedded');
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$exacomp_graph = (object) [
+$exacomp_graph = (object)[
     'data' => [],
-    'options' => (object) [],
+    'options' => (object)[],
 ];
 
 $graph_options =& $exacomp_graph->options;
@@ -117,7 +117,7 @@ $x = 1;
 foreach ($evaluation as $e) {
 
     if ($e->studentvalue > 0) {
-        $data_value = (object) [
+        $data_value = (object)[
             'x' => $x,
             'y' => $student_value_index,
             'z' => $e->studentvalue,
@@ -128,7 +128,7 @@ foreach ($evaluation as $e) {
     if ($e->teachervalues) {
         foreach ($e->teachervalues as $evkey => $tvalue) {
             if ($tvalue >= 0 && isset($y_id_to_index[$evkey])) {
-                $data_value = (object) [
+                $data_value = (object)[
                     'x' => $x,
                     'y' => $y_id_to_index[$evkey],
                     'z' => $tvalue,

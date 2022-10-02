@@ -197,7 +197,7 @@ class generalxml_upload_form extends moodleform {
                     $mform->addElement('html', $buttons . '<ul class="exacomp_import_grids_list">');
                     $pathIndex = 0;
                     foreach ($data['list'] as $subjid => $subject) {
-                        $path = (string) $subject->pathname;
+                        $path = (string)$subject->pathname;
                         if ($currPath != $path) {
                             $pathIndex++;
                             $mform->addElement('html', '</ul>');
@@ -419,10 +419,10 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                         echo $OUTPUT->box(block_exacomp_get_string("importinfo"));
                         if ($isAdmin) {
                             echo $OUTPUT->box(block_exacomp_get_string("importwebservice", null,
-                                (string) new moodle_url("/admin/settings.php", array('section' => 'blocksettingexacomp'))));
+                                (string)new moodle_url("/admin/settings.php", array('section' => 'blocksettingexacomp'))));
                         }
                         @set_time_limit(0);
-                        $max_execution_time = (int) ini_get('max_execution_time');
+                        $max_execution_time = (int)ini_get('max_execution_time');
                         if ($max_execution_time && $max_execution_time < 60 * 5) {
                             echo '<h3>' . block_exacomp_get_string("import_max_execution_time", null, $max_execution_time) . '</h3>';
                         }

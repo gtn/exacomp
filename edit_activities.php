@@ -79,11 +79,11 @@ if ($action == "save") {
     require_sesskey();
 
     $activitiesData = array();
-    if($_POST['data']){
-        foreach ($_POST['data'] as $activityid => $activity){
+    if ($_POST['data']) {
+        foreach ($_POST['data'] as $activityid => $activity) {
             $newActivity = array(); // to throw away all bad keys
             $activityid = clean_param($activityid, PARAM_INT);
-            foreach ($activity as $descriptorid => $descriptor){
+            foreach ($activity as $descriptorid => $descriptor) {
                 $descriptorid = clean_param($descriptorid, PARAM_INT);
                 $newActivity[$descriptorid] = clean_param($descriptor, PARAM_INT);
             }
@@ -92,11 +92,11 @@ if ($action == "save") {
     }
 
     $activitiesTopicData = array();
-    if($_POST['topicdata']){
-        foreach ($_POST['topicdata'] as $activityid => $activity){
+    if ($_POST['topicdata']) {
+        foreach ($_POST['topicdata'] as $activityid => $activity) {
             $newActivity = array(); // to throw away all bad keys
             $activityid = clean_param($activityid, PARAM_INT);
-            foreach ($activity as $topicid => $topic){
+            foreach ($activity as $topicid => $topic) {
                 $topicid = clean_param($topicid, PARAM_INT);
                 $newActivity[$topicid] = clean_param($topic, PARAM_INT);
             }
