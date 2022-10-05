@@ -32,7 +32,7 @@ call_user_func(function() {
             'restrictedusers' => 0,
             'enabled' => 1,
             'shortname' => 'exacompservices',
-            'functions' => [],
+            'functions' => '{FUNCTION-LIST}', // will be replaced later
             'downloadfiles' => 1,
             'uploadfiles' => 1,
         ),
@@ -74,7 +74,7 @@ call_user_func(function() {
     // save to services.php
     $content = "<?php\n\n";
     $content .= '$functions = ' . var_export($functions, true) . ";\n\n";
-    $content .= '$services = ' . var_export($services, true) . ";\n\n";
+    $content .= '$services = ' . str_replace("'{FUNCTION-LIST}'", 'array_keys($functions)', var_export($services, true)) . ";\n\n";
     file_put_contents($servicesFile, $content);
     @touch($servicesFile, $lastChangeTime);
 });

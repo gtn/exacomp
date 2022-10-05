@@ -1308,9 +1308,7 @@ $services = array (
     'restrictedusers' => 0,
     'enabled' => 1,
     'shortname' => 'exacompservices',
-    'functions' => 
-    array (
-    ),
+    'functions' => array_keys($functions),
     'downloadfiles' => 1,
     'uploadfiles' => 1,
   ),
