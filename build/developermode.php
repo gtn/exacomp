@@ -26,6 +26,18 @@ call_user_func(function() {
         }
     }
 
+    $services = array(
+        'exacompservices' => array(
+            'requiredcapability' => '',
+            'restrictedusers' => 0,
+            'enabled' => 1,
+            'shortname' => 'exacompservices',
+            'functions' => [],
+            'downloadfiles' => 1,
+            'uploadfiles' => 1,
+        ),
+    );
+
     $functions = [];
 
     $doku = '';
@@ -49,6 +61,8 @@ call_user_func(function() {
                 $func = 'block_exacomp_' . $func;
             }
 
+            $services['exacompservices']['functions'][] = $func;
+
             $functions[$func] = [                             // web service function name
                 'classname' => $externallib['className'],         // class containing the external function
                 'methodname' => $method->getName(), // external function name, strip block_exacomp_ for function name
@@ -62,7 +76,7 @@ call_user_func(function() {
     // save to services.php
     $content = "<?php\n\n";
     $content .= '$functions = ' . var_export($functions, true) . ";\n\n";
-    // $content .= '$services = ' . var_export($services, true) . ";\n\n";
+    $content .= '$services = ' . var_export($services, true) . ";\n\n";
     file_put_contents($servicesFile, $content);
     @touch($servicesFile, $lastChangeTime);
 });
