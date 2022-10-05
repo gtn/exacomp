@@ -61,8 +61,6 @@ call_user_func(function() {
                 $func = 'block_exacomp_' . $func;
             }
 
-            $services['exacompservices']['functions'][] = $func;
-
             $functions[$func] = [                             // web service function name
                 'classname' => $externallib['className'],         // class containing the external function
                 'methodname' => $method->getName(), // external function name, strip block_exacomp_ for function name
