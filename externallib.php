@@ -7012,7 +7012,11 @@ class block_exacomp_external extends external_api {
             $userpicture->size = 1; // Size f1.
             $comment->profileimageurl = $userpicture->get_url(g::$PAGE)->out(false);
 
-            if ($file = $comment->file) {
+            if (empty($comment->file)) {
+                // empty value not allowed in webservice response
+                unset($comment->file);
+            } else {
+                $file = $comment->file;
                 // access ist über die gesharte view
                 $access = block_exacomp_get_access_for_shared_view_for_item($item, $USER->id);
                 if ($access) {
