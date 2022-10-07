@@ -6859,6 +6859,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'itemid' => new external_value (PARAM_INT, 'id of item'),
             'comment' => new external_value (PARAM_TEXT, 'comment text'),
+            'fileitemid' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -6869,12 +6870,13 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item_comment($itemid, $comment) {
+    public static function diggrplus_submit_item_comment($itemid, $comment, $fileitemid) {
         global $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_comment_parameters(),
             array(
                 'itemid' => $itemid,
                 'comment' => $comment,
+                'fileitemid' => $fileitemid,
             ));
 
         $item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
@@ -6897,7 +6899,18 @@ class block_exacomp_external extends external_api {
             throw new invalid_parameter_exception('not allowed to comment on item');
         }
 
-        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
+        if ($fileitemid) {
+            $context = context_user::instance($USER->id);
+            $fs = get_file_storage();
+            $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
+            if (!$file) {
+                throw new moodle_exception('file not found');
+            }
+        } else {
+            $file = null;
+        }
+
+        $commentid = $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
 
         // send notification to all other users about comment
         $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'item_comment', 'itemid' => $itemid, 'itemuserid' => $item->userid, 'comment' => $comment];
@@ -6913,6 +6926,16 @@ class block_exacomp_external extends external_api {
                 continue;
             }
             block_exacomp_send_notification("comment", $USER, $user_id, $subject, '', $notificationContext, '', false, $item->courseid, $customdata);
+        }
+
+        if ($file) {
+            $fs->create_file_from_storedfile(array(
+                'contextid' => context_system::instance()->id,
+                'component' => 'block_exaport',
+                'filearea' => 'item_comment_file',
+                'itemid' => $commentid,
+            ), $file);
+            $file->delete();
         }
 
         return array("success" => true, "itemid" => $itemid);
@@ -6988,6 +7011,27 @@ class block_exacomp_external extends external_api {
             $userpicture = new user_picture($users[$comment->userid]);
             $userpicture->size = 1; // Size f1.
             $comment->profileimageurl = $userpicture->get_url(g::$PAGE)->out(false);
+
+            if ($file = $comment->file) {
+                // access ist über die gesharte view
+                $access = block_exacomp_get_access_for_shared_view_for_item($item, $USER->id);
+                if ($access) {
+                    $fileurl = (new moodle_url("/blocks/exaport/portfoliofile.php", [
+                        'access' => $access,
+                        'itemid' => $item->id,
+                        'commentid' => $comment->id,
+                        'wstoken' => static::wstoken(),
+                    ]))->out(false);
+                } else {
+                    $fileurl = '';
+                }
+
+                $comment->file = [
+                    'file' => $fileurl,
+                    'mimetype' => $file->get_mimetype(),
+                    'filename' => $file->get_filename(),
+                ];
+            }
         }
 
         return $itemcomments;
@@ -7006,6 +7050,11 @@ class block_exacomp_external extends external_api {
             'comment' => new external_value (PARAM_TEXT, 'commenttext'),
             'timemodified' => new external_value (PARAM_INT, 'timemodified'),
             'profileimageurl' => new external_value (PARAM_TEXT, ''),
+            'file' => new external_single_structure(array(
+                'filename' => new external_value (PARAM_TEXT, 'filename'),
+                'file' => new external_value (PARAM_URL, 'file url'),
+                'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+            ), "", VALUE_OPTIONAL),
         )));
     }
 

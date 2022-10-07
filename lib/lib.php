@@ -7081,6 +7081,31 @@ function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid
     return $CFG->wwwroot . '/blocks/exaport/shared_item.php?access=' . $access . '&exampleid=' . $exampleid . '&courseid=' . $courseid;
 }
 
+function block_exacomp_get_access_for_shared_view_for_item($item, $viewerid) {
+    global $DB;
+
+    $studentid = $item->userid;
+
+    if ($studentid == $viewerid) {
+        // view my own item
+        $access = "portfolio/id/" . $studentid . "&itemid=" . $item->id;
+    } else {
+        // view sb elses item, find a suitable view
+        $sql = "SELECT viewblock.*
+			FROM {block_exaportviewblock} viewblock
+			JOIN {block_exaportviewshar} viewshar ON viewshar.viewid=viewblock.viewid
+			WHERE viewblock.type='item' AND viewblock.itemid=? AND viewshar.userid=?";
+        $view = $DB->get_record_sql($sql, [$item->id, $viewerid]);
+        if (!$view) {
+            return null;
+        }
+
+        $access = "view/id/" . $studentid . "-" . $view->viewid . "&itemid=" . $item->id;
+    }
+
+    return $access;
+}
+
 /**
  * get the url to enter the competence overview example belongs to
  *
