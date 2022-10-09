@@ -326,8 +326,6 @@ function block_exacomp_get_context_from_courseid($courseid) {
 function block_exacomp_is_teacher($context = null, $userid = null) {
     $context = block_exacomp_get_context_from_courseid($context);
 
-    //    echo "THIS";
-
     return has_capability('block/exacomp:teacher', $context, $userid);
 }
 
@@ -352,8 +350,8 @@ function block_exacomp_is_teacher_in_any_course() {
 function block_exacomp_get_teacher_courses($userid) {
     $courses = block_exacomp_get_exacomp_courses($userid);
     foreach ($courses as $key => $course) {
-        if (!block_exacomp_is_teacher(context_course::instance($course->id))) {
-            // unset($courses[$key]);
+        if (!block_exacomp_is_teacher(context_course::instance($course->id), $userid)) {
+            unset($courses[$key]);
         }
     }
     return $courses;
