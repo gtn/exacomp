@@ -1893,7 +1893,7 @@ class block_exacomp_external extends external_api {
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
             'comps' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
-            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
+            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies (comma seperated)', VALUE_DEFAULT, ''),
             'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
             'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile', VALUE_DEFAULT, -1),
@@ -1939,6 +1939,7 @@ class block_exacomp_external extends external_api {
         // careful: if we ever change $onlyForThisCourse --> check the admin setting, just like for dakora
         $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid,
             $is_teacherexample, $removefiles, null, true);
+
         return array("success" => true, "exampleid" => $example["exampleid"]);
     }
 
@@ -7075,7 +7076,7 @@ class block_exacomp_external extends external_api {
             'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ""),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_DEFAULT, -1),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
@@ -7294,7 +7295,7 @@ class block_exacomp_external extends external_api {
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ''),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_DEFAULT, -1),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
