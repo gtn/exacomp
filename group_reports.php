@@ -53,10 +53,10 @@ if ($reportType == 'profoundness' && !$useprofoundness) {
 $page_identifier = 'tab_teacher_report_' . $reportType;
 
 $action = optional_param('action', '', PARAM_TEXT);
-$isDocx = (bool) optional_param('formatDocx', false, PARAM_RAW);
-$isPdf = (bool) optional_param('formatPdf', false, PARAM_RAW);
+$isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+$isPdf = (bool)optional_param('formatPdf', false, PARAM_RAW);
 
-$isTemplateDeleting = (bool) optional_param('deleteTemplate', false, PARAM_RAW);
+$isTemplateDeleting = (bool)optional_param('deleteTemplate', false, PARAM_RAW);
 block_exacomp_save_report_settings($courseid, $isTemplateDeleting);
 
 $output = block_exacomp_get_renderer();

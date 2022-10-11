@@ -16,11 +16,11 @@
 
 
 global $CFG;
-require __DIR__.'/../inc.php';
+require __DIR__ . '/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
 
-function moodle_backup($activityid, $user_doing_the_backup){
+function moodle_backup($activityid, $user_doing_the_backup) {
 
     if (!is_siteadmin()) {
         die('No Admin!');

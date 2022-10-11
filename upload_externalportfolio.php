@@ -70,7 +70,7 @@ if (!$client->send($mnethost)) {
     $message .= print_r($message, true);
 }
 // we should get back... the send type and a shared token
-$response = (object) $client->response;
+$response = (object)$client->response;
 
 // ����� � ����������� - ��� UNZIP
 // $result_querystring = $message .  print_r($mnethost, true);
@@ -106,7 +106,7 @@ require_once($CFG->dirroot . '/mnet/lib.php');
 require_once("$CFG->dirroot/blocks/exaport/locallib.php");
 
 // insert record to the 'portfolio_tempdata'. Get ID, later we will change some data in this record
-$r = (object) array(
+$r = (object)array(
     'expirytime' => time() + (60 * 60 * 24),
     'userid' => $USER->id,
     'instance' => $portfolioinstanceid,
@@ -176,14 +176,14 @@ $emulate_exporter->singlefile = $filecopy;
 $emulate_exporter->set('user', $USER);
 
 // update portfolio_tempdata record with true emulate object ($emulate_exporter)
-$r = (object) array(
+$r = (object)array(
     'id' => $exporter_id,
     'data' => base64_encode(serialize($emulate_exporter)),
 );
 $exporter_id_update = $DB->update_record('portfolio_tempdata', $r);
 
 // Create record in 'portfolio_mahara_queue' - Mahara will be find there token and id of portfolio_tempdata
-$r = (object) array(
+$r = (object)array(
     'transferid' => $exporter_id,
     'token' => $portfoliotoken,
 );
@@ -211,7 +211,7 @@ if (!$client->send($mnethost)) {
 }
 // we should get back...  an ok and a status
 // either we've been waiting a while and mahara has fetched the file or has queued it.
-$response = (object) $client->response;
+$response = (object)$client->response;
 if (!$response->status) {
     echo 'failed to ping!!!!!!!!!!!!';
 }

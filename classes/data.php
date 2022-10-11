@@ -129,14 +129,14 @@ class data {
      * checks if data is imported
      */
     public static function has_data() {
-        return (bool) g::$DB->get_records_select('block_exacompdescriptors', 'source!=' . BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
+        return (bool)g::$DB->get_records_select('block_exacompdescriptors', 'source!=' . BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
     }
 
     /*
      * check if there is still data in the old source format
      */
     public static function has_old_data($source) {
-        return (bool) g::$DB->get_records('block_exacompdescriptors', array("source" => $source), null, 'id', 0, 1);
+        return (bool)g::$DB->get_records('block_exacompdescriptors', array("source" => $source), null, 'id', 0, 1);
     }
 
     public static function get_all_used_sources() {
@@ -631,7 +631,7 @@ class data_exporter extends data {
         $plugininfo = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
         // nicht passwortgeschützte info dateien:
-        $data = (object) [];
+        $data = (object)[];
         $data->datatype = 'block_exacomp_class_export';
         $data->dataversion = '0.1';
         $data->exporttime = time();
@@ -1220,7 +1220,7 @@ class data_exporter extends data {
         $sources = array();
         // find all sources used in the xml (under /exacomp, which has a source, but we don't need it here)
         foreach ($xmlParent->xpath("/exacomp//*/@source") as $source) {
-            $sources[(string) $source] = 1;
+            $sources[(string)$source] = 1;
         }
         $sources = array_keys($sources);
 
@@ -1406,7 +1406,7 @@ class data_exporter extends data {
         $plugininfo = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
         // nicht passwortgeschützte info dateien:
-        $data = (object) [];
+        $data = (object)[];
         $data->datatype = 'block_exacomp_class_export';
         $data->dataversion = '0.1';
         $data->exporttime = time();
@@ -1551,7 +1551,7 @@ class data_exporter extends data {
         //        } else {
         //            $example_icons = null;
         //        }
-        $newExample = (object) array(
+        $newExample = (object)array(
             'title' => $module->name,
             'courseid' => $courseid,
             'activityid' => $activityid,
@@ -2023,7 +2023,7 @@ class data_importer extends data {
             throw new import_exception('oldxmlfile');
         }
 
-        self::$import_source_global_id = (string) $xml['source'];
+        self::$import_source_global_id = (string)$xml['source'];
         if ($simulate || $schedulerId > 0) { // save source for scheduler task
             self::add_source_if_not_exists(self::$import_source_global_id, $schedulerId);
         }
@@ -2033,7 +2033,7 @@ class data_importer extends data {
         // update source name
         if (self::$import_source_local_id) {
             g::$DB->update_record(BLOCK_EXACOMP_DB_DATASOURCES, array(
-                'name' => (string) $xml['sourcename'],
+                'name' => (string)$xml['sourcename'],
             ), array(
                 'id' => self::$import_source_local_id,
             ));
@@ -2170,7 +2170,7 @@ class data_importer extends data {
 
         // used for next lists
         $descriptorsFromSelectedGrids = self::get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
-//        $topicsFromSelectedGrids = self::get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
+        //        $topicsFromSelectedGrids = self::get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
 
         $skillsFromSelected = self::get_property_for_descriptors_from_xml($xml, 'skillid', $descriptorsFromSelectedGrids);
 
@@ -2186,7 +2186,7 @@ class data_importer extends data {
         $niveausFromSelected = self::get_property_for_descriptors_from_xml($xml, 'niveauid', $descriptorsFromSelectedGrids);
         if (isset($xml->niveaus)) {
             foreach ($xml->niveaus->niveau as $niveau) {
-                if (in_array((int) $niveau->attributes()->id, $niveausFromSelected)) {
+                if (in_array((int)$niveau->attributes()->id, $niveausFromSelected)) {
                     self::insert_niveau($niveau);
                 }
             }
@@ -2204,7 +2204,7 @@ class data_importer extends data {
         if (isset($xml->categories)) {
             //$categoryMapping = self::get_categorymapping_for_source(self::$import_source_local_id);
             foreach ($xml->categories->category as $category) {
-                if (in_array((int) $category->attributes()->id, $categoryFromSelected)) {
+                if (in_array((int)$category->attributes()->id, $categoryFromSelected)) {
                     self::insert_category($category, 0, $categoryMapping);
                 }
             }
@@ -2212,7 +2212,7 @@ class data_importer extends data {
 
         if (isset($xml->descriptors)) {
             foreach ($xml->descriptors->descriptor as $descriptor) {
-                if (in_array((int) $descriptor->attributes()->id, $descriptorsFromSelectedGrids)) {
+                if (in_array((int)$descriptor->attributes()->id, $descriptorsFromSelectedGrids)) {
                     self::insert_descriptor($descriptor, 0, 0, $categoryMapping);
                 }
             }
@@ -2243,7 +2243,7 @@ class data_importer extends data {
 
             foreach ($xml->examples->example as $example) {
 
-                if (in_array((int) $example->attributes()->id, $examplesFromSelected)) {
+                if (in_array((int)$example->attributes()->id, $examplesFromSelected)) {
 
                     self::insert_example($example, 0, $course_template);
                 }
@@ -2628,7 +2628,7 @@ class data_importer extends data {
         }
 
         g::$DB->update_record(BLOCK_EXACOMP_DB_DATASOURCES, array(
-            'name' => (string) $xmlItem->name,
+            'name' => (string)$xmlItem->name,
         ), array(
             'id' => $dbSource->id,
         ));
@@ -2735,12 +2735,12 @@ class data_importer extends data {
             'itemid' => $item->id,
             'filepath' => '/',
 
-            'filename' => (string) $xmlItem->filename,
-            'mimetype' => (string) $xmlItem->mimetype,
-            'author' => (string) $xmlItem->author,
-            'license' => (string) $xmlItem->license,
-            'timecreated' => (int) $xmlItem->timecreated,
-            'timemodified' => (int) $xmlItem->timemodified,
+            'filename' => (string)$xmlItem->filename,
+            'mimetype' => (string)$xmlItem->mimetype,
+            'author' => (string)$xmlItem->author,
+            'license' => (string)$xmlItem->license,
+            'timecreated' => (int)$xmlItem->timecreated,
+            'timemodified' => (int)$xmlItem->timemodified,
         );
 
         $fs = get_file_storage();
@@ -2748,7 +2748,7 @@ class data_importer extends data {
         // delete old file
         $fs->delete_area_files(context_system::instance()->id, 'block_exacomp', $filearea, $item->id);
 
-        $filepathOrig = (string) $xmlItem->filepath->__toString();
+        $filepathOrig = (string)$xmlItem->filepath->__toString();
         if (self::$unzippedPath) { // already unzipped (used for big zip-archives)
             //            $filecontent = file_get_contents(self::$unzippedPath.'/'.$filepathOrig); // PHP memory limit issue possible
             $filepath = self::$unzippedPath . '/' . $filepathOrig;
@@ -2905,7 +2905,7 @@ class data_importer extends data {
         if ($xmlItem->filecompletefile) {
             self::insert_file('example_completefile', $xmlItem->filecompletefile, $item);
         }
-        if ($xmlItem->activitytype) {
+        if ($xmlItem->activitytype || $xmlItem->is_moodle_activity /* from komet */) {
 
             if ($course_template > 0) {
                 $item->courseid = $course_template; // TODO: right? (need for correct relation of activities)
@@ -2984,7 +2984,7 @@ class data_importer extends data {
         if ($parent > 0) {
             $descriptor->parentid = $parent;
             $descriptor->sorting = $sorting;
-        }else if ($parent == 0){
+        } else if ($parent == 0) {
             // If the descriptor WAS a childdescriptor, but now the suject is updated, and this descriptor is now a parent --> set it to 0, not to NULL which would result in 0 in a new descriptor
             $descriptor->parentid = 0;
         }
@@ -3266,7 +3266,6 @@ class data_importer extends data {
     }
 
 
-
     private static function insert_schooltype($xmlItem, $source_local_id, $schedulerId = 0) {
         $schooltype = self::parse_xml_item($xmlItem);
         if (self::get_selectedallgrids_for_source(self::$import_source_local_id, $schedulerId)) {
@@ -3376,23 +3375,46 @@ class data_importer extends data {
         global $CFG, $USER;
         $example = self::parse_xml_item($xmlItem);
 
-        if ($example->activityid != 0) {
-            $key = array_search($example->activityid, $GLOBALS['activexamples']['old_activityid']);
-            if ($key !== false) { // is possible, that found key is '0'
-                array_push($GLOBALS['activexamples']['old_activityid'], $example->activityid);
-                array_push($GLOBALS['activexamples']['new_activityid'], $example->activitytitle); //array_push($GLOBALS['activexamples']['new_activityid'], $GLOBALS['activexamples']['new_activityid'][$key]);
-                array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
-                array_push($GLOBALS['activexamples']['activitytype'], $example->activitytype);
-            } else {
-                array_push($GLOBALS['activexamples']['old_activityid'], $example->activityid);
-                @rename($CFG->tempdir . '/backup/activities/activity' . $example->activityid, $CFG->tempdir . '/backup/activity' . $example->activityid);
+        if ($example->activityid != 0 || $example->is_moodle_activity != 0) {
+            if ($example->activityid != 0) {
+                $activityId = $example->activityid;
+                $activityTitle = $example->activitytitle;
+                $activityType = $example->activitytype;
+            } else if ($example->is_moodle_activity != 0) {
+                // If example was created in komet - folder's structure has not activities folder, but has .zip file for every activity.
+                // Also - such example xml-item has not needed values in activityid, activitytitle and other
+                $activityData = self::extract_activity_files_from_komet($xmlItem, $exampleid);
+                $activityId = @$activityData['id'];
+                $activityTitle = @$activityData['title'];
+                $activityType = @$activityData['type'];
+            }
 
-                //if (file_exists($CFG->tempdir . '/backup/activity'.$example->activityid)) {
-                moodle_restore('activity' . $example->activityid, $course_template, $USER->id);
-                //}
-                array_push($GLOBALS['activexamples']['new_activityid'], $example->activitytitle);
+            if (!$activityId) {
+                return $example;
+            }
+
+            $key = array_search($activityId, $GLOBALS['activexamples']['old_activityid']);
+            if ($key !== false) { // is possible, that found key is '0'
+                array_push($GLOBALS['activexamples']['old_activityid'], $activityId);
+                array_push($GLOBALS['activexamples']['new_activityid'], $activityTitle); //array_push($GLOBALS['activexamples']['new_activityid'], $GLOBALS['activexamples']['new_activityid'][$key]);
                 array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
-                array_push($GLOBALS['activexamples']['activitytype'], $example->activitytype);
+                array_push($GLOBALS['activexamples']['activitytype'], $activityType);
+            } else {
+                array_push($GLOBALS['activexamples']['old_activityid'], $activityId);
+
+                if ($example->activityid != 0) {
+                    @rename($CFG->tempdir . '/backup/activities/activity' . $activityId, $CFG->tempdir . '/backup/activity' . $activityId);
+                } else if ($example->is_moodle_activity != 0) {
+                    // self::extract_activity_files_from_komet already called before.
+                }
+                if (file_exists($CFG->tempdir . '/backup/activity' . $activityId)) {
+                    moodle_restore('activity' . $activityId, $course_template, $USER->id);
+                    //                moodle_restore($CFG->tempdir . '/backup/activity'.$example->activityid, $course_template, $USER->id);
+                }
+
+                array_push($GLOBALS['activexamples']['new_activityid'], $activityTitle);
+                array_push($GLOBALS['activexamples']['example_sourceid'], $exampleid);
+                array_push($GLOBALS['activexamples']['activitytype'], $activityType);
             }
 
         }
@@ -3426,7 +3448,7 @@ class data_importer extends data {
             unset($item['@attributes']);
         }
 
-        $item = (object) $item;
+        $item = (object)$item;
 
         if (!isset($item->id)) {
             throw new moodle_exception('wrong xml format');
@@ -3448,7 +3470,7 @@ class data_importer extends data {
         }
 
         // put sourceid and source on top of object properties, easier to read :)
-        $item = (object) (array('sourceid' => $item->id, 'source' => $item->source) + (array) $item);
+        $item = (object)(array('sourceid' => $item->id, 'source' => $item->source) + (array)$item);
         unset($item->id);
 
         return $item;
@@ -3483,6 +3505,55 @@ class data_importer extends data {
         // deactivated for now
     }
 
+    private static function extract_activity_files_from_komet($xmlItem, $exampleId) {
+        global $CFG;
+        // return: data with extracted activity data
+        $activityData = [];
+        // get file from example (must be already in file storage)
+        $fs = get_file_storage();
+        // from task
+        $taskFile = $fs->get_file(context_system::instance()->id, 'block_exacomp', 'example_task', $exampleId, '/', $xmlItem->filetask->filename);
+        if (!$taskFile) {
+            // from solution
+            $taskFile = $fs->get_file(context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleId, '/', $xmlItem->filetask->filename);
+        }
+        if (!$taskFile) {
+            // from complete file
+            $taskFile = $fs->get_file(context_system::instance()->id, 'block_exacomp', 'example_completefile', $exampleId, '/', $xmlItem->filetask->filename);
+        }
+        if (!$taskFile) {
+            return $activityData;
+        }
+        // only for zip
+        $mymeType = $taskFile->get_mimetype();
+        if ($mymeType != 'application/zip') {
+            return $activityData;
+        }
+
+        // unpack to temp folder, related to example
+        $tempActivityFolder = $CFG->tempdir . '/backup/example_activity' . $exampleId;
+        $packer = get_file_packer('application/zip');
+        $arch = $packer->extract_to_pathname($taskFile, $tempActivityFolder);
+        if ($arch !== false) {
+            // get activity data from unpacked xml
+            $activityXmlFile = $tempActivityFolder . '/activity/moodle_backup.xml';
+            if (file_exists($activityXmlFile)) {
+                $activityXml = @simplexml_load_file($activityXmlFile, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
+                $activityDetailsXml = $activityXml->information->contents->activities->activity;
+                $activityId = $activityDetailsXml->moduleid->__toString();
+                $activityData['id'] = $activityId;
+                $activityData['type'] = $activityDetailsXml->modulename->__toString();
+                $activityData['title'] = $activityDetailsXml->title->__toString();
+                // move extracted files to folder with relation to extracted activityId
+                @rename($tempActivityFolder . '/activity', $CFG->tempdir . '/backup/activity' . $activityId);
+                @rmdir($tempActivityFolder);
+
+            }
+        }
+
+        return $activityData;
+    }
+
 }
 
 /**
@@ -3494,7 +3565,7 @@ class data_importer extends data {
  * @return array
  */
 function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
-    $array = json_decode(json_encode((array) $xmlobject), true);
+    $array = json_decode(json_encode((array)$xmlobject), true);
     $array_final = array();
     foreach ($array as $key => $value) {
         if (is_array($value) && empty($value)) {

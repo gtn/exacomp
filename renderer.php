@@ -934,7 +934,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             /* TOPICS */
             //for every topic
-            $data = (object) array(
+            $data = (object)array(
                 'courseid' => $courseid,
                 'rg2_level' => 0,
                 'showevaluation' => 0,
@@ -2049,7 +2049,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             /* TOPICS */
             $topicsscheme = block_exacomp_get_assessment_topic_scheme($courseid);
             //for every topic
-            $data = (object) array(
+            $data = (object)array(
                 'subject' => $subject,
                 'rg2_level' => 0, // $singletopic ? -1 : 0,
                 'courseid' => $courseid,
@@ -2460,7 +2460,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true,
-        $forReport = false, $hideAllActionButtons = false) {
+                         $forReport = false, $hideAllActionButtons = false) {
         global $USER, $COURSE, $DB;
 
         $evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
@@ -4292,7 +4292,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         static $userdata = null;
         if ($userdata === null && $studentid > 0) {
             $user = $DB->get_record('user', ['id' => $studentid], '*', IGNORE_MISSING);
-            $userdata = (object) [
+            $userdata = (object)[
                 'fullname' => fullname($user),
                 'firstname' => $user->firstname,
                 'lastname' => $user->lastname,
@@ -5362,8 +5362,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
             if ($subject->used_in_courses) {
                 $notes .= $used_in_courses_message;
-                foreach ($subject->used_in_courses as $used_in_course){ // append the courseids of the courses this grid is used in
-                    $notes .= $used_in_course.", ";
+                foreach ($subject->used_in_courses as $used_in_course) { // append the courseids of the courses this grid is used in
+                    $notes .= $used_in_course . ", ";
                 }
             }
 
@@ -5635,7 +5635,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     public function activity_content($subjects, $modules, $courseid = 0) {
         global $PAGE, $CFG, $COURSE;
 
-        $nojs = (bool) get_config('exacomp', 'disable_js_edit_activities');
+        $nojs = (bool)get_config('exacomp', 'disable_js_edit_activities');
 
         $colspan = (count($modules) + 2);
 
@@ -6004,7 +6004,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
      *
      * @param unknown $student
      */
-    function competence_profile_metadata($student,$isExaplanDashboardBlock=0) {
+    function competence_profile_metadata($student, $isExaplanDashboardBlock = 0) {
         if (!$student || !$student instanceof stdClass) {
             return '';
         }
@@ -6034,8 +6034,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
             return html_writer::table($table);
         } else {
             $namediv = html_writer::div(html_writer::tag('b', $student->firstname . ' ' . $student->lastname), '');
-			$imgdiv = '';
-            if ($isExaplanDashboardBlock==0) {$imgdiv = html_writer::div($this->user_picture($student, array("size" => 100)), '');}
+            $imgdiv = '';
+            if ($isExaplanDashboardBlock == 0) {
+                $imgdiv = html_writer::div($this->user_picture($student, array("size" => 100)), '');
+            }
 
             (!empty($student->city)) ? $citydiv = html_writer::div($student->city
                 . html_writer::div(block_exacomp_get_string('city'), ''), '') : $citydiv = '';
@@ -6810,7 +6812,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             foreach ($value_titles as $key => $tmp) {
                 $cell = new html_table_cell();
-                $cell->text = (int) @$data[$key];
+                $cell->text = (int)@$data[$key];
                 $cell->attributes['align'] = 'center';
                 $row->cells[] = $cell;
             }
@@ -7105,7 +7107,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             while ($today <= time()) {
                 $next_day = strtotime('tomorrow', $today);
 
-                $brackets[] = (object) [
+                $brackets[] = (object)[
                     'timestamp' => $today,
                     'timestamp_end' => $next_day,
                     'title' => date('d.m.', $today),
@@ -7126,7 +7128,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $title = date('d.m.', $monday) . ".-" . date('d.m.', $next_sunday);
                 }
 
-                $brackets[] = (object) [
+                $brackets[] = (object)[
                     'timestamp' => $monday,
                     'timestamp_end' => $next_monday,
                     'title' => $title,
@@ -7140,7 +7142,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             while ($first_day <= time()) {
                 $next_first_day = strtotime('first day of next month', $first_day);
 
-                $brackets[] = (object) [
+                $brackets[] = (object)[
                     'timestamp' => $first_day,
                     'timestamp_end' => $next_first_day,
                     'title' => date('F', $first_day),
@@ -8401,7 +8403,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $output = '';
             foreach ($options as $value => $label) {
                 $attributes = array();
-                $value = (string) $value;
+                $value = (string)$value;
                 if ($value === $selected) {
                     $attributes['selected'] = 'selected';
                 }
@@ -8488,7 +8490,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $this->group_reports_print_filter($filter, BLOCK_EXACOMP_TYPE_EXAMPLE, 'report_learniningmaterial');
 
             $input_type = 'time';
-            $input_filter = (array) @$filter[$input_type];
+            $input_filter = (array)@$filter[$input_type];
 
             if ($periods = block_exacomp_get_exastud_periods_current_and_past_periods()) {
                 $options = [];
@@ -8639,7 +8641,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             return;
         }
 
-        $input_filter = (array) @$filter[$input_type];
+        $input_filter = (array)@$filter[$input_type];
 
         ?>
         <div class="filter-group">
@@ -8672,7 +8674,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     echo '<div class="filter-input-difficulty-level">
                             <span class="filter-title">' . block_exacomp_get_string('competence_grid_niveau') . ':</span>';
                     foreach ([0 => block_exacomp_get_string('no_specification')] + global_config::get_evalniveaus() as $key => $value) {
-                        $checked = in_array($key, (array) @$input_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) ? 'checked="checked"' : '';
+                        $checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) ? 'checked="checked"' : '';
                         echo '<label>
                                     <input type="checkbox" name="filter[' . $input_type . '][' . BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID . '][]" value="' . s($key) . '" ' . $checked . '/>  ' . $value . '
                                   </label>&nbsp;&nbsp;&nbsp;';
@@ -8726,7 +8728,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         // Checkboxes for Verbose|Yes/No
                         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                             foreach ([-1 => block_exacomp_get_string('no_specification')] + $teacher_eval_items as $key => $value) {
-                                $checked = in_array($key, (array) @$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
+                                $checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
                                 echo '<label>
                                              <input type="checkbox" name="filter[' . $input_type . '][teacherevaluation][]" value="' . s($key) . '" ' . $checked . '/>  ' . $value . '
                                           </label>&nbsp;&nbsp;&nbsp;';
@@ -8735,7 +8737,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         // Checkboxes for Yes/No
                         case BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO:
                             foreach (['1' => block_exacomp_get_string('yes'), '0' => block_exacomp_get_string('no')] as $key => $value) {
-                                $checked = in_array($key, (array) @$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
+                                $checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_TACHER_EVALUATION]) ? 'checked="checked"' : '';
                                 echo '<label>
                                                 <input type="checkbox" name="filter[' . $input_type . '][teacherevaluation][]" value="' . s($key) . '" ' . $checked . '/>  ' . $value . '
                                           </label>&nbsp;&nbsp;&nbsp;';
@@ -8749,7 +8751,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     echo '<div class="filter-input-student-eval">
                             <span class="filter-title">' . block_exacomp_get_string('selfevaluation') . ':</span>';
                     foreach ([0 => block_exacomp_get_string('no_specification')] + global_config::get_student_eval_items(false, $input_type) as $key => $value) {
-                        $checked = in_array($key, (array) @$input_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) ? 'checked="checked"' : '';
+                        $checked = in_array($key, (array)@$input_filter[BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION]) ? 'checked="checked"' : '';
                         echo '<label>
                                         <input type="checkbox" name="filter[' . $input_type . '][' . BLOCK_EXACOMP_EVAL_INPUT_STUDENT_EVALUATION . '][]" value="' . s($key) . '" ' . $checked . '/>  ' . $value . '
                                       </label>&nbsp;&nbsp;&nbsp;';

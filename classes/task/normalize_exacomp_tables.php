@@ -30,11 +30,11 @@ class normalize_exacomp_tables extends scheduled_task {
     }
 
     public function execute() {
-        try{
+        try {
             mtrace("Exabis Competence Grid: normalize task is running:");
             data::normalize_database();
             mtrace("Normalize exacomp tables done");
-        } catch (moodle_exception $e){
+        } catch (moodle_exception $e) {
             mtrace("Normalize exacomp tables: " . $e->getMessage());
         }
     }

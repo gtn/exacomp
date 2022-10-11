@@ -32,7 +32,6 @@ $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
 
 
-
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
@@ -77,11 +76,11 @@ if ($action == "save") {
     require_sesskey();
     // RELATED DATA
     $activitiesData = array();
-    if($_POST['data']){
-        foreach ($_POST['data'] as $activityid => $activity){
+    if ($_POST['data']) {
+        foreach ($_POST['data'] as $activityid => $activity) {
             $newActivity = array(); // to throw away all bad keys
             $activityid = clean_param($activityid, PARAM_INT);
-            foreach ($activity as $descriptorid => $descriptor){
+            foreach ($activity as $descriptorid => $descriptor) {
                 $descriptorid = clean_param($descriptorid, PARAM_INT);
                 $newActivity[$descriptorid] = clean_param($descriptor, PARAM_INT);
             }
@@ -158,7 +157,6 @@ if ($action == "import") {
 // build tab navigation & print header
 echo $output->header($context, $courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
-
 
 
 /* CONTENT REGION */

@@ -282,7 +282,6 @@ class db_layer_whole_moodle extends db_layer {
             $subject->used_in_courses = [];
 
 
-
             foreach ($subject->topics as $topic) {
                 $topic->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $topic->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC));
                 $topic->can_delete = ($topic->source == $source) && !$topic->gradings;
@@ -296,7 +295,6 @@ class db_layer_whole_moodle extends db_layer {
                 foreach ($used_in_courses as $used_in_course) {
                     $topic->used_in_courses[] = $used_in_course->courseid;
                 }
-
 
 
                 foreach ($topic->descriptors as $descriptor) {
@@ -607,7 +605,7 @@ class db_record {
     }
 
     public function get_data() {
-        $data = (object) [];
+        $data = (object)[];
         foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
             $data->{$prop->getName()} = $prop->getValue($this);
         }
@@ -616,7 +614,7 @@ class db_record {
     }
 
     public function toArray() {
-        return (array) $this->get_data();
+        return (array)$this->get_data();
     }
 
     public function &__get($name) {
@@ -735,7 +733,7 @@ class db_record {
             // return $DB->update_record(static::TABLE, $this);
         }
 
-        $data = (array) $data;
+        $data = (array)$data;
         foreach ($data as $key => $value) {
             $this->$key = $value;
         }
@@ -815,7 +813,7 @@ class db_record {
                 // no loading from db needed
                 return $conditions;
             } else if ($conditions instanceof \stdClass) {
-                $conditions = (array) $conditions;
+                $conditions = (array)$conditions;
                 if (!$conditions) {
                     print_error('wrong fields');
                 }

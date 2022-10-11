@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require __DIR__ . '/../inc.php';
-require_once ($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 function moodle_restore($data, $courseid, $userdoingrestore) {
     global $DB;
-    if (! is_siteadmin()) {
+    if (!is_siteadmin()) {
         die('No Admin!');
     }
 
@@ -28,17 +28,16 @@ function moodle_restore($data, $courseid, $userdoingrestore) {
     // $courseid: destination course of this restore
     // Restore backup into course.
     $controller = new restore_controller($data, $courseid, backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore, backup::TARGET_NEW_COURSE);
-
-//    $user = $controller->get_plan()->get_setting('users')->get_value();
+    //    $user = $controller->get_plan()->get_setting('users')->get_value();
     $controller->get_plan()->get_setting('users')->set_value(0); // 2021.09.16 this should be the setting "Include enrolled users"
-//    $user = $controller->get_plan()->get_setting('users')->get_value();
+    //    $user = $controller->get_plan()->get_setting('users')->get_value();
 
-//    $controller->get_plan()->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
+    //    $controller->get_plan()->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
 
     $controller->execute_precheck();
 
     $controller->execute_plan();
 
     // Commit.
-   $transaction->allow_commit();
+    $transaction->allow_commit();
 }

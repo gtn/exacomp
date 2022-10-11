@@ -132,7 +132,7 @@ class block_exacomp_external extends external_api {
             'shortname' => new external_value (PARAM_RAW, 'shortname of course'),
             'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
             'teachercanedit' => new external_value (PARAM_BOOL),
-            'course_topics_configured' => new external_value (PARAM_BOOL, 'only available for teachers (used in diggr+)', PARAM_OPTIONAL),
+            'course_topics_configured' => new external_value (PARAM_BOOL, 'only available for teachers (used in diggr+)', VALUE_OPTIONAL),
             'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
         )));
     }
@@ -533,7 +533,7 @@ class block_exacomp_external extends external_api {
      * @return example
      * @throws invalid_parameter_exception
      */
-    public static function get_example_by_id($exampleid, $courseid=null) {
+    public static function get_example_by_id($exampleid, $courseid = null) {
         global $DB;
 
         if (empty ($exampleid)) {
@@ -544,7 +544,7 @@ class block_exacomp_external extends external_api {
             'exampleid' => $exampleid,
         ));
 
-        if(!$courseid){
+        if (!$courseid) {
             $courseid = static::find_courseid_for_example($exampleid);
         }
         static::require_can_access_example($exampleid, $courseid);
@@ -824,7 +824,7 @@ class block_exacomp_external extends external_api {
             'trainerid' => $USER->id,
         ));
         if ($trainer) {
-            return (object) [
+            return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr,
             ];
         }
@@ -838,11 +838,11 @@ class block_exacomp_external extends external_api {
             $context = context_course::instance($course["courseid"]);
             $isTeacher = block_exacomp_is_teacher($context);
             if ($isTeacher) {
-                return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr];
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr];
             }
         }
 
-        return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr];
 
         //        // neither student or trainer depricated
         //        return (object)[
@@ -899,7 +899,7 @@ class block_exacomp_external extends external_api {
             'trainerid' => $USER->id,
         ));
         if ($trainer) {
-            return (object) [
+            return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr,
             ];
         }
@@ -909,7 +909,7 @@ class block_exacomp_external extends external_api {
         ));
 
         if ($student) {
-            return (object) [
+            return (object)[
                 "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr,
             ];
         }
@@ -922,12 +922,12 @@ class block_exacomp_external extends external_api {
             $context = context_course::instance($course["courseid"]);
             $isTeacher = block_exacomp_is_teacher($context);
             if ($isTeacher) {
-                return (object) [
+                return (object)[
                     "role" => BLOCK_EXACOMP_WS_ROLE_TEACHER, "diwipassapp_login" => $firstLoginDiggr,
                 ];
             }
         }
-        return (object) [
+        return (object)[
             "role" => BLOCK_EXACOMP_WS_ROLE_STUDENT, "diwipassapp_login" => $firstLoginDiggr,
         ];
 
@@ -1828,7 +1828,7 @@ class block_exacomp_external extends external_api {
      * @return array
      */
     public static function create_or_update_example($exampleid, $name, $description, $timeframe = '', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $filename,
-        $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0) {
+                                                    $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0) {
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -1851,11 +1851,11 @@ class block_exacomp_external extends external_api {
             'is_teacherexample' => $is_teacherexample,
         ));
 
-        if(!get_config('exacomp', 'example_upload_global')){
+        if (!get_config('exacomp', 'example_upload_global')) {
             // courseid HAS to be set because the admin setting says so. If there is no $courseid ==> error
-            if($courseid != 0){
+            if ($courseid != 0) {
                 $onlyForThisCourse = true;
-            }else{
+            } else {
                 throw new invalid_parameter_exception ('Parameter courseid can not be empty, because of example_upload_global setting set to false.');
             }
         }
@@ -1893,7 +1893,7 @@ class block_exacomp_external extends external_api {
             'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
             'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
             'comps' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
-            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
+            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies (comma seperated)', VALUE_DEFAULT, ''),
             'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
             'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
             'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile', VALUE_DEFAULT, -1),
@@ -1914,7 +1914,7 @@ class block_exacomp_external extends external_api {
      * @return array
      */
     public static function diggrplus_create_or_update_example($exampleid = -1, $name, $description, $timeframe = '', $externalurl = 'www', $comps = '0', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $crosssubjectid = -1,
-        $fileitemids = '', $removefiles = '', $solutionfileitemid = '', $activityid = 0, $is_teacherexample = 0) {
+                                                              $fileitemids = '', $removefiles = '', $solutionfileitemid = '', $activityid = 0, $is_teacherexample = 0) {
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
@@ -1939,6 +1939,7 @@ class block_exacomp_external extends external_api {
         // careful: if we ever change $onlyForThisCourse --> check the admin setting, just like for dakora
         $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid,
             $is_teacherexample, $removefiles, null, true);
+
         return array("success" => true, "exampleid" => $example["exampleid"]);
     }
 
@@ -2060,7 +2061,7 @@ class block_exacomp_external extends external_api {
         block_exacomp_require_teacher($courseid);
 
         $o365_request = function($path) use ($access_token) {
-            $ch = curl_init('https://graph.microsoft.com/v1.0/'.$path);
+            $ch = curl_init('https://graph.microsoft.com/v1.0/' . $path);
 
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Authorization: Bearer ' . $access_token,
@@ -2533,7 +2534,7 @@ class block_exacomp_external extends external_api {
      */
     public static function get_user_profile($userid) {
         global $CFG, $DB, $USER;
-        require_once($CFG->dirroot."/lib/enrollib.php");
+        require_once($CFG->dirroot . "/lib/enrollib.php");
 
         static::validate_parameters(static::get_user_profile_parameters(), array(
             'userid' => $userid,
@@ -3933,6 +3934,8 @@ class block_exacomp_external extends external_api {
                 'type' => new external_value (PARAM_TEXT, 'mime type for file'),
                 //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
             )), 'taskfiles of the example', VALUE_OPTIONAL),
+            'completefile' => new external_value (PARAM_TEXT, 'completefile (url/description) of example', VALUE_OPTIONAL),
+            'completefilefilename' => new external_value (PARAM_TEXT, 'completefile filename', VALUE_OPTIONAL),
         ));
     }
 
@@ -4613,11 +4616,11 @@ class block_exacomp_external extends external_api {
             $isTeacher = block_exacomp_is_teacher($context);
 
             if ($isTeacher) {
-                return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
             }
         }
 
-        return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
     }
 
     /**
@@ -5220,7 +5223,7 @@ class block_exacomp_external extends external_api {
             }
 
             $example->title = static::custom_htmltrim(strip_tags($example->title));
-			$example->end = $example->endtime;  //because field was renamed to endtime in exacomp, not in dakora
+            $example->end = $example->endtime;  //because field was renamed to endtime in exacomp, not in dakora
             // 		    //Taxonomies:
             $taxonomies = '';
             $taxids = '';
@@ -5382,7 +5385,7 @@ class block_exacomp_external extends external_api {
             }
         }
 
-//        $all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
+        //        $all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
         foreach ($all_cross_subjects as $cross_subject) {
             $cross_subject->visible = 0;
             if (array_key_exists($cross_subject->id, $cross_subjects_visible)) {
@@ -5415,7 +5418,7 @@ class block_exacomp_external extends external_api {
                     $example_return->timestampstudent = 0;
                     $example_return->solution_visible = 0;
                 } else {
-                    $evaluation = (object) static::_get_example_information($cross_subject->courseid, $userid, $example->id);
+                    $evaluation = (object)static::_get_example_information($cross_subject->courseid, $userid, $example->id);
                     $example_return->teacherevaluation = $evaluation->teachervalue;
                     $example_return->studentevaluation = $evaluation->studentvalue;
                     $example_return->evalniveauid = $evaluation->evalniveauid;
@@ -6275,7 +6278,7 @@ class block_exacomp_external extends external_api {
         $students = json_decode($students);
         $groups = json_decode($groups);
 
-        $distributionid = (int) $distributionid;
+        $distributionid = (int)$distributionid;
 
         foreach ($groups as $group) {
             block_exacomp_add_examples_to_schedule_for_group($courseid, $group, $distributionid);
@@ -6613,7 +6616,7 @@ class block_exacomp_external extends external_api {
      * @return array of course subjects
      */
     public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle = '', $collabuserids = '',
-        $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
+                                                 $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
@@ -6857,6 +6860,7 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'itemid' => new external_value (PARAM_INT, 'id of item'),
             'comment' => new external_value (PARAM_TEXT, 'comment text'),
+            'fileitemid' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -6867,12 +6871,13 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item_comment($itemid, $comment) {
+    public static function diggrplus_submit_item_comment($itemid, $comment, $fileitemid) {
         global $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_comment_parameters(),
             array(
                 'itemid' => $itemid,
                 'comment' => $comment,
+                'fileitemid' => $fileitemid,
             ));
 
         $item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
@@ -6895,7 +6900,18 @@ class block_exacomp_external extends external_api {
             throw new invalid_parameter_exception('not allowed to comment on item');
         }
 
-        $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
+        if ($fileitemid) {
+            $context = context_user::instance($USER->id);
+            $fs = get_file_storage();
+            $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
+            if (!$file) {
+                throw new moodle_exception('file not found');
+            }
+        } else {
+            $file = null;
+        }
+
+        $commentid = $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $comment, 'timemodified' => time()));
 
         // send notification to all other users about comment
         $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'type' => 'item_comment', 'itemid' => $itemid, 'itemuserid' => $item->userid, 'comment' => $comment];
@@ -6911,6 +6927,16 @@ class block_exacomp_external extends external_api {
                 continue;
             }
             block_exacomp_send_notification("comment", $USER, $user_id, $subject, '', $notificationContext, '', false, $item->courseid, $customdata);
+        }
+
+        if ($file) {
+            $fs->create_file_from_storedfile(array(
+                'contextid' => context_system::instance()->id,
+                'component' => 'block_exaport',
+                'filearea' => 'item_comment_file',
+                'itemid' => $commentid,
+            ), $file);
+            $file->delete();
         }
 
         return array("success" => true, "itemid" => $itemid);
@@ -6986,6 +7012,31 @@ class block_exacomp_external extends external_api {
             $userpicture = new user_picture($users[$comment->userid]);
             $userpicture->size = 1; // Size f1.
             $comment->profileimageurl = $userpicture->get_url(g::$PAGE)->out(false);
+
+            if (empty($comment->file)) {
+                // empty value not allowed in webservice response
+                unset($comment->file);
+            } else {
+                $file = $comment->file;
+                // access ist über die gesharte view
+                $access = block_exacomp_get_access_for_shared_view_for_item($item, $USER->id);
+                if ($access) {
+                    $fileurl = (new moodle_url("/blocks/exaport/portfoliofile.php", [
+                        'access' => $access,
+                        'itemid' => $item->id,
+                        'commentid' => $comment->id,
+                        'wstoken' => static::wstoken(),
+                    ]))->out(false);
+                } else {
+                    $fileurl = '';
+                }
+
+                $comment->file = [
+                    'file' => $fileurl,
+                    'mimetype' => $file->get_mimetype(),
+                    'filename' => $file->get_filename(),
+                ];
+            }
         }
 
         return $itemcomments;
@@ -7004,6 +7055,11 @@ class block_exacomp_external extends external_api {
             'comment' => new external_value (PARAM_TEXT, 'commenttext'),
             'timemodified' => new external_value (PARAM_INT, 'timemodified'),
             'profileimageurl' => new external_value (PARAM_TEXT, ''),
+            'file' => new external_single_structure(array(
+                'filename' => new external_value (PARAM_TEXT, 'filename'),
+                'file' => new external_value (PARAM_URL, 'file url'),
+                'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+            ), "", VALUE_OPTIONAL),
         )));
     }
 
@@ -7020,7 +7076,7 @@ class block_exacomp_external extends external_api {
             'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ""),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_DEFAULT, -1),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
@@ -7106,19 +7162,7 @@ class block_exacomp_external extends external_api {
                 if ($status == "new") { // if filtered by "new" then only examples without items should be shown
                     unset($examplesAndItems[$key]);
                 } else {
-                    switch ($exampleItem->item->status) {
-                        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
-                            $exampleItem->status = "inprogress";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
-                            $exampleItem->status = "submitted";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
-                            $exampleItem->status = "completed";
-                            break;
-                        default:
-                            $exampleItem->status = "errornostate";
-                    }
+                    $exampleItem->status = block_exacomp_get_human_readable_item_status($exampleItem->item->status);
                 }
             } else { //no item but the object exists ==> there must be an example, no condition needed
                 $exampleItem->status = "new";
@@ -7131,7 +7175,7 @@ class block_exacomp_external extends external_api {
                 $userpicture = new user_picture($student);
                 $userpicture->size = 1; // Size f1.
 
-                $exampleItem->item->owner = (object) [
+                $exampleItem->item->owner = (object)[
                     'userid' => $student->id,
                     'fullname' => fullname($student),
                     'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
@@ -7251,7 +7295,7 @@ class block_exacomp_external extends external_api {
             'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ''),
-            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for "LFS1, LFS2 ect', VALUE_DEFAULT, -1),
+            'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
         ));
     }
@@ -7303,7 +7347,7 @@ class block_exacomp_external extends external_api {
 
         $students = [];
         foreach ($courses as $course) {
-            $course = (object) $course;
+            $course = (object)$course;
             $courseStudents = block_exacomp_get_students_by_course($course->courseid);
             foreach ($courseStudents as $student) {
                 if ($studentid && $student->id != $studentid) {
@@ -7361,7 +7405,7 @@ class block_exacomp_external extends external_api {
                     $userpicture = new user_picture($student);
                     $userpicture->size = 1; // Size f1.
 
-                    $studentExamplesAndItem->item->owner = (object) [
+                    $studentExamplesAndItem->item->owner = (object)[
                         'userid' => $student->id,
                         'fullname' => fullname($student),
                         'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
@@ -7382,19 +7426,7 @@ class block_exacomp_external extends external_api {
                 if ($status == "new") { // if filtered by "new" then only examples without items should be shown
                     unset($examplesAndItems[$key]);
                 } else {
-                    switch ($exampleItem->item->status) {
-                        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
-                            $exampleItem->status = "inprogress";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
-                            $exampleItem->status = "submitted";
-                            break;
-                        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
-                            $exampleItem->status = "completed";
-                            break;
-                        default:
-                            $exampleItem->status = "errornostate";
-                    }
+                    $exampleItem->status = block_exacomp_get_human_readable_item_status($exampleItem->item->status);
                 }
             } else { //no item but the object exists ==> there must be an example, no condition needed
                 $exampleItem->status = "new";
@@ -7536,7 +7568,15 @@ class block_exacomp_external extends external_api {
 
         $tree = block_exacomp_get_competence_tree($courseid, $subjectid, null, true, null, true, null, false, false, false, false, false);
 
+        $getExampleStatus = function($example) use ($userid) {
+            if (!$userid) {
+                // only available when selecting one student
+                return '';
+            }
 
+            $item = block_exacomp_get_current_item_for_example($userid, $example->id);
+            return block_exacomp_get_human_readable_item_status($item ? $item->status : null);
+        };
 
         foreach ($tree as $subject) {
             $elem_sub = new stdClass ();
@@ -7576,6 +7616,7 @@ class block_exacomp_external extends external_api {
                             $elem_example->title = $example->title;
                             $elem_example->creatorid = $example->creatorid;
                             $elem_example->visible = $example->visible;
+                            $elem_example->status = $getExampleStatus($example);
                             //                            $elem_example->used = $example->used;
                             $elem_child->examples[] = $elem_example;
                         }
@@ -7588,6 +7629,7 @@ class block_exacomp_external extends external_api {
                         $elem_example->title = $example->title;
                         $elem_example->creatorid = $example->creatorid;
                         $elem_example->visible = $example->visible;
+                        $elem_example->status = $getExampleStatus($example);
                         //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
                     }
@@ -7641,6 +7683,7 @@ class block_exacomp_external extends external_api {
                             'title' => new external_value (PARAM_TEXT, 'title of example'),
                             'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                             'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
+                            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
                         ))),
                     ))),
                     'examples' => new external_multiple_structure (new external_single_structure (array(
@@ -7648,6 +7691,7 @@ class block_exacomp_external extends external_api {
                         'title' => new external_value (PARAM_TEXT, 'title of example'),
                         'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                         'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
+                        'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
                     ))),
                 ))),
             ))),
@@ -7803,7 +7847,7 @@ class block_exacomp_external extends external_api {
 
         $role = block_exacomp_is_teacher_in_any_course() ? 'teacher' : 'student';
 
-        return (object) [
+        return (object)[
             "role" => $role,
         ];
     }
@@ -8407,7 +8451,7 @@ class block_exacomp_external extends external_api {
         static::require_can_access_example($exampleid, $courseid);
         block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid, $additionalInfo);
         if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
-            $example = (object) array(
+            $example = (object)array(
                 'userid' => $userid,
                 'exampleid' => $exampleid,
                 'value' => $examplevalue,
@@ -8968,7 +9012,7 @@ class block_exacomp_external extends external_api {
                         $data['teachercomment'] = $itemcomment->entry;
                         if ($itemcomment->file) { //the most recent file is being kept, so if there is a newer comment without a file, the last file is still shown
                             $tFile = $itemcomment->file;
-                            $fileurl = (string) new moodle_url("/blocks/exaport/portfoliofile.php", [
+                            $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
                                 'userid' => $userid,
                                 'itemid' => $itemInformation->id,
                                 'commentid' => $itemcomment->id,
@@ -9526,7 +9570,7 @@ class block_exacomp_external extends external_api {
                 //                    $niveauid = -1;
                 //                }
                 $niveau = new stdClass();
-                $niveau->id = (int) $niveauid; // quick bugfix: when "points" is set in the plugin settings, the last niveaus is "".. this would lead to an error since int is expected
+                $niveau->id = (int)$niveauid; // quick bugfix: when "points" is set in the plugin settings, the last niveaus is "".. this would lead to an error since int is expected
                 $evaluations = array();
                 foreach ($niveaustat as $evalvalue => $sum) {
                     $eval = new stdClass();
@@ -10470,6 +10514,8 @@ class block_exacomp_external extends external_api {
 
         $configs = array();
         $configs[] = array(
+            'id' => 0,
+            'name' => '',
             'points_limit' => block_exacomp_get_assessment_points_limit(),
             'grade_limit' => block_exacomp_get_assessment_grade_limit(),
             'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
@@ -10517,8 +10563,10 @@ class block_exacomp_external extends external_api {
             'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES, null, 'source', 'id, title, source'),
         );
 
-        foreach ($assessment_configurations as $configuration) {
+        foreach ($assessment_configurations as $id => $configuration) {
             $configs[] = array(
+                'id' => $id, // array is indexed by id
+                'name' => $configuration['name'],
                 'points_limit' => $configuration["assessment_points_limit"],
                 'grade_limit' => $configuration["assessment_grade_limit"],
                 'points_negative_threshold' => $configuration["assessment_points_negativ"],
@@ -10640,6 +10688,8 @@ class block_exacomp_external extends external_api {
                 'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
             ))),
             'configs' => new external_multiple_structure (new external_single_structure (array(
+                'id' => new external_value (PARAM_INT, ''),
+                'name' => new external_value (PARAM_TEXT, ''),
                 'points_limit' => new external_value (PARAM_INT, 'points_limit'),
                 'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
                 'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
@@ -10713,10 +10763,10 @@ class block_exacomp_external extends external_api {
             $context = context_course::instance($course["courseid"]);
             $isTeacher = block_exacomp_is_teacher($context);
             if ($isTeacher) {
-                return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
+                return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
             }
         }
-        return (object) ["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
+        return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
     }
 
     public static function login_parameters() {
@@ -11800,7 +11850,7 @@ class block_exacomp_external extends external_api {
                   WHERE topic.id = ?';
             $information = $DB->get_record_sql($sql, array($compid));
 
-            if($courseid == -1){
+            if ($courseid == -1) {
                 $courseids = block_exacomp_get_courseids_by_topic($compid); // topic can be in more than one course, use one of those courses, since it does not matter for the descriptors
                 // only use courseids where this user is enrolled, since it DOES matter for the examples
                 //there can be examples in one course, but not in the other, even though it is the same subject
@@ -11983,7 +12033,7 @@ class block_exacomp_external extends external_api {
         if (isset($cachedExampleDatas[$courseid][$example->id])) {
             $exampleData = $cachedExampleDatas[$courseid][$example->id];
         } else {
-            $exampleData = $cachedExampleDatas[$courseid][$example->id] = (object) [];
+            $exampleData = $cachedExampleDatas[$courseid][$example->id] = (object)[];
 
             $exampleData->hassubmissions = !!$DB->get_records(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $example->id));
 
@@ -12051,7 +12101,7 @@ class block_exacomp_external extends external_api {
             $solution = block_exacomp_get_file($example, 'example_solution');
 
             if ($solution) {
-                $exampleData->solution = (string) static::get_webservice_url_for_file($solution, $courseid)->out(false);
+                $exampleData->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);
                 $exampleData->solutionfilename = $solution->get_filename();
             } else if ($example->externalsolution) {
                 $exampleData->solution = $example->externalsolution;
@@ -12059,6 +12109,14 @@ class block_exacomp_external extends external_api {
 
             // $example->description = strip_tags($example->description);
             // $example->description = static::custom_htmltrim($example->description);
+
+            // complete file
+            $completefile = block_exacomp_get_file($example, 'example_completefile');
+            if ($completefile) {
+                $exampleData->completefile = (string)static::get_webservice_url_for_file($completefile, $courseid)->out(false);
+                $exampleData->completefilefilename = $completefile->get_filename();
+            }
+
         }
 
         foreach ($exampleData as $key => $value) {
@@ -12747,7 +12805,7 @@ class block_exacomp_external extends external_api {
                 $example_return->timestampteacher = 0;
                 $example_return->timestampstudent = 0;
             } else {
-                $evaluation = (object) static::_get_example_information($courseid, $userid, $example->id);
+                $evaluation = (object)static::_get_example_information($courseid, $userid, $example->id);
                 $example_return->teacherevaluation = $evaluation->teachervalue;
                 $example_return->studentevaluation = $evaluation->studentvalue;
                 $example_return->evalniveauid = $evaluation->evalniveauid;
@@ -12772,7 +12830,7 @@ class block_exacomp_external extends external_api {
     }
 
     private static function create_or_update_example_common($exampleid, $name, $description, $timeframe = '', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $filename,
-        $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0, $removefiles = 0, $visible = true, $onlyForThisCourse = false) {
+                                                            $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0, $removefiles = 0, $visible = true, $onlyForThisCourse = false) {
         global $DB, $USER, $CFG, $COURSE;
 
         $COURSE->id = $courseid; // TODO: copied this from  update_descriptor_category.. why is the CONTEXT wrong?
@@ -13516,7 +13574,7 @@ class block_exacomp_external extends external_api {
         $return = [];
 
         foreach ($values as $key => $value) {
-            $return[] = [$nameKey => (int) $key, $nameValue => $value];
+            $return[] = [$nameKey => (int)$key, $nameValue => $value];
         }
 
         return $return;
@@ -13641,7 +13699,7 @@ class block_exacomp_external extends external_api {
                     $categories .= ',';
                 }
                 $categories .= $newCategory->id;
-                $newCategoryReturn = (object) [
+                $newCategoryReturn = (object)[
                     'id' => $newCategory->id,
                     'title' => $newCategory->title,
                     'source' => $newCategory->source,
@@ -13902,7 +13960,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns desription of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function dakora_delete_custom_example_returns() {
         return new external_single_structure (array(
@@ -13952,7 +14010,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns desription of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function diggrplus_delete_custom_example_returns() {
         return new external_single_structure (array(
@@ -14095,7 +14153,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns description of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function diggrplus_get_config_returns() {
         return new external_single_structure (array(
@@ -14164,7 +14222,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns desription of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function diggrplus_annotate_example_returns() {
         return new external_single_structure (array(
@@ -14211,7 +14269,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns desription of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function diggrplus_get_student_enrolcode_returns() {
         return new external_single_structure (array(
@@ -14248,13 +14306,13 @@ class block_exacomp_external extends external_api {
         block_exacomp_require_teacher($courseid);
 
         $roleid = block_exacomp_get_student_roleid();
-        $maturity = time()+60*60*24*7;
+        $maturity = time() + 60 * 60 * 24 * 7;
 
         // delete old codes
         $DB->delete_records('block_enrolcode', array('roleid' => $roleid, 'courseid' => $courseid));
 
         // create new code
-        require_once $CFG->dirroot.'/blocks/enrolcode/locallib.php';
+        require_once $CFG->dirroot . '/blocks/enrolcode/locallib.php';
         $code = block_enrolcode_lib::create_code($courseid, $roleid, 0, 1, $maturity, 0, 0);
 
         return array("code" => $code, 'valid_until' => $maturity);
@@ -14263,7 +14321,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns desription of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function diggrplus_create_student_enrolcode_returns() {
         return new external_single_structure (array(
@@ -14296,7 +14354,7 @@ class block_exacomp_external extends external_api {
         ));
         global $CFG;
 
-        require_once $CFG->dirroot.'/blocks/enrolcode/locallib.php';
+        require_once $CFG->dirroot . '/blocks/enrolcode/locallib.php';
         $courseid = block_enrolcode_lib::enrol_by_code($code);
 
         if (!$courseid) {
@@ -14309,7 +14367,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns desription of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function diggrplus_enrol_by_enrolcode_returns() {
         return new external_single_structure (array(
@@ -14411,7 +14469,7 @@ class block_exacomp_external extends external_api {
     /**
      * Returns desription of method return values
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function diwipass_get_sections_with_materials_returns() {
         return new external_single_structure (array(
@@ -14449,6 +14507,496 @@ class block_exacomp_external extends external_api {
                     ))),
                 ))),
             ))),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_get_example_and_item_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, ''),
+            'courseid' => new external_value(PARAM_INT, ''),
+        ));
+    }
+
+    /**
+     * @ws-type-read
+     * @return array of items
+     */
+    public static function dakoraplus_get_example_and_item($exampleid, $courseid) {
+        global $USER;
+
+        static::validate_parameters(static::dakoraplus_get_example_and_item_parameters(), array(
+            'exampleid' => $exampleid,
+            'courseid' => $courseid,
+        ));
+
+        $studentid = $USER->id;
+
+        $example = static::get_example_by_id($exampleid, $courseid);
+
+        $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
+        static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
+
+        $examplesAndItem = new stdClass();
+        $examplesAndItem->courseid = $item->courseid;
+        if ($item) {
+            $examplesAndItem->item = $item;
+        }
+        $examplesAndItem->subjecttitle = $item->subjecttitle;
+        $examplesAndItem->subjectid = $item->subjectid;
+        $examplesAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
+        $examplesAndItem->topicid = $item->topicid ? $item->topicid : 0;
+        $examplesAndItem->niveautitle = "";
+        $examplesAndItem->niveauid = 0;
+        $examplesAndItem->timemodified = $item->timemodified;
+
+        $examplesAndItem->status = block_exacomp_get_human_readable_item_status($examplesAndItem->item ? $examplesAndItem->item->status : null);
+
+        return $examplesAndItem;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function dakoraplus_get_example_and_item_returns() {
+        return new external_single_structure (array(
+            'courseid' => new external_value (PARAM_INT, ''),
+            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+
+            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+
+            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
+
+            'example' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of example'),
+                'title' => new external_value (PARAM_TEXT, 'title of example'),
+                'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
+                //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
+                //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+                //                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
+                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+                //                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
+                //                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+
+                'taskfiles' => new external_multiple_structure(new external_single_structure(array(
+                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value (PARAM_URL, 'file url'),
+                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
+                    //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                )), 'taskfiles of the example', VALUE_OPTIONAL),
+
+                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
+                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
+            ), 'example information', VALUE_OPTIONAL),
+            'item' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of item '),
+                'name' => new external_value (PARAM_TEXT, 'title of item'),
+                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                //                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                // 'owner' => new external_single_structure(array(
+                //     'userid' => new external_value (PARAM_INT, ''),
+                //     'fullname' => new external_value (PARAM_TEXT, ''),
+                //     'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                // )),
+                'studentfiles' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value (PARAM_INT, 'id'),
+                    'filename' => new external_value (PARAM_TEXT, 'filename'),
+                    'file' => new external_value (PARAM_URL, 'file url'),
+                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file'),
+                )), "files of the student's submission", VALUE_OPTIONAL),
+                'collaborators' => new external_multiple_structure (new external_single_structure (array(
+                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
+                    'fullname' => new external_value (PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                )), 'collaborators', VALUE_OPTIONAL),
+            ), 'item information', VALUE_OPTIONAL),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_get_teacher_example_and_item_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, ''),
+            'courseid' => new external_value(PARAM_INT, ''),
+            'studentid' => new external_value (PARAM_INT, ''),
+        ));
+    }
+
+    /**
+     * @ws-type-read
+     * @return item
+     */
+    public static function dakoraplus_get_teacher_example_and_item($exampleid, $courseid, $studentid) {
+        global $USER;
+
+        static::validate_parameters(static::dakoraplus_get_teacher_example_and_item_parameters(), array(
+            'exampleid' => $exampleid,
+            'courseid' => $courseid,
+            'studentid' => $studentid,
+        ));
+
+        block_exacomp_require_teacher($courseid);
+
+        $teacherid = $USER->id;
+
+        $example = static::get_example_by_id($exampleid, $courseid);
+
+        $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
+        static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
+
+        $examplesAndItem = new stdClass();
+        $examplesAndItem->courseid = $item->courseid;
+        if ($item) {
+            $examplesAndItem->item = $item;
+        }
+        $examplesAndItem->subjecttitle = $item->subjecttitle;
+        $examplesAndItem->subjectid = $item->subjectid;
+        $examplesAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
+        $examplesAndItem->topicid = $item->topicid ? $item->topicid : 0;
+        $examplesAndItem->niveautitle = "";
+        $examplesAndItem->niveauid = 0;
+        $examplesAndItem->timemodified = $item->timemodified;
+
+        $examplesAndItem->status = block_exacomp_get_human_readable_item_status($examplesAndItem->item ? $examplesAndItem->item->status : null);
+
+        return $examplesAndItem;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function dakoraplus_get_teacher_example_and_item_returns() {
+        return new external_single_structure (array(
+            'courseid' => new external_value (PARAM_INT, ''),
+            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+
+            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+
+            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
+
+            'example' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of example'),
+                'title' => new external_value (PARAM_TEXT, 'title of example'),
+                'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
+                //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
+                //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+                //                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
+                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
+                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+                //                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
+                //                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+
+                'taskfiles' => new external_multiple_structure(new external_single_structure(array(
+                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value (PARAM_URL, 'file url'),
+                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
+                    //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                )), 'taskfiles of the example', VALUE_OPTIONAL),
+
+                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
+                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
+            ), 'example information', VALUE_OPTIONAL),
+            'item' => new external_single_structure(array(
+                'id' => new external_value (PARAM_INT, 'id of item '),
+                'name' => new external_value (PARAM_TEXT, 'title of item'),
+                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                //                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                // 'owner' => new external_single_structure(array(
+                //     'userid' => new external_value (PARAM_INT, ''),
+                //     'fullname' => new external_value (PARAM_TEXT, ''),
+                //     'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                // )),
+                'studentfiles' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value (PARAM_INT, 'id'),
+                    'filename' => new external_value (PARAM_TEXT, 'filename'),
+                    'file' => new external_value (PARAM_URL, 'file url'),
+                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file'),
+                )), "files of the student's submission", VALUE_OPTIONAL),
+                'collaborators' => new external_multiple_structure (new external_single_structure (array(
+                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
+                    'fullname' => new external_value (PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                )), 'collaborators', VALUE_OPTIONAL),
+            ), 'item information', VALUE_DEFAULT, 'xxx'),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_save_coursesettings_parameters() {
+        return new external_function_parameters (array(
+            'courseid' => new external_value(PARAM_INT, ''),
+            'assessment_config' => new external_value (PARAM_INT, '', VALUE_DEFAULT),
+        ));
+    }
+
+    /**
+     * @ws-type-write
+     * @return success
+     */
+    public static function dakoraplus_save_coursesettings($courseid, $assessment_config = null) {
+        static::validate_parameters(static::dakoraplus_save_coursesettings_parameters(), array(
+            'courseid' => $courseid,
+            'assessment_config' => $assessment_config,
+        ));
+
+        block_exacomp_require_teacher($courseid);
+
+        if ($assessment_config !== null) {
+            if ($assessment_config) {
+                // check if is available
+                $assessment_configurations = block_exacomp_get_assessment_configurations();
+                if (empty($assessment_configurations[$assessment_config])) {
+                    throw new invalid_parameter_exception ("assessment config with id '{$assessment_config}' not found");
+                }
+            }
+
+            $settings = block_exacomp_get_settings_by_course($courseid);
+            $settings->assessmentconfiguration = $assessment_config;
+            $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies); // TODO: why like this? Is this done at every location? Then why not in the function.. copied from edit_course.php
+            block_exacomp_save_coursesettings($courseid, $settings);
+        }
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function dakoraplus_save_coursesettings_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_get_learning_diary_parameters() {
+        return new external_function_parameters (array());
+    }
+
+    /**
+     * @ws-type-read
+     * @return array
+     */
+    public static function dakoraplus_get_learning_diary() {
+        global $USER, $DB;
+
+        $category = $DB->get_record('block_exaportcate', ['userid' => $USER->id, 'name' => 'Lerntagebuch'], '*', IGNORE_MULTIPLE);
+        if (!$category) {
+            return [];
+        }
+
+        $items = $DB->get_records('block_exaportitem', ['userid' => $USER->id, 'type' => 'note', 'categoryid' => $category->id], 'timemodified DESC');
+
+        array_walk($items, function($item) {
+            $item->title = $item->name;
+            $item->text = $item->intro;
+        });
+
+        return $items;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakoraplus_get_learning_diary_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(array(
+                'id' => new external_value(PARAM_INT),
+                'timemodified' => new external_value(PARAM_INT),
+                'title' => new external_value(PARAM_TEXT),
+                'text' => new external_value(PARAM_TEXT),
+            ))
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function dakoraplus_save_learning_diary_parameters() {
+        return new external_function_parameters (array(
+            'id' => new external_value(PARAM_INT),
+            'title' => new external_value(PARAM_TEXT),
+            'text' => new external_value(PARAM_TEXT),
+        ));
+    }
+
+    /**
+     * @ws-type-write
+     * @return success
+     */
+    public static function dakoraplus_save_learning_diary($id, $title, $text) {
+        global $DB, $USER;
+
+        static::validate_parameters(static::dakoraplus_save_learning_diary_parameters(), array(
+            'id' => $id,
+            'title' => $title,
+            'text' => $text,
+        ));
+
+        $category = $DB->get_record('block_exaportcate', ['userid' => $USER->id, 'name' => 'Lerntagebuch'], '*', IGNORE_MULTIPLE);
+        if (!$category) {
+            $category = new stdClass();
+            $category->name = "Lerntagebuch";
+            $category->description = "Erstellt in DakoraPlus";
+            $category->userid = $USER->id;
+
+            $category->id = $DB->insert_record('block_exaportcate', $category);
+        }
+
+        $newItem = new stdClass();
+        $newItem->userid = $USER->id;
+        $newItem->name = $title;
+        $newItem->intro = $text;
+        $newItem->categoryid = $category->id;
+        $newItem->type = 'note';
+        $newItem->timemodified = time();
+
+        if ($id) {
+            $oldItem = $DB->get_record('block_exaportitem', ['userid' => $USER->id, 'id' => $id, 'type' => 'note', 'categoryid' => $category->id]);
+            // check if is owner
+            if (!$oldItem) {
+                throw new invalid_parameter_exception ("learning_diary entry not found or not allowed");
+            }
+
+            $newItem->id = $id;
+            $DB->update_record("block_exaportitem", $newItem);
+        } else {
+            $DB->insert_record('block_exaportitem', $newItem);
+        }
+
+        return array("success" => true);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function dakoraplus_save_learning_diary_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'status'),
+        ));
+    }
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_lang_parameters() {
+        return new external_function_parameters (array(
+            'lang' => new external_value(PARAM_TEXT),
+            'app' => new external_value(PARAM_TEXT),
+        ));
+    }
+
+    /**
+     * Get language definitions in json format for diggr-plus and dakora-plus apps
+     * @ws-type-read
+     * @return success
+     */
+    public static function get_lang($lang, $app) {
+        global $DB, $USER;
+
+        static::validate_parameters(static::get_lang_parameters(), array(
+            'lang' => $lang,
+            'app' => $app,
+        ));
+
+        header("Content-Type: application/json");
+        header('Access-Control-Allow-Origin: *');
+
+        if (!in_array($app, ['diggr-plus', 'dakora-plus', 'setapp'])) {
+            $data = ['error' => "app {$app} not allowed"];
+        } elseif (!preg_match('!^[a-z]+$!', $lang)) {
+            $data = ['error' => "lang {$lang} not allowed"];
+        } else {
+            $langFile = __DIR__ . "/lang/{$lang}/{$app}.json";
+            if (!file_exists($langFile)) {
+                $data = ['info' => 'no lang data found'];
+            } else {
+                $data = json_decode(file_get_contents($langFile));
+            }
+        }
+
+        echo json_encode($data);
+        exit;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function get_lang_returns() {
+        return new external_single_structure (array(
+            'string_id' => new external_value (PARAM_TEXT, 'translation'),
         ));
     }
 

@@ -77,8 +77,8 @@ $string['LA_backtoview'] = 'back to original view';
 $string['LA_from_n'] = ' from ';
 $string['LA_from_m'] = ' from ';
 $string['LA_to'] = ' to ';
-$string['LA_enddate']='end date';
-$string['LA_startdate']='start date';
+$string['LA_enddate'] = 'end date';
+$string['LA_startdate'] = 'start date';
 
 //Help
 $string['help_content'] = '<h1>Introduction Video</h1>
@@ -130,7 +130,7 @@ $string['extern_task'] = 'Tasca externa';
 $string['total_example'] = 'Exemple complert';
 
 //Example Upload
-$string['example_upload_header']  = 'Pujar la meva pròpia tasca o exemple';
+$string['example_upload_header'] = 'Pujar la meva pròpia tasca o exemple';
 $string['taxonomy'] = 'taxonomie';
 $string['descriptors'] = 'competències';
 $string['descriptors_help'] = 'You can select multible competencies';

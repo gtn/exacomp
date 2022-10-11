@@ -75,7 +75,7 @@ if ($action == 'dakora_sso') {
     }
 
     $moodle_redirect_token = '';
-    $moodle_data_token = 'data-'.block_exacomp_random_password(24);
+    $moodle_data_token = 'data-' . block_exacomp_random_password(24);
     $DB->insert_record('block_exacompapplogin', [
         'moodle_redirect_token' => $moodle_redirect_token,
         'moodle_data_token' => $moodle_data_token,
@@ -86,14 +86,12 @@ if ($action == 'dakora_sso') {
 
     $dakora_url = trim(get_config('exacomp', 'dakora_url'));
 
-    $redirect_url = $dakora_url.'/page/sso.html?moodle_url='.$CFG->wwwroot.'&moodle_token='.$moodle_data_token;
+    $redirect_url = $dakora_url . '/page/sso.html?moodle_url=' . $CFG->wwwroot . '&moodle_token=' . $moodle_data_token;
 
     redirect($redirect_url);
 
     exit;
 }
-
-
 
 
 $PAGE->set_context(context_system::instance());
@@ -103,7 +101,7 @@ $PAGE->set_pagelayout('embedded');
 if (!get_config('exacomp', 'applogin_enabled')) {
     echo $OUTPUT->header();
 
-    echo '<div style="width: 100%; text-align: center; padding-top: 100px;">'.block_exacomp_trans(['de:App Login ist deaktiviert!', 'en:App Login is disabled!']).'</div>';
+    echo '<div style="width: 100%; text-align: center; padding-top: 100px;">' . block_exacomp_trans(['de:App Login ist deaktiviert!', 'en:App Login is disabled!']) . '</div>';
 
     echo $OUTPUT->footer();
     exit;
