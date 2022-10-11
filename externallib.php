@@ -7551,7 +7551,7 @@ class block_exacomp_external extends external_api {
      * @return array of user courses
      */
     public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid, $subjectid = null) {
-        global $USER;
+        global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
             'userid' => $userid,
@@ -7580,6 +7580,11 @@ class block_exacomp_external extends external_api {
             return block_exacomp_get_human_readable_item_status($item ? $item->status : null);
         };
 
+        $student = $DB->get_record('user', [
+            'id' => $userid,
+        ]);
+        $student = block_exacomp_get_user_information_by_course($student, $courseid);
+
         foreach ($tree as $subject) {
             $elem_sub = new stdClass ();
             $elem_sub->id = $subject->id;
@@ -7596,6 +7601,8 @@ class block_exacomp_external extends external_api {
                 $elem_topic->descriptors = array();
                 $elem_topic->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
                 $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
+                $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
+                $elem_topic->studentevaluation = $student->topics->student[$topic->id];
                 foreach ($topic->descriptors as $descriptor) {
                     $elem_desc = new stdClass ();
                     $elem_desc->id = $descriptor->id;
@@ -7604,6 +7611,8 @@ class block_exacomp_external extends external_api {
                     $elem_desc->childdescriptors = array();
                     $elem_desc->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid, false);
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
+                    $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
+                    $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
@@ -7612,6 +7621,8 @@ class block_exacomp_external extends external_api {
                         $elem_child->examples = array();
                         $elem_child->visible = block_exacomp_is_descriptor_visible($courseid, $child, $userid, false);
                         $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
+                        $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
+                        $elem_child->studentevaluation = $student->competencies->student[$child->id];
                         foreach ($child->examples as $example) {
                             $elem_example = new stdClass ();
                             $elem_example->id = $example->id;
@@ -7668,24 +7679,32 @@ class block_exacomp_external extends external_api {
                 'title' => new external_value (PARAM_TEXT, 'title of topic'),
                 'visible' => new external_value (PARAM_BOOL, 'visibility of topic in current context '),
                 'used' => new external_value (PARAM_BOOL, 'if topic is used'),
+                'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                 'descriptors' => new external_multiple_structure (new external_single_structure (array(
                     'id' => new external_value (PARAM_INT, 'id of descriptor'),
                     'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
                     'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
                     'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
                     'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
+                    'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                    'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                     'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
                         'id' => new external_value (PARAM_INT, 'id of example'),
                         'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
                         'title' => new external_value (PARAM_TEXT, 'title of example'),
                         'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
                         'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
+                        'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                        'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                         'examples' => new external_multiple_structure (new external_single_structure (array(
                             'id' => new external_value (PARAM_INT, 'id of example'),
                             'title' => new external_value (PARAM_TEXT, 'title of example'),
                             'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                             'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
                             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+                            'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                            'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                         ))),
                     ))),
                     'examples' => new external_multiple_structure (new external_single_structure (array(
@@ -7694,6 +7713,8 @@ class block_exacomp_external extends external_api {
                         'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                         'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
                         'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+                        'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                        'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                     ))),
                 ))),
             ))),
