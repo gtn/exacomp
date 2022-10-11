@@ -3833,6 +3833,7 @@ class block_exacomp_external extends external_api {
             'solutionfilename' => new external_value (PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
             'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
             'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+            'externaltask_embedded' => new external_value (PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
             'task' => new external_value (PARAM_TEXT, '@deprecated'),
             'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
             'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
@@ -12069,7 +12070,14 @@ class block_exacomp_external extends external_api {
             //		}
 
             // fall back to old fields
-            // TODO: check if this can be deleted?!?
+            // check if it is an h5pactivity: if it cointains "/mod/h5pactivity/view.php" then it is ==> overwrite with our link to the exacomp h5pactivity view link
+            //if(str_contains($example->externaltask, "/mod/h5pactivity/view.php")){ TODO works only for PHP8
+            //    echo "asdf";
+            //}
+            if (strpos($example->externaltask, "/mod/h5pactivity/view.php")) {
+                $exampleData->externaltask_embedded = str_replace("mod/h5pactivity/view.php", "blocks/exacomp/mod_h5p_embedded.php", $example->externaltask);
+            }
+
             $exampleData->externalurl = $example->externalurl;
             $exampleData->externaltask = $example->externaltask;
             $exampleData->task = $example->task;
@@ -12085,6 +12093,10 @@ class block_exacomp_external extends external_api {
 
             if ($exampleData->externalurl) {
                 $exampleData->externalurl = static::format_url($exampleData->externalurl);
+            }
+
+            if ($exampleData->externaltask_embedded) {
+                $exampleData->externaltask_embedded = static::format_url($exampleData->externaltask_embedded);
             }
 
             // TODO: task field still needed in exacomp?

@@ -17,21 +17,25 @@
 /**
  * Prints an instance of mod_h5pactivity.
  * But without footer and header
+ * Based on h5pactivity/view.php
  */
 
 use mod_h5pactivity\local\manager;
 use core_h5p\factory;
 use core_h5p\player;
-use core_h5p\helper;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
+
+global $OUTPUT, $USER, $PAGE;
 
 $id = required_param('id', PARAM_INT);
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'h5pactivity');
 
 require_login($course, true, $cm);
+
+
 
 $manager = manager::create_from_coursemodule($cm);
 
@@ -55,6 +59,7 @@ $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_co
     $file->get_filearea(), $file->get_itemid(), $file->get_filepath(),
     $file->get_filename(), false);
 
+$PAGE->set_pagelayout('embedded');
 $PAGE->set_url('/blocks/exacomp/mod_h5p_stripped.php', ['id' => $cm->id]);
 
 $shortname = format_string($course->shortname, true, ['context' => $context]);
@@ -65,7 +70,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
 echo "<div class=exacomp>";
-//echo $OUTPUT->header();
+echo $OUTPUT->header();
 
 $instance = $manager->get_instance();
 
@@ -76,5 +81,5 @@ if (!$manager->is_tracking_enabled()) {
 
 echo player::display($fileurl, $config, true, 'mod_h5pactivity', true);
 
-//echo $OUTPUT->footer();
+echo $OUTPUT->footer();
 echo "</div>";
