@@ -2032,6 +2032,96 @@ class block_exacomp_external extends external_api {
         ));
     }
 
+    /**
+     * @return external_function_parameters
+     */
+    public static function diggrplus_grade_element_parameters() {
+        return new external_function_parameters (array(
+            'elementid' => new external_value (PARAM_INT, 'id of element'),
+            'type' => new external_value (PARAM_TEXT, 'example, descriptor, topic'),
+            'grading' => new external_value (PARAM_INT, 'grade for this descriptor'),
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+        ));
+    }
+
+    /**
+     * Grade a element
+     *
+     * @ws-type-write
+     * @param $descriptorid
+     * @param $grading
+     * @param $courseid
+     * @param $userid
+     * @param $role
+     * @param $subjectid
+     * @return array
+     * @throws invalid_parameter_exception
+     *
+     */
+    public static function diggrplus_grade_element($elementid, $type, $grading, $courseid, $userid, $role) {
+        global $USER;
+
+        if (empty ($elementid) || empty ($grading)) {
+            throw new invalid_parameter_exception ('Parameter can not be empty');
+        }
+
+        static::validate_parameters(static::diggrplus_grade_element_parameters(), array(
+            'elementid' => $elementid,
+            'type' => $type,
+            'grading' => $grading,
+            'courseid' => $courseid,
+            'userid' => $userid,
+            'role' => $role,
+        ));
+
+        if ($userid == 0 && $role == BLOCK_EXACOMP_ROLE_STUDENT) {
+            $userid = $USER->id;
+        } else {
+            if ($userid == 0) {
+                throw new invalid_parameter_exception ('Userid can not be 0 for teacher grading');
+            }
+        }
+
+        static::require_can_access_course_user($courseid, $userid);
+
+        if ($type == 'topic') {
+            $comptype = BLOCK_EXACOMP_TYPE_TOPIC;
+        } elseif ($type == 'descriptor') {
+            $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR;
+        } elseif ($type == 'example') {
+            $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE;
+        } else {
+            throw new invalid_parameter_exception("type '$type' not supported");
+        }
+
+        if ($type == 'descriptor') {
+            $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'descriptorid' => $elementid, 'userid' => $USER->id];
+        } else {
+            $customdata = [];
+        }
+
+        block_exacomp_set_user_competence($userid, $elementid, $comptype, $courseid, $role, $grading, null, -1, true, [
+            'notification_customdata' => $customdata,
+        ]);
+
+        return array(
+            "success" => true,
+        );
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_grade_element_returns() {
+        return new external_single_structure (array(
+            'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+        ));
+    }
+
     public static function diggrplus_msteams_import_students_parameters() {
         return new external_function_parameters (array(
             'courseid' => new external_value (PARAM_INT, 'id of course to import to'),
@@ -7630,6 +7720,8 @@ class block_exacomp_external extends external_api {
                             $elem_example->creatorid = $example->creatorid;
                             $elem_example->visible = $example->visible;
                             $elem_example->status = $getExampleStatus($example);
+                            $elem_example->teacherevaluation = $student->examples->teacher[$example->id];
+                            $elem_example->studentevaluation = $student->examples->student[$example->id];
                             //                            $elem_example->used = $example->used;
                             $elem_child->examples[] = $elem_example;
                         }
@@ -7643,6 +7735,8 @@ class block_exacomp_external extends external_api {
                         $elem_example->creatorid = $example->creatorid;
                         $elem_example->visible = $example->visible;
                         $elem_example->status = $getExampleStatus($example);
+                        $elem_example->teacherevaluation = $student->examples->teacher[$example->id];
+                        $elem_example->studentevaluation = $student->examples->student[$example->id];
                         //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
                     }
@@ -14911,9 +15005,9 @@ class block_exacomp_external extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function dakoraplus_save_learning_diary_parameters() {
+    public static function dakoraplus_save_learning_diary_entry_parameters() {
         return new external_function_parameters (array(
-            'id' => new external_value(PARAM_INT),
+            'id' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
             'title' => new external_value(PARAM_TEXT),
             'text' => new external_value(PARAM_TEXT),
         ));
@@ -14926,7 +15020,7 @@ class block_exacomp_external extends external_api {
     public static function dakoraplus_save_learning_diary($id, $title, $text) {
         global $DB, $USER;
 
-        static::validate_parameters(static::dakoraplus_save_learning_diary_parameters(), array(
+        static::validate_parameters(static::dakoraplus_save_learning_diary_entry_parameters(), array(
             'id' => $id,
             'title' => $title,
             'text' => $text,
@@ -14971,7 +15065,7 @@ class block_exacomp_external extends external_api {
      *
      * @return external_single_structure
      */
-    public static function dakoraplus_save_learning_diary_returns() {
+    public static function dakoraplus_save_learning_diary_entry_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));

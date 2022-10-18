@@ -179,6 +179,14 @@ create example',
     'description' => 'Grade a descriptor',
     'type' => 'write',
   ),
+  'diggrplus_grade_element' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_grade_element',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'Grade a element',
+    'type' => 'write',
+  ),
   'diggrplus_msteams_import_students' => 
   array (
     'classname' => 'block_exacomp_external',
