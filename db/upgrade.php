@@ -4061,6 +4061,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022072300, 'exacomp');
     }
 
+    //if ($oldversion < 2022101900) {
+    //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
+    //    // If they are used ==> they will not get deleted
+    //    if ($DB->get_manager()->table_exists('local_komettranslator')) {
+    //        $sql = "DELETE FROM  {" . BLOCK_EXACOMP_DB_EXAMPLES . "}
+    //                    WHERE id IN
+    //                      (SELECT e.id as id FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
+    //                                  LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLEEVAL . "} ev on e.id = ev.exampleid
+    //                                  LEFT JOIN {block_exaportitem} ei on e.id = ei.exampid
+    //                       WHERE ev.id IS NULL
+    //                         AND ei.id IS NULL
+    //                         AND e.source = 1)";
+    //        $DB->execute($sql);
+    //    }
+    //
+    //    // Exacomp savepoint reached.
+    //    upgrade_block_savepoint(true, 2022101900, 'exacomp');
+    //}
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

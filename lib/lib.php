@@ -14307,12 +14307,21 @@ function block_exacomp_relate_komettranslator_to_exacomp() {
     //First, get all the activityids that are relevant: all activities that have any competency where the competency exists in local_komettranslator
     //DISCTINCT, since I only need to find all modules that have ANY relation. It does not matter how many competencies are linked.
     $modules = $DB->get_records_sql('
-        SELECT DISTINCT modcomp.cmid as moduleid
+        SELECT DISTINCT modcomp.cmid as moduleid, cm.course as courseid
         FROM {competency_modulecomp} modcomp
         JOIN {local_komettranslator} komet ON komet.internalid = modcomp.competencyid
+        JOIN {course_modules} cm ON cm.id = modcomp.cmid
         ');
 
-    //Now we have every relevant module
+    // We have the courseids, with the courseid we can check, if exacomp is active in this course
+    // discard those where exacomp is not even active, since then they are not needed for sure
+    // TODO: is this a good filter? Should this be the limiting factor? Or should it be more: e.g. the topic of the descriptors has to be activated?
+    $modules = array_filter($modules, function($mod) {
+        return !empty(block_exacomp_is_activated($mod->courseid));
+    });
+
+
+    //Now we have every RELEVANT module
     //for each module: get the competencies and thereby the descriptors
     foreach ($modules as $module) {
         $descriptors = $DB->get_records_sql('
@@ -14328,6 +14337,7 @@ function block_exacomp_relate_komettranslator_to_exacomp() {
         $courseid = array_values($descriptors)[0]->courseid;
         $descriptors = array_keys($descriptors); //the keys are the descriptorids, which is what I need
         if ($descriptors) {
+            // TODO: Only do this, if the module is in a course where 1. exacomp is active and 2. the corresponding exacomp subject is active
             block_exacomp_relate_example_to_activity($courseid, $module->moduleid, $descriptors, true);
         }
 
@@ -14341,7 +14351,7 @@ function block_exacomp_relate_komettranslator_to_exacomp() {
         //        }
     }
 
-    //TODO: if a competency is REMOVED from a module the example should be removed as well... right?
+    //TODO: if a competency is REMOVED from a module the example should be removed as well...?
 
     //TODO: safe the time of the last update somewhere. I can then only walk through the NEW gradings and NEW relations => better performance
 
