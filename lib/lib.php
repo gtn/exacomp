@@ -5036,13 +5036,13 @@ function block_exacomp_get_activitiy_by_id($activityid) {
  */
 function block_exacomp_update_example_activity_relations($descriptorsData = array(), $courseid = 0) {
     global $DB, $CFG, $USER;
-
     foreach ($descriptorsData as $activityid => $descriptors) {
         $relatedDescriptors = array_filter($descriptors);
         $relatedDescriptors = array_keys($relatedDescriptors);
-        block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
+        if(!empty($relatedDescriptors)){ // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
+            block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
+        }
     }
-
 }
 
 /**
