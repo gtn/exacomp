@@ -15017,7 +15017,7 @@ class block_exacomp_external extends external_api {
      * @ws-type-write
      * @return success
      */
-    public static function dakoraplus_save_learning_diary($id, $title, $text) {
+    public static function dakoraplus_save_learning_diary_entry($id, $title, $text) {
         global $DB, $USER;
 
         static::validate_parameters(static::dakoraplus_save_learning_diary_entry_parameters(), array(

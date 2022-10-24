@@ -1215,10 +1215,10 @@ create example',
     'description' => '',
     'type' => 'read',
   ),
-  'dakoraplus_save_learning_diary' => 
+  'dakoraplus_save_learning_diary_entry' => 
   array (
     'classname' => 'block_exacomp_external',
-    'methodname' => 'dakoraplus_save_learning_diary',
+    'methodname' => 'dakoraplus_save_learning_diary_entry',
     'classpath' => 'blocks/exacomp/externallib.php',
     'description' => '',
     'type' => 'write',
