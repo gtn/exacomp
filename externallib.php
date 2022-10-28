@@ -4123,7 +4123,7 @@ class block_exacomp_external extends external_api {
      */
     public static function dakora_add_example_to_learning_calendar_returns() {
         return new external_single_structure (array(
-            'scheduleid' => new external_value (PARAM_INT, 'id of the single added example', VALUE_OPTIONAL),
+            'scheduleid' => new external_value (PARAM_INT, 'id of the single added example'),
             'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
@@ -7301,7 +7301,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
             'courseid' => new external_value (PARAM_INT, ''),
-            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+            'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
@@ -7548,7 +7548,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_teacher_examples_and_items_returns() {
         return new external_multiple_structure(new external_single_structure (array(
             'courseid' => new external_value (PARAM_INT, ''),
-            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+            'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
@@ -7796,7 +7796,7 @@ class block_exacomp_external extends external_api {
                             'title' => new external_value (PARAM_TEXT, 'title of example'),
                             'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                             'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
-                            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+                            'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
                             'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                             'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                         ))),
@@ -7806,7 +7806,7 @@ class block_exacomp_external extends external_api {
                         'title' => new external_value (PARAM_TEXT, 'title of example'),
                         'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
                         'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
-                        'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+                        'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
                         'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                         'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                     ))),
@@ -14695,7 +14695,7 @@ class block_exacomp_external extends external_api {
     public static function dakoraplus_get_example_and_item_returns() {
         return new external_single_structure (array(
             'courseid' => new external_value (PARAM_INT, ''),
-            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+            'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
@@ -14828,7 +14828,7 @@ class block_exacomp_external extends external_api {
     public static function dakoraplus_get_teacher_example_and_item_returns() {
         return new external_single_structure (array(
             'courseid' => new external_value (PARAM_INT, ''),
-            'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed'),
+            'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject'),
             'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
             'topicid' => new external_value (PARAM_INT, 'id of topic'),
