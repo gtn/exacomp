@@ -89,9 +89,15 @@ foreach ($servicesFiles as $servicesFile) {
                     }
 
                     if ($paramInfo->required == VALUE_DEFAULT) {
-                        ob_start();
-                        var_dump($paramInfo->default);
-                        $default = preg_replace("![\r\n\s]+!", ' ', trim(ob_get_clean()));
+                        // hack default param is time()
+                        if (strpos($paramName, 'time') !== false && @$paramInfo->type == PARAM_INT && abs(time() - $paramInfo->default) < 10) {
+                            // default is the current time() value
+                            $default = 'time()';
+                        } else {
+                            ob_start();
+                            var_dump($paramInfo->default);
+                            $default = preg_replace("![\r\n\s]+!", ' ', trim(ob_get_clean()));
+                        }
                     } else {
                         $default = '';
                     }

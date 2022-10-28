@@ -14993,6 +14993,7 @@ class block_exacomp_external extends external_api {
         return new external_multiple_structure(
             new external_single_structure(array(
                 'id' => new external_value(PARAM_INT),
+                'timecreated' => new external_value(PARAM_INT),
                 'timemodified' => new external_value(PARAM_INT),
                 'title' => new external_value(PARAM_TEXT),
                 'text' => new external_value(PARAM_TEXT),
@@ -15038,7 +15039,7 @@ class block_exacomp_external extends external_api {
 
         $newItem = new stdClass();
         $newItem->userid = $USER->id;
-        $newItem->name = $title;
+        $newItem->name = $title ?: date('Y-m-d');
         $newItem->intro = $text;
         $newItem->categoryid = $category->id;
         $newItem->type = 'note';
@@ -15054,6 +15055,8 @@ class block_exacomp_external extends external_api {
             $newItem->id = $id;
             $DB->update_record("block_exaportitem", $newItem);
         } else {
+            $newItem->timecreated = time();
+
             $DB->insert_record('block_exaportitem', $newItem);
         }
 
