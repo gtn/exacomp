@@ -10192,6 +10192,54 @@ class block_exacomp_external extends external_api {
      *
      * @return external_function_parameters
      */
+    public static function dakora_get_example_h5p_activity_results_parameters() {
+        return new external_function_parameters (array(
+            'exampleid' => new external_value (PARAM_INT, 'id of the example that is connected to an activity'),
+        ));
+    }
+
+    /**
+     *
+     * @ws-type-read
+     * @return boolean
+     */
+    public static function dakora_get_example_h5p_activity_results($exampleid) {
+        global $DB, $USER;
+        static::validate_parameters(static::dakora_get_example_h5p_activity_results_parameters(), array("exampleid" => $exampleid));
+
+        // get the related activity
+
+        // if h5p: get /mod/h5pactivity/report.php?a=1&userid=5
+
+        // if hvp: get  /mod/hvp/review.php?id=2&user=$USER->id
+
+
+        $returnvalue = array(
+            'topresult' => 1,
+            'results' => 2,
+            'resultpage_url' => 3
+        );
+        return $returnvalue;
+    }
+
+    /**
+     * Returns description of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function dakora_get_example_h5p_activity_results_returns() {
+        return new external_multiple_structure (new external_single_structure (array(
+            'topresult' => new external_value (PARAM_TEXT, 'name'),
+            'results' => new external_value (PARAM_TEXT, 'summary'),
+            'resultpage_url' => new external_value (PARAM_TEXT, 'content'),
+        )));
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
     public static function diggr_create_cohort_parameters() {
         return new external_function_parameters(array(
             'name' => new external_value(PARAM_RAW, 'cohort name'),

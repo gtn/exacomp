@@ -877,6 +877,14 @@ Get competence statistic for topic in profile for 3D graph',
     'description' => '',
     'type' => 'read',
   ),
+  'dakora_get_example_h5p_activity_results' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'dakora_get_example_h5p_activity_results',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => '',
+    'type' => 'read',
+  ),
   'block_exacomp_diggr_create_cohort' => 
   array (
     'classname' => 'block_exacomp_external',
