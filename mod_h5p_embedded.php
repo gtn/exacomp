@@ -17,7 +17,7 @@
 /**
  * Prints an instance of mod_h5pactivity.
  * But without footer and header
- * Based on h5pactivity/view.php
+ * Based on mod/h5pactivity/view.php
  */
 
 use mod_h5pactivity\local\manager;
@@ -60,7 +60,7 @@ $fileurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_co
     $file->get_filename(), false);
 
 $PAGE->set_pagelayout('embedded');
-$PAGE->set_url('/blocks/exacomp/mod_h5p_stripped.php', ['id' => $cm->id]);
+$PAGE->set_url('/blocks/exacomp/mod_h5p_embedded.php', ['id' => $cm->id]);
 
 $shortname = format_string($course->shortname, true, ['context' => $context]);
 $pagetitle = strip_tags($shortname . ': ' . format_string($moduleinstance->name));

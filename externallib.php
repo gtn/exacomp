@@ -12190,8 +12190,13 @@ class block_exacomp_external extends external_api {
             //if(str_contains($example->externaltask, "/mod/h5pactivity/view.php")){ TODO works only for PHP8
             //    echo "asdf";
             //}
+            // h5p
             if (strpos($example->externaltask, "/mod/h5pactivity/view.php")) {
                 $exampleData->externaltask_embedded = str_replace("mod/h5pactivity/view.php", "blocks/exacomp/mod_h5p_embedded.php", $example->externaltask);
+            }
+            // hvp --> the plugin that is mostly used
+            if (strpos($example->externaltask, "/mod/hvp/view.php")) {
+                $exampleData->externaltask_embedded = str_replace("mod/hvp/view.php", "mod/hvp/embed.php", $example->externaltask);
             }
 
             $exampleData->externalurl = $example->externalurl;
