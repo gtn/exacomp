@@ -21,6 +21,7 @@ require_once $CFG->libdir . '/externallib.php';
 require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
+require_once $CFG->dirroot . '/mod/hvp/locallib.php';
 
 use block_exacomp\cross_subject;
 use block_exacomp\db_record;
@@ -10208,18 +10209,126 @@ class block_exacomp_external extends external_api {
         static::validate_parameters(static::dakora_get_example_h5p_activity_results_parameters(), array("exampleid" => $exampleid));
 
         // get the related activity
+        $example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
+            'id' => $exampleid,
+        ));
 
-        // if h5p: get /mod/h5pactivity/report.php?a=1&userid=5
+        $results = [];
 
-        // if hvp: get  /mod/hvp/review.php?id=2&user=$USER->id
+        // if hvp: get  /mod/hvp/review.php?id=hvpid&user=$USER->id
+        // hvp --> the plugin that is mostly used
+        if (strpos($example->externaltask, "/mod/hvp/view.php")) {
+            if(!$cm = get_coursemodule_from_id('hvp', $example->activityid)){ // here the coursemodule aka activityid is needed
+                print_error('invalidcoursemodule');
+            }
+            if (!$course = $DB->get_record('course', ['id' => $cm->course])) {
+                print_error('coursemisconf');
+            }
+
+            $id = $cm->instance; // NOT the activityid, but the hvp-id of that activity.. this is the "instanceid" of the coursemodule
+            $userid = (int) $USER->id; // (int) is IMPORTANT. the permissions check further down uses a ===, so it has to be int, not string
+
+            require_login($course, false, $cm);
+
+            // Check permission.
+            $context = \context_module::instance($cm->id);
+            hvp_require_view_results_permission($userid, $context, $cm->id);
+
+            // Load H5P Content.
+            $xapiresults = $DB->get_records_sql("
+                SELECT x.*, i.grademax
+                FROM {hvp_xapi_results} x
+                JOIN {grade_items} i ON i.iteminstance = x.content_id
+                WHERE x.user_id = ?
+                AND x.content_id = ?
+                AND i.itemtype = 'mod'
+                AND i.itemmodule = 'hvp'", [$userid, $id]
+            );
+            if (!$xapiresults) {
+                echo "norresultssubmitted";
+            }
+
+            $totalrawscore       = null;
+            $totalmaxscore       = null;
+            $totalscaledscore    = null;
+            $scaledscoreperscore = null;
+
+            // Assemble our question tree.
+            $basequestion = null;
+
+            // Find base question.
+            foreach ($xapiresults as $question) {
+                if ($question->parent_id === null) {
+                    // This is the root of our tree.
+                    $basequestion = $question;
+
+                    if (isset($question->raw_score) && isset($question->grademax) && isset($question->max_score)) {
+                        $scaledscoreperscore   = $question->max_score ? ($question->grademax / $question->max_score) : 0;
+                        $question->score_scale = round($scaledscoreperscore, 2);
+                        $totalrawscore         = $question->raw_score;
+                        $totalmaxscore         = $question->max_score;
+                        if ($question->max_score && $question->raw_score === $question->max_score) {
+                            $totalscaledscore = round($question->grademax, 2);
+                        } else {
+                            $totalscaledscore = round($question->score_scale * $question->raw_score, 2);
+                        }
+                    }
+                    break;
+                }
+            }
+
+            foreach ($xapiresults as $question) {
+                if ($question->parent_id === null) {
+                    // Already processed.
+                    continue;
+                } else if (isset($xapiresults[$question->parent_id])) {
+                    // Add to parent.
+                    $xapiresults[$question->parent_id]->children[] = $question;
+                }
+
+                // Set scores.
+                if (!isset($question->raw_score)) {
+                    $question->raw_score = 0;
+                }
+                if (isset($question->raw_score) && isset($question->grademax) && isset($question->max_score)) {
+                    $question->scaled_score_per_score = $scaledscoreperscore;
+                    $question->parent_max_score = $totalmaxscore;
+                    $question->score_scale = round($question->raw_score * $scaledscoreperscore, 2);
+                }
+
+                // Set score labels.
+                $question->score_label            = get_string('reportingscorelabel', 'hvp');
+                $question->scaled_score_label     = get_string('reportingscaledscorelabel', 'hvp');
+                $question->score_delimiter        = get_string('reportingscoredelimiter', 'hvp');
+                $question->scaled_score_delimiter = get_string('reportingscaledscoredelimiter', 'hvp');
+                $question->questions_remaining_label = get_string('reportingquestionsremaininglabel', 'hvp');
+            }
+
+            $current_result = new stdClass();
+            $current_result->raw_score = $xapiresults->raw_score;
+            $current_result->max_score = $xapiresults->max_score;
+
+            // TODO: what to return for multiple questions
+
+            $results = array(
+                'current_result' => $current_result,
+                'resultpage_url' => new moodle_url("/mod/hvp/review.php", ["id" => $example->activityid, "user" => $userid])
+            );
 
 
-        $returnvalue = array(
-            'topresult' => 1,
-            'results' => 2,
-            'resultpage_url' => 3
-        );
-        return $returnvalue;
+            //$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+                    //                            'userid' => $userid,
+                    //                            'itemid' => $item->id,
+                    //                            'commentid' => $itemcomment->id,
+                    //                            'wstoken' => static::wstoken(),
+                    //                        ]);
+        } else if (strpos($example->externaltask, "/mod/h5pactivity/view.php")) {
+            // if h5p: get /mod/h5pactivity/report.php?a=1&userid=5
+            // todo.. but this is mostly not used
+        }
+
+
+        return $results;
     }
 
     /**
@@ -10229,8 +10338,8 @@ class block_exacomp_external extends external_api {
      */
     public static function dakora_get_example_h5p_activity_results_returns() {
         return new external_multiple_structure (new external_single_structure (array(
-            'topresult' => new external_value (PARAM_TEXT, 'name'),
-            'results' => new external_value (PARAM_TEXT, 'summary'),
+            'current_result' => new external_value (PARAM_TEXT, 'current result. The interactive content hvp module does not store a history of results'),
+            //'results' => new external_value (PARAM_TEXT, 'summary'),
             'resultpage_url' => new external_value (PARAM_TEXT, 'content'),
         )));
     }
