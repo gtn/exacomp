@@ -10314,7 +10314,7 @@ class block_exacomp_external extends external_api {
 
             $results = array(
                 'current_result' => $current_result,
-                'resultpage_url' => $resultpage_url->out()
+                'resultpage_url' => $resultpage_url->out(false)
             );
 
 
@@ -10327,6 +10327,9 @@ class block_exacomp_external extends external_api {
         } else if (strpos($example->externaltask, "/mod/h5pactivity/view.php")) {
             // if h5p: get /mod/h5pactivity/report.php?a=1&userid=5
             // todo.. but this is mostly not used
+            throw new moodle_exception("H5P is not implemented yet. Only works for hvp interactive content files");
+        } else {
+            throw new moodle_exception("Not a hvp file. This example is not linked to a hvp-activity.");
         }
 
         return $results;
