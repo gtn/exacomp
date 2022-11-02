@@ -10256,7 +10256,7 @@ class block_exacomp_external extends external_api {
             // Assemble our question tree.
             $basequestion = null;
 
-            // Find base question.
+            // Find base question. This is the compount of all questions of this single hvp.
             foreach ($xapiresults as $question) {
                 if ($question->parent_id === null) {
                     // This is the root of our tree.
@@ -10277,42 +10277,44 @@ class block_exacomp_external extends external_api {
                 }
             }
 
-            foreach ($xapiresults as $question) {
-                if ($question->parent_id === null) {
-                    // Already processed.
-                    continue;
-                } else if (isset($xapiresults[$question->parent_id])) {
-                    // Add to parent.
-                    $xapiresults[$question->parent_id]->children[] = $question;
-                }
+            // This could give more detailed results, maybe needed later.
+            //foreach ($xapiresults as $question) {
+            //    if ($question->parent_id === null) {
+            //        // Already processed.
+            //        continue;
+            //    } else if (isset($xapiresults[$question->parent_id])) {
+            //        // Add to parent.
+            //        $xapiresults[$question->parent_id]->children[] = $question;
+            //    }
+            //
+            //    // Set scores.
+            //    if (!isset($question->raw_score)) {
+            //        $question->raw_score = 0;
+            //    }
+            //    if (isset($question->raw_score) && isset($question->grademax) && isset($question->max_score)) {
+            //        $question->scaled_score_per_score = $scaledscoreperscore;
+            //        $question->parent_max_score = $totalmaxscore;
+            //        $question->score_scale = round($question->raw_score * $scaledscoreperscore, 2);
+            //    }
+            //
+            //    // Set score labels.
+            //    $question->score_label            = get_string('reportingscorelabel', 'hvp');
+            //    $question->scaled_score_label     = get_string('reportingscaledscorelabel', 'hvp');
+            //    $question->score_delimiter        = get_string('reportingscoredelimiter', 'hvp');
+            //    $question->scaled_score_delimiter = get_string('reportingscaledscoredelimiter', 'hvp');
+            //    $question->questions_remaining_label = get_string('reportingquestionsremaininglabel', 'hvp');
+            //}
 
-                // Set scores.
-                if (!isset($question->raw_score)) {
-                    $question->raw_score = 0;
-                }
-                if (isset($question->raw_score) && isset($question->grademax) && isset($question->max_score)) {
-                    $question->scaled_score_per_score = $scaledscoreperscore;
-                    $question->parent_max_score = $totalmaxscore;
-                    $question->score_scale = round($question->raw_score * $scaledscoreperscore, 2);
-                }
-
-                // Set score labels.
-                $question->score_label            = get_string('reportingscorelabel', 'hvp');
-                $question->scaled_score_label     = get_string('reportingscaledscorelabel', 'hvp');
-                $question->score_delimiter        = get_string('reportingscoredelimiter', 'hvp');
-                $question->scaled_score_delimiter = get_string('reportingscaledscoredelimiter', 'hvp');
-                $question->questions_remaining_label = get_string('reportingquestionsremaininglabel', 'hvp');
-            }
-
-            $current_result = new stdClass();
-            $current_result->raw_score = $xapiresults->raw_score;
-            $current_result->max_score = $xapiresults->max_score;
+            $current_result = [];
+            $current_result["raw_score"] = $totalrawscore;
+            $current_result["max_score"] = $totalmaxscore;
+            $resultpage_url = new moodle_url("/mod/hvp/review.php", ["id" => $cm->instance, "user" => $userid]);
 
             // TODO: what to return for multiple questions
 
             $results = array(
                 'current_result' => $current_result,
-                'resultpage_url' => new moodle_url("/mod/hvp/review.php", ["id" => $example->activityid, "user" => $userid])
+                'resultpage_url' => $resultpage_url->out()
             );
 
 
@@ -10327,7 +10329,6 @@ class block_exacomp_external extends external_api {
             // todo.. but this is mostly not used
         }
 
-
         return $results;
     }
 
@@ -10337,12 +10338,16 @@ class block_exacomp_external extends external_api {
      * @return external_multiple_structure
      */
     public static function dakora_get_example_h5p_activity_results_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'current_result' => new external_value (PARAM_TEXT, 'current result. The interactive content hvp module does not store a history of results'),
+        return new external_single_structure (array(
+            'current_result' => new external_single_structure (array(
+                'raw_score' => new external_value (PARAM_INT, 'current score of the student on this hvp'),
+                'max_score' => new external_value (PARAM_INT, 'maximum score you can get on this hvp'),
+            ), "current result. The interactive content hvp module does not store a history of results"),
             //'results' => new external_value (PARAM_TEXT, 'summary'),
             'resultpage_url' => new external_value (PARAM_TEXT, 'content'),
-        )));
+        ));
     }
+
 
     /**
      * Returns description of method parameters
