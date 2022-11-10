@@ -130,6 +130,7 @@ if (isset($SESSION->courseselection_filter)
         $newSubjects = array();
         foreach ($schooltype->subjects as $sid => $subject) {
             $addSubject = false;
+
             foreach ($subject->topics as $topic) {
                 if (!empty($active_topics[$topic->id])) {
                     $addSubject = true;
