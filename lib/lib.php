@@ -3522,14 +3522,11 @@ function block_exacomp_set_edulevel_hidden($values){
     }
 }
 
-function block_exacomp_check_topic_visibility($schoolTypeId){
+function block_exacomp_check_topic_visibility($stid){
     global $DB;
-    $test = $DB->get_record_sql("SELECT * FROM mdl_block_exacomptopicvisibility as tv inner join mdl_block_exacomptopics as t on tv.topicid = t.id
-    inner join mdl_block_exacompsubjects as s on t.subjid = s.id inner join mdl_block_exacompedulevels as el on s.stid = el.id WHERE el.id = " . intval($schoolTypeId) . " AND tv.visible = 1");
-    echo "<script>alert('$schoolTypeId')</script>";
-    echo "<script>alert('$test')</script>";
 
-    if($test != null){
+    if($DB->get_records_sql("SELECT tv.id FROM mdl_block_exacomptopicvisibility as tv inner join mdl_block_exacomptopics as t on tv.topicid = t.id
+    inner join mdl_block_exacompsubjects as s on t.subjid = s.id inner join mdl_block_exacompedulevels as el on s.stid = el.id WHERE el.id = " . intval($stid->id) . " AND tv.visible = 1")){
         return true;
     }
     return false;

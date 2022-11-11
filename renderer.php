@@ -5163,7 +5163,7 @@ class block_exacomp_renderer extends plugin_renderer_base
             $table->attributes['class'] = 'exabis_comp_comp rg2';
             $rows = array();
             foreach ($schooltypes as $schooltype) {
-                if ($schooltype->hidden == 0 || block_exacomp_check_topic_visibility($schooltype->id)) {
+                if (block_exacomp_check_topic_visibility($schooltype) || $schooltype->hidden == 0) {
                     $row = new html_table_row();
                     $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight';
 
