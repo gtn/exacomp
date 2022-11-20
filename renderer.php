@@ -4862,9 +4862,9 @@ class block_exacomp_renderer extends plugin_renderer_base
                 }
                 $t = "h";
                 if ($levelstruct->level->hidden == 1) {
-                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $t . $levelstruct->level->id . ']', 'value' => $t . $levelstruct->level->id, 'checked' => 'checked'));
+                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'edulevels[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id, 'checked' => 'checked'));
                 } else {
-                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $t . $levelstruct->level->id . ']', 'value' => $t . $levelstruct->level->id));
+                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'edulevels[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id));
                 }
 
                 $row->cells[] = $cell;
@@ -5163,6 +5163,12 @@ class block_exacomp_renderer extends plugin_renderer_base
             $table->attributes['class'] = 'exabis_comp_comp rg2';
             $rows = array();
             foreach ($schooltypes as $schooltype) {
+                foreach($schooltype as $key=>$value) {
+                    if($key == "hidden"){
+                        echo "<script>alert('$key . $value')</script>";
+
+                    }
+                }
                 if (block_exacomp_check_topic_visibility($schooltype) || $schooltype->hidden == 0) {
                     $row = new html_table_row();
                     $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight';
@@ -5171,6 +5177,13 @@ class block_exacomp_renderer extends plugin_renderer_base
                     $cell->text =
                         html_writer::div(html_writer::tag('b', $schooltype->title) . ' (' . $this->source_info($schooltype->source) .
                             ')');
+
+                    if($schooltype->hidden == 1){
+                        $cell->text .= html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'schooltypes[' . $schooltype->id . ']', 'value' => $schooltype->id, 'checked' => 'checked'));
+                    } else {
+                        $cell->text .= html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'schooltypes[' . $schooltype->id . ']', 'value' => $schooltype->id));
+                    }
+
                     $cell->attributes['class'] = 'rg2-arrow';
 
                     $cell->colspan = 3;
@@ -5665,16 +5678,16 @@ class block_exacomp_renderer extends plugin_renderer_base
             $outputnameCell = new html_table_cell();
             $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
             $outputnameCell->text = html_writer::div($topic->title, "desctitle");
+
             $topicRow->cells[] = $outputnameCell;
 
             $cell = new html_table_cell();
             $cell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topics[' . $topic->id . ']', 'value' => (0 - $topic->id)]);
             $cell->text .= html_writer::checkbox('topics[' . $topic->id . ']', $topic->id, !empty($topics_activ[$topic->id]), '');
-            $cell->text .= " hidden: " . html_writer::checkbox('topics[' . $topic->id . ']', $topic->id, !empty($topics_activ[$topic->id]), '');
+
             $topicRow->cells[] = $cell;
 
             $rows[] = $topicRow;
-
         }
     }
 

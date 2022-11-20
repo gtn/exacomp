@@ -72,7 +72,9 @@ if ($changeFilter) {
 if ($action == 'save') {
     require_sesskey();
     $topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
+    $stypes = block_exacomp\param::optional_array('schooltypes', [PARAM_INT]);
     block_exacomp_set_coursetopics($courseid, $topics);
+    block_exacomp_set_schooltype_hidden($stypes);
 
     if (empty($topics)) {
         $headertext = block_exacomp_get_string('tick_some');

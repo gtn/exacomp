@@ -62,8 +62,7 @@ if ($fromimport == 1) {
 if (isset ($action) && $action == 'save') {
     require_sesskey();
     $values = optional_param_array('data', array(), PARAM_INT);
-    $hiddenValues = optional_param_array('data', array(), PARAM_TEXT);
-
+    $hiddenValues = optional_param_array('edulevels', array(), PARAM_INT);
     block_exacomp_set_mdltype($values);
     block_exacomp_set_edulevel_hidden($hiddenValues);
 

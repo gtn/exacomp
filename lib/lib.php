@@ -1495,7 +1495,7 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
     global $DB;
 
     return $DB->get_records_sql('
-			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, e.hidden
+			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, s.hidden
 			FROM {' . BLOCK_EXACOMP_DB_SCHOOLTYPES . '} s
 			JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} m ON m.stid = s.id
 			JOIN {' . BLOCK_EXACOMP_DB_EDULEVELS .'} e ON s.elid = e.id AND m.courseid = ?
@@ -3513,10 +3513,21 @@ function block_exacomp_set_edulevel_hidden($values){
     global $DB;
     foreach($DB->get_records(BLOCK_EXACOMP_DB_EDULEVELS) as $rs){
         $DB->update_record(BLOCK_EXACOMP_DB_EDULEVELS, array("id"=>$rs->id, "hidden"=>0));
-        if(array_key_exists("h".$rs->id, $values)){
-            $item = $values["h".$rs->id];
-            if(strpos($item, "h") === 0) {
-                $DB->update_record(BLOCK_EXACOMP_DB_EDULEVELS, array("id"=>intval(substr($item, 1)), "hidden" => 1));
+        if($values != null) {
+            if (in_array($rs->id, $values)) {
+                $DB->update_record(BLOCK_EXACOMP_DB_EDULEVELS, array("id" => $rs->id, "hidden" => 1));
+            }
+        }
+    }
+}
+
+function block_exacomp_set_schooltype_hidden($values){
+    global $DB;
+    foreach($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs){
+        $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>0));
+        if($values != null) {
+            if(in_array($rs->id, $values)){
+                $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>1));
             }
         }
     }
