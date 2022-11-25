@@ -21,7 +21,7 @@ require_once $CFG->libdir . '/externallib.php';
 require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
-require_once $CFG->dirroot . '/mod/hvp/locallib.php';
+
 
 use block_exacomp\cross_subject;
 use block_exacomp\db_record;
@@ -10205,7 +10205,8 @@ class block_exacomp_external extends external_api {
      * @return boolean
      */
     public static function dakora_get_example_h5p_activity_results($exampleid) {
-        global $DB, $USER;
+        global $DB, $USER, $CFG;
+        require_once $CFG->dirroot . '/mod/hvp/locallib.php';
         static::validate_parameters(static::dakora_get_example_h5p_activity_results_parameters(), array("exampleid" => $exampleid));
 
         // get the related activity
