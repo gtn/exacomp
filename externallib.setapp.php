@@ -439,7 +439,7 @@ class block_exacomp_external_setapp extends external_api {
                 'id' => new external_value (PARAM_INT),
                 'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
                 'assess_with_grades' => new external_value (PARAM_BOOL),
-                'is_pflichtgegenstand' => new external_value (PARAM_BOOL, VALUE_OPTIONAL),
+                'is_pflichtgegenstand' => new external_value (PARAM_BOOL, '', VALUE_OPTIONAL),
                 'spf' => new external_value (PARAM_BOOL),
             )), '', VALUE_OPTIONAL),
             'descriptors' => new external_multiple_structure(new external_single_structure (array(

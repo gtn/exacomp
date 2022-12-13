@@ -37,7 +37,7 @@ $observers = array(
         'callback' => 'block_exacomp_observer::course_module_updated',
     ),
 
-   array(
+    array(
         'eventname' => '\core\event\course_module_deleted',
         'callback' => 'block_exacomp_observer::course_module_deleted',
     ),

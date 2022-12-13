@@ -55,3 +55,5 @@ indent_style = tab
 [{*.ctp,*.hphp,*.phtml,*.module,*.php,*.php5,*.php4,*.inc}]
 ij_php_method_parameters_new_line_after_left_paren = false
 ij_php_comma_after_last_array_element = true
+ij_php_concat_spaces = true
+ij_php_space_after_type_cast = false

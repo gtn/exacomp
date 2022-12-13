@@ -1621,7 +1621,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     }
 
     function upgrade_block_exacomp_2015072102_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true,
-        $showonlyvisible = false) {
+                                                                    $showonlyvisible = false) {
         global $DB;
 
         if (!$DB->record_exists(BLOCK_EXACOMP_DB_DESCRIPTORS, array("parentid" => $parent->id))) {
@@ -2129,7 +2129,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }*/
 
         function upgrade_block_exacomp_2015082000_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true,
-            $showonlyvisible = false) {
+                                                                              $showonlyvisible = false) {
             global $DB, $COURSE;
 
             if ($courseid == null) {
@@ -2187,7 +2187,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
 
         function upgrade_block_exacomp_2015072102_block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true,
-            $showonlyvisible = false) {
+                                                                                            $showonlyvisible = false) {
             global $DB, $COURSE;
 
             if ($courseid == null) {
@@ -4025,7 +4025,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
                 }
             }
         } catch (Exception $e) {
-            echo '<div class="alert alert-warning alert-block fade in">If you are using PostgreSql as DB - you may have an issue with updating. <br><strong>Please rename manually field \'<i>'.$CFG->prefix.'block_exacompschedule.end</i>\' into \'<i>endtime</i>\'</strong></div>';
+            echo '<div class="alert alert-warning alert-block fade in">If you are using PostgreSql as DB - you may have an issue with updating. <br><strong>Please rename manually field \'<i>' . $CFG->prefix . 'block_exacompschedule.end</i>\' into \'<i>endtime</i>\'</strong></div>';
             upgrade_log(UPGRADE_LOG_ERROR, 'block_exacomp', 'Warning: impossible to rename the field \'block_exacompschedule.end\' into \'endtime\'. Make it manually!', null, null);
         } finally {
             // Exacomp savepoint reached.
@@ -4060,6 +4060,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2022072300, 'exacomp');
     }
+
+    //if ($oldversion < 2022101900) {
+    //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
+    //    // If they are used ==> they will not get deleted
+    //    if ($DB->get_manager()->table_exists('local_komettranslator')) {
+    //        $sql = "DELETE FROM  {" . BLOCK_EXACOMP_DB_EXAMPLES . "}
+    //                    WHERE id IN
+    //                      (SELECT e.id as id FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
+    //                                  LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLEEVAL . "} ev on e.id = ev.exampleid
+    //                                  LEFT JOIN {block_exaportitem} ei on e.id = ei.exampid
+    //                       WHERE ev.id IS NULL
+    //                         AND ei.id IS NULL
+    //                         AND e.source = 1)";
+    //        $DB->execute($sql);
+    //    }
+    //
+    //    // Exacomp savepoint reached.
+    //    upgrade_block_savepoint(true, 2022101900, 'exacomp');
+    //}
 
     /*
      * insert new upgrade scripts before this comment section

@@ -190,7 +190,7 @@ class api {
             foreach ($subjects as $subject) {
                 $evaluation = block_exacomp_get_comp_eval_merged($courseid, $studentid, $subject);
                 if ($evaluation->additionalinfo) {
-                    $resultSubjects[] = (object) [
+                    $resultSubjects[] = (object)[
                         'title' => $subject->title,
                         'additionalinfo' => $evaluation->additionalinfo,
                         'niveau' => $evaluation->get_evalniveau_title(),

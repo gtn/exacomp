@@ -2946,6 +2946,18 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'is it old?',
         'is it old?',
     ],
+    'privacy:metadata:block_exacompcompuser:globalgradings' => [
+        'global value',
+        'global value',
+    ],
+    'privacy:metadata:block_exacompcompuser:gradinghistory' => [
+        'history of grading',
+        'history of grading',
+    ],
+    'privacy:metadata:block_exacompcompuser:personalisedtext' => [
+        'additional personalised text',
+        'additional personalised text',
+    ],
 
     'privacy:metadata:block_exacompcmassign' => [
         'Storage for auto grading mechanism: does not need to be exported',
@@ -3011,6 +3023,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'privacy:metadata:block_exacompexameval:evalniveauid' => [
         'Niveau',
         'Niveau',
+    ],
+    'privacy:metadata:block_exacompexameval:resubmission' => [
+        'resubmission is allowed/not allowed',
+        'resubmission is allowed/not allowed',
     ],
 
     'privacy:metadata:block_exacompcrossstud_mm' => [
@@ -3093,6 +3109,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Student',
         'Student',
     ],
+    'privacy:metadata:block_exacompprofilesettings:block' => [
+        'associated block: exacomp, exastud or exaport',
+        'associated block: exacomp, exastud or exaport',
+    ],
+    'privacy:metadata:block_exacompprofilesettings:feedback' => [
+        'verbal feedback should be displayed (for exastud reviews)',
+        'verbal feedback should be displayed (for exastud reviews)',
+    ],
 
     'privacy:metadata:block_exacompschedule' => [
         'examples, added to student\'s schedule list',
@@ -3138,6 +3162,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Marker of deleted record',
         'Marker of deleted record',
     ],
+    'privacy:metadata:block_exacompschedule:distributionid' => [
+        'distribution id',
+        'distribution id',
+    ],
+    'privacy:metadata:block_exacompschedule:source' => [
+        'S/T as a type',
+        'S/T as a type',
+    ],
 
     'privacy:metadata:block_exacompsolutvisibility' => [
         'which examplesolutions are visible',
@@ -3179,6 +3211,64 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'privacy:metadata:block_exacomptopicvisibility:visible' => [
         'visible marker',
         'visible marker',
+    ],
+    'privacy:metadata:block_exacomptopicvisibility:niveauid' => [
+        'Niveau id',
+        'Niveau id',
+    ],
+
+    'privacy:metadata:block_exacompcrosssubjects' => [
+        'Cross subjects, created by the user',
+        'Cross subjects, created by the user',
+    ],
+    'privacy:metadata:block_exacompcrosssubjects:title' => [
+        'Title',
+        'Title',
+    ],
+    'privacy:metadata:block_exacompcrosssubjects:description' => [
+        'Description',
+        'Description',
+    ],
+    'privacy:metadata:block_exacompcrosssubjects:courseid' => [
+        'Course id',
+        'Course id',
+    ],
+    'privacy:metadata:block_exacompcrosssubjects:creatorid' => [
+        'creator id',
+        'creator id',
+    ],
+    'privacy:metadata:block_exacompcrosssubjects:shared' => [
+        'shared or not',
+        'shared or not',
+    ],
+    'privacy:metadata:block_exacompcrosssubjects:subjectid' => [
+        'related subject id',
+        'related subject id',
+    ],
+    'privacy:metadata:block_exacompcrosssubjects:groupcategory' => [
+        'group category',
+        'group category',
+    ],
+
+    'privacy:metadata:block_exacompglobalgradings' => [
+        'Global grade text for a subject/topic/competence',
+        'Global grade text for a subject/topic/competence',
+    ],
+    'privacy:metadata:block_exacompglobalgradings:userid' => [
+        'Student id',
+        'Student id',
+    ],
+    'privacy:metadata:block_exacompglobalgradings:compid' => [
+        'competence id',
+        'competence id',
+    ],
+    'privacy:metadata:block_exacompglobalgradings:comptype' => [
+        'competence type: 0 - descriptor; 1 - topic',
+        'competence type: 0 - descriptor; 1 - topic',
+    ],
+    'privacy:metadata:block_exacompglobalgradings:globalgradings' => [
+        'content of global grading',
+        'content of global grading',
     ],
 
     'privacy:metadata:block_exacompwsdata' => [
@@ -3441,19 +3531,19 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'overview_examples_report_title' => [
         'Aufgabenübersicht zum Kompetenzerwerb',
-        'Overview of the examples'
+        'Overview of the examples',
     ],
     'block_exacomp_link_to_dakora_app' => [
         'zur Dakora-App',
-        'to Dakora-App'
+        'to Dakora-App',
     ],
     'diggrapp_cannotcreatetoken' => [
         'Can not have access to this moodle installation',
-        'Can not have access to this moodle installation'
+        'Can not have access to this moodle installation',
     ],
     'grid_creating_is_disabled' => [
         'Die Neuanlage von Rastern ist deaktiviert!',
-        'Grid creation is disabled!'
-    ]
+        'Grid creation is disabled!',
+    ],
 
 ];

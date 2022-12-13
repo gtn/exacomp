@@ -167,10 +167,10 @@ switch ($action) {
         }
         exit;
     case 'multi':
-        $data = (object) block_exacomp\param::required_json('data');
+        $data = (object)block_exacomp\param::required_json('data');
 
         if (!empty($data->new_descriptors)) {
-            $new_descriptors = block_exacomp\param::clean_array($data->new_descriptors, array((object) array(
+            $new_descriptors = block_exacomp\param::clean_array($data->new_descriptors, array((object)array(
                 'parentid' => PARAM_INT,
                 'topicid' => PARAM_INT,
                 'niveauid' => PARAM_INT,
@@ -182,7 +182,7 @@ switch ($action) {
         }
 
         if (!empty($data->competencies_by_type)) {
-            $competencies_by_type = block_exacomp\param::clean_array($data->competencies_by_type, array(PARAM_INT => array((object) array(
+            $competencies_by_type = block_exacomp\param::clean_array($data->competencies_by_type, array(PARAM_INT => array((object)array(
                 'compid' => PARAM_INT,
                 'userid' => PARAM_INT,
                 'value' => PARAM_INT,
@@ -197,7 +197,7 @@ switch ($action) {
         }
 
         if (!empty($data->examples)) {
-            $examples = block_exacomp\param::clean_array($data->examples, array((object) array(
+            $examples = block_exacomp\param::clean_array($data->examples, array((object)array(
                 'userid' => PARAM_INT,
                 'exampleid' => PARAM_INT,
                 'value' => PARAM_RAW,// PARAM_INT,

@@ -7,13 +7,13 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/question/editlib.php');
+
 use core_plugin_manager;
 use core_question\bank\search\condition;
 use qbank_columnsortorder\column_manager;
 use qbank_editquestion\editquestion_helper;
 use qbank_managecategories\helper;
 use qbank_questiontodescriptor;
-
 
 
 require_once('descriptor_link_column.php');
@@ -46,7 +46,7 @@ class exacomp_view extends view {
             'version_number_column',
             'creator_name_column',
             'comment_count_column',
-            'descriptor_link_column'
+            'descriptor_link_column',
         ];
         if (question_get_display_preference('qbshowtext', 0, PARAM_BOOL, new \moodle_url(''))) {
             $corequestionbankcolumns[] = 'question_text_row';

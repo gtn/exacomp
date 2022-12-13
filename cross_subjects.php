@@ -104,7 +104,7 @@ if ($action == 'share') {
 
     echo '<form method="post" id="share">';
     echo '<input type="hidden" name="save" value="save" />';
-    echo '<input type="hidden" name="sesskey" value='.sesskey().' />';
+    echo '<input type="hidden" name="sesskey" value=' . sesskey() . ' />';
     echo html_writer::checkbox('share_all', 'share_all', $shared, '');
     echo block_exacomp_get_string('share_crosssub_with_all', null, $cross_subject->title);
     echo html_writer::empty_tag('br') . html_writer::empty_tag('br');
@@ -283,7 +283,7 @@ if ($action == 'descriptor_selector') {
 
     echo '<form method="post">';
     echo $print_tree($subjects);
-    echo '<input type="hidden" name="sesskey" value='.sesskey().' />';
+    echo '<input type="hidden" name="sesskey" value=' . sesskey() . ' />';
     echo '<input type="submit" name="save" value="' . block_exacomp_get_string('add_descriptors_to_crosssub') . '" class="btn btn-primary"/>';
     echo '</form>';
 

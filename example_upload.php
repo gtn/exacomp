@@ -175,13 +175,13 @@ if ($formdata = $form->get_data()) {
             $newExample->example_icon = '';
         }
 
-        if(!get_config('exacomp', 'example_upload_global')){
+        if (!get_config('exacomp', 'example_upload_global')) {
             // courseid HAS to be set because the admin setting says so. If there is no $courseid ==> error
-            if($COURSE->id != 0){
-                if($newExample->courseid == Null || $newExample->courseid == 0){
+            if ($COURSE->id != 0) {
+                if ($newExample->courseid == Null || $newExample->courseid == 0) {
                     $newExample->courseid = $COURSE->id;
                 }
-            }else{
+            } else {
                 throw new invalid_parameter_exception ('Courseid can not be empty, because of example_upload_global setting set to false.');
             }
         }

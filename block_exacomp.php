@@ -25,8 +25,7 @@ class block_exacomp extends block_list {
         $this->title = block_exacomp_get_string('blocktitle');
     }
 
-    function specialization()
-    {
+    function specialization() {
         if ($this->isExaplanDashboardBlock()) {
             $this->title = block_exacomp_get_string('overview_examples_report_title');
         }
@@ -47,7 +46,7 @@ class block_exacomp extends block_list {
 
     function hide_header() {
         if ($this->isExaplanDashboardBlock()) {
-//            return true; // used another title
+            //            return true; // used another title
         }
         return false;
     }
@@ -82,8 +81,8 @@ class block_exacomp extends block_list {
             }
             // sort by last name + first name
             usort($coursestudents, function($a, $b) {
-                $aName = $a->lastname.' '.$a->firstname;
-                $bName = $b->lastname.' '.$b->firstname;
+                $aName = $a->lastname . ' ' . $a->firstname;
+                $bName = $b->lastname . ' ' . $b->firstname;
                 return strcmp($aName, $bName);
             });
 
@@ -99,7 +98,7 @@ class block_exacomp extends block_list {
                 $content .= block_exacomp_get_string('choosestudent');
                 $content .= $output->studentselector($coursestudents, $studentid, null, null, ['name' => 'studentid', 'onChange' => 'this.form.submit()']);
 
-				$content .= '</form>';
+                $content .= '</form>';
             } else {
                 // TODO: block_exacomp_is_student() does not work - why?
                 // get 'is a student' by his courses
@@ -129,7 +128,7 @@ class block_exacomp extends block_list {
                 $content .= '<div>';
 
                 // student's overview
-                $content .= $output->competence_profile_metadata($student,1);
+                $content .= $output->competence_profile_metadata($student, 1);
 
                 // tabs with course titles for selected student
                 $content .= '<ul class="nav nav-tabs mb-3">';
@@ -160,7 +159,7 @@ class block_exacomp extends block_list {
                         $finished = $studentExampleEvaluations->teacher[$example->id];
                     } else if (@$cm = $mod_info->cms[$example->activityid]) {
                         // second: use default sactivity completion method
-                        $completionFunc = $cm->modname.'_get_completion_state';
+                        $completionFunc = $cm->modname . '_get_completion_state';
                         if (function_exists($completionFunc)) {
                             $finished = $completionFunc($course, $cm, $studentid, 'not-defined'); // not-defined - if the activity has not conditions to get complete status
                         }
@@ -191,7 +190,7 @@ class block_exacomp extends block_list {
                                 }
                             } else {
                                 // for automatic completion methods
-                                $completionFunc = $cm->modname.'_get_completion_state';
+                                $completionFunc = $cm->modname . '_get_completion_state';
                                 if (function_exists($completionFunc)) {
                                     $finished = $completionFunc($course, $cm, $studentid, 'not-defined'); // not-defined - if the activity has not conditions to get complete status
                                 }
@@ -224,7 +223,7 @@ class block_exacomp extends block_list {
                         $urlParams['studentid'] = $studentid;
                     }
                     $overviewLink = new moodle_url('/blocks/exacomp/competence_grid.php', $urlParams);
-                    $content .= '<div class="pull-right"><a href="'.$overviewLink.'" class="btn btn-sm btn-info">Kompetenzbewertung</a> </div>';
+                    $content .= '<div class="pull-right"><a href="' . $overviewLink . '" class="btn btn-sm btn-info">Kompetenzbewertung</a> </div>';
                 }
 
                 // main report for selected student and selected course
@@ -378,7 +377,7 @@ class block_exacomp extends block_list {
                 if (get_config('exacomp', 'external_trainer_assign')) {
                     $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/externaltrainer.svg' . '" class="icon" alt="" />';
                     $this->content->items[] = '<a title="' . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '" ' .
-                        ' href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $courseid . '&sesskey=' . sesskey() .'">' .
+                        ' href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $courseid . '&sesskey=' . sesskey() . '">' .
                         $icon . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '</a>';
                 }
             }
@@ -426,9 +425,9 @@ class block_exacomp extends block_list {
         // link to dakora_url
         $dakoraUrl = trim(get_config('exacomp', 'dakora_url'));
         if ($dakoraUrl) {
-                       $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/dakora2.svg' . '" class="icon" alt="" />';
+            $icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/dakora2.svg' . '" class="icon" alt="" />';
 
-            $dakoraUrl = $CFG->wwwroot . '/blocks/exacomp/applogin.php?action=dakora_sso&sesskey='.sesskey();
+            $dakoraUrl = $CFG->wwwroot . '/blocks/exacomp/applogin.php?action=dakora_sso&sesskey=' . sesskey();
             $this->content->items[] = '<a target="_blank" title="' . block_exacomp_get_string('tab_admin_import') . '" ' .
                 ' href="' . $dakoraUrl . '">' .
                 $icon . block_exacomp_get_string('block_exacomp_link_to_dakora_app') . '</a>';

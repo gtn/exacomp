@@ -30,7 +30,7 @@ class plugin_feature extends \core_question\local\bank\plugin_features_base {
 
     public function get_question_columns(\core_question\local\bank\view $qbank): array {
         return [
-            new descriptor_link_column($qbank)
+            new descriptor_link_column($qbank),
         ];
     }
 }

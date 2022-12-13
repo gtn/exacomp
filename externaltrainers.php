@@ -94,7 +94,6 @@ echo '</form>';
 //	</form>';
 
 
-
 if ($externaltrainers) {
     echo '<table id="user-table" class="generaltable externaltrainerstable">';
     echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require __DIR__.'/../inc.php';
+require __DIR__ . '/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 if (!is_siteadmin()) {
@@ -24,33 +24,33 @@ if (!is_siteadmin()) {
 // Transaction.
 $transaction = $DB->start_delegated_transaction();
 
-$files = glob(block_exacomp_get_backup_temp_directory().'*');
+$files = glob(block_exacomp_get_backup_temp_directory() . '*');
 $files = array_filter($files, 'is_dir');
 usort($files, function($a, $b) {
     return filemtime($a) < filemtime($b);
 });
 
-    if (!isset($files[0])) {
-        die('backup not found');
-    }
-    echo "restoring last backup: ".$files[0]."\n";
+if (!isset($files[0])) {
+    die('backup not found');
+}
+echo "restoring last backup: " . $files[0] . "\n";
 
-    // Create new course.
-    $folder             = basename($files[0]); // as found in: $CFG->dataroot . '/temp/backup/'
-    $categoryid         = 1; // e.g. 1 == Miscellaneous
-    $userdoingrestore   = 2; // e.g. 2 == admin
-    $courseid           = restore_dbops::create_new_course('', '', $categoryid);
+// Create new course.
+$folder = basename($files[0]); // as found in: $CFG->dataroot . '/temp/backup/'
+$categoryid = 1; // e.g. 1 == Miscellaneous
+$userdoingrestore = 2; // e.g. 2 == admin
+$courseid = restore_dbops::create_new_course('', '', $categoryid);
 
-    // Restore backup into course.
-    $controller = new restore_controller($folder, $courseid,
-        backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore,
-        backup::TARGET_NEW_COURSE);
-    $controller->execute_precheck();
-    $controller->execute_plan();
+// Restore backup into course.
+$controller = new restore_controller($folder, $courseid,
+    backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore,
+    backup::TARGET_NEW_COURSE);
+$controller->execute_precheck();
+$controller->execute_plan();
 
-    var_dump($courseid);
+var_dump($courseid);
 
-    // Commit.
-    $transaction->allow_commit();
+// Commit.
+$transaction->allow_commit();
 
-    die('done');
+die('done');

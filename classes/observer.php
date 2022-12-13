@@ -171,18 +171,17 @@ class block_exacomp_observer {
         return true;
     }
 
-        /**
-         * Observer for \core\event\course_module_deleted event.
-         *
-         * @param \core\event\course_module_deleted $event
-         * @return void
-         */
-        public static function course_module_deleted(\core\event\course_module_deleted $event)
-        {
-            // This is often not triggered instantly, but for example in the next cron.
-            block_exacomp_checkfordelete_relatedactivity($event->objectid);
-            return true;
-        }
+    /**
+     * Observer for \core\event\course_module_deleted event.
+     *
+     * @param \core\event\course_module_deleted $event
+     * @return void
+     */
+    public static function course_module_deleted(\core\event\course_module_deleted $event) {
+        // This is often not triggered instantly, but for example in the next cron.
+        block_exacomp_checkfordelete_relatedactivity($event->objectid);
+        return true;
+    }
     // this is has been done in block_exacomp_pre_course_module_delete() before.
 
 }

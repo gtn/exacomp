@@ -256,7 +256,6 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
 //}
 
 
-
 // possibility to look into this way 'cm_info_dynamic'... now it is not success
 //function block_exacomp_cm_info_dynamic() {
 

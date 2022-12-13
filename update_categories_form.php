@@ -49,7 +49,8 @@ class block_exacomp_update_categories_form extends moodleform {
         $out = ob_get_contents();
         ob_end_clean();
         $doc = new DOMDocument();
-        @$doc->loadHTML(utf8_decode($out), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        //        @$doc->loadHTML(utf8_decode($out), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        @$doc->loadHTML(mb_convert_encoding($out, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
         $newInput = $doc->createDocumentFragment();
         // add "new category" input
