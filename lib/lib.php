@@ -3509,18 +3509,6 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
     block_exacomp_clean_course_topics($values, $courseid);
 }
 
-function block_exacomp_set_edulevel_hidden($values){
-    global $DB;
-    foreach($DB->get_records(BLOCK_EXACOMP_DB_EDULEVELS) as $rs){
-        $DB->update_record(BLOCK_EXACOMP_DB_EDULEVELS, array("id"=>$rs->id, "hidden"=>0));
-        if($values != null) {
-            if (in_array($rs->id, $values)) {
-                $DB->update_record(BLOCK_EXACOMP_DB_EDULEVELS, array("id" => $rs->id, "hidden" => 1));
-            }
-        }
-    }
-}
-
 function block_exacomp_set_schooltype_hidden($values){
     global $DB;
     foreach($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs){
@@ -3531,16 +3519,6 @@ function block_exacomp_set_schooltype_hidden($values){
             }
         }
     }
-}
-
-function block_exacomp_check_topic_visibility($stid){
-    global $DB;
-
-    if($DB->get_records_sql("SELECT tv.id FROM mdl_block_exacomptopicvisibility as tv inner join mdl_block_exacomptopics as t on tv.topicid = t.id
-    inner join mdl_block_exacompsubjects as s on t.subjid = s.id inner join mdl_block_exacompedulevels as el on s.stid = el.id WHERE el.id = " . intval($stid->id) . " AND tv.visible = 1")){
-        return true;
-    }
-    return false;
 }
 
 /**

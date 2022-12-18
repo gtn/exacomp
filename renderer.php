@@ -4842,10 +4842,17 @@ class block_exacomp_renderer extends plugin_renderer_base
             $row->attributes['class'] = 'exahighlight';
 
             $cell = new html_table_cell();
-            $cell->colspan = 2;
+            $cell->colspan = 1;
             $cell->text = html_writer::tag('b', $levelstruct->level->title) . ' (' . $this->source_info($levelstruct->level->source) . ')';
 
+            $celltwo = new html_table_cell();
+            $celltwo->colspan = 1;
+
+            $celltwo->text = html_writer::tag("a", block_exacomp_get_string('selectallornone', 'form'),
+                array("class" => "selectallornone"));
+
             $row->cells[] = $cell;
+            $row->cells[] = $celltwo;
             $rows[] = $row;
 
             foreach ($levelstruct->schooltypes as $schooltypestruct) {
@@ -4860,11 +4867,11 @@ class block_exacomp_renderer extends plugin_renderer_base
                 } else {
                     $cell->text = html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $schooltypestruct->schooltype->id . ']', 'value' => $schooltypestruct->schooltype->id));
                 }
-                $t = "h";
-                if ($levelstruct->level->hidden == 1) {
-                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'edulevels[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id, 'checked' => 'checked'));
+
+                if ($schooltypestruct->schooltype->hidden == 1) {
+                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('class'=>'schooltype' ,'type' => 'checkbox', 'name' => 'schooltypes[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id, 'checked' => 'checked'));
                 } else {
-                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'edulevels[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id));
+                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('class'=>'schooltype', 'type' => 'checkbox', 'name' => 'schooltypes[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id));
                 }
 
                 $row->cells[] = $cell;
@@ -5163,13 +5170,7 @@ class block_exacomp_renderer extends plugin_renderer_base
             $table->attributes['class'] = 'exabis_comp_comp rg2';
             $rows = array();
             foreach ($schooltypes as $schooltype) {
-                foreach($schooltype as $key=>$value) {
-                    if($key == "hidden"){
-                        echo "<script>alert('$key . $value')</script>";
-
-                    }
-                }
-                if (block_exacomp_check_topic_visibility($schooltype) || $schooltype->hidden == 0) {
+                if ($schooltype->hidden == 0) {
                     $row = new html_table_row();
                     $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight';
 
@@ -5177,12 +5178,6 @@ class block_exacomp_renderer extends plugin_renderer_base
                     $cell->text =
                         html_writer::div(html_writer::tag('b', $schooltype->title) . ' (' . $this->source_info($schooltype->source) .
                             ')');
-
-                    if($schooltype->hidden == 1){
-                        $cell->text .= html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'schooltypes[' . $schooltype->id . ']', 'value' => $schooltype->id, 'checked' => 'checked'));
-                    } else {
-                        $cell->text .= html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'schooltypes[' . $schooltype->id . ']', 'value' => $schooltype->id));
-                    }
 
                     $cell->attributes['class'] = 'rg2-arrow';
 

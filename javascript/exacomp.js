@@ -665,6 +665,21 @@ var formunsaved = false;
       $children.find(':checkbox').prop('checked', $children.find(':checkbox:not(:checked)').length > 0);
     });
 
+    $(document).ready(function () {
+      $('.selectallornone').on('click', function () {
+        var selectall = $(this).parent();
+        $(".schooltype:checkbox").each(function () {
+          if (selectall.parent().next().get(0) == $(this).parent().parent().get(0)) {
+            if ($(this).eq(0).is(':checked')) {
+              $(this).prop('checked', false);
+            } else {
+              $(this).prop('checked', true);
+            }
+          }
+        });
+      });
+    });
+
     // init
     $(document).on('rg2.init', 'table.rg2', function () {
       var $table = $(this);
