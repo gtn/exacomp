@@ -138,7 +138,7 @@ if (!empty($type)) { //TODO: hopefully will be removed in 2.0
     $pagepath .= 'mod';
 }
 $PAGE->set_pagetype($pagepath);
-$PAGE->set_pagelayout('admin');
+$PAGE->set_pagelayout('embedded');
 $PAGE->add_body_class('limitedwidth');
 
 
