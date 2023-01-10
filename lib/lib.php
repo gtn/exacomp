@@ -5284,7 +5284,7 @@ function block_exacomp_get_niveaus_for_subject($subjectid) {
 			FROM {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d, {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt, {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
 			WHERE d.id=dt.descrid AND dt.topicid IN
 				(SELECT id FROM {" . BLOCK_EXACOMP_DB_TOPICS . "} WHERE subjid = ?)
-			    AND d.niveauid > 0 AND d.niveauid = n.id
+			    AND d.niveauid > 0 AND d.niveauid = n.id AND d.parentid = 0
 			ORDER BY n.numb, n.sorting, n.id";
 
     return $DB->get_records_sql($niveaus, array($subjectid));
