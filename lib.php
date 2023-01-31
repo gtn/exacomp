@@ -274,7 +274,7 @@ function block_exacomp_coursemodule_definition_after_data($formwrapper, $mform) 
 
 
     // add button if exaquest is active in this course
-    if(is_exacomp_active_in_course() && $mform->_formName == 'mod_hvp_mod_form' && $formwrapper->dakoraplus){
+    if(is_exacomp_active_in_course() && $mform->_formName == 'mod_hvp_mod_form' && property_exists($formwrapper, 'dakoraplus')){
         ?>
         <script type="text/javascript">
             function changeFormActionExacomp() {
