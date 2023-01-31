@@ -3545,5 +3545,9 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Die Neuanlage von Rastern ist deaktiviert!',
         'Grid creation is disabled!',
     ],
+    'save_hvp_activity' => [
+        'HVP Aktivität speichern',
+        'Save HVP activity',
+    ],
 
 ];

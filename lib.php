@@ -150,7 +150,7 @@ function is_exacomp_active_in_course() {
 function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
     global $CFG, $COURSE, $DB, $PAGE;
 
-    //    $exacomp_active = is_exacomp_active_in_course(); // only inject if the block is active in this course
+    //$exacomp_active = is_exacomp_active_in_course(); // only inject if the block is active in this course
     //
     //    // enableavailability is a setting in mdl_config
     //    if (!empty($CFG->enableavailability) && $exacomp_active) {
@@ -261,3 +261,32 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
 
 //}
 
+
+/**
+ * Inject the exacomp element into all moodle module settings forms.
+ *
+ * @param moodleform $formwrapper The moodle quickforms wrapper object.
+ * @param MoodleQuickForm $mform The actual form object (required to modify the form).
+ */
+function block_exacomp_coursemodule_definition_after_data($formwrapper, $mform) {
+    global $CFG, $COURSE, $DB, $PAGE;
+
+
+
+    // add button if exaquest is active in this course
+    if(is_exacomp_active_in_course() && $mform->_formName == 'mod_hvp_mod_form' && $formwrapper->dakoraplus){
+        ?>
+        <script type="text/javascript">
+            function changeFormActionExacomp() {
+                document.getElementsByClassName("mform")[0].action = "../exacomp/modedit.php";
+            }
+        </script>
+        <?php
+        //$mform->removeElement("tags");
+        //$mform->removeElement("submitbutton2");
+        // the submitbuttons are not there yet ==> cannot remove them here
+        $mform->addElement('submit', 'savehvpactivity', get_string('save_hvp_activity', 'block_exacomp'), 'onClick="changeFormActionExacomp()"');
+    }
+
+    return;
+}

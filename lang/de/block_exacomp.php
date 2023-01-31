@@ -955,3 +955,4 @@ $string['overview_examples_report_title'] = 'Aufgabenübersicht zum Kompetenzerw
 $string['block_exacomp_link_to_dakora_app'] = 'zur Dakora-App';
 $string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';
 $string['grid_creating_is_disabled'] = 'Die Neuanlage von Rastern ist deaktiviert!';
+$string['save_hvp_activity'] = 'HVP Aktivität speichern';

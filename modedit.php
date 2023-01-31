@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Adds or updates modules in a course using new formslib
  * But without footer and header.
@@ -24,18 +23,18 @@
 
 require_once("../../config.php");
 require_once("../../course/lib.php");
-require_once($CFG->libdir.'/filelib.php');
-require_once($CFG->libdir.'/gradelib.php');
-require_once($CFG->libdir.'/completionlib.php');
-require_once($CFG->libdir.'/plagiarismlib.php');
+require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->libdir . '/gradelib.php');
+require_once($CFG->libdir . '/completionlib.php');
+require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/course/modlib.php');
 
 $PAGE->requires->jquery();
 
-$add    = optional_param('add', '', PARAM_ALPHANUM);     // Module name.
+$add = optional_param('add', '', PARAM_ALPHANUM);     // Module name.
 $update = optional_param('update', 0, PARAM_INT);
 $return = optional_param('return', 0, PARAM_BOOL);    //return to course/view.php if false or mod/modname/view.php if true
-$type   = optional_param('type', '', PARAM_ALPHANUM); //TODO: hopefully will be removed in 2.0
+$type = optional_param('type', '', PARAM_ALPHANUM); //TODO: hopefully will be removed in 2.0
 $sectionreturn = optional_param('sr', null, PARAM_INT);
 
 $url = new moodle_url('/blocks/exacomp/modedit.php');
@@ -46,14 +45,14 @@ if (!empty($return)) {
 
 if (!empty($add)) {
     $section = required_param('section', PARAM_INT);
-    $course  = required_param('course', PARAM_INT);
+    $course = required_param('course', PARAM_INT);
 
     $url->param('add', $add);
     $url->param('section', $section);
     $url->param('course', $course);
     $PAGE->set_url($url);
 
-    $course = $DB->get_record('course', array('id'=>$course), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $course), '*', MUST_EXIST);
     require_login($course);
 
     // There is no page for this in the navigation. The closest we'll have is the course section.
@@ -84,7 +83,7 @@ if (!empty($add)) {
     if ($data->section && $course->format != 'site') {
         $heading = new stdClass();
         $heading->what = $fullmodulename;
-        $heading->to   = $sectionname;
+        $heading->to = $sectionname;
         $pageheading = get_string('addinganewto', 'moodle', $heading);
     } else {
         $pageheading = get_string('addinganew', 'moodle', $fullmodulename);
@@ -97,13 +96,13 @@ if (!empty($add)) {
     $PAGE->set_url($url);
 
     // Select the "Edit settings" from navigation.
-    navigation_node::override_active_url(new moodle_url('/blocks/exacomp/modedit.php', array('update'=>$update, 'return'=>1)));
+    navigation_node::override_active_url(new moodle_url('/blocks/exacomp/modedit.php', array('update' => $update, 'return' => 1)));
 
     // Check the course module exists.
     $cm = get_coursemodule_from_id('', $update, 0, false, MUST_EXIST);
 
     // Check the course exists.
-    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
     // require_login
     require_login($course, false, $cm); // needed to setup proper $COURSE
@@ -119,7 +118,7 @@ if (!empty($add)) {
     if ($data->section && $course->format != 'site') {
         $heading = new stdClass();
         $heading->what = $fullmodulename;
-        $heading->in   = $sectionname;
+        $heading->in = $sectionname;
         $pageheading = get_string('updatingain', 'moodle', $heading);
     } else {
         $pageheading = get_string('updatinga', 'moodle', $fullmodulename);
@@ -141,7 +140,6 @@ $PAGE->set_pagetype($pagepath);
 $PAGE->set_pagelayout('embedded');
 $PAGE->add_body_class('limitedwidth');
 
-
 $modmoodleform = "$CFG->dirroot/mod/$module->name/mod_form.php";
 if (file_exists($modmoodleform)) {
     require_once($modmoodleform);
@@ -149,9 +147,10 @@ if (file_exists($modmoodleform)) {
     throw new \moodle_exception('noformdesc');
 }
 
-$mformclassname = 'mod_'.$module->name.'_mod_form';
+$mformclassname = 'mod_' . $module->name . '_mod_form';
 $mform = new $mformclassname($data, $cw->section, $cm, $course);
 $mform->set_data($data);
+$mform->dakoraplus = true; // this can then be used in the block_exacomp_coursemodule_definition_after_data() to check if the form is being called from here, or from moodle course/modedit
 
 if ($mform->is_cancelled()) {
     if ($return && !empty($cm->id)) {
@@ -167,26 +166,23 @@ if ($mform->is_cancelled()) {
 } else if ($fromform = $mform->get_data()) {
     if (!empty($fromform->update)) {
         list($cm, $fromform) = update_moduleinfo($cm, $fromform, $course, $mform);
+        $coursemoduleid = $cm->id;
     } else if (!empty($fromform->add)) {
         $fromform = add_moduleinfo($fromform, $course, $mform);
+        $coursemoduleid = $fromform->coursemodule;
     } else {
         throw new \moodle_exception('invaliddata');
     }
 
-    if (isset($fromform->submitbutton)) {
-        $url = new moodle_url("/mod/$module->name/view.php", array('id' => $fromform->coursemodule, 'forceview' => 1));
-        if (empty($fromform->showgradingmanagement)) {
-            redirect($url);
-        } else {
-            redirect($fromform->gradingman->get_management_url($url));
-        }
-    } else {
-        redirect(course_get_url($course, $cw->section, array('sr' => $sectionreturn)));
-    }
+    // Instead of redirect like in course/modedit: Script will use postMessage to inform the parent window of the coursemodule->id
+    ?>
+    <script>
+        console.log('Saved HVP activity with coursemoduleid: <?php echo $coursemoduleid; ?>');
+        window.parent.postMessage('Saved HVP activity with coursemoduleid: <?php echo $coursemoduleid; ?>', '*');
+    </script>
+    <?php
     exit;
-
 } else {
-
     $streditinga = get_string('editinga', 'moodle', $fullmodulename);
     $strmodulenameplural = get_string('modulenameplural', $module->name);
 
@@ -213,28 +209,15 @@ if ($mform->is_cancelled()) {
         echo $OUTPUT->heading_with_help($pageheading, '', $module->name, 'monologo');
     }
 
+    //$mform->addElement('submit', 'savehvpactivity', get_string('save_hvp_activity', 'block_exacomp'), 'onClick="changeFormActionExacomp()"');
+
     $mform->display();
-
-    //window.parent.postMessage('Hello from the iframe!', '*');
-
-    //id_submitbutton2
 
     echo $OUTPUT->footer();
 }
 ?>
+
 <script>
-    $( "#id_submitbutton" ).click(function() {
-        console.log("save and display clicked");
-        window.parent.postMessage('Hello from the iframe!', '*');
-    });
-
-    $( "#id_submitbutton2" ).click(function() {
-        console.log("save and return to course clicked");
-        window.parent.postMessage('Hello from the iframe!', '*');
-    });
-
-    $( "#id_cancel" ).click(function() {
-        console.log("cancel clicked");
-        window.parent.postMessage('Hello from the iframe!', '*');
-    });
+    $("#id_submitbutton").remove();
+    $("#id_submitbutton2").remove();
 </script>
