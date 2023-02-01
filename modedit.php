@@ -173,12 +173,13 @@ if ($mform->is_cancelled()) {
     } else {
         throw new \moodle_exception('invaliddata');
     }
+    $postMessageData = json_encode(array('coursemoduleid' => $coursemoduleid))
 
     // Instead of redirect like in course/modedit: Script will use postMessage to inform the parent window of the coursemodule->id
     ?>
     <script>
-        console.log('Saved HVP activity with coursemoduleid: <?php echo $coursemoduleid; ?>');
-        window.parent.postMessage('Saved HVP activity with coursemoduleid: <?php echo $coursemoduleid; ?>', '*');
+        console.log('<?php echo $postMessageData; ?>');
+        window.parent.postMessage('<?php echo $postMessageData; ?>', '*');
     </script>
     <?php
     exit;
