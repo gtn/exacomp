@@ -12333,6 +12333,7 @@ class block_exacomp_external extends external_api {
                     $exampleData->taskfilenames .= $file->get_filename() . ',';
 
                     //new solution for the taskfiles array
+                    $exampleData->taskfiles[$i] = new stdClass();
                     $exampleData->taskfiles[$i]->url = $exampleData->taskfileurl = static::get_webservice_url_for_file($file, $courseid, $i)->out(false);
                     $exampleData->taskfiles[$i]->name = $file->get_filename();
                     $exampleData->taskfiles[$i]->type = $file->get_mimetype();
