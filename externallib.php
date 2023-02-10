@@ -22,7 +22,6 @@ require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
 
-
 use block_exacomp\cross_subject;
 use block_exacomp\db_record;
 use block_exacomp\descriptor;
@@ -1162,7 +1161,6 @@ class block_exacomp_external extends external_api {
             ]);
         }
 
-
         foreach ($courses as $course) {
             $tree = block_exacomp_get_competence_tree($course["courseid"], null, null, false, null, true, null, false, false, true, true, true);
 
@@ -1649,7 +1647,7 @@ class block_exacomp_external extends external_api {
      * @return array of course subjects
      * @throws invalid_parameter_exception
      */
-    public static function submit_example($exampleid, $studentvalue, $url, $effort, $filename, $fileitemid = 0, $studentcomment, $title, $itemid = 0, $courseid = 0) {
+    public static function submit_example($exampleid, $studentvalue, $url, $effort, $filename, $fileitemid = 0, $studentcomment = null, $title = null, $itemid = 0, $courseid = 0) {
         global $CFG, $DB, $USER;
 
         static::validate_parameters(static::submit_example_parameters(),
@@ -1828,8 +1826,9 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function create_or_update_example($exampleid, $name, $description, $timeframe = '', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $filename,
-                                                    $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0) {
+    public static function create_or_update_example($exampleid, $name, $description, $timeframe = '', $externalurl = null, $comps = null, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0,
+        $filename = null,
+        $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0) {
         if (empty ($name)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
@@ -1914,8 +1913,8 @@ class block_exacomp_external extends external_api {
      *
      * @return array
      */
-    public static function diggrplus_create_or_update_example($exampleid = -1, $name, $description, $timeframe = '', $externalurl = 'www', $comps = '0', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $crosssubjectid = -1,
-                                                              $fileitemids = '', $removefiles = '', $solutionfileitemid = '', $activityid = 0, $is_teacherexample = 0) {
+    public static function diggrplus_create_or_update_example($exampleid = -1, $name = null, $description = null, $timeframe = '', $externalurl = 'www', $comps = '0', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $crosssubjectid = -1,
+        $fileitemids = '', $removefiles = '', $solutionfileitemid = '', $activityid = 0, $is_teacherexample = 0) {
         global $COURSE; //TODO: calling this function with courseid=3... but $COURSE->id is 1. Why?
 
         static::validate_parameters(static::diggrplus_create_or_update_example_parameters(), array(
@@ -2089,9 +2088,9 @@ class block_exacomp_external extends external_api {
 
         if ($type == 'topic') {
             $comptype = BLOCK_EXACOMP_TYPE_TOPIC;
-        } elseif ($type == 'descriptor') {
+        } else if ($type == 'descriptor') {
             $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR;
-        } elseif ($type == 'example') {
+        } else if ($type == 'example') {
             $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE;
         } else {
             throw new invalid_parameter_exception("type '$type' not supported");
@@ -2185,7 +2184,9 @@ class block_exacomp_external extends external_api {
             throw new moodle_exception('resultOwners is not array');
         }
 
-        $ownerIds = array_map(function($o) { return $o->id; }, $resultOwners->value);
+        $ownerIds = array_map(function($o) {
+            return $o->id;
+        }, $resultOwners->value);
 
         $importedCount = 0;
 
@@ -2231,7 +2232,6 @@ class block_exacomp_external extends external_api {
                     continue;
                 }
             }
-
 
             // enrol the user
             $enrol = enrol_get_plugin("manual"); //enrolment = manual
@@ -5431,7 +5431,7 @@ class block_exacomp_external extends external_api {
 
         if ($forall) {
             static::require_can_access_course($courseid, $allcrosssubjects);
-        } elseif ($allcrosssubjects) {
+        } else if ($allcrosssubjects) {
             foreach ($cross_subjects as $cross_subject) {
                 static::require_can_access_course_user($cross_subject->courseid, $userid);
             }
@@ -6526,7 +6526,7 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function dakora_submit_example($exampleid, $studentvalue = null, $url, $filenames, $studentcomment, $itemid = 0, $courseid = 0, $fileitemids = '') {
+    public static function dakora_submit_example($exampleid, $studentvalue = null, $url = null, $filenames = null, $studentcomment = null, $itemid = 0, $courseid = 0, $fileitemids = '') {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::dakora_submit_example_parameters(),
             array('exampleid' => $exampleid, 'url' => $url, 'filenames' => $filenames, 'studentcomment' => $studentcomment, 'studentvalue' => $studentvalue, 'itemid' => $itemid, 'courseid' => $courseid, 'fileitemids' => $fileitemids));
@@ -6707,8 +6707,8 @@ class block_exacomp_external extends external_api {
      * @param int itemid (0 for new, >0 for existing)
      * @return array of course subjects
      */
-    public static function diggrplus_submit_item($compid, $studentvalue = null, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle = '', $collabuserids = '',
-                                                 $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
+    public static function diggrplus_submit_item($compid, $studentvalue, $url, $filenames, $studentcomment, $fileitemids = '', $itemid = 0, $courseid = 0, $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE, $itemtitle = '', $collabuserids = '',
+        $submit = 0, $removefiles = '', $solutiondescription = '', $descriptorgradings = []) {
         global $CFG, $DB, $USER;
         static::validate_parameters(static::diggrplus_submit_item_parameters(),
             array('compid' => $compid, 'studentvalue' => $studentvalue, 'url' => $url, 'filenames' => $filenames, 'fileitemids' => $fileitemids, 'studentcomment' => $studentcomment,
@@ -7181,7 +7181,7 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of items
      */
-    public static function diggrplus_get_examples_and_items($courseid = -1, $userid, $compid, $comptype, $type = "", $search = "", $niveauid = -1, $status = "") {
+    public static function diggrplus_get_examples_and_items($courseid = -1, $userid = null, $compid = null, $comptype = null, $type = "", $search = "", $niveauid = -1, $status = "") {
         global $USER;
 
         if ($userid == 0) {
@@ -8033,6 +8033,7 @@ class block_exacomp_external extends external_api {
 
     /**
      * teacher grades and item in diggrplus
+     *
      * @ws-type-write
      */
     public static function diggrplus_grade_item($itemid, $teachervalue = -1, $descriptorgradings = []) {
@@ -10219,7 +10220,7 @@ class block_exacomp_external extends external_api {
         // if hvp: get  /mod/hvp/review.php?id=hvpid&user=$USER->id
         // hvp --> the plugin that is mostly used
         if (strpos($example->externaltask, "/mod/hvp/view.php")) {
-            if(!$cm = get_coursemodule_from_id('hvp', $example->activityid)){ // here the coursemodule aka activityid is needed
+            if (!$cm = get_coursemodule_from_id('hvp', $example->activityid)) { // here the coursemodule aka activityid is needed
                 print_error('invalidcoursemodule');
             }
             if (!$course = $DB->get_record('course', ['id' => $cm->course])) {
@@ -10227,7 +10228,7 @@ class block_exacomp_external extends external_api {
             }
 
             $id = $cm->instance; // NOT the activityid, but the hvp-id of that activity.. this is the "instanceid" of the coursemodule
-            $userid = (int) $USER->id; // (int) is IMPORTANT. the permissions check further down uses a ===, so it has to be int, not string
+            $userid = (int)$USER->id; // (int) is IMPORTANT. the permissions check further down uses a ===, so it has to be int, not string
 
             require_login($course, false, $cm);
 
@@ -10249,9 +10250,9 @@ class block_exacomp_external extends external_api {
                 echo "norresultssubmitted";
             }
 
-            $totalrawscore       = null;
-            $totalmaxscore       = null;
-            $totalscaledscore    = null;
+            $totalrawscore = null;
+            $totalmaxscore = null;
+            $totalscaledscore = null;
             $scaledscoreperscore = null;
 
             // Assemble our question tree.
@@ -10264,10 +10265,10 @@ class block_exacomp_external extends external_api {
                     $basequestion = $question;
 
                     if (isset($question->raw_score) && isset($question->grademax) && isset($question->max_score)) {
-                        $scaledscoreperscore   = $question->max_score ? ($question->grademax / $question->max_score) : 0;
+                        $scaledscoreperscore = $question->max_score ? ($question->grademax / $question->max_score) : 0;
                         $question->score_scale = round($scaledscoreperscore, 2);
-                        $totalrawscore         = $question->raw_score;
-                        $totalmaxscore         = $question->max_score;
+                        $totalrawscore = $question->raw_score;
+                        $totalmaxscore = $question->max_score;
                         if ($question->max_score && $question->raw_score === $question->max_score) {
                             $totalscaledscore = round($question->grademax, 2);
                         } else {
@@ -10315,16 +10316,15 @@ class block_exacomp_external extends external_api {
 
             $results = array(
                 'current_result' => $current_result,
-                'resultpage_url' => $resultpage_url->out(false)
+                'resultpage_url' => $resultpage_url->out(false),
             );
 
-
             //$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-                    //                            'userid' => $userid,
-                    //                            'itemid' => $item->id,
-                    //                            'commentid' => $itemcomment->id,
-                    //                            'wstoken' => static::wstoken(),
-                    //                        ]);
+            //                            'userid' => $userid,
+            //                            'itemid' => $item->id,
+            //                            'commentid' => $itemcomment->id,
+            //                            'wstoken' => static::wstoken(),
+            //                        ]);
         } else if (strpos($example->externaltask, "/mod/h5pactivity/view.php")) {
             // if h5p: get /mod/h5pactivity/report.php?a=1&userid=5
             // todo.. but this is mostly not used
@@ -10351,7 +10351,6 @@ class block_exacomp_external extends external_api {
             'resultpage_url' => new external_value (PARAM_TEXT, 'content'),
         ));
     }
-
 
     /**
      * Returns description of method parameters
@@ -11267,7 +11266,7 @@ class block_exacomp_external extends external_api {
      * @param $visible
      * @return array
      */
-    public static function dakora_set_niveau_visibility($courseid, $topicid, $userid, $forall, $visible, $groupid = -1, $niveauid) {
+    public static function dakora_set_niveau_visibility($courseid, $topicid, $userid, $forall, $visible, $groupid = -1, $niveauid = null) {
         global $USER;
         static::validate_parameters(static::dakora_set_niveau_visibility_parameters(), array(
             'courseid' => $courseid,
@@ -12015,7 +12014,7 @@ class block_exacomp_external extends external_api {
      * @param bool $comptype
      * @param int $courseid ---> use if you want to reduce the results to only the selected course. Otherwise, all courses are used.
      */
-    private static function block_exacomp_get_examples_for_competence_and_user($userid, $compid = -1, $comptype = -1, $wstoken, $search = "", $niveauid = -1, $status = "", $courseid = -1) {
+    private static function block_exacomp_get_examples_for_competence_and_user($userid = null, $compid = -1, $comptype = -1, $wstoken = null, $search = "", $niveauid = -1, $status = "", $courseid = -1) {
         global $DB;
         // Maybe better performance with join on user_enrolments table?
         //    if ($isTeacher) {
@@ -13128,8 +13127,9 @@ class block_exacomp_external extends external_api {
         return $examples_return;
     }
 
-    private static function create_or_update_example_common($exampleid, $name, $description, $timeframe = '', $externalurl, $comps, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '', $courseid = 0, $filename,
-                                                            $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0, $removefiles = 0, $visible = true, $onlyForThisCourse = false) {
+    private static function create_or_update_example_common($exampleid, $name, $description, $timeframe = '', $externalurl = null, $comps = null, $fileitemids = '', $solutionfileitemid = '', $taxonomies = '', $newtaxonomy = '',
+        $courseid = 0, $filename = null,
+        $crosssubjectid = -1, $activityid = 0, $is_teacherexample = 0, $removefiles = 0, $visible = true, $onlyForThisCourse = false) {
         global $DB, $USER, $CFG, $COURSE;
 
         $COURSE->id = $courseid; // TODO: copied this from  update_descriptor_category.. why is the CONTEXT wrong?
@@ -13477,7 +13477,7 @@ class block_exacomp_external extends external_api {
         global $USER;
         if ($courseid > 0) {
             $courseIds = [$courseid];
-        } elseif ($allcrosssubjects) { // check all cources where I am a teacher
+        } else if ($allcrosssubjects) { // check all cources where I am a teacher
             $courseIds = block_exacomp_get_courses_of_teacher($USER->id); // TODO: looks like this function is not working with userid!
         } else {
             $courseIds = [-1111]; // wrong crosssubject id, for secure
@@ -13797,7 +13797,7 @@ class block_exacomp_external extends external_api {
      * @return object the data of the found example
      * @throws block_exacomp_permission_exception
      */
-    private static function require_can_access_comp($compid, $courseid = 0, $comptype) {
+    private static function require_can_access_comp($compid, $courseid = 0, $comptype = null) {
         switch ($comptype) {
             case BLOCK_EXACOMP_TYPE_TOPIC:
                 // TODO: What should be checked? RW
@@ -14381,7 +14381,7 @@ class block_exacomp_external extends external_api {
     /**
      * @ws-type-write
      */
-    public static function diggrplus_set_active_course_topics($courseid, $topicids = [], $hide_new_examples) {
+    public static function diggrplus_set_active_course_topics($courseid, $topicids = [], $hide_new_examples = null) {
         static::validate_parameters(static::diggrplus_set_active_course_topics_parameters(), array(
             'courseid' => $courseid,
             'topicids' => $topicids,
@@ -15245,7 +15245,6 @@ class block_exacomp_external extends external_api {
         ));
     }
 
-
     /**
      * Returns description of method parameters
      *
@@ -15260,6 +15259,7 @@ class block_exacomp_external extends external_api {
 
     /**
      * Get language definitions in json format for diggr-plus and dakora-plus apps
+     *
      * @ws-type-read
      * @return success
      */
@@ -15276,7 +15276,7 @@ class block_exacomp_external extends external_api {
 
         if (!in_array($app, ['diggr-plus', 'dakora-plus', 'setapp'])) {
             $data = ['error' => "app {$app} not allowed"];
-        } elseif (!preg_match('!^[a-z]+$!', $lang)) {
+        } else if (!preg_match('!^[a-z]+$!', $lang)) {
             $data = ['error' => "lang {$lang} not allowed"];
         } else {
             $langFile = __DIR__ . "/lang/{$lang}/{$app}.json";
