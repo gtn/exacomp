@@ -4964,23 +4964,37 @@ class block_exacomp_external extends external_api {
             }
             $example->exampletaxonomies = $taxonomies;
             $example->exampletaxids = $taxids;
+            // TODO: remove exampletaxonomies and exampletaxids after testing, if no app uses this webservice in that way. Taxonomies are now sent in an object
+            $example->taxonomies = block_exacomp_get_taxonomies_by_example($example->exampleid);
 
             $example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 
             $example_course = $DB->get_record('course', array('id' => $example->courseid));
             $example->courseshortname = $example_course->shortname;
             $example->coursefullname = $example_course->fullname;
+
+            // add the item information to the examples
+
+            // this provides minimal information, and is what we need for now
+            $item = block_exacomp_get_current_item_for_example($userid, $example->exampleid);
+            $example->itemstatus = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
+
+            // this would include a lot of information, but still be an overkill
+            //$items = block_exacomp_get_items_for_competence($userid, $example->exampleid, BLOCK_EXACOMP_TYPE_EXAMPLE);
+            //if($items){
+            //    // it is ordered by timecreated ==> get the newest one. Currently it is an array
+            //    $example->item = reset($items); // reset returns the first element
+            //}
+
+            // this would include all the information we need, but be an overkill and less performant
+            ////$example->item = block_exacomp_get_current_item_for_example($userid, $example->exampleid); this is a very old function. does not provide enough information
+            //$items = static::diggrplus_get_examples_and_items($courseid, $userid, $example->exampleid, BLOCK_EXACOMP_TYPE_EXAMPLE);
+            //if($items){
+            //    // it is ordered by timecreated ==> get the newest one. Currently it is an array
+            //    $example->item = reset($items); // reset returns the first element
+            //}
         }
 
-        // add the item information to the examples
-        foreach ($examples as $exampleKey => $example) {
-            //$example->item = block_exacomp_get_current_item_for_example($userid, $example->exampleid); this is a very old function. does not provide enough information
-            $items = block_exacomp_get_items_for_competence($userid, $example->exampleid, BLOCK_EXACOMP_TYPE_EXAMPLE);
-            if($items){
-                // it is ordered by timecreated ==> get the newest one. Currently it is an array
-                $example->item = reset($items); // reset returns the first element
-            }
-        }
 
         return $examples;
     }
@@ -5006,36 +5020,12 @@ class block_exacomp_external extends external_api {
             'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'timeframe' => new external_value (PARAM_TEXT, 'timeframe, suggested time'),
-            'item' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of item '),
-                'name' => new external_value (PARAM_TEXT, 'title of item'),
-                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
-                'type' => new external_value (PARAM_TEXT, 'type of item (note,file,link)', VALUE_OPTIONAL),
-                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
-                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-                //                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
-                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
-                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
-                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
-                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
-                //'owner' => new external_single_structure(array(
-                //    'userid' => new external_value (PARAM_INT, ''),
-                //    'fullname' => new external_value (PARAM_TEXT, ''),
-                //    'profileimageurl' => new external_value (PARAM_TEXT, ''),
-                //)),
-                'studentfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'filename' => new external_value (PARAM_TEXT, 'filename'),
-                    'file' => new external_value (PARAM_URL, 'file url'),
-                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file'),
-                )), "files of the student's submission", VALUE_OPTIONAL),
-                'collaborators' => new external_multiple_structure (new external_single_structure (array(
-                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
-                )), 'collaborators', VALUE_OPTIONAL),
-            ), 'item information', VALUE_OPTIONAL),
+            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text'),
+            'taxonomies' => new external_multiple_structure (new external_single_structure ([
+                'id' => new external_value (PARAM_INT, 'id'),
+                'title' => new external_value (PARAM_TEXT, 'name'),
+                'source' => new external_value (PARAM_TEXT, 'source'),
+            ]), 'values'),
         )));
     }
 
@@ -5370,6 +5360,8 @@ class block_exacomp_external extends external_api {
             }
             $example->exampletaxonomies = $taxonomies;
             $example->exampletaxids = $taxids;
+            // TODO: remove exampletaxonomies and exampletaxids after testing, if no app uses this webservice in that way. Taxonomies are now sent in an object
+            $example->taxonomies = block_exacomp_get_taxonomies_by_example($example->exampleid);
 
             $example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
             $example_course = $DB->get_record('course', array(
@@ -5391,7 +5383,14 @@ class block_exacomp_external extends external_api {
                     $example->editable = false;
                 }
             }
+
+
+            // add the item information to the examples
+            // this provides minimal information, and is what we need for now
+            $item = block_exacomp_get_current_item_for_example($userid, $example->exampleid);
+            $example->itemstatus = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
         }
+
 
         return $examples;
     }
@@ -5418,9 +5417,15 @@ class block_exacomp_external extends external_api {
             'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
             'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
             'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'taxonomies' => new external_multiple_structure (new external_single_structure ([
+                'id' => new external_value (PARAM_INT, 'id'),
+                'title' => new external_value (PARAM_TEXT, 'name'),
+                'source' => new external_value (PARAM_TEXT, 'source'),
+            ]), 'values'),
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'schedule_marker' => new external_value(PARAM_TEXT, 'tag for the marker on the material in the weekly schedule', VALUE_OPTIONAL),
             'editable' => new external_value(PARAM_BOOL, 'for blocking events: show if editable'),
+            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text')
         )));
     }
 
@@ -7778,8 +7783,10 @@ class block_exacomp_external extends external_api {
                         $elem_example->status = $getExampleStatus($example);
                         $elem_example->teacherevaluation = $student->examples->teacher[$example->id];
                         $elem_example->studentevaluation = $student->examples->student[$example->id];
+                        $elem_example->taxonomies = $example->taxonomies;
                         //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
+
                     }
                     $elem_topic->descriptors[] = $elem_desc;
                 }
@@ -7850,6 +7857,11 @@ class block_exacomp_external extends external_api {
                         'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
                         'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                         'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                        'taxonomies' => new external_multiple_structure (new external_single_structure ([
+                            'id' => new external_value (PARAM_INT, 'id'),
+                            'title' => new external_value (PARAM_TEXT, 'name'),
+                            'source' => new external_value (PARAM_TEXT, 'source'),
+                        ]), 'values'),
                     ))),
                 ))),
             ))),
