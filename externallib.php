@@ -4011,6 +4011,7 @@ class block_exacomp_external extends external_api {
             'solutionfilename' => new external_value (PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
             'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
             'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
+            'externaltask_embedded' => new external_value (PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
             'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
             'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
             'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
