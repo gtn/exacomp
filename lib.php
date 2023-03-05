@@ -114,9 +114,51 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
     // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     // From Moodle 2.3, use send_stored_file instead.
 
+    $as_pdf = optional_param('as_pdf', false, PARAM_BOOL);
+    if ($as_pdf) {
+        send_stored_file_as_pdf($file, $forcedownload, $options);
+    }
+
     send_stored_file($file, 0, 0, $forcedownload, $options);
     exit;
 }
+
+
+function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options) {
+    $info = $file->get_imageinfo();
+    if (!$info) {
+        die('no image? (no image info)');
+    }
+
+    $width = $info['width'];
+    $height = $info['height'];
+
+    // create PDF object with image size
+    $pdf = new \FPDF($width > $height ? 'L' : 'P', 'pt', array($width, $height));
+
+    // add page and image to PDF
+    $pdf->AddPage();
+
+    if (!$tmp_image = $file->copy_content_to_temp()) {
+        die("couldn't create tmp image");
+    }
+
+    // rename tmp image to include extension, fpdf needs the correct extension!
+    $tmp_image_with_extension = $tmp_image . '.' . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+    rename($tmp_image, $tmp_image_with_extension);
+
+    $pdf->Image($tmp_image_with_extension, 0, 0, $width, $height);
+
+    $pdf_output = $pdf->Output('', 'S');
+
+    // Delete temporary image file.
+    @unlink($tmp_image_with_extension);
+
+    send_file($pdf_output, $file->get_filename() . '.pdf', 0, 0, true, $forcedownload, 'application/pdf',
+        false, $options);
+    exit;
+}
+
 
 function is_exacomp_active_in_course() {
     global $COURSE, $PAGE, $CFG;
