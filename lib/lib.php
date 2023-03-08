@@ -9734,15 +9734,28 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
 		FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex
 		WHERE ex.id IN (
 			SELECT dex.exampid
-			FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex
-			JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
-			JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
+                FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex
+                    JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
+                    JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
 			WHERE ct.courseid = :courseid"
             . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
-		)";
+		)
+		/* for subdescriptors */
+		OR ex.id IN (
+			SELECT dex.exampid
+                FROM {" . BLOCK_EXACOMP_DB_DESCRIPTORS ."} d
+                    JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS ."} d2 ON d2.parentid = d.id
+                    JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = d2.id
+                    JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON d.id = det.descrid /* topic relation by parent descriptor */
+                    JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
+			WHERE ct.courseid = :courseidsub"
+            . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
+		)
+
+		";
     }
 
-    return g::$DB->get_records_sql($sql, array("courseid" => $courseid, "courseidexample" => $courseid, "courseidexameval" => $courseid,
+    return g::$DB->get_records_sql($sql, array("courseid" => $courseid, "courseidsub" => $courseid, "courseidexample" => $courseid, "courseidexameval" => $courseid,
         "courseidexamannot" => $courseid, "searchtitle" => "%" . $search . "%", "searchdescription" => "%" . $search . "%", "userid" => $userid));
 }
 
@@ -9770,6 +9783,18 @@ function block_exacomp_course_has_examples($courseid) {
 		FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex
 		JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON ex.id = dex.exampid
 		JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
+		JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
+		WHERE ct.courseid = ?";
+    if ((bool)g::$DB->get_field_sql($sql, array($courseid))) {
+        return true;
+    }
+    // check subdescriptors
+    $sql = "SELECT COUNT(*)
+		FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex
+		JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON ex.id = dex.exampid
+		JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON d.id = dex.descrid AND d.parentid > 0
+		JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d2 ON d2.id = d.parentid
+		JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON det.descrid = d2.id
 		JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
 		WHERE ct.courseid = ?";
     return (bool)g::$DB->get_field_sql($sql, array($courseid));
@@ -9931,8 +9956,19 @@ function block_exacomp_get_courseids_by_example($exampleid) {
 		JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} dt ON ct.topicid = dt.topicid
 		JOIN {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} dex ON dex.descrid = dt.descrid
 		WHERE dex.exampid=?';
-
-    return g::$DB->get_fieldset_sql($sql, array($exampleid));
+    $courseIds = g::$DB->get_fieldset_sql($sql, array($exampleid));
+    // add subdescriptors
+    $sql2 = 'SELECT ct.courseid
+		FROM {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct
+		JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} dt ON ct.topicid = dt.topicid
+		JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON dt.descrid = d.id AND d.parentid = 0
+		JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d2 ON d2.parentid = d.id
+		JOIN {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} dex ON dex.descrid = d2.id
+		WHERE dex.exampid=?';
+    if ($courseIdsSub = g::$DB->get_fieldset_sql($sql2, array($exampleid))) {
+        $courseIds += $courseIdsSub;
+    }
+    return $courseIds;
 }
 
 /**
@@ -11896,13 +11932,21 @@ function block_exacomp_require_item_capability($cap, $item) {
             throw new block_exacomp_permission_exception('User is no teacher or student');
         }
 
+        // only if it is not imported utem (custom)
+        if ($item->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || $item->source === 0) {
+            if ($item->creatorid == g::$USER->id || $item->creatorid === null) {
+                // User is creator
+                return true;
+            }
+        }
+
         // find descriptor in course
         $examples = block_exacomp_get_examples_by_course(g::$COURSE->id);
         if (!isset($examples[$item->id])) {
             $examples = block_exacomp_get_crosssubject_examples_by_course(g::$COURSE->id);
             if (!isset($examples[$item->id])) {
                 if (!$item->blocking_event == 2) { //check if it is a free material
-                    throw new block_exacomp_permission_exception('Not a course example');
+                    throw new block_exacomp_permission_exception('Not a course example.');
                 }
             }
         }
