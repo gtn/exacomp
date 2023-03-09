@@ -5437,7 +5437,7 @@ class block_exacomp_external extends external_api {
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'schedule_marker' => new external_value(PARAM_TEXT, 'tag for the marker on the material in the weekly schedule', VALUE_OPTIONAL),
             'editable' => new external_value(PARAM_BOOL, 'for blocking events: show if editable (special for dakora?)'),
-            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text')
+            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)')
         )));
     }
 
