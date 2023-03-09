@@ -4061,6 +4061,30 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022072300, 'exacomp');
     }
 
+    if ($oldversion < 2023030900) {
+
+        // Define field lastmodifiedbyid to be added to block_exacompschedule.
+        $table = new xmldb_table('block_exacompschedule');
+        $field = new xmldb_field('lastmodifiedbyid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'creatorid');
+
+        // Conditionally launch add field lastmodifiedbyid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field addedtoschedulebyid to be added to block_exacompschedule.
+        $table = new xmldb_table('block_exacompschedule');
+        $field = new xmldb_field('addedtoschedulebyid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'lastmodifiedbyid');
+
+        // Conditionally launch add field addedtoschedulebyid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023030900, 'exacomp');
+    }
+
     //if ($oldversion < 2022101900) {
     //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
     //    // If they are used ==> they will not get deleted

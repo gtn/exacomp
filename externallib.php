@@ -4980,6 +4980,9 @@ class block_exacomp_external extends external_api {
             $item = block_exacomp_get_current_item_for_example($userid, $example->exampleid);
             $example->itemstatus = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
 
+            // set lastmodifiedbyid, if not yet set
+            $example->lastmodifiedbyid = $example->lastmodifiedbyid ?: $example->creatorid;
+
             // this would include a lot of information, but still be an overkill
             //$items = block_exacomp_get_items_for_competence($userid, $example->exampleid, BLOCK_EXACOMP_TYPE_EXAMPLE);
             //if($items){
@@ -5015,6 +5018,8 @@ class block_exacomp_external extends external_api {
             'courseid' => new external_value(PARAM_INT, 'example course'),
             'state' => new external_value (PARAM_INT, 'state of example'),
             'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
+            'creatorid' => new external_value (PARAM_INT, 'example added to pool by userid'),
+            'lastmodifiedbyid' => new external_value (PARAM_INT, 'example pool state last edited by userid'),
             'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
             'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
             'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
@@ -5390,6 +5395,9 @@ class block_exacomp_external extends external_api {
             // this provides minimal information, and is what we need for now
             $item = block_exacomp_get_current_item_for_example($userid, $example->exampleid);
             $example->itemstatus = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
+
+            // set lastmodifiedbyid, if not yet set
+            $example->lastmodifiedbyid = $example->lastmodifiedbyid ?: $example->creatorid;
         }
 
 
@@ -5414,6 +5422,9 @@ class block_exacomp_external extends external_api {
             'courseid' => new external_value(PARAM_INT, 'example course'),
             'state' => new external_value (PARAM_INT, 'state of example'),
             'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
+            'creatorid' => new external_value (PARAM_INT, 'example added to pool by userid'),
+            'lastmodifiedbyid' => new external_value (PARAM_INT, 'example pool state last edited by userid'),
+            'addedtoschedulebyid' => new external_value (PARAM_INT, 'example added to plan by userid (may be 0, if added outside of dakora!)'),
             'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
             'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
             'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
@@ -5425,7 +5436,7 @@ class block_exacomp_external extends external_api {
             ]), 'values'),
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'schedule_marker' => new external_value(PARAM_TEXT, 'tag for the marker on the material in the weekly schedule', VALUE_OPTIONAL),
-            'editable' => new external_value(PARAM_BOOL, 'for blocking events: show if editable'),
+            'editable' => new external_value(PARAM_BOOL, 'for blocking events: show if editable (special for dakora?)'),
             'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text')
         )));
     }

@@ -7321,6 +7321,8 @@ function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatori
             'exampleid' => $exampleid,
             'courseid' => $courseid,
             'creatorid' => $creatorid,
+            'lastmodifiedbyid' => $creatorid,
+            'addedtoschedulebyid' => $start ? $creatorid : 0,
             'timecreated' => $timecreated,
             'timemodified' => $timemodified,
             'start' => $start,
@@ -8406,6 +8408,11 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $endtime, $del
     global $DB, $USER;
 
     $entry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('id' => $scheduleid));
+    $entry->lastmodifiedbyid = $USER->id;
+    if (!$deleted && $start && !$entry->start) {
+        // example was moved from planning storage to calendar
+        $entry->addedtoschedulebyid = $USER->id;
+    }
     $entry->start = $start;
     $entry->endtime = $endtime;
     $entry->deleted = $deleted;
