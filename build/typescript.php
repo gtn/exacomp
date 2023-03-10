@@ -26,6 +26,8 @@ function moodle_type_to_typescript_type($isParameters, $type) {
 $doku = '';
 $dokuInterfaces = '';
 
+$definedEnumsByDefenition = [];
+
 foreach ($servicesFiles as $servicesFile) {
     require $servicesFile;
 
@@ -41,7 +43,7 @@ foreach ($servicesFiles as $servicesFile) {
 
         $method = new ReflectionMethod($function['classname'], $function['methodname']);
 
-        $recursor = function($isParameters, $namePrefix, $o) use (&$recursor) {
+        $recursor = function ($isParameters, $namePrefix, $o) use (&$recursor, &$definedEnumsByDefenition) {
             if ($o instanceof external_multiple_structure) {
                 $dokuInterface = $recursor($isParameters, $namePrefix . '_item', $o->content);
                 $dokuInterface .= "export type {$namePrefix} = {$namePrefix}_item[]\n\n";
@@ -64,13 +66,27 @@ foreach ($servicesFiles as $servicesFile) {
 
                             $parts = explode(',', $matches[1]);
 
+                            $enumFields = join("", array_map(function ($part) {
+                                return "  " . ucfirst(trim($part)) . " = '" . trim($part) . "',\n";
+                            }, $parts));
+                            $enumName = 'enum_' . join("_", array_map(function ($part) {
+                                    return trim($part);
+                                }, $parts));
+
+                            // enums with same defenition have the same type
                             $tsType = $namePrefix . '_' . $paramName;
-                            $dokuInterface = "export enum {$tsType} {\n" .
-                                join("", array_map(function($part) {
-                                    return "  " . ucfirst(trim($part)) . " = '" . trim($part) . "',\n";
-                                }, $parts)) .
-                                "}\n" .
+                            $dokuInterface = "export { $enumName as $tsType }\n\n" .
                                 $dokuInterface;
+
+                            if (!$definedEnumsByDefenition[$enumFields]) {
+                                $dokuInterface = "export enum {$enumName} {\n" . $enumFields . "}\n\n" .
+                                    $dokuInterface;
+
+                                // save enum defenition for later
+                                $definedEnumsByDefenition[$enumFields] = $tsType;
+                            }
+
+                            $tsType = $enumName;
                         } else {
                             $tsType = moodle_type_to_typescript_type($isParameters, $paramInfo->type);
                         }
