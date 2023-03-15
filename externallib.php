@@ -5437,7 +5437,7 @@ class block_exacomp_external extends external_api {
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'schedule_marker' => new external_value(PARAM_TEXT, 'tag for the marker on the material in the weekly schedule', VALUE_OPTIONAL),
             'editable' => new external_value(PARAM_BOOL, 'for blocking events: show if editable (special for dakora?)'),
-            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)')
+            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)'),
         )));
     }
 
@@ -14511,6 +14511,7 @@ class block_exacomp_external extends external_api {
             'msteams_import_enabled' => !!trim($msteams_client_id),
             'msteams_azure_app_client_id' => $msteams_client_id,
             'enrolcode_enabled' => !!$info_block_enrolcode,
+            'example_upload_global' => get_config('exacomp', 'example_upload_global'),
         );
     }
 
