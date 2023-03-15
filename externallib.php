@@ -14469,7 +14469,6 @@ class block_exacomp_external extends external_api {
             foreach ($examples as $example) {
                 if (in_array($example->topicid, $addedTopicIds)) {
                     // is an example from a newly activated topic
-                    var_dump($example);
                     block_exacomp_set_example_visibility($example->id, $courseid, false, 0);
                 }
             }
