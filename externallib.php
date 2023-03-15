@@ -1936,9 +1936,14 @@ class block_exacomp_external extends external_api {
             'is_teacherexample' => $is_teacherexample,
         ));
 
-        // careful: if we ever change $onlyForThisCourse --> check the admin setting, just like for dakora
+        if (!get_config('exacomp', 'example_upload_global') && !$courseid) {
+            // courseid HAS to be set because the admin setting says so. If there is no $courseid ==> error
+            throw new invalid_parameter_exception ('Parameter courseid can not be empty, because of example_upload_global setting set to false.');
+        }
+        $onlyForThisCourse = !!$courseid;
+
         $example = self::create_or_update_example_common($exampleid, $name, $description, $timeframe, $externalurl, $comps, $fileitemids, $solutionfileitemid, $taxonomies, $newtaxonomy, $courseid, null, $crosssubjectid, $activityid,
-            $is_teacherexample, $removefiles, null, true);
+            $is_teacherexample, $removefiles, null, $onlyForThisCourse);
 
         return array("success" => true, "exampleid" => $example["exampleid"]);
     }
@@ -14526,6 +14531,7 @@ class block_exacomp_external extends external_api {
             'msteams_import_enabled' => new external_value (PARAM_BOOL, ''),
             'msteams_azure_app_client_id' => new external_value (PARAM_TEXT, ''),
             'enrolcode_enabled' => new external_value (PARAM_BOOL, ''),
+            'example_upload_global' => new external_value (PARAM_BOOL, ''),
         ));
     }
 
