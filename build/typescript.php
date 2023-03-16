@@ -23,7 +23,14 @@ function moodle_type_to_typescript_type($isParameters, $type) {
     return $tsType;
 }
 
+$block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+
+$dokuHeader = "// moodle release: " . $CFG->release . "\n";
+$dokuHeader .= "// block_exacomp version: " . $block_exacomp_info->versiondisk . "\n";
+$dokuHeader .= "\n";
+
 $doku = '';
+
 $dokuInterfaces = '';
 
 $definedEnumsByDefenition = [];
@@ -41,9 +48,15 @@ foreach ($servicesFiles as $servicesFile) {
             require_once $CFG->dirroot . '/' . $function['classpath'];
         }
 
-        $method = new ReflectionMethod($function['classname'], $function['methodname']);
+        $methodname = $function['methodname'] ?: 'execute'; // new style with one class per webservice
+        try {
+            $method = new ReflectionMethod($function['classname'], $methodname);
+        } catch (\Exception $e) {
+            $doku .= "\n  // Error in Webservice {$functionName}: " . $e->getMessage() . "\n";
+            continue;
+        }
 
-        $recursor = function ($isParameters, $namePrefix, $o) use (&$recursor, &$definedEnumsByDefenition) {
+        $recursor = function($isParameters, $namePrefix, $o) use (&$recursor, &$definedEnumsByDefenition) {
             if ($o instanceof external_multiple_structure) {
                 $dokuInterface = $recursor($isParameters, $namePrefix . '_item', $o->content);
                 $dokuInterface .= "export type {$namePrefix} = {$namePrefix}_item[]\n\n";
@@ -66,10 +79,10 @@ foreach ($servicesFiles as $servicesFile) {
 
                             $parts = explode(',', $matches[1]);
 
-                            $enumFields = join("", array_map(function ($part) {
+                            $enumFields = join("", array_map(function($part) {
                                 return "  " . ucfirst(trim($part)) . " = '" . trim($part) . "',\n";
                             }, $parts));
-                            $enumName = 'enum_' . join("_", array_map(function ($part) {
+                            $enumName = 'enum_' . join("_", array_map(function($part) {
                                     return trim($part);
                                 }, $parts));
 
@@ -142,12 +155,12 @@ foreach ($servicesFiles as $servicesFile) {
             }
         };
 
-        $paramMethod = new ReflectionMethod($function['classname'], $function['methodname'] . '_parameters');
+        $paramMethod = new ReflectionMethod($function['classname'], $methodname . '_parameters');
         /* @var external_function_parameters $params */
         $params = $paramMethod->invoke(null);
         $dokuInterfaces .= $recursor(true, "{$functionName}_parameters", $params);
 
-        $returnMethod = new ReflectionMethod($function['classname'], $function['methodname'] . '_returns');
+        $returnMethod = new ReflectionMethod($function['classname'], $methodname . '_returns');
         /* @var external_description $returns */
         $returns = $returnMethod->invoke(null);
 
@@ -168,7 +181,8 @@ foreach ($servicesFiles as $servicesFile) {
     }
 }
 
-$doku = "export type param_string = string | number | boolean | null;\n" .
+$doku = $dokuHeader .
+    "export type param_string = string | number | boolean | null;\n" .
     "export type param_boolean = string | number | boolean | null;\n" .
     "export type param_number = string | number | null;\n" .
     "\n" .
