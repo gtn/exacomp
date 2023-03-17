@@ -22,7 +22,7 @@ This block is for Moodle 3.1+ and 4.0 versions, it will not work for versions be
 If you have any problems installing this block or suggestions for improvement please mailto: office@gtn-solutions.com
 
 * Exabis Competence Grid Block - Description *
-Outcomes for students can easily be added to courses by teachers documenting their work with educational standards. These outcomes can be generated at http://www.edustandards.org and communicate with the exabis_competencies-block.
+Outcomes for students can easily be added to courses by teachers documenting their work with educational standards. These outcomes can be generated at https://comet.edustandards.org and communicate with the exabis_competencies-block.
 Students can reflect upon their own work and develop a competence-profile. The newest version adds competence-grids and drag&drop-upload for material to be used with standards.
 
 

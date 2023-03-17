@@ -245,7 +245,7 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 ';
 
 // === Import ===
-$string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
+$string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">Server-URL</a>.';
 $string['import_max_execution_time'] = 'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".';
 $string['importdone'] = 'data has already been imported from xml';
@@ -261,7 +261,7 @@ $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'individual data was imported successfully!';
 $string['importfail'] = 'an error has occured during import';
 $string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
-$string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
+$string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="https://comet.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
 $string['do_demo_import'] = 'import demo data to see how Exabis Competence Grid works.';
 $string['schedulerimport'] = 'Scheduler import tasks';
 $string['add_new_importtask'] = 'Add new import task';

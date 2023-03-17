@@ -286,7 +286,7 @@ $string['import_source'] = 'Імпортовано з: {$a}';
 $string['import_used_preselected_from_previous'] = 'Якщо XML-файл імпортувався раніше, ці значення вибрано з попереднього імпорту';
 $string['importdone'] = 'дані вже імпортовано з xml';
 $string['importfail'] = 'сталася помилка під час імпорту';
-$string['importinfo'] = 'Будь ласка, створіть свої сітки компетенцій на <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> або відвідайте <a href="https://eeducation.at /index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a>, щоб завантажити доступний файл xml.';
+$string['importinfo'] = 'Будь ласка, створіть свої сітки компетенцій на <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a> або відвідайте <a href="https://eeducation.at /index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a>, щоб завантажити доступний файл xml.';
 $string['importpending'] = 'дані ще не імпортовано!';
 $string['importsuccess'] = 'дані успішно імпортовано!';
 $string['importsuccess_own'] = 'індивідуальні дані успішно імпортовано!';
@@ -419,7 +419,7 @@ $string['noxmlfile'] = 'Немає доступних даних для імпо
 $string['numb'] = 'Номер';
 $string['number_of_found_students'] = 'кількість знайдених студентів';
 $string['number_of_students'] = 'кількість студентів';
-$string['oldxmlfile'] = 'Ви використовуєте застарілий xml-файл. Будь ласка, створіть нові результати/стандарти на <a href="http://www.edustandards.org">www.edustandards.org</a> або відвідайте <a href="http://www.github.com/gtn /edustandards">github.com/gtn/edustandards</a>, щоб завантажити доступний файл xml у каталог blocks xml.';
+$string['oldxmlfile'] = 'Ви використовуєте застарілий xml-файл. Будь ласка, створіть нові результати/стандарти на <a href="https://comet.edustandards.org">www.edustandards.org</a> або відвідайте <a href="http://www.github.com/gtn /edustandards">github.com/gtn/edustandards</a>, щоб завантажити доступний файл xml у каталог blocks xml.';
 $string['opencomps'] = 'Оберіть свої компетенції';
 $string['optional_step'] = 'У вашому курсі ще немає учасників. Якщо ви хочете зареєструвати нових, скористайтеся цим посиланням.';
 $string['OR'] = 'АБО';
