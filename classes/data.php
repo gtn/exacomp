@@ -2297,7 +2297,6 @@ class data_importer extends data {
                 $activityid = self::get_new_activity_id($GLOBALS['activexamples']['new_activityid'][$i], $GLOBALS['activexamples']['activitytype'][$i], $course_template);
                 block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples']['example_sourceid'][$i]);
             }
-
             @rmdir($CFG->tempdir . '/backup/activities');
             @unlink($CFG->tempdir . '/backup/data.xml');
 
@@ -3401,7 +3400,6 @@ class data_importer extends data {
                 array_push($GLOBALS['activexamples']['activitytype'], $activityType);
             } else {
                 array_push($GLOBALS['activexamples']['old_activityid'], $activityId);
-
                 if ($example->activityid != 0) {
                     @rename($CFG->tempdir . '/backup/activities/activity' . $activityId, $CFG->tempdir . '/backup/activity' . $activityId);
                 } else if ($example->is_moodle_activity != 0) {
@@ -3534,6 +3532,11 @@ class data_importer extends data {
         $tempActivityFolder = $CFG->tempdir . '/backup/example_activity' . $exampleId;
         $packer = get_file_packer('application/zip');
         $arch = $packer->extract_to_pathname($taskFile, $tempActivityFolder);
+
+        /*$filesystem = $fs->get_file_system();
+        $localpath = $filesystem->get_local_path_from_storedfile($taskFile, true);
+        $arch = extract_zip_subdir($localpath, "", $tempActivityFolder, $tempActivityFolder);*/
+
         if ($arch !== false) {
             // get activity data from unpacked xml
             $activityXmlFile = $tempActivityFolder . '/activity/moodle_backup.xml';

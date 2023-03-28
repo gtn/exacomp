@@ -86,7 +86,7 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 ';
 
 //Import
-$string['importinfo'] = 'Please create your outcomes/standards at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a> or visit <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
+$string['importinfo'] = 'Please create your outcomes/standards at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a>';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
 $string['importdone'] = 'Les dades ja s\'han importat des d\'xml';
 $string['importpending'] = 'No s\'han importat les dades!';

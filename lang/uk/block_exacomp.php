@@ -157,10 +157,10 @@ $string['delete_success'] = 'Індивідуальні результати/с�
 $string['delete_unconnected_examples'] = 'Якщо ви скасуєте вибір тем, які пов’язані з матеріалами, які використовуються в тижневому розкладі, ці матеріали буде видалено.';
 $string['delete...'] = 'Видалити...';
 $string['description'] = 'Опис';
-$string['description_createtoken'] = 'Надайте додатковий дозвіл для ролі «authenticated user» за шляхом: Site administration/Users/Permissions/Define roles 
-4.1 Select Authenticated User 
-4.2 Click on "Edit" 
-4.3 Filter for createtoken 
+$string['description_createtoken'] = 'Надайте додатковий дозвіл для ролі «authenticated user» за шляхом: Site administration/Users/Permissions/Define roles
+4.1 Select Authenticated User
+4.2 Click on "Edit"
+4.3 Filter for createtoken
 4.4 Allow moodle/webservice:createtoken';
 $string['description_edit_badge_comps'] = 'Тут ви можете пов’язати обрану відзнаку із результатами.';
 $string['description_example'] = 'Опис';
@@ -286,7 +286,7 @@ $string['import_source'] = 'Імпортовано з: {$a}';
 $string['import_used_preselected_from_previous'] = 'Якщо XML-файл імпортувався раніше, ці значення вибрано з попереднього імпорту';
 $string['importdone'] = 'дані вже імпортовано з xml';
 $string['importfail'] = 'сталася помилка під час імпорту';
-$string['importinfo'] = 'Будь ласка, створіть свої сітки компетенцій на <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a> або відвідайте <a href="https://eeducation.at /index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a>, щоб завантажити доступний файл xml.';
+$string['importinfo'] = 'Будь ласка, створіть свої сітки компетенцій на <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a>.';
 $string['importpending'] = 'дані ще не імпортовано!';
 $string['importsuccess'] = 'дані успішно імпортовано!';
 $string['importsuccess_own'] = 'індивідуальні дані успішно імпортовано!';

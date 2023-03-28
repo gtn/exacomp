@@ -95,48 +95,53 @@ class block_exacomp_local_item_form extends moodleform {
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
-        $courseid_schooltype = block_exacomp_is_skillsmanagement() ? $COURSE->id : 0;
+        /* $courseid_schooltype = block_exacomp_is_skillsmanagement() ? $COURSE->id : 0;
         $schooltypes = block_exacomp_get_schooltypes_by_course($courseid_schooltype);
 
         $schooltypes = array_map(function($st) {
             return $st->title;
         }, $schooltypes);
 
-        //$mform->addElement('select', 'stid', block_exacomp_get_string('tab_teacher_settings_selection_st'), $schooltypes);
-        //$mform->addElement('html', '<br/>');
-
-        //Topic
-        $mform->addElement('html', '<h2> ' . block_exacomp_get_string("topic") . ' </h2>');
-        $mform->addElement('html', '<p> ' . block_exacomp_get_string("topic_description") . '</p>');
-        $mform->addElement('text', 'topicTitle', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
-        $mform->setType('topicTitle', PARAM_TEXT);
-        $mform->addRule('topicTitle', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
-
-        $mform->addElement('text', 'numb', block_exacomp_trans('de:Nummer'), 'maxlength="4" size="4"');
-        $mform->setType('numb', PARAM_INT);
+        $mform->addElement('select', 'stid', block_exacomp_get_string('tab_teacher_settings_selection_st'), $schooltypes);
         $mform->addElement('html', '<br/>');
+        */
 
-        //Niveau
-        $mform->addElement('html', '<h2> ' . block_exacomp_get_string("niveau") . ' </h2>');
-        $mform->addElement('html', '<p> ' . block_exacomp_get_string("niveau_description") . ' </p>');
-        $mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
-        $mform->setType('niveau_title', PARAM_TEXT);
-        $mform->addRule('niveau_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+        // Only for NEW subjects:
 
-        $mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
-        $mform->setType('niveau_numb', PARAM_TEXT);
+        if ($this->_customdata['editedId'] === null) {
+            //Topic
+            $mform->addElement('html', '<h2> ' . block_exacomp_get_string("topic") . ' </h2>');
+            $mform->addElement('html', '<p> ' . block_exacomp_get_string("topic_description") . '</p>');
+            $mform->addElement('text', 'topicTitle', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
+            $mform->setType('topicTitle', PARAM_TEXT);
+            $mform->addRule('topicTitle', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
-        $mform->addElement('html', '<h2> ' . block_exacomp_get_string("descriptors") . ' </h2>');
-        $mform->addElement('html', '<p> ' . block_exacomp_get_string("descriptor_description") . ' </p>');
-        $mform->addElement('textarea', 'descriptor_title', block_exacomp_get_string('descriptor_label'), 'rows="6" cols="100" size="60"');
-        $mform->setType('descriptor_title', PARAM_TEXT);
-        $mform->addRule('descriptor_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+            $mform->addElement('text', 'numb', block_exacomp_trans('de:Nummer'), 'maxlength="4" size="4"');
+            $mform->setType('numb', PARAM_INT);
+            $mform->addElement('html', '<br/>');
+
+            //Niveau
+            $mform->addElement('html', '<h2> ' . block_exacomp_get_string("niveau") . ' </h2>');
+            $mform->addElement('html', '<p> ' . block_exacomp_get_string("niveau_description") . ' </p>');
+            $mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
+            $mform->setType('niveau_title', PARAM_TEXT);
+            $mform->addRule('niveau_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+
+            $mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
+            $mform->setType('niveau_numb', PARAM_TEXT);
+
+            $mform->addElement('html', '<h2> ' . block_exacomp_get_string("descriptors") . ' </h2>');
+            $mform->addElement('html', '<p> ' . block_exacomp_get_string("descriptor_description") . ' </p>');
+            $mform->addElement('textarea', 'descriptor_title', block_exacomp_get_string('descriptor_label'), 'rows="6" cols="100" size="60"');
+            $mform->setType('descriptor_title', PARAM_TEXT);
+            $mform->addRule('descriptor_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
+        }
 
         $this->add_action_buttons(false);
     }
 }
 
-$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
+$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], ['editedId' => $item]);
 if ($item) {
     $form->set_data($item);
 }
@@ -147,9 +152,12 @@ if ($formdata = $form->get_data()) {
     $new->title = $formdata->title;
     $new->titleshort = substr($formdata->title, 0, 1);
 
-    $newTopic = new stdClass();
-    $newTopic->title = $formdata->topicTitle;
-    $newTopic->numb = $formdata->numb;
+    // Only for NEW subject.
+    if (!$item) {
+        $newTopic = new stdClass();
+        $newTopic->title = $formdata->topicTitle;
+        $newTopic->numb = $formdata->numb;
+    }
 
     if (!$item) {
         //Subject
@@ -159,7 +167,7 @@ if ($formdata = $form->get_data()) {
 
         if (!$DB->record_exists(BLOCK_EXACOMP_DB_EDULEVELS, array('source' => BLOCK_EXACOMP_DATA_SOURCE_CUSTOM))) {
             $newEL = new stdClass();
-            $newEL->title = "ohne feste Zuordnung";
+            $newEL->title = block_exacomp_get_string('edulevel_without_assignment_title');
             $newEL->sourceid = 0;
             $newEL->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 
@@ -167,7 +175,7 @@ if ($formdata = $form->get_data()) {
 
             $newST = new stdClass();
             $newST->elid = $id;
-            $newST->title = "ohne feste Zuordnung";
+            $newST->title = block_exacomp_get_string('schooltype_without_assignment_title');
             $newST->sourceid = 0;
             $newST->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 
@@ -221,13 +229,16 @@ if ($formdata = $form->get_data()) {
         $subjectid = $item->id;
     }
 
-    //echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&subjectid={$subjectid}");
-    $url = new moodle_url('/blocks/exacomp/assign_competencies.php', array(
-        'courseid' => $courseid,
-        'editmode' => 1,
-        'subjectid' => $subjectid,
-    ));
-    redirect($url);
+    if ($item) {
+        echo $output->popup_close_and_forward($CFG->wwwroot . "/blocks/exacomp/assign_competencies.php?courseid=" . $courseid . "&editmode=1&subjectid=$subjectid");
+    } else {
+        $url = new moodle_url('/blocks/exacomp/assign_competencies.php', array(
+            'courseid' => $courseid,
+            'editmode' => 1,
+            'subjectid' => $subjectid,
+        ));
+        redirect($url);
+    }
 
     exit;
 }

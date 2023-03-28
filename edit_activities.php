@@ -136,7 +136,7 @@ if ($action == "save") {
         $students = block_exacomp_get_students_by_course($courseid);
         if (empty($students)) {
             $headertext .= html_writer::empty_tag('br')
-                . html_writer::link(new moodle_url('/enrol/users.php', array('id' => $courseid)),
+                . html_writer::link(new moodle_url('/user/index.php', array('id' => $courseid)),
                     block_exacomp_get_string('optional_step'));
         }
     }

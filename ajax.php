@@ -536,9 +536,11 @@ switch ($action) {
             $studentsArr = array();
             foreach ($students as $stId) {
                 // fill student with needed data
-                $student = $allStudents[$stId];
-                $student = block_exacomp_get_user_information_by_course($student, $courseid);
-                $studentsArr[$stId] = $student;
+                if (array_key_exists($stId, $allStudents)) {
+                    $student = $allStudents[$stId];
+                    $student = block_exacomp_get_user_information_by_course($student, $courseid);
+                    $studentsArr[$stId] = $student;
+                }
             }
             $content .= $output->competence_overview(
                 $competence_tree,

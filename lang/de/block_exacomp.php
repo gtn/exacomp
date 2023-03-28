@@ -245,7 +245,7 @@ $string['help_content'] = '<h1>Video zur Einführung</h1>
 ';
 
 // === Import ===
-$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="https://comet.edustandards.org">wwww.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Kompetenzraster besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>';
+$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="https://comet.edustandards.org">wwww.edustandards.org</a>.';
 $string['importwebservice'] = 'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.';
 $string['import_max_execution_time'] = 'Wichtig: die aktuellen Servereinstellungen beschränken den Import auf {$a} Sekunden. Falls der Import-Vorgang länger dauert, wird dieser abgebrochen, es werden keine Daten importiert. Am Ausgabegerät wird in diesem Fall eine serverseitige Fehlermeldung ausgegeben (z.B. "500 Internal Server Error").';
 $string['importdone'] = 'Die allgemeinen Kompetenzraster sind bereits importiert.';
@@ -956,3 +956,6 @@ $string['block_exacomp_link_to_dakora_app'] = 'zur Dakora-App';
 $string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';
 $string['grid_creating_is_disabled'] = 'Die Neuanlage von Rastern ist deaktiviert!';
 $string['save_hvp_activity'] = 'HVP Aktivität speichern';
+$string['edulevel_without_assignment_title'] = 'ohne feste Zuordnung';
+$string['schooltype_without_assignment_title'] = 'ohne feste Zuordnung';
+$string['please_select_topic_first'] = 'Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus';

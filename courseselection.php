@@ -116,7 +116,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 // skillsmanagemenet has a per course configuration, excaomp has a per moodle configuration (courseid = 0)
 $limit_courseid = block_exacomp_is_skillsmanagement() ? $courseid : 0;
 
-$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid);
+$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid, true);
 
 $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 

@@ -420,7 +420,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             } else {
                 $content .= html_writer::tag('li',
                     html_writer::link('javascript:void(0)',
-                        $addNiveauContent, array('onclick' => 'alert(' . json_encode(block_exacomp_trans('de:Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus')) . ')'))
+                        $addNiveauContent, array('onclick' => 'alert(' . block_exacomp_get_string('please_select_topic_first') . ')'))
                 );
             }
         }
@@ -3168,7 +3168,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                                 } else if ($isEditingTeacher && $data->role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                     $studentid = block_exacomp_get_studentid();
-
                                     //auch für alle schüler auf wochenplan legen
                                     if (!$this->is_edit_mode()) {
                                         if ($visible_example) { //prevent errors
@@ -7944,7 +7943,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $numberOfFiles = block_exacomp_get_number_of_files($example, 'example_task');
                 for ($i = 0; $i < $numberOfFiles; $i++) {
                     $url = $example->get_task_file_url($i);
-                    $exampleIcons->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
+                    $exampleIcons .= html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                 }
             } else if ($example->externaltask) {
                 $exampleIcons = html_writer::link($example->externaltask,

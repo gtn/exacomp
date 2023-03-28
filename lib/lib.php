@@ -4921,12 +4921,16 @@ function block_exacomp_set_exampleactivity($activityid, $exampleid, $activitytit
         $modulename = $DB->get_record('modules', array("id" => $cmmod->module));
         $instance = get_coursemodule_from_id($modulename->name, $activityid);
         $activitytitle = $instance->name;
+        $activityLink = block_exacomp_get_activityurl($instance)->out(false);
+    } else {
+        $link = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLES, 'activitylink', array('id' => $exampleid));
+        $newLink = explode("=", $link);
+        $activityLink = '';
+        if ($newLink[0]) { // only if a link is not empty
+            $activityLink = $newLink[0] . "=" . $activityid;
+        }
     }
-    $link = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLES, 'activitylink', array('id' => $exampleid));
-
-    $newLink = explode("=", $link);
-    $newLink[0] = $newLink[0] . "=" . $activityid;
-    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $exampleid, "activityid" => $activityid, "activitytitle" => $activitytitle, "activitylink" => $newLink[0], "externaltask" => $CFG->wwwroot . "/" . $newLink[0]));
+    $DB->update_record(BLOCK_EXACOMP_DB_EXAMPLES, array("id" => $exampleid, "activityid" => $activityid, "activitytitle" => $activitytitle, "activitylink" => $activityLink, "externaltask" => $activityLink));
 }
 
 /**
@@ -5609,9 +5613,11 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  *
  * Gets tree with schooltype on highest level
  *
- * @param unknown_type $courseid
+ * @param integer $limit_courseid
+ * @param bool $onlyWithSubjects
+ * @return array
  */
-function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid) {
+function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid, $onlyWithSubjects = false) {
     global $SESSION;
     $schooltypes = block_exacomp_get_schooltypes_by_course($limit_courseid);
 
@@ -5630,8 +5636,11 @@ function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid
         });
     }
 
-    foreach ($schooltypes as $schooltype) {
+    foreach ($schooltypes as $k => $schooltype) {
         $schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
+        if ($onlyWithSubjects && !$schooltype->subjects) {
+            unset($schooltypes[$k]);
+        }
     }
 
     return $schooltypes;

@@ -245,7 +245,7 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 ';
 
 // === Import ===
-$string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
+$string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a>.';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">Server-URL</a>.';
 $string['import_max_execution_time'] = 'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".';
 $string['importdone'] = 'data has already been imported from xml';
@@ -892,7 +892,7 @@ $string['report all descriptor children'] = 'All child competences of competence
 $string['report all descriptor examples'] = 'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ';
 $string['filterlogic'] = 'Filterlogic: ';
 $string['topic_description'] = 'Create your first topic:';
-$string['niveau_description'] = 'Create your first Niveau:';
+$string['niveau_description'] = 'Create your first Difficulty Level:';
 $string['descriptor_description'] = 'Create your first descriptor:';
 $string['selectcourse_filter'] = 'Filter';
 $string['selectcourse_filter_schooltype'] = 'Schooltype';
@@ -946,3 +946,6 @@ $string['block_exacomp_link_to_dakora_app'] = 'to Dakora-App';
 $string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';
 $string['grid_creating_is_disabled'] = 'Grid creation is disabled!';
 $string['save_hvp_activity'] = 'Save HVP activity';
+$string['edulevel_without_assignment_title'] = 'without a specific assignment';
+$string['schooltype_without_assignment_title'] = 'without a specific assignment';
+$string['please_select_topic_first'] = 'Please first select a topic of competence in the left bar';
