@@ -5623,11 +5623,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
     public function transfer_activities() {
         global $PAGE;
-        $import_activities = '<p>' . block_exacomp_get_string("import_activities") . '</p>';
-        $import_activities .= html_writer::select(['' => ''] + get_all_template_courses_key_value(), "template", '', false, array('id' => 'template', 'style' => 'float:left'));
-        $import_activities .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'import', 'class' => 'btn btn-primary')), '', array('id' => 'import'));
-        $ret = html_writer::tag('form', $import_activities, array('id' => 'edit-activities', 'action' => $PAGE->url->out(false, array('sesskey' => sesskey())) . '&action=import', 'method' => 'post'));
-        $ret .= '<br/>';
+        $ret = '';
+        $form_content = html_writer::start_tag('fieldset', ['class' => 'transfer-activities-form']);
+        $form_content .= '<p>' . block_exacomp_get_string("import_activities") . '</p>';
+        $template_courses = get_all_template_courses_key_value();
+        if (count($template_courses) > 0) {
+            $divcontent = html_writer::select(['' => ''] + $template_courses, "template", '', false,
+                    array('id' => 'template',
+                        'class' => 'form-control import_template_course_selectbox'
+                        ));
+            $divcontent .= html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'import', 'class' => 'btn btn-primary'));
+            $form_content .= html_writer::div($divcontent, 'form-group', array('id' => 'import'));
+        } else {
+            $form_content .= html_writer::div(block_exacomp_get_string('no_course_templates'), 'alert alert-info');
+        }
+        $form_content .= html_writer::end_tag('fieldset');
+        $ret .= html_writer::tag('form', $form_content, array('id' => 'edit-activities', 'action' => $PAGE->url->out(false, array('sesskey' => sesskey())) . '&action=import', 'method' => 'post'));
         return $ret;
     }
 

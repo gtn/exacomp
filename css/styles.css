@@ -1410,3 +1410,25 @@ input[type=checkbox].be-sure {
 #block_exacomp .view_item_link {
     color: #fcba5d;
 }
+
+#course-selection-filter {
+    background-color: #f9f9f9;
+    padding: 5px;
+    margin-bottom: 15px;
+    border-radius: .5rem;
+}
+#course-selection-filter #menufilter_schooltype {
+    min-width: 10rem;
+}
+
+.transfer-activities-form {
+    background-color: #f9f9f9;
+    padding: 5px;
+    margin-bottom: 15px;
+    border-radius: .5rem;
+}
+.import_template_course_selectbox {
+    float:left;
+    margin-right: 1rem !important;
+    min-width: 10rem;
+}

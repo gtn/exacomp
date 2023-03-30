@@ -3561,5 +3561,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus',
         'Please first select a topic of competence in the left bar'
     ],
-
+    'no_course_templates' => [
+        'Kann keinen Kurs finden, der als Vorlage verwendet werden kann',
+        'Can not find any course to use as a template'
+    ]
 ];

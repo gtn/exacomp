@@ -1021,6 +1021,7 @@ var formunsaved = false;
   window.onbeforeunload = function unloadPage() {
     if (formunsaved && $('form.checksaving_on_leavepage').length) {
       // show message, but this message often is reloading via default browser message
+      // Looks like almost all browsers closed possibility to change this message.
       return M.str.block_exacomp.donotleave_page_message + '  ';
     }
   };

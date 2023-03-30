@@ -959,3 +959,4 @@ $string['save_hvp_activity'] = 'HVP Aktivität speichern';
 $string['edulevel_without_assignment_title'] = 'ohne feste Zuordnung';
 $string['schooltype_without_assignment_title'] = 'ohne feste Zuordnung';
 $string['please_select_topic_first'] = 'Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus';
+$string['no_course_templates'] = 'Kann keinen Kurs finden, der als Vorlage verwendet werden kann';
