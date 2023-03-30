@@ -72,7 +72,8 @@ if (isset ($action) && $action == 'save') {
 
         $url = 'edit_course.php';
 
-        $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br') . html_writer::empty_tag('img', array(
+        $headertext = html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
+            . html_writer::empty_tag('img', array(
                 'src' => new moodle_url ('/blocks/exacomp/pix/' . $img),
                 'alt' => '',
                 'width' => '60px',

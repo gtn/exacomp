@@ -127,9 +127,9 @@ if ($action == "save") {
     block_exacomp_save_competences_activities($activitiesTopicData, $courseid, 1);
 
     if (!isset($_POST['data']) && !isset($_POST['topicdata'])) {
-        $headertext = block_exacomp_get_string('tick_some');
+        $headertext = html_writer::div(block_exacomp_get_string("tick_some"), 'alert alert-danger');
     } else {
-        $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br')
+        $headertext = html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
             . html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
             . block_exacomp_get_string('completed_config');
 

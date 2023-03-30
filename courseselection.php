@@ -85,12 +85,12 @@ if ($action == 'save') {
                 } else {
                     $linkTo = html_writer::link(new moodle_url('activities_to_descriptors.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
                 }
-                $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br')
+                $headertext = html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
                     . html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
                     . $linkTo;
             }
         } else {
-            $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br')
+            $headertext = html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
                 . html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px')) . block_exacomp_get_string('completed_config');
 
             $students = block_exacomp_get_students_by_course($courseid);
