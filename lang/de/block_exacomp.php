@@ -516,6 +516,7 @@ $string['materials_compProfile'] = 'Lernmaterialien';
 // === Competence Profile Settings ===
 $string['profile_settings_choose_courses'] = 'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
+$string['config_usedorgunits'] = 'Kompetenzen dieser Abteilung anzeigen.';
 $string['topic_3dchart'] = '3D Diagramm';
 $string['topic_3dchart_empty'] = 'Es liegen keine Beurteilungen für diesen Kompetenzbereich vor.';
 // === Profoundness ===

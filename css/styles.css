@@ -1432,3 +1432,12 @@ input[type=checkbox].be-sure {
     margin-right: 1rem !important;
     min-width: 10rem;
 }
+
+.exabis_competencies_lis .exabis_comp_comp .edit-config-itemlabel,
+.exabis_competencies_lis .exabis_comp_comp .desctitle label {
+    margin-bottom: 0px;
+}
+.exabis_competencies_lis .exabis_comp_comp tr.table-divider,
+.exabis_competencies_lis .exabis_comp_comp tr.table-divider td {
+    border: none !important;
+}

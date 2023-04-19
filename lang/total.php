@@ -1856,6 +1856,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Schulbezogene Themenbereiche',
         'site-specific topics',
     ],
+    'config_usedorgunits' => [
+        'Kompetenzen dieser Abteilung anzeigen.',
+        'Show competences of these departments',
+    ],
 
     'topic_3dchart' => [
         '3D Diagramm',

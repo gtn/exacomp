@@ -2172,8 +2172,8 @@ class data_importer extends data {
         $descriptorsFromSelectedGrids = self::get_descriptors_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
         //        $topicsFromSelectedGrids = self::get_topics_for_subjects_from_xml($xml, $source_local_id, $schedulerId);
 
+        // Skills
         $skillsFromSelected = self::get_property_for_descriptors_from_xml($xml, 'skillid', $descriptorsFromSelectedGrids);
-
         //self::truncate_table(self::$import_source_local_id, BLOCK_EXACOMP_DB_SKILLS);
         if (isset($xml->skills)) {
             foreach ($xml->skills->skill as $skill) {
@@ -2183,6 +2183,7 @@ class data_importer extends data {
             }
         }
 
+        // Niveaus
         $niveausFromSelected = self::get_property_for_descriptors_from_xml($xml, 'niveauid', $descriptorsFromSelectedGrids);
         if (isset($xml->niveaus)) {
             foreach ($xml->niveaus->niveau as $niveau) {
@@ -2192,6 +2193,7 @@ class data_importer extends data {
             }
         }
 
+        // Taxonomies
         self::truncate_table(self::$import_source_local_id, BLOCK_EXACOMP_DB_TAXONOMIES);
         if (isset($xml->taxonomies)) {
             foreach ($xml->taxonomies->taxonomy as $taxonomy) {
@@ -2199,6 +2201,7 @@ class data_importer extends data {
             }
         }
 
+        // Categories
         $categoryMapping = self::get_categorymapping_for_source($source_local_id, ($simulate || $schedulerId > 0 ? true : false));
         $categoryFromSelected = self::get_property_for_descriptors_from_xml($xml, 'categories/categoryid', $descriptorsFromSelectedGrids);
         if (isset($xml->categories)) {
@@ -2210,16 +2213,32 @@ class data_importer extends data {
             }
         }
 
+        // Orgunits: part 1
+        // first we need to fill related descriptors
+        $descriptorsFromOrgunits = [];
+        if (isset($xml->orgunits)) {
+            foreach ($xml->orgunits->orgunit as $orgunit) {
+                if ($orgunit->descriptors) {
+                    foreach ($orgunit->descriptors->descriptorid as $descriptor) {
+                        $descriptorsFromOrgunits[] = (int)$descriptor->attributes()->id;
+                    }
+                }
+            }
+        }
+
+        // Descriptors
         if (isset($xml->descriptors)) {
             foreach ($xml->descriptors->descriptor as $descriptor) {
-                if (in_array((int)$descriptor->attributes()->id, $descriptorsFromSelectedGrids)) {
+                if (in_array((int)$descriptor->attributes()->id, $descriptorsFromSelectedGrids)
+                    || in_array((int)$descriptor->attributes()->id, $descriptorsFromOrgunits)
+                ) {
                     self::insert_descriptor($descriptor, 0, 0, $categoryMapping);
                 }
             }
         }
 
+        // Examples
         $examplesFromSelected = self::get_examples_for_descriptors_from_xml($xml, $descriptorsFromSelectedGrids);
-
         if (isset($xml->examples)) {
             $GLOBALS['activexamples'] = array();
             // old activityid
@@ -2272,26 +2291,28 @@ class data_importer extends data {
         }
 
         // TODO: Here the topics for example are updated... if they are missing: Delete
+        // Education levels
         if (isset($xml->edulevels)) {
             foreach ($xml->edulevels->edulevel as $edulevel) {
                 self::insert_edulevel($edulevel, $source_local_id, $schedulerId);
             }
         }
 
+        // Cross subjects
         if (isset($xml->crosssubjects)) {
             foreach ($xml->crosssubjects->crosssubject as $crosssubject) {
                 self::insert_crosssubject($crosssubject);
             }
         }
 
+        // Sources
         if (isset($xml->sources)) {
             foreach ($xml->sources->source as $source) {
                 self::insert_source($source);
             }
         }
 
-        //cleanup and insert activities into DB
-
+        // Activities - cleanup and insert into DB
         if ($course_template != 0) {
             for ($i = 0; $i < count($GLOBALS['activexamples']['old_activityid']); $i++) {
                 $activityid = self::get_new_activity_id($GLOBALS['activexamples']['new_activityid'][$i], $GLOBALS['activexamples']['activitytype'][$i], $course_template);
@@ -2302,6 +2323,15 @@ class data_importer extends data {
 
             $DB->set_field(BLOCK_EXACOMP_DB_SETTINGS, "istemplate", 1, array('courseid' => $course_template));
         }
+
+        // Orgunits: part 2
+        // Real importing of orgunits
+        if (isset($xml->orgunits)) {
+            foreach ($xml->orgunits->orgunit as $orgunit) {
+                self::insert_orgunit($orgunit, $xml->orgunits);
+            }
+        }
+
 
         // self::kompetenzraster_clean_unused_data_from_source();
         // TODO: was ist mit desccross?
@@ -2809,6 +2839,11 @@ class data_importer extends data {
                 'mm1' => array('subjectid', BLOCK_EXACOMP_DB_SUBJECTS),
                 'mm2' => array('niveauid', BLOCK_EXACOMP_DB_NIVEAUS),
             ),
+            array(
+                'table' => BLOCK_EXACOMP_DB_DESCRORGUNIT_MM,
+                'mm1' => array('descrid', BLOCK_EXACOMP_DB_DESCRIPTORS),
+                'mm2' => array('orgunitid', BLOCK_EXACOMP_DB_ORGUNITS),
+            ),
         );
 
         $tables = array_filter($tables, function($t) use ($table) {
@@ -3094,12 +3129,11 @@ class data_importer extends data {
         if ($xmlItem->subjectid) {
             $crosssubject->subjectid = self::get_database_id($xmlItem->subjectid);
         }
+        // Crosssubject in DB
         self::insert_or_update_item(BLOCK_EXACOMP_DB_CROSSSUBJECTS, $crosssubject);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_CROSSSUBJECTS, $crosssubject);
 
-        //crosssubject in DB
-        //insert descriptors
-
+        // Insert descriptors
         self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_DESCCROSS, 'crosssubjid', $crosssubject->id);
         if ($xmlItem->descriptors) {
             foreach ($xmlItem->descriptors->descriptorid as $descriptor) {
@@ -3439,6 +3473,54 @@ class data_importer extends data {
         return null;
     }
 
+    /**
+     * @param SimpleXMLElement $xmlItem
+     * @return object
+     * @throws moodle_exception
+     */
+    private static function insert_orgunit($xmlItem, $xmlAllOrgunits = null) {
+        global $DB;
+        static $dataSources = null;
+        if ($dataSources === null) {
+            $dataSources = $DB->get_records_menu(BLOCK_EXACOMP_DB_DATASOURCES, null, null, 'id,source');
+        }
+
+        $orgunit = self::parse_xml_item($xmlItem);
+        // get real parent id:
+        if ($xmlItem->parent_orgunit > 0) {
+            $orig_parentid = (int)$xmlItem->parent_orgunit;
+            $source_local_id = array_search((string)$xmlItem->attributes()->source, $dataSources);
+            // Orgunits in the XML are not ordered for correct importing parent-child, so use nested function
+            if ($parentXmlItem = g::$DB->get_record(BLOCK_EXACOMP_DB_ORGUNITS, ['sourceid' => $orig_parentid, 'source' => $source_local_id])) {
+                $orgunit->parent_orgunit = $parentXmlItem->id;
+            } else {
+                // parent orgunit is not inserted yet - make it!
+                $tempSxml = new SimpleXMLElement($xmlAllOrgunits->asXML());
+                $parentXmlItem = $tempSxml->xpath('//orgunits/orgunit[@id="'.$orig_parentid.'"]')[0];
+                if ($parentXmlItem) {
+                    self::insert_orgunit($parentXmlItem, $xmlAllOrgunits);
+                    $orgunit->parent_orgunit = (string)$parentXmlItem->id;
+                } else {
+                    throw new moodle_exception('related to non-existed parent orgunit. Give this XML file to admin for testing');
+                }
+            }
+        }
+        //  Orgunit in DB
+        self::insert_or_update_item(BLOCK_EXACOMP_DB_ORGUNITS, $orgunit);
+
+        // Descriptor relations
+        self::delete_mm_record_for_item(BLOCK_EXACOMP_DB_DESCRORGUNIT_MM, 'orgunitid', $orgunit->id);
+        if ($xmlItem->descriptors) {
+            foreach ($xmlItem->descriptors->descriptorid as $descriptor) {
+                if ($descriptorid = self::get_database_id($descriptor)) {
+                    g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCRORGUNIT_MM, array("orgunitid" => $orgunit->id, "descrid" => $descriptorid, 'sorting' => (int)$descriptor->sorting));
+                }
+            }
+        }
+        return $orgunit;
+    }
+
+
     private static function parse_xml_item($xml) {
         $item = simpleXMLElementToArray($xml);
         if (isset($item['@attributes'])) {
@@ -3485,6 +3567,7 @@ class data_importer extends data {
             'niveau' => BLOCK_EXACOMP_DB_NIVEAUS,
             'skillid' => BLOCK_EXACOMP_DB_SKILLS,
             'subjectid' => BLOCK_EXACOMP_DB_SUBJECTS,
+            'orgunit' => BLOCK_EXACOMP_DB_ORGUNITS,
         );
 
         if (isset($tableMapping[$element->getName()])) {

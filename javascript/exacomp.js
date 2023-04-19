@@ -665,6 +665,19 @@ var formunsaved = false;
       $children.find(':checkbox').prop('checked', $children.find(':checkbox:not(:checked)').length > 0);
     });
 
+    $(document).on('click', '#exabis_competences_block_orgunits .orgunit_selectallornone', function () {
+      var graphId = $(this).attr('data-graphId');
+      var targetList = $('#exabis_competences_block_orgunits input:checkbox[data-graphId="' + graphId + '"]');
+      var currentState = $(this).attr('data-state');
+      if (currentState == 1) {
+        targetList.prop('checked', false);
+        $(this).attr('data-state', 0);
+      } else {
+        targetList.prop('checked', true);
+        $(this).attr('data-state', 1);
+      }
+    });
+
     // init
     $(document).on('rg2.init', 'table.rg2', function () {
       var $table = $(this);

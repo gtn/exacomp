@@ -43,6 +43,7 @@ const BLOCK_EXACOMP_DB_SCHOOLTYPES = 'block_exacompschooltypes';
 const BLOCK_EXACOMP_DB_SUBJECTS = 'block_exacompsubjects';
 const BLOCK_EXACOMP_DB_TOPICS = 'block_exacomptopics';
 const BLOCK_EXACOMP_DB_COURSETOPICS = 'block_exacompcoutopi_mm';
+const BLOCK_EXACOMP_DB_COURSEORGUNITS_MM = 'block_exacompcouorgunit_mm';
 const BLOCK_EXACOMP_DB_DESCTOPICS = 'block_exacompdescrtopic_mm';
 const BLOCK_EXACOMP_DB_CATEGORIES = 'block_exacompcategories';
 const BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY = 'block_exacompcompactiv_mm';
@@ -72,6 +73,8 @@ const BLOCK_EXACOMP_DB_GLOBALGRADINGS = 'block_exacompglobalgradings';
 const BLOCK_EXACOMP_DB_DESCRIPTOR_QUESTION = 'block_exacompdescrquest_mm';
 const BLOCK_EXACOMP_DB_ITEM_COLLABORATOR_MM = 'block_exacompitemcollab_mm';
 const BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION = 'block_exacompexampannotation';
+const BLOCK_EXACOMP_DB_ORGUNITS = 'block_exacomporgunits';
+const BLOCK_EXACOMP_DB_DESCRORGUNIT_MM = 'block_exacompdescrorgunit_mm';
 
 /**
  * PLUGIN ROLES
@@ -1343,15 +1346,18 @@ function block_exacomp_require_admin($context = null) {
  *
  * @param int $courseid
  * @param bool $showalldescriptors default false, show only comps with activities
+ * @param bool $hideglobalsubjects - @deprecated? moved to course settings?
+ * @param bool $includeOrgunits
  * @return array $subjects
  */
-function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false, $hideglobalsubjects = -1) {
+function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false, $hideglobalsubjects = -1, $includeOrgunits = false) {
     if (!$showalldescriptors) {
         $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
     }
 
+    $subjectSelectFields = 's.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal, s.class, s.is_editable';
     $sql = '
-		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author, s.editor, s.isglobal, s.class, s.is_editable
+		SELECT DISTINCT '.$subjectSelectFields.'
 		FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 		JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON t.subjid = s.id
 		JOIN {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -1366,6 +1372,24 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			';
 
     $subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
+
+    // add subjects from orgunits
+    if ($includeOrgunits) {
+        $sql = '
+		SELECT DISTINCT ' . $subjectSelectFields . ', 1 as from_orgunit
+		FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
+            JOIN {' . BLOCK_EXACOMP_DB_TOPICS . '} t ON t.subjid = s.id
+            JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} dtmm ON dtmm.topicid = t.id
+            JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON dtmm.descrid = d.id
+            JOIN {' . BLOCK_EXACOMP_DB_DESCRORGUNIT_MM . '} domm ON domm.descrid = d.id
+            JOIN {' . BLOCK_EXACOMP_DB_COURSEORGUNITS_MM . '} comm ON comm.orgunitid = domm.orgunitid
+		WHERE comm.courseid = ?
+		ORDER BY s.isglobal, s.title
+			';
+
+        $orgunitSubjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
+        $subjects = $subjects + $orgunitSubjects;
+    }
 
     //remove the subjects that are hidden because they are globalsubjects and the settings are set to hide them
 
@@ -1606,8 +1630,8 @@ function block_exacomp_get_subjecttitle_by_topic($compid) {
  *
  * @param int $courseid
  */
-function block_exacomp_get_topics_by_course($courseid, $showalldescriptors = false, $showonlyvisible = false, $crosssubj = null) {
-    return block_exacomp_get_topics_by_subject($courseid, 0, $showalldescriptors, $showonlyvisible, $crosssubj);
+function block_exacomp_get_topics_by_course($courseid, $showalldescriptors = false, $showonlyvisible = false, $crosssubj = null, $includeOrgunits = false) {
+    return block_exacomp_get_topics_by_subject($courseid, 0, $showalldescriptors, $showonlyvisible, $crosssubj, $includeOrgunits);
 }
 
 /**
@@ -1617,9 +1641,11 @@ function block_exacomp_get_topics_by_course($courseid, $showalldescriptors = fal
  * @param int|array $subjectid
  * @param bool $showalldescriptors
  * @param bool $showonlyvisible
+ * @param bool $crosssubj
+ * @param bool $includeOrgunits
  * @return array
  */
-function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false, $showonlyvisible = false, $crosssubj = null) {
+function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false, $showonlyvisible = false, $crosssubj = null, $includeOrgunits = false) {
     global $DB;
     if (!$courseid) {
         $showonlyvisible = false;
@@ -1636,20 +1662,22 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
         $subjectSqlON = ' AND t.subjid = ? ';
     }
 
+    $selectfields = 't.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title';
+
     $sql = '
-    SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, t.span, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
-    FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
-    JOIN {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct ON ct.topicid = t.id AND ct.courseid = ? ' . $subjectSqlON . '
-    JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
-    -- left join, because courseid=0 has no topicvisibility!
-    JOIN {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=ct.courseid AND tvis.niveauid IS NULL'
-        . ($showonlyvisible ? ' AND tvis.visible = 1 ' : '')
-        . ($showalldescriptors ? '' : '
-        -- only show active ones
-        JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} topmm ON topmm.topicid=t.id
-        JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON topmm.descrid=d.id
-        JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ') OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
-            AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
+        SELECT DISTINCT '.$selectfields.'
+        FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+            JOIN {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} ct ON ct.topicid = t.id AND ct.courseid = ? ' . $subjectSqlON . '
+            JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
+            -- left join, because courseid=0 has no topicvisibility!
+            JOIN {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=ct.courseid AND tvis.niveauid IS NULL'
+                . ($showonlyvisible ? ' AND tvis.visible = 1 ' : '')
+                . ($showalldescriptors ? '' : '
+                -- only show active ones
+                JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} topmm ON topmm.topicid=t.id
+                JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON topmm.descrid=d.id
+                JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} da ON ((d.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . ') OR (t.id=da.compid AND da.comptype = ' . BLOCK_EXACOMP_TYPE_TOPIC . '))
+                    AND da.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
     ');
 
     //GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
@@ -1659,6 +1687,30 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
     }
 
     $topics = $DB->get_records_sql($sql, $params);
+
+    if ($includeOrgunits) {
+        $sql = '
+            SELECT DISTINCT '.$selectfields.'
+            FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+                JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} dtmm ON dtmm.topicid = t.id
+                JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON dtmm.descrid = d.id
+                JOIN {' . BLOCK_EXACOMP_DB_DESCRORGUNIT_MM . '} domm ON domm.descrid = d.id
+                JOIN {' . BLOCK_EXACOMP_DB_COURSEORGUNITS_MM . '} comm ON comm.orgunitid = domm.orgunitid
+                JOIN {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s ON t.subjid = s.id -- join subject here, to make sure only topics with existing subject are loaded
+                -- left join - because for orgunits we are not manage visibility. so, there will be nulls
+                LEFT JOIN {' . BLOCK_EXACOMP_DB_TOPICVISIBILITY . '} tvis ON tvis.topicid = t.id AND tvis.studentid = 0 AND tvis.courseid = comm.courseid AND tvis.niveauid IS NULL
+            WHERE comm.courseid= ? '.$subjectSqlON;
+
+        //GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
+        $params = array($courseid);
+        if (!is_array($subjectid) && $subjectid > 0) {
+            $params[] = $subjectid;
+        }
+
+        $orgunitstopics = $DB->get_records_sql($sql, $params);
+        $topics = $topics + $orgunitstopics;
+
+    }
 
     //If crosssubject then only get those topics where a descriptor has been added
     if ($crosssubj) {
@@ -2183,7 +2235,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
  *
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showonlyvisible = false, $include_childs = true) {
+function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showonlyvisible = false, $include_childs = true, $includeOrgunits = false) {
     if (!$courseid) {
         $showalldescriptors = true;
         $showonlyvisible = false;
@@ -2192,27 +2244,46 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
         $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
     }
 
-    $sql = '
-		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid,
+    $selectfields = 'desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid,
 		                d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.numb AS niveau_numb,
 		                n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting, d.author, d.editor,
-		                d.sorting, d.creatorid as descriptor_creatorid
-		FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
-		' . (($courseid > 0) ? ' JOIN {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = ' . $subjectid . ' ' : '') : '') . '
-		JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} desctopmm ON desctopmm.topicid=t.id
-		JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON desctopmm.descrid=d.id AND d.parentid=0
-		-- left join, because courseid=0 has no descvisibility!
-		LEFT JOIN {' . BLOCK_EXACOMP_DB_DESCVISIBILITY . '} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
-		' . ($showonlyvisible ? ' AND dvis.visible = 1 ' : '') . '
-		LEFT JOIN {' . BLOCK_EXACOMP_DB_NIVEAUS . '} n ON d.niveauid = n.id
-		' . ($showalldescriptors ? '' : '
-			JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} ca ON d.id=ca.compid AND ca.comptype=' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . '
-				AND ca.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
-		') . '
+		                d.sorting, d.creatorid as descriptor_creatorid';
+
+    $sql = '
+		SELECT DISTINCT '.$selectfields.'
+		    FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+                ' . (($courseid > 0) ? ' JOIN {' . BLOCK_EXACOMP_DB_COURSETOPICS . '} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = ' . $subjectid . ' ' : '') : '') . '
+                JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} desctopmm ON desctopmm.topicid=t.id
+                JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON desctopmm.descrid=d.id AND d.parentid=0
+                -- left join, because courseid=0 has no descvisibility!
+                LEFT JOIN {' . BLOCK_EXACOMP_DB_DESCVISIBILITY . '} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
+                ' . ($showonlyvisible ? ' AND dvis.visible = 1 ' : '') . '
+                LEFT JOIN {' . BLOCK_EXACOMP_DB_NIVEAUS . '} n ON d.niveauid = n.id
+                ' . ($showalldescriptors ? '' : '
+                    JOIN {' . BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY . '} ca ON d.id=ca.compid AND ca.comptype=' . BLOCK_EXACOMP_TYPE_DESCRIPTOR . '
+                        AND ca.activityid IN (' . block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) . ')
+                ') . '
 		';
     //ORDER BY t.sorting, n.numb, n.sorting, d.sorting
 
     $descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
+
+    if ($includeOrgunits) {
+        $sql = '
+		    SELECT DISTINCT '.$selectfields.', 1 as from_orgunit
+		        FROM {' . BLOCK_EXACOMP_DB_TOPICS . '} t
+                JOIN {' . BLOCK_EXACOMP_DB_DESCTOPICS . '} desctopmm ON desctopmm.topicid = t.id
+                JOIN {' . BLOCK_EXACOMP_DB_DESCRIPTORS . '} d ON desctopmm.descrid = d.id
+                JOIN {' . BLOCK_EXACOMP_DB_DESCRORGUNIT_MM . '} domm ON domm.descrid = d.id
+                JOIN {' . BLOCK_EXACOMP_DB_COURSEORGUNITS_MM . '} comm ON comm.orgunitid = domm.orgunitid
+                -- left join, because visibility is not for orgunits
+                LEFT JOIN {' . BLOCK_EXACOMP_DB_DESCVISIBILITY . '} dvis ON dvis.descrid = d.id AND dvis.studentid = 0 AND dvis.courseid = ?
+                LEFT JOIN {' . BLOCK_EXACOMP_DB_NIVEAUS . '} n ON d.niveauid = n.id
+                WHERE comm.courseid = ?
+		';
+        $orgunitsdescriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid));
+        $descriptors = $descriptors + $orgunitsdescriptors;
+    }
 
     //here a lot of time is lost rw
     foreach ($descriptors as $descriptor) {
@@ -2629,14 +2700,14 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
     } else if ($subjectid) {
         $allSubjects = array($subjectid => \block_exacomp\subject::get($subjectid));
     } else {
-        $allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);
+        $allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors, -1, true);
     }
 
     // 2. GET TOPICS
     $allTopics = block_exacomp_get_all_topics($subjectid, $showonlyvisible);
     if ($courseid > 0) {
         if ((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
-            $courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid, $showalldescriptors, $showonlyvisibletopics);
+            $courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid, $showalldescriptors, $showonlyvisibletopics, null, true);
         } else if (isset($selectedTopic)) {
             $courseTopics = \block_exacomp\topic::get($selectedTopic->id);
             if (!$courseTopics) {
@@ -2651,7 +2722,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
     if ($without_descriptors) {
         $allDescriptors = array();
     } else {
-        $allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors, 0, $showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
+        $allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors, 0, $showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs, true);
     }
 
     if ($filteredDescriptors && is_array($filteredDescriptors) && count($filteredDescriptors) > 0) {
@@ -2704,7 +2775,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
     }
 
     foreach ($allTopics as $topic) {
-        //topic must be coursetopic if courseid <> 0
+        // Topic must be coursetopic if courseid <> 0
         if ($courseid > 0 && !array_key_exists($topic->id, $courseTopics)) {
             continue;
         }
@@ -2772,10 +2843,10 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @param number $studentid set if he is a student
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects = false, $crosssubj = null) {
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false, $hideglobalsubjects = false, $crosssubj = null, $includeOrgunits = false) {
 
-    $courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false, $crosssubj);
-    $courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects);
+    $courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false, $crosssubj, $includeOrgunits);
+    $courseSubjects = block_exacomp_get_subjects_by_course($courseid, false, $hideglobalsubjects, $includeOrgunits);
 
     $topic = new \stdClass();
     $topic->id = $topicid;
@@ -2785,7 +2856,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
     if ($subjectid) {
         if (!empty($courseSubjects[$subjectid])) {
             $selectedSubject = $courseSubjects[$subjectid];
-            $topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible ? (($isTeacher) ? false : true) : false));
+            $topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible ? (($isTeacher) ? false : true) : false), null, $includeOrgunits);
             if ($topicid == BLOCK_EXACOMP_SHOW_ALL_TOPICS) {
                 // no $selectedTopic
             } else if ($topicid && isset($topics[$topicid]) && block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
@@ -2813,7 +2884,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
         $selectedSubject = reset($courseSubjects);
         if ($selectedSubject) {
             $topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false,
-                ($showonlyvisible ? (($isTeacher) ? false : true) : false));
+                ($showonlyvisible ? (($isTeacher) ? false : true) : false), mull, $includeOrgunits);
             // select first visible topic
             foreach ($topics as $tmpTopic) {
                 if (block_exacomp_is_topic_visible($courseid, $tmpTopic, $studentid)) {
@@ -3662,6 +3733,8 @@ function block_exacomp_is_activated($courseid) {
  *    1. block is activated and no activites are used in the course
  *    or
  *    2. block is activated, activities are used and associated
+ *    or
+ *    3. block is activated with orgunit selected
  *
  */
 function block_exacomp_is_ready_for_use($courseid) {
@@ -3670,7 +3743,12 @@ function block_exacomp_is_ready_for_use($courseid) {
     $course_settings = block_exacomp_get_settings_by_course($courseid);
     $is_activated = block_exacomp_is_activated($courseid);
 
-    //no topics selected
+    // No topics selected
+    if (!$is_activated) {
+        // check selected orgunits
+        $is_activated = block_exacomp_get_orgunits_by_course($courseid);
+    }
+
     if (!$is_activated) {
         return false;
     }
@@ -4357,7 +4435,7 @@ function block_exacomp_set_coursetopics($courseid, $topicids, $fromWS = false) {
     global $DB;
     $topicsToDelete = null;
     if ($fromWS) { // will be deleted all related topics and will saved only current selected
-        $DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid));
+        $DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid, 'orgunitid' => 0));
     } else {
         // will be deleted only '-X' topics, but saved 'X'
         $topicsToAdd = $topicsToDelete = array();
@@ -4372,7 +4450,8 @@ function block_exacomp_set_coursetopics($courseid, $topicids, $fromWS = false) {
             $DB->execute('DELETE
                             FROM {' . BLOCK_EXACOMP_DB_COURSETOPICS . '}
                             WHERE courseid = ?
-                                AND topicid IN (' . implode(',', $topicsToDelete) . ') ',
+                                AND topicid IN (' . implode(',', $topicsToDelete) . ')
+                                AND orgunitid = 0 ',
                 [$courseid]);
         }
     }
@@ -4380,10 +4459,49 @@ function block_exacomp_set_coursetopics($courseid, $topicids, $fromWS = false) {
     block_exacomp_update_topic_visibilities($courseid, $topicids, $topicsToDelete);
 
     foreach ($topicids as $topicid) {
-        $DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
+        $DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid, 'orgunitid' => 0));
     }
 
     block_exacomp_normalize_course_visibilities($courseid);
+}
+
+/**
+ *
+ * Assign topics to course (for orgunits!)
+ *
+ * @param int $courseid
+ * @param array $orgunits
+ * @return null
+ */
+function block_exacomp_set_courseorgunits($courseid, $orgunits) {
+    global $DB;
+    $orgunitsToDelete = null;
+
+    // will be deleted only '-X' orgunits, but saved 'X'
+    $orgunitsToAdd = $orgunitsToDelete = array();
+    foreach ($orgunits as $orgunitid) {
+        $orgunitsToDelete[] = abs($orgunitid);
+        if ($orgunitid > 0) {
+            $orgunitsToAdd[] = $orgunitid;
+        }
+    }
+    $orgunits = $orgunitsToAdd; // what will be added
+    if (count($orgunitsToDelete) > 0) { // what will be deleted (all from form)
+        $DB->execute('DELETE
+                        FROM {' . BLOCK_EXACOMP_DB_COURSEORGUNITS_MM . '}
+                        WHERE courseid = ?
+                            AND orgunitid IN (' . implode(',', $orgunitsToDelete) . ') ',
+            [$courseid]);
+    }
+
+
+    // block_exacomp_update_topic_visibilities($courseid, $topicids, $orgunitsToDelete);
+
+    foreach ($orgunits as $orgunitid) {
+        $DB->insert_record(BLOCK_EXACOMP_DB_COURSEORGUNITS_MM, array("courseid" => $courseid, "orgunitid" => $orgunitid));
+    }
+
+    // block_exacomp_normalize_course_visibilities($courseid);
 }
 
 /**
@@ -14693,4 +14811,52 @@ function block_exacomp_get_human_readable_item_status($statusId) {
         default:
             return "errornostate";
     }
+}
+
+/**
+ * Get available orgunits
+ * @param bool $onlyRoot
+ */
+function block_exacomp_get_orgunits($onlyRoot = false) {
+    global $DB;
+
+    $conditions = [];
+    if ($onlyRoot) {
+        $conditions['parent_orgunit'] = 0;
+    }
+    $result = $DB->get_records(BLOCK_EXACOMP_DB_ORGUNITS, $conditions, 'source, graph_title, sorting, title ASC');
+
+    return $result;
+}
+
+/**
+ * Get child orgunits
+ * @param integer $parentid
+ */
+function block_exacomp_get_childorgunits($parentid) {
+    global $DB;
+
+    $conditions = [
+        'parent_orgunit' => $parentid
+    ];
+    $result = $DB->get_records(BLOCK_EXACOMP_DB_ORGUNITS, $conditions, 'source, graph_title, sorting, title ASC');
+
+    return $result;
+}
+
+/**
+ * Returns orgunits, related to course
+ * @param integer $courseid
+ * @return array
+ * @throws dml_exception
+ */
+function block_exacomp_get_orgunits_by_course($courseid) {
+    global $DB;
+
+    $conditions = [
+        'courseid' => $courseid
+    ];
+    $result = $DB->get_records(BLOCK_EXACOMP_DB_COURSEORGUNITS_MM, $conditions);
+
+    return $result;
 }
