@@ -7244,7 +7244,7 @@ class block_exacomp_external extends external_api {
      * @return array of items
      */
     public static function diggrplus_get_examples_and_items($courseid = -1, $userid = null, $compid = null, $comptype = null, $type = "", $search = "", $niveauid = -1, $status = "") {
-        global $USER;
+        global $DB, $USER;
 
         if ($userid == 0) {
             $userid = $USER->id;
@@ -7308,19 +7308,32 @@ class block_exacomp_external extends external_api {
                 $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status, $courseid);
                 $examplesAndItems = array_merge($examplesAndItems, $examples);
             }
+
+            if ($status == "new") {
+                // if filtered by "new" then only examples without items should be shown
+                // with an item it is "in Arbeit", "Abgegeben" or "Abgeschlossen"
+                foreach ($examplesAndItems as $key => $exampleItem) {
+                    if ($exampleItem->item) {
+                        unset($examplesAndItems[$key]);
+                    }
+                }
+
+                // Filter ob die Aufgabe dem Schüler schon einmal zugeteilt wurden. (d.h. bereits im Schüler Planungsspeicher oder wurde vom Lehrer in den Wochenplan gelegt), bzw. er selbst in den Planungsspeicher/Wochenplan gelegt hat.
+                // filter only examples, which are in the calendar
+                $sql = "SELECT DISTINCT exampleid, exampleid AS tmp FROM {block_exacompschedule} WHERE deleted=0 AND studentid=?";
+                $visibleExamples = $DB->get_records_sql_menu($sql, [$userid]);
+                foreach ($examplesAndItems as $key => $exampleItem) {
+                    if (empty($visibleExamples[$exampleItem->example->id])) {
+                        unset($examplesAndItems[$key]);
+                    }
+                }
+            }
         }
 
+
         // TODO: we can actually forget about examplegradings, right?
-        foreach ($examplesAndItems as $key => $exampleItem) {
-            if ($exampleItem->item) {
-                if ($status == "new") { // if filtered by "new" then only examples without items should be shown
-                    unset($examplesAndItems[$key]);
-                } else {
-                    $exampleItem->status = block_exacomp_get_human_readable_item_status($exampleItem->item->status);
-                }
-            } else { //no item but the object exists ==> there must be an example, no condition needed
-                $exampleItem->status = "new";
-            }
+        foreach ($examplesAndItems as $exampleItem) {
+            $exampleItem->status = block_exacomp_get_human_readable_item_status($examplesAndItem->item ? $examplesAndItem->item->status : null);
 
             if ($exampleItem->item) {
                 $student = g::$DB->get_record('user', array(
