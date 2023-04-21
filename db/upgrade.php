@@ -4085,60 +4085,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023030900, 'exacomp');
     }
 
-    if ($oldversion < 2023041800) {
-
-        // new table: block_exacomporgunits
-        $table = new xmldb_table('block_exacomporgunits');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('title', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('type', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('is_edudepartment', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
-        $table->add_field('duration', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('parent_orgunit', XMLDB_TYPE_INTEGER, '11', null, null, null, 0);
-        $table->add_field('graph_uid', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
-        $table->add_field('graph_title', XMLDB_TYPE_CHAR, '255', null, null, null, '');
-        $table->add_field('sorting', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('hidden', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
-        $table->add_field('sourceid', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('source', XMLDB_TYPE_INTEGER, '10', null, null, null, 1);
-        $table->add_field('connection_text', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('creatorid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_index('parent_orgunit', XMLDB_INDEX_NOTUNIQUE, ['parent_orgunit']);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-        // new table: block_exacompdescrorgunit_mm
-        $table = new xmldb_table('block_exacompdescrorgunit_mm');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('descrid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('orgunitid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('sorting', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_index('descr_orgunit', XMLDB_INDEX_NOTUNIQUE, ['descrid', 'orgunitid']);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2023041800, 'exacomp');
-    }
-
-    if ($oldversion < 2023041901) {
-
-        $table = new xmldb_table('block_exacompcouorgunit_mm');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '20', null, null, null, 0);
-        $table->add_field('orgunitid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2023041901, 'exacomp');
-    }
-
     //if ($oldversion < 2022101900) {
     //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
     //    // If they are used ==> they will not get deleted

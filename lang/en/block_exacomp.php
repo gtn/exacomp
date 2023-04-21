@@ -510,7 +510,6 @@ $string['materials_compProfile'] = 'Materials';
 // === Competence Profile Settings ===
 $string['profile_settings_choose_courses'] = 'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['specificcontent'] = 'site-specific topics';
-$string['config_usedorgunits'] = 'Show competences of these departments';
 $string['topic_3dchart'] = '3D Chart';
 $string['topic_3dchart_empty'] = 'No gradings available';
 // === Profoundness ===

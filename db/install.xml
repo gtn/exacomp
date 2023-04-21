@@ -272,18 +272,6 @@
         <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id" COMMENT="Fremdschlüssel Schwerpunkt-ID"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_exacompcouorgunit_mm" COMMENT="The assignments of the individual courses to specializations are saved in this table (by orgunits)">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Zuordnung Kurs"/>
-        <FIELD NAME="orgunitid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="If this relation is by orgunit"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kursid"/>
-        <KEY NAME="orgunitid" TYPE="foreign" FIELDS="orgunitid" REFTABLE="block_exacomporgunits" REFFIELDS="id" COMMENT="Orgunits"/>
-      </KEYS>
-    </TABLE>
     <TABLE NAME="block_exacompcompuser" COMMENT="In dieser Tabelle wird gespeichert, welcher Benutzer welchen Deskriptor oder welches Topic erfüllt. Zusätzlich wer die Kompetenzermittlung durchgeführt hat, also Schüler oder Lehrer">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -795,40 +783,6 @@
         <INDEX NAME="tenant_id_remoteuserid" UNIQUE="true" FIELDS="tenant_id, remoteuserid"/>
         <INDEX NAME="idx_tenant_id" UNIQUE="false" FIELDS="tenant_id"/>
       </INDEXES>
-    </TABLE>
-    <TABLE NAME="block_exacomporgunits" COMMENT="Orgunits">
-        <FIELDS>
-            <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-            <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="type" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="is_edudepartment" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="is the edu department?"/>
-            <FIELD NAME="duration" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="duration"/>
-            <FIELD NAME="parent_orgunit" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="parent"/>
-            <FIELD NAME="graph_uid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="relation to graph- id"/>
-            <FIELD NAME="graph_title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="relation to graph - only title"/>
-            <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="sorting"/>
-            <FIELD NAME="hidden" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0" COMMENT="hidden"/>
-            <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
-            <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-            <FIELD NAME="connection_text" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this record"/>
-        </FIELDS>
-        <KEYS>
-            <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        </KEYS>
-    </TABLE>
-    <TABLE NAME="block_exacompdescrorgunit_mm" COMMENT="relations descriptor-orgunit">
-        <FIELDS>
-            <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-            <FIELD NAME="descrid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-            <FIELD NAME="orgunitid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-            <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        </FIELDS>
-        <KEYS>
-            <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-            <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
-            <KEY NAME="orgunitid" TYPE="foreign" FIELDS="topicid" REFTABLE="mdl_block_exacomporgunits" REFFIELDS="id"/>
-        </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>

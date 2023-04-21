@@ -102,7 +102,7 @@ if ($course_settings->uses_activities && !$activities && !$course_settings->show
     exit;
 }
 
-$ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher ? 0 : $USER->id), ($isTeacher) ? false : true, @$course_settings->hideglobalsubjects, null, true);
+$ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher ? 0 : $USER->id), ($isTeacher) ? false : true, @$course_settings->hideglobalsubjects);
 
 if (!$ret) {
     print_error('not configured');
@@ -129,9 +129,8 @@ if ($course_settings->nostudents) {
     $allCourseStudents = array();
 }
 
-// var_dump($editmode);
-// die;
-
+//var_dump($editmode);
+//die;
 $competence_tree = block_exacomp_get_competence_tree($courseid,
     $selectedSubject ? $selectedSubject->id : null,
     $selectedTopic ? $selectedTopic->id : null,

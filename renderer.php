@@ -4802,26 +4802,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $row = new html_table_row();
                 $cell = new html_table_cell();
                 $cell->text = $schooltypestruct->schooltype->title;
-                $cell->text = html_writer::label($schooltypestruct->schooltype->title, 'data_'.$schooltypestruct->schooltype->id, true, ['class' => 'edit-config-itemlabel']);
                 $row->cells[] = $cell;
 
                 $cell = new html_table_cell();
-                $checkboxAttributes = array(
-                    'type' => 'checkbox',
-                    'name' => 'data[' . $schooltypestruct->schooltype->id . ']',
-                    'value' => $schooltypestruct->schooltype->id,
-                    'id' => 'data_'.$schooltypestruct->schooltype->id,
-                );
                 if ($schooltypestruct->ticked) {
-                    $checkboxAttributes['checked'] = 'checked';
+                    $cell->text = html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $schooltypestruct->schooltype->id . ']', 'value' => $schooltypestruct->schooltype->id, 'checked' => 'checked'));
+                } else {
+                    $cell->text = html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $schooltypestruct->schooltype->id . ']', 'value' => $schooltypestruct->schooltype->id));
                 }
-                $cell->text = html_writer::empty_tag('input', $checkboxAttributes);
 
                 $row->cells[] = $cell;
                 $rows[] = $row;
             }
         }
-
 
         $hiddenaction = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save'));
         $innerdiv = html_writer::div(html_writer::empty_tag('input',
@@ -5097,18 +5090,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    public function courseselection($schooltypes, $topics_activ, $orgunits, $activated_orgunits, $headertext) {
+    public function courseselection($schooltypes, $topics_activ, $headertext) {
         global $PAGE, $COURSE;
 
         $header = html_writer::tag('p', $headertext) . html_writer::empty_tag('br');
         $filterform = $this->courseselectionfilter($COURSE->id);
 
-        if (!count($schooltypes) && !count($orgunits)) {
-            return $filterform . block_exacomp_get_string('selectcourse_filter_emptyresult');
-        }
-
-        // Topics selecting
-        $table_html_schooltypes = '';
         if (count($schooltypes)) {
 
             $table = new html_table();
@@ -5159,111 +5146,28 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $table->data = $rows;
 
-            $table_html_schooltypes = html_writer::tag("div",
+            $table_html = html_writer::tag("div",
                 html_writer::tag("div", html_writer::table($table), array("class" => "exabis_competencies_lis")),
                 array("id" => "exabis_competences_block"));
+            $table_html .= html_writer::div(html_writer::empty_tag('input', array('type' => 'submit',
+                'class' => 'btn btn-primary',
+                'value' => block_exacomp_get_string('save_selection'))),
+                '', array('id' => 'exabis_save_button'));
+            $table_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
 
+            $examples_on_schedule = block_exacomp_any_examples_on_schedule($COURSE->id);
+
+            $formurl = new moodle_url($PAGE->url, array('sesskey' => sesskey()));
+
+            return $header . $filterform . html_writer::tag("form", $table_html,
+                    array("method" => "post",
+                        "action" => $formurl,
+                        "id" => "course-selection",
+                        "examplesonschedule" => $examples_on_schedule,
+                        'class' => 'checksaving_on_leavepage'));
+        } else {
+            return $filterform . block_exacomp_get_string('selectcourse_filter_emptyresult');
         }
-
-        // Orgunits
-        $table_html_orgunits = '';
-        if ($orgunits) {
-
-            $tableOrgunit = new html_table();
-            $tableOrgunit->attributes['class'] = 'exabis_comp_comp rg2';
-
-            $rows = [];
-
-            $addOrgunitRow = function($orgunit, $level) use (&$rows, &$addOrgunitRow, $activated_orgunits) {
-                $row = new html_table_row();
-                $row->attributes['class'] = '';
-                // orgunit title
-                $cell = new html_table_cell();
-                $cell->text = html_writer::tag('span',
-                    html_writer::label($orgunit->title, 'orgunit_data_'.$orgunit->id, true, ['class' => 'edit-config-itemlabel']),
-                    // $orgunit->title,
-                    ['style' => 'margin-left: '.(25 * $level).'px;',]
-                );
-                $row->cells[] = $cell;
-                // orgunit checkbox
-                $cell = new html_table_cell();
-                $cell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'orgunits[' . $orgunit->id . ']', 'value' => (0 - $orgunit->id)]);
-                $checkboxAttributes = array(
-                    'type' => 'checkbox',
-                    'name' => 'orgunits[' . $orgunit->id . ']',
-                    'value' => $orgunit->id,
-                    'id' => 'orgunit_data_'.$orgunit->id,
-                    'data-graphId' => $orgunit->graph_uid,
-                );
-                if (in_array($orgunit->id, $activated_orgunits)) {
-                    $checkboxAttributes['checked'] = 'checked';
-                }
-                $cell->text .= html_writer::empty_tag('input', $checkboxAttributes);
-
-                $row->cells[] = $cell;
-                $rows[] = $row;
-                // add children
-                if ($children = block_exacomp_get_childorgunits($orgunit->id)) {
-                    foreach ($children as $child) {
-                        $addOrgunitRow($child, $level+1);
-                    }
-                }
-                return true;
-            };
-
-            // Title "Orgunits"
-            $row = new html_table_row();
-            $row->attributes['class'] = 'exahighlight';
-            $cell = new html_table_cell();
-            $cell->colspan = 2;
-            $cell->text = html_writer::tag('h2', block_exacomp_get_string('config_usedorgunits'));
-            $row->cells[] = $cell;
-            $rows[] = $row;
-            // list of orgunits - divided by graph
-            $current_graph = '---current-graph---';
-            foreach ($orgunits as $orgunit) {
-                if ($current_graph !== $orgunit->graph_title) {
-                    $current_graph = $orgunit->graph_title;
-                    $row = new html_table_row();
-                    $row->attributes['class'] = 'exahighlight';
-                    $cell = new html_table_cell();
-                    // $cell->colspan = 2;
-                    $cell->text = html_writer::tag('b', $orgunit->graph_title) . ' (' . $this->source_info($orgunit->source) . ')';
-                    $row->cells[] = $cell;
-                    $selectAllCell = new html_table_cell();
-                    $selectAllCell->text = html_writer::tag("a", block_exacomp_get_string('selectallornone', 'form'),
-                        array("class" => "orgunit_selectallornone", 'data-graphId' => $orgunit->graph_uid));
-                    $row->cells[] = $selectAllCell;
-                    $rows[] = $row;
-                }
-                $addOrgunitRow($orgunit, 1);
-
-            }
-            $tableOrgunit->data = $rows;
-
-            $table_html_orgunits = html_writer::tag("div",
-                html_writer::tag("div", html_writer::table($tableOrgunit), array("class" => "exabis_competencies_lis")),
-                array("id" => "exabis_competences_block_orgunits"));
-        }
-
-        $examples_on_schedule = block_exacomp_any_examples_on_schedule($COURSE->id);
-
-        $formurl = new moodle_url($PAGE->url, array('sesskey' => sesskey()));
-
-        $save_button_html = html_writer::div(html_writer::empty_tag('input', array('type' => 'submit',
-            'class' => 'btn btn-primary',
-            'value' => block_exacomp_get_string('save_selection'))),
-            '', array('id' => 'exabis_save_button'));
-        $save_button_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
-
-        $tables_html = $table_html_schooltypes . $table_html_orgunits . $save_button_html;
-
-        return $header . $filterform . html_writer::tag("form", $tables_html,
-                array("method" => "post",
-                    "action" => $formurl,
-                    "id" => "course-selection",
-                    "examplesonschedule" => $examples_on_schedule,
-                    'class' => 'checksaving_on_leavepage'));
 
     }
 
@@ -5694,13 +5598,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $outputnameCell = new html_table_cell();
             $outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
-            $topicTitle = html_writer::label($topic->title, 'topic-'.$topic->id);
-            $outputnameCell->text = html_writer::div($topicTitle, "desctitle");
+            $outputnameCell->text = html_writer::div($topic->title, "desctitle");
             $topicRow->cells[] = $outputnameCell;
 
             $cell = new html_table_cell();
             $cell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topics[' . $topic->id . ']', 'value' => (0 - $topic->id)]);
-            $cell->text .= html_writer::checkbox('topics[' . $topic->id . ']', $topic->id, !empty($topics_activ[$topic->id]), '', ['id' => 'topic-'.$topic->id]);
+            $cell->text .= html_writer::checkbox('topics[' . $topic->id . ']', $topic->id, !empty($topics_activ[$topic->id]), '');
             $topicRow->cells[] = $cell;
 
             $rows[] = $topicRow;

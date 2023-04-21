@@ -61,13 +61,9 @@ if ($fromimport == 1) {
 // Falls Formular abgesendet, speichern
 if (isset ($action) && $action == 'save') {
     require_sesskey();
-    // relate grids data
     $values = optional_param_array('data', array(), PARAM_INT);
-    block_exacomp_set_mdltype($values);
 
-    // relate orgunit data
-    $orgunitValues = optional_param_array('orgunit_data', array(), PARAM_INT);
-    // echo "<pre>debug:<strong>edit_config.php:70</strong>\r\n"; print_r($orgunitValues); echo '</pre>'; exit; // !!!!!!!!!! delete it
+    block_exacomp_set_mdltype($values);
 
     if (!isset ($_POST['data'])) {
         $headertext = block_exacomp_get_string('tick_some');
@@ -114,7 +110,6 @@ $data = new stdClass ();
 $data->headertext = $headertext;
 $data->levels = array();
 
-// Competence tree:
 $levels = block_exacomp_get_edulevels();
 foreach ($levels as $level) {
     $data->levels[$level->id] = new stdClass ();

@@ -71,8 +71,6 @@ if ($changeFilter) {
 
 if ($action == 'save') {
     require_sesskey();
-
-    // Save selected topics
     $topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
     block_exacomp_set_coursetopics($courseid, $topics);
 
@@ -105,11 +103,6 @@ if ($action == 'save') {
             }
         }
     }
-
-    // Save selected orgunits
-    $orgunits = block_exacomp\param::optional_array('orgunits', [PARAM_INT]);
-    block_exacomp_set_courseorgunits($courseid, $orgunits);
-
 } else {
     $headertext = html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px')) . block_exacomp_get_string('teacher_second_configuration_step');
 }
@@ -156,19 +149,7 @@ if (isset($SESSION->courseselection_filter)
     $schooltypes = $newSchooltypes;
 }
 
-$orgunits = [];
-$orgunitsAll = block_exacomp_get_orgunits(true);
-$activated_orgunits = block_exacomp_get_orgunits_by_course($courseid);
-$activated_orgunits = array_map(function($o) {return $o->orgunitid;}, $activated_orgunits);
-foreach ($orgunitsAll as $orgunit) {
-    $orgunits[$orgunit->id] = new stdClass ();
-    $orgunits[$orgunit->id]->id = $orgunit->id;
-    $orgunits[$orgunit->id]->title = $orgunit->title;
-    $orgunits[$orgunit->id]->graph_uid = $orgunit->graph_uid;
-    $orgunits[$orgunit->id]->graph_title = $orgunit->graph_title;
-    $orgunits[$orgunit->id]->source = $orgunit->source;
-}
-echo $output->courseselection($schooltypes, $active_topics, $orgunits, $activated_orgunits, $headertext);
+echo $output->courseselection($schooltypes, $active_topics, $headertext);
 
 /* END CONTENT REGION */
 echo $output->footer();
