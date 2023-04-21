@@ -9700,7 +9700,7 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
         if ($mindvisibility) {
             // Visibility of Niveaus is NOT minded. But cannot be changed in diggrplus anyways, for which this function is made
             // Student specific visibility is also NOT minded, only global
-            $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle,
+            $sql = "SELECT DISTINCT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle,
                         exameval.teacher_evaluation, exameval.student_evaluation, examannot.annotationtext as annotation
             FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex
             JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.exampid = ex.id
@@ -9725,10 +9725,9 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
             AND (ex.courseid = 0 OR ex.courseid = :courseidexample OR ex.courseid IS NULL)"
                 . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
             AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
-            GROUP BY ex.id
             ";
         } else {
-            $sql = "SELECT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
+            $sql = "SELECT DISTINCT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex
             JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.exampid = ex.id
             JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
@@ -9742,7 +9741,6 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
             WHERE ct.courseid = :courseid
             AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)"
                 . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
-            GROUP BY ex.id
             ";
         }
     } else {
