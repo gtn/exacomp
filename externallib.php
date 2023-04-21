@@ -12969,22 +12969,22 @@ class block_exacomp_external extends external_api {
                             $descriptor_return->niveauvisible = 0;
 
                             if ($descriptor->niveauid) {
-                                $niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
-                                $descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
+                                // $niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
+                                $descriptor_return->niveautitle = static::custom_htmltrim($descriptor->niveau_title);
                                 // $descriptor_return->niveausort = $niveau->numb;//.','.$niveau->sorting;//static::custom_htmltrim($niveau->title);
-                                $descriptor_return->niveausort = $niveau->sorting;
+                                $descriptor_return->niveausort = $descriptor->niveau_sorting;
                                 // 2023.04.21 Use sorting instead of numb.
                                 // Numb is used rarely and is written in Komet. E.g. "M1.1, M1.2" etc. Sorting is the actual sorting of the elements in Komet
                                 // So sorting is more relevant. It should not happen, that numb is different from sorting, but it DOES happent hat numb is not used ==> that is a problem
                                 // sorting always exists ==> use sorting. We did not use a combination of sorting and numb, because it would create a string and caus problems.
-                                $descriptor_return->niveauid = $niveau->id;
+                                $descriptor_return->niveauid = $descriptor->niveauid;
 
                                 //								var_dump($descriptor->niveauid);
                                 //								var_dump($niveau->id);
                                 //								die;
-                                $descriptor_return->niveauvisible = block_exacomp_is_niveau_visible($courseid, $topicid, $userid, $niveau->id);
+                                $descriptor_return->niveauvisible = block_exacomp_is_niveau_visible($courseid, $topicid, $userid, $descriptor->niveauid);
 
-                                $niveau = $DB->get_record('block_exacompsubjniveau_mm', array('subjectid' => $subject->id, 'niveauid' => $niveau->id));
+                                $niveau = $DB->get_record('block_exacompsubjniveau_mm', array('subjectid' => $subject->id, 'niveauid' => $descriptor->niveauid));
                                 $descriptor_return->niveaudescription = $niveau->subtitle;
                             }
                             $descriptor_return->visible = (!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student)) || $forall)) ? 1 : 0;
