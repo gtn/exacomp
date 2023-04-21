@@ -130,11 +130,35 @@ function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options) {
         die('no image? (no image info)');
     }
 
+    $a4_width = 210;
+    $a4_height = 297;
+
     $width = $info['width'];
     $height = $info['height'];
 
+    // bildmaße: 100x300 -> portrait
+    // bildmaße: 200x250 -> landscape
+
+    // check if image is bigger than a4, else shrink it.
+    // this is needed, because annotation (pencil, stamps, etc.) look best with a4, or else are very small.
+    $ratio = 1;
+    if ($width / $height <= $a4_width / $a4_height) {
+        $orientation = 'P';
+        if ($height > $a4_height) {
+            $ratio = $a4_height / $height;
+        }
+    } else {
+        $orientation = 'L';
+        if ($width > $a4_height) {
+            $ratio = $a4_height / $width;
+        }
+    }
+
+    $width = $width * $ratio;
+    $height = $height * $ratio;
+
     // create PDF object with image size
-    $pdf = new \FPDF($width > $height ? 'L' : 'P', 'pt', array($width, $height));
+    $pdf = new \FPDF($orientation, 'mm', array($width, $height));
 
     // add page and image to PDF
     $pdf->AddPage();
@@ -314,9 +338,8 @@ function block_exacomp_coursemodule_definition_after_data($formwrapper, $mform) 
     global $CFG, $COURSE, $DB, $PAGE;
 
 
-
     // add button if exaquest is active in this course
-    if(is_exacomp_active_in_course() && $mform->_formName == 'mod_hvp_mod_form' && property_exists($formwrapper, 'dakoraplus')){
+    if (is_exacomp_active_in_course() && $mform->_formName == 'mod_hvp_mod_form' && property_exists($formwrapper, 'dakoraplus')) {
         ?>
         <script type="text/javascript">
             function changeFormActionExacomp() {
