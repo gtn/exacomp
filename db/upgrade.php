@@ -4085,6 +4085,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023030900, 'exacomp');
     }
 
+    if ($oldversion < 2023042100) {
+
+        $table = new xmldb_table('block_exacomporgunits');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+        $table = new xmldb_table('block_exacompdescrorgunit_mm');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+        $table = new xmldb_table('block_exacompcouorgunit_mm');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023042100, 'exacomp');
+    }
+
     //if ($oldversion < 2022101900) {
     //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
     //    // If they are used ==> they will not get deleted
