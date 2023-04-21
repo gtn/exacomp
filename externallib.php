@@ -12971,7 +12971,12 @@ class block_exacomp_external extends external_api {
                             if ($descriptor->niveauid) {
                                 $niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
                                 $descriptor_return->niveautitle = static::custom_htmltrim($niveau->title);
-                                $descriptor_return->niveausort = $niveau->numb;//.','.$niveau->sorting;//static::custom_htmltrim($niveau->title);
+                                // $descriptor_return->niveausort = $niveau->numb;//.','.$niveau->sorting;//static::custom_htmltrim($niveau->title);
+                                $descriptor_return->niveausort = $niveau->sorting;
+                                // 2023.04.21 Use sorting instead of numb.
+                                // Numb is used rarely and is written in Komet. E.g. "M1.1, M1.2" etc. Sorting is the actual sorting of the elements in Komet
+                                // So sorting is more relevant. It should not happen, that numb is different from sorting, but it DOES happent hat numb is not used ==> that is a problem
+                                // sorting always exists ==> use sorting. We did not use a combination of sorting and numb, because it would create a string and caus problems.
                                 $descriptor_return->niveauid = $niveau->id;
 
                                 //								var_dump($descriptor->niveauid);
