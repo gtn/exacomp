@@ -2351,7 +2351,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
  * @return unknown
  */
 function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false,
-                                                   $freeelementdescriptor = false, $search = "") {
+    $freeelementdescriptor = false, $search = "") {
     global $COURSE, $USER;
 
     if (is_scalar($descriptor)) {
@@ -2605,8 +2605,8 @@ function block_exacomp_get_descriptors_by_niveau($courseid, $niveauid, $topicid 
  * @return associative_array
  */
 function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES),
-                                           $calledfromoverview = false,
-                                           $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true, $filteredDescriptors = null, $editmode = false) {
+    $calledfromoverview = false,
+    $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true, $filteredDescriptors = null, $editmode = false) {
     global $DB, $USER;
 
     if (!$showalldescriptors) {
@@ -5043,7 +5043,7 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
     foreach ($descriptorsData as $activityid => $descriptors) {
         $relatedDescriptors = array_filter($descriptors);
         $relatedDescriptors = array_keys($relatedDescriptors);
-        if(!empty($relatedDescriptors)){ // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
+        if (!empty($relatedDescriptors)) { // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
             block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
         }
     }
@@ -7284,7 +7284,7 @@ function block_exacomp_delete_imports_of_weekly_schedule($courseid, $studentid, 
  * @return boolean
  */
 function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null, $ethema_ismain = -1, $ethema_issubcategory = -1, $source = null, $icsBackgroundEvent = false, $distributionid = null,
-                                               $customdata = null) {
+    $customdata = null) {
     global $USER, $DB;
 
     $timecreated = $timemodified = time();
@@ -9757,8 +9757,8 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
 		/* for subdescriptors */
 		OR ex.id IN (
 			SELECT dex.exampid
-                FROM {" . BLOCK_EXACOMP_DB_DESCRIPTORS ."} d
-                    JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS ."} d2 ON d2.parentid = d.id
+                FROM {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d
+                    JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d2 ON d2.parentid = d.id
                     JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = d2.id
                     JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON d.id = det.descrid /* topic relation by parent descriptor */
                     JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
@@ -14692,3 +14692,46 @@ function block_exacomp_get_human_readable_item_status($statusId) {
             return "errornostate";
     }
 }
+
+
+function block_exacomp_clear_last_weeks_schedule() {
+    // get all entries in schedule, check if the start and end date are in the last week and there is no submission
+    // if yes, delete the entry
+    // submission: for examples there must be an item in the exacompitem_mm table with the exampleid and an entry in the exaportitem table with the userid of the student
+
+    global $DB;
+    $lastweek = time() - 7 * 24 * 60 * 60;
+
+    // $sql = "SELECT * FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
+    // LEFT JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON schedule.exampleid = item_mm.exacomp_record_id
+    // LEFT JOIN {block_exaportitem} item ON item_mm.itemid = item.id
+    // WHERE start > :lastweek";
+    // check where there is only data for the schedule, but not for the rest
+
+    // more clean way:
+    // get every entry in schedule that has entries in item_mm and exaportitem
+    // $sql = "SELECT sched.id FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} sched
+    // JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON sched.exampleid = item_mm.exacomp_record_id
+    // JOIN {block_exaportitem} item ON item_mm.itemid = item.id
+    // WHERE sched.start > :lastweek2
+    // AND sched.start < :currenttime2";
+    // $params = array("lastweek1" => $lastweek, "lastweek2" => $lastweek, "currenttime1" => time(), "currenttime2" => time());
+    // $schedule = $DB->get_records_sql($sql, $params);
+
+    $sql = "UPDATE {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
+    JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex ON ex.id = schedule.exampleid
+    SET schedule.start = null, schedule.endtime = null
+    WHERE schedule.start > :lastweek1
+    AND schedule.start < :currenttime1
+    AND ex.blocking_event = 0
+    AND schedule.id NOT IN (SELECT sched.id FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} sched
+    JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON sched.exampleid = item_mm.exacomp_record_id
+    JOIN {block_exaportitem} item ON item_mm.itemid = item.id
+    WHERE sched.start > :lastweek2
+    AND sched.start < :currenttime2)";
+    $params = array("lastweek1" => $lastweek, "lastweek2" => $lastweek, "currenttime1" => time(), "currenttime2" => time());
+    $DB->execute($sql, $params);
+}
+
+
+
