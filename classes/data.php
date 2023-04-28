@@ -3184,6 +3184,14 @@ class data_importer extends data {
             // Not needed, Parentdescriptor _mm entries are deleted anyways TODO: find out what exaclty happend in edge cases
         }
 
+        // If this topic is imported from orgunit (virtual subject).
+        if (@$xmlItem->attributes()->fromOrgunit) {
+            // Auto-activate topics. Only into related Moodle course
+            if (@$xmlItem->attributes()->courseId) {
+                block_exacomp_set_coursetopics((int)$xmlItem->attributes()->courseId, [$topic->id]);
+            }
+        }
+
         if ($xmlItem->children) {
             foreach ($xmlItem->children->topic as $child) {
                 self::insert_topic($child, $topic->id);
@@ -3223,10 +3231,10 @@ class data_importer extends data {
             // $xmlItem->topics->topic is an object with an @attributes field
             $xmlTopicSourceData = array(array_map(function($t) {
                 return ["source" => $t["@attributes"]["source"], "id" => $t["@attributes"]["id"]];
-            }, self::parse_xml_item($xmlItem)->topics)["topic"]);
+            }, @self::parse_xml_item($xmlItem)->topics)["topic"]);
         }
 
-        // get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wront
+        // get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wrong
         $existingTopics = g::$DB->get_records(BLOCK_EXACOMP_DB_TOPICS, array('subjid' => $subject->id, 'source' => $subject->source), '', 'id, sourceid, source');
         foreach ($existingTopics as $topic) {
             // We need a comparetopic array for the in_array() function
