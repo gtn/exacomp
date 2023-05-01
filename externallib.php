@@ -7312,8 +7312,8 @@ class block_exacomp_external extends external_api {
             if ($status == "new") {
                 // if filtered by "new" then only examples without items should be shown
                 // with an item it is "in Arbeit", "Abgegeben" or "Abgeschlossen"
-                foreach ($examplesAndItems as $key => $exampleItem) {
-                    if ($exampleItem->item) {
+                foreach ($examplesAndItems as $key => $exampleAndItem) {
+                    if ($exampleAndItem->item) {
                         unset($examplesAndItems[$key]);
                     }
                 }
@@ -7322,8 +7322,8 @@ class block_exacomp_external extends external_api {
                 // filter only examples, which are in the calendar
                 $sql = "SELECT DISTINCT exampleid, exampleid AS tmp FROM {block_exacompschedule} WHERE deleted=0 AND studentid=?";
                 $visibleExamples = $DB->get_records_sql_menu($sql, [$userid]);
-                foreach ($examplesAndItems as $key => $exampleItem) {
-                    if (empty($visibleExamples[$exampleItem->example->id])) {
+                foreach ($examplesAndItems as $key => $exampleAndItem) {
+                    if (empty($visibleExamples[$exampleAndItem->example->id])) {
                         unset($examplesAndItems[$key]);
                     }
                 }
@@ -7332,30 +7332,30 @@ class block_exacomp_external extends external_api {
 
 
         // TODO: we can actually forget about examplegradings, right?
-        foreach ($examplesAndItems as $exampleItem) {
-            $exampleItem->status = block_exacomp_get_human_readable_item_status($examplesAndItem->item ? $examplesAndItem->item->status : null);
+        foreach ($examplesAndItems as $exampleAndItem) {
+            $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
 
-            if ($exampleItem->item) {
+            if ($exampleAndItem->item) {
                 $student = g::$DB->get_record('user', array(
-                    'id' => $exampleItem->item->userid,
+                    'id' => $exampleAndItem->item->userid,
                 ));
                 $userpicture = new user_picture($student);
                 $userpicture->size = 1; // Size f1.
 
-                $exampleItem->item->owner = (object)[
+                $exampleAndItem->item->owner = (object)[
                     'userid' => $student->id,
                     'fullname' => fullname($student),
                     'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
                 ];
 
-                $exampleItem->item->solutiondescription = $exampleItem->item->intro;
+                $exampleAndItem->item->solutiondescription = $exampleAndItem->item->intro;
             }
         }
 
         //Filter by status and use different sortings depending on status
         if ($status == "inprogress" || $status == "submitted" || $status == "completed") {
-            foreach ($examplesAndItems as $key => $exampleItem) {
-                if ($exampleItem->status != $status) {
+            foreach ($examplesAndItems as $key => $exampleAndItem) {
+                if ($exampleAndItem->status != $status) {
                     unset($examplesAndItems[$key]);
                 }
             }
@@ -7588,22 +7588,22 @@ class block_exacomp_external extends external_api {
         // array_unique with SORT_REGULAR compares using "==", not "===". It compares the properties, not for object identity. We want to compare the properties --> good
         // also tested: it goes deep, it e.g. compared the item->timemodified.. if those are not ==, the whole thing is not ==
         $examplesAndItems = array_unique($examplesAndItems, SORT_REGULAR);
-        foreach ($examplesAndItems as $key => $exampleItem) {
-            if ($exampleItem->item) {
+        foreach ($examplesAndItems as $key => $exampleAndItem) {
+            if ($exampleAndItem->item) {
                 if ($status == "new") { // if filtered by "new" then only examples without items should be shown
                     unset($examplesAndItems[$key]);
                 } else {
-                    $exampleItem->status = block_exacomp_get_human_readable_item_status($exampleItem->item->status);
+                    $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item->status);
                 }
             } else { //no item but the object exists ==> there must be an example, no condition needed
-                $exampleItem->status = "new";
+                $exampleAndItem->status = "new";
             }
         }
 
         //Filter by status and use different sortings depending on status
         if ($status == "inprogress" || $status == "submitted" || $status == "completed") {
-            foreach ($examplesAndItems as $key => $exampleItem) {
-                if ($exampleItem->status != $status) {
+            foreach ($examplesAndItems as $key => $exampleAndItem) {
+                if ($exampleAndItem->status != $status) {
                     unset($examplesAndItems[$key]);
                 }
             }
@@ -14929,22 +14929,22 @@ class block_exacomp_external extends external_api {
         $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
         static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
 
-        $examplesAndItem = new stdClass();
-        $examplesAndItem->courseid = $item->courseid;
+        $exampleAndItem = new stdClass();
+        $exampleAndItem->courseid = $item->courseid;
         if ($item) {
-            $examplesAndItem->item = $item;
+            $exampleAndItem->item = $item;
         }
-        $examplesAndItem->subjecttitle = $item->subjecttitle;
-        $examplesAndItem->subjectid = $item->subjectid;
-        $examplesAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
-        $examplesAndItem->topicid = $item->topicid ? $item->topicid : 0;
-        $examplesAndItem->niveautitle = "";
-        $examplesAndItem->niveauid = 0;
-        $examplesAndItem->timemodified = $item->timemodified;
+        $exampleAndItem->subjecttitle = $item->subjecttitle;
+        $exampleAndItem->subjectid = $item->subjectid;
+        $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
+        $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+        $exampleAndItem->niveautitle = "";
+        $exampleAndItem->niveauid = 0;
+        $exampleAndItem->timemodified = $item->timemodified;
 
-        $examplesAndItem->status = block_exacomp_get_human_readable_item_status($examplesAndItem->item ? $examplesAndItem->item->status : null);
+        $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
 
-        return $examplesAndItem;
+        return $exampleAndItem;
     }
 
     /**
@@ -15062,22 +15062,22 @@ class block_exacomp_external extends external_api {
         $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
         static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
 
-        $examplesAndItem = new stdClass();
-        $examplesAndItem->courseid = $item->courseid;
+        $exampleAndItem = new stdClass();
+        $exampleAndItem->courseid = $item->courseid;
         if ($item) {
-            $examplesAndItem->item = $item;
+            $exampleAndItem->item = $item;
         }
-        $examplesAndItem->subjecttitle = $item->subjecttitle;
-        $examplesAndItem->subjectid = $item->subjectid;
-        $examplesAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
-        $examplesAndItem->topicid = $item->topicid ? $item->topicid : 0;
-        $examplesAndItem->niveautitle = "";
-        $examplesAndItem->niveauid = 0;
-        $examplesAndItem->timemodified = $item->timemodified;
+        $exampleAndItem->subjecttitle = $item->subjecttitle;
+        $exampleAndItem->subjectid = $item->subjectid;
+        $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
+        $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+        $exampleAndItem->niveautitle = "";
+        $exampleAndItem->niveauid = 0;
+        $exampleAndItem->timemodified = $item->timemodified;
 
-        $examplesAndItem->status = block_exacomp_get_human_readable_item_status($examplesAndItem->item ? $examplesAndItem->item->status : null);
+        $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
 
-        return $examplesAndItem;
+        return $exampleAndItem;
     }
 
     /**
