@@ -7567,18 +7567,18 @@ class block_exacomp_external extends external_api {
                 }
             }
 
-            foreach ($studentExamplesAndItems as $studentExamplesAndItem) {
-                if ($studentExamplesAndItem->item) {
+            foreach ($studentExamplesAndItems as $studentExampleAndItem) {
+                if ($studentExampleAndItem->item) {
                     $userpicture = new user_picture($student);
                     $userpicture->size = 1; // Size f1.
 
-                    $studentExamplesAndItem->item->owner = (object)[
+                    $studentExampleAndItem->item->owner = (object)[
                         'userid' => $student->id,
                         'fullname' => fullname($student),
                         'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
                     ];
 
-                    $studentExamplesAndItem->item->solutiondescription = $studentExamplesAndItem->item->intro;
+                    $studentExampleAndItem->item->solutiondescription = $studentExampleAndItem->item->intro;
                 }
             }
 
