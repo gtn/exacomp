@@ -21,6 +21,8 @@ require_once $CFG->libdir . '/formslib.php';
 
 class block_exacomp_update_categories_form extends moodleform {
 
+    private $hideSelectbox = false;
+
     function definition() {
         global $CFG, $DB;
 
@@ -33,12 +35,14 @@ class block_exacomp_update_categories_form extends moodleform {
         $descrTitle = $DB->get_field(BLOCK_EXACOMP_DB_DESCRIPTORS, 'title', array("id" => $descrid));
         // 	    $mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
 
-        if ($this->_customdata['categories']) {
-            $categories = ['0' => ' - - - '] + $this->_customdata['categories'];
-            $cselect = $mform->addElement('select', 'catid', block_exacomp_get_string('descriptor_categories'), $categories);
-            $cselect->setMultiple(true);
-            $cselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $this->_customdata['descrid']), "", "catid")));
+        if (!$this->_customdata['categories']) {
+            $this->hideSelectbox = true;
         }
+        $categories = ['0' => ' - - - '] + $this->_customdata['categories'];
+        $cselect = $mform->addElement('select', 'catid', block_exacomp_get_string('descriptor_categories'), $categories);
+        $cselect->setMultiple(true);
+        $cselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_DESCCAT, array("descrid" => $this->_customdata['descrid']), "", "catid")));
+
 
         $this->add_action_buttons(true);
     }
@@ -52,19 +56,28 @@ class block_exacomp_update_categories_form extends moodleform {
         //        @$doc->loadHTML(utf8_decode($out), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         @$doc->loadHTML(mb_convert_encoding($out, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
-        $newInput = $doc->createDocumentFragment();
-        // add "new category" input
-        $newInput->appendXML('<br /><span>' . block_exacomp_get_string('descriptor_add_category') . ' <input class="form-control" name="newcategory" value="" size="10" /> </span>');
-        foreach ($selector->query('//select[@name=\'catid[]\']') as $e) {
-            $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
-            $e->parentNode->appendChild($newInput);
+        // Add class to the form.
+        foreach ($selector->query('//form') as $f) {
+            $f->setAttribute("class", $f->getAttribute('class') . ' category_form');
         }
-        // add subtext - description
+        // Add "new category" input.
+        $newInput = $doc->createDocumentFragment();
+        $newInput->appendXML('<br /><span>' . block_exacomp_get_string('descriptor_add_category') . ' <input type="text" class="form-control" name="newcategory" value="" /> </span>');
         $subText = $doc->createDocumentFragment();
         $subText->appendXML('<span class="exacomp_sublabel">' . block_exacomp_get_string('descriptor_categories_description') . '</span>');
-        foreach ($selector->query('//select[@name=\'catid[]\']/ancestor::*[contains(@class, \'form-group\')]//label') as $e) {
-            $e->parentNode->appendChild($subText);
+        foreach ($selector->query('//select[@name=\'catid[]\']') as $e) {
+            if ($this->hideSelectbox) {
+                $e->setAttribute("style","display: none;");
+            }
+            $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
+            $e->parentNode->appendChild($newInput);
+            $e->parentNode->insertBefore($subText, $e);
         }
+        // Add subtext - description.
+
+        // foreach ($selector->query('//select[@name=\'catid[]\']/ancestor::*[contains(@class, \'form-group\')]') as $e) {
+        //     $e->parentNode->insertBefore($subText);
+        // }
         $output = $doc->saveHTML($doc->documentElement);
         print $output;
     }

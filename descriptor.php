@@ -84,6 +84,23 @@ class block_exacomp_local_item_form extends moodleform {
 
         $this->add_action_buttons(false);
     }
+
+    public function display() {
+        ob_start();
+        parent::display();
+        $out = ob_get_contents();
+        ob_end_clean();
+        $doc = new DOMDocument();
+        @$doc->loadHTML(mb_convert_encoding($out, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $selector = new DOMXPath($doc);
+        // Add class to the form.
+        foreach ($selector->query('//form') as $f) {
+            $f->setAttribute("class", $f->getAttribute('class') . ' descriptor_form');
+        }
+        $output = $doc->saveHTML($doc->documentElement);
+        print $output;
+    }
+
 }
 
 $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], ['hasNiveau' => !$item->parentid]);

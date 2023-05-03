@@ -109,7 +109,7 @@ class block_exacomp_local_item_form extends moodleform {
         // Only for NEW subjects:
 
         if ($this->_customdata['editedId'] === null) {
-            //Topic
+            // Topic.
             $mform->addElement('html', '<h2> ' . block_exacomp_get_string("topic") . ' </h2>');
             $mform->addElement('html', '<p> ' . block_exacomp_get_string("topic_description") . '</p>');
             $mform->addElement('text', 'topicTitle', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
@@ -120,7 +120,7 @@ class block_exacomp_local_item_form extends moodleform {
             $mform->setType('numb', PARAM_INT);
             $mform->addElement('html', '<br/>');
 
-            //Niveau
+            // Niveau.
             $mform->addElement('html', '<h2> ' . block_exacomp_get_string("niveau") . ' </h2>');
             $mform->addElement('html', '<p> ' . block_exacomp_get_string("niveau_description") . ' </p>');
             $mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
@@ -130,6 +130,7 @@ class block_exacomp_local_item_form extends moodleform {
             $mform->addElement('text', 'niveau_numb', block_exacomp_get_string('numb'), 'maxlength="255" size="60"');
             $mform->setType('niveau_numb', PARAM_TEXT);
 
+            // Descriptor.
             $mform->addElement('html', '<h2> ' . block_exacomp_get_string("descriptors") . ' </h2>');
             $mform->addElement('html', '<p> ' . block_exacomp_get_string("descriptor_description") . ' </p>');
             $mform->addElement('textarea', 'descriptor_title', block_exacomp_get_string('descriptor_label'), 'rows="6" cols="100" size="60"');

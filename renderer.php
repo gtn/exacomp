@@ -306,7 +306,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= html_writer::tag('li',
                 html_writer::link(
                     new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS, 'colgroupid' => optional_param('colgroupid', 0, PARAM_INT)]),
-                    $subject->title . $extra, [
+                    $subject->title . '<span class="no-br">'.$extra.'</span>', [
                     'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
                     'title' => $popuptitle,
                 ])
@@ -338,7 +338,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'subjectid' => $subject->id,
                         'topicid' => $topic->id,
                         'colgroupid' => optional_param('colgroupid', 0, PARAM_INT),
-                    ]), block_exacomp_get_topic_numbering($topic) . ' ' . $topic->title . $extra, array(
+                    ]), block_exacomp_get_topic_numbering($topic) . ' ' . $topic->title . '<span class="no-br">'.$extra.'</span>', array(
                         'class' => (($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '') . ' ' . (($topic->visible) ? '' : 'hidden'),
                         'title' => $topic->description,
                     )));
@@ -386,7 +386,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             ]);
                 }
                 if ($this->is_edit_mode() && $niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $selectedTopic != null && $this->page->url->get_param("topicid") != 0) {
-                    $title .= $this->visibility_icon_niveau($niveau->visible, $selectedTopic->id, $niveau->id);
+                    $extra .= $this->visibility_icon_niveau($niveau->visible, $selectedTopic->id, $niveau->id);
                 }
                 $titleForTitle = $title;
                 if ($subtitle) {
@@ -402,7 +402,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 $content .= html_writer::tag('li',
                     html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
-                        $title . $extra, array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $titleForTitle))
+                        $title . '<span class="no-br">'.$extra.'</span>', array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $titleForTitle))
                 );
             }
         }
@@ -1002,6 +1002,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         /* SUBJECTS */
         $first = true;
+        $second = false;
         $course_subs = block_exacomp_get_subjects_by_course($courseid);
         $usesubjectgrading = block_exacomp_is_subjectgrading_enabled($courseid);
 
@@ -1022,7 +1023,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($crosssubjid) {
                     $title->text = html_writer::tag("b", block_exacomp_get_string('comps_and_material'));
                 } else {
-                    $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", $subject->title);
+                    $title->rowspan = 2;
+                    // $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", $subject->title); // Do not show double subject title.
                 }
 
                 $title->print_width = 5 + 25;
@@ -1030,6 +1032,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
             $nivCell = new html_table_cell();
+            if (!$crosssubjid) {
+                $nivCell->rowspan = 2;
+            }
             $nivCell->text = block_exacomp_get_string('competence_grid_niveau');
             $nivCell->print_width = 5;
 
@@ -1071,9 +1076,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $studentsCount = 0;
 
                 $evaluationRow = new html_table_row();
-                $emptyCell = new html_table_cell();
-                $emptyCell->colspan = 3;
-                $evaluationRow->cells[] = $emptyCell;
+                if ($crosssubjid) {
+                    $emptyCell = new html_table_cell();
+                    $emptyCell->colspan = 3;
+                    $evaluationRow->cells[] = $emptyCell;
+                }
 
                 foreach ($students as $student) {
                     $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
@@ -2083,7 +2090,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $row->cells[$i]->print_width = (100 - (5 + 25 + 5)) / ($cnt - 3);
                 }
             }
-
+            if ($second) {
+                $second = false;
+            }
+            if ($first) {
+                $second = true;
+            }
             $first = false;
         }
 
@@ -2461,7 +2473,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
     function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true,
                          $forReport = false, $hideAllActionButtons = false) {
-        global $USER, $COURSE, $DB;
+        global $USER, $COURSE, $DB, $OUTPUT;
 
         $evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
         $showstudents = block_exacomp_get_studentid();
@@ -2839,7 +2851,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                 if (array_key_exists($descriptor->id, $student->competencies->gradingisold) && $student->competencies->gradingisold[$descriptor->id]) {
                                     if ($isEditingTeacher && ($data->role == BLOCK_EXACOMP_ROLE_TEACHER)) {
                                         //Hackable????
-                                        $gradingisoldwarning = html_writer::tag('a', '     !!!',
+                                        // $iconA = html_writer::img($OUTPUT->image_url('i/valid'), '', ['width' => 16]);
+                                        // echo "<pre>debug:<strong>renderer.php:2855</strong>\r\n"; print_r(new moodle_url('/blocks/exacomp/pix/alert_yellow.png')); echo '</pre>'; exit; // !!!!!!!!!! delete it
+                                        $iconA = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/alert_yellow.png')));
+                                        $gradingisoldwarning = '&nbsp;'.html_writer::tag('a', $iconA,
                                             array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),
                                                 'class' => 'competencegrid_tooltip'));
                                         $teacher_evaluation_cell->text .= $gradingisoldwarning;
@@ -4386,9 +4401,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
         }
 
-        return html_writer::link('', $icon, array('class' => 'hide-niveau', 'name' => 'hide-niveau', 'topicid' => $topicid, 'niveauid' => $niveauid, 'id' => 'hide-niveau', 'state' => ($visible) ? '-' : '+',
+        // 'span' is not breaking html structure. So - use 'span' instead 'a' tag
+        return html_writer::span($icon, 'niveau-button hide-niveau', array('name' => 'hide-niveau', 'topicid' => $topicid, 'niveauid' => $niveauid, 'id' => 'hide-niveau', 'state' => ($visible) ? '-' : '+',
             'showurl' => $this->image_url("i/hide"), 'hideurl' => $this->image_url("i/show"),
         ));
+        /*return html_writer::link('', $icon, array('class' => 'hide-niveau', 'name' => 'hide-niveau', 'topicid' => $topicid, 'niveauid' => $niveauid, 'id' => 'hide-niveau', 'state' => ($visible) ? '-' : '+',
+            'showurl' => $this->image_url("i/hide"), 'hideurl' => $this->image_url("i/show"),
+        ));*/
 
     }
 
@@ -5724,7 +5743,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $table->data = $rows;
 
         $table_html = html_writer::div(html_writer::table($table), 'grade-report-grader floating-header');
-        $div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis")), array("id" => "exabis_competences_block"));
+        $div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis acitivities_list")), array("id" => "exabis_competences_block"));
         $div .= html_writer::div(html_writer::empty_tag('input', array(
             'type' => 'submit',
             'class' => 'btn btn-primary',

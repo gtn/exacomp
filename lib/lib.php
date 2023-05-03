@@ -4266,10 +4266,14 @@ function block_exacomp_get_icon_for_user($associated_modules, $student) {
         $icon->text .= '<div>';
 
         if (isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
+            // graded
             $found = true;
-            $icon->text .= html_writer::empty_tag("img", array("src" => "pix/list_12x11.png"));
+            // $icon->text .= html_writer::empty_tag("img", array("src" => "pix/list_12x11.png"));
+            $icon->text .= html_writer::empty_tag("img", array("src" => "pix/ok_16x16.png"));
         } else {
-            $icon->text .= html_writer::empty_tag("img", array("src" => "pix/x_11x11.png"));
+            // $icon->text .= html_writer::empty_tag("img", array("src" => "pix/x_11x11.png"));
+            $iconurl = $cm->get_icon_url();
+            $icon->text .= html_writer::empty_tag('img', array('src' => $iconurl, 'class' => 'smallicon', 'alt' => ' ', 'width' => 16));
         }
 
         $icon->text .= ' ';
@@ -4289,11 +4293,13 @@ function block_exacomp_get_icon_for_user($associated_modules, $student) {
         $icon->text .= '</div>';
     }
 
-    if ($found) {
+    // Always needed icon?
+    $icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png", "alt" => block_exacomp_get_string("legend_activities")));
+    /*if ($found) {
         $icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png", "alt" => block_exacomp_get_string("legend_activities")));
     } else {
         $icon->img = html_writer::empty_tag("img", array("src" => "pix/x_11x11.png", "alt" => block_exacomp_get_string("usernosubmission", null, fullname($student))));
-    }
+    }*/
 
     return $icon;
 }

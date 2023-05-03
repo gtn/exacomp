@@ -3360,8 +3360,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Nothing to show',
     ],
     'descriptor_label' => [
-        'Kompetenzbeschreibung',
-        'Competency description',
+        'Kompetenztitel',
+        'Competency title',
     ],
     'export_password_message' => [
         'Bitte notieren Sie sich das Passwort "<strong>{$a}</strong>", bevor Sie fortfahren.<br/><br/>

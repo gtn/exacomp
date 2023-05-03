@@ -1,3 +1,20 @@
 #block_exacomp .form-check-input {
     position: static !important;
 }
+
+.exabis_competencies_lis {
+    margin-bottom: 20px;
+}
+
+.example_upload_form {
+    padding: 0 20px;
+}
+
+.example_upload_form .example_add_taxonomy, .example_upload_form #id_isTeacherexample {
+    margin-right: 10px !important;
+}
+
+.example_upload_form input[type="text"],
+.example_upload_form select {
+    width: 100% !important;
+}
