@@ -14548,7 +14548,7 @@ function block_exacomp_build_comp_tree() {
             }
             $content .= $item->title .
                 ($item->achieved ? ' ' . g::$OUTPUT->pix_icon("i/badge",
-                        block_exaport_get_string('selected_competencies')) : '') .
+                        'selected_competencies') : '') .
                 $printtree($item->get_subs(), $level + 1) .
                 '</li>';
         }
