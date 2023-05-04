@@ -14700,29 +14700,12 @@ function block_exacomp_get_human_readable_item_status($statusId) {
 }
 
 
-function block_exacomp_clear_last_weeks_schedule() {
+function block_exacomp_clear_exacomp_weekly_schedule() {
     // get all entries in schedule, check if the start and end date are in the last week and there is no submission
     // if yes, delete the entry
     // submission: for examples there must be an item in the exacompitem_mm table with the exampleid and an entry in the exaportitem table with the userid of the student
-
     global $DB;
     $lastweek = time() - 7 * 24 * 60 * 60;
-
-    // $sql = "SELECT * FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
-    // LEFT JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON schedule.exampleid = item_mm.exacomp_record_id
-    // LEFT JOIN {block_exaportitem} item ON item_mm.itemid = item.id
-    // WHERE start > :lastweek";
-    // check where there is only data for the schedule, but not for the rest
-
-    // more clean way:
-    // get every entry in schedule that has entries in item_mm and exaportitem
-    // $sql = "SELECT sched.id FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} sched
-    // JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON sched.exampleid = item_mm.exacomp_record_id
-    // JOIN {block_exaportitem} item ON item_mm.itemid = item.id
-    // WHERE sched.start > :lastweek2
-    // AND sched.start < :currenttime2";
-    // $params = array("lastweek1" => $lastweek, "lastweek2" => $lastweek, "currenttime1" => time(), "currenttime2" => time());
-    // $schedule = $DB->get_records_sql($sql, $params);
 
     $sql = "UPDATE {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
     JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex ON ex.id = schedule.exampleid
@@ -14737,7 +14720,10 @@ function block_exacomp_clear_last_weeks_schedule() {
     AND sched.start < :currenttime2)";
     $params = array("lastweek1" => $lastweek, "lastweek2" => $lastweek, "currenttime1" => time(), "currenttime2" => time());
     $DB->execute($sql, $params);
+
+    // now delete all entries in weekly schedule where the associated course does not exist anymore
+    $sql = "DELETE FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "}
+    WHERE courseid NOT IN (SELECT id FROM {course})";
+    $DB->execute($sql);
 }
-
-
 
