@@ -15156,7 +15156,7 @@ class block_exacomp_external extends external_api {
                     'fullname' => new external_value (PARAM_TEXT, ''),
                     'profileimageurl' => new external_value (PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
-            ), 'item information', VALUE_DEFAULT, 'xxx'),
+            ), 'item information', VALUE_OPTIONAL),
         ));
     }
 

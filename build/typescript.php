@@ -48,7 +48,7 @@ foreach ($servicesFiles as $servicesFile) {
             require_once $CFG->dirroot . '/' . $function['classpath'];
         }
 
-        $methodname = $function['methodname'] ?: 'execute'; // new style with one class per webservice
+        $methodname = $function['methodname'] ?? 'execute'; // new style with one class per webservice
         try {
             $method = new ReflectionMethod($function['classname'], $methodname);
         } catch (\Exception $e) {
@@ -91,7 +91,7 @@ foreach ($servicesFiles as $servicesFile) {
                             $dokuInterface = "export { $enumName as $tsType }\n\n" .
                                 $dokuInterface;
 
-                            if (!$definedEnumsByDefenition[$enumFields]) {
+                            if (empty($definedEnumsByDefenition[$enumFields])) {
                                 $dokuInterface = "export enum {$enumName} {\n" . $enumFields . "}\n\n" .
                                     $dokuInterface;
 
