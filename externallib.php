@@ -14915,7 +14915,7 @@ class block_exacomp_external extends external_api {
      * @return array of items
      */
     public static function dakoraplus_get_example_and_item($exampleid, $courseid) {
-        global $USER;
+        global $USER, $DB;
 
         static::validate_parameters(static::dakoraplus_get_example_and_item_parameters(), array(
             'exampleid' => $exampleid,
@@ -14930,14 +14930,39 @@ class block_exacomp_external extends external_api {
         static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
 
         $exampleAndItem = new stdClass();
-        $exampleAndItem->courseid = $item->courseid;
+        $exampleAndItem->courseid = $item->courseid ?: $courseid;
+        $exampleAndItem->example = $example;
         if ($item) {
+            // get info from item
             $exampleAndItem->item = $item;
+            $exampleAndItem->subjecttitle = $item->subjecttitle;
+            $exampleAndItem->subjectid = $item->subjectid;
+            $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
+            $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+        } else {
+            // get info from example-descriptor-topic-subject-relationship
+            $result = current($DB->get_records_sql("SELECT DISTINCT topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid
+            FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex
+            JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
+            JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
+            JOIN {" . BLOCK_EXACOMP_DB_TOPICS . "} topic ON ct.topicid = topic.id
+            JOIN {" . BLOCK_EXACOMP_DB_SUBJECTS . "} subj ON topic.subjid = subj.id
+            JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON det.descrid=d.id
+            WHERE ct.courseid = :courseid AND dex.exampid = :exampleid", ['courseid' => $courseid, 'exampleid' => $exampleid], 0, 1));
+
+            if ($result) {
+                $exampleAndItem->subjecttitle = $result->subjecttitle;
+                $exampleAndItem->subjectid = $result->subjectid;
+                $exampleAndItem->topictitle = $result->topictitle;
+                $exampleAndItem->topicid = $result->topicid;
+            } else {
+                $exampleAndItem->subjecttitle = '';
+                $exampleAndItem->subjectid = 0;
+                $exampleAndItem->topictitle = "";
+                $exampleAndItem->topicid = 0;
+            }
         }
-        $exampleAndItem->subjecttitle = $item->subjecttitle;
-        $exampleAndItem->subjectid = $item->subjectid;
-        $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
-        $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+
         $exampleAndItem->niveautitle = "";
         $exampleAndItem->niveauid = 0;
         $exampleAndItem->timemodified = $item->timemodified;
@@ -14970,7 +14995,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
-                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
+                // 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course', VALUE_OPTIONAL),
                 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
                 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
@@ -14991,8 +15016,8 @@ class block_exacomp_external extends external_api {
                     //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
-                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
+                // 'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
+                // 'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of item '),
@@ -15045,7 +15070,7 @@ class block_exacomp_external extends external_api {
      * @return item
      */
     public static function dakoraplus_get_teacher_example_and_item($exampleid, $courseid, $studentid) {
-        global $USER;
+        global $USER, $DB;
 
         static::validate_parameters(static::dakoraplus_get_teacher_example_and_item_parameters(), array(
             'exampleid' => $exampleid,
@@ -15063,14 +15088,39 @@ class block_exacomp_external extends external_api {
         static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
 
         $exampleAndItem = new stdClass();
-        $exampleAndItem->courseid = $item->courseid;
+        $exampleAndItem->courseid = $item->courseid ?: $courseid;
+        $exampleAndItem->example = $example;
         if ($item) {
+            // get info from item
             $exampleAndItem->item = $item;
+            $exampleAndItem->subjecttitle = $item->subjecttitle;
+            $exampleAndItem->subjectid = $item->subjectid;
+            $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
+            $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+        } else {
+            // get info from example-descriptor-topic-subject-relationship
+            $result = current($DB->get_records_sql("SELECT DISTINCT topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid
+            FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex
+            JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
+            JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
+            JOIN {" . BLOCK_EXACOMP_DB_TOPICS . "} topic ON ct.topicid = topic.id
+            JOIN {" . BLOCK_EXACOMP_DB_SUBJECTS . "} subj ON topic.subjid = subj.id
+            JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON det.descrid=d.id
+            WHERE ct.courseid = :courseid AND dex.exampid = :exampleid", ['courseid' => $courseid, 'exampleid' => $exampleid], 0, 1));
+
+            if ($result) {
+                $exampleAndItem->subjecttitle = $result->subjecttitle;
+                $exampleAndItem->subjectid = $result->subjectid;
+                $exampleAndItem->topictitle = $result->topictitle;
+                $exampleAndItem->topicid = $result->topicid;
+            } else {
+                $exampleAndItem->subjecttitle = '';
+                $exampleAndItem->subjectid = 0;
+                $exampleAndItem->topictitle = "";
+                $exampleAndItem->topicid = 0;
+            }
         }
-        $exampleAndItem->subjecttitle = $item->subjecttitle;
-        $exampleAndItem->subjectid = $item->subjectid;
-        $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
-        $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+
         $exampleAndItem->niveautitle = "";
         $exampleAndItem->niveauid = 0;
         $exampleAndItem->timemodified = $item->timemodified;
@@ -15103,7 +15153,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
-                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
+                // 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course', VALUE_OPTIONAL),
                 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
                 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
@@ -15124,8 +15174,8 @@ class block_exacomp_external extends external_api {
                     //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
-                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
+                // 'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
+                // 'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
                 'id' => new external_value (PARAM_INT, 'id of item '),
