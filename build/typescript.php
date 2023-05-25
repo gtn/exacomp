@@ -4,12 +4,27 @@ require __DIR__ . '/../inc.php';
 
 global $CFG;
 
-$servicesFiles = [
+$servicesGroups = [
+    'default' => [
     __DIR__ . '/../db/services.php',
     $CFG->dirroot . '/mod/quiz/db/services.php',
     $CFG->dirroot . '/lib/db/services.php',
     $CFG->dirroot . '/message/output/popup/db/services.php',
+        ],
+    'exapdf' => [
+        $CFG->dirroot . '/mod/assign/feedback/exapdf/db/services.php',
+    ]
 ];
+
+$group = optional_param('group', '', PARAM_TEXT);
+if (!$group || empty($servicesGroups[$group])) {
+    foreach ($servicesGroups as $key => $tmp) {
+        echo '<a href="'.$_SERVER['PHP_SELF'].'?group='.$key.'">'.$key.'</a><br/>';
+    }
+    exit;
+} else {
+    $servicesFiles = $servicesGroups[$group];
+}
 
 function moodle_type_to_typescript_type($isParameters, $type) {
     if ($type == 'int' || $type == 'float') {
@@ -23,10 +38,16 @@ function moodle_type_to_typescript_type($isParameters, $type) {
     return $tsType;
 }
 
-$block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+$dokuHeader = '';
+if ($group == 'exapdf') {
+    $assignfeedback_exapdf_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+    $dokuHeader = "// assignfeedback_exapdf version: " . $assignfeedback_exapdf_info->versiondisk . "\n";
+} else {
+    $block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
 
-$dokuHeader = "// moodle release: " . $CFG->release . "\n";
-$dokuHeader .= "// block_exacomp version: " . $block_exacomp_info->versiondisk . "\n";
+    $dokuHeader .= "// moodle release: " . $CFG->release . "\n";
+    $dokuHeader .= "// block_exacomp version: " . $block_exacomp_info->versiondisk . "\n";
+}
 $dokuHeader .= "\n";
 
 $doku = '';
@@ -59,11 +80,15 @@ foreach ($servicesFiles as $servicesFile) {
         $recursor = function($isParameters, $namePrefix, $o) use (&$recursor, &$definedEnumsByDefenition) {
             if ($o instanceof external_multiple_structure) {
                 $dokuInterface = $recursor($isParameters, $namePrefix . '_item', $o->content);
-                $dokuInterface .= "export type {$namePrefix} = {$namePrefix}_item[]\n\n";
+                $dokuInterface .= "export type {$namePrefix} = {$namePrefix}_item[];\n\n";
 
                 return $dokuInterface;
             } elseif ($o instanceof external_single_structure) {
-                $dokuInterface = "export interface {$namePrefix} {\n";
+                $dokuInterface = "export interface {$namePrefix} {";
+
+                if ($o->keys) {
+                    $dokuInterface .= "\n";
+                }
 
                 foreach ($o->keys as $paramName => $paramInfo) {
                     if ($paramInfo instanceof external_value) {
@@ -88,7 +113,7 @@ foreach ($servicesFiles as $servicesFile) {
 
                             // enums with same defenition have the same type
                             $tsType = $namePrefix . '_' . $paramName;
-                            $dokuInterface = "export { $enumName as $tsType }\n\n" .
+                            $dokuInterface = "export { $enumName as $tsType };\n\n" .
                                 $dokuInterface;
 
                             if (empty($definedEnumsByDefenition[$enumFields])) {
@@ -187,10 +212,9 @@ $doku = $dokuHeader .
     "export type param_number = string | number | null;\n" .
     "\n" .
     $dokuInterfaces .
-    "\n\n" .
     "export default abstract class MoodleWebserviceDefinitions {\n" .
     "  abstract callWebservice<T = any>(wsfunction: string, payload: any): Promise<T>;\n" .
     $doku .
-    "}";
+    "}\n\n";
 
 echo '<pre>' . htmlspecialchars($doku);
