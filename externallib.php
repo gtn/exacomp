@@ -2044,7 +2044,64 @@ class block_exacomp_external extends external_api {
         return new external_function_parameters (array(
             'elementid' => new external_value (PARAM_INT, 'id of element'),
             'type' => new external_value (PARAM_TEXT, 'example, descriptor, topic'),
-            'grading' => new external_value (PARAM_INT, 'grade for this descriptor'),
+            'grading' => new external_value (PARAM_INT, 'grade for this element'),
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+        ));
+    }
+
+    /**
+     * Grade a element
+     *
+     * @ws-type-write
+     * @param $descriptorid
+     * @param $grading
+     * @param $courseid
+     * @param $userid
+     * @param $role
+     * @param $subjectid
+     * @return array
+     * @throws invalid_parameter_exception
+     * @deprecated on 2023-05-29 -> can be deleted later
+     */
+    public static function diggrplus_grade_element($elementid, $type, $grading, $courseid, $userid, $role) {
+        global $USER;
+
+        if (empty ($elementid) || empty ($grading)) {
+            throw new invalid_parameter_exception ('Parameter can not be empty');
+        }
+
+        if ($type == 'topic') {
+            $comptype = BLOCK_EXACOMP_TYPE_TOPIC;
+        } else if ($type == 'descriptor') {
+            $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR;
+        } else if ($type == 'example') {
+            $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE;
+        } else {
+            throw new invalid_parameter_exception("type '$type' not supported");
+        }
+
+        return static::diggrplus_grade_competency($elementid, $comptype, $grading, $courseid, $userid, $role);
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_grade_element_returns() {
+        return static::diggrplus_grade_competency_returns();
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function diggrplus_grade_competency_parameters() {
+        return new external_function_parameters (array(
+            'compid' => new external_value (PARAM_INT, 'competency id'),
+            'comptype' => new external_value (PARAM_INT, 'competency type'),
+            'grading' => new external_value (PARAM_INT, 'grade for this element'),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
@@ -2065,16 +2122,12 @@ class block_exacomp_external extends external_api {
      * @throws invalid_parameter_exception
      *
      */
-    public static function diggrplus_grade_element($elementid, $type, $grading, $courseid, $userid, $role) {
+    public static function diggrplus_grade_competency($compid, $comptype, $grading, $courseid, $userid, $role) {
         global $USER;
 
-        if (empty ($elementid) || empty ($grading)) {
-            throw new invalid_parameter_exception ('Parameter can not be empty');
-        }
-
-        static::validate_parameters(static::diggrplus_grade_element_parameters(), array(
-            'elementid' => $elementid,
-            'type' => $type,
+        static::validate_parameters(static::diggrplus_grade_competency_parameters(), array(
+            'compid' => $compid,
+            'comptype' => $comptype,
             'grading' => $grading,
             'courseid' => $courseid,
             'userid' => $userid,
@@ -2091,23 +2144,13 @@ class block_exacomp_external extends external_api {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        if ($type == 'topic') {
-            $comptype = BLOCK_EXACOMP_TYPE_TOPIC;
-        } else if ($type == 'descriptor') {
-            $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR;
-        } else if ($type == 'example') {
-            $comptype = BLOCK_EXACOMP_TYPE_EXAMPLE;
-        } else {
-            throw new invalid_parameter_exception("type '$type' not supported");
-        }
-
-        if ($type == 'descriptor') {
-            $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'descriptorid' => $elementid, 'userid' => $USER->id];
+        if ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+            $customdata = ['block' => 'exacomp', 'app' => 'diggrplus', 'courseid' => $courseid, 'descriptorid' => $compid, 'userid' => $USER->id];
         } else {
             $customdata = [];
         }
 
-        block_exacomp_set_user_competence($userid, $elementid, $comptype, $courseid, $role, $grading, null, -1, true, [
+        block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $grading, null, -1, true, [
             'notification_customdata' => $customdata,
         ]);
 
@@ -2121,10 +2164,88 @@ class block_exacomp_external extends external_api {
      *
      * @return external_multiple_structure
      */
-    public static function diggrplus_grade_element_returns() {
+    public static function diggrplus_grade_competency_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
         ));
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function diggrplus_get_all_competency_gradings_parameters() {
+        return new external_function_parameters (array(
+            'compid' => new external_value(PARAM_INT, 'competence id'),
+            'comptype' => new external_value(PARAM_INT, 'type of competence: descriptor, topic, subject'),
+            'userid' => new external_value(PARAM_INT, ''),
+        ));
+    }
+
+    /**
+     * Get all gradings in all courses
+     *
+     * @ws-type-write
+     */
+    public static function diggrplus_get_all_competency_gradings($compid, $comptype, $userid) {
+        static::validate_parameters(static::diggrplus_get_all_competency_gradings_parameters(), array(
+            'compid' => $compid,
+            'comptype' => $comptype,
+            'userid' => $userid,
+        ));
+
+        if (!block_exacomp_is_teacher_in_any_course()) {
+            throw new \moodle_exception('not a teacher');
+        }
+
+        if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+            throw new \moodle_exception('example needs a different logic');
+        }
+
+        $evals = g::$DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES, ['compid' => $compid, 'comptype' => $comptype, 'userid' => $userid, 'role' => BLOCK_EXACOMP_ROLE_TEACHER], 'timestamp DESC');
+
+        foreach ($evals as $key => $eval) {
+            $user = g::$DB->get_record('user', ['id' => $eval->reviewerid]);
+            $course = g::$DB->get_record('course', ['id' => $eval->courseid]);
+
+            if ($user) {
+                $userpicture = new user_picture($user);
+                $userpicture->size = 1; // Size f1.
+                $reviewerprofileimageurl = $userpicture->get_url(g::$PAGE)->out(false);
+            } else {
+                $reviewerprofileimageurl = '';
+            }
+
+            $evals[$key] = [
+                'id' => $eval->id,
+                'reviewerid' => $eval->reviewerid,
+                'reviewerfullname' => $user ? fullname($user) : '',
+                'reviewerprofileimageurl' => $reviewerprofileimageurl,
+                'courseid' => $course ? $course->id : 0,
+                'coursefullname' => $course ? $course->fullname : '',
+                'grading' => $eval->value,
+                'timestamp' => $eval->timestamp,
+            ];
+        }
+
+        return $evals;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_multiple_structure
+     */
+    public static function diggrplus_get_all_competency_gradings_returns() {
+        return new external_multiple_structure (new external_single_structure (array(
+            'id' => new external_value (PARAM_INT, 'id of grading'),
+            'reviewerid' => new external_value (PARAM_INT, 'userid of teacher'),
+            'reviewerfullname' => new external_value (PARAM_TEXT, 'fullname of teacher'),
+            'reviewerprofileimageurl' => new external_value (PARAM_TEXT, 'profileimageurl of teacher'),
+            'courseid' => new external_value (PARAM_INT, 'id of course'),
+            'coursefullname' => new external_value (PARAM_TEXT, 'id of course'),
+            'grading' => new external_value (PARAM_INT, 'grade for this element'),
+            'timestamp' => new external_value (PARAM_INT, 'timemodified'),
+        )));
     }
 
     public static function diggrplus_msteams_import_students_parameters() {
