@@ -2210,16 +2210,20 @@ class block_exacomp_external extends external_api {
             if ($user) {
                 $userpicture = new user_picture($user);
                 $userpicture->size = 1; // Size f1.
-                $reviewerprofileimageurl = $userpicture->get_url(g::$PAGE)->out(false);
+
+                $reviewer = (object)[
+                    'userid' => $user->id,
+                    'fullname' => fullname($user),
+                    'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
+                ];
+
             } else {
-                $reviewerprofileimageurl = '';
+                $reviewer = null;
             }
 
             $evals[$key] = [
                 'id' => $eval->id,
-                'reviewerid' => $eval->reviewerid,
-                'reviewerfullname' => $user ? fullname($user) : '',
-                'reviewerprofileimageurl' => $reviewerprofileimageurl,
+                'reviewer' => $reviewer,
                 'courseid' => $course ? $course->id : 0,
                 'coursefullname' => $course ? $course->fullname : '',
                 'grading' => $eval->value,
@@ -2238,9 +2242,11 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_get_all_competency_gradings_returns() {
         return new external_multiple_structure (new external_single_structure (array(
             'id' => new external_value (PARAM_INT, 'id of grading'),
-            'reviewerid' => new external_value (PARAM_INT, 'userid of teacher'),
-            'reviewerfullname' => new external_value (PARAM_TEXT, 'fullname of teacher'),
-            'reviewerprofileimageurl' => new external_value (PARAM_TEXT, 'profileimageurl of teacher'),
+            'reviewer' => new external_single_structure(array(
+                'userid' => new external_value (PARAM_INT, ''),
+                'fullname' => new external_value (PARAM_TEXT, ''),
+                'profileimageurl' => new external_value (PARAM_TEXT, ''),
+            ), 'reviewing teacher', VALUE_OPTIONAL),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
             'coursefullname' => new external_value (PARAM_TEXT, 'id of course'),
             'grading' => new external_value (PARAM_INT, 'grade for this element'),
@@ -7460,14 +7466,17 @@ class block_exacomp_external extends external_api {
                 $student = g::$DB->get_record('user', array(
                     'id' => $exampleAndItem->item->userid,
                 ));
-                $userpicture = new user_picture($student);
-                $userpicture->size = 1; // Size f1.
 
-                $exampleAndItem->item->owner = (object)[
-                    'userid' => $student->id,
-                    'fullname' => fullname($student),
-                    'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
-                ];
+                if ($student) {
+                    $userpicture = new user_picture($student);
+                    $userpicture->size = 1; // Size f1.
+
+                    $exampleAndItem->item->owner = (object)[
+                        'userid' => $student->id,
+                        'fullname' => fullname($student),
+                        'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
+                    ];
+                }
 
                 $exampleAndItem->item->solutiondescription = $exampleAndItem->item->intro;
             }
@@ -15246,6 +15255,23 @@ class block_exacomp_external extends external_api {
         $exampleAndItem->niveauid = 0;
         $exampleAndItem->timemodified = $item->timemodified;
 
+        if ($exampleAndItem->item) {
+            $student = g::$DB->get_record('user', array(
+                'id' => $exampleAndItem->item->userid,
+            ));
+
+            if ($student) {
+                $userpicture = new user_picture($student);
+                $userpicture->size = 1; // Size f1.
+
+                $exampleAndItem->item->owner = (object)[
+                    'userid' => $student->id,
+                    'fullname' => fullname($student),
+                    'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
+                ];
+            }
+        }
+
         $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
 
         return $exampleAndItem;
@@ -15310,11 +15336,11 @@ class block_exacomp_external extends external_api {
                 'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
                 'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
                 'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
-                // 'owner' => new external_single_structure(array(
-                //     'userid' => new external_value (PARAM_INT, ''),
-                //     'fullname' => new external_value (PARAM_TEXT, ''),
-                //     'profileimageurl' => new external_value (PARAM_TEXT, ''),
-                // )),
+                'owner' => new external_single_structure(array(
+                    'userid' => new external_value (PARAM_INT, ''),
+                    'fullname' => new external_value (PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                ), '', VALUE_OPTIONAL),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
                     'id' => new external_value (PARAM_INT, 'id'),
                     'filename' => new external_value (PARAM_TEXT, 'filename'),
