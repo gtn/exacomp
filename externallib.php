@@ -7836,6 +7836,8 @@ class block_exacomp_external extends external_api {
             'userid' => new external_value (PARAM_INT, 'id of user'),
             'courseid' => new external_value (PARAM_INT, 'id of course'),
             'subjectid' => new external_value (PARAM_INT, 'id of subject, if you only want one specific subject', VALUE_DEFAULT, null),
+            // name $select is borrowed from ms graph api
+            '$select' => new external_value (PARAM_TEXT, 'select extra fields', VALUE_DEFAULT, null),
         ));
     }
 
@@ -7846,13 +7848,14 @@ class block_exacomp_external extends external_api {
      * @ws-type-read
      * @return array of user courses
      */
-    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid, $subjectid = null) {
+    public static function diggrplus_get_all_subjects_for_course_as_tree($userid, $courseid, $subjectid = null, $select = null) {
         global $USER, $DB;
 
         static::validate_parameters(static::diggrplus_get_all_subjects_for_course_as_tree_parameters(), array(
             'userid' => $userid,
             'courseid' => $courseid,
             'subjectid' => $subjectid,
+            '$select' => $select,
         ));
 
         if (!$userid) {
@@ -7881,6 +7884,28 @@ class block_exacomp_external extends external_api {
         ]);
         $student = block_exacomp_get_user_information_by_course($student, $courseid);
 
+        if (!$select) {
+            $add_extra_fields = function($comptype, $obj, $retObj) {
+            };
+        } else {
+            $select = explode(',', $select);
+
+            if ($diff = array_diff($select, ['teacherevaluationcount'])) {
+                throw new \moodle_exception('unknown $select: ' . join(',', $diff));
+            }
+            $selectFields = array_flip($select);
+            $add_extra_fields = function($comptype, $obj, $retObj) use ($selectFields, $userid) {
+                if (isset($selectFields['teacherevaluationcount'])) {
+                    if ($comptype == BLOCK_EXACOMP_TYPE_SUBJECT) {
+                        return;
+                    }
+
+                    $compid = $obj->id;
+                    $retObj->teacherevaluationcount = g::$DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, 'COUNT(*)', ['compid' => $compid, 'comptype' => $comptype, 'userid' => $userid, 'role' => BLOCK_EXACOMP_ROLE_TEACHER]);
+                }
+            };
+        }
+
         foreach ($tree as $subject) {
             $elem_sub = new stdClass ();
             $elem_sub->id = $subject->id;
@@ -7890,6 +7915,7 @@ class block_exacomp_external extends external_api {
             $elem_sub->courseshortname = $course->shortname;
             $elem_sub->coursefullname = $course->fullname;
             $elem_sub->topics = array();
+            $add_extra_fields(BLOCK_EXACOMP_TYPE_SUBJECT, $subject, $elem_sub);
             foreach ($subject->topics as $topic) {
                 $elem_topic = new stdClass ();
                 $elem_topic->id = $topic->id;
@@ -7899,6 +7925,7 @@ class block_exacomp_external extends external_api {
                 $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                 $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
                 $elem_topic->studentevaluation = $student->topics->student[$topic->id];
+                $add_extra_fields(BLOCK_EXACOMP_TYPE_TOPICS, $topic, $elem_topic);
                 foreach ($topic->descriptors as $descriptor) {
                     $elem_desc = new stdClass ();
                     $elem_desc->id = $descriptor->id;
@@ -7909,6 +7936,7 @@ class block_exacomp_external extends external_api {
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                     $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
                     $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
+                    $add_extra_fields(BLOCK_EXACOMP_TYPE_DESC, $descriptor, $elem_desc);
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
@@ -7919,6 +7947,7 @@ class block_exacomp_external extends external_api {
                         $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
                         $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
                         $elem_child->studentevaluation = $student->competencies->student[$child->id];
+                        $add_extra_fields(BLOCK_EXACOMP_TYPE_DESC, $child, $elem_child);
                         foreach ($child->examples as $example) {
                             $elem_example = new stdClass ();
                             $elem_example->id = $example->id;
@@ -7928,6 +7957,7 @@ class block_exacomp_external extends external_api {
                             $elem_example->status = $getExampleStatus($example);
                             $elem_example->teacherevaluation = $student->examples->teacher[$example->id];
                             $elem_example->studentevaluation = $student->examples->student[$example->id];
+                            $add_extra_fields(BLOCK_EXACOMP_TYPE_EXAMPLE, $example, $elem_example);
                             //                            $elem_example->used = $example->used;
                             $elem_child->examples[] = $elem_example;
                         }
@@ -7944,6 +7974,7 @@ class block_exacomp_external extends external_api {
                         $elem_example->teacherevaluation = $student->examples->teacher[$example->id];
                         $elem_example->studentevaluation = $student->examples->student[$example->id];
                         $elem_example->taxonomies = $example->taxonomies;
+                        $add_extra_fields(BLOCK_EXACOMP_TYPE_EXAMPLE, $example, $elem_example);
                         //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
 
@@ -7983,6 +8014,7 @@ class block_exacomp_external extends external_api {
                 'used' => new external_value (PARAM_BOOL, 'if topic is used'),
                 'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                 'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
                 'descriptors' => new external_multiple_structure (new external_single_structure (array(
                     'id' => new external_value (PARAM_INT, 'id of descriptor'),
                     'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
@@ -7991,6 +8023,7 @@ class block_exacomp_external extends external_api {
                     'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
                     'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                     'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                    'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
                     'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
                         'id' => new external_value (PARAM_INT, 'id of example'),
                         'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
@@ -7999,6 +8032,7 @@ class block_exacomp_external extends external_api {
                         'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
                         'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                         'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                        'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
                         'examples' => new external_multiple_structure (new external_single_structure (array(
                             'id' => new external_value (PARAM_INT, 'id of example'),
                             'title' => new external_value (PARAM_TEXT, 'title of example'),
@@ -8007,6 +8041,7 @@ class block_exacomp_external extends external_api {
                             'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
                             'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                             'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                            'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
                         ))),
                     ))),
                     'examples' => new external_multiple_structure (new external_single_structure (array(
@@ -8017,6 +8052,7 @@ class block_exacomp_external extends external_api {
                         'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
                         'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
                         'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
+                        'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
                         'taxonomies' => new external_multiple_structure (new external_single_structure ([
                             'id' => new external_value (PARAM_INT, 'id'),
                             'title' => new external_value (PARAM_TEXT, 'name'),
