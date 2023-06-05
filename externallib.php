@@ -13520,6 +13520,8 @@ class block_exacomp_external extends external_api {
                         }
                     }
                 } else {
+                    // TODO: this should be removed, maybe was needed in old dakora/diggr
+
                     //Delete old files
                     $context = context_user::instance($USER->id);
                     $fs = get_file_storage();

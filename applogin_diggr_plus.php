@@ -535,6 +535,16 @@ $PAGE->set_pagelayout('embedded');
 
 $SESSION->wantsurl = $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?' . $_SERVER['QUERY_STRING'];
 
+// für cors im iframe ist ein extra redirect mit manueller Benutzerbestätigung notwendig
+// sonst werden die cookies nicht geladen bzw. können auch keine neuen cookies gesetzt werden
+$extra_iframe_redirect = optional_param('extra_iframe_redirect', '', PARAM_TEXT);
+if ($extra_iframe_redirect) {
+    echo $OUTPUT->header();
+    echo '<div style="margin: 30px;"><a href="'.str_replace('extra_iframe_redirect', 'extra_iframe_redirect_disabled', $_SERVER['REQUEST_URI']).'">Bitte hier klicken!</a></div>';
+    echo $OUTPUT->footer();
+    exit;
+}
+
 require_login(0, false, null, false, false);
 
 if (isguestuser()) {

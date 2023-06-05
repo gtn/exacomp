@@ -119,14 +119,26 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
         send_stored_file_as_pdf($file, $forcedownload, $options);
     }
 
+    // $as_image = optional_param('as_image', false, PARAM_TEXT);
+    // if ($as_image) {
+    //     send_stored_file_as_image($file, $forcedownload, $options);
+    // }
+
     send_stored_file($file, 0, 0, $forcedownload, $options);
     exit;
 }
 
 
 function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options) {
+    if ($file->get_mimetype() == 'application/pdf') {
+        // already a pdf
+        send_stored_file($file, null, 0, $forcedownload, $options);
+        exit;
+    }
+
     $info = $file->get_imageinfo();
     if (!$info) {
+        send_header_404();
         die('no image? (no image info)');
     }
 
@@ -182,6 +194,31 @@ function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options) {
         false, $options);
     exit;
 }
+
+
+/*
+function send_stored_file_as_image(\stored_file $file, $forcedownload, $options) {
+    $info = $file->get_imageinfo();
+    if ($info) {
+        // already a image
+        send_stored_file($file, null, 0, $forcedownload, $options);
+        exit;
+    }
+
+    if ($file->get_mimetype() == 'application/pdf') {
+        // convert to image
+
+        $converter = new \core_files\converter();
+        var_dump($converter->can_convert_storedfile_to($file, 'jpg'));
+        $conversion = $converter->start_conversion($file, 'jpg');
+        var_dump($conversion);
+        exit;
+    }
+
+    send_header_404();
+    die('can not convert to image');
+}
+*/
 
 
 function is_exacomp_active_in_course() {
