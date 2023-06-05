@@ -1900,12 +1900,12 @@ class data_importer extends data {
         }
 
         $file = tempnam($CFG->tempdir, "zip");
-        $handle = @fopen($url, 'r');
-        if (!$handle) {
+        $content = download_file_content($url);
+        if (!$content) {
             throw new import_exception("could not open url '$url'");
         }
 
-        file_put_contents($file, $handle);
+        file_put_contents($file, $content);
         $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
 
         @unlink($file);
