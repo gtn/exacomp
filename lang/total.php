@@ -373,6 +373,22 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm',
         'Begin time for the first unit in the schedule. Format hh:mm',
     ],
+	'settings_description_nurmoodleunddakora' => [
+        '<b>Nur Moodle und Dakora App</b>',
+        '<b>Only Moodle and Dakora App</b>',
+    ],
+	'settings_description_nurdakora' => [
+        '<b>Nur Dakora App</b>',
+        '<b>Only Dakora App</b>',
+    ],
+		'settings_description_nurdiggr' => [
+        '<b>Nur Diggr+ und elove App</b>',
+        '<b>Only Diggr+ and elove App</b>',
+    ],
+	'settings_description_nurdakoraplus' => [
+        '<b>Nur DakoraPlus App</b>',
+        '<b>Only DakoraPlus App</b>',
+    ],
     'settings_admin_scheme' => [
         'Vordefinierte Konfiguration',
         'Predefined configuration',
@@ -442,8 +458,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Enable App Login',
     ],
     'settings_applogin_enabled_description' => [
-        'Erlaubt den Login von Exabis Apps (Diggr+, usw.)',
-        'Allows the login from Exabis Apps (Diggr+, etc.)',
+        'Erlaubt den Login von Exabis Apps (Diggr+, Dakora, Dakora+, elove)',
+        'Allows the login from Exabis Apps (Diggr+, Dakora, Dakora+, elove)',
     ],
     'settings_setapp_enabled' => [
         'SET-App Funktionen aktivieren',
