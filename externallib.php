@@ -7925,7 +7925,7 @@ class block_exacomp_external extends external_api {
                 $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                 $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
                 $elem_topic->studentevaluation = $student->topics->student[$topic->id];
-                $add_extra_fields(BLOCK_EXACOMP_TYPE_TOPICS, $topic, $elem_topic);
+                $add_extra_fields(BLOCK_EXACOMP_TYPE_TOPIC, $topic, $elem_topic);
                 foreach ($topic->descriptors as $descriptor) {
                     $elem_desc = new stdClass ();
                     $elem_desc->id = $descriptor->id;
@@ -7936,7 +7936,7 @@ class block_exacomp_external extends external_api {
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                     $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
                     $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
-                    $add_extra_fields(BLOCK_EXACOMP_TYPE_DESC, $descriptor, $elem_desc);
+                    $add_extra_fields(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor, $elem_desc);
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
@@ -7947,7 +7947,7 @@ class block_exacomp_external extends external_api {
                         $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
                         $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
                         $elem_child->studentevaluation = $student->competencies->student[$child->id];
-                        $add_extra_fields(BLOCK_EXACOMP_TYPE_DESC, $child, $elem_child);
+                        $add_extra_fields(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child, $elem_child);
                         foreach ($child->examples as $example) {
                             $elem_example = new stdClass ();
                             $elem_example->id = $example->id;
