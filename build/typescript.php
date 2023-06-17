@@ -6,20 +6,20 @@ global $CFG;
 
 $servicesGroups = [
     'default' => [
-    __DIR__ . '/../db/services.php',
-    $CFG->dirroot . '/mod/quiz/db/services.php',
-    $CFG->dirroot . '/lib/db/services.php',
-    $CFG->dirroot . '/message/output/popup/db/services.php',
-        ],
+        __DIR__ . '/../db/services.php',
+        $CFG->dirroot . '/mod/quiz/db/services.php',
+        $CFG->dirroot . '/lib/db/services.php',
+        $CFG->dirroot . '/message/output/popup/db/services.php',
+    ],
     'exapdf' => [
         $CFG->dirroot . '/mod/assign/feedback/exapdf/db/services.php',
-    ]
+    ],
 ];
 
 $group = optional_param('group', '', PARAM_TEXT);
 if (!$group || empty($servicesGroups[$group])) {
     foreach ($servicesGroups as $key => $tmp) {
-        echo '<a href="'.$_SERVER['PHP_SELF'].'?group='.$key.'">'.$key.'</a><br/>';
+        echo '<a href="' . $_SERVER['PHP_SELF'] . '?group=' . $key . '">' . $key . '</a><br/>';
     }
     exit;
 } else {
@@ -212,9 +212,14 @@ $doku = $dokuHeader .
     "export type param_number = string | number | null;\n" .
     "\n" .
     $dokuInterfaces .
-    "export default abstract class MoodleWebserviceDefinitions {\n" .
-    "  abstract callWebservice<T = any>(wsfunction: string, payload: any): Promise<T>;\n" .
-    $doku .
+    "// Idea from: https://www.typescriptlang.org/docs/handbook/mixins.html\n" .
+    "type GConstructor<T = {}> = new (...args: any[]) => T;\n" .
+    "type WebserviceBase = GConstructor<{ callWebservice<T = any>(wsfunction: string, payload: any): Promise<T> }>;\n" .
+    "\n" .
+    "export default function WebserviceDefinitions<TBase extends WebserviceBase>(Base: TBase) {\n" .
+    "  return class Extended extends Base {\n" .
+    "  " . preg_replace('!^!m', '  ', trim($doku)) . "\n" .
+    "  }\n" .
     "}\n\n";
 
 echo '<pre>' . htmlspecialchars($doku);
