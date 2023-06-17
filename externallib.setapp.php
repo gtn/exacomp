@@ -100,7 +100,7 @@ class block_exacomp_external_setapp extends external_api {
      * @return array
      * @throws moodle_exception
      */
-    public static function diggrplus_v_create_or_update_student($courseid, $userid = 0, $firstname, $lastname, $ausserordentlich) {
+    public static function diggrplus_v_create_or_update_student($courseid, $userid, $firstname, $lastname, $ausserordentlich) {
         static::validate_parameters(static::diggrplus_v_create_or_update_student_parameters(), array(
             'courseid' => $courseid,
             'userid' => $userid,
