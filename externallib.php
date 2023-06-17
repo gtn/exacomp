@@ -2068,7 +2068,7 @@ class block_exacomp_external extends external_api {
     public static function diggrplus_grade_element($elementid, $type, $grading, $courseid, $userid, $role) {
         global $USER;
 
-        if (empty ($elementid) || is_null ($grading)) {
+        if (empty ($elementid) || is_null($grading)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
 
