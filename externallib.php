@@ -7884,6 +7884,8 @@ class block_exacomp_external extends external_api {
         ]);
         $student = block_exacomp_get_user_information_by_course($student, $courseid);
 
+        $isglobal = block_exacomp_get_settings_by_course($courseid)->isglobal && block_exacomp_is_dakora_teacher($USER->id);
+
         if (!$select) {
             $add_extra_fields = function($comptype, $obj, $retObj) {
             };
@@ -7894,14 +7896,12 @@ class block_exacomp_external extends external_api {
                 throw new \moodle_exception('unknown $select: ' . join(',', $diff));
             }
             $selectFields = array_flip($select);
-            $add_extra_fields = function($comptype, $obj, $retObj) use ($selectFields, $userid) {
+            $add_extra_fields = function($comptype, $obj, $retObj, $subject) use ($selectFields, $userid, $isglobal) {
                 if (isset($selectFields['teacherevaluationcount'])) {
-                    if ($comptype == BLOCK_EXACOMP_TYPE_SUBJECT) {
-                        return;
+                    if ($comptype != BLOCK_EXACOMP_TYPE_SUBJECT && $isglobal && $subject->isglobal) {
+                        $compid = $obj->id;
+                        $retObj->teacherevaluationcount = g::$DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, 'COUNT(*)', ['compid' => $compid, 'comptype' => $comptype, 'userid' => $userid, 'role' => BLOCK_EXACOMP_ROLE_TEACHER]);
                     }
-
-                    $compid = $obj->id;
-                    $retObj->teacherevaluationcount = g::$DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, 'COUNT(*)', ['compid' => $compid, 'comptype' => $comptype, 'userid' => $userid, 'role' => BLOCK_EXACOMP_ROLE_TEACHER]);
                 }
             };
         }
@@ -7915,7 +7915,7 @@ class block_exacomp_external extends external_api {
             $elem_sub->courseshortname = $course->shortname;
             $elem_sub->coursefullname = $course->fullname;
             $elem_sub->topics = array();
-            $add_extra_fields(BLOCK_EXACOMP_TYPE_SUBJECT, $subject, $elem_sub);
+            $add_extra_fields(BLOCK_EXACOMP_TYPE_SUBJECT, $subject, $elem_sub, $subject);
             foreach ($subject->topics as $topic) {
                 $elem_topic = new stdClass ();
                 $elem_topic->id = $topic->id;
@@ -7925,7 +7925,7 @@ class block_exacomp_external extends external_api {
                 $elem_topic->used = block_exacomp_is_topic_used($courseid, $topic, $userid);
                 $elem_topic->teacherevaluation = $student->topics->teacher[$topic->id];
                 $elem_topic->studentevaluation = $student->topics->student[$topic->id];
-                $add_extra_fields(BLOCK_EXACOMP_TYPE_TOPIC, $topic, $elem_topic);
+                $add_extra_fields(BLOCK_EXACOMP_TYPE_TOPIC, $topic, $elem_topic, $subject);
                 foreach ($topic->descriptors as $descriptor) {
                     $elem_desc = new stdClass ();
                     $elem_desc->id = $descriptor->id;
@@ -7936,7 +7936,7 @@ class block_exacomp_external extends external_api {
                     $elem_desc->used = block_exacomp_descriptor_used($courseid, $descriptor, $userid);
                     $elem_desc->teacherevaluation = $student->competencies->teacher[$descriptor->id];
                     $elem_desc->studentevaluation = $student->competencies->student[$descriptor->id];
-                    $add_extra_fields(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor, $elem_desc);
+                    $add_extra_fields(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor, $elem_desc, $subject);
                     foreach ($descriptor->children as $child) {
                         $elem_child = new stdClass ();
                         $elem_child->id = $child->id;
@@ -7947,7 +7947,7 @@ class block_exacomp_external extends external_api {
                         $elem_child->used = block_exacomp_descriptor_used($courseid, $child, $userid);
                         $elem_child->teacherevaluation = $student->competencies->teacher[$child->id];
                         $elem_child->studentevaluation = $student->competencies->student[$child->id];
-                        $add_extra_fields(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child, $elem_child);
+                        $add_extra_fields(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $child, $elem_child, $subject);
                         foreach ($child->examples as $example) {
                             $elem_example = new stdClass ();
                             $elem_example->id = $example->id;
@@ -7957,7 +7957,7 @@ class block_exacomp_external extends external_api {
                             $elem_example->status = $getExampleStatus($example);
                             $elem_example->teacherevaluation = $student->examples->teacher[$example->id];
                             $elem_example->studentevaluation = $student->examples->student[$example->id];
-                            $add_extra_fields(BLOCK_EXACOMP_TYPE_EXAMPLE, $example, $elem_example);
+                            $add_extra_fields(BLOCK_EXACOMP_TYPE_EXAMPLE, $example, $elem_example, $subject);
                             //                            $elem_example->used = $example->used;
                             $elem_child->examples[] = $elem_example;
                         }
@@ -7974,7 +7974,7 @@ class block_exacomp_external extends external_api {
                         $elem_example->teacherevaluation = $student->examples->teacher[$example->id];
                         $elem_example->studentevaluation = $student->examples->student[$example->id];
                         $elem_example->taxonomies = $example->taxonomies;
-                        $add_extra_fields(BLOCK_EXACOMP_TYPE_EXAMPLE, $example, $elem_example);
+                        $add_extra_fields(BLOCK_EXACOMP_TYPE_EXAMPLE, $example, $elem_example, $subject);
                         //                        $elem_example->used = $example->used;
                         $elem_desc->examples[] = $elem_example;
 
