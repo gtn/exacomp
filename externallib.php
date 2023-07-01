@@ -14752,6 +14752,9 @@ class block_exacomp_external extends external_api {
         ));
         global $DB;
         block_exacomp_require_teacher($courseid);
+
+        $annotationtext = trim($annotationtext);
+
         $exampleannotation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, array('exampleid' => $exampleid, 'courseid' => $courseid));
         if ($exampleannotation) {
             $exampleannotation->annotationtext = $annotationtext;
@@ -15135,6 +15138,14 @@ class block_exacomp_external extends external_api {
         $exampleAndItem->niveauid = 0;
         $exampleAndItem->timemodified = $item->timemodified;
 
+        if ($exampleAndItem->example) {
+            $example = $exampleAndItem->example;
+
+            if (!property_exists($example, "annotation")) {
+                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+            }
+        }
+
         $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
 
         return $exampleAndItem;
@@ -15163,7 +15174,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
-                // 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course', VALUE_OPTIONAL),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
                 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
                 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
@@ -15310,6 +15321,14 @@ class block_exacomp_external extends external_api {
             }
         }
 
+        if ($exampleAndItem->example) {
+            $example = $exampleAndItem->example;
+
+            if (!property_exists($example, "annotation")) {
+                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+            }
+        }
+
         $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
 
         return $exampleAndItem;
@@ -15338,7 +15357,7 @@ class block_exacomp_external extends external_api {
                 'id' => new external_value (PARAM_INT, 'id of example'),
                 'title' => new external_value (PARAM_TEXT, 'title of example'),
                 'description' => new external_value (PARAM_TEXT, 'description of example'),
-                // 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course', VALUE_OPTIONAL),
+                'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
                 //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
                 //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
                 'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
