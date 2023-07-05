@@ -7101,7 +7101,7 @@ function block_exacomp_get_access_for_shared_view_for_item($item, $viewerid) {
 
     if ($studentid == $viewerid) {
         // view my own item
-        $access = "portfolio/id/" . $studentid . "&itemid=" . $item->id;
+        $access = "portfolio/id/" . $studentid;
     } else {
         // view sb elses item, find a suitable view
         $sql = "SELECT viewblock.*
@@ -7113,7 +7113,7 @@ function block_exacomp_get_access_for_shared_view_for_item($item, $viewerid) {
             return null;
         }
 
-        $access = "view/id/" . $studentid . "-" . $view->viewid . "&itemid=" . $item->id;
+        $access = "view/id/" . $studentid . "-" . $view->viewid;
     }
 
     return $access;
