@@ -14691,17 +14691,29 @@ class block_exacomp_external extends external_api {
         global $CFG;
         static::validate_parameters(static::diggrplus_get_config_parameters(), array());
 
-        $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+        $info_block_exacomp = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
         $info_block_enrolcode = core_plugin_manager::instance()->get_plugin_info('block_enrolcode');
         $msteams_client_id = get_config("exacomp", 'msteams_client_id');
 
+        $plugin_names = ['block_exacomp', 'mod_hvp'];
+        $plugins = [];
+        foreach ($plugin_names as $plugin_name) {
+            $info = core_plugin_manager::instance()->get_plugin_info($plugin_name);
+
+            $plugins[] = [
+                'name' => $plugin_name,
+                'versiondb' =>$info->versiondb,
+            ];
+        }
+
         return array(
-            'exacompversion' => $info->versiondb,
+            'exacompversion' => $info_block_exacomp->versiondb,
             'moodleversion' => $CFG->version,
             'msteams_import_enabled' => !!trim($msteams_client_id),
             'msteams_azure_app_client_id' => $msteams_client_id,
             'enrolcode_enabled' => !!$info_block_enrolcode,
             'example_upload_global' => get_config('exacomp', 'example_upload_global'),
+            'plugins' => $plugins,
         );
     }
 
@@ -14718,6 +14730,10 @@ class block_exacomp_external extends external_api {
             'msteams_azure_app_client_id' => new external_value (PARAM_TEXT, ''),
             'enrolcode_enabled' => new external_value (PARAM_BOOL, ''),
             'example_upload_global' => new external_value (PARAM_BOOL, ''),
+            'plugins' => new external_multiple_structure (new external_single_structure (array(
+                'name' => new external_value (PARAM_TEXT),
+                'versiondb' => new external_value (PARAM_FLOAT, '', VALUE_OPTIONAL),
+            ))),
         ));
     }
 
