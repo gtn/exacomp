@@ -15069,6 +15069,25 @@ class block_exacomp_external extends external_api {
         ));
     }
 
+    protected static function get_example_item($userid, $exampleid) {
+        global $DB;
+
+        $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
+              FROM {block_exacompexamples} d
+                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
+                JOIN {block_exaportitem} i ON ie.itemid = i.id
+              WHERE i.userid = :userid
+                AND d.id = :compid
+                AND ie.competence_type = :comptype
+              ORDER BY ie.timecreated DESC';
+        $params["userid"] = $userid;
+        $params["compid"] = $exampleid;
+        $params["comptype"] = BLOCK_EXACOMP_TYPE_EXAMPLE;
+        $item = current($DB->get_records_sql($sql, $params));
+
+        return $item;
+    }
+
     /**
      * Returns description of method parameters
      *
@@ -15100,18 +15119,7 @@ class block_exacomp_external extends external_api {
         $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
         if (!$item) {
             // hack daniel, freie materialien haben keine deskriptoren, darum liefert block_exacomp_get_items_for_competence keine werte
-            $sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue
-              FROM {block_exacompexamples} d
-                JOIN {' . BLOCK_EXACOMP_DB_ITEM_MM . '} ie ON ie.exacomp_record_id = d.id
-                JOIN {block_exaportitem} i ON ie.itemid = i.id
-              WHERE i.userid = :userid
-                AND d.id = :compid
-                AND ie.competence_type = :comptype
-              ORDER BY ie.timecreated DESC';
-            $params["userid"] = $studentid;
-            $params["compid"] = $example->id;
-            $params["comptype"] = BLOCK_EXACOMP_TYPE_EXAMPLE;
-            $item = current($DB->get_records_sql($sql, $params));
+            $item = static::get_example_item($studentid, $example->id);
         }
         if ($item) {
             static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
@@ -15281,7 +15289,13 @@ class block_exacomp_external extends external_api {
         $example = static::get_example_by_id($exampleid, $courseid);
 
         $item = current(block_exacomp_get_items_for_competence($studentid, $example->id, BLOCK_EXACOMP_TYPE_EXAMPLE));
-        static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
+        if (!$item) {
+            // hack daniel, freie materialien haben keine deskriptoren, darum liefert block_exacomp_get_items_for_competence keine werte
+            $item = static::get_example_item($studentid, $example->id);
+        }
+        if ($item) {
+            static::block_exacomp_get_item_details($item, $studentid, static::wstoken());
+        }
 
         $exampleAndItem = new stdClass();
         $exampleAndItem->courseid = $item->courseid ?: $courseid;
