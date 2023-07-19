@@ -765,6 +765,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.',
         'When all child examples have been graded, the parent material should be assessed automatically.',
     ],
+    'settings_assessment_verbose_lowerisbetter' => [
+        'Niedriger Wert ist besser',
+        'Lower value is better',
+    ],
+    'settings_assessment_verbose_lowerisbetter_description' => [
+        'Je niedriger der Wert der Beurteilung umso besser.',
+        'The lower the Assessment, the better.',
+    ],
 
     // === Unit Tests ===
     'unittest_string' => [

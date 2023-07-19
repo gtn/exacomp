@@ -116,9 +116,9 @@ $string['settings_scheduleunits_description'] = 'Anzahl der Einheiten im Wochenp
 $string['settings_schedulebegin'] = 'Beginn der Einheiten';
 $string['settings_schedulebegin_description'] = 'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm';
 $string['settings_description_nurmoodleunddakora'] = '<b>Nur Moodle und Dakora App</b>';
-$string['settings_description_nurdakoraplus'] = '<b>nur DakoraPlus App</b>';
-$string['settings_description_nurdakora'] = '<b>nur Dakora App</b>';
+$string['settings_description_nurdakora'] = '<b>Nur Dakora App</b>';
 $string['settings_description_nurdiggr'] = '<b>Nur Diggr+ und elove App</b>';
+$string['settings_description_nurdakoraplus'] = '<b>Nur DakoraPlus App</b>';
 $string['settings_admin_scheme'] = 'Vordefinierte Konfiguration';
 $string['settings_admin_scheme_description'] = 'Beurteilungen können auf unterschiedlichem Niveau erfolgen.';
 $string['settings_admin_scheme_none'] = 'keine Niveaus';
@@ -212,6 +212,8 @@ $string['settings_disable_js_editactivities'] = 'JS für die Zuteilung von Moodl
 $string['settings_disable_js_editactivities_description'] = 'Aktivieren, falls sich die Seite "Moodle-Aktivitäten zuteilen"  zu langsam aufbaut.';
 $string['settings_example_autograding'] = 'übergeordnete Materialien automatische Beurteilung';
 $string['settings_example_autograding_description'] = 'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
+$string['settings_assessment_verbose_lowerisbetter'] = 'Niedriger Wert ist besser';
+$string['settings_assessment_verbose_lowerisbetter_description'] = 'Je niedriger der Wert der Beurteilung umso besser.';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';

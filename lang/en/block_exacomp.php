@@ -116,9 +116,9 @@ $string['settings_scheduleunits_description'] = 'Amount of units in the schedule
 $string['settings_schedulebegin'] = 'Begin of schedule';
 $string['settings_schedulebegin_description'] = 'Begin time for the first unit in the schedule. Format hh:mm';
 $string['settings_description_nurmoodleunddakora'] = '<b>Only Moodle and Dakora App</b>';
-$string['settings_description_nurdakoraplus'] = '<b>Only DakoraPlus App</b>';
 $string['settings_description_nurdakora'] = '<b>Only Dakora App</b>';
 $string['settings_description_nurdiggr'] = '<b>Only Diggr+ and elove App</b>';
+$string['settings_description_nurdakoraplus'] = '<b>Only DakoraPlus App</b>';
 $string['settings_admin_scheme'] = 'Predefined configuration';
 $string['settings_admin_scheme_description'] = 'Grading can be done on different difficulty levels.';
 $string['settings_admin_scheme_none'] = 'no global difficulty levels';
@@ -212,6 +212,8 @@ $string['settings_disable_js_editactivities'] = 'Disable JS in students selectio
 $string['settings_disable_js_editactivities_description'] = 'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem';
 $string['settings_example_autograding'] = 'automatic assessment of parent materials';
 $string['settings_example_autograding_description'] = 'When all child examples have been graded, the parent material should be assessed automatically.';
+$string['settings_assessment_verbose_lowerisbetter'] = 'Lower value is better';
+$string['settings_assessment_verbose_lowerisbetter_description'] = 'The lower the Assessment, the better.';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
