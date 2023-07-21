@@ -135,7 +135,7 @@ namespace block_exacomp\common {
             }
         }
 
-        public function addChild(string $name, ?string $value = null, ?string $namespace = null): ?\SimpleXMLElement {
+        public function addChild(mixed $name, ?string $value = null, ?string $namespace = null): ?\SimpleXMLElement {
             if ($name instanceof SimpleXMLElement) {
                 $newNode = $name;
                 $node = dom_import_simplexml($this);
