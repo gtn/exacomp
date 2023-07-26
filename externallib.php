@@ -11093,6 +11093,7 @@ class block_exacomp_external extends external_api {
             'show_overview' => block_exacomp_get_config_dakora_show_overview(),
             'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
             'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES, null, 'source', 'id, title, source'),
+			'assessment_verbose_lowerisbetter' => block_exacomp_get_config_assessment_verbose_lowerisbetter(),
         );
 
         foreach ($assessment_configurations as $id => $configuration) {
@@ -11145,6 +11146,7 @@ class block_exacomp_external extends external_api {
                 'show_overview' => block_exacomp_get_config_dakora_show_overview(),
                 'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
                 'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES, null, 'source', 'id, title, source'),
+				'assessment_verbose_lowerisbetter' => block_exacomp_get_config_assessment_verbose_lowerisbetter(),
             );
         }
 
@@ -11280,6 +11282,7 @@ class block_exacomp_external extends external_api {
                     'title' => new external_value (PARAM_TEXT, 'name'),
                     'source' => new external_value (PARAM_TEXT, 'source'),
                 ]), 'values'),
+				'assessment_verbose_lowerisbetter' => new external_value (PARAM_BOOL, 'flag if "The lower the Assessment, the better" is active'),
             ))),
         ));
     }
