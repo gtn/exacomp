@@ -37,7 +37,7 @@ function block_exacomp_load_service($serviceshortname) {
     // Get an existing token or create a new one.
     $context = context_system::instance();
     // a part core code to prevent erorr message to own
-    if (!is_siteadmin($USER) && has_capability('moodle/webservice:createtoken', $context)) {
+    if (has_capability('moodle/webservice:createtoken', $context)) {
         $token = external_generate_token_for_current_user($service);
     } else {
         throw new moodle_exception('diggrapp_cannotcreatetoken', 'block_exacomp');
@@ -200,7 +200,7 @@ function block_exacomp_send_login_result($user, $login_request_data) {
 }
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
+$PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php', $_GET);
 
 $action = optional_param('action', '', PARAM_TEXT);
 
@@ -570,7 +570,17 @@ try {
 } catch (Exception $e) {
     block_exacomp_logout();
 
-    throw $e;
+    echo $OUTPUT->header();
+
+    echo '<div class="login-container" style="max-width: 600px; padding: 60px 30px; text-align: center; margin: 35px auto;">';
+    echo nl2br(block_exacomp_trans(["de:Der Login für externe Apps wurde vom Administrator nicht konfiguriert.\n\nTechnische Info:", "en:The Login for external Apps is not configured.\n\nTechnical Details:"]));
+    echo ' '.$e->getMessage();
+    echo '</br><br/>';
+    echo '<a href="'.$PAGE->url.'">'.block_exacomp_trans(["de:Login erneut versuchen", "en:Retry Login"]).'</a>';
+    echo '</div>';
+
+    echo $OUTPUT->footer();
+    exit;
 }
 
 // hack add moodle sesskey too
