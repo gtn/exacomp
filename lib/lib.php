@@ -14706,7 +14706,7 @@ function block_exacomp_get_human_readable_item_status($statusId) {
 
 function block_exacomp_clear_exacomp_weekly_schedule() {
     // get all entries in schedule, check if the start and end date are in the last week and there is no submission
-    // if yes, delete the entry
+    // if yes, remove entry from schedule and move it back to planungsspeicher
     // submission: for examples there must be an item in the exacompitem_mm table with the exampleid and an entry in the exaportitem table with the userid of the student
     global $DB;
     $lastweek = time() - 7 * 24 * 60 * 60;
