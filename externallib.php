@@ -12496,7 +12496,7 @@ class block_exacomp_external extends external_api {
             // Adding annotationinformation    TODO: Again: What IF the user has the same subject in two different courses.. which courseid to take?
             // check if it is already there (done for "all" and "subject" so save computation time
             if (!property_exists($example, "annotation")) {
-                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
 
             // Adding the evaluation information if it did not get queried before when getting the examples
@@ -15188,7 +15188,7 @@ class block_exacomp_external extends external_api {
             $example = $exampleAndItem->example;
 
             if (!property_exists($example, "annotation")) {
-                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
         }
 
@@ -15377,7 +15377,7 @@ class block_exacomp_external extends external_api {
             $example = $exampleAndItem->example;
 
             if (!property_exists($example, "annotation")) {
-                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $example->courseid));
+                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
         }
 
