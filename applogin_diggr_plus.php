@@ -121,7 +121,7 @@ function block_exacomp_login_successfull($login_request_data) {
 function block_exacomp_is_return_uri_allowed($return_uri) {
     global $CFG;
 
-    $allowed_redirect_uris = [$CFG->wwwroot, 'diggr-plus.at', 'www.diggr-plus.at'];
+    $allowed_redirect_uris = [$CFG->wwwroot, 'diggr-plus.at', 'www.diggr-plus.at', 'dakoraplus.eu'];
     $additional_allowed_redirect_uris = trim(get_config('exacomp', 'applogin_redirect_urls'));
     if ($additional_allowed_redirect_uris) {
         $additional_allowed_redirect_uris = preg_split('![\s\r\n]+!', $additional_allowed_redirect_uris);
@@ -131,14 +131,20 @@ function block_exacomp_is_return_uri_allowed($return_uri) {
     $return_uri_allowed = false;
     foreach ($allowed_redirect_uris as $allowed_redirect_uri) {
         // add protocol, if needed
-        if (strpos($allowed_redirect_uri, '://') === false) {
+        if (!preg_match('!^[a-z]+://!i', $allowed_redirect_uri)) {
             $allowed_redirect_uri = 'https://' . $allowed_redirect_uri;
         }
-        // check url, also allow "www." prefix
-        $regexp = '!^(www\\.)?' . preg_quote($allowed_redirect_uri, '!') . '(/|$)!';
+
+        $regexp = preg_quote($allowed_redirect_uri, '!');
+
         // allow * as wildcard
         $regexp = str_replace('\\*', '.*', $regexp);
-        if (preg_match($regexp, $return_uri)) {
+
+        // also allow "www." prefix
+        $regexp = preg_replace('!^((http|https)[\\\\]?\://)!i', '$1(www\\.)?', $regexp);
+
+        $regexp = "^".rtrim($regexp, '/').'(/.*)?$';
+        if (preg_match("!{$regexp}!", $return_uri)) {
             $return_uri_allowed = true;
             break;
         }
