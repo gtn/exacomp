@@ -1,3 +1,6 @@
+### next ###
+* always allow login on dakoraplus.eu
+
 ### v4.6.7 (2023091700) ###
 * code cleanup
 
