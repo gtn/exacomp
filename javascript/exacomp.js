@@ -667,10 +667,10 @@ var formunsaved = false;
 
     $(document).ready(function () {
       $('.selectallornone').on('click', function () {
-        var selectall = $(this).parent();
-        $(".schooltype:checkbox").each(function () {
-          if (selectall.parent().next().get(0) == $(this).parent().parent().get(0)) {
-            if ($(this).eq(0).is(':checked')) {
+        var val = $("input:checkbox").get(1).checked;
+        $("input:checkbox").each(function () {
+          if($(this).attr('name').substring(0,4) == 'data'){
+            if (val) {
               $(this).prop('checked', false);
             } else {
               $(this).prop('checked', true);
@@ -678,6 +678,23 @@ var formunsaved = false;
           }
         });
       });
+    });
+
+    $(document).on('click', '.schooltype', function(event){
+      event.preventDefault();
+      var i = $(this).children().get(0);
+      var hidden = $(this).next().get(0);
+      console.log(hidden);
+      if(i.classList.contains('fa-eye')){
+        i.classList.remove('fa-eye');
+        i.classList.add('fa-eye-slash');
+        hidden.value = 1;
+      } else {
+        i.classList.add('fa-eye');
+        i.classList.remove('fa-eye-slash');
+        hidden.value = 0;
+      }
+      
     });
 
     // init

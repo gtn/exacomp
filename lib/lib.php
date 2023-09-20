@@ -3509,14 +3509,12 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
     block_exacomp_clean_course_topics($values, $courseid);
 }
 
-function block_exacomp_set_schooltype_hidden($values){
+function block_exacomp_set_schooltype_hidden($value){
     global $DB;
     foreach($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs){
         $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>0));
-        if($values != null) {
-            if(in_array($rs->id, $values)){
-                $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>1));
-            }
+        if($value[$rs->id] != null) {
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>$value[$rs->id]));
         }
     }
 }

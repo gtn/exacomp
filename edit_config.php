@@ -61,13 +61,8 @@ if ($fromimport == 1) {
 // Falls Formular abgesendet, speichern
 if (isset ($action) && $action == 'save') {
     require_sesskey();
-    $values = optional_param_array('data', array(), PARAM_INT);
-    $stypes = block_exacomp\param::optional_array('schooltypes', [PARAM_INT]);
-    foreach($stypes as $msg){
-        echo "<script>alert('$msg')</script>";
-    }
-    block_exacomp_set_mdltype($values);
-    block_exacomp_set_schooltype_hidden($stypes);
+    block_exacomp_set_mdltype(optional_param_array('data', array(), PARAM_INT));
+    block_exacomp_set_schooltype_hidden(optional_param_array('hide', array(), PARAM_INT));
 
     if (!isset ($_POST['data'])) {
         $headertext = block_exacomp_get_string('tick_some');

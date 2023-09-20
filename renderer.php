@@ -4431,6 +4431,21 @@ class block_exacomp_renderer extends plugin_renderer_base
 
     }
 
+    public function visibility_icon_schooltype($visible, $id)
+    {
+        $value = -1;
+        if ($visible) {
+            $icon = $this->pix_icon("i/hide", block_exacomp_get_string("hide"));
+            $value = 0;
+        } else {
+            $icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
+            $value = 1;
+        }
+      
+        return html_writer::link('',$icon, array('class'=>'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
+    }
+
+
     public function visibility_icon_example($visible, $exampleid)
     {
         if ($visible) {
@@ -4869,9 +4884,11 @@ class block_exacomp_renderer extends plugin_renderer_base
                 }
 
                 if ($schooltypestruct->schooltype->hidden == 1) {
-                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('class'=>'schooltype' ,'type' => 'checkbox', 'name' => 'schooltypes[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id, 'checked' => 'checked'));
+                    $cell->text .= " " . $this->visibility_icon_schooltype(false, $schooltypestruct->schooltype->id);
+                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 1, 'checked' => 'checked'));
                 } else {
-                    $cell->text .= " hidden: " . html_writer::empty_tag('input', array('class'=>'schooltype', 'type' => 'checkbox', 'name' => 'schooltypes[' . $levelstruct->level->id . ']', 'value' => $levelstruct->level->id));
+                    $cell->text .= " " . $this->visibility_icon_schooltype(true, $schooltypestruct->schooltype->id);
+                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 0));
                 }
 
                 $row->cells[] = $cell;
