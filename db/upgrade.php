@@ -1621,7 +1621,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     }
 
     function upgrade_block_exacomp_2015072102_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true,
-                                                                    $showonlyvisible = false) {
+        $showonlyvisible = false) {
         global $DB;
 
         if (!$DB->record_exists(BLOCK_EXACOMP_DB_DESCRIPTORS, array("parentid" => $parent->id))) {
@@ -2129,7 +2129,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }*/
 
         function upgrade_block_exacomp_2015082000_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true,
-                                                                              $showonlyvisible = false) {
+            $showonlyvisible = false) {
             global $DB, $COURSE;
 
             if ($courseid == null) {
@@ -2187,7 +2187,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
 
         function upgrade_block_exacomp_2015072102_block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true,
-                                                                                            $showonlyvisible = false) {
+            $showonlyvisible = false) {
             global $DB, $COURSE;
 
             if ($courseid == null) {
