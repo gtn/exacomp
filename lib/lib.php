@@ -519,9 +519,9 @@ function block_exacomp_get_assessment_points_limit($onlyGlobal = true, $courseid
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int) $configurations[$assessment_config]["assessment_points_limit"];
+        return (int)$configurations[$assessment_config]["assessment_points_limit"];
     } else {
-        return (int) get_config('exacomp', 'assessment_points_limit');
+        return (int)get_config('exacomp', 'assessment_points_limit');
     }
 }
 
@@ -544,7 +544,7 @@ function block_exacomp_get_assessment_grade_limit($courseid = 0) {
         $value = get_config('exacomp', 'assessment_grade_limit');
     }
 
-    return (int) $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_grade_limit');
 }
 
@@ -628,9 +628,9 @@ function block_exacomp_get_assessment_points_negative_threshold($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int) $configurations[$assessment_config]["assessment_points_negativ"];
+        return (int)$configurations[$assessment_config]["assessment_points_negativ"];
     } else {
-        return (int) get_config('exacomp', 'assessment_points_negativ');
+        return (int)get_config('exacomp', 'assessment_points_negativ');
     }
 }
 
@@ -642,9 +642,9 @@ function block_exacomp_get_assessment_grade_negative_threshold($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int) $configurations[$assessment_config]["assessment_grade_negativ"];
+        return (int)$configurations[$assessment_config]["assessment_grade_negativ"];
     } else {
-        return (int) get_config('exacomp', 'assessment_grade_negativ');
+        return (int)get_config('exacomp', 'assessment_grade_negativ');
     }
 
 }
@@ -657,9 +657,9 @@ function block_exacomp_get_assessment_verbose_negative_threshold($courseid = 0) 
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        return (int) $configurations[$assessment_config]["assessment_verbose_negative"];
+        return (int)$configurations[$assessment_config]["assessment_verbose_negative"];
     } else {
-        return (int) get_config('exacomp', 'assessment_verbose_negative');
+        return (int)get_config('exacomp', 'assessment_verbose_negative');
     }
 
 }
@@ -759,9 +759,9 @@ function block_exacomp_get_assessment_example_scheme($courseid = 0) {
     $assessment_config = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $courseid]);
     if ($assessment_config != 0) {
         $configurations = block_exacomp_get_assessment_configurations();
-        $value = (int) $configurations[$assessment_config]["assessment_example_scheme"];
+        $value = (int)$configurations[$assessment_config]["assessment_example_scheme"];
     } else {
-        $value = (int) get_config('exacomp', 'assessment_example_scheme');
+        $value = (int)get_config('exacomp', 'assessment_example_scheme');
     }
 
     return $value;
@@ -829,7 +829,7 @@ function block_exacomp_get_assessment_childcomp_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_childcomp_scheme');
     }
 
-    return (int) $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_childcomp_scheme');
 }
 
@@ -896,7 +896,7 @@ function block_exacomp_get_assessment_comp_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_comp_scheme');
     }
 
-    return (int) $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_comp_scheme');
 }
 
@@ -964,7 +964,7 @@ function block_exacomp_get_assessment_topic_scheme($courseid = 0) {
         $value = get_config('exacomp', 'assessment_topic_scheme');
     }
 
-    return (int) $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_topic_scheme');
 }
 
@@ -1031,7 +1031,7 @@ function block_exacomp_get_assessment_subject_scheme($courseid = 0) {
     } else {
         $value = get_config('exacomp', 'assessment_subject_scheme');
     }
-    return (int) $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_subject_scheme');
 }
 
@@ -1096,7 +1096,7 @@ function block_exacomp_get_assessment_theme_scheme($courseid = 0) {
     } else {
         $value = get_config('exacomp', 'assessment_theme_scheme');
     }
-    return (int) $value;
+    return (int)$value;
     //return get_config('exacomp', 'assessment_theme_scheme');
 }
 
@@ -1498,7 +1498,7 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
 			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, s.hidden
 			FROM {' . BLOCK_EXACOMP_DB_SCHOOLTYPES . '} s
 			JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} m ON m.stid = s.id
-			JOIN {' . BLOCK_EXACOMP_DB_EDULEVELS .'} e ON s.elid = e.id AND m.courseid = ?
+			JOIN {' . BLOCK_EXACOMP_DB_EDULEVELS . '} e ON s.elid = e.id AND m.courseid = ?
 			ORDER BY s.sorting, s.title
 			', array($courseid));
 }
@@ -1694,7 +1694,7 @@ function block_exacomp_get_topics_by_descriptor($descriptorid) {
  * @throws \block_exacomp\moodle_exception
  */
 function block_exacomp_sort_items(&$items, $sortings) {
-    $sortings = (array) $sortings;
+    $sortings = (array)$sortings;
 
     if (is_array($items)) {
         uasort($items, function($a, $b) use ($sortings) {
@@ -3226,7 +3226,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
                     new tabobject('tab_teacher_settings_activitiestodescriptors', new moodle_url('/blocks/exacomp/activities_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_activitiestodescriptors"), null,
                         true);
             }
-            if(intval($CFG->version) >= 2022030300){
+            if (intval($CFG->version) >= 2022030300) {
                 $settings_subtree[] =
                     new tabobject('tab_teacher_settings_questiontodescriptors', new moodle_url('/blocks/exacomp/question_to_descriptors.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_questiontodescriptors"), null, true);
             }
@@ -3509,12 +3509,12 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
     block_exacomp_clean_course_topics($values, $courseid);
 }
 
-function block_exacomp_set_schooltype_hidden($value){
+function block_exacomp_set_schooltype_hidden($value) {
     global $DB;
-    foreach($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs){
-        $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>0));
-        if($value[$rs->id] != null) {
-            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>$value[$rs->id]));
+    foreach ($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs) {
+        $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "hidden" => 0));
+        if ($value[$rs->id] != null) {
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "hidden" => $value[$rs->id]));
         }
     }
 }
@@ -3864,7 +3864,7 @@ function block_exacomp_get_user_badges($courseid, $userid) {
     //$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
     $badges = badges_get_badges(BADGE_TYPE_COURSE);
 
-    $result = (object) array(
+    $result = (object)array(
         'issued' => array(),
         'pending' => array(),
     );
@@ -5051,7 +5051,7 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
     foreach ($descriptorsData as $activityid => $descriptors) {
         $relatedDescriptors = array_filter($descriptors);
         $relatedDescriptors = array_keys($relatedDescriptors);
-        if(!empty($relatedDescriptors)){ // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
+        if (!empty($relatedDescriptors)) { // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
             block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
         }
     }
@@ -5118,7 +5118,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
         //                'example_icon' => $example_icons
         //            );
         //        }else{
-        $newExample = (object) array(
+        $newExample = (object)array(
             'title' => $module->name,
             'courseid' => $courseid,
             'activityid' => $activityid,
@@ -5156,7 +5156,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
     $DB->delete_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleId));
     // insert new relations to descriptors
     foreach ($descriptors as $descriptorid) {
-        $newRelation = (object) array(
+        $newRelation = (object)array(
             'exampid' => $exampleId,
             'descrid' => $descriptorid,
         );
@@ -8641,7 +8641,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
                 }
             }
         }
-        if ($url = block_exacomp_get_file_url((object) array('id' => $example->exampleid), 'example_task')) {
+        if ($url = block_exacomp_get_file_url((object)array('id' => $example->exampleid), 'example_task')) {
             $example_array['task'] = html_writer::link($url, $output->preview_icon(), array("target" => "_blank"));
         } else if (isset($example->externalurl)) {
             $example_array['externalurl'] = html_writer::link(str_replace('&amp;', '&', $example->externalurl), $output->preview_icon(), array("target" => "_blank"));
@@ -9143,7 +9143,7 @@ function block_exacomp_get_items_for_competence($userid, $compid = -1, $comptype
             $userpicture = new user_picture($student);
             $userpicture->size = 1; // Size f1.
 
-            $item->collaborators[] = (object) [
+            $item->collaborators[] = (object)[
                 'userid' => $student->id,
                 'fullname' => fullname($student),
                 'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
@@ -9258,7 +9258,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
     require_once($CFG->dirroot . '/message/lib.php');
 
     //if ((float)$CFG->version >= 2018120300){ //bigger than 3.6
-    if ((float) $CFG->version >= 2016102700) { //bigger than 3.2dev (Build: 20161027)
+    if ((float)$CFG->version >= 2016102700) { //bigger than 3.2dev (Build: 20161027)
         $eventdata = new core\message\message(); // works but is it inteded like that? RW TODO
     } else {
         $eventdata = new stdClass ();
@@ -9544,7 +9544,7 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
 
     if (is_string($additionalinfo)) {
         // force additional info to be stored with a dot as decimal mark
-        $additionalinfo = (float) str_replace(",", ".", $additionalinfo);
+        $additionalinfo = (float)str_replace(",", ".", $additionalinfo);
     }
 
     switch (block_exacomp_additional_grading($comptype, $courseid)) {
@@ -9759,7 +9759,7 @@ function block_exacomp_course_has_examples($courseid) {
 		JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
 		JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
 		WHERE ct.courseid = ?";
-    return (bool) g::$DB->get_field_sql($sql, array($courseid));
+    return (bool)g::$DB->get_field_sql($sql, array($courseid));
 }
 
 /**
@@ -10120,7 +10120,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
  * @return object
  */
 function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic, $crosssubj = null) {
-    $data = (object) [];
+    $data = (object)[];
     $data->niveaus = array();
     $data->span = @$topic->span ? $topic->span : 0;
 
@@ -10366,9 +10366,9 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
             }
             $cellContent->show = $element->show;
             $cellContent->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
-            $cellContent->timestamp = (int) $element->timestamp;
+            $cellContent->timestamp = (int)$element->timestamp;
 
-            $cellContent->gradingisold = (bool) $element->gradingisold;
+            $cellContent->gradingisold = (bool)$element->gradingisold;
 
             if (in_array($niveau, $spanning_niveaus)) {
                 $cellContent->span = $spanning_colspan;
@@ -10406,7 +10406,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
             $topic_eval->topicid = $rowcontent->topic_id;
             $topic_eval->span = 0;
             $topic_eval->visible = $rowcontent->visible;
-            $topic_eval->timestamp = (int) $rowcontent->timestamp;
+            $topic_eval->timestamp = (int)$rowcontent->timestamp;
             $content_row->columns[$current_idx] = $topic_eval;
         }
 
@@ -11039,7 +11039,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
     }
     return array(
         'descriptor_evaluation' => $descriptorgradings,
-        'average_descriptor_evaluations' => $averagedescriptorgradings // we need to get average value for niveau (topic has many descriptors)
+        'average_descriptor_evaluations' => $averagedescriptorgradings, // we need to get average value for niveau (topic has many descriptors)
     );
 }
 
@@ -11477,7 +11477,7 @@ function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
  */
 function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
     $examples = [];
-    $data = (object) [];
+    $data = (object)[];
     $get_examples = function($items) use (&$get_examples, &$examples, &$data) {
         array_walk($items, function($item) use (&$get_examples, &$examples, &$data) {
             if ($item instanceof \block_exacomp\subject) {
@@ -11623,7 +11623,7 @@ function block_exacomp_get_comp_eval_merged($courseid, $studentid, $item) {
 
 function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $compid, $data, $savegradinghistory = true) {
     global $USER;
-    $data = (array) $data;
+    $data = (array)$data;
     unset($data['courseid']);
     unset($data['role']);
     unset($data['userid']);
@@ -11723,10 +11723,10 @@ function block_exacomp_set_comp_eval($courseid, $role, $studentid, $comptype, $c
                     $new_value = $data['value'];
                     $old_value = $record->value;
                     if ($new_value !== null) {
-                        $new_value = (int) $new_value;
+                        $new_value = (int)$new_value;
                     }
                     if ($old_value !== null) {
-                        $old_value = (int) $old_value;
+                        $old_value = (int)$old_value;
                     }
                     if ($new_value !== $old_value) {
                         $changed = true;
@@ -12049,7 +12049,7 @@ function block_exacomp_format_eval_value($value) {
 }
 
 function block_exacomp_group_reports_get_filter($reportType = 'general') {
-    $filter = (array) @$_REQUEST['filter'];
+    $filter = (array)@$_REQUEST['filter'];
 
     switch ($reportType) {
         case 'annex':
@@ -12246,7 +12246,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher) 
                 }
                 $item_scheme = block_exacomp_additional_grading($item_type, $courseid); //this has to be done AFTER specifying the item type of course, otherwise always the scheme of the parent descriptor will be taken
 
-                $item_filter = (array) @$filter[$item_type];
+                $item_filter = (array)@$filter[$item_type];
 
                 $item->visible = @$item_filter['visible'];
 
@@ -12440,7 +12440,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher) 
                 $item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
             }
 
-            $item_filter = (array) @$filter[$item_type];
+            $item_filter = (array)@$filter[$item_type];
 
             $visible = @$item_filter['visible'];
 
@@ -12496,7 +12496,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher) 
  * @return bool
  */
 function block_exacomp_group_reports_annex_result_filter_rules($item_type, $item_scheme, $filter, $eval) {
-    $item_filter = (array) @$filter[$item_type];
+    $item_filter = (array)@$filter[$item_type];
     if (@$item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID]) {
         $value = @$eval->evalniveauid ?: 0;
         if (!in_array($value, $item_filter[BLOCK_EXACOMP_EVAL_INPUT_EVALNIVEAUID])) {
@@ -12576,8 +12576,8 @@ function block_exacomp_group_reports_annex_result($filter) {
 
     //print_r($filter);
     $has_output = false;
-    $isDocx = (bool) optional_param('formatDocx', false, PARAM_RAW);
-    $isPdf = (bool) optional_param('formatPdf', false, PARAM_RAW);
+    $isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+    $isPdf = (bool)optional_param('formatPdf', false, PARAM_RAW);
     $dataRow = array();
 
     if ($isPdf) {
@@ -12607,7 +12607,7 @@ function block_exacomp_group_reports_annex_result($filter) {
                 $item_type = $level > 2 ? BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD : BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT;
             }
 
-            $item_filter = (array) @$filter[$item_type];
+            $item_filter = (array)@$filter[$item_type];
             $item->visible = @$item_filter['visible'];
 
             if (!@$item_filter['active']) {
@@ -12811,8 +12811,8 @@ function block_exacomp_group_reports_profoundness_result($filter) {
 
     //print_r($filter);
     $has_output = false;
-    $isDocx = (bool) optional_param('formatDocx', false, PARAM_RAW);
-    $isPdf = (bool) optional_param('formatPdf', false, PARAM_RAW);
+    $isDocx = (bool)optional_param('formatDocx', false, PARAM_RAW);
+    $isPdf = (bool)optional_param('formatPdf', false, PARAM_RAW);
     $dataRow = array();
 
     if ($filter['selectedStudentOrGroup'] != 0) {
@@ -13117,7 +13117,7 @@ function block_exacomp_read_preconfigurations_xml() {
     $path = $CFG->dirroot . '/blocks/exacomp/';
     $namexml = $path . 'settings_preconfiguration.xml';
     $xmlcontent = file_get_contents($namexml);
-    $xmlarray = (array) simplexml_load_string($xmlcontent);
+    $xmlarray = (array)simplexml_load_string($xmlcontent);
     if ($xmlarray && is_array($xmlarray) && $xmlarray['configOption']) {
         if (!is_array($xmlarray['configOption'])) {
             $configs = array($xmlarray['configOption']);
@@ -13125,7 +13125,7 @@ function block_exacomp_read_preconfigurations_xml() {
             $configs = $xmlarray['configOption'];
         }
         foreach ($configs as $config) {
-            $data = (array) $config;
+            $data = (array)$config;
             if ($data['@attributes']['id'] > 0) {
                 $key = $data['@attributes']['id'];
             } else {
@@ -13616,7 +13616,7 @@ function block_exacomp_is_autograding_example($exampleid) {
     }
     // if example has at least one child example - it is autograded example
     $result = g::$DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, ['ethema_parent' => $exampleid], '*', IGNORE_MULTIPLE);
-    return (bool) $result;
+    return (bool)$result;
 }
 
 function block_exacomp_is_block_used_by_student($blockname, $studentid) {
@@ -13744,7 +13744,7 @@ function block_exacomp_get_dakora_teacher_cohort() {
     $description = "Teachers that can see all globalgradings";
 
     if (!$cohort) {
-        $cohort = (object) [
+        $cohort = (object)[
             'contextid' => \context_system::instance()->id,
             'idnumber' => 'block_exacomp_dakora_teachers',
             'name' => $name,
@@ -13783,7 +13783,7 @@ function block_exacomp_get_user_assesment($userid, $competenceid, $competencetyp
     ];
     $result = g::$DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, $conditions, '*', IGNORE_MULTIPLE);
     if ($result) {
-        $resultObj = (object) array(
+        $resultObj = (object)array(
             'grade' => @$result->additionalinfo,
             'niveau' => @$result->evalniveauid,
         );
@@ -13872,7 +13872,7 @@ function block_exacomp_versions_compare($newVersion, $oldVersion, $rule = 1) {
         //$stringValue = str_replace('.', '', $stringValue);
         $parts = explode('.', $stringValue);
         array_walk($parts, function(&$p) {
-            $p = abs((int) filter_var($p, FILTER_SANITIZE_NUMBER_INT));
+            $p = abs((int)filter_var($p, FILTER_SANITIZE_NUMBER_INT));
         });
         // first number and mix of other
         $resultparts = array(array_shift($parts), implode('', $parts));
@@ -13922,7 +13922,7 @@ function block_exacomp_get_config_dakora_language_file($returnContent = false) {
 }
 
 function block_exacomp_get_config_dakora_timeout() {
-    return (int) get_config('exacomp', 'dakora_timeout');
+    return (int)get_config('exacomp', 'dakora_timeout');
 }
 
 function block_exacomp_get_config_dakora_show_overview() {
@@ -13980,7 +13980,7 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
     // get values for every subjects by course for calculate averages in next step
     foreach ($subjectGenericData as $sId => $subjectData) {
         if (!array_key_exists($sId, $newSubjectData)) {
-            $newSubjectData[$sId] = (object) array(
+            $newSubjectData[$sId] = (object)array(
                 'subject_evalniveau' => '',
                 'subject_evalniveauid' => -1,
                 'subject_eval' => -1,
@@ -13992,7 +13992,7 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
         foreach ($subjectData['courses_table_content'] as $cId => $courseContent) {
             foreach ($courseContent->content as $tId => $topicData) {
                 if (!array_key_exists($tId, $newSubjectData[$sId]->content)) {
-                    $newSubjectData[$sId]->content[$tId] = (object) array(
+                    $newSubjectData[$sId]->content[$tId] = (object)array(
                         'niveaus' => array(),
                         'span' => 0,
                         'topic_evalniveauid' => 0,
@@ -14013,7 +14013,7 @@ function block_exacomp_new_subject_data_for_competence_profile($subjectGenericDa
                 }
                 foreach ($topicData->niveaus as $niveauTitle => $niveauData) {
                     if (!array_key_exists($niveauTitle, $newSubjectData[$sId]->content[$tId]->niveaus)) {
-                        $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle] = (object) array(
+                        $newSubjectData[$sId]->content[$tId]->niveaus[$niveauTitle] = (object)array(
                             'evalniveau' => '',
                             'evalniveauid' => -1, // block_exacomp_use_eval_niveau() ? -1 : 0 ???
                             'eval' => -1,
@@ -14307,7 +14307,6 @@ function block_exacomp_relate_komettranslator_to_exacomp() {
         return !empty(block_exacomp_is_activated($mod->courseid));
     });
 
-
     //Now we have every RELEVANT module
     //for each module: get the competencies and thereby the descriptors
     foreach ($modules as $module) {
@@ -14526,7 +14525,6 @@ function block_exacomp_check_relatedactivitydata($cmid, $newtitle) {
     return true;
 }
 
-
 function block_exacomp_checkfordelete_relatedactivity($cmid) {
     global $DB, $CFG;
     //require_once $CFG->dirroot . '/blocks/exacomp/inc.php'; was needed when it was in exacomp/lib
@@ -14558,28 +14556,27 @@ function block_exacomp_fill_comp_tree($question, $comptree) {
     global $CFG, $USER, $COURSE, $DB;
     $activedescriptors = $DB->get_fieldset_select("block_exacompdescrquest_mm", 'descrid', 'questid = ' . $question->id);
 
-
     $dom = new DOMDocument;
     $dom->loadHTML(mb_convert_encoding($comptree, 'HTML-ENTITIES', "UTF-8"));
     $xpath = new DOMXPath($dom);
     $nodes = $xpath->query('//form[@id="treeform"]');
-    foreach($nodes as $node) {
-        $node->setAttribute('id', 'treeform'. $question->id);
+    foreach ($nodes as $node) {
+        $node->setAttribute('id', 'treeform' . $question->id);
     }
     $nodes = $xpath->query('//ul[@id="comptree"]');
-    foreach($nodes as $node) {
-        $node->setAttribute('id', 'comptree'. $question->id);
+    foreach ($nodes as $node) {
+        $node->setAttribute('id', 'comptree' . $question->id);
     }
     $nodes = $xpath->query('//input[@type="checkbox"]');
-    foreach($nodes as $node) {
+    foreach ($nodes as $node) {
         $node->removeAttribute('checked');
         $node->setAttribute('class', $node->getAttribute('value'));
-        if(in_array(intval($node->getAttribute('value')), $activedescriptors)){
-            $node->setAttribute('checked', 'checked'. $question->id);
+        if (in_array(intval($node->getAttribute('value')), $activedescriptors)) {
+            $node->setAttribute('checked', 'checked' . $question->id);
         }
     }
     $nodes = $xpath->query('//input[@name="questid"]');
-    foreach($nodes as $node) {
+    foreach ($nodes as $node) {
         $node->setAttribute('value', $question->id);
     }
 

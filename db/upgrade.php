@@ -4025,7 +4025,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
                 }
             }
         } catch (Exception $e) {
-            echo '<div class="alert alert-warning alert-block fade in">If you are using PostgreSql as DB - you may have an issue with updating. <br><strong>Please rename manually field \'<i>'.$CFG->prefix.'block_exacompschedule.end</i>\' into \'<i>endtime</i>\'</strong></div>';
+            echo '<div class="alert alert-warning alert-block fade in">If you are using PostgreSql as DB - you may have an issue with updating. <br><strong>Please rename manually field \'<i>' . $CFG->prefix .
+                'block_exacompschedule.end</i>\' into \'<i>endtime</i>\'</strong></div>';
             upgrade_log(UPGRADE_LOG_ERROR, 'block_exacomp', 'Warning: impossible to rename the field \'block_exacompschedule.end\' into \'endtime\'. Make it manually!', null, null);
         } finally {
             // Exacomp savepoint reached.
@@ -4073,7 +4074,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022102700, 'exacomp');
     }
 
-    if ($oldversion < 2022103100){
+    if ($oldversion < 2022103100) {
         $table = new xmldb_table('block_exacompschooltypes');
 
         $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
@@ -4085,7 +4086,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022103100, 'exacomp');
 
     }
-
 
     /*
      * insert new upgrade scripts before this comment section

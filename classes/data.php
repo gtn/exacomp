@@ -394,7 +394,6 @@ class data {
         $time_elapsed_secs = microtime(true) - $start;
         mtrace("Seconds spent on deleting unused mms: " . $time_elapsed_secs);
 
-
         // delete competence gradings of competences that do not exists anymore ==> subjects, topics, descriptors are 3 different tables
         $start = microtime(true);
         $sql = "
@@ -2980,7 +2979,6 @@ class data_importer extends data {
         $descriptor = self::parse_xml_item($xmlItem);
         $descriptor->crdate = self::$import_time;
 
-
         if ($parent > 0) {
             $descriptor->parentid = $parent;
             $descriptor->sorting = $sorting;
@@ -3264,7 +3262,6 @@ class data_importer extends data {
 
         return $subject;
     }
-
 
     private static function insert_schooltype($xmlItem, $source_local_id, $schedulerId = 0) {
         $schooltype = self::parse_xml_item($xmlItem);
