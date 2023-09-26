@@ -1459,7 +1459,11 @@ class block_exacomp_renderer extends plugin_renderer_base
                                 $titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
 
-
+                            if ($example->externaltask) {
+                                $titleCell->text .= html_writer::link($example->externaltask,
+                                    block_exacomp_get_example_icon_simple($this, $example, 'externaltask'),
+                                    array("target" => "_blank"));
+                            }
 
                             $solution_url = $example->get_solution_file_url();
                             if (!$solution_url && @$example->externalsolution) {
@@ -3208,18 +3212,12 @@ class block_exacomp_renderer extends plugin_renderer_base
 
                                         }
                                     }
-
                                     $titleCell->text .= $this->competence_association_icon($example->id, $data->courseid,
                                         $editmode);
 
                                 } else if ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) {
                                     $titleCell->text .= $this->competence_association_icon($example->id, $data->courseid,
                                         $editmode);
-                                }
-
-                                if ($example->activityid == -5) {
-                                    $titleCell->text .= $this->example_available_icon($example->id, $data->courseid);
-                                    download_activity($example, $COURSE->id);
                                 }
                             }
                             $titleCell->text .= '</span>';
@@ -3879,6 +3877,11 @@ class block_exacomp_renderer extends plugin_renderer_base
                                 $titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
 
+                            if ($example->externaltask) {
+                                $titleCell->text .= html_writer::link($example->externaltask,
+                                    block_exacomp_get_example_icon_simple($this, $example, 'externaltask'),
+                                    array("target" => "_blank"));
+                            }
 
                             $solution_url = $example->get_solution_file_url();
                             if (!$solution_url && @$example->externalsolution) {
@@ -4381,13 +4384,6 @@ class block_exacomp_renderer extends plugin_renderer_base
             $this->pix("compprofpie.png", block_exacomp_get_string('topic_3dchart')), array('exa-type' => 'iframe-popup', 'class' => 'compprofpie'));
     }
 
-    public function example_available_icon($exampleid, $courseid)
-    {
-        return html_writer::link(
-            new moodle_url('/blocks/exacomp/assign_competencies.php', array("courseid" => $courseid, "activity" => $exampleid)),
-            $this->pix_icon("e/insert_edit_link", block_exacomp_get_string('competence_associations')));
-    }
-
     public function example_solution_icon($solution)
     {
         return html_writer::link($solution, $this->pix_icon("e/fullpage", block_exacomp_get_string('solution')), array("target" => "_blank"));
@@ -4445,7 +4441,7 @@ class block_exacomp_renderer extends plugin_renderer_base
             $icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
             $value = 1;
         }
-
+      
         return html_writer::link('',$icon, array('class'=>'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
     }
 
