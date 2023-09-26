@@ -11108,7 +11108,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
     }
     return array(
         'descriptor_evaluation' => $descriptorgradings,
-        'average_descriptor_evaluations' => $averagedescriptorgradings // we need to get average value for niveau (topic has many descriptors)
+        'average_descriptor_evaluations' => $averagedescriptorgradings, // we need to get average value for niveau (topic has many descriptors)
     );
 }
 

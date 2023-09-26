@@ -306,7 +306,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= html_writer::tag('li',
                 html_writer::link(
                     new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => BLOCK_EXACOMP_SHOW_ALL_TOPICS, 'colgroupid' => optional_param('colgroupid', 0, PARAM_INT)]),
-                    $subject->title . '<span class="no-br">'.$extra.'</span>', [
+                    $subject->title . '<span class="no-br">' . $extra . '</span>', [
                     'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
                     'title' => $popuptitle,
                 ])
@@ -338,7 +338,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'subjectid' => $subject->id,
                         'topicid' => $topic->id,
                         'colgroupid' => optional_param('colgroupid', 0, PARAM_INT),
-                    ]), block_exacomp_get_topic_numbering($topic) . ' ' . $topic->title . '<span class="no-br">'.$extra.'</span>', array(
+                    ]), block_exacomp_get_topic_numbering($topic) . ' ' . $topic->title . '<span class="no-br">' . $extra . '</span>', array(
                         'class' => (($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '') . ' ' . (($topic->visible) ? '' : 'hidden'),
                         'title' => $topic->description,
                     )));
@@ -402,7 +402,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 }
                 $content .= html_writer::tag('li',
                     html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
-                        $title . '<span class="no-br">'.$extra.'</span>', array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $titleForTitle))
+                        $title . '<span class="no-br">' . $extra . '</span>', array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title' => $titleForTitle))
                 );
             }
         }
@@ -2472,7 +2472,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode = false, $custom_created_descriptors = false, $parent = false, $crosssubjid = 0, $parent_visible = array(), $isEditingTeacher = true,
-                         $forReport = false, $hideAllActionButtons = false) {
+        $forReport = false, $hideAllActionButtons = false) {
         global $USER, $COURSE, $DB, $OUTPUT;
 
         $evaluation = ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? "teacher" : "student";
@@ -2854,9 +2854,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                         // $iconA = html_writer::img($OUTPUT->image_url('i/valid'), '', ['width' => 16]);
                                         // echo "<pre>debug:<strong>renderer.php:2855</strong>\r\n"; print_r(new moodle_url('/blocks/exacomp/pix/alert_yellow.png')); echo '</pre>'; exit; // !!!!!!!!!! delete it
                                         $iconA = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/alert_yellow.png')));
-                                        $gradingisoldwarning = '&nbsp;'.html_writer::tag('a', $iconA,
-                                            array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),
-                                                'class' => 'competencegrid_tooltip'));
+                                        $gradingisoldwarning = '&nbsp;' . html_writer::tag('a', $iconA,
+                                                array('id' => 'gradingisold_warning', 'descrid' => $descriptor->id, 'studentid' => $student->id, 'title' => block_exacomp_get_string('newer_grading_tooltip'),
+                                                    'class' => 'competencegrid_tooltip'));
                                         $teacher_evaluation_cell->text .= $gradingisoldwarning;
                                     }
                                 }
@@ -5648,9 +5648,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $template_courses = get_all_template_courses_key_value();
         if (count($template_courses) > 0) {
             $divcontent = html_writer::select(['' => ''] + $template_courses, "template", '', false,
-                    array('id' => 'template',
-                        'class' => 'form-control import_template_course_selectbox'
-                        ));
+                array('id' => 'template',
+                    'class' => 'form-control import_template_course_selectbox',
+                ));
             $divcontent .= html_writer::empty_tag('input', array('type' => 'submit', 'value' => 'import', 'class' => 'btn btn-primary'));
             $form_content .= html_writer::div($divcontent, 'form-group', array('id' => 'import'));
         } else {
