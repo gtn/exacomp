@@ -1,4 +1,5 @@
 <?php
+use function block_exacomp\extract_zip_subdir;
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,6 +22,7 @@ use Super\Cache;
 
 require_once __DIR__ . '/common.php';
 require_once __DIR__ . '/classes.php';
+require_once __DIR__ . '/../classes/data.php';
 require_once __DIR__ . '/../block_exacomp.php';
 require_once($CFG->libdir . '/badgeslib.php');
 require_once($CFG->dirroot . '/badges/lib/awardlib.php');
@@ -14597,4 +14599,33 @@ function block_exacomp_get_student_roleid() {
     // var_dump($roles);
 
     return 5;
+}
+
+function download_activity($example, $courseid) {
+    global $CFG, $DB, $USER;      
+    if (isset($_GET['activity'])) {
+        $arrContextOptions=array(
+            "ssl"=>array(
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            ),
+        );  
+        
+        $url = str_replace("https", "http", $example->activitylink);
+        $file = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        $newFilePath = $CFG->tempdir.'/'.rand().'.zip';
+        file_put_contents($newFilePath, $file);
+
+        $zip = new ZipArchive;
+        $res = $zip->open($newFilePath);
+        if ($res === TRUE) {
+            $zip->extractTo($CFG->tempdir."/backup//");
+            $zip->close();
+            moodle_restore('activity', $courseid, $USER->id);
+            rmdir($CFG->tempdir.'/activity/backup/activity');
+        } 
+
+        $file_pointer = $newFilePath;
+        unlink($file_pointer);
+    }
 }
