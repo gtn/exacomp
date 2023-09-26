@@ -1459,11 +1459,7 @@ class block_exacomp_renderer extends plugin_renderer_base
                                 $titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
 
-                            if ($example->externaltask) {
-                                $titleCell->text .= html_writer::link($example->externaltask,
-                                    block_exacomp_get_example_icon_simple($this, $example, 'externaltask'),
-                                    array("target" => "_blank"));
-                            }
+
 
                             $solution_url = $example->get_solution_file_url();
                             if (!$solution_url && @$example->externalsolution) {
@@ -3212,6 +3208,7 @@ class block_exacomp_renderer extends plugin_renderer_base
 
                                         }
                                     }
+
                                     $titleCell->text .= $this->competence_association_icon($example->id, $data->courseid,
                                         $editmode);
 
@@ -3877,11 +3874,6 @@ class block_exacomp_renderer extends plugin_renderer_base
                                 $titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", block_exacomp_get_string('preview')), array("target" => "_blank"));
                             }
 
-                            if ($example->externaltask) {
-                                $titleCell->text .= html_writer::link($example->externaltask,
-                                    block_exacomp_get_example_icon_simple($this, $example, 'externaltask'),
-                                    array("target" => "_blank"));
-                            }
 
                             $solution_url = $example->get_solution_file_url();
                             if (!$solution_url && @$example->externalsolution) {
@@ -4441,7 +4433,7 @@ class block_exacomp_renderer extends plugin_renderer_base
             $icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
             $value = 1;
         }
-      
+
         return html_writer::link('',$icon, array('class'=>'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
     }
 
@@ -5177,7 +5169,7 @@ class block_exacomp_renderer extends plugin_renderer_base
 
     public function courseselection($schooltypes, $topics_activ, $headertext)
     {
-        global $PAGE, $COURSE;
+        global $CFG, $DB, $PAGE, $COURSE;
 
         $header = html_writer::tag('p', $headertext) . html_writer::empty_tag('br');
         $filterform = $this->courseselectionfilter($COURSE->id);
@@ -5187,7 +5179,6 @@ class block_exacomp_renderer extends plugin_renderer_base
             $table->attributes['class'] = 'exabis_comp_comp rg2';
             $rows = array();
             foreach ($schooltypes as $schooltype) {
-                if ($schooltype->hidden == 0) {
                     $row = new html_table_row();
                     $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight';
 
@@ -5204,6 +5195,8 @@ class block_exacomp_renderer extends plugin_renderer_base
                     $rows[] = $row;
 
                     foreach ($schooltype->subjects as $subject) {
+                        if(($DB->get_record_sql("SELECT * FROM {$CFG->prefix}block_exacomptopics as topic inner join {$CFG->prefix}block_exacomptopicvisibility as vs
+                        on topic.id = vs.topicid WHERE vs.visible = 1 && topic.subjid =" . $subject->id)) || $schooltype->hidden == 0){
                         $this_rg2_class = 'rg2-level-0';
 
                         $row = new html_table_row();
