@@ -3209,6 +3209,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
                                     $titleCell->text .= $this->competence_association_icon($example->id, $data->courseid,
                                         $editmode);
                                 }
+
+                                if ($example->activityid == -5) {
+                                    $titleCell->text .= $this->example_available_icon($example->id, $data->courseid);
+                                    download_activity($example, $COURSE->id);
+                                }
                             }
                             $titleCell->text .= '</span>';
                             // grade related descriptors and thier examples
@@ -4356,6 +4361,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return html_writer::link(
             new moodle_url('/blocks/exacomp/competence_associations.php', array("courseid" => $courseid, "exampleid" => $exampleid, "editmode" => ($editmode) ? 1 : 0)),
             $this->pix_icon("e/insert_edit_link", block_exacomp_get_string('competence_associations')), array('exa-type' => 'iframe-popup'));
+    }
+
+    public function example_available_icon($exampleid, $courseid){
+        return html_writer::link(
+            new moodle_url('/blocks/exacomp/assign_competencies.php', array("courseid" => $courseid, "activity" => $exampleid)),
+            $this->pix("accept.png", block_exacomp_get_string('activity_download')));
     }
 
     public function topic_3dchart_icon($topicid, $userid, $courseid) {

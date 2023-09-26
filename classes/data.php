@@ -2863,6 +2863,9 @@ class data_importer extends data {
     private static function insert_example($xmlItem, $parent, $course_template) {
         $item = self::parse_xml_item($xmlItem);
         $item->parentid = $parent;
+        $item->activitylink = $item->externaltask;
+        $item->externaltask = "";
+        $item->activityid = -5;
 
         // eTheMa parent - update later
         if (isset($item->ethema_parent)
@@ -2904,14 +2907,9 @@ class data_importer extends data {
         if ($xmlItem->filecompletefile) {
             self::insert_file('example_completefile', $xmlItem->filecompletefile, $item);
         }
-        if ($xmlItem->activitytype || $xmlItem->is_moodle_activity /* from komet */) {
-
+        if ($xmlItem->activitytype) {
             if ($course_template > 0) {
                 $item->courseid = $course_template; // TODO: right? (need for correct relation of activities)
-            }
-
-            if ($course_template != 0) {
-                self::insert_activity($xmlItem, $course_template, $item->id);
             }
         }
 

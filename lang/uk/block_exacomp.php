@@ -809,3 +809,4 @@ $string['weekly_schedule_disabled'] = 'Прихований матеріал н�
 $string['weekly_schedule_link_to_grid'] = 'Для додавання матеріалів до розкладу скористайтеся оглядом';
 $string['yes_no_No'] = 'Ні';
 $string['yes_no_Yes'] = 'Так';
+$string['activity_download'] = 'Install activity to current course!';
