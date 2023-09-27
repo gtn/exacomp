@@ -14732,16 +14732,17 @@ function block_exacomp_clear_exacomp_weekly_schedule() {
     $DB->execute($sql);
 }
 
-function download_activity($example, $courseid) {
+function download_activity($courseid) {
     global $CFG, $DB, $USER;      
     if (isset($_GET['activity'])) {
+        $exampleid = $_GET['activity'];
         $arrContextOptions=array(
             "ssl"=>array(
                 "verify_peer"=>false,
                 "verify_peer_name"=>false,
             ),
         );  
-        
+        $example = $DB->get_record('block_exacompexamples', ['id'=>$exampleid]);
         $url = str_replace("https", "http", $example->activitylink);
         $file = file_get_contents($url, false, stream_context_create($arrContextOptions));
         $newFilePath = $CFG->tempdir.'/'.rand().'.zip';

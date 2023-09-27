@@ -3212,7 +3212,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                                 if ($example->activityid == -5) {
                                     $titleCell->text .= $this->example_available_icon($example->id, $data->courseid);
-                                    download_activity($example, $COURSE->id);
+                                    download_activity($COURSE->id);
                                 }
                             }
                             $titleCell->text .= '</span>';
