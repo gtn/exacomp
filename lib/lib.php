@@ -3510,12 +3510,19 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
 function block_exacomp_set_schooltype_hidden($values){
     global $DB;
     foreach($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs){
-        $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>0));
-        if(in_array($rs->id, $values)){
-            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>1));
-        }
-        if($values[$rs->id] != null) {
-            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>$values[$rs->id]));
+        // $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>0));
+        // if(in_array($rs->id, $values)){
+        //     $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>1));
+        // }
+        // if($values[$rs->id] != null) {
+        //     $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>$values[$rs->id]));
+        // }
+
+        if ($values[$rs->id] != null) { // if the value is not null, update the hidden value to whatever is in $values[$rs->id] which should be 1
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "hidden" => $values[$rs->id]));
+        } else {
+            // goes here if it is null or 0
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "hidden" => 0));
         }
     }
 }

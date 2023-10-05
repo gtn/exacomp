@@ -4852,9 +4852,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 if ($schooltypestruct->schooltype->hidden == 1) {
                     $cell->text .= " " . $this->visibility_icon_schooltype(false, $schooltypestruct->schooltype->id);
+                    // $cell->text .= " " . html_writer::link('', $this->pix_icon("i/hide", block_exacomp_get_string("hide")), array('class' => 'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
                     $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 1, 'checked' => 'checked'));
                 } else {
                     $cell->text .= " " . $this->visibility_icon_schooltype(true, $schooltypestruct->schooltype->id);
+                    // $cell->text .= " " . html_writer::link('', $this->pix_icon("i/show", block_exacomp_get_string("hide")), array('class' => 'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
                     $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 0));
                 }
 
