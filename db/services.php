@@ -187,6 +187,22 @@ create example',
     'description' => 'Grade a element',
     'type' => 'write',
   ),
+  'diggrplus_grade_competency' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_grade_competency',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'Grade a element',
+    'type' => 'write',
+  ),
+  'diggrplus_get_all_competency_gradings' => 
+  array (
+    'classname' => 'block_exacomp_external',
+    'methodname' => 'diggrplus_get_all_competency_gradings',
+    'classpath' => 'blocks/exacomp/externallib.php',
+    'description' => 'Get all gradings in all courses',
+    'type' => 'write',
+  ),
   'diggrplus_msteams_import_students' => 
   array (
     'classname' => 'block_exacomp_external',

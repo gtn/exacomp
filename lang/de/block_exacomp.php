@@ -115,6 +115,10 @@ $string['settings_scheduleunits'] = 'Anzahl der Einheiten';
 $string['settings_scheduleunits_description'] = 'Anzahl der Einheiten im Wochenplan';
 $string['settings_schedulebegin'] = 'Beginn der Einheiten';
 $string['settings_schedulebegin_description'] = 'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm';
+$string['settings_description_nurmoodleunddakora'] = '<b>Nur Moodle und Dakora App</b>';
+$string['settings_description_nurdakora'] = '<b>Nur Dakora App</b>';
+$string['settings_description_nurdiggr'] = '<b>Nur Diggr+ und elove App</b>';
+$string['settings_description_nurdakoraplus'] = '<b>Nur DakoraPlus App</b>';
 $string['settings_admin_scheme'] = 'Vordefinierte Konfiguration';
 $string['settings_admin_scheme_description'] = 'Beurteilungen können auf unterschiedlichem Niveau erfolgen.';
 $string['settings_admin_scheme_none'] = 'keine Niveaus';
@@ -132,7 +136,7 @@ $string['settings_dakora_teacher_link'] = 'Klicken Sie, um die Dakoralehrer fest
 $string['settings_applogin_redirect_urls'] = 'Applogin Urls';
 $string['settings_applogin_redirect_urls_description'] = '';
 $string['settings_applogin_enabled'] = 'App-Login aktivieren';
-$string['settings_applogin_enabled_description'] = 'Erlaubt den Login von Exabis Apps (Diggr+, usw.)';
+$string['settings_applogin_enabled_description'] = 'Erlaubt den Login von Exabis Apps (Diggr+, Dakora, Dakora+, elove)';
 $string['settings_setapp_enabled'] = 'SET-App Funktionen aktivieren';
 $string['settings_setapp_enabled_description'] = 'Anlegen von Userkonten über App erlauben.';
 $string['settings_sso_create_users'] = 'SSO: Neue Benutzer erstellen';
@@ -208,6 +212,8 @@ $string['settings_disable_js_editactivities'] = 'JS für die Zuteilung von Moodl
 $string['settings_disable_js_editactivities_description'] = 'Aktivieren, falls sich die Seite "Moodle-Aktivitäten zuteilen"  zu langsam aufbaut.';
 $string['settings_example_autograding'] = 'übergeordnete Materialien automatische Beurteilung';
 $string['settings_example_autograding_description'] = 'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.';
+$string['settings_assessment_verbose_lowerisbetter'] = 'Niedriger Wert ist besser';
+$string['settings_assessment_verbose_lowerisbetter_description'] = 'Je niedriger der Wert der Beurteilung umso besser.';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -245,7 +251,7 @@ $string['help_content'] = '<h1>Video zur Einführung</h1>
 ';
 
 // === Import ===
-$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="http://www.edustandards.org">wwww.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Kompetenzraster besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>';
+$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="https://comet.edustandards.org">wwww.edustandards.org</a>.';
 $string['importwebservice'] = 'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.';
 $string['import_max_execution_time'] = 'Wichtig: die aktuellen Servereinstellungen beschränken den Import auf {$a} Sekunden. Falls der Import-Vorgang länger dauert, wird dieser abgebrochen, es werden keine Daten importiert. Am Ausgabegerät wird in diesem Fall eine serverseitige Fehlermeldung ausgegeben (z.B. "500 Internal Server Error").';
 $string['importdone'] = 'Die allgemeinen Kompetenzraster sind bereits importiert.';
@@ -261,7 +267,7 @@ $string['importsuccess'] = 'Daten erfolgreich importiert!';
 $string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';
 $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 $string['noxmlfile'] = 'Ein Import ist derzeit nicht möglich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';
-$string['oldxmlfile'] = 'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
+$string['oldxmlfile'] = 'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="https://comet.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
 $string['do_demo_import'] = 'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Kompetenzraster funktioniert.';
 $string['schedulerimport'] = 'Import von geplanten Aufgaben';
 $string['add_new_importtask'] = 'Neue geplante Aufgabe hinzufügen';
@@ -907,7 +913,7 @@ $string['selectcourse_filter_schooltype'] = 'Schulart';
 $string['selectcourse_filter_onlyselected'] = 'Nur ausgewählte Raster anzeigen';
 $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Keine Ergebnisse zu diesem Filter';
-$string['descriptor_label'] = 'Kompetenzbeschreibung';
+$string['descriptor_label'] = 'Kompetenztitel';
 $string['export_password_message'] = 'Bitte notieren Sie sich das Passwort "<strong>{$a}</strong>", bevor Sie fortfahren.<br/><br/>
 		Hinweis: Passwortgeschützte zip-Dateien können unter Windows zwar geöffnet werden, aber die Dateien innerhalb der Zip-Datei können nur mit einem externen Programm (z.B. 7-Zip) extrahiert werden.
 		';
@@ -955,3 +961,8 @@ $string['overview_examples_report_title'] = 'Aufgabenübersicht zum Kompetenzerw
 $string['block_exacomp_link_to_dakora_app'] = 'zur Dakora-App';
 $string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';
 $string['grid_creating_is_disabled'] = 'Die Neuanlage von Rastern ist deaktiviert!';
+$string['save_hvp_activity'] = 'HVP Aktivität speichern';
+$string['edulevel_without_assignment_title'] = 'ohne feste Zuordnung';
+$string['schooltype_without_assignment_title'] = 'ohne feste Zuordnung';
+$string['please_select_topic_first'] = 'Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus';
+$string['no_course_templates'] = 'Kann keinen Kurs finden, der als Vorlage verwendet werden kann';

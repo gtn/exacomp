@@ -107,7 +107,6 @@ class block_exacomp extends block_list {
                     $studentid = $USER->id;
                 }
             }
-
             // dashboard of students data (tabs with courses)
             if ($studentid > 0) {
 
@@ -141,15 +140,15 @@ class block_exacomp extends block_list {
 
                 $course = $possible_courses[$courseid];
 
-                $examples = \block_exacomp\example::get_objects_sql("
+                $examples = block_exacomp_get_examples_by_course($courseid);
+                if (count($examples) > 0) {
+                    // to order
+                    $examples = \block_exacomp\example::get_objects_sql("
                             SELECT DISTINCT e.*
-                              FROM {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct
-                                JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON ct.topicid = dt.topicid
-                                JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON dt.descrid = de.descrid
-                                JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e ON e.id = de.exampid
-                              WHERE ct.courseid = ?
-                              ORDER BY e.title
-                        ", [$courseid]);
+                              FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
+                              WHERE e.id IN (".implode(',', array_keys($examples)).")
+                              ORDER BY e.title ");
+                }
 
                 // set example 'finished' value
                 foreach ($examples as $exInd => $example) {

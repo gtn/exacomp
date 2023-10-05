@@ -231,11 +231,6 @@ if ($action == 'search' && !$isTemplateDeleting) {
         $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_EXAMPLE, $filter, $filterlogictext);
     }
 
-    if ($filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_EXAMPLE]["visible"]) {
-        $filterlogictext .= "<br>" . block_exacomp_get_string('report all examples');
-        $filterlogictext = create_filterlogic_text(BLOCK_EXACOMP_TYPE_EXAMPLE, $filter, $filterlogictext);
-    }
-
     echo html_writer::tag('p', $filterlogictext);
 
     switch ($reportType) {

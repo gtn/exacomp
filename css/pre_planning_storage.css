@@ -65,10 +65,11 @@
 
 #block_exacomp #save_button {
     margin-top: 10px;
+    clear: both;
 }
 
 #block_exacomp #save_pre_planning_storage {
-    margin-top: 50px;
+    /*margin-top: 50px;*/
     float: right;
 }
 

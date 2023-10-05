@@ -18,25 +18,32 @@ require __DIR__ . '/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 function moodle_restore($data, $courseid, $userdoingrestore) {
-    global $DB;
+    global $DB, $CFG;
     if (!is_siteadmin()) {
         die('No Admin!');
     }
 
     $transaction = $DB->start_delegated_transaction();
-    // $data: the name of the folder in CFG->backuptempdir
-    // $courseid: destination course of this restore
-    // Restore backup into course.
-    $controller = new restore_controller($data, $courseid, backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore, backup::TARGET_NEW_COURSE);
-    //    $user = $controller->get_plan()->get_setting('users')->get_value();
-    $controller->get_plan()->get_setting('users')->set_value(0); // 2021.09.16 this should be the setting "Include enrolled users"
-    //    $user = $controller->get_plan()->get_setting('users')->get_value();
 
-    //    $controller->get_plan()->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
+    try {
+        // $data: the name of the folder in CFG->backuptempdir
+        // $courseid: destination course of this restore
+        // Restore backup into course.
+        $controller = new restore_controller($data, $courseid, backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore, backup::TARGET_NEW_COURSE);
+        //    $user = $controller->get_plan()->get_setting('users')->get_value();
+        $controller->get_plan()->get_setting('users')->set_value(0); // 2021.09.16 this should be the setting "Include enrolled users"
 
-    $controller->execute_precheck();
+        //    $controller->get_plan()->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
+        $controller->execute_precheck();
 
-    $controller->execute_plan();
+        $controller->execute_plan();
+
+    } catch (\Exception $e) {
+
+        // throw new moodle_exception('something wrong with importing of activity: ' . $data);
+        echo "<pre>debug:<strong>activity_restore.php:44</strong>\r\n"; print_r($e->getMessage()); echo '</pre>'; // !!!!!!!!!! delete it
+
+    }
 
     // Commit.
     $transaction->allow_commit();

@@ -4025,8 +4025,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
                 }
             }
         } catch (Exception $e) {
-            echo '<div class="alert alert-warning alert-block fade in">If you are using PostgreSql as DB - you may have an issue with updating. <br><strong>Please rename manually field \'<i>' . $CFG->prefix .
-                'block_exacompschedule.end</i>\' into \'<i>endtime</i>\'</strong></div>';
+            echo '<div class="alert alert-warning alert-block fade in">If you are using PostgreSql as DB - you may have an issue with updating. <br><strong>Please rename manually field \'<i>' . $CFG->prefix . 'block_exacompschedule.end</i>\' into \'<i>endtime</i>\'</strong></div>';
             upgrade_log(UPGRADE_LOG_ERROR, 'block_exacomp', 'Warning: impossible to rename the field \'block_exacompschedule.end\' into \'endtime\'. Make it manually!', null, null);
         } finally {
             // Exacomp savepoint reached.
@@ -4062,30 +4061,67 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2022072300, 'exacomp');
     }
 
-    if ($oldversion < 2022102700) {
-        $table = new xmldb_table('block_exacompedulevels');
+    if ($oldversion < 2023030900) {
 
-        $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
+        // Define field lastmodifiedbyid to be added to block_exacompschedule.
+        $table = new xmldb_table('block_exacompschedule');
+        $field = new xmldb_field('lastmodifiedbyid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'creatorid');
+
+        // Conditionally launch add field lastmodifiedbyid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // exacomp savepoint reached
-        upgrade_block_savepoint(true, 2022102700, 'exacomp');
-    }
+        // Define field addedtoschedulebyid to be added to block_exacompschedule.
+        $table = new xmldb_table('block_exacompschedule');
+        $field = new xmldb_field('addedtoschedulebyid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'lastmodifiedbyid');
 
-    if ($oldversion < 2022103100) {
-        $table = new xmldb_table('block_exacompschooltypes');
-
-        $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
+        // Conditionally launch add field addedtoschedulebyid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // exacomp savepoint reached
-        upgrade_block_savepoint(true, 2022103100, 'exacomp');
-
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023030900, 'exacomp');
     }
+
+    if ($oldversion < 2023042100) {
+
+        $table = new xmldb_table('block_exacomporgunits');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+        $table = new xmldb_table('block_exacompdescrorgunit_mm');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+        $table = new xmldb_table('block_exacompcouorgunit_mm');
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023042100, 'exacomp');
+    }
+
+    //if ($oldversion < 2022101900) {
+    //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
+    //    // If they are used ==> they will not get deleted
+    //    if ($DB->get_manager()->table_exists('local_komettranslator')) {
+    //        $sql = "DELETE FROM  {" . BLOCK_EXACOMP_DB_EXAMPLES . "}
+    //                    WHERE id IN
+    //                      (SELECT e.id as id FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
+    //                                  LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLEEVAL . "} ev on e.id = ev.exampleid
+    //                                  LEFT JOIN {block_exaportitem} ei on e.id = ei.exampid
+    //                       WHERE ev.id IS NULL
+    //                         AND ei.id IS NULL
+    //                         AND e.source = 1)";
+    //        $DB->execute($sql);
+    //    }
+    //
+    //    // Exacomp savepoint reached.
+    //    upgrade_block_savepoint(true, 2022101900, 'exacomp');
+    //}
 
     /*
      * insert new upgrade scripts before this comment section

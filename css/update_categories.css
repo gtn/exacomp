@@ -1,0 +1,19 @@
+.category_form .exacomp_sublabel {
+    display: block;
+    font-size: 0.8em;
+    opacity: 0.75;
+    clear: both;
+}
+
+.category_form {
+    padding: 0 20px;
+}
+
+.category_form input[type="text"],
+.category_form select {
+    width: 100% !important;
+}
+
+.category_form #fitem_id_catid .form-inline {
+    display: block;
+}

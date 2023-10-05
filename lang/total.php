@@ -373,6 +373,22 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm',
         'Begin time for the first unit in the schedule. Format hh:mm',
     ],
+	'settings_description_nurmoodleunddakora' => [
+        '<b>Nur Moodle und Dakora App</b>',
+        '<b>Only Moodle and Dakora App</b>',
+    ],
+	'settings_description_nurdakora' => [
+        '<b>Nur Dakora App</b>',
+        '<b>Only Dakora App</b>',
+    ],
+		'settings_description_nurdiggr' => [
+        '<b>Nur Diggr+ und elove App</b>',
+        '<b>Only Diggr+ and elove App</b>',
+    ],
+	'settings_description_nurdakoraplus' => [
+        '<b>Nur DakoraPlus App</b>',
+        '<b>Only DakoraPlus App</b>',
+    ],
     'settings_admin_scheme' => [
         'Vordefinierte Konfiguration',
         'Predefined configuration',
@@ -442,8 +458,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Enable App Login',
     ],
     'settings_applogin_enabled_description' => [
-        'Erlaubt den Login von Exabis Apps (Diggr+, usw.)',
-        'Allows the login from Exabis Apps (Diggr+, etc.)',
+        'Erlaubt den Login von Exabis Apps (Diggr+, Dakora, Dakora+, elove)',
+        'Allows the login from Exabis Apps (Diggr+, Dakora, Dakora+, elove)',
     ],
     'settings_setapp_enabled' => [
         'SET-App Funktionen aktivieren',
@@ -749,6 +765,14 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Wenn alle untergeordneten Aufgaben erledigt sind, soll das übergeordnete Material automatisch beurteilt werden.',
         'When all child examples have been graded, the parent material should be assessed automatically.',
     ],
+    'settings_assessment_verbose_lowerisbetter' => [
+        'Niedriger Wert ist besser',
+        'Lower value is better',
+    ],
+    'settings_assessment_verbose_lowerisbetter_description' => [
+        'Je niedriger der Wert der Beurteilung umso besser.',
+        'The lower the Assessment, the better.',
+    ],
 
     // === Unit Tests ===
     'unittest_string' => [
@@ -870,8 +894,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
 
     // === Import ===
     'importinfo' => [
-        'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="http://www.edustandards.org">wwww.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Kompetenzraster besuchen Sie bitte das Kompetenzrastertool unter <a target="_blank" href="https://eeducation.at/index.php?id=155&L=0">www.eeducation.at</a>',
-        'Please create your competence grids at <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.',
+        'Erstellen Sie Ihre eigenen Kompetenzraster auf <a target="_blank" href="https://comet.edustandards.org">wwww.edustandards.org</a>.',
+        'Please create your competence grids at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a>.',
     ],
     'importwebservice' => [
         'Es besteht auch die Möglichkeit die Daten über eine <a href="{$a}">Server-URL</a> aktuell zu halten.',
@@ -934,8 +958,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.',
     ],
     'oldxmlfile' => [
-        'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.',
-        'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.',
+        'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="https://comet.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.',
+        'You are using an outdated xml-file. Please create new outcomes/standards at <a href="https://comet.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.',
     ],
     'do_demo_import' => [
         'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Kompetenzraster funktioniert.',
@@ -3333,7 +3357,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     ],
     'niveau_description' => [
         'Bezeichnung der ersten Spalte (z.B. LFS 1)',
-        'Create your first Niveau:',
+        'Create your first Difficulty Level:',
     ],
     'descriptor_description' => [
         'Eintrag der ersten Zelle (z.B. Kompetenzbeschreibung)',
@@ -3360,8 +3384,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Nothing to show',
     ],
     'descriptor_label' => [
-        'Kompetenzbeschreibung',
-        'Competency description',
+        'Kompetenztitel',
+        'Competency title',
     ],
     'export_password_message' => [
         'Bitte notieren Sie sich das Passwort "<strong>{$a}</strong>", bevor Sie fortfahren.<br/><br/>
@@ -3545,5 +3569,24 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Die Neuanlage von Rastern ist deaktiviert!',
         'Grid creation is disabled!',
     ],
-
+    'save_hvp_activity' => [
+        'HVP Aktivität speichern',
+        'Save HVP activity',
+    ],
+    'edulevel_without_assignment_title' => [
+        'ohne feste Zuordnung',
+        'without a specific assignment',
+    ],
+    'schooltype_without_assignment_title' => [
+        'ohne feste Zuordnung',
+        'without a specific assignment',
+    ],
+    'please_select_topic_first' => [
+        'Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus',
+        'Please first select a topic of competence in the left bar'
+    ],
+    'no_course_templates' => [
+        'Kann keinen Kurs finden, der als Vorlage verwendet werden kann',
+        'Can not find any course to use as a template'
+    ]
 ];

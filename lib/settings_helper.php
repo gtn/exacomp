@@ -226,12 +226,30 @@ class block_exacomp_admin_setting_verbose_negative extends admin_setting_configs
         //    $e->setAttribute('onFocus', $e->getAttribute('onFocus').'; if (typeof reloadVerboseNegativeSelectbox === "function") {reloadVerboseNegativeSelectbox();};');
         //}
         //$output = $doc->saveHTML($doc->documentElement);
-        $output .= ').value != 0){
-                        selectbox.setAttribute("disabled","true");
-                    }else{
-                        selectbox.removeAttribute("disabled");
+        $output .= '<script>
+                function reloadVerboseNegativeSelectbox() {
+                    var new_list = document.getElementById(\'id_s_exacomp_assessment_verbose_options\').value;
+                    var new_options = new_list.split(\',\');
+                    var selectbox = document.getElementById(\'id_s_exacomp_assessment_verbose_negative\');
+                    var selected_value = selectbox.value;
+                    var j;
+                    for(j = selectbox.options.length - 1 ; j >= 0 ; j--) {
+                        selectbox.remove(j);
                     }
-                }
+                    new_options.forEach(function(elem, i) {
+                        var doc = selectbox.ownerDocument;
+                        var option = doc.createElement("option");
+                        option.text = elem.trim();
+                        option.value = i;
+                        doc = null;
+                        if (selectbox.add.length === 2){
+                            selectbox.add(option, null); // standards compliant
+                        } else{
+                            selectbox.add(option); // IE only
+                        }
+                    });
+                    selectbox.value = selected_value;
+                };
             reloadVerboseNegativeSelectbox();
             </script>';
         return $output;

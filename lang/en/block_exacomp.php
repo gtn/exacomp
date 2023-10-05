@@ -115,6 +115,10 @@ $string['settings_scheduleunits'] = 'Amount of units';
 $string['settings_scheduleunits_description'] = 'Amount of units in the schedule';
 $string['settings_schedulebegin'] = 'Begin of schedule';
 $string['settings_schedulebegin_description'] = 'Begin time for the first unit in the schedule. Format hh:mm';
+$string['settings_description_nurmoodleunddakora'] = '<b>Only Moodle and Dakora App</b>';
+$string['settings_description_nurdakora'] = '<b>Only Dakora App</b>';
+$string['settings_description_nurdiggr'] = '<b>Only Diggr+ and elove App</b>';
+$string['settings_description_nurdakoraplus'] = '<b>Only DakoraPlus App</b>';
 $string['settings_admin_scheme'] = 'Predefined configuration';
 $string['settings_admin_scheme_description'] = 'Grading can be done on different difficulty levels.';
 $string['settings_admin_scheme_none'] = 'no global difficulty levels';
@@ -132,7 +136,7 @@ $string['settings_dakora_teacher_link'] = 'Click to assign the dakorateachers';
 $string['settings_applogin_redirect_urls'] = 'Applogin Urls';
 $string['settings_applogin_redirect_urls_description'] = '';
 $string['settings_applogin_enabled'] = 'Enable App Login';
-$string['settings_applogin_enabled_description'] = 'Allows the login from Exabis Apps (Diggr+, etc.)';
+$string['settings_applogin_enabled_description'] = 'Allows the login from Exabis Apps (Diggr+, Dakora, Dakora+, elove)';
 $string['settings_setapp_enabled'] = 'Enable SET-App Functions';
 $string['settings_setapp_enabled_description'] = 'Allow creating users in the App.';
 $string['settings_sso_create_users'] = 'SSO: Create new Users';
@@ -208,6 +212,8 @@ $string['settings_disable_js_editactivities'] = 'Disable JS in students selectio
 $string['settings_disable_js_editactivities_description'] = 'If "Assign Moodle activities" (in settings) has a long page generation time. This checkbox can solve this problem';
 $string['settings_example_autograding'] = 'automatic assessment of parent materials';
 $string['settings_example_autograding_description'] = 'When all child examples have been graded, the parent material should be assessed automatically.';
+$string['settings_assessment_verbose_lowerisbetter'] = 'Lower value is better';
+$string['settings_assessment_verbose_lowerisbetter_description'] = 'The lower the Assessment, the better.';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -245,7 +251,7 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 ';
 
 // === Import ===
-$string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="https://eeducation.at/index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a> to download an available xml file.';
+$string['importinfo'] = 'Please create your competence grids at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a>.';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">Server-URL</a>.';
 $string['import_max_execution_time'] = 'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".';
 $string['importdone'] = 'data has already been imported from xml';
@@ -261,7 +267,7 @@ $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'individual data was imported successfully!';
 $string['importfail'] = 'an error has occured during import';
 $string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
-$string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
+$string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="https://comet.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
 $string['do_demo_import'] = 'import demo data to see how Exabis Competence Grid works.';
 $string['schedulerimport'] = 'Scheduler import tasks';
 $string['add_new_importtask'] = 'Add new import task';
@@ -892,14 +898,14 @@ $string['report all descriptor children'] = 'All child competences of competence
 $string['report all descriptor examples'] = 'All examples of competence fields, competences and child competences that have not been filtered AND pass following filters: ';
 $string['filterlogic'] = 'Filterlogic: ';
 $string['topic_description'] = 'Create your first topic:';
-$string['niveau_description'] = 'Create your first Niveau:';
+$string['niveau_description'] = 'Create your first Difficulty Level:';
 $string['descriptor_description'] = 'Create your first descriptor:';
 $string['selectcourse_filter'] = 'Filter';
 $string['selectcourse_filter_schooltype'] = 'Schooltype';
 $string['selectcourse_filter_onlyselected'] = 'Show only selected grids';
 $string['selectcourse_filter_submit'] = 'Filter';
 $string['selectcourse_filter_emptyresult'] = 'Nothing to show';
-$string['descriptor_label'] = 'Competency description';
+$string['descriptor_label'] = 'Competency title';
 $string['export_password_message'] = 'Please remember the password "<strong>{$a}</strong>" before proceeding';
 $string['settings_heading_security'] = 'Security';
 $string['settings_heading_security_description'] = '';
@@ -945,3 +951,8 @@ $string['overview_examples_report_title'] = 'Overview of the examples';
 $string['block_exacomp_link_to_dakora_app'] = 'to Dakora-App';
 $string['diggrapp_cannotcreatetoken'] = 'Can not have access to this moodle installation';
 $string['grid_creating_is_disabled'] = 'Grid creation is disabled!';
+$string['save_hvp_activity'] = 'Save HVP activity';
+$string['edulevel_without_assignment_title'] = 'without a specific assignment';
+$string['schooltype_without_assignment_title'] = 'without a specific assignment';
+$string['please_select_topic_first'] = 'Please first select a topic of competence in the left bar';
+$string['no_course_templates'] = 'Can not find any course to use as a template';

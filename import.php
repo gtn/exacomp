@@ -373,7 +373,7 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                                 $string = block_exacomp_get_string('next_step');
                                 $url = 'edit_config.php';
 
-                                $html = block_exacomp_get_string("importsuccess") . html_writer::empty_tag('br');
+                                $html = html_writer::div(block_exacomp_get_string("importsuccess"), 'alert alert-success');
                                 if ($isAdmin) {
                                     $html .= html_writer::empty_tag('img', array(
                                             'src' => new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt' => '',
@@ -439,7 +439,8 @@ if ($isAdmin || block_exacomp_check_customupload()) {
                 if ($importSuccess) {
                     $string = block_exacomp_get_string('next_step');
 
-                    echo $OUTPUT->box(block_exacomp_get_string("importsuccess") . html_writer::empty_tag('br')
+                    echo $OUTPUT->box(
+                        html_writer::div(block_exacomp_get_string("importsuccess"), 'alert alert-success')
                         . html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt' => '', 'width' => '60px', 'height' => '60px'))
                         . html_writer::link(new moodle_url('edit_config.php', array('courseid' => $courseid, 'fromimport' => 1)), $string));
                 } else {

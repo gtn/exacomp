@@ -157,10 +157,10 @@ $string['delete_success'] = 'Індивідуальні результати/с�
 $string['delete_unconnected_examples'] = 'Якщо ви скасуєте вибір тем, які пов’язані з матеріалами, які використовуються в тижневому розкладі, ці матеріали буде видалено.';
 $string['delete...'] = 'Видалити...';
 $string['description'] = 'Опис';
-$string['description_createtoken'] = 'Надайте додатковий дозвіл для ролі «authenticated user» за шляхом: Site administration/Users/Permissions/Define roles 
-4.1 Select Authenticated User 
-4.2 Click on "Edit" 
-4.3 Filter for createtoken 
+$string['description_createtoken'] = 'Надайте додатковий дозвіл для ролі «authenticated user» за шляхом: Site administration/Users/Permissions/Define roles
+4.1 Select Authenticated User
+4.2 Click on "Edit"
+4.3 Filter for createtoken
 4.4 Allow moodle/webservice:createtoken';
 $string['description_edit_badge_comps'] = 'Тут ви можете пов’язати обрану відзнаку із результатами.';
 $string['description_example'] = 'Опис';
@@ -170,7 +170,7 @@ $string['descriptor_categories'] = 'Редагувати рівень склад
 $string['descriptor_categories_description'] = 'Виберіть рівень складності для цієї (суб)компетенції/навчального матеріалу. Ви також можете додати новий рівень складності або не вибирати рівень складності.';
 $string['descriptor_child'] = 'вложена компетенція';
 $string['descriptor_description'] = 'Створіть свій перший дескриптор:';
-$string['descriptor_label'] = 'Опис компетенції';
+$string['descriptor_label'] = 'Назва компетенції';
 $string['descriptor_submission_info'] = 'Ви збираєтеся додати виконану роботу до дескриптора "{$a}". Ваша робота буде збережена в Exabis ePortfolio, і вчителі зможуть переглядати її там.';
 $string['descriptors'] = 'Компетенції';
 $string['deselect_all'] = 'відмінити усе';
@@ -286,7 +286,7 @@ $string['import_source'] = 'Імпортовано з: {$a}';
 $string['import_used_preselected_from_previous'] = 'Якщо XML-файл імпортувався раніше, ці значення вибрано з попереднього імпорту';
 $string['importdone'] = 'дані вже імпортовано з xml';
 $string['importfail'] = 'сталася помилка під час імпорту';
-$string['importinfo'] = 'Будь ласка, створіть свої сітки компетенцій на <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> або відвідайте <a href="https://eeducation.at /index.php?id=155&L=0" target="_blank">https://eeducation.at/index.php?id=155&L=0</a>, щоб завантажити доступний файл xml.';
+$string['importinfo'] = 'Будь ласка, створіть свої сітки компетенцій на <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a>.';
 $string['importpending'] = 'дані ще не імпортовано!';
 $string['importsuccess'] = 'дані успішно імпортовано!';
 $string['importsuccess_own'] = 'індивідуальні дані успішно імпортовано!';
@@ -419,7 +419,7 @@ $string['noxmlfile'] = 'Немає доступних даних для імпо
 $string['numb'] = 'Номер';
 $string['number_of_found_students'] = 'кількість знайдених студентів';
 $string['number_of_students'] = 'кількість студентів';
-$string['oldxmlfile'] = 'Ви використовуєте застарілий xml-файл. Будь ласка, створіть нові результати/стандарти на <a href="http://www.edustandards.org">www.edustandards.org</a> або відвідайте <a href="http://www.github.com/gtn /edustandards">github.com/gtn/edustandards</a>, щоб завантажити доступний файл xml у каталог blocks xml.';
+$string['oldxmlfile'] = 'Ви використовуєте застарілий xml-файл. Будь ласка, створіть нові результати/стандарти на <a href="https://comet.edustandards.org">www.edustandards.org</a> або відвідайте <a href="http://www.github.com/gtn /edustandards">github.com/gtn/edustandards</a>, щоб завантажити доступний файл xml у каталог blocks xml.';
 $string['opencomps'] = 'Оберіть свої компетенції';
 $string['optional_step'] = 'У вашому курсі ще немає учасників. Якщо ви хочете зареєструвати нових, скористайтеся цим посиланням.';
 $string['OR'] = 'АБО';
@@ -665,6 +665,10 @@ $string['settings_periods'] = 'Записи розкладу';
 $string['settings_periods_description'] = 'Тижневий графік можна адаптувати до будь-якого розкладу. Використовуйте один рядок у текстовій області для кожного введення часу. Ви можете використовувати будь-який формат, який вам подобається, напр. «1-ша година» або «07:30 - 09:00».';
 $string['settings_schedulebegin'] = 'Початок розкладу';
 $string['settings_schedulebegin_description'] = 'Початковий час для першого блоку в розкладі. Формат hh:mm';
+$string['settings_description_nurmoodleunddakora'] = '<b>Only Moodle and Dakora App</b>';
+$string['settings_description_nurdakoraplus'] = '<b>Only DakoraPlus App</b>';
+$string['settings_description_nurdakora'] = '<b>Only Dakora App</b>';
+$string['settings_description_nurdiggr'] = '<b>Only Diggr+ and elove App</b>';
 $string['settings_scheduleunits'] = 'Кількість блоків';
 $string['settings_scheduleunits_description'] = 'Кількість блоків у розкладі';
 $string['settings_schoolname'] = 'Назва та адреса школи';

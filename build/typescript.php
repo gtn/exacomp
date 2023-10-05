@@ -4,12 +4,27 @@ require __DIR__ . '/../inc.php';
 
 global $CFG;
 
-$servicesFiles = [
-    __DIR__ . '/../db/services.php',
-    $CFG->dirroot . '/mod/quiz/db/services.php',
-    $CFG->dirroot . '/lib/db/services.php',
-    $CFG->dirroot . '/message/output/popup/db/services.php',
+$servicesGroups = [
+    'default' => [
+        __DIR__ . '/../db/services.php',
+        $CFG->dirroot . '/mod/quiz/db/services.php',
+        $CFG->dirroot . '/lib/db/services.php',
+        $CFG->dirroot . '/message/output/popup/db/services.php',
+    ],
+    'exapdf' => [
+        $CFG->dirroot . '/mod/assign/feedback/exapdf/db/services.php',
+    ],
 ];
+
+$group = optional_param('group', '', PARAM_TEXT);
+if (!$group || empty($servicesGroups[$group])) {
+    foreach ($servicesGroups as $key => $tmp) {
+        echo '<a href="' . $_SERVER['PHP_SELF'] . '?group=' . $key . '">' . $key . '</a><br/>';
+    }
+    exit;
+} else {
+    $servicesFiles = $servicesGroups[$group];
+}
 
 function moodle_type_to_typescript_type($isParameters, $type) {
     if ($type == 'int' || $type == 'float') {
@@ -23,8 +38,23 @@ function moodle_type_to_typescript_type($isParameters, $type) {
     return $tsType;
 }
 
+$dokuHeader = '';
+if ($group == 'exapdf') {
+    $assignfeedback_exapdf_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+    $dokuHeader = "// assignfeedback_exapdf version: " . $assignfeedback_exapdf_info->versiondisk . "\n";
+} else {
+    $block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+
+    $dokuHeader .= "// moodle release: " . $CFG->release . "\n";
+    $dokuHeader .= "// block_exacomp version: " . $block_exacomp_info->versiondisk . "\n";
+}
+$dokuHeader .= "\n";
+
 $doku = '';
+
 $dokuInterfaces = '';
+
+$definedEnumsByDefenition = [];
 
 foreach ($servicesFiles as $servicesFile) {
     require $servicesFile;
@@ -39,16 +69,26 @@ foreach ($servicesFiles as $servicesFile) {
             require_once $CFG->dirroot . '/' . $function['classpath'];
         }
 
-        $method = new ReflectionMethod($function['classname'], $function['methodname']);
+        $methodname = $function['methodname'] ?? 'execute'; // new style with one class per webservice
+        try {
+            $method = new ReflectionMethod($function['classname'], $methodname);
+        } catch (\Exception $e) {
+            $doku .= "\n  // Error in Webservice {$functionName}: " . $e->getMessage() . "\n";
+            continue;
+        }
 
-        $recursor = function($isParameters, $namePrefix, $o) use (&$recursor) {
+        $recursor = function($isParameters, $namePrefix, $o) use (&$recursor, &$definedEnumsByDefenition) {
             if ($o instanceof external_multiple_structure) {
                 $dokuInterface = $recursor($isParameters, $namePrefix . '_item', $o->content);
-                $dokuInterface .= "export type {$namePrefix} = {$namePrefix}_item[]\n\n";
+                $dokuInterface .= "export type {$namePrefix} = {$namePrefix}_item[];\n\n";
 
                 return $dokuInterface;
             } elseif ($o instanceof external_single_structure) {
-                $dokuInterface = "export interface {$namePrefix} {\n";
+                $dokuInterface = "export interface {$namePrefix} {";
+
+                if ($o->keys) {
+                    $dokuInterface .= "\n";
+                }
 
                 foreach ($o->keys as $paramName => $paramInfo) {
                     if ($paramInfo instanceof external_value) {
@@ -64,13 +104,27 @@ foreach ($servicesFiles as $servicesFile) {
 
                             $parts = explode(',', $matches[1]);
 
+                            $enumFields = join("", array_map(function($part) {
+                                return "  " . ucfirst(trim($part)) . " = '" . trim($part) . "',\n";
+                            }, $parts));
+                            $enumName = 'enum_' . join("_", array_map(function($part) {
+                                    return trim($part);
+                                }, $parts));
+
+                            // enums with same defenition have the same type
                             $tsType = $namePrefix . '_' . $paramName;
-                            $dokuInterface = "export enum {$tsType} {\n" .
-                                join("", array_map(function($part) {
-                                    return "  " . ucfirst(trim($part)) . " = '" . trim($part) . "',\n";
-                                }, $parts)) .
-                                "}\n" .
+                            $dokuInterface = "export { $enumName as $tsType };\n\n" .
                                 $dokuInterface;
+
+                            if (empty($definedEnumsByDefenition[$enumFields])) {
+                                $dokuInterface = "export enum {$enumName} {\n" . $enumFields . "}\n\n" .
+                                    $dokuInterface;
+
+                                // save enum defenition for later
+                                $definedEnumsByDefenition[$enumFields] = $tsType;
+                            }
+
+                            $tsType = $enumName;
                         } else {
                             $tsType = moodle_type_to_typescript_type($isParameters, $paramInfo->type);
                         }
@@ -126,12 +180,12 @@ foreach ($servicesFiles as $servicesFile) {
             }
         };
 
-        $paramMethod = new ReflectionMethod($function['classname'], $function['methodname'] . '_parameters');
+        $paramMethod = new ReflectionMethod($function['classname'], $methodname . '_parameters');
         /* @var external_function_parameters $params */
         $params = $paramMethod->invoke(null);
         $dokuInterfaces .= $recursor(true, "{$functionName}_parameters", $params);
 
-        $returnMethod = new ReflectionMethod($function['classname'], $function['methodname'] . '_returns');
+        $returnMethod = new ReflectionMethod($function['classname'], $methodname . '_returns');
         /* @var external_description $returns */
         $returns = $returnMethod->invoke(null);
 
@@ -152,15 +206,20 @@ foreach ($servicesFiles as $servicesFile) {
     }
 }
 
-$doku = "export type param_string = string | number | boolean | null;\n" .
+$doku = $dokuHeader .
+    "export type param_string = string | number | boolean | null;\n" .
     "export type param_boolean = string | number | boolean | null;\n" .
     "export type param_number = string | number | null;\n" .
     "\n" .
     $dokuInterfaces .
-    "\n\n" .
-    "export default abstract class MoodleWebserviceDefinitions {\n" .
-    "  abstract callWebservice<T = any>(wsfunction: string, payload: any): Promise<T>;\n" .
-    $doku .
-    "}";
+    "// Idea from: https://www.typescriptlang.org/docs/handbook/mixins.html\n" .
+    "type GConstructor<T = {}> = new (...args: any[]) => T;\n" .
+    "type WebserviceBase = GConstructor<{ callWebservice<T = any>(wsfunction: string, payload: any): Promise<T> }>;\n" .
+    "\n" .
+    "export default function WebserviceDefinitions<TBase extends WebserviceBase>(Base: TBase) {\n" .
+    "  return class Extended extends Base {\n" .
+    "  " . preg_replace('!^!m', '  ', trim($doku)) . "\n" .
+    "  }\n" .
+    "}\n\n";
 
 echo '<pre>' . htmlspecialchars($doku);

@@ -112,7 +112,15 @@ switch ($style) {
     case 1:
         //could be optimized together with block_exacomp_build_example_tree
         //non critical - only 1 additional query for whole loading process
+        $examples = block_exacomp_get_examples_by_course($courseid);
+        // for order and additional condition
         $examples = \block_exacomp\example::get_objects_sql("
+            SELECT DISTINCT e.*
+                FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
+                WHERE e.id IN (".implode(',', array_keys($examples)).") "
+             .(!$isTeacher ? " AND e.is_teacherexample = 0 " : "")
+        );
+        /*$examples = \block_exacomp\example::get_objects_sql("
             SELECT DISTINCT e.*
             FROM {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct
             JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} dt ON ct.topicid = dt.topicid
@@ -121,7 +129,7 @@ switch ($style) {
             WHERE ct.courseid = ?
             " . (!$isTeacher ? " AND e.is_teacherexample = 0 " : "") . "
             ORDER BY e.title
-        ", [$courseid]);
+        ", [$courseid]);*/
 
         if (!$isTeacher) {
             $examples = array_filter($examples, function($example) use ($courseid, $studentid) {

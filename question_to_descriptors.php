@@ -31,9 +31,8 @@ require_once __DIR__ . '/classes/data.php';
 $courseid = required_param('courseid', PARAM_INT);
 //$moduleid = required_param('moduleid', PARAM_INT);
 $action = optional_param("action", "", PARAM_TEXT);
-$descs = optional_param('desc', '', PARAM_RAW);
+$descs = optional_param_array('desc', [], PARAM_INT);
 $questid = optional_param('questid', '', PARAM_RAW);
-
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_simplehtml', $courseid);
 }

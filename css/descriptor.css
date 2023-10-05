@@ -1,0 +1,8 @@
+.descriptor_form {
+    padding: 0 20px;
+}
+
+.descriptor_form input[type="text"],
+.descriptor_form select {
+    width: 100% !important;
+}

@@ -135,7 +135,7 @@ namespace block_exacomp\common {
             }
         }
 
-        public function addChild($name, $value = null, $namespace = null) {
+        public function addChild(mixed $name, ?string $value = null, ?string $namespace = null): ?\SimpleXMLElement {
             if ($name instanceof SimpleXMLElement) {
                 $newNode = $name;
                 $node = dom_import_simplexml($this);
@@ -771,6 +771,7 @@ namespace block_exacomp {
 
     if (_export_function('get_string')) {
         function get_string($identifier, $component = null, $a = null) {
+            return '';
         }
     }
     if (_export_function('print_error')) {
@@ -778,7 +779,8 @@ namespace block_exacomp {
         }
     }
     if (_export_function('trans')) {
-        function trans() {
+        function trans($string_or_strings, $arg_or_args = null) {
+            return '';
         }
     }
 }
@@ -804,6 +806,7 @@ namespace {
 
     if (_block_exacomp_export_function('get_string')) {
         function block_exacomp_get_string($identifier, $component = null, $a = null) {
+            return '';
         }
     }
     if (_block_exacomp_export_function('print_error')) {
@@ -811,7 +814,8 @@ namespace {
         }
     }
     if (_block_exacomp_export_function('trans')) {
-        function block_exacomp_trans() {
+        function block_exacomp_trans($string_or_strings, $arg_or_args = null) {
+            return '';
         }
     }
 }

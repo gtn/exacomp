@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20201003" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20230309" COMMENT="XMLDB file for Moodle blocks/exacomp"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -95,7 +95,6 @@
                 <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="hidden" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -109,7 +108,6 @@
                 <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="hidden" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -523,6 +521,8 @@
                 <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="lastmodifiedbyid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="addedtoschedulebyid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the course in which the example is treated"/>
@@ -766,7 +766,7 @@
                 <FIELD NAME="provider" TYPE="char" LENGTH="15" NOTNULL="false" SEQUENCE="false" COMMENT="provider"/>
                 <FIELD NAME="tenant_id" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="tenant_id"/>
                 <FIELD NAME="school" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="school name from provider"/>
-                <FIELD NAME="remoteuserid" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="remoteuserid" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="remoteuserrole" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="user role in remote"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="userid in moodle"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="time mapping was created"/>

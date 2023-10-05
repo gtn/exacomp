@@ -62,4 +62,13 @@ $tasks = array(
         'month' => '*',
         'dayofweek' => '*',
     ),
+    array(
+        'classname' => 'block_exacomp\task\clear_exacomp_weekly_schedule',
+        'blocking' => 0,
+        'minute' => '59',
+        'hour' => '23',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '0',
+    )
 );

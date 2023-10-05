@@ -665,38 +665,6 @@ var formunsaved = false;
       $children.find(':checkbox').prop('checked', $children.find(':checkbox:not(:checked)').length > 0);
     });
 
-    $(document).ready(function () {
-      $('.selectallornone').on('click', function () {
-        var val = $("input:checkbox").get(1).checked;
-        $("input:checkbox").each(function () {
-          if ($(this).attr('name').substring(0, 4) == 'data') {
-            if (val) {
-              $(this).prop('checked', false);
-            } else {
-              $(this).prop('checked', true);
-            }
-          }
-        });
-      });
-    });
-
-    $(document).on('click', '.schooltype', function (event) {
-      event.preventDefault();
-      var i = $(this).children().get(0);
-      var hidden = $(this).next().get(0);
-      console.log(hidden);
-      if (i.classList.contains('fa-eye')) {
-        i.classList.remove('fa-eye');
-        i.classList.add('fa-eye-slash');
-        hidden.value = 1;
-      } else {
-        i.classList.add('fa-eye');
-        i.classList.remove('fa-eye-slash');
-        hidden.value = 0;
-      }
-
-    });
-
     // init
     $(document).on('rg2.init', 'table.rg2', function () {
       var $table = $(this);
@@ -1053,6 +1021,7 @@ var formunsaved = false;
   window.onbeforeunload = function unloadPage() {
     if (formunsaved && $('form.checksaving_on_leavepage').length) {
       // show message, but this message often is reloading via default browser message
+      // Looks like almost all browsers closed possibility to change this message.
       return M.str.block_exacomp.donotleave_page_message + '  ';
     }
   };

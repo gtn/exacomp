@@ -394,6 +394,7 @@ class data {
         $time_elapsed_secs = microtime(true) - $start;
         mtrace("Seconds spent on deleting unused mms: " . $time_elapsed_secs);
 
+
         // delete competence gradings of competences that do not exists anymore ==> subjects, topics, descriptors are 3 different tables
         $start = microtime(true);
         $sql = "
@@ -1899,12 +1900,12 @@ class data_importer extends data {
         }
 
         $file = tempnam($CFG->tempdir, "zip");
-        $handle = @fopen($url, 'r');
-        if (!$handle) {
+        $content = download_file_content($url);
+        if (!$content) {
             throw new import_exception("could not open url '$url'");
         }
 
-        file_put_contents($file, $handle);
+        file_put_contents($file, $content);
         $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
 
         @unlink($file);
@@ -2296,7 +2297,6 @@ class data_importer extends data {
                 $activityid = self::get_new_activity_id($GLOBALS['activexamples']['new_activityid'][$i], $GLOBALS['activexamples']['activitytype'][$i], $course_template);
                 block_exacomp_set_exampleactivity($activityid, $GLOBALS['activexamples']['example_sourceid'][$i]);
             }
-
             @rmdir($CFG->tempdir . '/backup/activities');
             @unlink($CFG->tempdir . '/backup/data.xml');
 
@@ -2979,6 +2979,7 @@ class data_importer extends data {
         $descriptor = self::parse_xml_item($xmlItem);
         $descriptor->crdate = self::$import_time;
 
+
         if ($parent > 0) {
             $descriptor->parentid = $parent;
             $descriptor->sorting = $sorting;
@@ -3183,6 +3184,14 @@ class data_importer extends data {
             // Not needed, Parentdescriptor _mm entries are deleted anyways TODO: find out what exaclty happend in edge cases
         }
 
+        // If this topic is imported from orgunit (virtual subject).
+        if (@$xmlItem->attributes()->fromOrgunit) {
+            // Auto-activate topics. Only into related Moodle course
+            if (@$xmlItem->attributes()->courseId) {
+                block_exacomp_set_coursetopics((int)$xmlItem->attributes()->courseId, [$topic->id]);
+            }
+        }
+
         if ($xmlItem->children) {
             foreach ($xmlItem->children->topic as $child) {
                 self::insert_topic($child, $topic->id);
@@ -3222,10 +3231,10 @@ class data_importer extends data {
             // $xmlItem->topics->topic is an object with an @attributes field
             $xmlTopicSourceData = array(array_map(function($t) {
                 return ["source" => $t["@attributes"]["source"], "id" => $t["@attributes"]["id"]];
-            }, self::parse_xml_item($xmlItem)->topics)["topic"]);
+            }, @self::parse_xml_item($xmlItem)->topics)["topic"]);
         }
 
-        // get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wront
+        // get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wrong
         $existingTopics = g::$DB->get_records(BLOCK_EXACOMP_DB_TOPICS, array('subjid' => $subject->id, 'source' => $subject->source), '', 'id, sourceid, source');
         foreach ($existingTopics as $topic) {
             // We need a comparetopic array for the in_array() function
@@ -3262,6 +3271,7 @@ class data_importer extends data {
 
         return $subject;
     }
+
 
     private static function insert_schooltype($xmlItem, $source_local_id, $schedulerId = 0) {
         $schooltype = self::parse_xml_item($xmlItem);
@@ -3398,7 +3408,6 @@ class data_importer extends data {
                 array_push($GLOBALS['activexamples']['activitytype'], $activityType);
             } else {
                 array_push($GLOBALS['activexamples']['old_activityid'], $activityId);
-
                 if ($example->activityid != 0) {
                     @rename($CFG->tempdir . '/backup/activities/activity' . $activityId, $CFG->tempdir . '/backup/activity' . $activityId);
                 } else if ($example->is_moodle_activity != 0) {
@@ -3531,6 +3540,11 @@ class data_importer extends data {
         $tempActivityFolder = $CFG->tempdir . '/backup/example_activity' . $exampleId;
         $packer = get_file_packer('application/zip');
         $arch = $packer->extract_to_pathname($taskFile, $tempActivityFolder);
+
+        /*$filesystem = $fs->get_file_system();
+        $localpath = $filesystem->get_local_path_from_storedfile($taskFile, true);
+        $arch = extract_zip_subdir($localpath, "", $tempActivityFolder, $tempActivityFolder);*/
+
         if ($arch !== false) {
             // get activity data from unpacked xml
             $activityXmlFile = $tempActivityFolder . '/activity/moodle_backup.xml';

@@ -18,6 +18,8 @@ require_once $CFG->libdir . '/formslib.php';
 
 class block_exacomp_example_upload_form extends moodleform {
 
+    private $hidetaxonomyselector = false;
+
     function definition() {
         global $CFG, $USER, $DB, $PAGE;
 
@@ -74,11 +76,12 @@ class block_exacomp_example_upload_form extends moodleform {
             $mform->addElement('text', 'timeframe', block_exacomp_get_string("timeframe_example"), 'maxlength="255" size="60"');
             $mform->setType('timeframe', PARAM_TEXT);
 
-            //if (@$this->_customdata['taxonomies']) {
+            if (!@$this->_customdata['taxonomies']) {
+                $this->hidetaxonomyselector = true;
+            }
             $tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'), @$this->_customdata['taxonomies']);
             $tselect->setMultiple(true);
             $tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX, array("exampleid" => @$this->_customdata['exampleid']), "", "taxid")));
-            //}
 
             $mform->addElement('checkbox', 'isTeacherexample', block_exacomp_get_string('is_teacherexample'));
             $mform->setType('isTeacherexample', PARAM_INT);
@@ -223,10 +226,16 @@ class block_exacomp_example_upload_form extends moodleform {
         @$doc->loadHTML(mb_convert_encoding($out, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
         $newInput = $doc->createDocumentFragment();
-        $newInput->appendXML('<br /><span>' . block_exacomp_get_string('example_add_taxonomy') . '</span> <input class="form-control" name="newtaxonomy" value="" size="10" />');
+        $newInput->appendXML('<br /><span class="example_add_taxonomy">' . block_exacomp_get_string('example_add_taxonomy') . '</span> <input type="text" class="form-control" name="newtaxonomy" value="" size="10" />');
         foreach ($selector->query('//select[@name=\'taxid[]\']') as $e) {
-            $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
+            $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig taxonomy_selector');
+            if ($this->hidetaxonomyselector) {
+                $e->setAttribute('style', 'display: none;');
+            }
             $e->parentNode->appendChild($newInput);
+        }
+        foreach ($selector->query('//form') as $f) {
+            $f->setAttribute("class", $f->getAttribute('class') . ' example_upload_form');
         }
         $output = $doc->saveHTML($doc->documentElement);
         print $output;

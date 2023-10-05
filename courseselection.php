@@ -85,12 +85,12 @@ if ($action == 'save') {
                 } else {
                     $linkTo = html_writer::link(new moodle_url('activities_to_descriptors.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
                 }
-                $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br')
+                $headertext = html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
                     . html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
                     . $linkTo;
             }
         } else {
-            $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br')
+            $headertext = html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
                 . html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px')) . block_exacomp_get_string('completed_config');
 
             $students = block_exacomp_get_students_by_course($courseid);
@@ -116,7 +116,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 // skillsmanagemenet has a per course configuration, excaomp has a per moodle configuration (courseid = 0)
 $limit_courseid = block_exacomp_is_skillsmanagement() ? $courseid : 0;
 
-$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid);
+$schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid, true);
 
 $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
@@ -130,7 +130,6 @@ if (isset($SESSION->courseselection_filter)
         $newSubjects = array();
         foreach ($schooltype->subjects as $sid => $subject) {
             $addSubject = false;
-
             foreach ($subject->topics as $topic) {
                 if (!empty($active_topics[$topic->id])) {
                     $addSubject = true;

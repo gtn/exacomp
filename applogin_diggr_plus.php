@@ -37,7 +37,7 @@ function block_exacomp_load_service($serviceshortname) {
     // Get an existing token or create a new one.
     $context = context_system::instance();
     // a part core code to prevent erorr message to own
-    if (!is_siteadmin($USER) && has_capability('moodle/webservice:createtoken', $context)) {
+    if (has_capability('moodle/webservice:createtoken', $context)) {
         $token = external_generate_token_for_current_user($service);
     } else {
         throw new moodle_exception('diggrapp_cannotcreatetoken', 'block_exacomp');
@@ -121,7 +121,7 @@ function block_exacomp_login_successfull($login_request_data) {
 function block_exacomp_is_return_uri_allowed($return_uri) {
     global $CFG;
 
-    $allowed_redirect_uris = [$CFG->wwwroot, 'diggr-plus.at', 'www.diggr-plus.at'];
+    $allowed_redirect_uris = [$CFG->wwwroot, 'diggr-plus.at', 'www.diggr-plus.at', 'dakoraplus.eu'];
     $additional_allowed_redirect_uris = trim(get_config('exacomp', 'applogin_redirect_urls'));
     if ($additional_allowed_redirect_uris) {
         $additional_allowed_redirect_uris = preg_split('![\s\r\n]+!', $additional_allowed_redirect_uris);
@@ -131,14 +131,20 @@ function block_exacomp_is_return_uri_allowed($return_uri) {
     $return_uri_allowed = false;
     foreach ($allowed_redirect_uris as $allowed_redirect_uri) {
         // add protocol, if needed
-        if (strpos($allowed_redirect_uri, '://') === false) {
+        if (!preg_match('!^[a-z]+://!i', $allowed_redirect_uri)) {
             $allowed_redirect_uri = 'https://' . $allowed_redirect_uri;
         }
-        // check url, also allow "www." prefix
-        $regexp = '!^(www\\.)?' . preg_quote($allowed_redirect_uri, '!') . '(/|$)!';
+
+        $regexp = preg_quote($allowed_redirect_uri, '!');
+
         // allow * as wildcard
         $regexp = str_replace('\\*', '.*', $regexp);
-        if (preg_match($regexp, $return_uri)) {
+
+        // also allow "www." prefix
+        $regexp = preg_replace('!^((http|https)[\\\\]?\://)!i', '$1(www\\.)?', $regexp);
+
+        $regexp = "^".rtrim($regexp, '/').'(/.*)?$';
+        if (preg_match("!{$regexp}!", $return_uri)) {
             $return_uri_allowed = true;
             break;
         }
@@ -200,7 +206,7 @@ function block_exacomp_send_login_result($user, $login_request_data) {
 }
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php');
+$PAGE->set_url('/blocks/exacomp/applogin_diggr_plus.php', $_GET);
 
 $action = optional_param('action', '', PARAM_TEXT);
 
@@ -535,6 +541,16 @@ $PAGE->set_pagelayout('embedded');
 
 $SESSION->wantsurl = $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?' . $_SERVER['QUERY_STRING'];
 
+// für cors im iframe ist ein extra redirect mit manueller Benutzerbestätigung notwendig
+// sonst werden die cookies nicht geladen bzw. können auch keine neuen cookies gesetzt werden
+$extra_iframe_redirect = optional_param('extra_iframe_redirect', '', PARAM_TEXT);
+if ($extra_iframe_redirect) {
+    echo $OUTPUT->header();
+    echo '<div style="margin: 30px;"><a href="'.str_replace('extra_iframe_redirect', 'extra_iframe_redirect_disabled', $_SERVER['REQUEST_URI']).'">Bitte hier klicken!</a></div>';
+    echo $OUTPUT->footer();
+    exit;
+}
+
 require_login(0, false, null, false, false);
 
 if (isguestuser()) {
@@ -560,7 +576,17 @@ try {
 } catch (Exception $e) {
     block_exacomp_logout();
 
-    throw $e;
+    echo $OUTPUT->header();
+
+    echo '<div class="login-container" style="max-width: 600px; padding: 60px 30px; text-align: center; margin: 35px auto;">';
+    echo nl2br(block_exacomp_trans(["de:Der Login für externe Apps wurde vom Administrator nicht konfiguriert.\n\nTechnische Info:", "en:The Login for external Apps is not configured.\n\nTechnical Details:"]));
+    echo ' '.$e->getMessage();
+    echo '</br><br/>';
+    echo '<a href="'.$PAGE->url.'">'.block_exacomp_trans(["de:Login erneut versuchen", "en:Retry Login"]).'</a>';
+    echo '</div>';
+
+    echo $OUTPUT->footer();
+    exit;
 }
 
 // hack add moodle sesskey too

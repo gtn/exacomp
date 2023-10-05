@@ -61,8 +61,9 @@ if ($fromimport == 1) {
 // Falls Formular abgesendet, speichern
 if (isset ($action) && $action == 'save') {
     require_sesskey();
-    block_exacomp_set_mdltype(optional_param_array('data', array(), PARAM_INT));
-    block_exacomp_set_schooltype_hidden(optional_param_array('hide', array(), PARAM_INT));
+    $values = optional_param_array('data', array(), PARAM_INT);
+
+    block_exacomp_set_mdltype($values);
 
     if (!isset ($_POST['data'])) {
         $headertext = block_exacomp_get_string('tick_some');
@@ -71,7 +72,8 @@ if (isset ($action) && $action == 'save') {
 
         $url = 'edit_course.php';
 
-        $headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag('br') . html_writer::empty_tag('img', array(
+        $headertext = html_writer::div(block_exacomp_get_string("save_success"), 'alert alert-success')
+            . html_writer::empty_tag('img', array(
                 'src' => new moodle_url ('/blocks/exacomp/pix/' . $img),
                 'alt' => '',
                 'width' => '60px',
@@ -115,8 +117,10 @@ foreach ($levels as $level) {
     $data->levels[$level->id]->schooltypes = array();
 
     $types = block_exacomp_get_schooltypes($level->id);
+
     foreach ($types as $type) {
         $ticked = block_exacomp_get_mdltypes($type->id);
+
         $data->levels[$level->id]->schooltypes[$type->id] = new stdClass ();
         $data->levels[$level->id]->schooltypes[$type->id]->schooltype = $type;
         $data->levels[$level->id]->schooltypes[$type->id]->ticked = $ticked;

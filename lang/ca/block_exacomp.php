@@ -86,7 +86,7 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 ';
 
 //Import
-$string['importinfo'] = 'Please create your outcomes/standards at <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> or visit <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
+$string['importinfo'] = 'Please create your outcomes/standards at <a target="_blank" href="https://comet.edustandards.org">www.edustandards.org</a>';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
 $string['importdone'] = 'Les dades ja s\'han importat des d\'xml';
 $string['importpending'] = 'No s\'han importat les dades!';
@@ -97,7 +97,7 @@ $string['importsuccess'] = 'Les dades s\'han importat correctament!';
 $string['importsuccess_own'] = 'Les dades individuals s\'han importat correctament!';
 $string['importfail'] = 'Hi ha hagut un error durant la importació';
 $string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
-$string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
+$string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="https://comet.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
 
 //Configuration
 $string['explainconfig'] = 'Per fer servir el mòdul de competències d\'exabis, cal triar el teu tipus d\'escola. Les dades necessàries s\'importaran des de l\'arxiu xml.';

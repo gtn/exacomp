@@ -114,9 +114,112 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
     // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     // From Moodle 2.3, use send_stored_file instead.
 
+    $as_pdf = optional_param('as_pdf', false, PARAM_BOOL);
+    if ($as_pdf) {
+        send_stored_file_as_pdf($file, $forcedownload, $options);
+    }
+
+    // $as_image = optional_param('as_image', false, PARAM_TEXT);
+    // if ($as_image) {
+    //     send_stored_file_as_image($file, $forcedownload, $options);
+    // }
+
     send_stored_file($file, 0, 0, $forcedownload, $options);
     exit;
 }
+
+
+function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options) {
+    if ($file->get_mimetype() == 'application/pdf') {
+        // already a pdf
+        send_stored_file($file, null, 0, $forcedownload, $options);
+        exit;
+    }
+
+    $info = $file->get_imageinfo();
+    if (!$info) {
+        send_header_404();
+        die('no image? (no image info)');
+    }
+
+    $a4_width = 210;
+    $a4_height = 297;
+
+    $width = $info['width'];
+    $height = $info['height'];
+
+    // bildmaße: 100x300 -> portrait
+    // bildmaße: 200x250 -> landscape
+
+    // check if image is bigger than a4, else shrink it.
+    // this is needed, because annotation (pencil, stamps, etc.) look best with a4, or else are very small.
+    $ratio = 1;
+    if ($width / $height <= $a4_width / $a4_height) {
+        $orientation = 'P';
+        if ($height > $a4_height) {
+            $ratio = $a4_height / $height;
+        }
+    } else {
+        $orientation = 'L';
+        if ($width > $a4_height) {
+            $ratio = $a4_height / $width;
+        }
+    }
+
+    $width = $width * $ratio;
+    $height = $height * $ratio;
+
+    // create PDF object with image size
+    $pdf = new \FPDF($orientation, 'mm', array($width, $height));
+
+    // add page and image to PDF
+    $pdf->AddPage();
+
+    if (!$tmp_image = $file->copy_content_to_temp()) {
+        die("couldn't create tmp image");
+    }
+
+    // rename tmp image to include extension, fpdf needs the correct extension!
+    $tmp_image_with_extension = $tmp_image . '.' . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+    rename($tmp_image, $tmp_image_with_extension);
+
+    $pdf->Image($tmp_image_with_extension, 0, 0, $width, $height);
+
+    $pdf_output = $pdf->Output('', 'S');
+
+    // Delete temporary image file.
+    @unlink($tmp_image_with_extension);
+
+    send_file($pdf_output, $file->get_filename() . '.pdf', 0, 0, true, $forcedownload, 'application/pdf',
+        false, $options);
+    exit;
+}
+
+
+/*
+function send_stored_file_as_image(\stored_file $file, $forcedownload, $options) {
+    $info = $file->get_imageinfo();
+    if ($info) {
+        // already a image
+        send_stored_file($file, null, 0, $forcedownload, $options);
+        exit;
+    }
+
+    if ($file->get_mimetype() == 'application/pdf') {
+        // convert to image
+
+        $converter = new \core_files\converter();
+        var_dump($converter->can_convert_storedfile_to($file, 'jpg'));
+        $conversion = $converter->start_conversion($file, 'jpg');
+        var_dump($conversion);
+        exit;
+    }
+
+    send_header_404();
+    die('can not convert to image');
+}
+*/
+
 
 function is_exacomp_active_in_course() {
     global $COURSE, $PAGE, $CFG;
@@ -150,7 +253,7 @@ function is_exacomp_active_in_course() {
 function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
     global $CFG, $COURSE, $DB, $PAGE;
 
-    //    $exacomp_active = is_exacomp_active_in_course(); // only inject if the block is active in this course
+    //$exacomp_active = is_exacomp_active_in_course(); // only inject if the block is active in this course
     //
     //    // enableavailability is a setting in mdl_config
     //    if (!empty($CFG->enableavailability) && $exacomp_active) {
@@ -261,3 +364,31 @@ function block_exacomp_coursemodule_standard_elements($formwrapper, $mform) {
 
 //}
 
+
+/**
+ * Inject the exacomp element into all moodle module settings forms.
+ *
+ * @param moodleform $formwrapper The moodle quickforms wrapper object.
+ * @param MoodleQuickForm $mform The actual form object (required to modify the form).
+ */
+function block_exacomp_coursemodule_definition_after_data($formwrapper, $mform) {
+    global $CFG, $COURSE, $DB, $PAGE;
+
+
+    // add button if exaquest is active in this course
+    if (is_exacomp_active_in_course() && $mform->_formName == 'mod_hvp_mod_form' && property_exists($formwrapper, 'dakoraplus')) {
+        ?>
+        <script type="text/javascript">
+            function changeFormActionExacomp() {
+                document.getElementsByClassName("mform")[0].action = "../exacomp/modedit.php";
+            }
+        </script>
+        <?php
+        //$mform->removeElement("tags");
+        //$mform->removeElement("submitbutton2");
+        // the submitbuttons are not there yet ==> cannot remove them here
+        $mform->addElement('submit', 'savehvpactivity', get_string('save_hvp_activity', 'block_exacomp'), 'onClick="changeFormActionExacomp()"');
+    }
+
+    return;
+}
