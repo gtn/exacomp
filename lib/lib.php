@@ -1494,7 +1494,7 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
     global $DB;
 
     return $DB->get_records_sql('
-			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting
+			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, s.hidden
 			FROM {' . BLOCK_EXACOMP_DB_SCHOOLTYPES . '} s
 			JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} m ON m.stid = s.id AND m.courseid = ?
 			ORDER BY s.sorting, s.title
@@ -3507,6 +3507,18 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
     block_exacomp_clean_course_topics($values, $courseid);
 }
 
+function block_exacomp_set_schooltype_hidden($values){
+    global $DB;
+    foreach($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs){
+        $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>0));
+        if(in_array($rs->id, $values)){
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>1));
+        }
+        if($values[$rs->id] != null) {
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>$values[$rs->id]));
+        }
+    }
+}
 /**
  * called when schooltype is changed, remove old topics
  *
