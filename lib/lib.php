@@ -9702,10 +9702,14 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
     if ($userid == -1) {
         $userid = $USER->id;
     }
+
+    $params = [];
+
     if ($withCompetenceInfo) { // with topics and subjects and evaluation and annotation of example (for diggrplus)
         if ($mindvisibility) {
             // Visibility of Niveaus is NOT minded. But cannot be changed in diggrplus anyways, for which this function is made
             // Student specific visibility is also NOT minded, only global
+            // changed 2023-10-10: mind the desc, topic and example visibility for the actual course, and not globally
             $sql = "SELECT DISTINCT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle,
                         exameval.teacher_evaluation, exameval.student_evaluation, examannot.annotationtext as annotation
             FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex
@@ -9718,9 +9722,9 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
             JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON det.descrid=d.id
             JOIN {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n ON n.id = d.niveauid
 
-            JOIN {" . BLOCK_EXACOMP_DB_DESCVISIBILITY . "} dvis ON d.id=dvis.descrid
-            JOIN {" . BLOCK_EXACOMP_DB_TOPICVISIBILITY . "} tvis ON topic.id=tvis.topicid AND tvis.niveauid IS NULL
-            JOIN {" . BLOCK_EXACOMP_DB_EXAMPVISIBILITY . "} evis ON ex.id=evis.exampleid
+            JOIN {" . BLOCK_EXACOMP_DB_DESCVISIBILITY . "} dvis ON d.id=dvis.descrid AND dvis.courseid=:courseiddvis
+            JOIN {" . BLOCK_EXACOMP_DB_TOPICVISIBILITY . "} tvis ON topic.id=tvis.topicid AND tvis.niveauid IS NULL AND tvis.courseid=:courseidtvis
+            JOIN {" . BLOCK_EXACOMP_DB_EXAMPVISIBILITY . "} evis ON ex.id=evis.exampleid AND evis.courseid=:courseidevis
 
             LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLEEVAL . "} exameval ON exameval.exampleid = ex.id AND exameval.courseid = :courseidexameval AND exameval.studentid = :userid
             LEFT JOIN {" . BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION . "} examannot ON examannot.exampleid = ex.id AND examannot.courseid = :courseidexamannot
@@ -9732,6 +9736,8 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
                 . (!block_exacomp_is_teacher() && !block_exacomp_is_teacher($courseid, $USER->id) /*for webservice*/ ? ' AND ex.is_teacherexample = 0 ' : '') . "
             AND (ex.title LIKE :searchtitle OR ex.description LIKE :searchdescription)
             ";
+
+            $params = ['courseiddvis' => $courseid, 'courseidtvis' => $courseid, 'courseidevis' => $courseid, "courseidexameval" => $courseid, "courseidexamannot" => $courseid, "courseidexample" => $courseid];
         } else {
             $sql = "SELECT DISTINCT ex.*, topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid, ct.courseid as courseid, d.niveauid, n.title as niveautitle
             FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex
@@ -9775,8 +9781,13 @@ function block_exacomp_get_examples_by_course($courseid, $withCompetenceInfo = f
 		";
     }
 
-    return g::$DB->get_records_sql($sql, array("courseid" => $courseid, "courseidsub" => $courseid, "courseidexample" => $courseid, "courseidexameval" => $courseid,
-        "courseidexamannot" => $courseid, "searchtitle" => "%" . $search . "%", "searchdescription" => "%" . $search . "%", "userid" => $userid));
+    return g::$DB->get_records_sql($sql, array_merge(
+        [
+            "courseid" => $courseid, "courseidsub" => $courseid,
+            "searchtitle" => "%" . $search . "%", "searchdescription" => "%" . $search . "%", "userid" => $userid,
+        ],
+        $params
+    ));
 }
 
 function block_exacomp_get_crosssubject_examples_by_course($courseid) {
