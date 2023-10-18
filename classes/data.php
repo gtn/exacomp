@@ -3229,9 +3229,9 @@ class data_importer extends data {
             }, self::parse_xml_item($xmlItem)->topics)["topic"];
         } else {
             // $xmlItem->topics->topic is an object with an @attributes field
-            $xmlTopicSourceData = array(array_map(function($t) {
+            $xmlTopicSourceData = array_map(function($t) {
                 return ["source" => $t["@attributes"]["source"], "id" => $t["@attributes"]["id"]];
-            }, @self::parse_xml_item($xmlItem)->topics)["topic"]);
+            }, array(@self::parse_xml_item($xmlItem)->topics["topic"]));
         }
 
         // get all topics of the current subject. The check for the source should actually not be necessary, but is there to be absolutely sure to not delete anything wrong
