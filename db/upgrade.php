@@ -4103,31 +4103,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2023042100, 'exacomp');
     }
-
-    if ($oldversion < 2022102700) {
+    
+    if ($oldversion < 2023102700) {
         $table = new xmldb_table('block_exacompedulevels');
 
         $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
-        // exacomp savepoint reached
-        upgrade_block_savepoint(true, 2022102700, 'exacomp');
-    }
-
-    if ($oldversion < 2022103100){
         $table = new xmldb_table('block_exacompschooltypes');
 
         $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
         // exacomp savepoint reached
-        upgrade_block_savepoint(true, 2022103100, 'exacomp');
-
+        upgrade_block_savepoint(true, 2023102700, 'exacomp');
     }
+
+   
 
     //if ($oldversion < 2022101900) {
     //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
