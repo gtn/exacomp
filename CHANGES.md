@@ -1,4 +1,8 @@
 ### latest ###
+* fix xml import issue
+* improve performance when loading examples list
+* code improvements for external services
+* add info if webservices are deactivated when logging in via dakora+ app
 
 ### v4.6.7 (2023093000) ###
 * always allow login on dakoraplus.eu
