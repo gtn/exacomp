@@ -1,4 +1,6 @@
-### next ###
+### latest ###
+
+### v4.6.7 (2023093000) ###
 * always allow login on dakoraplus.eu
 
 ### v4.6.7 (2023091700) ###
