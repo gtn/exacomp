@@ -5,7 +5,6 @@ use Firebase\JWT\JWT;
 
 require __DIR__ . '/inc.php';
 require_once($CFG->libdir . '/externallib.php');
-require_once __DIR__ . '/externallib.php';
 
 function block_exacomp_json_result_success($data) {
     header('Content-Type: application/json');

@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace block_exacomp\common {
+    use block_exacomp\developer;
 
     defined('MOODLE_INTERNAL') || die();
 
@@ -568,9 +569,7 @@ namespace block_exacomp\common {
         }
 
         // include other developer scripts
-        if (file_exists(__DIR__ . '/../build/developermode.php')) {
-            require __DIR__ . '/../build/developermode.php';
-        }
+        developer::developer_actions();
     });
 
     /**

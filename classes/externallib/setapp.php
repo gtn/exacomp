@@ -14,17 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace block_exacomp\externallib;
+
 defined('MOODLE_INTERNAL') || die();
 
-require __DIR__ . '/inc.php';
-require_once $CFG->libdir . '/externallib.php';
-require_once __DIR__ . '/externallib.php';
+use context_course;
+use Exception;
+use external_function_parameters;
+use external_multiple_structure;
+use external_single_structure;
+use external_value;
+use moodle_exception;
+use stdClass;
 
-use block_exacomp\globals as g;
-use block_exacomp\printer;
-use block_exacomp\printer_TCPDF_student_report;
-
-class block_exacomp_external_setapp extends external_api {
+class setapp extends base {
     /**
      * Returns description of method parameters
      *
@@ -311,7 +314,7 @@ class block_exacomp_external_setapp extends external_api {
             'courseid' => $courseid,
         ));
 
-        block_exacomp_external::require_can_access_course_user($courseid, $userid);
+        externallib::require_can_access_course_user($courseid, $userid);
         $courses = enrol_get_users_courses($userid);
         $course = $courses[$courseid];
 
@@ -463,7 +466,7 @@ class block_exacomp_external_setapp extends external_api {
             'descriptors' => $descriptor_gradings,
         ));
 
-        block_exacomp_external::require_can_access_course_user($courseid, $userid);
+        externallib::require_can_access_course_user($courseid, $userid);
         $courses = enrol_get_users_courses($userid);
         $course = $courses[$courseid];
 
@@ -493,7 +496,7 @@ class block_exacomp_external_setapp extends external_api {
 
             block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject_grading['id'], null);
 
-            g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
+            $DB->insert_or_update_record('block_exacompsubjstudconfig', [
                 'assess_with_grades' => $subject_grading['assess_with_grades'],
                 'is_pflichtgegenstand' => $subject_grading['is_pflichtgegenstand'],
                 'spf' => $subject_grading['spf'],
@@ -560,7 +563,7 @@ class block_exacomp_external_setapp extends external_api {
         if ($userid == 'all') {
             $allusers = true;
             $userid = 0;
-            block_exacomp_external::require_can_access_course($courseid);
+            externallib::require_can_access_course($courseid);
 
             $course = $DB->get_record('course', array('id' => $courseid));
 
@@ -568,7 +571,7 @@ class block_exacomp_external_setapp extends external_api {
         } else {
             $allusres = false;
             // keep userid
-            block_exacomp_external::require_can_access_course_user($courseid, $userid);
+            externallib::require_can_access_course_user($courseid, $userid);
 
             $courses = enrol_get_users_courses($userid);
             $course = $courses[$courseid];
@@ -865,39 +868,35 @@ class block_exacomp_external_setapp extends external_api {
         ));
     }
 
-    public static function diggrv_create_course_parameters() {
-        return new external_function_parameters (array(
-            'coursename' => new external_value (PARAM_TEXT),
-            'schoolcode' => new external_value (PARAM_TEXT),
-        ));
-    }
-
-    /**
-     * @ws-type-write
-     */
-    public static function diggrv_create_course($courseid, $schoolcode) {
-        static::validate_parameters(static::block_exacomp_diggrv_create_course_parameters(), array(
-            'courseid' => $courseid,
-            'schoolcode' => $schoolcode,
-        ));
-
-        //        block_exacomp_require_teacher($courseid);
-        // TODO: check if is teacher --> how?
-
-        die('not finished');
-
-        block_exacomp_diggrv_create_first_course($courseid, $schoolcode);
-
-        return ['success' => true];
-    }
-
-    public static function diggrv_create_course_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-        ));
-    }
-
-    protected function custom_htmltrim($string) {
-        return block_exacomp_external::custom_htmltrim($string);
-    }
+    // public static function diggrv_create_course_parameters() {
+    //     return new external_function_parameters (array(
+    //         'coursename' => new external_value (PARAM_TEXT),
+    //         'schoolcode' => new external_value (PARAM_TEXT),
+    //     ));
+    // }
+    //
+    // /**
+    //  * @ws-type-write
+    //  */
+    // public static function diggrv_create_course($courseid, $schoolcode) {
+    //     static::validate_parameters(static::block_exacomp_diggrv_create_course_parameters(), array(
+    //         'courseid' => $courseid,
+    //         'schoolcode' => $schoolcode,
+    //     ));
+    //
+    //     //        block_exacomp_require_teacher($courseid);
+    //     // TODO: check if is teacher --> how?
+    //
+    //     die('not finished');
+    //
+    //     block_exacomp_diggrv_create_first_course($courseid, $schoolcode);
+    //
+    //     return ['success' => true];
+    // }
+    //
+    // public static function diggrv_create_course_returns() {
+    //     return new external_single_structure (array(
+    //         'success' => new external_value (PARAM_BOOL, 'status'),
+    //     ));
+    // }
 }

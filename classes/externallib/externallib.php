@@ -14,28 +14,45 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace block_exacomp\externallib;
+
 defined('MOODLE_INTERNAL') || die();
 
-require __DIR__ . '/inc.php';
-require_once $CFG->libdir . '/externallib.php';
 require_once $CFG->dirroot . '/mod/assign/locallib.php';
 require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
 
+use block_enrolcode_lib;
 use block_exacomp\cross_subject;
 use block_exacomp\db_record;
 use block_exacomp\descriptor;
 use block_exacomp\event\example_commented;
 use block_exacomp\event\example_submitted;
+use block_exacomp\example;
 use block_exacomp\global_config;
 use block_exacomp\globals as g;
 use block_exacomp\topic;
+use block_exacomp_permission_exception;
 use block_exaport\api;
+use context_course;
+use context_module;
+use context_user;
+use core_plugin_manager;
+use Exception;
+use external_files;
+use external_format_value;
+use external_function_parameters;
+use external_multiple_structure;
+use external_single_structure;
+use external_util;
+use external_value;
+use invalid_parameter_exception;
+use moodle_exception;
+use moodle_url;
+use stdClass;
+use user_picture;
 
-//use tool_policy\api;
-//use tool_policy\policy_version;
-
-class block_exacomp_external extends external_api {
+class externallib extends base {
 
     /**
      * Returns description of method parameters
@@ -3147,7 +3164,7 @@ class block_exacomp_external extends external_api {
             'fileitemid' => $fileitemid,
         ));
 
-        $example = block_exacomp\example::get($exampleid);
+        $example = example::get($exampleid);
 
         block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
 
@@ -3414,7 +3431,7 @@ class block_exacomp_external extends external_api {
 
         if ($mapping && $role == BLOCK_EXACOMP_ROLE_TEACHER) { // grade ==> mapping needed, save mapped value and save additionalinfo
             //check if teacher, because the student sends the selfevaluationvalue in $value, not in $additinalinfo
-            $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
+            $value = global_config::get_additionalinfo_value_mapping($additionalinfo);
             if (block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid, $subjectid, false, [
                     'notification_customdata' => $customdata,
                 ]) < 0) {
@@ -10187,7 +10204,7 @@ class block_exacomp_external extends external_api {
                     $descriptor->subs[] = $sub;
                     $edited = true;
                 } else if ($example->state > BLOCK_EXACOMP_EXAMPLE_STATE_NOT_SET && $example->state < BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED && !$inwork) {
-                    $sub->example = fale;
+                    $sub->example = false;
                     $sub->title = 'Lernmaterialien in Arbeit';
                     $descriptor->subs[] = $sub;
                     $inwork = true;
@@ -10372,11 +10389,11 @@ class block_exacomp_external extends external_api {
 
         $policies = g::$DB->get_records("tool_policy_versions", array());
 
-        $policies = tool_policy\api::list_current_versions(tool_policy\policy_version::AUDIENCE_LOGGEDIN);
+        $policies = \tool_policy\api::list_current_versions(\tool_policy\policy_version::AUDIENCE_LOGGEDIN);
 
         // During the signup, show compulsory policies only.
         foreach ($policies as $ix => $policyversion) {
-            if ($policyversion->optional == tool_policy\policy_version::AGREEMENT_OPTIONAL) {
+            if ($policyversion->optional == \tool_policy\policy_version::AGREEMENT_OPTIONAL) {
                 unset($policies[$ix]);
             }
         }
@@ -10388,8 +10405,8 @@ class block_exacomp_external extends external_api {
             // Check if this policy version has been agreed or not.
             $versionagreed = false;
             $versiondeclined = false;
-            $acceptances = tool_policy\api::get_user_acceptances($USER->id);
-            $policy->versionacceptance = tool_policy\api::get_user_version_acceptance($USER->id, $policy->id, $acceptances);
+            $acceptances = \tool_policy\api::get_user_acceptances($USER->id);
+            $policy->versionacceptance = \tool_policy\api::get_user_version_acceptance($USER->id, $policy->id, $acceptances);
             if (!empty($policy->versionacceptance)) {
                 // The policy version has ever been replied to before. Check if status = 1 to know if still is accepted.
                 if ($policy->versionacceptance->status) {
@@ -10833,7 +10850,7 @@ class block_exacomp_external extends external_api {
 
         static::validate_parameters(static::dakora_get_evaluation_config_parameters(), array());
 
-        //$confiiig=get_config(\block_exacomp\global_config::get_evalniveaus(true));
+        //$confiiig=get_config(global_config::get_evalniveaus(true));
         //echo('asdf');
 
         return array('use_evalniveau' => block_exacomp_use_eval_niveau(), // TODO: courseid?
@@ -10962,8 +10979,8 @@ class block_exacomp_external extends external_api {
             'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
             'grade_negative_threshold' => block_exacomp_get_assessment_grade_negative_threshold(),
             'verbal_negative_threshold' => block_exacomp_get_assessment_verbose_negative_threshold(),
-            //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
-            //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
+            //'diffLevel_options' => static::return_key_value(global_config::get_diffLevel_options(true)),
+            //'verbose_options' => static::return_key_value(global_config::get_verbose_options()),
             'example_scheme' => block_exacomp_get_assessment_example_scheme(),
             'example_diffLevel' => block_exacomp_get_assessment_example_diffLevel(),
             'example_SelfEval' => block_exacomp_get_assessment_example_SelfEval(),
@@ -11053,8 +11070,8 @@ class block_exacomp_external extends external_api {
             'points_negative_threshold' => block_exacomp_get_assessment_points_negative_threshold(),
             'grade_negative_threshold' => block_exacomp_get_assessment_grade_negative_threshold(),
             'verbal_negative_threshold' => block_exacomp_get_assessment_verbose_negative_threshold(),
-            //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
-            //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
+            //'diffLevel_options' => static::return_key_value(global_config::get_diffLevel_options(true)),
+            //'verbose_options' => static::return_key_value(global_config::get_verbose_options()),
             'example_scheme' => block_exacomp_get_assessment_example_scheme(),
             'example_diffLevel' => block_exacomp_get_assessment_example_diffLevel(),
             'example_SelfEval' => block_exacomp_get_assessment_example_SelfEval(),
@@ -11093,7 +11110,7 @@ class block_exacomp_external extends external_api {
             'show_overview' => block_exacomp_get_config_dakora_show_overview(),
             'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
             'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES, null, 'source', 'id, title, source'),
-			'assessment_verbose_lowerisbetter' => block_exacomp_get_config_assessment_verbose_lowerisbetter(),
+            'assessment_verbose_lowerisbetter' => block_exacomp_get_config_assessment_verbose_lowerisbetter(),
         );
 
         foreach ($assessment_configurations as $id => $configuration) {
@@ -11105,8 +11122,8 @@ class block_exacomp_external extends external_api {
                 'points_negative_threshold' => $configuration["assessment_points_negativ"],
                 'grade_negative_threshold' => $configuration["assessment_grade_negativ"],
                 'verbal_negative_threshold' => $configuration["assessment_verbose_negative"],
-                //'diffLevel_options' => static::return_key_value(\block_exacomp\global_config::get_diffLevel_options(true)),
-                //'verbose_options' => static::return_key_value(\block_exacomp\global_config::get_verbose_options()),
+                //'diffLevel_options' => static::return_key_value(global_config::get_diffLevel_options(true)),
+                //'verbose_options' => static::return_key_value(global_config::get_verbose_options()),
                 'example_scheme' => $configuration["assessment_example_scheme"],
                 'example_diffLevel' => $configuration["assessment_example_diffLevel"],
                 'example_SelfEval' => $configuration["assessment_example_SelfEval"],
@@ -11146,7 +11163,7 @@ class block_exacomp_external extends external_api {
                 'show_overview' => block_exacomp_get_config_dakora_show_overview(),
                 'show_eportfolio' => block_exacomp_get_config_dakora_show_eportfolio(),
                 'categories' => g::$DB->get_records(BLOCK_EXACOMP_DB_CATEGORIES, null, 'source', 'id, title, source'),
-				'assessment_verbose_lowerisbetter' => block_exacomp_get_config_assessment_verbose_lowerisbetter(),
+                'assessment_verbose_lowerisbetter' => block_exacomp_get_config_assessment_verbose_lowerisbetter(),
             );
         }
 
@@ -11282,7 +11299,7 @@ class block_exacomp_external extends external_api {
                     'title' => new external_value (PARAM_TEXT, 'name'),
                     'source' => new external_value (PARAM_TEXT, 'source'),
                 ]), 'values'),
-				'assessment_verbose_lowerisbetter' => new external_value (PARAM_BOOL, 'flag if "The lower the Assessment, the better" is active'),
+                'assessment_verbose_lowerisbetter' => new external_value (PARAM_BOOL, 'flag if "The lower the Assessment, the better" is active'),
             ))),
         ));
     }
@@ -11314,8 +11331,6 @@ class block_exacomp_external extends external_api {
 
     /**
      * Returns description of method return values
-     *
-     * @return external_multiple_structure
      */
     public static function login_returns() {
         return new external_single_structure ([
@@ -13395,7 +13410,7 @@ class block_exacomp_external extends external_api {
 
         //Update material that already exists
         if ($exampleid != -1) {
-            $example = block_exacomp\example::get($exampleid);
+            $example = example::get($exampleid);
             block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
         } else {
             //new material
@@ -14181,19 +14196,6 @@ class block_exacomp_external extends external_api {
         $item->timestampstudent = null;
     }
 
-    public static function custom_htmltrim($string) {
-        //$string = strip_tags($string);
-        $string = nl2br($string);
-        $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>", "<sup>", "</sup>");
-        $string = str_replace($remove, ' ', $string); // new lines to space
-        $string = preg_replace('!\s+!', ' ', $string); // multiple spaces to single
-        $string = fix_utf8($string);
-        // here is possible &nbsp;, but also are possible umlauts...
-        $string = strtr($string, array_flip(get_html_translation_table(HTML_ENTITIES, ENT_QUOTES)));
-        $string = trim($string, chr(0xC2) . chr(0xA0));
-        return $string;
-    }
-
     /**
      * Returns description of method parameters
      *
@@ -14234,7 +14236,7 @@ class block_exacomp_external extends external_api {
             'courseid' => $courseid,
         ));
 
-        $descriptor = block_exacomp\descriptor::get($descriptorid);
+        $descriptor = descriptor::get($descriptorid);
 
         if ($courseid = optional_param('courseid', 0, PARAM_INT)) {
             $COURSE->id = $courseid; // TODO: another way?
@@ -14707,7 +14709,7 @@ class block_exacomp_external extends external_api {
 
             $plugins[] = [
                 'name' => $plugin_name,
-                'versiondb' =>$info->versiondb,
+                'versiondb' => $info->versiondb,
             ];
         }
 
@@ -15696,6 +15698,5 @@ class block_exacomp_external extends external_api {
             'string_id' => new external_value (PARAM_TEXT, 'translation'),
         ));
     }
-
 }
 

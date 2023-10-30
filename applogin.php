@@ -2,7 +2,6 @@
 
 require __DIR__ . '/inc.php';
 require_once($CFG->libdir . '/externallib.php');
-require_once __DIR__ . '/externallib.php';
 
 function block_exacomp_load_service($serviceshortname) {
     global $DB;
@@ -39,12 +38,12 @@ function block_exacomp_get_login_data() {
     }
 
     // get login data
-    $data = block_exacomp_external::login();
+    $data = \block_exacomp\externallib\externallib::login();
     // add tokens
     $data['tokens'] = $exa_tokens;
 
     // clean output
-    $data = external_api::clean_returnvalue(block_exacomp_external::login_returns(), $data);
+    $data = external_api::clean_returnvalue(\block_exacomp\externallib\externallib::login_returns(), $data);
 
     return $data;
 }

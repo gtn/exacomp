@@ -68,14 +68,12 @@ foreach ($services as $service) {
     ];
 }
 
-require_once __DIR__ . '/externallib.php';
-
 // get login data
-$data = block_exacomp_external::login();
+$data = \block_exacomp\externallib\externallib::login();
 // add tokens
 $data['tokens'] = $exa_tokens;
 
 // clean output
-$data = external_api::clean_returnvalue(block_exacomp_external::login_returns(), $data);
+$data = external_api::clean_returnvalue(\block_exacomp\externallib\externallib::login_returns(), $data);
 
 echo json_encode($data, JSON_PRETTY_PRINT);
