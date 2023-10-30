@@ -70,7 +70,19 @@ class developer {
         extract($GLOBALS);
 
         foreach ($externallibs as $externallib) {
-            $rc = new ReflectionClass($externallib['className']);
+            try {
+                // manchmal wird die klasse nicht gefunden, darum hier requiren!
+                require_once $externallib['file'];
+                $rc = new ReflectionClass($externallib['className']);
+            } catch (\Exception $e) {
+                if (preg_match('!server.php!', $_SERVER['PHP_SELF'])) {
+                    // manchmal wird die klasse in den webservices nicht gefunden, php 8.1 bug?!?
+                    // darum hier ausnehmen
+                    return;
+                }
+                echo $e->getMessage();
+                return;
+            }
             $methods = $rc->getMethods(ReflectionMethod::IS_STATIC | ReflectionMethod::IS_PUBLIC);
             foreach ($methods as $method) {
                 if (!preg_match('!@ws-type-(read|write)!', $method->getDocComment(), $matches)) {

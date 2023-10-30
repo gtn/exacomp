@@ -4,6 +4,8 @@ require __DIR__ . '/../inc.php';
 
 global $CFG;
 
+require_admin();
+
 $servicesGroups = [
     'default' => [
         __DIR__ . '/../db/services.php',
