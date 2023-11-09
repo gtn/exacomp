@@ -1108,6 +1108,62 @@ create example',
     'description' => 'Get language definitions in json format for diggr-plus and dakora-plus apps',
     'type' => 'read',
   ),
+  'diggrplus_learningpath_list' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_list',
+    'description' => '',
+    'type' => 'read',
+  ),
+  'diggrplus_learningpath_details' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_details',
+    'description' => '',
+    'type' => 'read',
+  ),
+  'diggrplus_learningpath_add' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_add',
+    'description' => '',
+    'type' => 'write',
+  ),
+  'diggrplus_learningpath_delete' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_delete',
+    'description' => '',
+    'type' => 'write',
+  ),
+  'diggrplus_learningpath_item_update' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_item_update',
+    'description' => '',
+    'type' => 'write',
+  ),
+  'diggrplus_learningpath_item_add' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_item_add',
+    'description' => '',
+    'type' => 'write',
+  ),
+  'diggrplus_learningpath_item_delete' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_item_delete',
+    'description' => '',
+    'type' => 'write',
+  ),
+  'diggrplus_learningpath_item_sorting' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_item_sorting',
+    'description' => '',
+    'type' => 'write',
+  ),
   'diggrplus_v_edit_course' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
