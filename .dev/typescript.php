@@ -30,11 +30,11 @@ if (!$group || empty($servicesGroups[$group])) {
 
 function moodle_type_to_typescript_type($isParameters, $type) {
     if ($type == 'int' || $type == 'float') {
-        $tsType = $isParameters ? 'param_number' : 'number';
+        $tsType = 'number';
     } elseif ($type == 'bool') {
-        $tsType = $isParameters ? 'param_boolean' : 'boolean';
+        $tsType = 'boolean';
     } else {
-        $tsType = $isParameters ? 'param_string' : 'string';
+        $tsType = 'string';
     }
 
     return $tsType;
@@ -140,9 +140,9 @@ foreach ($servicesFiles as $servicesFile) {
                         die('error #fsjkjlerw234');
                     }
 
-                    if ($paramInfo->required == VALUE_DEFAULT) {
-                        $tsType .= ' | null';
-                    }
+                    // if ($paramInfo->required == VALUE_DEFAULT) {
+                    //     $tsType .= ' | null';
+                    // }
 
                     if ($paramInfo->required == VALUE_DEFAULT) {
                         // hack default param is time()
@@ -209,10 +209,10 @@ foreach ($servicesFiles as $servicesFile) {
 }
 
 $doku = $dokuHeader .
-    "export type param_string = string | number | boolean | null;\n" .
-    "export type param_boolean = string | number | boolean | null;\n" .
-    "export type param_number = string | number | null;\n" .
-    "\n" .
+    // "export type param_string = string | number | boolean | null;\n" .
+    // "export type param_boolean = string | number | boolean | null;\n" .
+    // "export type param_number = string | number | null;\n" .
+    // "\n" .
     $dokuInterfaces .
     "// Idea from: https://www.typescriptlang.org/docs/handbook/mixins.html\n" .
     "type GConstructor<T = {}> = new (...args: any[]) => T;\n" .
