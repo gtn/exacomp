@@ -523,19 +523,24 @@ class learningpaths extends base {
     public static function diggrplus_learningpath_item_sorting_parameters() {
         return new external_function_parameters(array(
             'learningpathid' => new external_value(PARAM_INT),
+            'itemids' => new external_multiple_structure(
+                new external_value(PARAM_INT)
+            ),
         ));
     }
 
     /**
      * @ws-type-write
      */
-    public static function diggrplus_learningpath_item_sorting(int $learningpathid) {
+    public static function diggrplus_learningpath_item_sorting(int $learningpathid, array $itemids) {
         global $DB;
 
         [
             'learningpathid' => $learningpathid,
+            'itemids' => $itemids,
         ] = static::validate_parameters(static::diggrplus_learningpath_item_sorting_parameters(), [
             'learningpathid' => $learningpathid,
+            'itemids' => $itemids,
         ]);
 
         $learningpath = $DB->get_record('block_exacomplps', [
@@ -544,7 +549,21 @@ class learningpaths extends base {
 
         block_exacomp_require_teacher($learningpath->courseid);
 
-        throw new \Exception('TODO');
+        $items = $DB->get_records('block_exacomplp_items', [
+            'learningpathid' => $learningpath->id
+        ]);
+
+        foreach ($itemids as $sorting => $itemid) {
+            if (empty($items[$itemid])) {
+                // item not in this learningpath
+                continue;
+            }
+
+            $DB->update_record('block_exacomplp_items', [
+                'id' => $itemid,
+                'sorting' => $sorting,
+            ]);
+        }
 
         return [
             'success' => true,
