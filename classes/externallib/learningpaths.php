@@ -292,6 +292,9 @@ class learningpaths extends base {
         ));
     }
 
+    /**
+     * @ws-type-write
+     */
     public static function diggrplus_learningpath_update(int $id, ?string $title, ?string $description, ?bool $visible) {
         global $DB;
 

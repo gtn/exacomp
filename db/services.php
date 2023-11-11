@@ -1136,6 +1136,13 @@ create example',
     'description' => '',
     'type' => 'write',
   ),
+  'diggrplus_learningpath_update' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\learningpaths',
+    'methodname' => 'diggrplus_learningpath_update',
+    'description' => '',
+    'type' => 'write',
+  ),
   'diggrplus_learningpath_item_update' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
