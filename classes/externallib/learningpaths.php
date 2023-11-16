@@ -384,24 +384,7 @@ class learningpaths extends base {
                 throw new invalid_parameter_exception ('studentid missing');
             }
 
-            $item_stud = $DB->get_record('block_exacomplp_item_stud', [
-                'itemid' => $learningpath_item->id,
-                'studentid' => $studentid,
-            ]);
-            if ($item_stud) {
-                if ($learningpath_item->visible === $visiblestudent) {
-                    $item_stud->visible = null;
-                } else {
-                    $item_stud->visible = $visiblestudent;
-                }
-                $DB->update_record('block_exacomplp_item_stud', $item_stud);
-            } else {
-                $DB->insert_record('block_exacomplp_item_stud', [
-                    'itemid' => $learningpath_item->id,
-                    'studentid' => $studentid,
-                    'visible' => $visiblestudent,
-                ]);
-            }
+            static::learningpath_item_visibility($learningpath_item, [$studentid], $visiblestudent);
         }
         if ($visibleall !== null) {
             $learningpath_item->visible = $visibleall;
@@ -424,28 +407,34 @@ class learningpaths extends base {
         ));
     }
 
-    public static function diggrplus_learningpath_item_add_parameters() {
+    public static function diggrplus_learningpath_add_items_parameters() {
         return new external_function_parameters(array(
             'learningpathid' => new external_value(PARAM_INT),
-            'exampleid' => new external_value(PARAM_INT),
-            // 'studentid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
-            // 'visibleall' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, null),
-            // 'visiblestudent' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, null),
+            'exampleids' => new external_multiple_structure(new external_value(PARAM_INT)),
+            'studentids' => new external_multiple_structure(new external_value(PARAM_INT), '', VALUE_DEFAULT, []),
+            // 'visibleall' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, true),
+            // 'visiblestudent' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, true),
         ));
     }
 
     /**
      * @ws-type-write
      */
-    public static function diggrplus_learningpath_item_add(int $learningpathid, int $exampleid /* , $studentid, $visibleall, $visiblestudent */) {
+    public static function diggrplus_learningpath_add_items(int $learningpathid, array $exampleids, array $studentids = []) {
         global $DB;
 
         [
             'learningpathid' => $learningpathid,
-            'exampleid' => $exampleid,
-        ] = static::validate_parameters(static::diggrplus_learningpath_item_add_parameters(), [
+            'exampleids' => $exampleids,
+            'studentids' => $studentids,
+            // 'visibleall' => $visibleall,
+            // 'visiblestudent' => $visiblestudent,
+        ] = static::validate_parameters(static::diggrplus_learningpath_add_items_parameters(), [
             'learningpathid' => $learningpathid,
-            'exampleid' => $exampleid,
+            'exampleids' => $exampleids,
+            'studentids' => $studentids,
+            // 'visibleall' => $visibleall,
+            // 'visiblestudent' => $visiblestudent,
         ]);
 
         $learningpath = $DB->get_record('block_exacomplps', [
@@ -456,22 +445,58 @@ class learningpaths extends base {
 
         $maxSort = $DB->get_field_select('block_exacomplp_items', 'MAX(sorting)', 'learningpathid=?', [$learningpathid]);
 
-        $DB->insert_record('block_exacomplp_items', [
-            'learningpathid' => $learningpath->id,
-            'exampleid' => $exampleid,
-            'sorting' => $maxSort + 1,
-            'visible' => true,
-        ]);
+        $visibleall = !$studentids;
+        $visiblestudent = !!$studentids;
+
+        foreach ($exampleids as $exampleid) {
+            $id = $DB->insert_record('block_exacomplp_items', [
+                'learningpathid' => $learningpath->id,
+                'exampleid' => $exampleid,
+                'sorting' => $maxSort + 1,
+                'visible' => $visibleall,
+            ]);
+
+            $learningpath_item = $DB->get_record('block_exacomplp_items', [
+                'id' => $id,
+            ], '*', MUST_EXIST);
+
+            static::learningpath_item_visibility($learningpath_item, $studentids, $visiblestudent);
+        }
 
         return [
             'success' => true,
         ];
     }
 
-    public static function diggrplus_learningpath_item_add_returns() {
+    public static function diggrplus_learningpath_add_items_returns() {
         return new external_single_structure (array(
             'success' => new external_value (PARAM_BOOL, 'status'),
         ));
+    }
+
+    private static function learningpath_item_visibility(object $learningpath_item, array $studentids, bool $visiblestudent) {
+        global $DB;
+
+        foreach ($studentids as $studentid) {
+            $item_stud = $DB->get_record('block_exacomplp_item_stud', [
+                'itemid' => $learningpath_item->id,
+                'studentid' => $studentid,
+            ]);
+            if ($item_stud) {
+                if ($learningpath_item->visible === $visiblestudent) {
+                    $item_stud->visible = null;
+                } else {
+                    $item_stud->visible = $visiblestudent;
+                }
+                $DB->update_record('block_exacomplp_item_stud', $item_stud);
+            } else {
+                $DB->insert_record('block_exacomplp_item_stud', [
+                    'itemid' => $learningpath_item->id,
+                    'studentid' => $studentid,
+                    'visible' => $visiblestudent,
+                ]);
+            }
+        }
     }
 
     public static function diggrplus_learningpath_item_delete_parameters() {
@@ -550,7 +575,7 @@ class learningpaths extends base {
         block_exacomp_require_teacher($learningpath->courseid);
 
         $items = $DB->get_records('block_exacomplp_items', [
-            'learningpathid' => $learningpath->id
+            'learningpathid' => $learningpath->id,
         ]);
 
         foreach ($itemids as $sorting => $itemid) {
