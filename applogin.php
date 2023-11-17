@@ -84,9 +84,12 @@ if ($action == 'dakora_sso') {
     ]);
 
     $dakora_url = trim(get_config('exacomp', 'dakora_url'));
-
-    $redirect_url = $dakora_url . '/page/sso.html?moodle_url=' . $CFG->wwwroot . '&moodle_token=' . $moodle_data_token;
-
+	$pos = strpos($dakora_url, "dakoraplus.eu");  //different redirects for dakora+ and dakora (old)
+	if ($pos === false) {
+		$redirect_url = $dakora_url . '/page/sso.html?moodle_url=' . $CFG->wwwroot . '&moodle_token=' . $moodle_data_token;
+	}else{
+		$redirect_url = $dakora_url . '/login?moodle_url=' . $CFG->wwwroot . '&do_login=true&recheck_login=1';
+	}
     redirect($redirect_url);
 
     exit;
