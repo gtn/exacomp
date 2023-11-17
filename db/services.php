@@ -1150,10 +1150,10 @@ create example',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_learningpath_item_add' => 
+  'diggrplus_learningpath_add_items' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
-    'methodname' => 'diggrplus_learningpath_item_add',
+    'methodname' => 'diggrplus_learningpath_add_items',
     'description' => '',
     'type' => 'write',
   ),
