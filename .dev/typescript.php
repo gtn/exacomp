@@ -50,7 +50,18 @@ if ($group == 'exapdf') {
     $dokuHeader .= "// moodle release: " . $CFG->release . "\n";
     $dokuHeader .= "// block_exacomp version: " . $block_exacomp_info->versiondisk . "\n";
 }
-$dokuHeader .= "\n";
+
+$dokuHeader .= "
+// https://stackoverflow.com/questions/49580725/is-it-possible-to-restrict-typescript-object-to-contain-only-properties-defined/57117594#57117594
+// ensure that an object passed to a function does not contain any properties beyond those in a specified (object) type.
+type Impossible<K extends keyof any> = {
+  [P in K]: never;
+};
+type NoExtraProperties<T, U extends T = T> = U extends Array<infer V>
+  ? NoExtraProperties<V>[]
+  : U & Impossible<Exclude<keyof U, keyof T>>;
+
+";
 
 $doku = '';
 
@@ -200,10 +211,15 @@ foreach ($servicesFiles as $servicesFile) {
         }
 
         $doku .= "\n  /**\n   * " . preg_replace("![\r\n\s]+!", ' ', $function['description']) . "\n   */\n" .
-            "  public {$functionName} = async (params" .
+            // "  public {$functionName} = async (params" .
+            // // optional, weil keine parameter notwendig
+            // (count($params->keys) == 0 ? '?' : '') .
+            // ": {$functionName}_parameters): Promise<{$returns_type}> =>\n" .
+            // "    this.callWebservice('{$functionName}', params);\n";
+            "  public {$functionName} = async <T extends {$functionName}_parameters>(params" .
             // optional, weil keine parameter notwendig
             (count($params->keys) == 0 ? '?' : '') .
-            ": {$functionName}_parameters): Promise<{$returns_type}> =>\n" .
+            ": NoExtraProperties<{$functionName}_parameters, T>): Promise<{$returns_type}> =>\n" .
             "    this.callWebservice('{$functionName}', params);\n";
     }
 }
