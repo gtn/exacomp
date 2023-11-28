@@ -42,7 +42,7 @@ function moodle_type_to_typescript_type($isParameters, $type) {
 
 $dokuHeader = '';
 if ($group == 'exapdf') {
-    $assignfeedback_exapdf_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
+    $assignfeedback_exapdf_info = core_plugin_manager::instance()->get_plugin_info('assignfeedback_exapdf');
     $dokuHeader = "// assignfeedback_exapdf version: " . $assignfeedback_exapdf_info->versiondisk . "\n";
 } else {
     $block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
