@@ -1171,6 +1171,13 @@ create example',
     'description' => '',
     'type' => 'write',
   ),
+  'dakoraplus_create_report' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\reports',
+    'methodname' => 'dakoraplus_create_report',
+    'description' => '',
+    'type' => 'read',
+  ),
   'diggrplus_v_edit_course' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
