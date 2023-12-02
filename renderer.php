@@ -4411,6 +4411,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
     }
 
+    public function visibility_icon_schooltype($visible, $id) {
+        $value = -1;
+        if ($visible) {
+            $icon = $this->pix_icon("i/hide", block_exacomp_get_string("hide"));
+            $value = 0;
+        } else {
+            $icon = $this->pix_icon("i/show", block_exacomp_get_string("show"));
+            $value = 1;
+        }
+
+        return html_writer::link('', $icon, array('class' => 'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
+    }
+
     public function visibility_icon_example($visible, $exampleid) {
         if ($visible) {
             $icon = $this->pix_icon("i/hide", block_exacomp_get_string("hide"));
@@ -4811,10 +4824,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $row->attributes['class'] = 'exahighlight';
 
             $cell = new html_table_cell();
-            $cell->colspan = 2;
+            $cell->colspan = 1;
             $cell->text = html_writer::tag('b', $levelstruct->level->title) . ' (' . $this->source_info($levelstruct->level->source) . ')';
 
+            $celltwo = new html_table_cell();
+            $celltwo->colspan = 1;
+
+            $celltwo->text = html_writer::tag("a", block_exacomp_get_string('selectallornone', 'form'),
+                array("class" => "selectallornone"));
+
             $row->cells[] = $cell;
+            $row->cells[] = $celltwo;
             $rows[] = $row;
 
             foreach ($levelstruct->schooltypes as $schooltypestruct) {
@@ -4828,6 +4848,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $cell->text = html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $schooltypestruct->schooltype->id . ']', 'value' => $schooltypestruct->schooltype->id, 'checked' => 'checked'));
                 } else {
                     $cell->text = html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $schooltypestruct->schooltype->id . ']', 'value' => $schooltypestruct->schooltype->id));
+                }
+
+                if ($schooltypestruct->schooltype->hidden == 1) {
+                    $cell->text .= " " . $this->visibility_icon_schooltype(false, $schooltypestruct->schooltype->id);
+                    // $cell->text .= " " . html_writer::link('', $this->pix_icon("i/hide", block_exacomp_get_string("hide")), array('class' => 'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
+                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 1, 'checked' => 'checked'));
+                } else {
+                    $cell->text .= " " . $this->visibility_icon_schooltype(true, $schooltypestruct->schooltype->id);
+                    // $cell->text .= " " . html_writer::link('', $this->pix_icon("i/show", block_exacomp_get_string("hide")), array('class' => 'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
+                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 0));
                 }
 
                 $row->cells[] = $cell;
@@ -5110,7 +5140,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     public function courseselection($schooltypes, $topics_activ, $headertext) {
-        global $PAGE, $COURSE;
+        global $CFG, $DB, $PAGE, $COURSE;
 
         $header = html_writer::tag('p', $headertext) . html_writer::empty_tag('br');
         $filterform = $this->courseselectionfilter($COURSE->id);
@@ -5138,6 +5168,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $rows[] = $row;
 
                 foreach ($schooltype->subjects as $subject) {
+                    if(($DB->get_record_sql("SELECT * FROM {$CFG->prefix}block_exacomptopics as topic inner join {$CFG->prefix}block_exacomptopicvisibility as vs
+                        on topic.id = vs.topicid WHERE vs.visible = 1 && topic.subjid =" . $subject->id)) || $schooltype->hidden == 0){
+die('x');
                     $this_rg2_class = 'rg2-level-0';
 
                     $row = new html_table_row();
@@ -5159,7 +5192,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                     $rows[] = $row;
                     $this->topics_courseselection($rows, 1, $subject->topics, $topics_activ);
-
+                    }
                 }
             }
 
