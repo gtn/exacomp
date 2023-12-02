@@ -5139,7 +5139,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    public function courseselection($schooltypes, $topics_activ, $headertext) {
+    public function courseselection($schooltypes, $active_topics, $headertext) {
         global $CFG, $DB, $PAGE, $COURSE;
 
         $header = html_writer::tag('p', $headertext) . html_writer::empty_tag('br');
@@ -5157,6 +5157,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight';
 
                 $cell = new html_table_cell();
+                // TODO: Hinweis ergänzen, wenn hidden?!?
                 $cell->text =
                     html_writer::div(html_writer::tag('b', $schooltype->title) . ' (' . $this->source_info($schooltype->source) .
                         ')');
@@ -5165,12 +5166,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $cell->colspan = 3;
                 $row->cells[] = $cell;
 
-                $rows[] = $row;
+                $schooltypeRow = $row;
+                $subjectRows = [];
 
                 foreach ($schooltype->subjects as $subject) {
-                    if(($DB->get_record_sql("SELECT * FROM {$CFG->prefix}block_exacomptopics as topic inner join {$CFG->prefix}block_exacomptopicvisibility as vs
-                        on topic.id = vs.topicid WHERE vs.visible = 1 && topic.subjid =" . $subject->id)) || $schooltype->hidden == 0){
-die('x');
+                    if ($subject->hidden || $schooltype->hidden) {
+                        // nur anzeigen, wenn topics davon ausgewählt wurden
+                        $activeCount = count(array_filter($subject->topics, function($topic) use ($active_topics) {
+                            return !empty($active_topics[$topic->id]);
+                        }));
+                        if ($activeCount == 0) {
+                            continue;
+                        }
+                    }
                     $this_rg2_class = 'rg2-level-0';
 
                     $row = new html_table_row();
@@ -5190,9 +5198,14 @@ die('x');
                         array("class" => "selectallornone"));
                     $row->cells[] = $selectAllCell;
 
-                    $rows[] = $row;
-                    $this->topics_courseselection($rows, 1, $subject->topics, $topics_activ);
-                    }
+                    $subjectRows[] = $row;
+                    $this->topics_courseselection($subjectRows, 1, $subject->topics, $active_topics);
+                }
+
+                if ($subjectRows) {
+                    // add subject and topics only if there are topics available, which weren't filtered out
+                    $rows[] = $schooltypeRow;
+                    $rows = array_merge($rows, $subjectRows);
                 }
             }
 
@@ -5637,7 +5650,7 @@ die('x');
         return html_writer::tag("form", $header . $table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'select_from_preselection')), "id" => "exa-selector"));
     }
 
-    public function topics_courseselection(&$rows, $level, $topics, $topics_activ) {
+    public function topics_courseselection(&$rows, $level, $topics, $active_topics) {
         foreach ($topics as $topic) {
             $this_rg2_class = 'rg2-level-' . $level;
 
@@ -5655,7 +5668,7 @@ die('x');
 
             $cell = new html_table_cell();
             $cell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topics[' . $topic->id . ']', 'value' => (0 - $topic->id)]);
-            $cell->text .= html_writer::checkbox('topics[' . $topic->id . ']', $topic->id, !empty($topics_activ[$topic->id]), '');
+            $cell->text .= html_writer::checkbox('topics[' . $topic->id . ']', $topic->id, !empty($active_topics[$topic->id]), '');
             $topicRow->cells[] = $cell;
 
             $rows[] = $topicRow;

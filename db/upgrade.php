@@ -4200,6 +4200,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023110900, 'exacomp');
     }
 
+    if ($oldversion < 2023120100) {
+        // Define field hidden to be added to block_exacompsubjects.
+        $table = new xmldb_table('block_exacompsubjects');
+        $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'sorting');
+
+        // Conditionally launch add field hidden.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023120100, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

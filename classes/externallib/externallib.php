@@ -14460,23 +14460,42 @@ class externallib extends base {
      * @ws-type-read
      */
     public static function diggrplus_get_course_schooltype_tree($courseid) {
-        static::validate_parameters(static::diggrplus_get_course_schooltype_tree_parameters(), array(
+        [
             'courseid' => $courseid,
-        ));
+        ] = static::validate_parameters(static::diggrplus_get_course_schooltype_tree_parameters(), [
+            'courseid' => $courseid,
+        ]);
 
         block_exacomp_require_teacher($courseid);
 
         $schooltypes = block_exacomp_build_schooltype_tree_for_courseselection(0);
         $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
-        foreach ($schooltypes as $schooltype) {
-            foreach ($schooltype->subjects as $subject) {
+        foreach ($schooltypes as $schooltypeKey => $schooltype) {
+            foreach ($schooltype->subjects as $subjectKey => $subject) {
+                if ($subject->hidden || $schooltype->hidden) {
+                    // nur anzeigen, wenn topics davon ausgewählt wurden
+                    $activeCount = count(array_filter($subject->topics, function($topic) use ($active_topics) {
+                        return !empty($active_topics[$topic->id]);
+                    }));
+                    if ($activeCount == 0) {
+                        // remove subject (filter it out)
+                        unset($schooltype->subjects[$subjectKey]);
+                        continue;
+                    }
+                }
+
                 foreach ($subject->topics as $topic) {
                     // some topics have html in the title, and moodle does not allow this?!?
                     $topic->title = strip_tags($topic->title);
 
                     $topic->active = !empty($active_topics[$topic->id]);
                 }
+            }
+
+            if (!$schooltype->subjects) {
+                // remove schooltype, if no subjects are available (all were filtered before)
+                unset($schooltypes[$schooltypeKey]);
             }
         }
 
