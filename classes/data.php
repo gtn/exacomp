@@ -3208,6 +3208,11 @@ class data_importer extends data {
             $subject->catid = self::get_database_id($xmlItem->categoryid);
         }
 
+        if ($xmlItem->disabled) {
+            // Comet has "Disabled" field, exacomp has "hidden"
+            $subject->hidden = 1;
+        }
+
         self::insert_or_update_item(BLOCK_EXACOMP_DB_SUBJECTS, $subject);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_SUBJECTS, $subject);
 

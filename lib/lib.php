@@ -1512,7 +1512,8 @@ function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0)
     $sql = 'SELECT s.*
                 FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 	                JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} type ON s.stid = type.stid
-                WHERE type.courseid = ?';
+                WHERE type.courseid = ? ';
+    // AND (s.hidden IS NULL OR s.hidden = 0) is needed conditions here, but we need to show hidden grids if here are already selected topics
 
     if ($schooltypeid > 0) {
         $sql .= ' AND type.stid = ? ';
