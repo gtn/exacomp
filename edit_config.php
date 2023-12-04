@@ -63,7 +63,7 @@ if (isset ($action) && $action == 'save') {
     require_sesskey();
     $values = optional_param_array('data', array(), PARAM_INT);
     block_exacomp_set_mdltype($values);
-    block_exacomp_set_schooltype_hidden(optional_param_array('hide', array(), PARAM_INT));
+    block_exacomp_set_schooltype_disabled(optional_param_array('disable', array(), PARAM_INT));
 
     if (!isset ($_POST['data'])) {
         $headertext = block_exacomp_get_string('tick_some');

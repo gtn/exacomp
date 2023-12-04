@@ -14473,7 +14473,7 @@ class externallib extends base {
 
         foreach ($schooltypes as $schooltypeKey => $schooltype) {
             foreach ($schooltype->subjects as $subjectKey => $subject) {
-                if ($subject->hidden || $schooltype->hidden) {
+                if ($subject->disabled || $schooltype->disabled) {
                     // nur anzeigen, wenn topics davon ausgewählt wurden
                     $activeCount = count(array_filter($subject->topics, function($topic) use ($active_topics) {
                         return !empty($active_topics[$topic->id]);

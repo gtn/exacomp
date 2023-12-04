@@ -4104,7 +4104,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023042100, 'exacomp');
     }
 
-    if ($oldversion < 2023102700) {
+    // renamed to 'disabled'
+/*    if ($oldversion < 2023102700) {
         $table = new xmldb_table('block_exacompedulevels');
 
         $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
@@ -4119,7 +4120,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
         // exacomp savepoint reached
         upgrade_block_savepoint(true, 2023102700, 'exacomp');
-    }
+    }*/
 
 
     //if ($oldversion < 2022101900) {
@@ -4200,7 +4201,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023110900, 'exacomp');
     }
 
-    if ($oldversion < 2023120100) {
+    // renamed to 'disabled'
+/*    if ($oldversion < 2023120100) {
         // Define field hidden to be added to block_exacompsubjects.
         $table = new xmldb_table('block_exacompsubjects');
         $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'sorting');
@@ -4212,6 +4214,28 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2023120100, 'exacomp');
+    }*/
+
+    if ($oldversion < 2023120400) {
+        // Define field disabled to be added to block_exacompsubjects/schooltypes/edulevels.
+        $tables = ['block_exacompsubjects', 'block_exacompedulevels', 'block_exacompschooltypes'];
+        // For check already existing 'hidden' (rename them to 'disabled').
+        $hiddenField = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null);
+
+        foreach ($tables as $tableName) {
+            $table = new xmldb_table($tableName);
+            if ($dbman->field_exists($table, $hiddenField)) {
+                $dbman->rename_field($table, $hiddenField, 'disabled');
+            } else {
+                $disabledField = new xmldb_field('disabled', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
+                if (!$dbman->field_exists($table, $disabledField)) {
+                    $dbman->add_field($table, $disabledField);
+                }
+            }
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023120400, 'exacomp');
     }
 
     /*

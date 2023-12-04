@@ -4850,14 +4850,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $cell->text = html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'data[' . $schooltypestruct->schooltype->id . ']', 'value' => $schooltypestruct->schooltype->id));
                 }
 
-                if ($schooltypestruct->schooltype->hidden == 1) {
+                if ($schooltypestruct->schooltype->disabled == 1) {
                     $cell->text .= " " . $this->visibility_icon_schooltype(false, $schooltypestruct->schooltype->id);
                     // $cell->text .= " " . html_writer::link('', $this->pix_icon("i/hide", block_exacomp_get_string("hide")), array('class' => 'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
-                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 1, 'checked' => 'checked'));
+                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'disable[' . $schooltypestruct->schooltype->id . ']', 'value' => 1, 'checked' => 'checked'));
                 } else {
                     $cell->text .= " " . $this->visibility_icon_schooltype(true, $schooltypestruct->schooltype->id);
                     // $cell->text .= " " . html_writer::link('', $this->pix_icon("i/show", block_exacomp_get_string("hide")), array('class' => 'schooltype', 'type' => 'checkbox', 'name' => 'schooltype'));
-                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'hide[' . $schooltypestruct->schooltype->id . ']', 'value' => 0));
+                    $cell->text .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'disable[' . $schooltypestruct->schooltype->id . ']', 'value' => 0));
                 }
 
                 $row->cells[] = $cell;
@@ -5170,7 +5170,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $subjectRows = [];
 
                 foreach ($schooltype->subjects as $subject) {
-                    if ($subject->hidden || $schooltype->hidden) {
+                    if ($subject->disabled || $schooltype->disabled) {
                         // nur anzeigen, wenn topics davon ausgewählt wurden
                         $activeCount = count(array_filter($subject->topics, function($topic) use ($active_topics) {
                             return !empty($active_topics[$topic->id]);

@@ -1494,7 +1494,7 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
     global $DB;
 
     return $DB->get_records_sql('
-			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, s.hidden
+			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting, s.disabled
 			FROM {' . BLOCK_EXACOMP_DB_SCHOOLTYPES . '} s
 			JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} m ON m.stid = s.id AND m.courseid = ?
 			ORDER BY s.sorting, s.title
@@ -1513,7 +1513,7 @@ function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0)
                 FROM {' . BLOCK_EXACOMP_DB_SUBJECTS . '} s
 	                JOIN {' . BLOCK_EXACOMP_DB_MDLTYPES . '} type ON s.stid = type.stid
                 WHERE type.courseid = ? ';
-    // AND (s.hidden IS NULL OR s.hidden = 0) is needed conditions here, but we need to show hidden grids if here are already selected topics
+    // AND (s.disabled IS NULL OR s.disabled = 0) is needed conditions here, but we need to show hidden grids if here are already selected topics
 
     if ($schooltypeid > 0) {
         $sql .= ' AND type.stid = ? ';
@@ -3508,7 +3508,7 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
     block_exacomp_clean_course_topics($values, $courseid);
 }
 
-function block_exacomp_set_schooltype_hidden($values){
+function block_exacomp_set_schooltype_disabled($values){
     global $DB;
     foreach($DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES) as $rs){
         // $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$rs->id, "hidden"=>0));
@@ -3520,10 +3520,10 @@ function block_exacomp_set_schooltype_hidden($values){
         // }
 
         if ($values[$rs->id] != null) { // if the value is not null, update the hidden value to whatever is in $values[$rs->id] which should be 1
-            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "hidden" => $values[$rs->id]));
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "disabled" => $values[$rs->id]));
         } else {
             // goes here if it is null or 0
-            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "hidden" => 0));
+            $DB->update_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $rs->id, "disabled" => 0));
         }
     }
 }

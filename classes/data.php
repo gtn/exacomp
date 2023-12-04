@@ -3209,8 +3209,7 @@ class data_importer extends data {
         }
 
         if ($xmlItem->disabled) {
-            // Comet has "Disabled" field, exacomp has "hidden"
-            $subject->hidden = 1;
+            $subject->disabled = 1;
         }
 
         self::insert_or_update_item(BLOCK_EXACOMP_DB_SUBJECTS, $subject);
