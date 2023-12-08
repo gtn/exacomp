@@ -37,12 +37,8 @@ function moodle_restore($data, $courseid, $userdoingrestore) {
         $controller->execute_precheck();
 
         $controller->execute_plan();
-
     } catch (\Exception $e) {
-
-        // throw new moodle_exception('something wrong with importing of activity: ' . $data);
-        echo "<pre>debug:<strong>activity_restore.php:44</strong>\r\n"; print_r($e->getMessage()); echo '</pre>'; // !!!!!!!!!! delete it
-
+        throw new moodle_exception('something wrong with importing of activity: ' . $data);
     }
 
     // Commit.
