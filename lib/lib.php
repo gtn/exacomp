@@ -14744,7 +14744,7 @@ function block_exacomp_clear_exacomp_weekly_schedule() {
 
     $sql = "UPDATE {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
     JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex ON ex.id = schedule.exampleid
-    SET schedule.start = null, schedule.endtime = null
+    SET schedule.start = null, schedule.endtime = null, is_overdue = 0
     WHERE schedule.start > :lastweek1
     AND schedule.start < :currenttime1
     AND ex.blocking_event = 0

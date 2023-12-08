@@ -5176,6 +5176,7 @@ class externallib extends base {
             'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'timeframe' => new external_value (PARAM_TEXT, 'timeframe, suggested time'),
             'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)'),
+            'is_overdue' => new external_value (PARAM_BOOL),
             'taxonomies' => new external_multiple_structure (new external_single_structure ([
                 'id' => new external_value (PARAM_INT, 'id'),
                 'title' => new external_value (PARAM_TEXT, 'name'),

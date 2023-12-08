@@ -4238,6 +4238,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023120400, 'exacomp');
     }
 
+    if ($oldversion < 2023120800) {
+
+        // Define field is_overdue to be added to block_exacompschedule.
+        $table = new xmldb_table('block_exacompschedule');
+        $field = new xmldb_field('is_overdue', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'distributionid');
+
+        // Conditionally launch add field is_overdue.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023120800, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
