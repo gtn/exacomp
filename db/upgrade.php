@@ -4104,24 +4104,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023042100, 'exacomp');
     }
 
-    // renamed to 'disabled'
-/*    if ($oldversion < 2023102700) {
-        $table = new xmldb_table('block_exacompedulevels');
-
-        $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-        $table = new xmldb_table('block_exacompschooltypes');
-
-        $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, true, null, 0);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-        // exacomp savepoint reached
-        upgrade_block_savepoint(true, 2023102700, 'exacomp');
-    }*/
-
 
     //if ($oldversion < 2022101900) {
     //    // Clean the examples database from examples that have been created by block_exacomp_relate_komettranslator_to_exacomp but are not used.
@@ -4200,21 +4182,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2023110900, 'exacomp');
     }
-
-    // renamed to 'disabled'
-/*    if ($oldversion < 2023120100) {
-        // Define field hidden to be added to block_exacompsubjects.
-        $table = new xmldb_table('block_exacompsubjects');
-        $field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'sorting');
-
-        // Conditionally launch add field hidden.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2023120100, 'exacomp');
-    }*/
 
     if ($oldversion < 2023120400) {
         // Define field disabled to be added to block_exacompsubjects/schooltypes/edulevels.
