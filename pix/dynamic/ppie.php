@@ -1,11 +1,11 @@
 <?php
 
 /* pChart library inclusions */
-$pathToPChart = __DIR__.'/../../vendor/pChart/';
-require $pathToPChart.'class/pData.class.php';
-require $pathToPChart.'class/pDraw.class.php';
-require $pathToPChart.'class/pPie.class.php';
-require $pathToPChart.'class/pImage.class.php';
+$pathToPChart = __DIR__ . '/../../vendor/pChart/';
+require $pathToPChart . 'class/pData.class.php';
+require $pathToPChart . 'class/pDraw.class.php';
+require $pathToPChart . 'class/pPie.class.php';
+require $pathToPChart . 'class/pImage.class.php';
 
 $height = array_key_exists('height', $_GET) && $_GET['height'] ? $_GET['height'] : 50;
 $width = array_key_exists('width', $_GET) && $_GET['width'] ? $_GET['width'] : 50;
@@ -34,14 +34,18 @@ function nullPicture($gray = false) {
         $circleColor = array('R' => 172, 'G' => 183, 'B' => 182, 'Alpha' => $circleAlpha);
     }
     $drawCheckMarkNo = true;
-};
+}
+
+;
 
 function plusPicture() {
     global $centerText, $fontSize, $circleColor, $circleTextColor, $drawCheckMarkYes;
     //$centerText[0] = 'V';
     //$fontSize = $fontSize * 0.75;
     $drawCheckMarkYes = true;
-};
+}
+
+;
 
 function changeCircleAlpha($value) {
     global $circleColor, $maxCircleAlpha, $minCircleAlpha, $evalMax;
@@ -64,8 +68,8 @@ $drawCheckMarkNo = false;
 $drawOuterGraph = false;
 $centerText = array();
 $fontSizes = array();
-$circleColor = array('R'=>30, 'G'=>111, 'B'=>188, 'Alpha' => $circleAlpha);
-$circleTextColor = array('R'=>255, 'G'=>255, 'B'=>255);
+$circleColor = array('R' => 30, 'G' => 111, 'B' => 188, 'Alpha' => $circleAlpha);
+$circleTextColor = array('R' => 255, 'G' => 255, 'B' => 255);
 $fontSize = 24;
 $xBuffer = 0; // different fonts can have different values
 $outerGraphWidth = 7;
@@ -82,7 +86,7 @@ switch ($assessmentType) {
     case 1: // Grade
     case 3: // Points
         if (($assessmentType == 1 && (!$evalValue || $evalValue == -1))
-            || $assessmentType == 3 && ($evalValue == -1 || (!$evalValue && $evalValue !==0))
+            || $assessmentType == 3 && ($evalValue == -1 || (!$evalValue && $evalValue !== 0))
             || ($diffLevel && !$niveauTitle)) {
             nullPicture(true);
             break;
@@ -105,25 +109,25 @@ switch ($assessmentType) {
         }
         changeCircleAlpha($evalValue);
 
-/*        if (($assessmentType == 1 && !$evalValue)
-            || $assessmentType == 3 && ($evalValue == -1 || (!$evalValue && $evalValue !==0))) {
-            nullPicture(true);
-        } else {
-            $drawOuterGraph = true;
-            $width = $width + (($outerMargin + $outerGraphWidth) * 2);
-            $height = $height + (($outerMargin + $outerGraphWidth) * 2);
-            $centerText[0] = $evalValue;
-            if (strlen($centerText[0]) > 2) { // for numbers greater than 100
-                $fontSize = $fontSize * 0.85;
-            }
-            if ($diffLevel && $niveauTitle) {
-                $centerText[0] = trim($niveauTitle);
-                $centerText[1] = $evalValue;
-                if (strlen($centerText[0]) || strlen($centerText[1]) > 2) { // for numbers greater than 100
-                    $fontSize = $fontSize * 0.75;
-                }
-            }
-        }*/
+        /*        if (($assessmentType == 1 && !$evalValue)
+                    || $assessmentType == 3 && ($evalValue == -1 || (!$evalValue && $evalValue !==0))) {
+                    nullPicture(true);
+                } else {
+                    $drawOuterGraph = true;
+                    $width = $width + (($outerMargin + $outerGraphWidth) * 2);
+                    $height = $height + (($outerMargin + $outerGraphWidth) * 2);
+                    $centerText[0] = $evalValue;
+                    if (strlen($centerText[0]) > 2) { // for numbers greater than 100
+                        $fontSize = $fontSize * 0.85;
+                    }
+                    if ($diffLevel && $niveauTitle) {
+                        $centerText[0] = trim($niveauTitle);
+                        $centerText[1] = $evalValue;
+                        if (strlen($centerText[0]) || strlen($centerText[1]) > 2) { // for numbers greater than 100
+                            $fontSize = $fontSize * 0.75;
+                        }
+                    }
+                }*/
         break;
     case 2: // Verbose
         if ($diffLevel && $niveauTitle && $evalValue > -1) {
@@ -136,7 +140,8 @@ switch ($assessmentType) {
             /*if ($stringValueShort) { // for app
                 $centerText[0] = trim($stringValueShort);
                 $fontSize = 16;
-            } else*/ if ($stringValue) {
+            } else*/
+            if ($stringValue) {
                 $string = explode('-', $stringValue);
                 foreach ($string as $key => $word) {
                     $centerText[$key] = $word;
@@ -214,14 +219,14 @@ for ($i = 0; $i < $raysCount; $i++) {
     $labels[$i] = $i;
     //$colors[$i] = array('R' => 140, 'G' => 182, 'B' => 196);
     $MyData->Palette[$i] = array('R' => 140, 'G' => 182, 'B' => 196, 'Alpha' => 100);
-    if($assessmentType == 1){ //grade
+    if ($assessmentType == 1) { //grade
         if ($evalMax > 0) {
-            if($evalValue==0){//no grading: no circle
+            if ($evalValue == 0) {//no grading: no circle
                 $MyData->Palette[$i]['Alpha'] = 0;
-            }else{
-                if($evalValue == $evalMax && $i <= 1) {
+            } else {
+                if ($evalValue == $evalMax && $i <= 1) {
                     $MyData->Palette[$i]['Alpha'] = 100;
-                }else if ($i >= (($evalMax-$evalValue) * 100 / ($evalMax-1)) / (100 / $raysCount)) {
+                } else if ($i >= (($evalMax - $evalValue) * 100 / ($evalMax - 1)) / (100 / $raysCount)) {
                     $MyData->Palette[$i]['Alpha'] = 0;
                 }
 
@@ -229,15 +234,15 @@ for ($i = 0; $i < $raysCount; $i++) {
         } else {
             $MyData->Palette[$i]['Alpha'] = 0;
         }
-    }else{
+    } else {
         if ($evalMax > 0) {
             if ($i >= ($evalValue * 100 / $evalMax) / (100 / $raysCount)) {
                 $MyData->Palette[$i]['Alpha'] = 0;
             }
         } else {
             $MyData->Palette[$i]['Alpha'] = 0;
+        }
     }
-}
 
 }
 
@@ -256,11 +261,11 @@ $MyData->setAbscissa("Labels");
 $myPicture = new pImage($width, $height, $MyData, true);
 
 /* Set the default font properties */
-$fontName = $pathToPChart.'fonts/verdana.ttf';
-$fontName = $pathToPChart.'fonts/SourceSansPro-Regular.ttf';
-$myPicture->setFontProperties(array("FontName" => $fontName, "FontSize"=>10, "R"=>255, "G"=>255, "B"=>255));
+$fontName = $pathToPChart . 'fonts/verdana.ttf';
+$fontName = $pathToPChart . 'fonts/SourceSansPro-Regular.ttf';
+$myPicture->setFontProperties(array("FontName" => $fontName, "FontSize" => 10, "R" => 255, "G" => 255, "B" => 255));
 
-/* Enable shadow computing */ 
+/* Enable shadow computing */
 //$myPicture->setShadow(TRUE,array("X"=>2,"Y"=>2,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>50));
 
 $xCenter = floor($width / 2);
@@ -274,35 +279,35 @@ if ($drawOuterGraph) {
     //    $PieChart->setSliceColor($key, $color);
     //}
     $PieChart->draw2DRing(
-            $xCenter,
-            $yCenter,
-            array(
-                    'OuterRadius' => $radius + $outerMargin + $outerGraphWidth,
-                    // original pPie.class.php has a bug with 'InnerRadius'. need to de changed if pChart is updating.
-                    // Fork for php7 does not have this bug, but has 'OuterRadius' instead of 'Radius' option
-                    'InnerRadius' => $radius + $outerMargin,
-                    "WriteValues" => false,
-                    'Precision' => 100,
-                    //"ValueR" => 255,
-                    //"ValueG" => 0,
-                    //"ValueB" => 0,
-                    "Border" => true,
-                    //'BorderR' => 0,
-                    //'BorderG' => 0,
-                    //'BorderB' => 0,
-                    //'BorderAlpha' => 0,
-            ));
+        $xCenter,
+        $yCenter,
+        array(
+            'OuterRadius' => $radius + $outerMargin + $outerGraphWidth,
+            // original pPie.class.php has a bug with 'InnerRadius'. need to de changed if pChart is updating.
+            // Fork for php7 does not have this bug, but has 'OuterRadius' instead of 'Radius' option
+            'InnerRadius' => $radius + $outerMargin,
+            "WriteValues" => false,
+            'Precision' => 100,
+            //"ValueR" => 255,
+            //"ValueG" => 0,
+            //"ValueB" => 0,
+            "Border" => true,
+            //'BorderR' => 0,
+            //'BorderG' => 0,
+            //'BorderB' => 0,
+            //'BorderAlpha' => 0,
+        ));
 }
 
 if (count($centerText) > 0 || $drawCheckMarkYes || $drawCheckMarkNo) {
-   $myPicture->drawFilledCircle(
-            $xCenter,
-            $yCenter,
-            $radius,
-            array("R" => $circleColor['R'],
-                    "G" => $circleColor['G'],
-                    "B" => $circleColor['B'],
-                    'Alpha' => $circleColor['Alpha']));
+    $myPicture->drawFilledCircle(
+        $xCenter,
+        $yCenter,
+        $radius,
+        array("R" => $circleColor['R'],
+            "G" => $circleColor['G'],
+            "B" => $circleColor['B'],
+            'Alpha' => $circleColor['Alpha']));
 }
 
 if (count($centerText) > 0) {
@@ -326,15 +331,15 @@ if (count($centerText) > 0) {
     //echo $vertCorrection; exit;
     foreach ($centerText as $key => $text) {
         $myPicture->drawText(
-                $middleX[$key],
-                ($yCenter + $yTextBuffer) + ($key == 0 ? (0 - $vertCorrection) : $vertCorrection),
-                $text,
-                array('FontSize' => (array_key_exists($key, $fontSizes) && $fontSizes[$key] ? $fontSizes[$key] : $fontSize),
-                        "R" => $circleTextColor['R'],
-                        "G" => $circleTextColor['G'],
-                        "B" => $circleTextColor['B'],
-                        "Align" => TEXT_ALIGN_MIDDLELEFT,
-                    /*"DrawBox" => true*/)
+            $middleX[$key],
+            ($yCenter + $yTextBuffer) + ($key == 0 ? (0 - $vertCorrection) : $vertCorrection),
+            $text,
+            array('FontSize' => (array_key_exists($key, $fontSizes) && $fontSizes[$key] ? $fontSizes[$key] : $fontSize),
+                "R" => $circleTextColor['R'],
+                "G" => $circleTextColor['G'],
+                "B" => $circleTextColor['B'],
+                "Align" => TEXT_ALIGN_MIDDLELEFT,
+                /*"DrawBox" => true*/)
         );
     }
 } else {
@@ -344,45 +349,45 @@ if (count($centerText) > 0) {
 if ($drawCheckMarkNo) {
     $offsets = $radius - ($radius * 0.72); // from center
     $lineOptions = array(
-            'R' => 255,
-            'G' => 255,
-            'B' => 255,
-            'Weight' => 1
+        'R' => 255,
+        'G' => 255,
+        'B' => 255,
+        'Weight' => 1,
     );
     // draw \
     $myPicture->drawLine($xCenter - $offsets,
-            $yCenter - $offsets,
-            $xCenter + $offsets,
-            $yCenter + $offsets,
-            $lineOptions);
+        $yCenter - $offsets,
+        $xCenter + $offsets,
+        $yCenter + $offsets,
+        $lineOptions);
     // draw /
     $myPicture->drawLine($xCenter - $offsets,
-            $yCenter + $offsets,
-            $xCenter + $offsets,
-            $yCenter - $offsets,
-            $lineOptions);
+        $yCenter + $offsets,
+        $xCenter + $offsets,
+        $yCenter - $offsets,
+        $lineOptions);
 }
 
 if ($drawCheckMarkYes) {
     $offsets = $radius - ($radius * 0.7); // from center
     $lineOptions = array(
-            'R' => 255,
-            'G' => 255,
-            'B' => 255,
-            'Weight' => 1
+        'R' => 255,
+        'G' => 255,
+        'B' => 255,
+        'Weight' => 1,
     );
     // draw \
     $myPicture->drawLine($xCenter - $offsets,
-            $yCenter,
-            $xCenter - ($offsets / 3),
-            $yCenter + $offsets,
-            $lineOptions);
+        $yCenter,
+        $xCenter - ($offsets / 3),
+        $yCenter + $offsets,
+        $lineOptions);
     // draw /
     $myPicture->drawLine($xCenter - ($offsets / 3),
-            $yCenter + $offsets,
-            $xCenter + $offsets,
-            $yCenter - $offsets,
-            $lineOptions);
+        $yCenter + $offsets,
+        $xCenter + $offsets,
+        $yCenter - $offsets,
+        $lineOptions);
 }
 
 

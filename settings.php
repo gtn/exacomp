@@ -139,14 +139,14 @@ $settings->add(new admin_setting_configcheckbox('exacomp/usenumbering',
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/scheduleinterval',
     block_exacomp_get_string('settings_interval'),
     block_exacomp_get_string('settings_interval_description'), 50, PARAM_INT));
-$settings->add(new admin_setting_description("subheader1","",block_exacomp_get_string('settings_description_nurdakoraplus')));
+$settings->add(new admin_setting_description("subheader1", "", block_exacomp_get_string('settings_description_nurdakoraplus')));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/scheduleunits',
     block_exacomp_get_string('settings_scheduleunits'),
     block_exacomp_get_string('settings_scheduleunits_description'), 8, PARAM_INT));
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/schedulebegin',
     block_exacomp_get_string('settings_schedulebegin'),
     block_exacomp_get_string('settings_schedulebegin_description'), "07:45", PARAM_TEXT));
-$settings->add(new admin_setting_description("subheader","",block_exacomp_get_string('settings_description_nurmoodleunddakora')));
+$settings->add(new admin_setting_description("subheader", "", block_exacomp_get_string('settings_description_nurmoodleunddakora')));
 $settings->add(new admin_setting_configtextarea('exacomp/periods',
     block_exacomp_get_string('settings_periods'),
     block_exacomp_get_string('settings_periods_description'), ''));
@@ -195,17 +195,17 @@ $settings->add(new admin_setting_heading('exacomp/heading_apps',
     block_exacomp_get_string('settings_heading_apps'),
     ''));
 
-	$settings->add(new admin_setting_configcheckbox('exacomp/new_app_login',
+$settings->add(new admin_setting_configcheckbox('exacomp/new_app_login',
     block_exacomp_get_string('settings_new_app_login'),
     block_exacomp_get_string('settings_new_app_login_description'), 0));
 
-	$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/dakora_url',
+$settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/dakora_url',
     block_exacomp_get_string('settings_dakora_url'),
     block_exacomp_get_string('settings_dakora_url_description'),
     '',
     PARAM_TEXT));
 
-$settings->add(new admin_setting_description("subheader2","",block_exacomp_get_string('settings_description_nurdakora')));
+$settings->add(new admin_setting_description("subheader2", "", block_exacomp_get_string('settings_description_nurdakora')));
 
 $settings->add(new admin_setting_configstoredfile('exacomp/dakora_language_file',
     block_exacomp_get_string('block_exacomp_dakora_language_file_head'),
@@ -225,7 +225,7 @@ $settings->add(new admin_setting_configcheckbox('exacomp/dakora_show_eportfolio'
     block_exacomp_get_string('settings_dakora_show_eportfolio'),
     block_exacomp_get_string('settings_dakora_show_eportfolio_description'), 1));
 
-	$settings->add(new admin_setting_description("subheader3","",block_exacomp_get_string('settings_description_nurdiggr')));
+$settings->add(new admin_setting_description("subheader3", "", block_exacomp_get_string('settings_description_nurdiggr')));
 
 $settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_assessment',
     block_exacomp_get_string('block_exacomp_elove_student_self_assessment_head'),

@@ -52,7 +52,7 @@ class printer_TCPDF extends TCPDF {
     }
 
     public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false,
-                          $fitonpage = false, $alt = false, $altimgs = array()) {
+        $fitonpage = false, $alt = false, $altimgs = array()) {
         $args = func_get_args();
 
         // replace moodle image urls with local urls

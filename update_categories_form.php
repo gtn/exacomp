@@ -67,7 +67,7 @@ class block_exacomp_update_categories_form extends moodleform {
         $subText->appendXML('<span class="exacomp_sublabel">' . block_exacomp_get_string('descriptor_categories_description') . '</span>');
         foreach ($selector->query('//select[@name=\'catid[]\']') as $e) {
             if ($this->hideSelectbox) {
-                $e->setAttribute("style","display: none;");
+                $e->setAttribute("style", "display: none;");
             }
             $e->setAttribute("class", $e->getAttribute('class') . ' exacomp_forpreconfig');
             $e->parentNode->appendChild($newInput);

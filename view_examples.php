@@ -117,8 +117,8 @@ switch ($style) {
         $examples = \block_exacomp\example::get_objects_sql("
             SELECT DISTINCT e.*
                 FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
-                WHERE e.id IN (".implode(',', array_keys($examples)).") "
-             .(!$isTeacher ? " AND e.is_teacherexample = 0 " : "")
+                WHERE e.id IN (" . implode(',', array_keys($examples)) . ") "
+            . (!$isTeacher ? " AND e.is_teacherexample = 0 " : "")
         );
         /*$examples = \block_exacomp\example::get_objects_sql("
             SELECT DISTINCT e.*

@@ -9,11 +9,7 @@ global $CFG;
 require_once($CFG->dirroot . '/question/editlib.php');
 
 use core_plugin_manager;
-use core_question\bank\search\condition;
 use qbank_columnsortorder\column_manager;
-use qbank_editquestion\editquestion_helper;
-use qbank_managecategories\helper;
-use qbank_questiontodescriptor;
 
 
 require_once('descriptor_link_column.php');

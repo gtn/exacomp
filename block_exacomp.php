@@ -146,7 +146,7 @@ class block_exacomp extends block_list {
                     $examples = \block_exacomp\example::get_objects_sql("
                             SELECT DISTINCT e.*
                               FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
-                              WHERE e.id IN (".implode(',', array_keys($examples)).")
+                              WHERE e.id IN (" . implode(',', array_keys($examples)) . ")
                               ORDER BY e.title ");
                 }
 

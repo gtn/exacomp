@@ -554,7 +554,7 @@ switch ($action) {
                 $isEditingTeacher,
                 true);
             echo html_writer::tag('div', $content, array('id' => 'grade_example_related',
-                'class' => 'grade_example_related'
+                'class' => 'grade_example_related',
                 /*, 'style' => 'max-height:100%; overflow: scroll;'*/
             ));
             //echo $content;

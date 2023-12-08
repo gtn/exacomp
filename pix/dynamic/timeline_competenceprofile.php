@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../../inc.php';
+require __DIR__ . '/../../inc.php';
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
@@ -21,11 +21,11 @@ $studentid = required_param('studentid', PARAM_INT);
 $student = $DB->get_record('user', array('id' => $studentid));
 
 /* pChart library inclusions */
-$pathToPChart = __DIR__.'/../../vendor/pChart/';
+$pathToPChart = __DIR__ . '/../../vendor/pChart/';
 
-include($pathToPChart.'class/pData.class.php');
-include($pathToPChart.'class/pDraw.class.php');
-include($pathToPChart.'class/pImage.class.php');
+include($pathToPChart . 'class/pData.class.php');
+include($pathToPChart . 'class/pDraw.class.php');
+include($pathToPChart . 'class/pImage.class.php');
 
 $height = optional_param('height', 300, PARAM_INT);
 $width = optional_param('width', 600, PARAM_INT);
@@ -46,11 +46,11 @@ $teacherSerie = block_exacomp_get_string("teacher");
 $studentSerie = block_exacomp_get_string("student");
 $totalSerie = block_exacomp_get_string("timeline_available");
 $MyData->addPoints($graphData['teacher'], $teacherSerie);
-$MyData->setPalette($teacherSerie, array("R"=>2, "G"=>166, "B"=>0)); // #02a600
+$MyData->setPalette($teacherSerie, array("R" => 2, "G" => 166, "B" => 0)); // #02a600
 $MyData->addPoints($graphData['student'], $studentSerie);
-$MyData->setPalette($studentSerie, array("R"=>0, "G"=>117, "B"=>221)); // #0075dd
+$MyData->setPalette($studentSerie, array("R" => 0, "G" => 117, "B" => 221)); // #0075dd
 $MyData->addPoints($graphData['total'], $totalSerie);
-$MyData->setPalette($totalSerie, array("R"=>170, "G"=>170, "B"=>170)); //
+$MyData->setPalette($totalSerie, array("R" => 170, "G" => 170, "B" => 170)); //
 //$MyData->setSeriePicture("User","resources/serie1.png");
 //$MyData->setSeriePicture("Group","resources/serie2.png");
 $MyData->setSerieWeight($teacherSerie, 0.5);
@@ -79,7 +79,7 @@ $myPicture = new pImage($width, $height, $MyData);
 //$myPicture->drawRectangle(0,0,699,229,array("R"=>0,"G"=>0,"B"=>0));
 
 /* Write the picture title */
-$myPicture->setFontProperties(array("FontName" => $pathToPChart.'fonts/Verdana.ttf', "FontSize" => 7));
+$myPicture->setFontProperties(array("FontName" => $pathToPChart . 'fonts/Verdana.ttf', "FontSize" => 7));
 //$myPicture->drawText(10,13,"drawPlotChart() - draw a plot chart",array("R"=>255,"G"=>255,"B"=>255));
 
 /* Write the chart title */
@@ -90,38 +90,38 @@ $myPicture->setFontProperties(array("FontName" => $pathToPChart.'fonts/Verdana.t
 $myPicture->setGraphArea(20, 20, $width - 20, $height - 80);
 //$myPicture->drawFilledRectangle(20, 20, $width - 20, $height - 20, array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
 $myPicture->drawScale(array(
-                            'Mode' => SCALE_MODE_START0,
-                            'DrawSubTicks' => false,
-                            'GridTicks' => 0,
-                            'AxisR' => 175,
-                            'AxisG' => 175,
-                            'AxisB' => 175,
-                            'GridR' => 175,
-                            'GridG' => 175,
-                            'GridB' => 175,
-                            'TickR' => 175,
-                            'TickG' => 175,
-                            'TickB' => 175,
-                            'GridAlpha' => 25,
-                            'AxisAlpha' => 0,
-                            'TickAlpha' => 25,
-                            'LabelRotation' => 75,
-                            'XAxisTitleMargin' => 30
-        ));
+    'Mode' => SCALE_MODE_START0,
+    'DrawSubTicks' => false,
+    'GridTicks' => 0,
+    'AxisR' => 175,
+    'AxisG' => 175,
+    'AxisB' => 175,
+    'GridR' => 175,
+    'GridG' => 175,
+    'GridB' => 175,
+    'TickR' => 175,
+    'TickG' => 175,
+    'TickB' => 175,
+    'GridAlpha' => 25,
+    'AxisAlpha' => 0,
+    'TickAlpha' => 25,
+    'LabelRotation' => 75,
+    'XAxisTitleMargin' => 30,
+));
 //$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 //$myPicture->setFontProperties(array("FontName"=>$pathToPChart.'fonts/pf_arma_five.ttf',"FontSize"=>6));
 //$myPicture->drawSplineChart();
 $myPicture->drawLineChart(array());
 $myPicture->drawPlotChart(array(
-                            'DisplayValues' => true,
-                            'DisplayColor' => DISPLAY_AUTO,
-                            'PlotBorder' => true,
-                            'BorderR' => 255,
-                            'BorderG' => 255,
-                            'BorderB' => 255,
-                            'BorderAlpha' => 100,
-                            'BorderSize' => 1
-        ));
+    'DisplayValues' => true,
+    'DisplayColor' => DISPLAY_AUTO,
+    'PlotBorder' => true,
+    'BorderR' => 255,
+    'BorderG' => 255,
+    'BorderB' => 255,
+    'BorderAlpha' => 100,
+    'BorderSize' => 1,
+));
 
 /* Draw the scale and the 2nd chart */
 /*$myPicture->setGraphArea(500,60,670,190);
@@ -133,14 +133,14 @@ $myPicture->setShadow(FALSE);*/
 
 /* Write the chart legend */
 $Config = array("FontR" => 0,
-                "FontG" => 0,
-                "FontB" => 0,
-                "Margin" => 6,
-                "Alpha" => 30,
-                "BoxSize" => 5,
-                "Style" => LEGEND_NOBORDER,
-                "Mode" => LEGEND_HORIZONTAL,
-                "FontName" => $pathToPChart.'fonts/Verdana.ttf'
+    "FontG" => 0,
+    "FontB" => 0,
+    "Margin" => 6,
+    "Alpha" => 30,
+    "BoxSize" => 5,
+    "Style" => LEGEND_NOBORDER,
+    "Mode" => LEGEND_HORIZONTAL,
+    "FontName" => $pathToPChart . 'fonts/Verdana.ttf',
 );
 $myPicture->drawLegend(25, 10, $Config);
 $myPicture->setShadow(false);

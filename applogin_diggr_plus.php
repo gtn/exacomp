@@ -142,7 +142,7 @@ function block_exacomp_is_return_uri_allowed($return_uri) {
         // also allow "www." prefix
         $regexp = preg_replace('!^((http|https)[\\\\]?\://)!i', '$1(www\\.)?', $regexp);
 
-        $regexp = "^".rtrim($regexp, '/').'(/.*)?$';
+        $regexp = "^" . rtrim($regexp, '/') . '(/.*)?$';
         if (preg_match("!{$regexp}!", $return_uri)) {
             $return_uri_allowed = true;
             break;
@@ -545,7 +545,7 @@ $SESSION->wantsurl = $CFG->wwwroot . '/blocks/exacomp/applogin_diggr_plus.php?' 
 $extra_iframe_redirect = optional_param('extra_iframe_redirect', '', PARAM_TEXT);
 if ($extra_iframe_redirect) {
     echo $OUTPUT->header();
-    echo '<div style="margin: 30px;"><a href="'.str_replace('extra_iframe_redirect', 'extra_iframe_redirect_disabled', $_SERVER['REQUEST_URI']).'">Bitte hier klicken!</a></div>';
+    echo '<div style="margin: 30px;"><a href="' . str_replace('extra_iframe_redirect', 'extra_iframe_redirect_disabled', $_SERVER['REQUEST_URI']) . '">Bitte hier klicken!</a></div>';
     echo $OUTPUT->footer();
     exit;
 }
@@ -579,10 +579,10 @@ try {
 
     echo '<div class="login-container" style="max-width: 600px; padding: 60px 30px; text-align: center; margin: 35px auto;">';
     echo nl2br(block_exacomp_trans(["de:Der Login für externe Apps wurde vom Administrator nicht konfiguriert.\n\nTechnische Info:", "en:The Login for external Apps is not configured.\n\nTechnical Details:"]));
-    echo ' '.$e->getMessage();
-    echo 'An Administrator has to go to '.new moodle_url('/blocks/exacomp/webservice_status.php?courseid=1').' and configure the Webservices';
+    echo ' ' . $e->getMessage();
+    echo 'An Administrator has to go to ' . new moodle_url('/blocks/exacomp/webservice_status.php?courseid=1') . ' and configure the Webservices';
     echo '</br><br/>';
-    echo '<a href="'.$PAGE->url.'">'.block_exacomp_trans(["de:Login erneut versuchen", "en:Retry Login"]).'</a>';
+    echo '<a href="' . $PAGE->url . '">' . block_exacomp_trans(["de:Login erneut versuchen", "en:Retry Login"]) . '</a>';
     echo '</div>';
 
     echo $OUTPUT->footer();

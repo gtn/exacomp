@@ -16,8 +16,8 @@
 
 namespace block_exacomp\task;
 
-use core\task\scheduled_task;
 use block_exacomp\data;
+use core\task\scheduled_task;
 
 defined('MOODLE_INTERNAL') || die();
 

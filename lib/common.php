@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace block_exacomp\common {
+
     use block_exacomp\developer;
 
     defined('MOODLE_INTERNAL') || die();

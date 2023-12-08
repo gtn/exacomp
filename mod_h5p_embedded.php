@@ -20,9 +20,9 @@
  * Based on mod/h5pactivity/view.php
  */
 
-use mod_h5pactivity\local\manager;
 use core_h5p\factory;
 use core_h5p\player;
+use mod_h5pactivity\local\manager;
 
 require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
@@ -34,7 +34,6 @@ $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'h5pactivity');
 
 require_login($course, true, $cm);
-
 
 
 $manager = manager::create_from_coursemodule($cm);

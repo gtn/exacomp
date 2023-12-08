@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../../inc.php';
+require __DIR__ . '/../../inc.php';
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
@@ -25,11 +25,11 @@ $height = optional_param('height', 600, PARAM_INT);
 $width = optional_param('width', 300, PARAM_INT);
 
 /* pChart library inclusions */
-$pathToPChart = __DIR__.'/../../vendor/pChart/';
-require $pathToPChart.'class/pData.class.php';
-require $pathToPChart.'class/pDraw.class.php';
-require $pathToPChart.'class/pRadar.class.php';
-require $pathToPChart.'class/pImage.class.php';
+$pathToPChart = __DIR__ . '/../../vendor/pChart/';
+require $pathToPChart . 'class/pData.class.php';
+require $pathToPChart . 'class/pDraw.class.php';
+require $pathToPChart . 'class/pRadar.class.php';
+require $pathToPChart . 'class/pImage.class.php';
 
 $fontSize = 10;
 $AxisRotation = 0;
@@ -40,18 +40,24 @@ switch ($graphAction) {
     case 'competenceProfileRadar':
         $topics = block_exacomp_get_topics_for_radar_graph($courseid, $studentid, $subjectid);
         $radarData = new stdClass();
-        $radarData->labels = (array)array_map(function($t) {return $t->title;}, $topics);
+        $radarData->labels = (array)array_map(function($t) {
+            return $t->title;
+        }, $topics);
         $radarData->datasets = [
-                '0' => (object)[
-                        'label' => get_string("studentcomp", "block_exacomp"),
-                        'data' => array_values(array_map(function($a) { return round($a->student, 2); }, $topics)),
-                        'palette' => array('R' => 249, 'G' => 178, 'B' => 51),
-                ],
-                '1' => (object)[
-                        'label' => get_string("teachercomp", "block_exacomp"),
-                        'data' => array_values(array_map(function($a) { return round($a->teacher, 2); }, $topics)),
-                        'palette' => array('R' => 72, 'G' => 165, 'B' => 63),
-                ],
+            '0' => (object)[
+                'label' => get_string("studentcomp", "block_exacomp"),
+                'data' => array_values(array_map(function($a) {
+                    return round($a->student, 2);
+                }, $topics)),
+                'palette' => array('R' => 249, 'G' => 178, 'B' => 51),
+            ],
+            '1' => (object)[
+                'label' => get_string("teachercomp", "block_exacomp"),
+                'data' => array_values(array_map(function($a) {
+                    return round($a->teacher, 2);
+                }, $topics)),
+                'palette' => array('R' => 72, 'G' => 165, 'B' => 63),
+            ],
         ];
         $AxisRotation = -90;
         $segments = 4;
@@ -62,17 +68,17 @@ switch ($graphAction) {
 
 
 /* Set the default font properties */
-$fontName = $pathToPChart.'fonts/verdana.ttf';
-$fontName = $pathToPChart.'fonts/SourceSansPro-Regular.ttf';
+$fontName = $pathToPChart . 'fonts/verdana.ttf';
+$fontName = $pathToPChart . 'fonts/SourceSansPro-Regular.ttf';
 
 $MyData = new pData();
 foreach ($radarData->datasets as $dataKey => $dataset) {
-    $MyData->addPoints($dataset->data, 'data'.$dataKey);
+    $MyData->addPoints($dataset->data, 'data' . $dataKey);
     if ($dataset->label) {
-        $MyData->setSerieDescription('data'.$dataKey, $dataset->label);
+        $MyData->setSerieDescription('data' . $dataKey, $dataset->label);
     }
     if ($dataset->palette) {
-        $MyData->setPalette('data'.$dataKey, $dataset->palette);
+        $MyData->setPalette('data' . $dataKey, $dataset->palette);
     }
 }
 
@@ -86,11 +92,11 @@ $myPicture = new pImage($width, $height, $MyData);
 
 /* Define general drawing parameters */
 $myPicture->setFontProperties(array(
-        'FontName' => $fontName,
-        'FontSize' => $fontSize,
-        'R' => 40,
-        'G' => 40,
-        'B' => 40));
+    'FontName' => $fontName,
+    'FontSize' => $fontSize,
+    'R' => 40,
+    'G' => 40,
+    'B' => 40));
 
 /* Create the radar object */
 $SplitChart = new pRadar();
@@ -117,16 +123,16 @@ $SplitChart->drawRadar($myPicture, $MyData, $Options);
 /* Write down the legend */
 $fontSizeLegend = 14;
 $myPicture->setFontProperties(array(
-        'FontName' => $fontName,
-        'FontSize' => $fontSizeLegend));
+    'FontName' => $fontName,
+    'FontSize' => $fontSizeLegend));
 $myPicture->drawLegend(10, $height - 25, array(
-        'Style' => LEGEND_BOX,
-        'Mode' => LEGEND_HORIZONTAL,
-        'BoxWidth' => 10,
-        'BoxHeight' => 10,
-        'R' => 255,
-        'G' => 255,
-        'B' => 255));
+    'Style' => LEGEND_BOX,
+    'Mode' => LEGEND_HORIZONTAL,
+    'BoxWidth' => 10,
+    'BoxHeight' => 10,
+    'R' => 255,
+    'G' => 255,
+    'B' => 255));
 
 /* Render the picture */
 /* Render the picture (choose the best way) */

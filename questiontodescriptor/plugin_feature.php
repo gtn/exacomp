@@ -16,8 +16,6 @@
 
 namespace qbank_questiontodescriptor;
 
-use core_question\local\bank\plugin_features_base;
-
 /**
  * Class plugin_feature is the entrypoint for the columns.
  *
