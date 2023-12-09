@@ -81,16 +81,31 @@ class reports extends base {
             throw new \moodle_exception("unknown result type '$result_type'");
         }
 
-        if ($output_style == 'list') {
-            // ok
-        } else {
-            throw new \moodle_exception("output_style '$output_style' not supported");
+        $students = block_exacomp_get_students_by_course($courseid);
+        if ($studentids) {
+            $students = array_filter($students, function($student) use ($studentids) {
+                return in_array($student->id, $studentids);
+            });
         }
 
         if ($time_from || $time_to) {
             $only_achieved_competencies = true;
         }
 
+        if ($output_style == 'list') {
+            return self::dakoraplus_create_report_list($courseid, $students, $topicids, $with_childdescriptors, $only_achieved_competencies, $time_from, $time_to, $isPdf);
+        } elseif ($output_style == 'grid') {
+            return self::dakoraplus_create_report_grid($courseid, $students, $topicids, $with_childdescriptors, $only_achieved_competencies, $time_from, $time_to, $isPdf);
+        } else {
+            throw new \moodle_exception("output_style '$output_style' not supported");
+        }
+    }
+
+    public static function dakoraplus_create_report_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    public static function dakoraplus_create_report_list(int $courseid, array $students, array $topicids, bool $with_childdescriptors, bool $only_achieved_competencies, int $time_from, int $time_to, bool $isPdf) {
         $filter = [
             'type' => 'students',
         ];
@@ -109,12 +124,6 @@ class reports extends base {
 
 
         // if ($isTeacher) {
-        $students = block_exacomp_get_students_by_course($courseid);
-        if ($studentids) {
-            $students = array_filter($students, function($student) use ($studentids) {
-                return in_array($student->id, $studentids);
-            });
-        }
         // } else {
         //     $students[$USER->id] = $coursestudents[$USER->id];
         // }
@@ -210,7 +219,7 @@ class reports extends base {
                 //item_type is needed to distinguish between topics, parent descripors and child descriptors --> important for css-styling
                 $item_type = $item::TYPE;
 
-                $teachereval = function($id) {
+                $teachereval_smiley = function($id) {
                     if ($id === null) {
                         return;
                     } elseif ($id == 0) {
@@ -241,18 +250,23 @@ class reports extends base {
                 // $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
 
                 // echo '<td class="exarep_descriptor" width="4%" style="white-space: nowrap;">' . $item->get_numbering() . '</td>';
-                echo '<td class="exarep_descriptorText" width="' . ($isPdf ? '50%' : '65%') . '">' .
-                    '<table style="padding: 0 0 0 ' . ($level * 8) . 'px;"><tr><td style="border: 0px solid white">' .
+                echo '<td class="exarep_descriptorText" width="' . ($isPdf ? '50%' : '65%') . '">';
+                echo '<table style="padding: 0 0 0 ' . ($level * 10) . 'px;"><tr>' .
+                    '<td style="border: 0px solid white;">' .
+                    '<table style="padding: 0"><tr><td style="border: 0px solid white; width: 8px;">&#8226;</td>' .
+                    '<td style="border: 0px solid white" width="97%">' .
                     $item->title .
                     '</td></tr></table>' .
-                    '</td>';
+                    '</td></tr></table>';
+
+                echo '</td>';
 
                 if (@$filter['time']['active']) {
                     echo '<td width="5%" class="timestamp">' . ($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '') . '</td>';
                     //$html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
                 }
                 echo '<td class="exarep_studentAssessment" width="15%" style="text-align: center">' . global_config::get_student_eval_title_by_id($item->studenteval) . '</td>';
-                echo '<td class="exarep_teacherAssessment" width="15%" style="text-align: center">' . $teachereval($item->teachereval) . '</td>';
+                echo '<td class="exarep_teacherAssessment" width="15%" style="text-align: center">' . $teachereval_smiley($item->teachereval) . '</td>';
                 //				echo '<td class="exarep_exa_evaluation" width="10%" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>'; // remove? RW
                 // echo '<td class="exarep_difficultyLevel" width="10%" style="padding: 0 10px;">' . $eval->get_evalniveau_title() . '</td>';
                 echo '</tr>';
@@ -371,7 +385,213 @@ class reports extends base {
         }
     }
 
-    public static function dakoraplus_create_report_returns() {
-        return new external_value(PARAM_RAW);
+    public static function dakoraplus_create_report_grid(int $courseid, array $students, array $topicids, bool $with_childdescriptors, bool $only_achieved_competencies, int $time_from, int $time_to, bool $isPdf) {
+
+        $subjectid = 0;
+        $tree = block_exacomp_get_competence_tree($courseid, $subjectid, null, true, null, true, null, false, false, false, false, false);
+
+        ob_start();
+        $output_started = false;
+        foreach ($students as $student) {
+            $studentid = $student->id;
+
+            $student = block_exacomp_get_user_information_by_course($student, $courseid);
+
+            $print_eval = function($item) {
+                $teachereval_smiley = function($id) {
+                    if ($id === null) {
+                        return;
+                    } elseif ($id == 0) {
+                        return ':-)';
+                    } elseif ($id == 1) {
+                        return ':-|';
+                    } elseif ($id == 2) {
+                        return ':-(';
+                    }
+                };
+
+                $studenteval = trim(global_config::get_student_eval_title_by_id($item->studenteval)) ?: '-';
+                $teachereval = $teachereval_smiley($item->teachereval) ?: '-';
+
+                echo '<table style="padding: 0 0 3px ' . 80 . 'px"><tr>' .
+                    '<td style="border: 0px solid white;">' .
+                    $studenteval . '&nbsp;&nbsp;/&nbsp;&nbsp;' . $teachereval .
+                    '</td></tr></table>';
+
+            };
+
+            $fill_eval = function($item) use ($student) {
+                if ($item instanceof subject) {
+                    $evalKey = 'subjects';
+                } elseif ($item instanceof topic) {
+                    $evalKey = 'topics';
+                } elseif ($item instanceof descriptor) {
+                    $evalKey = 'competencies';
+                } elseif ($item instanceof example) {
+                    $evalKey = 'examples';
+                } else {
+                    // should not happen
+                    $evalKey = '';
+                }
+
+                $item->teachereval = $student->{$evalKey}->teacher[$item->id];
+                $item->studenteval = $student->{$evalKey}->student[$item->id];
+                $item->timestamp_teacher = $student->{$evalKey}->timestamp_teacher[$item->id];
+            };
+
+            $print_item = function($item, $level, $sub_output = '') use ($fill_eval, $print_eval, $student, $time_from, $time_to, $only_achieved_competencies) {
+                $fill_eval($item);
+
+                $filtered_time = ($time_from && $item->timestamp_teacher < $time_from) || ($time_to && $item->timestamp_teacher > $time_to);
+                $filtered_achieved = ($only_achieved_competencies && $item->teachereval === null);
+                if (!$sub_output && ($filtered_achieved || $filtered_time)) {
+                    // ignore
+                    return;
+                }
+
+                ob_start();
+                echo '<table style="padding: 0 0 0 ' . ($level * 10) . 'px"><tr>' .
+                    '<td style="border: 0px solid white;">' .
+                    '<table style="padding: 0"><tr><td style="border: 0px solid white; width: 8px;">&#8226;</td>' .
+                    '<td style="border: 0px solid white" width="97%">' .
+                    $item->title .
+                    '</td></tr></table>' .
+                    '</td></tr></table>';
+
+                echo $print_eval($item);
+
+                echo $sub_output;
+                return ob_get_clean();
+            };
+
+            foreach ($tree as $subject) {
+                // first check if any topics in this subject were selected
+                $print_subject = false;
+                foreach ($subject->topics as $topic) {
+                    if (in_array($topic->id, $topicids)) {
+                        $print_subject = true;
+                    }
+                }
+
+                if (!$print_subject) {
+                    continue;
+                }
+
+                $used_niveaus = $subject->used_niveaus;
+                // kA wieso das niveau ein array ist, sollte aber ein object sein? -> konvertieren
+                $used_niveaus = array_map(function($niveau) {
+                    return (object)$niveau;
+                }, $used_niveaus);
+
+                if ($output_started) {
+                    echo '<br pagebreak="true"/>';
+                }
+                $output_started = true;
+
+                echo '<h1>' . fullname($student) . ' / ' . $subject->title . '</h1>';
+
+                echo '<table>';
+                echo '<tr><td></td>';
+                foreach ($used_niveaus as $niveau) {
+                    echo "<td>{$niveau->title}</td>";
+                }
+                echo '</tr>';
+
+                foreach ($subject->topics as $topic) {
+                    if (!in_array($topic->id, $topicids)) {
+                        continue;
+                    }
+
+                    $fill_eval($topic);
+
+                    echo "<tr><td>";
+                    echo "<div>{$topic->title}</div>";
+                    echo $print_eval($topic);
+                    echo "</td>";
+
+                    foreach ($used_niveaus as $niveau) {
+                        echo "<td>";
+
+                        $descriptor_output = '';
+                        foreach ($topic->descriptors as $descriptor) {
+                            if ($descriptor->niveauid !== $niveau->id) {
+                                continue;
+                            }
+
+                            if (!block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid, false)) {
+                                continue;
+                            }
+
+                            $child_descriptor_output = '';
+
+                            if ($with_childdescriptors) {
+                                foreach ($descriptor->children as $child) {
+                                    $examples_output = '';
+                                    foreach ($child->examples as $example) {
+                                        $examples_output .= $print_item($example, 2);
+                                    }
+
+                                    $child_descriptor_output .= $print_item($child, 1, $examples_output);
+                                }
+                            }
+
+                            $examples_output = '';
+                            foreach ($descriptor->examples as $example) {
+                                $examples_output .= $print_item($example, 1);
+                            }
+
+                            $descriptor_output .= $print_item($descriptor, 0, $examples_output . $child_descriptor_output);
+                        }
+
+                        echo $descriptor_output ?: '-';
+
+                        echo "</td>";
+                    }
+
+                    echo '</tr>';
+                }
+
+                echo '</table>';
+            }
+        }
+        $html = ob_get_clean();
+
+        if ($isPdf) {
+            $pdf = printer::getPdfPrinter('L');
+
+            $pdf->setStyle('
+			* {
+				font-size: 9pt;
+			}
+			h3 {
+                font-size: 24pt;
+            }
+			div {
+				padding: 0;
+				margin: 0;
+			}
+			table td {
+				border: 0.2pt solid #111;
+				margin: 40px;
+			}
+			table {
+				padding: 1px 5px 1px 5px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+			}
+			tr.highlight {
+				background-color: #e6e6e6;
+			}
+            ');
+
+            $pdf->setHeaderMargin(5);
+            $pdf->SetTopMargin(20);
+
+            $html_content = str_replace('<tr ', '<tr nobr="true"', $html);
+
+            $pdf->writeHTML($html_content);
+            $pdf->Output();
+            exit;
+        } else {
+            return $html;
+        }
     }
 }
