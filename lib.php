@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\PdfParser\PdfParser;
+use setasign\Fpdi\PdfParser\StreamReader;
+use setasign\Fpdi\PdfReader\PageBoundaries;
+use setasign\Fpdi\PdfReader\PdfReader;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__ . '/inc.php';
@@ -116,7 +122,7 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
     $as_pdf = optional_param('as_pdf', false, PARAM_BOOL);
     if ($as_pdf) {
-        send_stored_file_as_pdf($file, $forcedownload, $options);
+        \block_exacomp\api::send_stored_file_as_pdf($file, $forcedownload, $options);
     }
 
     // $as_image = optional_param('as_image', false, PARAM_TEXT);
@@ -127,74 +133,6 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
     send_stored_file($file, 0, 0, $forcedownload, $options);
     exit;
 }
-
-
-function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options) {
-    if ($file->get_mimetype() == 'application/pdf') {
-        // already a pdf
-        send_stored_file($file, null, 0, $forcedownload, $options);
-        exit;
-    }
-
-    $info = $file->get_imageinfo();
-    if (!$info) {
-        send_header_404();
-        die('no image? (no image info)');
-    }
-
-    $a4_width = 210;
-    $a4_height = 297;
-
-    $width = $info['width'];
-    $height = $info['height'];
-
-    // bildmaße: 100x300 -> portrait
-    // bildmaße: 200x250 -> landscape
-
-    // check if image is bigger than a4, else shrink it.
-    // this is needed, because annotation (pencil, stamps, etc.) look best with a4, or else are very small.
-    $ratio = 1;
-    if ($width / $height <= $a4_width / $a4_height) {
-        $orientation = 'P';
-        if ($height > $a4_height) {
-            $ratio = $a4_height / $height;
-        }
-    } else {
-        $orientation = 'L';
-        if ($width > $a4_height) {
-            $ratio = $a4_height / $width;
-        }
-    }
-
-    $width = $width * $ratio;
-    $height = $height * $ratio;
-
-    // create PDF object with image size
-    $pdf = new \FPDF($orientation, 'mm', array($width, $height));
-
-    // add page and image to PDF
-    $pdf->AddPage();
-
-    if (!$tmp_image = $file->copy_content_to_temp()) {
-        die("couldn't create tmp image");
-    }
-
-    // rename tmp image to include extension, fpdf needs the correct extension!
-    $tmp_image_with_extension = $tmp_image . '.' . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
-    rename($tmp_image, $tmp_image_with_extension);
-
-    $pdf->Image($tmp_image_with_extension, 0, 0, $width, $height);
-
-    $pdf_output = $pdf->Output('', 'S');
-
-    // Delete temporary image file.
-    @unlink($tmp_image_with_extension);
-
-    send_file($pdf_output, $file->get_filename() . '.pdf', 0, 0, true, $forcedownload, 'application/pdf',
-        false, $options);
-    exit;
-}
-
 
 /*
 function send_stored_file_as_image(\stored_file $file, $forcedownload, $options) {

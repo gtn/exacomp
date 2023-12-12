@@ -394,4 +394,127 @@ class api {
 
         return $subjects;
     }
+
+    static function send_stored_file_as_pdf(\stored_file $file, $forcedownload, $options = []) {
+        // for now always add page!
+        $add_blank_page = optional_param('add_blank_page', false, PARAM_BOOL);
+
+        if ($file->get_mimetype() == 'application/pdf') {
+            if (!$add_blank_page) {
+                // already a pdf
+                send_stored_file($file, null, 0, $forcedownload, $options);
+            } else {
+                if (!$tmp_file = $file->copy_content_to_temp()) {
+                    die("couldn't create tmp image");
+                }
+
+                $pdf = new \setasign\Fpdi\Fpdi();
+
+                // set the source file
+                $pagecount = $pdf->setSourceFile($tmp_file);
+
+                for ($i = 1; $i <= $pagecount; $i++) {
+                    $tplidx = $pdf->importPage($i);
+                    $size = $pdf->getTemplateSize($tplidx);
+
+                    // create page with the size of the template
+                    $pdf->addPage($size['orientation'], $size);
+
+                    // draw template over whole page
+                    $pdf->useTemplate($tplidx, 0, 0, $size[0], $size[1]);
+                }
+
+                // $add_blank_page=true
+                $pdf->addPage();
+                $pdf->SetFont('Arial', '', 12);
+                $pdf->Cell(40, 10, utf8_decode('Leere Seite für Notizen'));
+
+                $pdf->Output('I', $file->get_filename());
+
+                @unlink($tmp_file);
+
+                exit;
+            }
+
+            // already a pdf
+            send_stored_file($file, null, 0, $forcedownload, $options);
+            exit;
+        }
+
+        $info = $file->get_imageinfo();
+        if (!$info) {
+            send_header_404();
+            die('no image? (no image info)');
+        }
+
+        $a4_width = 210;
+        $a4_height = 297;
+
+        $width = $info['width'];
+        $height = $info['height'];
+
+        // bildmaße: 100x300 -> portrait
+        // bildmaße: 200x250 -> landscape
+
+        // check if image is bigger than a4, else shrink it.
+        // this is needed, because annotation (pencil, stamps, etc.) look best with a4, or else are very small.
+        $ratio = 1;
+        if ($width / $height <= $a4_width / $a4_height) {
+            $orientation = 'P';
+            if ($height > $a4_height) {
+                $ratio = $a4_height / $height;
+            }
+            $page_width = $a4_width;
+            $page_height = $a4_height;
+        } else {
+            $orientation = 'L';
+            if ($width > $a4_height) {
+                $ratio = $a4_height / $width;
+            }
+            $page_width = $a4_height;
+            $page_height = $a4_width;
+        }
+
+        $width = $width * $ratio;
+        $height = $height * $ratio;
+
+        // create PDF object with image size
+        $pdf = new \FPDF($orientation, 'mm', array($a4_width, $a4_height));
+
+        // add page and image to PDF
+        $pdf->AddPage();
+
+        if (!$tmp_file = $file->copy_content_to_temp()) {
+            die("couldn't create tmp image");
+        }
+
+        // try to get extension from mimetype (this is the safe option, because a png could be saved as .jpg and then $pdf->Image() fails!
+        $extension = @image_type_to_extension(@exif_imagetype($tmp_file));
+        if (!$extension) {
+            // alternativly from file nam
+            $extension = '.' . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+        }
+
+        // rename tmp image to include extension, fpdf needs the correct extension!
+        $tmp_file_with_extension = $tmp_file . $extension;
+        rename($tmp_file, $tmp_file_with_extension);
+
+        $pdf->Image($tmp_file_with_extension, ($page_width - $width) / 2, ($page_height - $height) / 2, $width, $height);
+
+        if ($add_blank_page) {
+            // add blank page
+            $pdf->AddPage();
+            $pdf->SetFont('Arial', '', 12);
+            $pdf->Cell(40, 10, utf8_decode('Leere Seite für Notizen'));
+        }
+
+        $pdf_output = $pdf->Output('', 'S');
+
+        // Delete temporary image file.
+        @unlink($tmp_file_with_extension);
+
+        send_file($pdf_output, $file->get_filename() . '.pdf', 0, 0, true, $forcedownload, 'application/pdf',
+            false, $options);
+        exit;
+    }
 }

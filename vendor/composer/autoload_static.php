@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
 {
     public static $prefixLengthsPsr4 = array (
+        's' => 
+        array (
+            'setasign\\Fpdi\\' => 14,
+        ),
         'Z' => 
         array (
             'Zend\\Stdlib\\' => 12,
@@ -27,6 +31,10 @@ class ComposerStaticInit6e8509137f55e9c1d129d7c0d0cb2345
     );
 
     public static $prefixDirsPsr4 = array (
+        'setasign\\Fpdi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
         'Zend\\Stdlib\\' => 
         array (
             0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
