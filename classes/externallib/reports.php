@@ -250,7 +250,7 @@ class reports extends base {
                 // $item_scheme = block_exacomp_additional_grading($item_type, $courseid);
 
                 // echo '<td class="exarep_descriptor" width="4%" style="white-space: nowrap;">' . $item->get_numbering() . '</td>';
-                echo '<td class="exarep_descriptorText" width="' . ($isPdf ? '50%' : '65%') . '">';
+                echo '<td class="exarep_descriptorText" width="70%">';
                 echo '<table style="padding: 0 0 0 ' . ($level * 10) . 'px;"><tr>' .
                     '<td style="border: 0px solid white;">' .
                     '<table style="padding: 0"><tr><td style="border: 0px solid white; width: 8px;">&#8226;</td>' .
@@ -261,10 +261,10 @@ class reports extends base {
 
                 echo '</td>';
 
-                if (@$filter['time']['active']) {
-                    echo '<td width="5%" class="timestamp">' . ($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '') . '</td>';
-                    //$html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
-                }
+                // if (@$filter['time']['active']) {
+                //     echo '<td width="5%" class="timestamp">' . ($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '') . '</td>';
+                //     //$html .= '<td class="timestamp">'.($eval->timestampteacher ? date('d.m.Y', $eval->timestampteacher) : '').'</td>';
+                // }
                 echo '<td class="exarep_studentAssessment" width="15%" style="text-align: center">' . global_config::get_student_eval_title_by_id($item->studenteval) . '</td>';
                 echo '<td class="exarep_teacherAssessment" width="15%" style="text-align: center">' . $teachereval_smiley($item->teachereval) . '</td>';
                 //				echo '<td class="exarep_exa_evaluation" width="10%" style="padding: 0 10px;">'.$eval->get_teacher_value_title().'</td>'; // remove? RW
@@ -291,47 +291,19 @@ class reports extends base {
             if ($output) {
                 $has_output = true;
 
-                // 				echo '<h3>'.fullname($student).'</h3>';
-                // 				echo '<table class="report_table" border="1" width="100%">';
-                // 				echo '<thead><th style="width: 4%"></th><th style="width: 65%"></th>';
                 if ($i != 1) {
                     $html .= '<br pagebreak="true"/>';
                 }
                 $html .= '<h3>' . fullname($student) . '</h3>';
-                $html .= '<table class="report_table" border="1" width="100%">';
+                $html .= '<table width="100%">';
                 $html .= '<thead>';
-                // $html .= '<tr>';
-                // // $html .= '<th width="4%" ></th>';
-                // $html .= '<th width="' . ($isPdf ? '50%' : '65%') . '" ></th>';
-                // if (@$filter['time']['active']) {
-                //     // 				    echo '<th>'.block_exacomp_get_string('assessment_date').'</th>';
-                //     $html .= '<th width="5%">' . block_exacomp_get_string('assessment_date') . '</th>';
-                // }
-                // //echo html_writer::tag('th',block_exacomp_get_string('output_current_assessments'),array('colspan' => "4"));
-                // // 				echo '<th colspan="4">'.block_exacomp_get_string('output_current_assessments').'</th>';
-                // // 				echo '<tr>';
-                // //                 echo '<th class="heading"></th>';
-                // //                 echo '<th class="heading"></th>';
-                // //                 echo '<th class="heading" class="studentAssessment">'.block_exacomp_get_string('student_assessment').'</th>';
-                // //                 echo '<th class="heading" class="teacherAssessment">'.block_exacomp_get_string('teacher_assessment').'</th>';
-                // //                 echo '<th class="heading" class="exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>';
-                // //                 echo '<th class="heading"class="difficultyLevel">'.block_exacomp_get_string('difficulty_group_report').'</th>';
-                // //                 echo "<tbody>";
-                // //                 echo $output;
-                // // 				echo '</table>';
-                //
-                // $html .= '<th width="40%" colspan="' . (@$filter['time']['active'] ? 5 : 4) . '">' . block_exacomp_get_string('output_current_assessments') . '</th>';
-                // $html .= '</tr>';
                 $html .= '<tr>';
-                // $html .= '<th class="heading"></th>';
-                $html .= '<th width="50%" class="heading"></th>';
-                if (@$filter['time']['active']) {
-                    $html .= '<th width="5%" class="heading"></th>';
-                }
-                $html .= '<th width="15%" class="heading studentAssessment" style="text-align: center;">' . 'Schüler:in' . '</th>';
-                $html .= '<th width="15%" class="heading teacherAssessment" style="text-align: center;">' . 'Lehrkraft' . '</th>';
-                //				$html .= '<th width="10%" class="heading exa_evaluation">'.block_exacomp_get_string('exa_evaluation').'</th>'; //remove? RW
-                // $html .= '<th width="10%" class="heading difficultyLevel">' . block_exacomp_get_string('difficulty_group_report') . '</th>';
+                $html .= '<th width="70%"></th>';
+                // if (@$filter['time']['active']) {
+                //     $html .= '<th width="5%" class="heading"></th>';
+                // }
+                $html .= '<th width="15%" style="text-align: center;">' . 'Schüler:in' . '</th>';
+                $html .= '<th width="15%" style="text-align: center;">' . 'Lehrkraft' . '</th>';
                 $html .= '</tr>';
                 $html .= '</thead>';
                 $html .= "<tbody>";
@@ -347,22 +319,21 @@ class reports extends base {
         }
 
         if ($isPdf) {
-            $pdf = printer::getPdfPrinter('L');
+            $pdf = printer::getPdfPrinter('P');
 
             $pdf->setStyle('
 			* {
 				font-size: 9pt;
 			}
 			h3 {
-                font-size: 24pt;
+                font-size: 20pt;
             }
 			div {
 				padding: 0;
 				margin: 0;
 			}
-			table td {
+			table td, table th {
 				border: 0.2pt solid #111;
-				margin: 40px;
 			}
 			table {
 				padding: 1px 5px 1px 5px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
@@ -370,15 +341,20 @@ class reports extends base {
 			tr.highlight {
 				background-color: #e6e6e6;
 			}
+			th {
+			    font-weight: bold;
+				background-color: #e6e6e6;
+			}
             ');
 
             $pdf->setHeaderMargin(5);
             $pdf->SetTopMargin(20);
 
-            $html_content = str_replace('<tr ', '<tr nobr="true"', $html);
+            // $html_content = preg_replace('!<tr(\s|>)!i', '<tr nobr="true"$1', $html);
+            $html_content = $html;
 
             $pdf->writeHTML($html_content);
-            $pdf->Output();
+            $pdf->Output('Bericht.pdf');
             exit;
         } else {
             return $html;
@@ -397,7 +373,12 @@ class reports extends base {
 
             $student = block_exacomp_get_user_information_by_course($student, $courseid);
 
-            $print_eval = function($item) {
+            $print_eval_student = function($item) {
+                $studenteval = trim(global_config::get_student_eval_title_by_id($item->studenteval)) ?: '-';
+                return $studenteval;
+            };
+
+            $print_eval_teacher = function($item) {
                 $teachereval_smiley = function($id) {
                     if ($id === null) {
                         return;
@@ -410,14 +391,8 @@ class reports extends base {
                     }
                 };
 
-                $studenteval = trim(global_config::get_student_eval_title_by_id($item->studenteval)) ?: '-';
                 $teachereval = $teachereval_smiley($item->teachereval) ?: '-';
-
-                echo '<table style="padding: 0 0 3px ' . 80 . 'px"><tr>' .
-                    '<td style="border: 0px solid white;">' .
-                    $studenteval . '&nbsp;&nbsp;/&nbsp;&nbsp;' . $teachereval .
-                    '</td></tr></table>';
-
+                return $teachereval;
             };
 
             $fill_eval = function($item) use ($student) {
@@ -439,7 +414,7 @@ class reports extends base {
                 $item->timestamp_teacher = $student->{$evalKey}->timestamp_teacher[$item->id];
             };
 
-            $print_item = function($item, $level, $sub_output = '') use ($fill_eval, $print_eval, $student, $time_from, $time_to, $only_achieved_competencies) {
+            $print_item = function($item, $level, $sub_output = '') use ($fill_eval, $print_eval_student, $print_eval_teacher, $student, $time_from, $time_to, $only_achieved_competencies) {
                 $fill_eval($item);
 
                 $filtered_time = ($time_from && $item->timestamp_teacher < $time_from) || ($time_to && $item->timestamp_teacher > $time_to);
@@ -450,15 +425,17 @@ class reports extends base {
                 }
 
                 ob_start();
-                echo '<table style="padding: 0 0 0 ' . ($level * 10) . 'px"><tr>' .
+                echo '<table style="padding: 3px 0 3px ' . ($level * 10) . 'px"><tr>' .
                     '<td style="border: 0px solid white;">' .
                     '<table style="padding: 0"><tr><td style="border: 0px solid white; width: 8px;">&#8226;</td>' .
-                    '<td style="border: 0px solid white" width="97%">' .
+                    '<td style="border: 0px solid white" width="77%">' .
                     $item->title .
+                    '</td><td style="border: 0px solid white; text-align: center;" width="10%">' .
+                    $print_eval_student($item) .
+                    '</td><td style="border: 0px solid white; text-align: center;" width="10%">' .
+                    $print_eval_teacher($item) .
                     '</td></tr></table>' .
                     '</td></tr></table>';
-
-                echo $print_eval($item);
 
                 echo $sub_output;
                 return ob_get_clean();
@@ -488,14 +465,15 @@ class reports extends base {
                 }
                 $output_started = true;
 
-                echo '<h1>' . fullname($student) . ' / ' . $subject->title . '</h1>';
+                echo '<h3>' . fullname($student) . ' / ' . $subject->title . '</h3>';
 
                 echo '<table>';
-                echo '<tr><td></td>';
+                echo '<thead><tr><th></th>';
                 foreach ($used_niveaus as $niveau) {
-                    echo "<td>{$niveau->title}</td>";
+                    echo "<th>{$niveau->title}</th>";
                 }
-                echo '</tr>';
+                echo '</tr></thead>';
+                echo '<tbody>';
 
                 foreach ($subject->topics as $topic) {
                     if (!in_array($topic->id, $topicids)) {
@@ -504,9 +482,15 @@ class reports extends base {
 
                     $fill_eval($topic);
 
-                    echo "<tr><td>";
-                    echo "<div>{$topic->title}</div>";
-                    echo $print_eval($topic);
+                    echo '<tr nobr="true"><td>';
+                    echo '<table style="padding: 0"><tr>' .
+                        '<td style="border: 0px solid white" width="77%">' .
+                        $topic->title .
+                        '</td><td style="border: 0px solid white; text-align: center;" width="10%">' .
+                        $print_eval_student($topic) .
+                        '</td><td style="border: 0px solid white; text-align: center;" width="10%">' .
+                        $print_eval_teacher($topic) .
+                        '</td></tr></table>';
                     echo "</td>";
 
                     foreach ($used_niveaus as $niveau) {
@@ -551,6 +535,7 @@ class reports extends base {
                     echo '</tr>';
                 }
 
+                echo '</tbody>';
                 echo '</table>';
             }
         }
@@ -564,15 +549,14 @@ class reports extends base {
 				font-size: 9pt;
 			}
 			h3 {
-                font-size: 24pt;
+                font-size: 20pt;
             }
 			div {
 				padding: 0;
 				margin: 0;
 			}
-			table td {
+			table td, table th {
 				border: 0.2pt solid #111;
-				margin: 40px;
 			}
 			table {
 				padding: 1px 5px 1px 5px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
@@ -580,15 +564,20 @@ class reports extends base {
 			tr.highlight {
 				background-color: #e6e6e6;
 			}
+			th {
+			    font-weight: bold;
+				background-color: #e6e6e6;
+			}
             ');
 
             $pdf->setHeaderMargin(5);
             $pdf->SetTopMargin(20);
 
-            $html_content = str_replace('<tr ', '<tr nobr="true"', $html);
+            // $html_content = preg_replace('!<tr(\s|>)!i', '<tr nobr="true"$1', $html);
+            $html_content = $html;
 
             $pdf->writeHTML($html_content);
-            $pdf->Output();
+            $pdf->Output('Bericht.pdf');
             exit;
         } else {
             return $html;
