@@ -1,6 +1,13 @@
 <?php
 
 $functions = array (
+  'diggrplus_set_item_status' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\competence_grid',
+    'methodname' => 'diggrplus_set_item_status',
+    'description' => 'set the item status',
+    'type' => 'write',
+  ),
   'block_exacomp_get_courses' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',

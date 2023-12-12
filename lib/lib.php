@@ -14721,20 +14721,34 @@ function block_exacomp_get_human_readable_item_status($statusId) {
     }
 
     switch ($statusId) {
-        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS: //inprogress
+        case BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS:
             return "inprogress";
-            break;
-        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED: //submitted
+        case BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED:
             return "submitted";
-            break;
-        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED: //completed
+        case BLOCK_EXACOMP_ITEM_STATUS_COMPLETED:
             return "completed";
-            break;
         default:
             return "errornostate";
     }
 }
 
+/**
+ * @return int|null
+ */
+function block_exacomp_convert_human_readable_item_status(string $statusStr) {
+    switch ($statusStr) {
+        case "new":
+            return null;
+        case "inprogress":
+            return BLOCK_EXACOMP_ITEM_STATUS_INPROGRESS;
+        case "submitted":
+            return BLOCK_EXACOMP_ITEM_STATUS_SUBMITTED;
+        case "completed":
+            return BLOCK_EXACOMP_ITEM_STATUS_COMPLETED;
+        default:
+            throw new \moodle_exception("unknown status '$statusStr'");
+    }
+}
 
 function block_exacomp_clear_exacomp_weekly_schedule() {
     // get all entries in schedule, check if the start and end date are in the last week and there is no submission
