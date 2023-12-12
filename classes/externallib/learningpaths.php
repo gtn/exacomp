@@ -178,17 +178,17 @@ class learningpaths extends base {
             'visible' => new external_value(PARAM_BOOL),
             'items' => new external_multiple_structure(
                 new external_single_structure([
-                    'id' => new external_value (PARAM_INT),
-                    'exampleid' => new external_value (PARAM_INT),
-                    'exampletitle' => new external_value (PARAM_TEXT),
+                    'id' => new external_value(PARAM_INT),
+                    'exampleid' => new external_value(PARAM_INT),
+                    'exampletitle' => new external_value(PARAM_TEXT),
                     'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
-                    'topictitle' => new external_value (PARAM_TEXT),
-                    'sorting' => new external_value (PARAM_INT),
-                    'visibleall' => new external_value (PARAM_BOOL),
-                    'visiblestudent' => new external_value (PARAM_BOOL),
-                    'count_inprogress' => new external_value (PARAM_INT),
-                    'count_completed' => new external_value (PARAM_INT),
-                    'count_submitted' => new external_value (PARAM_INT),
+                    'topictitle' => new external_value(PARAM_TEXT),
+                    'sorting' => new external_value(PARAM_INT),
+                    'visibleall' => new external_value(PARAM_BOOL),
+                    'visiblestudent' => new external_value(PARAM_BOOL),
+                    'count_inprogress' => new external_value(PARAM_INT),
+                    'count_completed' => new external_value(PARAM_INT),
+                    'count_submitted' => new external_value(PARAM_INT),
                 ])
             ),
         ]);
@@ -238,8 +238,8 @@ class learningpaths extends base {
     }
 
     public static function diggrplus_learningpath_add_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
             'id' => new external_value(PARAM_INT),
         ));
     }
@@ -278,8 +278,8 @@ class learningpaths extends base {
     }
 
     public static function diggrplus_learningpath_delete_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -337,8 +337,8 @@ class learningpaths extends base {
     }
 
     public static function diggrplus_learningpath_update_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -402,8 +402,8 @@ class learningpaths extends base {
     }
 
     public static function diggrplus_learningpath_item_update_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -469,8 +469,8 @@ class learningpaths extends base {
     }
 
     public static function diggrplus_learningpath_add_items_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -540,8 +540,8 @@ class learningpaths extends base {
     }
 
     public static function diggrplus_learningpath_item_delete_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -596,8 +596,8 @@ class learningpaths extends base {
     }
 
     public static function diggrplus_learningpath_item_sorting_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 }

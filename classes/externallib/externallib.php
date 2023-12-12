@@ -61,8 +61,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_courses_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user', VALUE_DEFAULT),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user', VALUE_DEFAULT),
         ));
     }
 
@@ -144,14 +144,14 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_courses_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'fullname' => new external_value (PARAM_TEXT, 'fullname of course'),
-            'shortname' => new external_value (PARAM_RAW, 'shortname of course'),
-            'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
-            'teachercanedit' => new external_value (PARAM_BOOL),
-            'course_topics_configured' => new external_value (PARAM_BOOL, 'only available for teachers (used in diggr+)', VALUE_OPTIONAL),
-            'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'fullname' => new external_value(PARAM_TEXT, 'fullname of course'),
+            'shortname' => new external_value(PARAM_RAW, 'shortname of course'),
+            'exarole' => new external_value(PARAM_INT, '1=trainer, 2=student'),
+            'teachercanedit' => new external_value(PARAM_BOOL),
+            'course_topics_configured' => new external_value(PARAM_BOOL, 'only available for teachers (used in diggr+)', VALUE_OPTIONAL),
+            'assessment_config' => new external_value(PARAM_RAW, 'which course specific assessment_config is used'),
         )));
     }
 
@@ -160,10 +160,10 @@ class externallib extends base {
 	 * @return external_function_parameters
 	 */
     public static function get_examples_for_subject_parameters() {
-        return new external_function_parameters (array(
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -316,21 +316,21 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_examples_for_subject_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'title' => new external_value (PARAM_TEXT, 'title of topic'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'title' => new external_value(PARAM_TEXT, 'title of topic'),
             'requireaction' => new external_value(PARAM_BOOL, 'trainer action required or not'),
-            'examples' => new external_multiple_structure (new external_single_structure (array(
-                'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                'example_title' => new external_value (PARAM_TEXT, 'title of example'),
-                'example_item' => new external_value (PARAM_INT, 'current item id'),
-                'example_status' => new external_value (PARAM_INT, 'status of current item'),
-                'example_creatorid' => new external_value (PARAM_INT, 'creator of example'),
+            'examples' => new external_multiple_structure(new external_single_structure(array(
+                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                'example_title' => new external_value(PARAM_TEXT, 'title of example'),
+                'example_item' => new external_value(PARAM_INT, 'current item id'),
+                'example_status' => new external_value(PARAM_INT, 'status of current item'),
+                'example_creatorid' => new external_value(PARAM_INT, 'creator of example'),
             ))),
-            'quizes' => new external_multiple_structure (new external_single_structure (array(
-                'quizid' => new external_value (PARAM_INT, 'id of quiz'),
-                'quiz_title' => new external_value (PARAM_TEXT, 'title of quiz'),
-                'quiz_grade' => new external_value (PARAM_FLOAT, 'sum grade of quiz'),
+            'quizes' => new external_multiple_structure(new external_single_structure(array(
+                'quizid' => new external_value(PARAM_INT, 'id of quiz'),
+                'quiz_title' => new external_value(PARAM_TEXT, 'title of quiz'),
+                'quiz_grade' => new external_value(PARAM_FLOAT, 'sum grade of quiz'),
 
             )), 'quiz data', VALUE_OPTIONAL),
         )));
@@ -341,10 +341,10 @@ class externallib extends base {
 	 * @return external_function_parameters
 	 */
     public static function get_examples_for_subject_with_lfs_infos_parameters() {
-        return new external_function_parameters (array(
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -509,23 +509,23 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_examples_for_subject_with_lfs_infos_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'title' => new external_value (PARAM_TEXT, 'title of topic'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'title' => new external_value(PARAM_TEXT, 'title of topic'),
             'requireaction' => new external_value(PARAM_BOOL, 'trainer action required or not'),
-            'totalCompetencies' => new external_value (PARAM_INT, 'amount of total competencies of this topic'),
-            'examples' => new external_multiple_structure (new external_single_structure (array(
-                'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
-                'example_title' => new external_value (PARAM_TEXT, 'title of example'),
-                'example_item' => new external_value (PARAM_INT, 'current item id'),
-                'example_status' => new external_value (PARAM_INT, 'status of current item'),
-                'example_creatorid' => new external_value (PARAM_INT, 'creator of example'),
+            'totalCompetencies' => new external_value(PARAM_INT, 'amount of total competencies of this topic'),
+            'examples' => new external_multiple_structure(new external_single_structure(array(
+                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
+                'example_title' => new external_value(PARAM_TEXT, 'title of example'),
+                'example_item' => new external_value(PARAM_INT, 'current item id'),
+                'example_status' => new external_value(PARAM_INT, 'status of current item'),
+                'example_creatorid' => new external_value(PARAM_INT, 'creator of example'),
             ))),
-            'quizes' => new external_multiple_structure (new external_single_structure (array(
-                'quizid' => new external_value (PARAM_INT, 'id of quiz'),
-                'quiz_title' => new external_value (PARAM_TEXT, 'title of quiz'),
-                'quiz_grade' => new external_value (PARAM_FLOAT, 'sum grade of quiz'),
+            'quizes' => new external_multiple_structure(new external_single_structure(array(
+                'quizid' => new external_value(PARAM_INT, 'id of quiz'),
+                'quiz_title' => new external_value(PARAM_TEXT, 'title of quiz'),
+                'quiz_grade' => new external_value(PARAM_FLOAT, 'sum grade of quiz'),
 
             )), 'quiz data', VALUE_OPTIONAL),
         )));
@@ -537,8 +537,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_example_by_id_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
         ));
     }
 
@@ -590,21 +590,21 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_example_by_id_returns() {
-        return new external_single_structure (array(
-            'title' => new external_value (PARAM_TEXT, 'title of example'),
-            'description' => new external_value (PARAM_TEXT, 'description of example'),
-            'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-            'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-            'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-            'task' => new external_value (PARAM_TEXT, '@deprecated'),
-            'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-            //'timeframe' => new external_value (PARAM_INT, 'timeframe in minutes'),
-            'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'), // like in Dakora?
-            'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-            'quiz' => new external_single_structure (array(
-                'quizid' => new external_value (PARAM_INT, 'id of quiz'),
-                'quiz_title' => new external_value (PARAM_TEXT, 'title of quiz'),
-                'quiz_grade' => new external_value (PARAM_FLOAT, 'sum grade of quiz'),
+        return new external_single_structure(array(
+            'title' => new external_value(PARAM_TEXT, 'title of example'),
+            'description' => new external_value(PARAM_TEXT, 'description of example'),
+            'taskfileurl' => new external_value(PARAM_TEXT, 'task fileurl'),
+            'taskfilenames' => new external_value(PARAM_TEXT, 'task filename'),
+            'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+            'task' => new external_value(PARAM_TEXT, '@deprecated'),
+            'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+            //'timeframe' => new external_value(PARAM_INT, 'timeframe in minutes'),
+            'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'), // like in Dakora?
+            'hassubmissions' => new external_value(PARAM_BOOL, 'true if example has already submissions'),
+            'quiz' => new external_single_structure(array(
+                'quizid' => new external_value(PARAM_INT, 'id of quiz'),
+                'quiz_title' => new external_value(PARAM_TEXT, 'title of quiz'),
+                'quiz_grade' => new external_value(PARAM_FLOAT, 'sum grade of quiz'),
             )),
         ));
     }
@@ -615,10 +615,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_descriptors_for_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -660,10 +660,10 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_descriptors_for_example_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'evaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'evaluation' => new external_value(PARAM_INT, 'evaluation of descriptor'),
         )));
     }
 
@@ -727,10 +727,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_descriptors_for_quiz_parameters() {
-        return new external_function_parameters (array(
-            'quizid' => new external_value (PARAM_INT, 'id of quiz'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'quizid' => new external_value(PARAM_INT, 'id of quiz'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -798,10 +798,10 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_descriptors_for_quiz_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'evaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'evaluation' => new external_value(PARAM_INT, 'evaluation of descriptor'),
         )));
     }
 
@@ -811,7 +811,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_user_role_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -874,9 +874,9 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_user_role_returns() {
-        return new external_function_parameters (array(
-            'role' => new external_value (PARAM_INT, '1=trainer, 2=student'),
-            'diwipassapp_login' => new external_value (PARAM_INT, '0=first, 1=not first'),
+        return new external_function_parameters(array(
+            'role' => new external_value(PARAM_INT, '1=trainer, 2=student'),
+            'diwipassapp_login' => new external_value(PARAM_INT, '0=first, 1=not first'),
         ));
     }
 
@@ -886,7 +886,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggr_get_user_role_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -961,9 +961,9 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggr_get_user_role_returns() {
-        return new external_function_parameters (array(
-            'role' => new external_value (PARAM_INT, '1=trainer, 2=student'),
-            'diwipassapp_login' => new external_value (PARAM_INT, '0=first, 1=not first'),
+        return new external_function_parameters(array(
+            'role' => new external_value(PARAM_INT, '1=trainer, 2=student'),
+            'diwipassapp_login' => new external_value(PARAM_INT, '0=first, 1=not first'),
         ));
     }
 
@@ -973,7 +973,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_external_trainer_students_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -1037,18 +1037,18 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_external_trainer_students_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'name' => new external_value (PARAM_TEXT, 'name of user'),
-            'cohorts' => new external_multiple_structure (new external_single_structure (array(
-                'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
-                'name' => new external_value (PARAM_TEXT, 'title of cohort'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'name' => new external_value(PARAM_TEXT, 'name of user'),
+            'cohorts' => new external_multiple_structure(new external_single_structure(array(
+                'cohortid' => new external_value(PARAM_INT, 'id of cohort'),
+                'name' => new external_value(PARAM_TEXT, 'title of cohort'),
             ))),
             'requireaction' => new external_value(PARAM_BOOL, 'trainer action required or not'),
-            'examples' => new external_single_structure (array(
-                'total' => new external_value (PARAM_INT),
-                'submitted' => new external_value (PARAM_INT),
-                'reached' => new external_value (PARAM_INT),
+            'examples' => new external_single_structure(array(
+                'total' => new external_value(PARAM_INT),
+                'submitted' => new external_value(PARAM_INT),
+                'reached' => new external_value(PARAM_INT),
             )),
         )));
     }
@@ -1059,8 +1059,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_subjects_for_user_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -1114,11 +1114,11 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_subjects_for_user_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'title' => new external_value (PARAM_TEXT, 'title of subject'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'requireaction' => new external_value (PARAM_BOOL, 'whether example in this subject has been edited or not by the selected student'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'title' => new external_value(PARAM_TEXT, 'title of subject'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'requireaction' => new external_value(PARAM_BOOL, 'whether example in this subject has been edited or not by the selected student'),
         )));
     }
 
@@ -1128,10 +1128,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_subjects_and_topics_for_user_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'courseid' => new external_value (PARAM_INT, 'id of course. This is used for teachers.', VALUE_DEFAULT, -1),
-            'showonlywithexamples' => new external_value (PARAM_BOOL, 'id of course. This is used for teachers.', VALUE_DEFAULT, true),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'courseid' => new external_value(PARAM_INT, 'id of course. This is used for teachers.', VALUE_DEFAULT, -1),
+            'showonlywithexamples' => new external_value(PARAM_BOOL, 'id of course. This is used for teachers.', VALUE_DEFAULT, true),
         ));
     }
 
@@ -1224,18 +1224,18 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_get_subjects_and_topics_for_user_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of subject'),
-            'title' => new external_value (PARAM_TEXT, 'title of subject'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
-            'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
-            'topics' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of example'),
-                'title' => new external_value (PARAM_TEXT, 'title of example'),
-                'descriptors' => new external_multiple_structure (new external_single_structure (array(
-                    'descriptorid' => new external_value (PARAM_INT, 'id of example'),
-                    'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of subject'),
+            'title' => new external_value(PARAM_TEXT, 'title of subject'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'courseshortname' => new external_value(PARAM_TEXT, 'courseshortname'),
+            'coursefullname' => new external_value(PARAM_TEXT, 'coursefullname'),
+            'topics' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of example'),
+                'title' => new external_value(PARAM_TEXT, 'title of example'),
+                'descriptors' => new external_multiple_structure(new external_single_structure(array(
+                    'descriptorid' => new external_value(PARAM_INT, 'id of example'),
+                    'descriptortitle' => new external_value(PARAM_TEXT, 'title of example'),
                 ))),
             ))),
         )));
@@ -1247,8 +1247,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_niveaus_for_subject_parameters() {
-        return new external_function_parameters (array(
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+        return new external_function_parameters(array(
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
         ));
     }
 
@@ -1286,9 +1286,9 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_get_niveaus_for_subject_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'niveauid' => new external_value (PARAM_INT, 'id of subject'),
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of subject'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'niveauid' => new external_value(PARAM_INT, 'id of subject'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of subject'),
         )));
     }
 
@@ -1298,8 +1298,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function delete_item_parameters() {
-        return new external_function_parameters (array(
-            'itemid' => new external_value (PARAM_INT, 'id of item'),
+        return new external_function_parameters(array(
+            'itemid' => new external_value(PARAM_INT, 'id of item'),
         ));
     }
 
@@ -1346,8 +1346,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function delete_item_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -1357,10 +1357,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function set_competence_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'value' => new external_value (PARAM_INT, 'evaluation value'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'value' => new external_value(PARAM_INT, 'evaluation value'),
         ));
     }
 
@@ -1422,8 +1422,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function set_competence_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -1433,9 +1433,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_item_for_example_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'itemid' => new external_value (PARAM_INT, 'id of item'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'itemid' => new external_value(PARAM_INT, 'id of item'),
         ));
     }
 
@@ -1526,20 +1526,20 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_item_for_example_returns() {
-        return new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of item'),
-            'name' => new external_value (PARAM_TEXT, 'title of item'),
-            'type' => new external_value (PARAM_TEXT, 'type of item ENUM(note,file,link)'),
-            'url' => new external_value (PARAM_TEXT, 'url'),
-            'effort' => new external_value (PARAM_RAW, 'description of the effort'),
-            'filename' => new external_value (PARAM_TEXT, 'title of item'),
-            'file' => new external_value (PARAM_URL, 'file url'),
-            'isimage' => new external_value (PARAM_BOOL, 'true if file is image'),
-            'status' => new external_value (PARAM_INT, 'status of the submission'),
-            'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
-            'studentvalue' => new external_value (PARAM_INT, 'student grading'),
-            'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
-            'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
+        return new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of item'),
+            'name' => new external_value(PARAM_TEXT, 'title of item'),
+            'type' => new external_value(PARAM_TEXT, 'type of item ENUM(note,file,link)'),
+            'url' => new external_value(PARAM_TEXT, 'url'),
+            'effort' => new external_value(PARAM_RAW, 'description of the effort'),
+            'filename' => new external_value(PARAM_TEXT, 'title of item'),
+            'file' => new external_value(PARAM_URL, 'file url'),
+            'isimage' => new external_value(PARAM_BOOL, 'true if file is image'),
+            'status' => new external_value(PARAM_INT, 'status of the submission'),
+            'teachervalue' => new external_value(PARAM_INT, 'teacher grading'),
+            'studentvalue' => new external_value(PARAM_INT, 'student grading'),
+            'teachercomment' => new external_value(PARAM_TEXT, 'teacher comment'),
+            'studentcomment' => new external_value(PARAM_TEXT, 'student comment'),
         ));
     }
 
@@ -1549,8 +1549,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_competencies_for_upload_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -1612,15 +1612,15 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_competencies_for_upload_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'subjectid' => new external_value (PARAM_INT, 'id of topic'),
-            'subjecttitle' => new external_value (PARAM_TEXT, 'title of topic'),
-            'topics' => new external_multiple_structure (new external_single_structure (array(
-                'topicid' => new external_value (PARAM_INT, 'id of example'),
-                'topictitle' => new external_value (PARAM_TEXT, 'title of example'),
-                'descriptors' => new external_multiple_structure (new external_single_structure (array(
-                    'descriptorid' => new external_value (PARAM_INT, 'id of example'),
-                    'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'subjectid' => new external_value(PARAM_INT, 'id of topic'),
+            'subjecttitle' => new external_value(PARAM_TEXT, 'title of topic'),
+            'topics' => new external_multiple_structure(new external_single_structure(array(
+                'topicid' => new external_value(PARAM_INT, 'id of example'),
+                'topictitle' => new external_value(PARAM_TEXT, 'title of example'),
+                'descriptors' => new external_multiple_structure(new external_single_structure(array(
+                    'descriptorid' => new external_value(PARAM_INT, 'id of example'),
+                    'descriptortitle' => new external_value(PARAM_TEXT, 'title of example'),
                 ))),
             ))),
         )));
@@ -1633,17 +1633,17 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function submit_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'exampleid'),
-            'studentvalue' => new external_value (PARAM_INT, 'studentvalue'),
-            'url' => new external_value (PARAM_URL, 'url'),
-            'effort' => new external_value (PARAM_TEXT, 'effort'),
-            'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
-            'fileitemid' => new external_value (PARAM_INT, 'fileitemid, used to look up file and create a new one in the exaport file area'),
-            'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
-            'title' => new external_value (PARAM_TEXT, 'title'),
-            'itemid' => new external_value (PARAM_INT, 'itemid'),
-            'courseid' => new external_value (PARAM_INT, 'courseid'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'exampleid'),
+            'studentvalue' => new external_value(PARAM_INT, 'studentvalue'),
+            'url' => new external_value(PARAM_URL, 'url'),
+            'effort' => new external_value(PARAM_TEXT, 'effort'),
+            'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+            'fileitemid' => new external_value(PARAM_INT, 'fileitemid, used to look up file and create a new one in the exaport file area'),
+            'studentcomment' => new external_value(PARAM_TEXT, 'studentcomment'),
+            'title' => new external_value(PARAM_TEXT, 'title'),
+            'itemid' => new external_value(PARAM_INT, 'itemid'),
+            'courseid' => new external_value(PARAM_INT, 'courseid'),
         ));
     }
 
@@ -1805,9 +1805,9 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function submit_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-            'itemid' => new external_value (PARAM_INT, 'itemid'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
+            'itemid' => new external_value(PARAM_INT, 'itemid'),
         ));
     }
 
@@ -1817,22 +1817,22 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function create_or_update_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated', VALUE_DEFAULT, -1),
-            'name' => new external_value (PARAM_TEXT, 'title of example'),
-            'description' => new external_value (PARAM_TEXT, 'description of example'),
-            'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
-            'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
-            'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
-            'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
-            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
-            'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
-            'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
-            'filename' => new external_value (PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
-            'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile', VALUE_DEFAULT, -1),
-            'activityid' => new external_value (PARAM_INT, 'id of related activity', VALUE_DEFAULT, 0),
-            'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?', VALUE_DEFAULT, 0),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of the example that is to be updated', VALUE_DEFAULT, -1),
+            'name' => new external_value(PARAM_TEXT, 'title of example'),
+            'description' => new external_value(PARAM_TEXT, 'description of example'),
+            'timeframe' => new external_value(PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
+            'externalurl' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
+            'comps' => new external_value(PARAM_TEXT, 'list of competencies, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
+            'fileitemids' => new external_value(PARAM_TEXT, 'fileitemids separated by comma', VALUE_DEFAULT, ''),
+            'solutionfileitemid' => new external_value(PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
+            'taxonomies' => new external_value(PARAM_TEXT, 'list of taxonomies', VALUE_DEFAULT, ''),
+            'newtaxonomy' => new external_value(PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
+            'courseid' => new external_value(PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
+            'filename' => new external_value(PARAM_TEXT, 'deprecated (old code for maybe elove?) filename, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
+            'crosssubjectid' => new external_value(PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile', VALUE_DEFAULT, -1),
+            'activityid' => new external_value(PARAM_INT, 'id of related activity', VALUE_DEFAULT, 0),
+            'is_teacherexample' => new external_value(PARAM_INT, 'is a teacher example?', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -1888,12 +1888,12 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function create_or_update_example_returns() {
-        return new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of created example'),
-            'newtaxonomy' => new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'amount of total competencies'),
-                'source' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
-                'title' => new external_value (PARAM_TEXT, 'amount of reached competencies'),
+        return new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of created example'),
+            'newtaxonomy' => new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'amount of total competencies'),
+                'source' => new external_value(PARAM_TEXT, 'amount of reached competencies'),
+                'title' => new external_value(PARAM_TEXT, 'amount of reached competencies'),
             )),
         ));
     }
@@ -1904,22 +1904,22 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_create_or_update_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated', VALUE_DEFAULT, -1),
-            'name' => new external_value (PARAM_TEXT, 'title of example', VALUE_DEFAULT, ''),
-            'description' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
-            'timeframe' => new external_value (PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
-            'externalurl' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
-            'comps' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
-            'taxonomies' => new external_value (PARAM_TEXT, 'list of taxonomies (comma seperated)', VALUE_DEFAULT, ''),
-            'newtaxonomy' => new external_value (PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
-            'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
-            'crosssubjectid' => new external_value (PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile', VALUE_DEFAULT, -1),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
-            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, ''),
-            'solutionfileitemid' => new external_value (PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
-            'activityid' => new external_value (PARAM_INT, 'id of related activity', VALUE_DEFAULT, 0),
-            'is_teacherexample' => new external_value (PARAM_INT, 'is a teacher example?', VALUE_DEFAULT, 0),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of the example that is to be updated', VALUE_DEFAULT, -1),
+            'name' => new external_value(PARAM_TEXT, 'title of example', VALUE_DEFAULT, ''),
+            'description' => new external_value(PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
+            'timeframe' => new external_value(PARAM_TEXT, 'description of example', VALUE_DEFAULT, ''),
+            'externalurl' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, 'wwww'),
+            'comps' => new external_value(PARAM_TEXT, 'list of descriptorids, seperated by comma, or "freemat" if freematerial should be created', VALUE_DEFAULT, '0'),
+            'taxonomies' => new external_value(PARAM_TEXT, 'list of taxonomies (comma seperated)', VALUE_DEFAULT, ''),
+            'newtaxonomy' => new external_value(PARAM_TEXT, 'new taxonomy to be created', VALUE_DEFAULT, ''),
+            'courseid' => new external_value(PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
+            'crosssubjectid' => new external_value(PARAM_INT, 'id of the crosssubject if it is a crosssubjectfile', VALUE_DEFAULT, -1),
+            'fileitemids' => new external_value(PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area', VALUE_DEFAULT, ''),
+            'removefiles' => new external_value(PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma', VALUE_DEFAULT, ''),
+            'solutionfileitemid' => new external_value(PARAM_TEXT, 'fileitemid for the solutionfile', VALUE_DEFAULT, ''),
+            'activityid' => new external_value(PARAM_INT, 'id of related activity', VALUE_DEFAULT, 0),
+            'is_teacherexample' => new external_value(PARAM_INT, 'is a teacher example?', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -1972,9 +1972,9 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_create_or_update_example_returns() {
-        return new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of created example'),
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of created example'),
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -1984,10 +1984,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_grade_descriptor_parameters() {
-        return new external_function_parameters (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'grading' => new external_value (PARAM_INT, 'grade for this descriptor'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'grading' => new external_value(PARAM_INT, 'grade for this descriptor'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
             'subjectid' => new external_value(PARAM_INT, 'subjectid', VALUE_DEFAULT, -1),
@@ -2050,8 +2050,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_grade_descriptor_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if grading was successful'),
         ));
     }
 
@@ -2059,11 +2059,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_grade_element_parameters() {
-        return new external_function_parameters (array(
-            'elementid' => new external_value (PARAM_INT, 'id of element'),
-            'type' => new external_value (PARAM_TEXT, 'example, descriptor, topic'),
-            'grading' => new external_value (PARAM_INT, 'grade for this element'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'elementid' => new external_value(PARAM_INT, 'id of element'),
+            'type' => new external_value(PARAM_TEXT, 'example, descriptor, topic'),
+            'grading' => new external_value(PARAM_INT, 'grade for this element'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
         ));
@@ -2116,11 +2116,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_grade_competency_parameters() {
-        return new external_function_parameters (array(
-            'compid' => new external_value (PARAM_INT, 'competency id'),
-            'comptype' => new external_value (PARAM_INT, 'competency type'),
-            'grading' => new external_value (PARAM_INT, 'grade for this element'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'compid' => new external_value(PARAM_INT, 'competency id'),
+            'comptype' => new external_value(PARAM_INT, 'competency type'),
+            'grading' => new external_value(PARAM_INT, 'grade for this element'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
         ));
@@ -2183,8 +2183,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_grade_competency_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if grading was successful'),
         ));
     }
 
@@ -2192,7 +2192,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_all_competency_gradings_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'compid' => new external_value(PARAM_INT, 'competence id'),
             'comptype' => new external_value(PARAM_INT, 'type of competence: descriptor, topic, subject'),
             'userid' => new external_value(PARAM_INT, ''),
@@ -2258,23 +2258,23 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_get_all_competency_gradings_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of grading'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of grading'),
             'reviewer' => new external_single_structure(array(
-                'userid' => new external_value (PARAM_INT, ''),
-                'fullname' => new external_value (PARAM_TEXT, ''),
-                'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                'userid' => new external_value(PARAM_INT, ''),
+                'fullname' => new external_value(PARAM_TEXT, ''),
+                'profileimageurl' => new external_value(PARAM_TEXT, ''),
             ), 'reviewing teacher', VALUE_OPTIONAL),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'coursefullname' => new external_value (PARAM_TEXT, 'id of course'),
-            'grading' => new external_value (PARAM_INT, 'grade for this element'),
-            'timestamp' => new external_value (PARAM_INT, 'timemodified'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'coursefullname' => new external_value(PARAM_TEXT, 'id of course'),
+            'grading' => new external_value(PARAM_INT, 'grade for this element'),
+            'timestamp' => new external_value(PARAM_INT, 'timemodified'),
         )));
     }
 
     public static function diggrplus_msteams_import_students_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course to import to'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course to import to'),
             'access_token' => new external_value(PARAM_TEXT, 'msteams access token'),
             'teamid' => new external_value(PARAM_TEXT, 'uuid of msteams team to import from'),
         ));
@@ -2415,16 +2415,16 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_msteams_import_students_returns() {
-        return new external_single_structure (array(
-            'total_count' => new external_value (PARAM_INT, 'number of users in the team'),
-            'imported_count' => new external_value (PARAM_INT, 'number of newly imported users'),
+        return new external_single_structure(array(
+            'total_count' => new external_value(PARAM_INT, 'number of users in the team'),
+            'imported_count' => new external_value(PARAM_INT, 'number of newly imported users'),
         ));
     }
 
     public static function diggrplus_msteams_get_access_token_parameters() {
-        return new external_function_parameters (array(
-            'tenantid' => new external_value (PARAM_TEXT),
-            'authentication_token' => new external_value (PARAM_TEXT, 'msteams authentication token'),
+        return new external_function_parameters(array(
+            'tenantid' => new external_value(PARAM_TEXT),
+            'authentication_token' => new external_value(PARAM_TEXT, 'msteams authentication token'),
         ));
     }
 
@@ -2493,8 +2493,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_msteams_get_access_token_returns() {
-        return new external_single_structure (array(
-            'access_token' => new external_value (PARAM_TEXT),
+        return new external_single_structure(array(
+            'access_token' => new external_value(PARAM_TEXT),
         ));
     }
 
@@ -2504,14 +2504,14 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function grade_item_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'value' => new external_value (PARAM_INT, 'value for grading'),
-            'status' => new external_value (PARAM_INT, 'status'),
-            'comment' => new external_value (PARAM_TEXT, 'comment of grading'),
-            'itemid' => new external_value (PARAM_INT, 'id of item'),
-            'comps' => new external_value (PARAM_TEXT, 'comps for example - positive grading'),
-            'courseid' => new external_value (PARAM_INT, 'if of course'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'value' => new external_value(PARAM_INT, 'value for grading'),
+            'status' => new external_value(PARAM_INT, 'status'),
+            'comment' => new external_value(PARAM_TEXT, 'comment of grading'),
+            'itemid' => new external_value(PARAM_INT, 'id of item'),
+            'comps' => new external_value(PARAM_TEXT, 'comps for example - positive grading'),
+            'courseid' => new external_value(PARAM_INT, 'if of course'),
         ));
     }
 
@@ -2669,8 +2669,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function grade_item_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if grading was successful'),
         ));
     }
 
@@ -2680,7 +2680,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_user_examples_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -2748,11 +2748,11 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_user_examples_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-            'example_status' => new external_value (PARAM_INT, 'status of example'),
-            'exampletopicid' => new external_value (PARAM_INT, 'topic id where example belongs to'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+            'example_status' => new external_value(PARAM_INT, 'status of example'),
+            'exampletopicid' => new external_value(PARAM_INT, 'topic id where example belongs to'),
         )));
     }
 
@@ -2762,8 +2762,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_user_profile_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -3076,39 +3076,39 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_user_profile_returns() {
-        return new external_single_structure (array(
-            'user' => new external_single_structure (array(
-                'competencies' => new external_single_structure (array(
-                    'total' => new external_value (PARAM_INT, 'amount of total competencies'),
-                    'reached' => new external_value (PARAM_INT, 'amount of reached competencies'),
+        return new external_single_structure(array(
+            'user' => new external_single_structure(array(
+                'competencies' => new external_single_structure(array(
+                    'total' => new external_value(PARAM_INT, 'amount of total competencies'),
+                    'reached' => new external_value(PARAM_INT, 'amount of reached competencies'),
                 )),
-                'examples' => new external_single_structure (array(
-                    'total' => new external_value (PARAM_INT, 'amount of total competencies'),
-                    'reached' => new external_value (PARAM_INT, 'amount of reached competencies'),
+                'examples' => new external_single_structure(array(
+                    'total' => new external_value(PARAM_INT, 'amount of total competencies'),
+                    'reached' => new external_value(PARAM_INT, 'amount of reached competencies'),
                 )),
             )),
-            'subjects' => new external_multiple_structure (new external_single_structure (array(
-                'title' => new external_value (PARAM_TEXT, 'subject title'),
-                'data' => new external_single_structure (array(
-                    'competencies' => new external_single_structure (array(
-                        'total' => new external_value (PARAM_INT, 'amount of total competencies'),
-                        'reached' => new external_value (PARAM_INT, 'amount of reached competencies'),
+            'subjects' => new external_multiple_structure(new external_single_structure(array(
+                'title' => new external_value(PARAM_TEXT, 'subject title'),
+                'data' => new external_single_structure(array(
+                    'competencies' => new external_single_structure(array(
+                        'total' => new external_value(PARAM_INT, 'amount of total competencies'),
+                        'reached' => new external_value(PARAM_INT, 'amount of reached competencies'),
                     )),
-                    'examples' => new external_single_structure (array(
-                        'total' => new external_value (PARAM_INT, 'amount of total competencies'),
-                        'reached' => new external_value (PARAM_INT, 'amount of reached competencies'),
+                    'examples' => new external_single_structure(array(
+                        'total' => new external_value(PARAM_INT, 'amount of total competencies'),
+                        'reached' => new external_value(PARAM_INT, 'amount of reached competencies'),
                     )),
                 )),
-                'topics' => new external_multiple_structure (new external_single_structure (array(
-                    'title' => new external_value (PARAM_TEXT, 'topic title'),
-                    'data' => new external_single_structure (array(
-                        'competencies' => new external_single_structure (array(
-                            'total' => new external_value (PARAM_INT, 'amount of total competencies'),
-                            'reached' => new external_value (PARAM_INT, 'amount of reached competencies'),
+                'topics' => new external_multiple_structure(new external_single_structure(array(
+                    'title' => new external_value(PARAM_TEXT, 'topic title'),
+                    'data' => new external_single_structure(array(
+                        'competencies' => new external_single_structure(array(
+                            'total' => new external_value(PARAM_INT, 'amount of total competencies'),
+                            'reached' => new external_value(PARAM_INT, 'amount of reached competencies'),
                         )),
-                        'examples' => new external_single_structure (array(
-                            'total' => new external_value (PARAM_INT, 'amount of total competencies'),
-                            'reached' => new external_value (PARAM_INT, 'amount of reached competencies'),
+                        'examples' => new external_single_structure(array(
+                            'total' => new external_value(PARAM_INT, 'amount of total competencies'),
+                            'reached' => new external_value(PARAM_INT, 'amount of reached competencies'),
                         )),
                     )),
                 ))),
@@ -3122,14 +3122,14 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function update_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'name' => new external_value (PARAM_TEXT, 'title of example'),
-            'description' => new external_value (PARAM_TEXT, 'description of example'),
-            'externalurl' => new external_value (PARAM_TEXT, ''),
-            'comps' => new external_value (PARAM_TEXT, 'list of competencies, seperated by comma'),
-            'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
-            'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'name' => new external_value(PARAM_TEXT, 'title of example'),
+            'description' => new external_value(PARAM_TEXT, 'description of example'),
+            'externalurl' => new external_value(PARAM_TEXT, ''),
+            'comps' => new external_value(PARAM_TEXT, 'list of competencies, seperated by comma'),
+            'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+            'fileitemid' => new external_value(PARAM_INT, 'fileitemid'),
         ));
     }
 
@@ -3221,8 +3221,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function update_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if successful'),
         ));
     }
 
@@ -3232,8 +3232,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function delete_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
         ));
     }
 
@@ -3277,8 +3277,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function delete_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if successful'),
         ));
     }
 
@@ -3288,9 +3288,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_competencies_by_topic_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
         ));
     }
 
@@ -3345,9 +3345,9 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function get_competencies_by_topic_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of example'),
-            'descriptortitle' => new external_value (PARAM_TEXT, 'title of example'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of example'),
+            'descriptortitle' => new external_value(PARAM_TEXT, 'title of example'),
         )));
     }
 
@@ -3358,8 +3358,8 @@ class externallib extends base {
      *
      */
     public static function dakora_set_competence_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'compid' => new external_value(PARAM_INT, 'competence id'),
             'comptype' => new external_value(PARAM_INT, 'type of competence: descriptor, topic, subject'),
@@ -3458,8 +3458,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_set_competence_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
             /*
 			'value' => new external_value(PARAM_INT, 'evaluation value, only set for TK (0 to 3)'),
 			'additionalinfo' => new external_value(PARAM_FLOAT, 'decimal between 1 and 6'),
@@ -3503,10 +3503,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_topics_by_course_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -3539,14 +3539,14 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_topics_by_course_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
-            'numbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-            'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
+            'numbering' => new external_value(PARAM_TEXT, 'numbering for topic'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value(PARAM_TEXT, 'title of subject'),
+            'visible' => new external_value(PARAM_INT, 'visibility of topic in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
         )));
     }
 
@@ -3556,11 +3556,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_all_topics_by_course_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
-            'groupid' => new external_value (PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT, 0),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false', VALUE_DEFAULT, 0),
+            'groupid' => new external_value(PARAM_INT, 'id of user, 0 for current user', VALUE_DEFAULT),
         ));
     }
 
@@ -3602,17 +3602,17 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_all_topics_by_course_returns() {
-        return new external_single_structure (array(
-            'topics' => new external_multiple_structure (new external_single_structure (array(
-                'topicid' => new external_value (PARAM_INT, 'id of topic'),
-                'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
-                'topicdescription' => new external_value (PARAM_RAW, 'description of topic'),
-                'numbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
-                'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-                'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-                'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
-                // 'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor'),
+        return new external_single_structure(array(
+            'topics' => new external_multiple_structure(new external_single_structure(array(
+                'topicid' => new external_value(PARAM_INT, 'id of topic'),
+                'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
+                'topicdescription' => new external_value(PARAM_RAW, 'description of topic'),
+                'numbering' => new external_value(PARAM_TEXT, 'numbering for topic'),
+                'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+                'subjecttitle' => new external_value(PARAM_TEXT, 'title of subject'),
+                'visible' => new external_value(PARAM_INT, 'visibility of topic in current context'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
+                // 'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor'),
             ))),
             'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
         ));
@@ -3624,11 +3624,11 @@ class externallib extends base {
 	 * @return external_function_parameters
 	 */
     public static function dakora_get_descriptors_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
         ));
     }
 
@@ -3661,16 +3661,16 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_descriptors_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'numbering' => new external_value (PARAM_TEXT, 'numbering for descriptor'),
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'niveaudescription' => new external_value (PARAM_TEXT, 'description of niveau'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
-            'niveauvisible' => new external_value (PARAM_BOOL, 'if niveau is visible'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'numbering' => new external_value(PARAM_TEXT, 'numbering for descriptor'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'niveaudescription' => new external_value(PARAM_TEXT, 'description of niveau'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            'visible' => new external_value(PARAM_INT, 'visibility of topic in current context'),
+            'niveauvisible' => new external_value(PARAM_BOOL, 'if niveau is visible'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
             'niveausort' => new external_value(PARAM_INT, 'sorting for ids'),
         )));
     }
@@ -3681,12 +3681,12 @@ class externallib extends base {
 	 * @return external_function_parameters
 	 */
     public static function dakora_get_all_descriptors_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'editmode' => new external_value (PARAM_BOOL, 'when editmode is active, descriptors fo hidden niveaus should be loaded', VALUE_DEFAULT, 0),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'editmode' => new external_value(PARAM_BOOL, 'when editmode is active, descriptors fo hidden niveaus should be loaded', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -3720,17 +3720,17 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_all_descriptors_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'numbering' => new external_value (PARAM_TEXT, 'numbering for descriptor'),
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            'niveaudescription' => new external_value (PARAM_TEXT, 'description of niveau'),
-            'visible' => new external_value (PARAM_INT, 'visibility of topic in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'numbering' => new external_value(PARAM_TEXT, 'numbering for descriptor'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            'niveaudescription' => new external_value(PARAM_TEXT, 'description of niveau'),
+            'visible' => new external_value(PARAM_INT, 'visibility of topic in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
             'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
-            'niveauvisible' => new external_value (PARAM_BOOL, 'if niveau is visible'),
+            'niveauvisible' => new external_value(PARAM_BOOL, 'if niveau is visible'),
             'niveausort' => new external_value(PARAM_INT, 'sorting for ids', false),
         )));
     }
@@ -3741,11 +3741,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_descriptor_children_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of parent descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of parent descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
         ));
     }
 
@@ -3780,41 +3780,41 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_descriptor_children_returns() {
-        return new external_single_structure (array(
-            'children' => new external_multiple_structure (new external_single_structure (array(
-                'descriptorid' => new external_value (PARAM_INT, 'id of child'),
-                'descriptortitle' => new external_value (PARAM_TEXT, 'title of child'),
-                'numbering' => new external_value (PARAM_TEXT, 'numbering for child'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'grading of child'),
-                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                'studentevaluation' => new external_value (PARAM_INT, 'self evaluation of child'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-                'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-                'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
-                'visible' => new external_value (PARAM_INT, 'visibility of child'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_single_structure(array(
+            'children' => new external_multiple_structure(new external_single_structure(array(
+                'descriptorid' => new external_value(PARAM_INT, 'id of child'),
+                'descriptortitle' => new external_value(PARAM_TEXT, 'title of child'),
+                'numbering' => new external_value(PARAM_TEXT, 'numbering for child'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'grading of child'),
+                'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                'studentevaluation' => new external_value(PARAM_INT, 'self evaluation of child'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                'examplestotal' => new external_value(PARAM_INT, 'total number of material'),
+                'examplesvisible' => new external_value(PARAM_INT, 'visible number of material'),
+                'examplesinwork' => new external_value(PARAM_INT, 'edited number of material'),
+                'visible' => new external_value(PARAM_INT, 'visibility of child'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
             ))),
-            'examples' => new external_multiple_structure (new external_single_structure (array(
-                'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                'visible' => new external_value (PARAM_INT, 'visibility of example'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
+            'examples' => new external_multiple_structure(new external_single_structure(array(
+                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+                'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                'visible' => new external_value(PARAM_INT, 'visibility of example'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
             ))),
-            'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
-            'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-            'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work'),
+            'examplestotal' => new external_value(PARAM_INT, 'number of total examples'),
+            'examplesvisible' => new external_value(PARAM_INT, 'number of visible examples'),
+            'examplesinwork' => new external_value(PARAM_INT, 'number of examples in work'),
         ));
     }
 
     public static function dakora_get_examples_for_descriptor_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of parent descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
-            'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of parent descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'forall' => new external_value(PARAM_BOOL, 'if all users = true, only one user = false'),
         ));
     }
 
@@ -3845,21 +3845,21 @@ class externallib extends base {
     }
 
     public static function dakora_get_examples_for_descriptor_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'exampletitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'exampletitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
             'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
         )));
     }
 
     public static function dakora_get_examples_for_descriptor_with_grading_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of parent descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
-            'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of parent descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'forall' => new external_value(PARAM_BOOL, 'if all users = true, only one user = false'),
         ));
     }
 
@@ -3890,27 +3890,27 @@ class externallib extends base {
     }
 
     public static function dakora_get_examples_for_descriptor_with_grading_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'exampletitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
-            'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'exampletitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+            'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'example evaluation of teacher'),
+            'studentevaluation' => new external_value(PARAM_INT, 'example evaluation of student'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher evaluation'),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student evaluation'),
         )));
     }
 
     public static function dakora_get_examples_for_descriptor_for_crosssubject_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of parent descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
-            'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of parent descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'forall' => new external_value(PARAM_BOOL, 'if all users = true, only one user = false'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crosssubject'),
         ));
     }
 
@@ -3943,22 +3943,22 @@ class externallib extends base {
     }
 
     public static function dakora_get_examples_for_descriptor_for_crosssubject_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'exampletitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'exampletitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+            'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
         )));
     }
 
     public static function dakora_get_examples_for_descriptor_for_crosssubject_with_grading_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of parent descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
-            'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of parent descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'forall' => new external_value(PARAM_BOOL, 'if all users = true, only one user = false'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crosssubject'),
         ));
     }
 
@@ -3991,25 +3991,25 @@ class externallib extends base {
     }
 
     public static function dakora_get_examples_for_descriptor_for_crosssubject_with_grading_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'exampletitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
-            'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'exampletitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+            'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'example evaluation of teacher'),
+            'studentevaluation' => new external_value(PARAM_INT, 'example evaluation of student'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher evaluation'),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student evaluation'),
         )));
     }
 
     public static function dakora_get_example_overview_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
         ));
     }
 
@@ -4066,32 +4066,32 @@ class externallib extends base {
     }
 
     public static function dakora_get_example_overview_returns() {
-        return new external_single_structure (array(
-            'title' => new external_value (PARAM_TEXT, 'title of example'),
-            'description' => new external_value (PARAM_TEXT, 'description of example'),
-            'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-            'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-            'solutionfilename' => new external_value (PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
-            'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-            'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-            'externaltask_embedded' => new external_value (PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
-            'task' => new external_value (PARAM_TEXT, '@deprecated'),
-            'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-            'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-            'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
-            'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-            'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-            'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
+        return new external_single_structure(array(
+            'title' => new external_value(PARAM_TEXT, 'title of example'),
+            'description' => new external_value(PARAM_TEXT, 'description of example'),
+            'taskfileurl' => new external_value(PARAM_TEXT, 'task fileurl'),
+            'taskfilenames' => new external_value(PARAM_TEXT, 'task filename'),
+            'solutionfilename' => new external_value(PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
+            'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+            'externaltask' => new external_value(PARAM_TEXT, 'url of associated module'),
+            'externaltask_embedded' => new external_value(PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
+            'task' => new external_value(PARAM_TEXT, '@deprecated'),
+            'taskfilecount' => new external_value(PARAM_TEXT, 'number of files for the task'),
+            'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+            'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+            'hassubmissions' => new external_value(PARAM_BOOL, 'true if example has already submissions'),
+            'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+            'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+            'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'is_teacherexample' => new external_value(PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
         ));
     }
 
     public static function diggrplus_get_example_overview_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
         ));
     }
 
@@ -4153,32 +4153,32 @@ class externallib extends base {
     }
 
     public static function diggrplus_get_example_overview_returns() {
-        return new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of example'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility of example'),
-            'title' => new external_value (PARAM_TEXT, 'title of example'),
-            'description' => new external_value (PARAM_TEXT, 'description of example'),
-            'solutionfilename' => new external_value (PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
-            'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-            'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-            'externaltask_embedded' => new external_value (PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
-            'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-            'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
-            'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-            'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-            'is_teacherexample' => new external_value (PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
-            'creatorid' => new external_value (PARAM_INT, 'creatorid'),
+        return new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of example'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility of example'),
+            'title' => new external_value(PARAM_TEXT, 'title of example'),
+            'description' => new external_value(PARAM_TEXT, 'description of example'),
+            'solutionfilename' => new external_value(PARAM_TEXT, 'task filename', VALUE_OPTIONAL),
+            'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+            'externaltask' => new external_value(PARAM_TEXT, 'url of associated module'),
+            'externaltask_embedded' => new external_value(PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
+            'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+            'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+            'hassubmissions' => new external_value(PARAM_BOOL, 'true if example has already submissions'),
+            'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+            'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+            'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'is_teacherexample' => new external_value(PARAM_BOOL, 'is teacher example?', VALUE_OPTIONAL),
+            'creatorid' => new external_value(PARAM_INT, 'creatorid'),
             'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
             'taskfiles' => new external_multiple_structure(new external_single_structure(array(
-                'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
-                'url' => new external_value (PARAM_URL, 'file url'),
-                'type' => new external_value (PARAM_TEXT, 'mime type for file'),
-                //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                'name' => new external_value(PARAM_TEXT, 'title of taskfile'),
+                'url' => new external_value(PARAM_URL, 'file url'),
+                'type' => new external_value(PARAM_TEXT, 'mime type for file'),
+                //                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
             )), 'taskfiles of the example', VALUE_OPTIONAL),
-            'completefile' => new external_value (PARAM_TEXT, 'completefile (url/description) of example', VALUE_OPTIONAL),
-            'completefilefilename' => new external_value (PARAM_TEXT, 'completefile filename', VALUE_OPTIONAL),
+            'completefile' => new external_value(PARAM_TEXT, 'completefile (url/description) of example', VALUE_OPTIONAL),
+            'completefilefilename' => new external_value(PARAM_TEXT, 'completefile filename', VALUE_OPTIONAL),
         ));
     }
 
@@ -4188,13 +4188,13 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_add_example_to_learning_calendar_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'creatorid' => new external_value (PARAM_INT, 'id of creator'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'creatorid' => new external_value(PARAM_INT, 'id of creator'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'groupid' => new external_value(PARAM_INT, 'id of group', VALUE_DEFAULT),
         ));
     }
 
@@ -4274,9 +4274,9 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_add_example_to_learning_calendar_returns() {
-        return new external_single_structure (array(
-            'scheduleid' => new external_value (PARAM_INT, 'id of the single added example'),
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'scheduleid' => new external_value(PARAM_INT, 'id of the single added example'),
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -4286,11 +4286,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_descriptors_for_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
         ));
     }
 
@@ -4529,22 +4529,22 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_descriptors_for_example_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
-            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            //            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
-            'child' => new external_value (PARAM_BOOL, 'true: child, false: parent'),
-            'parentid' => new external_value (PARAM_INT, 'parentid if child, 0 otherwise'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'evaluation of descriptor'),
+            'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of descriptor'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            //            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading for descriptor'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
+            'child' => new external_value(PARAM_BOOL, 'true: child, false: parent'),
+            'parentid' => new external_value(PARAM_INT, 'parentid if child, 0 otherwise'),
             'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
-            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
-            'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
+            'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
+            'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
         )));
     }
 
@@ -4554,10 +4554,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_example_grading_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
         ));
     }
 
@@ -4621,10 +4621,10 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_example_grading_returns() {
-        return new external_single_structure (array(
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation for student and example'),
-            'studentevaluation' => new external_value (PARAM_INT, 'self evaluation for example'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+        return new external_single_structure(array(
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation for student and example'),
+            'studentevaluation' => new external_value(PARAM_INT, 'self evaluation for example'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
         ));
     }
 
@@ -4634,10 +4634,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_topic_grading_parameters() {
-        return new external_function_parameters (array(
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+        return new external_function_parameters(array(
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
         ));
     }
 
@@ -4718,13 +4718,13 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_topic_grading_returns() {
-        return new external_single_structure (array(
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation for student and topic'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'teacher additional info for student and topic'),
-            'studentevaluation' => new external_value (PARAM_INT, 'self evaluation for topic'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
+        return new external_single_structure(array(
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation for student and topic'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'teacher additional info for student and topic'),
+            'studentevaluation' => new external_value(PARAM_INT, 'self evaluation for topic'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher evaluation'),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student evaluation'),
         ));
     }
 
@@ -4734,10 +4734,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_subject_grading_parameters() {
-        return new external_function_parameters (array(
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+        return new external_function_parameters(array(
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
         ));
     }
 
@@ -4818,13 +4818,13 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_subject_grading_returns() {
-        return new external_single_structure (array(
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation for student and subject'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'teacher additional info for student and subject'),
-            'studentevaluation' => new external_value (PARAM_INT, 'self evaluation for subject'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
+        return new external_single_structure(array(
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation for student and subject'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'teacher additional info for student and subject'),
+            'studentevaluation' => new external_value(PARAM_INT, 'self evaluation for subject'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher evaluation'),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student evaluation'),
         ));
     }
 
@@ -4834,7 +4834,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_user_role_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -4872,8 +4872,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_user_role_returns() {
-        return new external_function_parameters (array(
-            'role' => new external_value (PARAM_INT, '1=trainer, 2=student'),
+        return new external_function_parameters(array(
+            'role' => new external_value(PARAM_INT, '1=trainer, 2=student'),
         ));
     }
 
@@ -4883,8 +4883,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_students_and_groups_for_course_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -4942,16 +4942,16 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_students_and_groups_for_course_returns() {
-        return new external_single_structure (array(
-            'students' => new external_multiple_structure (new external_single_structure (array(
-                'studentid' => new external_value (PARAM_INT, 'id of student'),
-                'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-                'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+        return new external_single_structure(array(
+            'students' => new external_multiple_structure(new external_single_structure(array(
+                'studentid' => new external_value(PARAM_INT, 'id of student'),
+                'firstname' => new external_value(PARAM_TEXT, 'firstname of student'),
+                'lastname' => new external_value(PARAM_TEXT, 'lastname of student'),
                 'profilepicture' => new external_value(PARAM_TEXT, 'link to  profile picture'),
             ))),
-            'groups' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of group'),
-                'name' => new external_value (PARAM_TEXT, 'name of group'),
+            'groups' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of group'),
+                'name' => new external_value(PARAM_TEXT, 'name of group'),
                 'picture' => new external_value(PARAM_TEXT, 'link to  picture'),
             )))));
     }
@@ -4962,8 +4962,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_students_for_teacher_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -4997,10 +4997,10 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_students_for_teacher_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of student'),
-            'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-            'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of student'),
+            'firstname' => new external_value(PARAM_TEXT, 'firstname of student'),
+            'lastname' => new external_value(PARAM_TEXT, 'lastname of student'),
         )));
     }
 
@@ -5010,8 +5010,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_teachers_for_student_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
         ));
     }
 
@@ -5045,10 +5045,10 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_teachers_for_student_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of teacher'),
-            'firstname' => new external_value (PARAM_TEXT, 'firstname of teacher'),
-            'lastname' => new external_value (PARAM_TEXT, 'lastname of teacher'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of teacher'),
+            'firstname' => new external_value(PARAM_TEXT, 'firstname of teacher'),
+            'lastname' => new external_value(PARAM_TEXT, 'lastname of teacher'),
         )));
     }
 
@@ -5058,9 +5058,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_examples_pool_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
         ));
     }
 
@@ -5159,29 +5159,29 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_examples_pool_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'title' => new external_value (PARAM_TEXT, 'title of example'),
-            'student_evaluation' => new external_value (PARAM_INT, 'self evaluation of student'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'title' => new external_value(PARAM_TEXT, 'title of example'),
+            'student_evaluation' => new external_value(PARAM_INT, 'self evaluation of student'),
             'teacher_evaluation' => new external_value(PARAM_INT, 'evaluation of teacher'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
             'courseid' => new external_value(PARAM_INT, 'example course'),
-            'state' => new external_value (PARAM_INT, 'state of example'),
-            'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
-            'creatorid' => new external_value (PARAM_INT, 'example added to pool by userid'),
-            'lastmodifiedbyid' => new external_value (PARAM_INT, 'example pool state last edited by userid'),
-            'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
-            'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
-            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-            'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
-            'timeframe' => new external_value (PARAM_TEXT, 'timeframe, suggested time'),
-            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)'),
-            'is_overdue' => new external_value (PARAM_BOOL),
-            'taxonomies' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'title' => new external_value (PARAM_TEXT, 'name'),
-                'source' => new external_value (PARAM_TEXT, 'source'),
+            'state' => new external_value(PARAM_INT, 'state of example'),
+            'scheduleid' => new external_value(PARAM_INT, 'id in schedule context'),
+            'creatorid' => new external_value(PARAM_INT, 'example added to pool by userid'),
+            'lastmodifiedbyid' => new external_value(PARAM_INT, 'example pool state last edited by userid'),
+            'courseshortname' => new external_value(PARAM_TEXT, 'shortname of example course'),
+            'coursefullname' => new external_value(PARAM_TEXT, 'full name of example course'),
+            'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+            'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'source' => new external_value(PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
+            'timeframe' => new external_value(PARAM_TEXT, 'timeframe, suggested time'),
+            'itemstatus' => new external_value(PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)'),
+            'is_overdue' => new external_value(PARAM_BOOL),
+            'taxonomies' => new external_multiple_structure(new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'id'),
+                'title' => new external_value(PARAM_TEXT, 'name'),
+                'source' => new external_value(PARAM_TEXT, 'source'),
             ]), 'values'),
         )));
     }
@@ -5192,9 +5192,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_examples_trash_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
         ));
     }
 
@@ -5241,18 +5241,18 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_examples_trash_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'title' => new external_value (PARAM_TEXT, 'title of example'),
-            'student_evaluation' => new external_value (PARAM_INT, 'self evaluation of student'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'title' => new external_value(PARAM_TEXT, 'title of example'),
+            'student_evaluation' => new external_value(PARAM_INT, 'self evaluation of student'),
             'teacher_evaluation' => new external_value(PARAM_INT, 'evaluation of teacher'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
             'courseid' => new external_value(PARAM_INT, 'example course'),
-            'state' => new external_value (PARAM_INT, 'state of example'),
-            'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
-            'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
-            'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
-            'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
+            'state' => new external_value(PARAM_INT, 'state of example'),
+            'scheduleid' => new external_value(PARAM_INT, 'id in schedule context'),
+            'courseshortname' => new external_value(PARAM_TEXT, 'shortname of example course'),
+            'coursefullname' => new external_value(PARAM_TEXT, 'full name of example course'),
+            'source' => new external_value(PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
         )));
     }
 
@@ -5262,8 +5262,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_set_example_time_slot_parameters() {
-        return new external_function_parameters (array(
-            'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
+        return new external_function_parameters(array(
+            'scheduleid' => new external_value(PARAM_INT, 'id in schedule context'),
             'start' => new external_value(PARAM_INT, 'start timestamp'),
             'end' => new external_value(PARAM_INT, 'end timestamp'),
             'deleted' => new external_value(PARAM_INT, 'delete item'),
@@ -5351,11 +5351,11 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_set_example_time_slot_returns() {
-        return new external_single_structure (array(
-            'timeremaining' => new external_value (PARAM_TEXT, 'time planned minus timeframe = timeremaining'),
-            'timeplanned' => new external_value (PARAM_TEXT, 'time planned '),
-            'timesuggested' => new external_value (PARAM_TEXT, 'timeframe'),
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'timeremaining' => new external_value(PARAM_TEXT, 'time planned minus timeframe = timeremaining'),
+            'timeplanned' => new external_value(PARAM_TEXT, 'time planned '),
+            'timesuggested' => new external_value(PARAM_TEXT, 'timeframe'),
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -5365,7 +5365,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_remove_example_from_schedule_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'scheduleid' => new external_value(PARAM_INT, 'id of schedule entry'),
         ));
     }
@@ -5398,8 +5398,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_remove_example_from_schedule_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -5409,7 +5409,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_add_examples_to_schedule_for_all_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
@@ -5442,8 +5442,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_add_examples_to_schedule_for_all_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -5453,8 +5453,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_examples_for_time_slot_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'start' => new external_value(PARAM_INT, 'start timestamp'),
             'end' => new external_value(PARAM_INT, 'end timestamp'),
         ));
@@ -5561,34 +5561,34 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_examples_for_time_slot_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'title' => new external_value (PARAM_TEXT, 'title of example'),
-            'start' => new external_value (PARAM_INT, 'start of event'),
-            'end' => new external_value (PARAM_INT, 'end of event'),
-            'timeframe' => new external_value (PARAM_TEXT, 'timeframe'),
-            'student_evaluation' => new external_value (PARAM_INT, 'self evaluation of student'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'title' => new external_value(PARAM_TEXT, 'title of example'),
+            'start' => new external_value(PARAM_INT, 'start of event'),
+            'end' => new external_value(PARAM_INT, 'end of event'),
+            'timeframe' => new external_value(PARAM_TEXT, 'timeframe'),
+            'student_evaluation' => new external_value(PARAM_INT, 'self evaluation of student'),
             'teacher_evaluation' => new external_value(PARAM_INT, 'evaluation of teacher'),
             'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
             'courseid' => new external_value(PARAM_INT, 'example course'),
-            'state' => new external_value (PARAM_INT, 'state of example'),
-            'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
-            'creatorid' => new external_value (PARAM_INT, 'example added to pool by userid'),
-            'lastmodifiedbyid' => new external_value (PARAM_INT, 'example pool state last edited by userid'),
-            'addedtoschedulebyid' => new external_value (PARAM_INT, 'example added to plan by userid (may be 0, if added outside of dakora!)'),
-            'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
-            'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course'),
-            'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-            'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-            'taxonomies' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'title' => new external_value (PARAM_TEXT, 'name'),
-                'source' => new external_value (PARAM_TEXT, 'source'),
+            'state' => new external_value(PARAM_INT, 'state of example'),
+            'scheduleid' => new external_value(PARAM_INT, 'id in schedule context'),
+            'creatorid' => new external_value(PARAM_INT, 'example added to pool by userid'),
+            'lastmodifiedbyid' => new external_value(PARAM_INT, 'example pool state last edited by userid'),
+            'addedtoschedulebyid' => new external_value(PARAM_INT, 'example added to plan by userid (may be 0, if added outside of dakora!)'),
+            'courseshortname' => new external_value(PARAM_TEXT, 'shortname of example course'),
+            'coursefullname' => new external_value(PARAM_TEXT, 'full name of example course'),
+            'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+            'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+            'taxonomies' => new external_multiple_structure(new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'id'),
+                'title' => new external_value(PARAM_TEXT, 'name'),
+                'source' => new external_value(PARAM_TEXT, 'source'),
             ]), 'values'),
-            'source' => new external_value (PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
+            'source' => new external_value(PARAM_TEXT, 'tag where the material comes from', VALUE_OPTIONAL),
             'schedule_marker' => new external_value(PARAM_TEXT, 'tag for the marker on the material in the weekly schedule', VALUE_OPTIONAL),
             'editable' => new external_value(PARAM_BOOL, 'for blocking events: show if editable (special for dakora?)'),
-            'itemstatus' => new external_value (PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)'),
+            'itemstatus' => new external_value(PARAM_TEXT, 'status of the item as text ENUM(new, inprogress, submitted, completed)'),
         )));
     }
 
@@ -5598,8 +5598,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_cross_subjects_by_course_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
             'allcrosssubjects' => new external_value(PARAM_BOOL, 'for all allcross subjects = true (no course selected)', VALUE_DEFAULT, 0),
@@ -5755,26 +5755,26 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_cross_subjects_by_course_returns() {
-        return new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id of cross subject'),
-                'title' => new external_value (PARAM_TEXT, 'title of cross subject'),
-                'description' => new external_value (PARAM_TEXT, 'description of cross subject'),
-                'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
-                'visible' => new external_value (PARAM_INT, 'visibility of crosssubject for selected student'),
-                'groupcategory' => new external_value (PARAM_TEXT, 'name of groupcategory'),
-                'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if crosssubject has material'),
-                'examples' => new external_multiple_structure (new external_single_structure (array(
-                    'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                    'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                    'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                    'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-                    'used' => new external_value (PARAM_INT, 'used in current context'),
-                    'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
-                    'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
-                    'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                    'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                    'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                    'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
+        return new external_multiple_structure(new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'id of cross subject'),
+                'title' => new external_value(PARAM_TEXT, 'title of cross subject'),
+                'description' => new external_value(PARAM_TEXT, 'description of cross subject'),
+                'subjectid' => new external_value(PARAM_INT, 'subject id, cross subject is associated with'),
+                'visible' => new external_value(PARAM_INT, 'visibility of crosssubject for selected student'),
+                'groupcategory' => new external_value(PARAM_TEXT, 'name of groupcategory'),
+                'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if crosssubject has material'),
+                'examples' => new external_multiple_structure(new external_single_structure(array(
+                    'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                    'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+                    'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                    'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+                    'used' => new external_value(PARAM_INT, 'used in current context'),
+                    'teacherevaluation' => new external_value(PARAM_INT, 'example evaluation of teacher'),
+                    'studentevaluation' => new external_value(PARAM_INT, 'example evaluation of student'),
+                    'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                    'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                    'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                    'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
                 ))),
             ] + static::comp_eval_returns()));
     }
@@ -5785,9 +5785,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_descriptors_by_cross_subject_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of cross subject'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of cross subject'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
         ));
@@ -5828,14 +5828,14 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_descriptors_by_cross_subject_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'numbering' => new external_value (PARAM_TEXT, 'numbering for descriptor'),
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of nivaue'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'numbering' => new external_value(PARAM_TEXT, 'numbering for descriptor'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of nivaue'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
         )));
     }
 
@@ -5845,9 +5845,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_all_descriptors_by_cross_subject_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of cross subject'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of cross subject'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
         ));
@@ -5888,14 +5888,14 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_all_descriptors_by_cross_subject_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'numbering' => new external_value (PARAM_TEXT, 'numbering for descriptor'),
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of nivaue'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'numbering' => new external_value(PARAM_TEXT, 'numbering for descriptor'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of nivaue'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
         )));
     }
 
@@ -5905,12 +5905,12 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_descriptor_children_for_cross_subject_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of parent descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of cross subject'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of parent descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of cross subject'),
         ));
     }
 
@@ -5947,32 +5947,32 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_descriptor_children_for_cross_subject_returns() {
-        return new external_single_structure (array(
-            'children' => new external_multiple_structure (new external_single_structure (array(
-                'descriptorid' => new external_value (PARAM_INT, 'id of child'),
-                'descriptortitle' => new external_value (PARAM_TEXT, 'title of child'),
-                'numbering' => new external_value (PARAM_TEXT, 'numbering for child'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'grading of children'),
-                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                'studentevaluation' => new external_value (PARAM_INT, 'self evaluation of children'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-                'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-                'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
-                'visible' => new external_value (PARAM_INT, 'visibility of child in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_single_structure(array(
+            'children' => new external_multiple_structure(new external_single_structure(array(
+                'descriptorid' => new external_value(PARAM_INT, 'id of child'),
+                'descriptortitle' => new external_value(PARAM_TEXT, 'title of child'),
+                'numbering' => new external_value(PARAM_TEXT, 'numbering for child'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'grading of children'),
+                'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                'studentevaluation' => new external_value(PARAM_INT, 'self evaluation of children'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                'examplestotal' => new external_value(PARAM_INT, 'total number of material'),
+                'examplesvisible' => new external_value(PARAM_INT, 'visible number of material'),
+                'examplesinwork' => new external_value(PARAM_INT, 'edited number of material'),
+                'visible' => new external_value(PARAM_INT, 'visibility of child in current context'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
             ))),
-            'examples' => new external_multiple_structure (new external_single_structure (array(
-                'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
+            'examples' => new external_multiple_structure(new external_single_structure(array(
+                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+                'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
             ))),
-            'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
-            'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-            'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work'),
+            'examplestotal' => new external_value(PARAM_INT, 'number of total examples'),
+            'examplesvisible' => new external_value(PARAM_INT, 'number of visible examples'),
+            'examplesinwork' => new external_value(PARAM_INT, 'number of examples in work'),
         ));
     }
 
@@ -5982,12 +5982,12 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_all_descriptor_children_for_cross_subject_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of parent descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of cross subject'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of parent descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of cross subject'),
         ));
     }
 
@@ -6024,33 +6024,33 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_all_descriptor_children_for_cross_subject_returns() {
-        return new external_single_structure (array(
-            'children' => new external_multiple_structure (new external_single_structure (array(
-                'descriptorid' => new external_value (PARAM_INT, 'id of child'),
-                'descriptortitle' => new external_value (PARAM_TEXT, 'title of child'),
-                'numbering' => new external_value (PARAM_TEXT, 'numbering for child'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'grading of children'),
-                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                'studentevaluation' => new external_value (PARAM_INT, 'self evaluation of children'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if child has materials'),
-                'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-                'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-                'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
-                'visible' => new external_value (PARAM_INT, 'visibility of children in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
+        return new external_single_structure(array(
+            'children' => new external_multiple_structure(new external_single_structure(array(
+                'descriptorid' => new external_value(PARAM_INT, 'id of child'),
+                'descriptortitle' => new external_value(PARAM_TEXT, 'title of child'),
+                'numbering' => new external_value(PARAM_TEXT, 'numbering for child'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'grading of children'),
+                'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                'studentevaluation' => new external_value(PARAM_INT, 'self evaluation of children'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if child has materials'),
+                'examplestotal' => new external_value(PARAM_INT, 'total number of material'),
+                'examplesvisible' => new external_value(PARAM_INT, 'visible number of material'),
+                'examplesinwork' => new external_value(PARAM_INT, 'edited number of material'),
+                'visible' => new external_value(PARAM_INT, 'visibility of children in current context'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
             ))),
-            'examples' => new external_multiple_structure (new external_single_structure (array(
-                'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
+            'examples' => new external_multiple_structure(new external_single_structure(array(
+                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+                'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
             ))),
-            'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
-            'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-            'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work'),
+            'examplestotal' => new external_value(PARAM_INT, 'number of total examples'),
+            'examplesvisible' => new external_value(PARAM_INT, 'number of visible examples'),
+            'examplesinwork' => new external_value(PARAM_INT, 'number of examples in work'),
         ));
     }
 
@@ -6060,7 +6060,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_schedule_config_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -6091,12 +6091,12 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_schedule_config_returns() {
-        return new external_single_structure (array(
-            'units' => new external_value (PARAM_INT, 'number of units per day'),
-            'interval' => new external_value (PARAM_TEXT, 'duration of unit in minutes'),
-            'begin' => new external_value (PARAM_TEXT, 'begin time for the first unit, format hh:mm'),
-            'periods' => new external_multiple_structure (new external_single_structure (array(
-                'title' => new external_value (PARAM_TEXT, 'id of example'),
+        return new external_single_structure(array(
+            'units' => new external_value(PARAM_INT, 'number of units per day'),
+            'interval' => new external_value(PARAM_TEXT, 'duration of unit in minutes'),
+            'begin' => new external_value(PARAM_TEXT, 'begin time for the first unit, format hh:mm'),
+            'periods' => new external_multiple_structure(new external_single_structure(array(
+                'title' => new external_value(PARAM_TEXT, 'id of example'),
             ))),
         ));
     }
@@ -6108,8 +6108,8 @@ class externallib extends base {
      *
      */
     public static function dakora_get_pre_planning_storage_examples_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -6145,12 +6145,12 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_pre_planning_storage_examples_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'title' => new external_value (PARAM_TEXT, 'title of example'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'title' => new external_value(PARAM_TEXT, 'title of example'),
             'courseid' => new external_value(PARAM_INT, 'example course'),
-            'state' => new external_value (PARAM_INT, 'state of example'),
-            'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
+            'state' => new external_value(PARAM_INT, 'state of example'),
+            'scheduleid' => new external_value(PARAM_INT, 'id in schedule context'),
         )));
     }
 
@@ -6161,8 +6161,8 @@ class externallib extends base {
      *
      */
     public static function dakora_get_pre_planning_storage_students_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -6215,10 +6215,10 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_pre_planning_storage_students_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'studentid' => new external_value (PARAM_INT, 'id of student'),
-            'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-            'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'studentid' => new external_value(PARAM_INT, 'id of student'),
+            'firstname' => new external_value(PARAM_TEXT, 'firstname of student'),
+            'lastname' => new external_value(PARAM_TEXT, 'lastname of student'),
             'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage'),
         )));
     }
@@ -6230,8 +6230,8 @@ class externallib extends base {
      *
      */
     public static function dakora_get_pre_planning_storage_groups_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -6284,9 +6284,9 @@ class externallib extends base {
     }
 
     public static function dakora_get_pre_planning_storage_groups_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of group'),
-            'name' => new external_value (PARAM_TEXT, 'name of group'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of group'),
+            'name' => new external_value(PARAM_TEXT, 'name of group'),
             'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage'),
         )));
     }
@@ -6307,14 +6307,14 @@ class externallib extends base {
     //  * @return external_multiple_structure
     //  */
     // public static function dakora_get_pre_planning_storage_students_returns() {
-    //     return new external_single_structure (array(
-    //         new external_multiple_structure (new external_single_structure (array(
-    //             'studentid' => new external_value (PARAM_INT, 'id of student'),
-    //             'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-    //             'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
+    //     return new external_single_structure(array(
+    //         new external_multiple_structure(new external_single_structure(array(
+    //             'studentid' => new external_value(PARAM_INT, 'id of student'),
+    //             'firstname' => new external_value(PARAM_TEXT, 'firstname of student'),
+    //             'lastname' => new external_value(PARAM_TEXT, 'lastname of student'),
     //             'has_examples' => new external_value(PARAM_BOOL, 'already has examples from current pre planning storage'),
     //         ))),
-    //         'testvalue' => new external_value (PARAM_INT, 'some testvalue)'),
+    //         'testvalue' => new external_value(PARAM_INT, 'some testvalue)'),
     //     ));
     // }
 
@@ -6325,8 +6325,8 @@ class externallib extends base {
      *
      */
     public static function dakora_has_items_in_pre_planning_storage_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -6364,8 +6364,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_has_items_in_pre_planning_storage_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -6376,8 +6376,8 @@ class externallib extends base {
      *
      */
     public static function dakora_empty_pre_planning_storage_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -6409,8 +6409,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_empty_pre_planning_storage_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -6421,9 +6421,9 @@ class externallib extends base {
      *
      */
     public static function dakora_add_example_to_pre_planning_storage_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
         ));
     }
 
@@ -6461,8 +6461,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_add_example_to_pre_planning_storage_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success'),
         ));
     }
 
@@ -6473,11 +6473,11 @@ class externallib extends base {
      *
      */
     public static function dakora_add_examples_to_students_schedule_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'examples' => new external_value (PARAM_TEXT, 'json array of examples'),
-            'students' => new external_value (PARAM_TEXT, 'json array of students'),
-            'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'examples' => new external_value(PARAM_TEXT, 'json array of examples'),
+            'students' => new external_value(PARAM_TEXT, 'json array of students'),
+            'groups' => new external_value(PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -6530,8 +6530,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_add_examples_to_students_schedule_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -6542,11 +6542,11 @@ class externallib extends base {
      *
      */
     public static function dakora_add_examples_to_selected_students_schedule_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'students' => new external_value (PARAM_TEXT, 'json array of students'),
-            'groups' => new external_value (PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
-            'distributionid' => new external_value (PARAM_TEXT, 'distribution id. used for undo button', VALUE_DEFAULT, null),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'students' => new external_value(PARAM_TEXT, 'json array of students'),
+            'groups' => new external_value(PARAM_TEXT, 'json array of groups', VALUE_DEFAULT, ''),
+            'distributionid' => new external_value(PARAM_TEXT, 'distribution id. used for undo button', VALUE_DEFAULT, null),
         ));
     }
 
@@ -6596,8 +6596,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_add_examples_to_selected_students_schedule_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -6642,7 +6642,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_undo_examples_from_schedule_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'teacherid' => new external_value(PARAM_INT, 'id of teacher'),
             'distributionid' => new external_value(PARAM_INT, 'distribution id'),
         ));
@@ -6700,8 +6700,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_undo_examples_from_schedule_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -6711,18 +6711,18 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_submit_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'exampleid'),
-            'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1),
-            'url' => new external_value (PARAM_URL, 'url'),
-            //			'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
-            'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
-            'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
-            //'value' => new external_value (PARAM_INT, 'value of the grading', VALUE_DEFAULT, -1),
-            'itemid' => new external_value (PARAM_INT, 'itemid (<=0 for insert, >0 for update)'),
-            'courseid' => new external_value (PARAM_INT, 'courseid'),
-            //			'fileitemid' => new external_value (PARAM_INT, 'fileitemid'),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'exampleid'),
+            'studentvalue' => new external_value(PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1),
+            'url' => new external_value(PARAM_URL, 'url'),
+            //			'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+            'filenames' => new external_value(PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
+            'studentcomment' => new external_value(PARAM_TEXT, 'studentcomment'),
+            //'value' => new external_value(PARAM_INT, 'value of the grading', VALUE_DEFAULT, -1),
+            'itemid' => new external_value(PARAM_INT, 'itemid (<=0 for insert, >0 for update)'),
+            'courseid' => new external_value(PARAM_INT, 'courseid'),
+            //			'fileitemid' => new external_value(PARAM_INT, 'fileitemid'),
+            'fileitemids' => new external_value(PARAM_TEXT, 'fileitemids separated by comma'),
         ));
     }
 
@@ -6870,9 +6870,9 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_submit_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-            'itemid' => new external_value (PARAM_INT, 'itemid'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
+            'itemid' => new external_value(PARAM_INT, 'itemid'),
         ));
     }
 
@@ -6882,21 +6882,21 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_submit_item_parameters() {
-        return new external_function_parameters (array(
-            'compid' => new external_value (PARAM_INT, 'id of topic/example'),
-            'studentvalue' => new external_value (PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1), // if example --> grading also possible
-            'url' => new external_value (PARAM_URL, 'url'),
-            'filenames' => new external_value (PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
-            'studentcomment' => new external_value (PARAM_TEXT, 'studentcomment'),
-            'fileitemids' => new external_value (PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
-            'itemid' => new external_value (PARAM_INT, 'itemid (0 for insert, >0 for update)'),
-            'courseid' => new external_value (PARAM_INT, 'courseid'),
-            'comptype' => new external_value (PARAM_INT, 'comptype (example, topic, descriptor)'),
-            'itemtitle' => new external_value (PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_DEFAULT, ''),
+        return new external_function_parameters(array(
+            'compid' => new external_value(PARAM_INT, 'id of topic/example'),
+            'studentvalue' => new external_value(PARAM_INT, 'studentvalue for grading', VALUE_DEFAULT, -1), // if example --> grading also possible
+            'url' => new external_value(PARAM_URL, 'url'),
+            'filenames' => new external_value(PARAM_TEXT, 'filenames, separated by comma, used to look up files and create a new ones in the exaport file area'),
+            'studentcomment' => new external_value(PARAM_TEXT, 'studentcomment'),
+            'fileitemids' => new external_value(PARAM_TEXT, 'fileitemids separated by comma, used to look up file and create a new one in the exaport file area'),
+            'itemid' => new external_value(PARAM_INT, 'itemid (0 for insert, >0 for update)'),
+            'courseid' => new external_value(PARAM_INT, 'courseid'),
+            'comptype' => new external_value(PARAM_INT, 'comptype (example, topic, descriptor)'),
+            'itemtitle' => new external_value(PARAM_TEXT, 'name of the item (for examples, the exampletitle is fitting, but for topics, using the topic would not be very useful', VALUE_DEFAULT, ''),
             'collabuserids' => new external_value(PARAM_TEXT, 'userids of collaborators separated by comma', VALUE_DEFAULT, ''),
             'submit' => new external_value(PARAM_INT, '1 for submitting definitely (submitted), 0 for only creating/updating the item (inprogress)', VALUE_DEFAULT, 0),
-            'removefiles' => new external_value (PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
-            'solutiondescription' => new external_value (PARAM_TEXT, 'description of what the student has done'),
+            'removefiles' => new external_value(PARAM_TEXT, 'fileindizes/pathnamehashes of the files that should be removed, separated by comma'),
+            'solutiondescription' => new external_value(PARAM_TEXT, 'description of what the student has done'),
             'descriptorgradings' => new external_multiple_structure(
                 new external_single_structure(
                     array(
@@ -7145,9 +7145,9 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_submit_item_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-            'itemid' => new external_value (PARAM_INT, 'itemid'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
+            'itemid' => new external_value(PARAM_INT, 'itemid'),
         ));
     }
 
@@ -7157,10 +7157,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_submit_item_comment_parameters() {
-        return new external_function_parameters (array(
-            'itemid' => new external_value (PARAM_INT, 'id of item'),
-            'comment' => new external_value (PARAM_TEXT, 'comment text'),
-            'fileitemid' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
+        return new external_function_parameters(array(
+            'itemid' => new external_value(PARAM_INT, 'id of item'),
+            'comment' => new external_value(PARAM_TEXT, 'comment text'),
+            'fileitemid' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -7248,9 +7248,9 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_submit_item_comment_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-            'itemid' => new external_value (PARAM_INT, 'itemid'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
+            'itemid' => new external_value(PARAM_INT, 'itemid'),
         ));
     }
 
@@ -7260,8 +7260,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_item_comments_parameters() {
-        return new external_function_parameters (array(
-            'itemid' => new external_value (PARAM_INT, 'id of item'),
+        return new external_function_parameters(array(
+            'itemid' => new external_value(PARAM_INT, 'id of item'),
         ));
     }
 
@@ -7348,17 +7348,17 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_get_item_comments_returns() {
-        return new external_multiple_structure(new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'commentid'),
-            'userid' => new external_value (PARAM_INT, 'userid'),
-            'fullname' => new external_value (PARAM_TEXT, 'fullname of user'),
-            'comment' => new external_value (PARAM_TEXT, 'commenttext'),
-            'timemodified' => new external_value (PARAM_INT, 'timemodified'),
-            'profileimageurl' => new external_value (PARAM_TEXT, ''),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'commentid'),
+            'userid' => new external_value(PARAM_INT, 'userid'),
+            'fullname' => new external_value(PARAM_TEXT, 'fullname of user'),
+            'comment' => new external_value(PARAM_TEXT, 'commenttext'),
+            'timemodified' => new external_value(PARAM_INT, 'timemodified'),
+            'profileimageurl' => new external_value(PARAM_TEXT, ''),
             'file' => new external_single_structure(array(
-                'filename' => new external_value (PARAM_TEXT, 'filename'),
-                'file' => new external_value (PARAM_URL, 'file url'),
-                'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
+                'filename' => new external_value(PARAM_TEXT, 'filename'),
+                'file' => new external_value(PARAM_URL, 'file url'),
+                'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
             ), "", VALUE_OPTIONAL),
         )));
     }
@@ -7369,11 +7369,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_examples_and_items_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'courseid. Used if a topic is selected as filter', VALUE_DEFAULT, -1),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'compid' => new external_value (PARAM_INT, 'id of subject(3)/topic(1)/descriptor(0)/example(4)   if <= 0 then show all items for user'),
-            'comptype' => new external_value (PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'compid' => new external_value(PARAM_INT, 'id of subject(3)/topic(1)/descriptor(0)/example(4)   if <= 0 then show all items for user'),
+            'comptype' => new external_value(PARAM_INT, 'Type of competence: subject/topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ""),
             'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
@@ -7523,76 +7523,76 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_get_examples_and_items_returns() {
-        return new external_multiple_structure(new external_single_structure (array(
-            'courseid' => new external_value (PARAM_INT, ''),
+        return new external_multiple_structure(new external_single_structure(array(
+            'courseid' => new external_value(PARAM_INT, ''),
             'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value(PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
 
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
 
-            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
+            'timemodified' => new external_value(PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
 
             'example' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of example'),
-                'title' => new external_value (PARAM_TEXT, 'title of example'),
-                'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'id' => new external_value(PARAM_INT, 'id of example'),
+                'title' => new external_value(PARAM_TEXT, 'title of example'),
+                'description' => new external_value(PARAM_TEXT, 'description of example'),
                 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
-                //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-                //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
-                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-                'externaltask_embedded' => new external_value (PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
-                //                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
-                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                //                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
-                //                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+                //                'taskfileurl' => new external_value(PARAM_TEXT, 'task fileurl'),
+                //                'taskfilenames' => new external_value(PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value(PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value(PARAM_TEXT, 'url of associated module'),
+                'externaltask_embedded' => new external_value(PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
+                //                'taskfilecount' => new external_value(PARAM_TEXT, 'number of files for the task'),
+                'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+                'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value(PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                //                'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma'),
+                //                'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma'),
 
                 'taskfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
-                    'url' => new external_value (PARAM_URL, 'file url'),
-                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                    'name' => new external_value(PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value(PARAM_URL, 'file url'),
+                    'type' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    //                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
-                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
+                'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation'),
+                'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation'),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of item '),
-                'name' => new external_value (PARAM_TEXT, 'title of item'),
-                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
-                'type' => new external_value (PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
-                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
-                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-                //                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
-                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
-                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
-                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
-                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                'id' => new external_value(PARAM_INT, 'id of item '),
+                'name' => new external_value(PARAM_TEXT, 'title of item'),
+                'solutiondescription' => new external_value(PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value(PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value(PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value(PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                //                'status' => new external_value(PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value(PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value(PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value(PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value(PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
                 'owner' => new external_single_structure(array(
-                    'userid' => new external_value (PARAM_INT, ''),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                    'userid' => new external_value(PARAM_INT, ''),
+                    'fullname' => new external_value(PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 )),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'filename' => new external_value (PARAM_TEXT, 'filename'),
-                    'file' => new external_value (PARAM_URL, 'file url'),
-                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file'),
+                    'id' => new external_value(PARAM_INT, 'id'),
+                    'filename' => new external_value(PARAM_TEXT, 'filename'),
+                    'file' => new external_value(PARAM_URL, 'file url'),
+                    'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file'),
                 )), "files of the student's submission", VALUE_OPTIONAL),
-                'collaborators' => new external_multiple_structure (new external_single_structure (array(
-                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                'collaborators' => new external_multiple_structure(new external_single_structure(array(
+                    'userid' => new external_value(PARAM_INT, 'userid of collaborator'),
+                    'fullname' => new external_value(PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_OPTIONAL),
         )));
@@ -7604,11 +7604,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_teacher_examples_and_items_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, ''),
-            'studentid' => new external_value (PARAM_INT, ''),
-            'compid' => new external_value (PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
-            'comptype' => new external_value (PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, ''),
+            'studentid' => new external_value(PARAM_INT, ''),
+            'compid' => new external_value(PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
+            'comptype' => new external_value(PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
             'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ''),
             'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
@@ -7770,76 +7770,76 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_get_teacher_examples_and_items_returns() {
-        return new external_multiple_structure(new external_single_structure (array(
-            'courseid' => new external_value (PARAM_INT, ''),
+        return new external_multiple_structure(new external_single_structure(array(
+            'courseid' => new external_value(PARAM_INT, ''),
             'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value(PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
 
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
 
-            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
+            'timemodified' => new external_value(PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
 
             'example' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of example'),
-                'title' => new external_value (PARAM_TEXT, 'title of example'),
-                'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'id' => new external_value(PARAM_INT, 'id of example'),
+                'title' => new external_value(PARAM_TEXT, 'title of example'),
+                'description' => new external_value(PARAM_TEXT, 'description of example'),
                 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
-                //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-                //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
-                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-                'externaltask_embedded' => new external_value (PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
-                //                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
-                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                //                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
-                //                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+                //                'taskfileurl' => new external_value(PARAM_TEXT, 'task fileurl'),
+                //                'taskfilenames' => new external_value(PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value(PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value(PARAM_TEXT, 'url of associated module'),
+                'externaltask_embedded' => new external_value(PARAM_TEXT, 'url of associated module, link to embedded view in exacomp', VALUE_OPTIONAL),
+                //                'taskfilecount' => new external_value(PARAM_TEXT, 'number of files for the task'),
+                'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+                'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value(PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                //                'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma'),
+                //                'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma'),
 
                 'taskfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
-                    'url' => new external_value (PARAM_URL, 'file url'),
-                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                    'name' => new external_value(PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value(PARAM_URL, 'file url'),
+                    'type' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    //                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation'),
-                'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation'),
+                'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation'),
+                'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation'),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of item '),
-                'name' => new external_value (PARAM_TEXT, 'title of item'),
-                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
-                'type' => new external_value (PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
-                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
-                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-                //                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
-                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
-                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
-                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
-                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                'id' => new external_value(PARAM_INT, 'id of item '),
+                'name' => new external_value(PARAM_TEXT, 'title of item'),
+                'solutiondescription' => new external_value(PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value(PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value(PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value(PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                //                'status' => new external_value(PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value(PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value(PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value(PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value(PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
                 'owner' => new external_single_structure(array(
-                    'userid' => new external_value (PARAM_INT, ''),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                    'userid' => new external_value(PARAM_INT, ''),
+                    'fullname' => new external_value(PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 )),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'filename' => new external_value (PARAM_TEXT, 'filename'),
-                    'file' => new external_value (PARAM_URL, 'file url'),
-                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file'),
+                    'id' => new external_value(PARAM_INT, 'id'),
+                    'filename' => new external_value(PARAM_TEXT, 'filename'),
+                    'file' => new external_value(PARAM_URL, 'file url'),
+                    'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file'),
                 )), "files of the student's submission", VALUE_OPTIONAL),
-                'collaborators' => new external_multiple_structure (new external_single_structure (array(
-                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                'collaborators' => new external_multiple_structure(new external_single_structure(array(
+                    'userid' => new external_value(PARAM_INT, 'userid of collaborator'),
+                    'fullname' => new external_value(PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_OPTIONAL),
         )));
@@ -7851,12 +7851,12 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_all_subjects_for_course_as_tree_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject, if you only want one specific subject', VALUE_DEFAULT, null),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject, if you only want one specific subject', VALUE_DEFAULT, null),
             // name $select is borrowed from ms graph api
-            '$select' => new external_value (PARAM_TEXT, 'select extra fields', VALUE_DEFAULT, null),
+            '$select' => new external_value(PARAM_TEXT, 'select extra fields', VALUE_DEFAULT, null),
         ));
     }
 
@@ -8016,66 +8016,66 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_get_all_subjects_for_course_as_tree_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of subject'),
-            'title' => new external_value (PARAM_TEXT, 'title of subject'),
-            'used_niveaus' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_TEXT, 'id of niveau'),
-                'title' => new external_value (PARAM_TEXT, 'title of niveau'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of subject'),
+            'title' => new external_value(PARAM_TEXT, 'title of subject'),
+            'used_niveaus' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_TEXT, 'id of niveau'),
+                'title' => new external_value(PARAM_TEXT, 'title of niveau'),
             ))),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
-            'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
-            'topics' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of topic'),
-                'title' => new external_value (PARAM_TEXT, 'title of topic'),
-                'visible' => new external_value (PARAM_BOOL, 'visibility of topic in current context '),
-                'used' => new external_value (PARAM_BOOL, 'if topic is used'),
-                'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
-                'descriptors' => new external_multiple_structure (new external_single_structure (array(
-                    'id' => new external_value (PARAM_INT, 'id of descriptor'),
-                    'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
-                    'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-                    'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
-                    'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
-                    'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                    'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                    'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
-                    'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value (PARAM_INT, 'id of example'),
-                        'niveauid' => new external_value (PARAM_INT, 'id of the niveau (column) of this descriptor'),
-                        'title' => new external_value (PARAM_TEXT, 'title of example'),
-                        'visible' => new external_value (PARAM_BOOL, 'visibility of descriptor in current context '),
-                        'used' => new external_value (PARAM_BOOL, 'if descriptor is used'),
-                        'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                        'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                        'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
-                        'examples' => new external_multiple_structure (new external_single_structure (array(
-                            'id' => new external_value (PARAM_INT, 'id of example'),
-                            'title' => new external_value (PARAM_TEXT, 'title of example'),
-                            'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
-                            'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'courseshortname' => new external_value(PARAM_TEXT, 'courseshortname'),
+            'coursefullname' => new external_value(PARAM_TEXT, 'coursefullname'),
+            'topics' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of topic'),
+                'title' => new external_value(PARAM_TEXT, 'title of topic'),
+                'visible' => new external_value(PARAM_BOOL, 'visibility of topic in current context '),
+                'used' => new external_value(PARAM_BOOL, 'if topic is used'),
+                'teacherevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                'studentevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                'teacherevaluationcount' => new external_value(PARAM_INT, '', VALUE_OPTIONAL, null),
+                'descriptors' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT, 'id of descriptor'),
+                    'niveauid' => new external_value(PARAM_INT, 'id of the niveau (column) of this descriptor'),
+                    'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+                    'visible' => new external_value(PARAM_BOOL, 'visibility of descriptor in current context '),
+                    'used' => new external_value(PARAM_BOOL, 'if descriptor is used'),
+                    'teacherevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                    'studentevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                    'teacherevaluationcount' => new external_value(PARAM_INT, '', VALUE_OPTIONAL, null),
+                    'childdescriptors' => new external_multiple_structure(new external_single_structure(array(
+                        'id' => new external_value(PARAM_INT, 'id of example'),
+                        'niveauid' => new external_value(PARAM_INT, 'id of the niveau (column) of this descriptor'),
+                        'title' => new external_value(PARAM_TEXT, 'title of example'),
+                        'visible' => new external_value(PARAM_BOOL, 'visibility of descriptor in current context '),
+                        'used' => new external_value(PARAM_BOOL, 'if descriptor is used'),
+                        'teacherevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                        'studentevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                        'teacherevaluationcount' => new external_value(PARAM_INT, '', VALUE_OPTIONAL, null),
+                        'examples' => new external_multiple_structure(new external_single_structure(array(
+                            'id' => new external_value(PARAM_INT, 'id of example'),
+                            'title' => new external_value(PARAM_TEXT, 'title of example'),
+                            'creatorid' => new external_value(PARAM_INT, 'creator of this example'),
+                            'visible' => new external_value(PARAM_BOOL, 'visibility of example in current context '),
                             'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
-                            'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                            'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                            'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
+                            'teacherevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                            'studentevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                            'teacherevaluationcount' => new external_value(PARAM_INT, '', VALUE_OPTIONAL, null),
                         ))),
                     ))),
-                    'examples' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value (PARAM_INT, 'id of example'),
-                        'title' => new external_value (PARAM_TEXT, 'title of example'),
-                        'creatorid' => new external_value (PARAM_INT, 'creator of this example'),
-                        'visible' => new external_value (PARAM_BOOL, 'visibility of example in current context '),
+                    'examples' => new external_multiple_structure(new external_single_structure(array(
+                        'id' => new external_value(PARAM_INT, 'id of example'),
+                        'title' => new external_value(PARAM_TEXT, 'title of example'),
+                        'creatorid' => new external_value(PARAM_INT, 'creator of this example'),
+                        'visible' => new external_value(PARAM_BOOL, 'visibility of example in current context '),
                         'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
-                        'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                        'studentevaluation' => new external_value (PARAM_INT, '', VALUE_DEFAULT, null),
-                        'teacherevaluationcount' => new external_value (PARAM_INT, '', VALUE_OPTIONAL, null),
-                        'taxonomies' => new external_multiple_structure (new external_single_structure ([
-                            'id' => new external_value (PARAM_INT, 'id'),
-                            'title' => new external_value (PARAM_TEXT, 'name'),
-                            'source' => new external_value (PARAM_TEXT, 'source'),
+                        'teacherevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                        'studentevaluation' => new external_value(PARAM_INT, '', VALUE_DEFAULT, null),
+                        'teacherevaluationcount' => new external_value(PARAM_INT, '', VALUE_OPTIONAL, null),
+                        'taxonomies' => new external_multiple_structure(new external_single_structure([
+                            'id' => new external_value(PARAM_INT, 'id'),
+                            'title' => new external_value(PARAM_TEXT, 'name'),
+                            'source' => new external_value(PARAM_TEXT, 'source'),
                         ]), 'values'),
                     ))),
                 ))),
@@ -8126,9 +8126,9 @@ class externallib extends base {
     //     * @return external_function_parameters
     //     */
     //    public static function diggrplus_get_all_examples_for_course_parameters() {
-    //        return new external_function_parameters (array(
-    //            'courseid' => new external_value (PARAM_INT, ''),
-    //            'userid' => new external_value (PARAM_INT, ''),
+    //        return new external_function_parameters(array(
+    //            'courseid' => new external_value(PARAM_INT, ''),
+    //            'userid' => new external_value(PARAM_INT, ''),
     //        ));
     //    }
     //
@@ -8177,39 +8177,39 @@ class externallib extends base {
     //     * @return external_multiple_structure
     //     */
     //    public static function diggrplus_get_all_examples_for_course_returns() {
-    //        return new external_multiple_structure(new external_single_structure (array(
+    //        return new external_multiple_structure(new external_single_structure(array(
     //
-    //            'courseid' => new external_value (PARAM_INT, ''),
+    //            'courseid' => new external_value(PARAM_INT, ''),
     //
-    //            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-    //            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-    //            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-    //            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+    //            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+    //            'subjecttitle' => new external_value(PARAM_TEXT, 'title of subject'),
+    //            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+    //            'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
     //
-    //            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-    //            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+    //            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+    //            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
     //
     //
-    //            'id' => new external_value (PARAM_INT, 'id of example'),
-    //                'title' => new external_value (PARAM_TEXT, 'title of example'),
-    //                'description' => new external_value (PARAM_TEXT, 'description of example'),
-    ////                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-    ////                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-    //                'solution' => new external_value (PARAM_TEXT, 'task filename'),
-    //                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-    //                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-    ////                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-    //                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-    //                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
-    //                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-    ////                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
-    ////                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+    //            'id' => new external_value(PARAM_INT, 'id of example'),
+    //                'title' => new external_value(PARAM_TEXT, 'title of example'),
+    //                'description' => new external_value(PARAM_TEXT, 'description of example'),
+    ////                'taskfileurl' => new external_value(PARAM_TEXT, 'task fileurl'),
+    ////                'taskfilenames' => new external_value(PARAM_TEXT, 'task filename'),
+    //                'solution' => new external_value(PARAM_TEXT, 'task filename'),
+    //                'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+    //                'externaltask' => new external_value(PARAM_TEXT, 'url of associated module'),
+    ////                'taskfilecount' => new external_value(PARAM_TEXT, 'number of files for the task'),
+    //                'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+    //                'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+    //                'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+    ////                'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma'),
+    ////                'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma'),
     //
     //                'taskfiles' => new external_multiple_structure(new external_single_structure(array(
-    //                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
-    //                    'url' => new external_value (PARAM_URL, 'file url'),
-    //                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
-    ////                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+    //                    'name' => new external_value(PARAM_TEXT, 'title of taskfile'),
+    //                    'url' => new external_value(PARAM_URL, 'file url'),
+    //                    'type' => new external_value(PARAM_TEXT, 'mime type for file'),
+    ////                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
     //                )), 'taskfiles of the example', VALUE_OPTIONAL),
     //
     //            )));
@@ -8217,7 +8217,7 @@ class externallib extends base {
     //
 
     public static function diggrplus_get_user_info_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -8238,14 +8238,14 @@ class externallib extends base {
     }
 
     public static function diggrplus_get_user_info_returns() {
-        return new external_function_parameters (array(
-            'role' => new external_value (PARAM_TEXT),
+        return new external_function_parameters(array(
+            'role' => new external_value(PARAM_TEXT),
         ));
     }
 
     public static function diggrplus_request_external_file_parameters() {
-        return new external_function_parameters (array(
-            'url' => new external_value (PARAM_URL, ''),
+        return new external_function_parameters(array(
+            'url' => new external_value(PARAM_URL, ''),
         ));
     }
 
@@ -8279,14 +8279,14 @@ class externallib extends base {
     }
 
     public static function diggrplus_grade_item_parameters() {
-        return new external_function_parameters (array(
-            'itemid' => new external_value (PARAM_INT, ''),
-            'teachervalue' => new external_value (PARAM_INT, 'teacher grading of the item, -1 if none (leads to status "submitted" instead of "completed"', VALUE_DEFAULT, -1),
-            // 'userid' => new external_value (PARAM_INT, 'id of student that should be graded'),
-            // 'value' => new external_value (PARAM_INT, 'value for grading'),
-            // 'status' => new external_value (PARAM_INT, 'status'),
-            // 'comment' => new external_value (PARAM_TEXT, 'comment of grading', VALUE_OPTIONAL),
-            // 'comps' => new external_value (PARAM_TEXT, 'comps for example - positive grading'),
+        return new external_function_parameters(array(
+            'itemid' => new external_value(PARAM_INT, ''),
+            'teachervalue' => new external_value(PARAM_INT, 'teacher grading of the item, -1 if none (leads to status "submitted" instead of "completed"', VALUE_DEFAULT, -1),
+            // 'userid' => new external_value(PARAM_INT, 'id of student that should be graded'),
+            // 'value' => new external_value(PARAM_INT, 'value for grading'),
+            // 'status' => new external_value(PARAM_INT, 'status'),
+            // 'comment' => new external_value(PARAM_TEXT, 'comment of grading', VALUE_OPTIONAL),
+            // 'comps' => new external_value(PARAM_TEXT, 'comps for example - positive grading'),
             'descriptorgradings' => new external_multiple_structure(
                 new external_single_structure(
                     array(
@@ -8393,8 +8393,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_grade_item_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if grading was successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if grading was successful'),
         ));
     }
 
@@ -8404,9 +8404,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_competence_profile_statistic_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
-            'courseid' => new external_value (PARAM_INT, '', VALUE_DEFAULT, 0),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
+            'courseid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -8617,34 +8617,34 @@ class externallib extends base {
     }
 
     public static function diggrplus_get_competence_profile_statistic_returns() {
-        return new external_single_structure (array(
+        return new external_single_structure(array(
             'items_and_examples_total' => new external_value(PARAM_INT, 'number of free items + examples'),
             'items_and_examples_completed' => new external_value(PARAM_INT, 'number of solved items, those items can be free or related to an example'),
             'competencies_total' => new external_value(PARAM_INT, ''),
             'competencies_gained' => new external_value(PARAM_INT, ''),
-            'competencetree' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of subject'),
-                'title' => new external_value (PARAM_TEXT, 'title of subject'),
-                'courseid' => new external_value (PARAM_INT, 'id of course'),
-                'courseshortname' => new external_value (PARAM_TEXT, 'courseshortname'),
-                'coursefullname' => new external_value (PARAM_TEXT, 'coursefullname'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of subject'),
-                'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of subject'),
-                'topics' => new external_multiple_structure (new external_single_structure (array(
-                    'id' => new external_value (PARAM_INT, 'id of example'),
-                    'title' => new external_value (PARAM_TEXT, 'title of topic'),
-                    'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of topic'),
-                    'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of topic'),
-                    'descriptors' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value (PARAM_INT, 'id of example'),
-                        'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-                        'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-                        'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
-                        'childdescriptors' => new external_multiple_structure (new external_single_structure (array(
-                            'id' => new external_value (PARAM_INT, 'id of example'),
-                            'title' => new external_value (PARAM_TEXT, 'title of example'),
-                            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of childdescriptor'),
-                            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of childdescriptor'),
+            'competencetree' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of subject'),
+                'title' => new external_value(PARAM_TEXT, 'title of subject'),
+                'courseid' => new external_value(PARAM_INT, 'id of course'),
+                'courseshortname' => new external_value(PARAM_TEXT, 'courseshortname'),
+                'coursefullname' => new external_value(PARAM_TEXT, 'coursefullname'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of subject'),
+                'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of subject'),
+                'topics' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT, 'id of example'),
+                    'title' => new external_value(PARAM_TEXT, 'title of topic'),
+                    'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of topic'),
+                    'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of topic'),
+                    'descriptors' => new external_multiple_structure(new external_single_structure(array(
+                        'id' => new external_value(PARAM_INT, 'id of example'),
+                        'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+                        'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+                        'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of descriptor'),
+                        'childdescriptors' => new external_multiple_structure(new external_single_structure(array(
+                            'id' => new external_value(PARAM_INT, 'id of example'),
+                            'title' => new external_value(PARAM_TEXT, 'title of example'),
+                            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of childdescriptor'),
+                            'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of childdescriptor'),
                         ))),
                     ))),
                 ))),
@@ -8658,12 +8658,12 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_descriptors_for_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'mindvisibility' => new external_value (PARAM_BOOL, 'if a teacher wants to see the descriptors of an example in a hidden descriptor: set this to FALSE'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'mindvisibility' => new external_value(PARAM_BOOL, 'if a teacher wants to see the descriptors of an example in a hidden descriptor: set this to FALSE'),
         ));
     }
 
@@ -8771,22 +8771,22 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_get_descriptors_for_example_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'evaluation of descriptor'),
-            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            //            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
-            'child' => new external_value (PARAM_BOOL, 'true: child, false: parent'),
-            'parentid' => new external_value (PARAM_INT, 'parentid if child, 0 otherwise'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'evaluation of descriptor'),
+            'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of descriptor'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            //            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading for descriptor'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
+            'child' => new external_value(PARAM_BOOL, 'true: child, false: parent'),
+            'parentid' => new external_value(PARAM_INT, 'parentid if child, 0 otherwise'),
             'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
-            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
-            'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
+            'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
+            'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
         )));
     }
 
@@ -8796,18 +8796,18 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_grade_example_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT, 'userid'),
-            'courseid' => new external_value (PARAM_INT, 'courseid'),
-            'exampleid' => new external_value (PARAM_INT, 'exampleid'),
-            'examplevalue' => new external_value (PARAM_INT, 'examplevalue'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'additionalInfo'),
-            'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
-            'itemid' => new external_value (PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
-            'comment' => new external_value (PARAM_TEXT, 'comment', VALUE_DEFAULT, ''),
-            'url' => new external_value (PARAM_URL, 'url', VALUE_DEFAULT, ''),
-            'filename' => new external_value (PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport comment file area', VALUE_DEFAULT, ''),
-            'fileitemid' => new external_value (PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'userid'),
+            'courseid' => new external_value(PARAM_INT, 'courseid'),
+            'exampleid' => new external_value(PARAM_INT, 'exampleid'),
+            'examplevalue' => new external_value(PARAM_INT, 'examplevalue'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'additionalInfo'),
+            'exampleevalniveauid' => new external_value(PARAM_INT, 'example evaluation niveau id'),
+            'itemid' => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, -1),
+            'comment' => new external_value(PARAM_TEXT, 'comment', VALUE_DEFAULT, ''),
+            'url' => new external_value(PARAM_URL, 'url', VALUE_DEFAULT, ''),
+            'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport comment file area', VALUE_DEFAULT, ''),
+            'fileitemid' => new external_value(PARAM_TEXT, 'fileitemid', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -8911,19 +8911,19 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_grade_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
-            'exampleid' => new external_value (PARAM_INT, 'exampleid'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
+            'exampleid' => new external_value(PARAM_INT, 'exampleid'),
         ));
     }
 
     public static function dakora_get_descriptors_details_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'courseid'),
             'descriptorids' => new external_value(PARAM_TEXT, 'list of descriptors, seperated by comma'),
-            'userid' => new external_value (PARAM_INT, 'userid'),
-            'forall' => new external_value (PARAM_BOOL, 'forall'),
-            'crosssubjid' => new external_value (PARAM_INT, 'crosssubjid'),
+            'userid' => new external_value(PARAM_INT, 'userid'),
+            'forall' => new external_value(PARAM_BOOL, 'forall'),
+            'crosssubjid' => new external_value(PARAM_INT, 'crosssubjid'),
         ));
     }
 
@@ -8964,134 +8964,134 @@ class externallib extends base {
     }
 
     public static function dakora_get_descriptors_details_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
-            'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
-            'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'numbering' => new external_value (PARAM_TEXT, 'numbering'),
-            'categories' => new external_value (PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
+            'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'parentid' => new external_value(PARAM_INT, 'id of parent of descriptor'),
+            'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+            'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of descriptor'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading for descriptor'),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher evaluation'),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student evaluation'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'numbering' => new external_value(PARAM_TEXT, 'numbering'),
+            'categories' => new external_value(PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
             'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
-            'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
-            'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
-            'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
-            'children' => new external_multiple_structure (new external_single_structure (array(
-                'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
-                'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
-                'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-                'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
-                'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
-                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                'numbering' => new external_value (PARAM_TEXT, 'numbering'),
-                'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
-                'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
-                'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
-                'examples' => new external_multiple_structure (new external_single_structure (array(
-                    'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                    'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                    'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                    'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-                    'used' => new external_value (PARAM_INT, 'used in current context'),
-                    'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
-                    'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
-                    'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                    'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                    'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                    'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-                    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-                    'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
-                    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
-                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
-                    'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
+            'globalgradings' => new external_value(PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
+            'gradinghistory' => new external_value(PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
+            'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
+            'children' => new external_multiple_structure(new external_single_structure(array(
+                'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
+                'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
+                'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+                'parentid' => new external_value(PARAM_INT, 'id of parent of descriptor'),
+                'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+                'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading for descriptor'),
+                'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of descriptor'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                'numbering' => new external_value(PARAM_TEXT, 'numbering'),
+                'globalgradings' => new external_value(PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
+                'gradinghistory' => new external_value(PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
+                'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
+                'examples' => new external_multiple_structure(new external_single_structure(array(
+                    'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                    'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+                    'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                    'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+                    'used' => new external_value(PARAM_INT, 'used in current context'),
+                    'teacherevaluation' => new external_value(PARAM_INT, 'example evaluation of teacher'),
+                    'studentevaluation' => new external_value(PARAM_INT, 'example evaluation of student'),
+                    'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                    'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                    'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                    'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                    'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+                    'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                    'examplecreatorid' => new external_value(PARAM_INT, 'id of the creator of this example'),
+                    'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
+                    'resubmission' => new external_value(PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
+                    'is_teacherexample' => new external_value(PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
                 ))),
-                'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-                'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-                'examplesinwork' => new external_value (PARAM_INT, 'number of material in work'),
+                'examplestotal' => new external_value(PARAM_INT, 'total number of material'),
+                'examplesvisible' => new external_value(PARAM_INT, 'visible number of material'),
+                'examplesinwork' => new external_value(PARAM_INT, 'number of material in work'),
                 'visible' => new external_value(PARAM_INT, 'visibility of children in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
-                'examplesedited' => new external_value (PARAM_INT, 'number of edited material'),
-                'examplegradings' => new external_single_structure (array(
-                    'teacher' => new external_multiple_structure (new external_single_structure (array(
-                        'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
-                        'value' => new external_value (PARAM_INT, 'grading value', 0),
-                        'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
+                'examplesedited' => new external_value(PARAM_INT, 'number of edited material'),
+                'examplegradings' => new external_single_structure(array(
+                    'teacher' => new external_multiple_structure(new external_single_structure(array(
+                        'evalniveauid' => new external_value(PARAM_INT, 'niveau id to according number', 0),
+                        'value' => new external_value(PARAM_INT, 'grading value', 0),
+                        'sum' => new external_value(PARAM_INT, 'number of gradings'),
                     ))),
-                    'student' => new external_multiple_structure (new external_single_structure (array(
-                        'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                    'student' => new external_multiple_structure(new external_single_structure(array(
+                        'sum' => new external_value(PARAM_INT, 'number of gradings'),
                     ))),
                 )),
             ))),
-            'childrengradings' => new external_single_structure (array(
-                'teacher' => new external_multiple_structure (new external_single_structure (array(
-                    'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
-                    'value' => new external_value (PARAM_INT, 'grading value', 0),
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+            'childrengradings' => new external_single_structure(array(
+                'teacher' => new external_multiple_structure(new external_single_structure(array(
+                    'evalniveauid' => new external_value(PARAM_INT, 'niveau id to according number', 0),
+                    'value' => new external_value(PARAM_INT, 'grading value', 0),
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
-                'student' => new external_multiple_structure (new external_single_structure (array(
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                'student' => new external_multiple_structure(new external_single_structure(array(
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
             )),
-            'examples' => new external_multiple_structure (new external_single_structure (array(
-                'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                'exampletitle' => new external_value (PARAM_TEXT, 'title of example'),
-                'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
-                'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
-                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-                'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
-                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
-                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
-                'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
+            'examples' => new external_multiple_structure(new external_single_structure(array(
+                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+                'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'example evaluation of teacher'),
+                'studentevaluation' => new external_value(PARAM_INT, 'example evaluation of student'),
+                'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+                'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                'examplecreatorid' => new external_value(PARAM_INT, 'id of the creator of this example'),
+                'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
+                'resubmission' => new external_value(PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
+                'is_teacherexample' => new external_value(PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
             ))),
-            'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-            'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-            'examplesinwork' => new external_value (PARAM_INT, 'number of material in work'),
-            'examplesedited' => new external_value (PARAM_INT, 'number of edited material'),
-            'examplegradings' => new external_single_structure (array(
-                'teacher' => new external_multiple_structure (new external_single_structure (array(
-                    'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
-                    'value' => new external_value (PARAM_INT, 'grading value', 0),
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+            'examplestotal' => new external_value(PARAM_INT, 'total number of material'),
+            'examplesvisible' => new external_value(PARAM_INT, 'visible number of material'),
+            'examplesinwork' => new external_value(PARAM_INT, 'number of material in work'),
+            'examplesedited' => new external_value(PARAM_INT, 'number of edited material'),
+            'examplegradings' => new external_single_structure(array(
+                'teacher' => new external_multiple_structure(new external_single_structure(array(
+                    'evalniveauid' => new external_value(PARAM_INT, 'niveau id to according number', 0),
+                    'value' => new external_value(PARAM_INT, 'grading value', 0),
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
-                'student' => new external_multiple_structure (new external_single_structure (array(
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                'student' => new external_multiple_structure(new external_single_structure(array(
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
             )),
-            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
+            'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
         )));
     }
 
     public static function dakora_get_descriptor_details_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, 'courseid'),
             'descriptorid' => new external_value(PARAM_INT, 'descriptorid'),
-            'userid' => new external_value (PARAM_INT, 'userid'),
-            'forall' => new external_value (PARAM_BOOL, 'forall'),
-            'crosssubjid' => new external_value (PARAM_INT, 'crosssubjid'),
+            'userid' => new external_value(PARAM_INT, 'userid'),
+            'forall' => new external_value(PARAM_BOOL, 'forall'),
+            'crosssubjid' => new external_value(PARAM_INT, 'crosssubjid'),
         ));
     }
 
@@ -9124,124 +9124,124 @@ class externallib extends base {
     }
 
     public static function dakora_get_descriptor_details_returns() {
-        return new external_single_structure (array(
-            'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
-            'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
-            'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-            'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'numbering' => new external_value (PARAM_TEXT, 'numbering'),
-            'categories' => new external_value (PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
+        return new external_single_structure(array(
+            'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
+            'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'parentid' => new external_value(PARAM_INT, 'id of parent of descriptor'),
+            'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+            'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of descriptor'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading for descriptor'),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher evaluation'),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student evaluation'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'numbering' => new external_value(PARAM_TEXT, 'numbering'),
+            'categories' => new external_value(PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
             'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
-            'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
-            'children' => new external_multiple_structure (new external_single_structure (array(
-                'reviewerid' => new external_value (PARAM_INT, 'id of reviewer'),
-                'reviewername' => new external_value (PARAM_TEXT, 'name of reviewer'),
-                'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-                'parentid' => new external_value (PARAM_INT, 'id of parent of descriptor'),
-                'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading for descriptor'),
-                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                'studentevaluation' => new external_value (PARAM_INT, 'student evaluation of descriptor'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                'numbering' => new external_value (PARAM_TEXT, 'numbering'),
-                'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
-                'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
-                'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
-                'examples' => new external_multiple_structure (new external_single_structure (array(
-                    'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                    'exampletitle' => new external_value (PARAM_RAW, 'title of example'),
-                    'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                    'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-                    'used' => new external_value (PARAM_INT, 'used in current context'),
-                    'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
-                    'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
-                    'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                    'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                    'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                    'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                    'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-                    'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-                    'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
-                    'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
-                    'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
-                    'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
+            'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
+            'children' => new external_multiple_structure(new external_single_structure(array(
+                'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
+                'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
+                'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+                'parentid' => new external_value(PARAM_INT, 'id of parent of descriptor'),
+                'descriptortitle' => new external_value(PARAM_TEXT, 'title of descriptor'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+                'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading for descriptor'),
+                'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                'studentevaluation' => new external_value(PARAM_INT, 'student evaluation of descriptor'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                'numbering' => new external_value(PARAM_TEXT, 'numbering'),
+                'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
+                'globalgradings' => new external_value(PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
+                'gradinghistory' => new external_value(PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
+                'examples' => new external_multiple_structure(new external_single_structure(array(
+                    'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                    'exampletitle' => new external_value(PARAM_RAW, 'title of example'),
+                    'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                    'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+                    'used' => new external_value(PARAM_INT, 'used in current context'),
+                    'teacherevaluation' => new external_value(PARAM_INT, 'example evaluation of teacher'),
+                    'studentevaluation' => new external_value(PARAM_INT, 'example evaluation of student'),
+                    'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                    'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                    'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                    'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                    'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+                    'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                    'examplecreatorid' => new external_value(PARAM_INT, 'id of the creator of this example'),
+                    'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
+                    'resubmission' => new external_value(PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
+                    'is_teacherexample' => new external_value(PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
                 ))),
-                'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-                'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-                'examplesinwork' => new external_value (PARAM_INT, 'number of material in work'),
+                'examplestotal' => new external_value(PARAM_INT, 'total number of material'),
+                'examplesvisible' => new external_value(PARAM_INT, 'visible number of material'),
+                'examplesinwork' => new external_value(PARAM_INT, 'number of material in work'),
                 'visible' => new external_value(PARAM_INT, 'visibility of children in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
-                'examplesedited' => new external_value (PARAM_INT, 'number of edited material'),
-                'examplegradings' => new external_single_structure (array(
-                    'teacher' => new external_multiple_structure (new external_single_structure (array(
-                        'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
-                        'value' => new external_value (PARAM_INT, 'grading value', 0),
-                        'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
+                'examplesedited' => new external_value(PARAM_INT, 'number of edited material'),
+                'examplegradings' => new external_single_structure(array(
+                    'teacher' => new external_multiple_structure(new external_single_structure(array(
+                        'evalniveauid' => new external_value(PARAM_INT, 'niveau id to according number', 0),
+                        'value' => new external_value(PARAM_INT, 'grading value', 0),
+                        'sum' => new external_value(PARAM_INT, 'number of gradings'),
                     ))),
-                    'student' => new external_multiple_structure (new external_single_structure (array(
-                        'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                    'student' => new external_multiple_structure(new external_single_structure(array(
+                        'sum' => new external_value(PARAM_INT, 'number of gradings'),
                     ))),
                 )),
             ))),
-            'childrengradings' => new external_single_structure (array(
-                'teacher' => new external_multiple_structure (new external_single_structure (array(
-                    'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
-                    'value' => new external_value (PARAM_INT, 'grading value', 0),
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+            'childrengradings' => new external_single_structure(array(
+                'teacher' => new external_multiple_structure(new external_single_structure(array(
+                    'evalniveauid' => new external_value(PARAM_INT, 'niveau id to according number', 0),
+                    'value' => new external_value(PARAM_INT, 'grading value', 0),
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
-                'student' => new external_multiple_structure (new external_single_structure (array(
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                'student' => new external_multiple_structure(new external_single_structure(array(
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
             )),
-            'examples' => new external_multiple_structure (new external_single_structure (array(
-                'exampleid' => new external_value (PARAM_INT, 'id of example'),
-                'exampletitle' => new external_value (PARAM_RAW, 'title of example'),
-                'examplestate' => new external_value (PARAM_INT, 'state of example, always 0 if for all students'),
-                'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-                'used' => new external_value (PARAM_INT, 'used in current context'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'example evaluation of teacher'),
-                'studentevaluation' => new external_value (PARAM_INT, 'example evaluation of student'),
-                'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation'),
-                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
-                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
-                'examplecreatorid' => new external_value (PARAM_INT, 'id of the creator of this example'),
-                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
-                'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
-                'is_teacherexample' => new external_value (PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
+            'examples' => new external_multiple_structure(new external_single_structure(array(
+                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                'exampletitle' => new external_value(PARAM_RAW, 'title of example'),
+                'examplestate' => new external_value(PARAM_INT, 'state of example, always 0 if for all students'),
+                'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+                'used' => new external_value(PARAM_INT, 'used in current context'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'example evaluation of teacher'),
+                'studentevaluation' => new external_value(PARAM_INT, 'example evaluation of student'),
+                'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation'),
+                'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma', VALUE_OPTIONAL),
+                'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma', VALUE_OPTIONAL),
+                'examplecreatorid' => new external_value(PARAM_INT, 'id of the creator of this example'),
+                'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading', VALUE_OPTIONAL),
+                'resubmission' => new external_value(PARAM_BOOL, 'resubmission is allowed/not allowed', VALUE_OPTIONAL),
+                'is_teacherexample' => new external_value(PARAM_BOOL, 'is a teacher example?', VALUE_OPTIONAL),
             ))),
-            'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-            'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-            'examplesinwork' => new external_value (PARAM_INT, 'number of material in work'),
-            'examplesedited' => new external_value (PARAM_INT, 'number of edited material'),
-            'examplegradings' => new external_single_structure (array(
-                'teacher' => new external_multiple_structure (new external_single_structure (array(
-                    'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
-                    'value' => new external_value (PARAM_INT, 'grading value', 0),
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+            'examplestotal' => new external_value(PARAM_INT, 'total number of material'),
+            'examplesvisible' => new external_value(PARAM_INT, 'visible number of material'),
+            'examplesinwork' => new external_value(PARAM_INT, 'number of material in work'),
+            'examplesedited' => new external_value(PARAM_INT, 'number of edited material'),
+            'examplegradings' => new external_single_structure(array(
+                'teacher' => new external_multiple_structure(new external_single_structure(array(
+                    'evalniveauid' => new external_value(PARAM_INT, 'niveau id to according number', 0),
+                    'value' => new external_value(PARAM_INT, 'grading value', 0),
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
-                'student' => new external_multiple_structure (new external_single_structure (array(
-                    'sum' => new external_value (PARAM_INT, 'number of gradings'),
+                'student' => new external_multiple_structure(new external_single_structure(array(
+                    'sum' => new external_value(PARAM_INT, 'number of gradings'),
                 ))),
             )),
-            'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
-            'used' => new external_value (PARAM_INT, 'used in current context'),
-            'globalgradings' => new external_value (PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
-            'gradinghistory' => new external_value (PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
+            'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+            'used' => new external_value(PARAM_INT, 'used in current context'),
+            'globalgradings' => new external_value(PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
+            'gradinghistory' => new external_value(PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
             //'activitylist' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'possible activities list. needed for new example form'),
         ));
     }
@@ -9252,10 +9252,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_example_information_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
         ));
     }
 
@@ -9290,38 +9290,38 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_example_information_returns() {
-        return new external_single_structure (array(
-            'itemid' => new external_value (PARAM_INT, 'id of item'),
-            'status' => new external_value (PARAM_INT, 'status of the submission (-1 == no submission; 0 == not graded; 1 == graded'),
-            'name' => new external_value (PARAM_TEXT, 'title of item'),
-            'type' => new external_value (PARAM_TEXT, 'type of item ENUM(note,file,link)'),
-            'url' => new external_value (PARAM_TEXT, 'url'),
-            'teachervalue' => new external_value (PARAM_INT, 'teacher grading'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'teacher grading (double of teachervalue?)'),
-            'studentvalue' => new external_value (PARAM_INT, 'student grading'),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher evaluation'),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student evaluation'),
-            'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment'),
+        return new external_single_structure(array(
+            'itemid' => new external_value(PARAM_INT, 'id of item'),
+            'status' => new external_value(PARAM_INT, 'status of the submission (-1 == no submission; 0 == not graded; 1 == graded'),
+            'name' => new external_value(PARAM_TEXT, 'title of item'),
+            'type' => new external_value(PARAM_TEXT, 'type of item ENUM(note,file,link)'),
+            'url' => new external_value(PARAM_TEXT, 'url'),
+            'teachervalue' => new external_value(PARAM_INT, 'teacher grading'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'teacher grading (double of teachervalue?)'),
+            'studentvalue' => new external_value(PARAM_INT, 'student grading'),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher evaluation'),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student evaluation'),
+            'teachercomment' => new external_value(PARAM_TEXT, 'teacher comment'),
             'teacherfile' => new external_single_structure(array(
-                'filename' => new external_value (PARAM_TEXT, 'title of item'),
-                'file' => new external_value (PARAM_URL, 'file url'),
-                'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                'fileindex' => new external_value (PARAM_TEXT, 'mime type for file'),
+                'filename' => new external_value(PARAM_TEXT, 'title of item'),
+                'file' => new external_value(PARAM_URL, 'file url'),
+                'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
+                'fileindex' => new external_value(PARAM_TEXT, 'mime type for file'),
             ), '', VALUE_OPTIONAL),
-            'studentcomment' => new external_value (PARAM_TEXT, 'student comment'),
-            'teacheritemvalue' => new external_value (PARAM_INT, 'item teacher grading'),
-            'resubmission' => new external_value (PARAM_BOOL, 'resubmission is allowed/not allowed'),
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading'),
+            'studentcomment' => new external_value(PARAM_TEXT, 'student comment'),
+            'teacheritemvalue' => new external_value(PARAM_INT, 'item teacher grading'),
+            'resubmission' => new external_value(PARAM_BOOL, 'resubmission is allowed/not allowed'),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading'),
             'studentfiles' => new external_multiple_structure(new external_single_structure(array(
-                'filename' => new external_value (PARAM_TEXT, 'title of item'),
-                'file' => new external_value (PARAM_URL, 'file url'),
-                'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                'fileindex' => new external_value (PARAM_TEXT, 'mime type for file'),
+                'filename' => new external_value(PARAM_TEXT, 'title of item'),
+                'file' => new external_value(PARAM_URL, 'file url'),
+                'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
+                'fileindex' => new external_value(PARAM_TEXT, 'mime type for file'),
             ))),
-            'activityid' => new external_value (PARAM_INT, 'activityid'),
-            'activitytitle' => new external_value (PARAM_TEXT, 'activity title', VALUE_OPTIONAL),
-            'activitytype' => new external_value (PARAM_TEXT, 'activity type - key for activity icons in Dakora', VALUE_OPTIONAL),
+            'activityid' => new external_value(PARAM_INT, 'activityid'),
+            'activitytitle' => new external_value(PARAM_TEXT, 'activity title', VALUE_OPTIONAL),
+            'activitytype' => new external_value(PARAM_TEXT, 'activity type - key for activity icons in Dakora', VALUE_OPTIONAL),
         ));
     }
 
@@ -9474,7 +9474,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_user_information_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -9502,7 +9502,7 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_user_information_returns() {
-        return new external_single_structure (array(
+        return new external_single_structure(array(
             'id' => new external_value(PARAM_INT, 'ID of the user'),
             'username' => new external_value(PARAM_RAW, 'The username', VALUE_OPTIONAL),
             'firstname' => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
@@ -9517,7 +9517,7 @@ class externallib extends base {
             'url' => new external_value(PARAM_URL, 'URL of the user', VALUE_OPTIONAL),
             'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
             'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version'),
-            'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
+            'exarole' => new external_value(PARAM_INT, '1=trainer, 2=student'),
         ));
     }
 
@@ -9527,8 +9527,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_lang_information_parameters() {
-        return new external_function_parameters (array(
-            'lang' => new external_value (PARAM_TEXT, 'language'),
+        return new external_function_parameters(array(
+            'lang' => new external_value(PARAM_TEXT, 'language'),
         ));
     }
 
@@ -9562,7 +9562,7 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_lang_information_returns() {
-        return new external_multiple_structure (new external_single_structure(array(
+        return new external_multiple_structure(new external_single_structure(array(
                 'stringid' => new external_value(PARAM_TEXT, 'key for the lang string', VALUE_REQUIRED),
                 'master' => new external_value(PARAM_TEXT, 'lang string in the chosen language', VALUE_REQUIRED),
             )
@@ -9575,14 +9575,14 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_create_blocking_event_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'title' => new external_value (PARAM_TEXT, 'title of new blocking event'),
-            'description' => new external_value (PARAM_TEXT, 'description of new blocking event'),
-            'timeframe' => new external_value (PARAM_TEXT, 'timeframe'),
-            'externalurl' => new external_value (PARAM_URL, 'external url'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'preplanningstorage' => new external_value (PARAM_BOOL, 'in pre planning storage or for specific student'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'title' => new external_value(PARAM_TEXT, 'title of new blocking event'),
+            'description' => new external_value(PARAM_TEXT, 'description of new blocking event'),
+            'timeframe' => new external_value(PARAM_TEXT, 'timeframe'),
+            'externalurl' => new external_value(PARAM_URL, 'external url'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'preplanningstorage' => new external_value(PARAM_BOOL, 'in pre planning storage or for specific student'),
         ));
     }
 
@@ -9621,8 +9621,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_create_blocking_event_returns() {
-        return new external_single_structure (array(
-            'scheduleid' => new external_value (PARAM_INT, 'scheduleid'),
+        return new external_single_structure(array(
+            'scheduleid' => new external_value(PARAM_INT, 'scheduleid'),
         ));
     }
 
@@ -9632,11 +9632,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_examples_by_descriptor_and_grading_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'descriptorid' => new external_value (PARAM_TEXT, 'id of descriptor'),
-            'grading' => new external_value (PARAM_INT, 'grading value'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'descriptorid' => new external_value(PARAM_TEXT, 'id of descriptor'),
+            'grading' => new external_value(PARAM_INT, 'grading value'),
         ));
     }
 
@@ -9698,7 +9698,7 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_get_examples_by_descriptor_and_grading_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
+        return new external_multiple_structure(new external_single_structure(array(
             'exampleid' => new external_value(PARAM_INT, 'id of topic'),
             'exampletitle' => new external_value(PARAM_TEXT, 'title of topic'),
         )));
@@ -9710,10 +9710,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_allow_example_resubmission_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
         ));
     }
 
@@ -9743,8 +9743,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_allow_example_resubmission_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -9754,11 +9754,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_competence_grid_for_profile_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject', VALUE_DEFAULT, -1),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject', VALUE_DEFAULT, -1),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject', VALUE_DEFAULT, -1),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crosssubject', VALUE_DEFAULT, -1),
         ));
     }
 
@@ -9868,40 +9868,40 @@ class externallib extends base {
      */
     public static function dakora_get_competence_grid_for_profile_returns() {
         $table_structure = array(
-            'title' => new external_value (PARAM_TEXT, 'title of table', VALUE_DEFAULT, ""),
-            'rows' => new external_multiple_structure (new external_single_structure (array(
-                'columns' => new external_multiple_structure (new external_single_structure(array(
-                    'text' => new external_value (PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
-                    'evaluation' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_DEFAULT, -1),
-                    //'evaluation' => new external_value (PARAM_TEXT, 'evaluation', VALUE_DEFAULT, '-1'),
-                    'evaluation_text' => new external_value (PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
-                    'evaluation_mapped' => new external_value (PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
-                    'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
-                    'show' => new external_value (PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
+            'title' => new external_value(PARAM_TEXT, 'title of table', VALUE_DEFAULT, ""),
+            'rows' => new external_multiple_structure(new external_single_structure(array(
+                'columns' => new external_multiple_structure(new external_single_structure(array(
+                    'text' => new external_value(PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
+                    'evaluation' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_DEFAULT, -1),
+                    //'evaluation' => new external_value(PARAM_TEXT, 'evaluation', VALUE_DEFAULT, '-1'),
+                    'evaluation_text' => new external_value(PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
+                    'evaluation_mapped' => new external_value(PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
+                    'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
+                    'show' => new external_value(PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
                     'visible' => new external_value(PARAM_BOOL, 'cell visibility', VALUE_DEFAULT, true),
-                    'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
-                    'span' => new external_value (PARAM_INT, 'colspan'),
-                    'timestamp' => new external_value (PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
-                    'gradingisold' => new external_value (PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', false),
+                    'topicid' => new external_value(PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
+                    'span' => new external_value(PARAM_INT, 'colspan'),
+                    'timestamp' => new external_value(PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
+                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', false),
                 ))),
             ))),
         );
-        return new external_single_structure (array(
-                'teacher' => new external_single_structure (array(
+        return new external_single_structure(array(
+                'teacher' => new external_single_structure(array(
                     'crosssubjgrading' => new external_single_structure(array(
-                        'value' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
-                        'additionalinfo' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
-                        'evalniveauid' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'value' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'additionalinfo' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'evalniveauid' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
                     ), null, VALUE_OPTIONAL),
-                    'gridgradings' => new external_multiple_structure (new external_single_structure($table_structure)),
+                    'gridgradings' => new external_multiple_structure(new external_single_structure($table_structure)),
                 )),
-                'student' => new external_single_structure (array(
+                'student' => new external_single_structure(array(
                     'crosssubjgrading' => new external_single_structure(array(
-                        'value' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
-                        'additionalinfo' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
-                        'evalniveauid' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'value' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'additionalinfo' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
+                        'evalniveauid' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_OPTIONAL),
                     ), null, VALUE_OPTIONAL),
-                    'gridgradings' => new external_multiple_structure (new external_single_structure($table_structure)),
+                    'gridgradings' => new external_multiple_structure(new external_single_structure($table_structure)),
                 )),
                 'globalcompetences' => new external_multiple_structure(new external_single_structure($table_structure), '', VALUE_DEFAULT, array()),
             )
@@ -9916,12 +9916,12 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_competence_profile_statistic_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
-            'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'start_timestamp' => new external_value(PARAM_INT, 'start timestamp for evaluation range'),
+            'end_timestamp' => new external_value(PARAM_INT, 'end timestamp for evaluation range'),
         ));
     }
 
@@ -9992,43 +9992,43 @@ class externallib extends base {
      * @return external_single_structure
      */
     // 	public static function dakora_get_competence_profile_statistic_returns() {
-    // 	    return new external_single_structure (array(
-    //             'niveaus' => new external_multiple_structure (new external_single_structure(array(
+    // 	    return new external_single_structure(array(
+    //             'niveaus' => new external_multiple_structure(new external_single_structure(array(
     //                 'id' => new external_value(PARAM_INT, 'evalniveauid'),
-    //                 'evaluations' => new external_multiple_structure (new external_single_structure (array(
+    //                 'evaluations' => new external_multiple_structure(new external_single_structure(array(
     //                     'value' => new external_value(PARAM_INT, 'value of evaluation'),
-    //                     'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+    //                     'sum' => new external_value(PARAM_INT, 'sum of evaluations of current gradings'),
     //                 ))),
     //             ))),
     // 	    ));
     // 	}
     public static function dakora_get_competence_profile_statistic_returns() {
-        return new external_single_structure (array(
-            'descriptor_evaluations' => new external_single_structure (array(
-                'niveaus' => new external_multiple_structure (new external_single_structure(array(
+        return new external_single_structure(array(
+            'descriptor_evaluations' => new external_single_structure(array(
+                'niveaus' => new external_multiple_structure(new external_single_structure(array(
                     'id' => new external_value(PARAM_INT, 'evalniveauid'),
-                    'evaluations' => new external_multiple_structure (new external_single_structure (array(
+                    'evaluations' => new external_multiple_structure(new external_single_structure(array(
                         'value' => new external_value(PARAM_INT, 'value of evaluation'),
-                        'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+                        'sum' => new external_value(PARAM_INT, 'sum of evaluations of current gradings'),
                     ))),
                 ))),
                 'descriptorsToGain' => new external_value(PARAM_INT, 'maximum number of descripotrs/competencies one can gain'),
             )),
-            // 			'child_evaluations' => new external_single_structure (array(
-            // 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+            // 			'child_evaluations' => new external_single_structure(array(
+            // 				'niveaus' => new external_multiple_structure(new external_single_structure(array(
             // 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-            // 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+            // 					'evaluations' => new external_multiple_structure(new external_single_structure(array(
             // 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-            // 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+            // 						'sum' => new external_value(PARAM_INT, 'sum of evaluations of current gradings'),
             // 					))),
             // 				))),
             // 			)),
-            // 			'example_evaluations' => new external_single_structure (array(
-            // 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+            // 			'example_evaluations' => new external_single_structure(array(
+            // 				'niveaus' => new external_multiple_structure(new external_single_structure(array(
             // 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-            // 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+            // 					'evaluations' => new external_multiple_structure(new external_single_structure(array(
             // 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-            // 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+            // 						'sum' => new external_value(PARAM_INT, 'sum of evaluations of current gradings'),
             // 					))),
             // 				))),
             // 			)),
@@ -10043,12 +10043,12 @@ class externallib extends base {
     // 	 * @return external_function_parameters
     // 	 */
     // 	public static function dakora_get_competence_profile_statistic_parameters() {
-    // 		return new external_function_parameters (array(
-    // 			'courseid' => new external_value (PARAM_INT, 'id of course'),
-    // 			'userid' => new external_value (PARAM_INT, 'id of user'),
-    // 			'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-    // 			'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
-    // 			'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range'),
+    // 		return new external_function_parameters(array(
+    // 			'courseid' => new external_value(PARAM_INT, 'id of course'),
+    // 			'userid' => new external_value(PARAM_INT, 'id of user'),
+    // 			'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+    // 			'start_timestamp' => new external_value(PARAM_INT, 'start timestamp for evaluation range'),
+    // 			'end_timestamp' => new external_value(PARAM_INT, 'end timestamp for evaluation range'),
     // 		));
     // 	}
 
@@ -10103,31 +10103,31 @@ class externallib extends base {
     // 	 * @return external_single_structure
     // 	 */
     // 	public static function dakora_get_competence_profile_statistic_returns() {
-    // 		return new external_single_structure (array(
-    // 			'descriptor_evaluations' => new external_single_structure (array(
-    // 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+    // 		return new external_single_structure(array(
+    // 			'descriptor_evaluations' => new external_single_structure(array(
+    // 				'niveaus' => new external_multiple_structure(new external_single_structure(array(
     // 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-    // 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+    // 					'evaluations' => new external_multiple_structure(new external_single_structure(array(
     // 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-    // 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+    // 						'sum' => new external_value(PARAM_INT, 'sum of evaluations of current gradings'),
     // 					))),
     // 				))),
     // 			)),
-    // 			'child_evaluations' => new external_single_structure (array(
-    // 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+    // 			'child_evaluations' => new external_single_structure(array(
+    // 				'niveaus' => new external_multiple_structure(new external_single_structure(array(
     // 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-    // 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+    // 					'evaluations' => new external_multiple_structure(new external_single_structure(array(
     // 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-    // 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+    // 						'sum' => new external_value(PARAM_INT, 'sum of evaluations of current gradings'),
     // 					))),
     // 				))),
     // 			)),
-    // 			'example_evaluations' => new external_single_structure (array(
-    // 				'niveaus' => new external_multiple_structure (new external_single_structure(array(
+    // 			'example_evaluations' => new external_single_structure(array(
+    // 				'niveaus' => new external_multiple_structure(new external_single_structure(array(
     // 					'id' => new external_value(PARAM_INT, 'evalniveauid'),
-    // 					'evaluations' => new external_multiple_structure (new external_single_structure (array(
+    // 					'evaluations' => new external_multiple_structure(new external_single_structure(array(
     // 						'value' => new external_value(PARAM_INT, 'value of evaluation'),
-    // 						'sum' => new external_value (PARAM_INT, 'sum of evaluations of current gradings'),
+    // 						'sum' => new external_value(PARAM_INT, 'sum of evaluations of current gradings'),
     // 					))),
     // 				))),
     // 			)),
@@ -10140,10 +10140,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_competence_profile_comparison_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'topicid' => new external_value (PARAM_INT, 'id of subject'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'topicid' => new external_value(PARAM_INT, 'id of subject'),
         ));
     }
 
@@ -10240,27 +10240,27 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_get_competence_profile_comparison_returns() {
-        return new external_single_structure (array(
-            'descriptors' => new external_multiple_structure (new external_single_structure(array(
-                'descriptorid' => new external_value (PARAM_INT, 'descriptorid'),
-                'title' => new external_value (PARAM_TEXT, 'title of descriptor'),
-                'numbering' => new external_value (PARAM_TEXT, 'descriptor numbering'),
-                'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation'),
-                'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading of descriptor'),
-                'evalniveauid' => new external_value (PARAM_INT, 'teacher evaluation niveau id'),
-                'niveauid' => new external_value (PARAM_INT, 'niveau id (ger: lfs)'),
-                'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher descriptor evaluation'),
-                'studentevaluation' => new external_value (PARAM_INT, 'student evaluation'),
-                'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student descriptor evaluation'),
-                'examples' => new external_multiple_structure(new external_single_structure (array(
-                    'example' => new external_value (PARAM_BOOL, 'indicates if sub is example or grouping statement'),
-                    'exampleid' => new external_value (PARAM_INT, 'id of example', VALUE_DEFAULT, 0),
-                    'title' => new external_value (PARAM_TEXT, 'title of sub'),
-                    'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation', VALUE_DEFAULT, -1),
-                    'evalniveauid' => new external_value (PARAM_INT, 'teacher evaluation niveau id', VALUE_DEFAULT, -1),
-                    'timestampteacher' => new external_value (PARAM_INT, 'timestamp for teacher example evaluation', VALUE_DEFAULT, 0),
-                    'studentevaluation' => new external_value (PARAM_INT, 'student evaluation', VALUE_DEFAULT, -1),
-                    'timestampstudent' => new external_value (PARAM_INT, 'timestamp for student example evaluation', VALUE_DEFAULT, 0),
+        return new external_single_structure(array(
+            'descriptors' => new external_multiple_structure(new external_single_structure(array(
+                'descriptorid' => new external_value(PARAM_INT, 'descriptorid'),
+                'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+                'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
+                'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation'),
+                'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading of descriptor'),
+                'evalniveauid' => new external_value(PARAM_INT, 'teacher evaluation niveau id'),
+                'niveauid' => new external_value(PARAM_INT, 'niveau id (ger: lfs)'),
+                'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher descriptor evaluation'),
+                'studentevaluation' => new external_value(PARAM_INT, 'student evaluation'),
+                'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student descriptor evaluation'),
+                'examples' => new external_multiple_structure(new external_single_structure(array(
+                    'example' => new external_value(PARAM_BOOL, 'indicates if sub is example or grouping statement'),
+                    'exampleid' => new external_value(PARAM_INT, 'id of example', VALUE_DEFAULT, 0),
+                    'title' => new external_value(PARAM_TEXT, 'title of sub'),
+                    'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation', VALUE_DEFAULT, -1),
+                    'evalniveauid' => new external_value(PARAM_INT, 'teacher evaluation niveau id', VALUE_DEFAULT, -1),
+                    'timestampteacher' => new external_value(PARAM_INT, 'timestamp for teacher example evaluation', VALUE_DEFAULT, 0),
+                    'studentevaluation' => new external_value(PARAM_INT, 'student evaluation', VALUE_DEFAULT, -1),
+                    'timestampstudent' => new external_value(PARAM_INT, 'timestamp for student example evaluation', VALUE_DEFAULT, 0),
                 ))),
             ))),
         ));
@@ -10272,12 +10272,12 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_competence_profile_topic_statistic_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'userid' => new external_value (PARAM_INT, 'id of user'),
-            'topicid' => new external_value (PARAM_INT, 'id of subject'),
-            'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
-            'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+            'topicid' => new external_value(PARAM_INT, 'id of subject'),
+            'start_timestamp' => new external_value(PARAM_INT, 'start timestamp for evaluation range'),
+            'end_timestamp' => new external_value(PARAM_INT, 'end timestamp for evaluation range'),
         ));
     }
 
@@ -10326,13 +10326,13 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_get_competence_profile_topic_statistic_returns() {
-        return new external_single_structure (array(
-            'descriptor_evaluation' => new external_single_structure (array(
-                'niveaus' => new external_multiple_structure (new external_single_structure(array(
+        return new external_single_structure(array(
+            'descriptor_evaluation' => new external_single_structure(array(
+                'niveaus' => new external_multiple_structure(new external_single_structure(array(
                     'title' => new external_value(PARAM_TEXT, 'evalniveauid'),
                     'teacherevaluation' => new external_value(PARAM_INT, 'evaluation value of current lfs'),
                     'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
-                    'studentevaluation' => new external_value (PARAM_INT, 'student evaluation'),
+                    'studentevaluation' => new external_value(PARAM_INT, 'student evaluation'),
                 ))),
             )),
         ));
@@ -10344,7 +10344,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function is_elove_student_self_assessment_enabled_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -10366,8 +10366,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function is_elove_student_self_assessment_enabled_returns() {
-        return new external_function_parameters (array(
-            'enabled' => new external_value (PARAM_BOOL, ''),
+        return new external_function_parameters(array(
+            'enabled' => new external_value(PARAM_BOOL, ''),
         ));
     }
 
@@ -10377,7 +10377,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_site_policies_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -10449,10 +10449,10 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_site_policies_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'name' => new external_value (PARAM_TEXT, 'name'),
-            'summary' => new external_value (PARAM_TEXT, 'summary'),
-            'content' => new external_value (PARAM_TEXT, 'content'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'name' => new external_value(PARAM_TEXT, 'name'),
+            'summary' => new external_value(PARAM_TEXT, 'summary'),
+            'content' => new external_value(PARAM_TEXT, 'content'),
         )));
     }
 
@@ -10462,8 +10462,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_get_example_h5p_activity_results_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of the example that is connected to an activity'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of the example that is connected to an activity'),
         ));
     }
 
@@ -10609,13 +10609,13 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_example_h5p_activity_results_returns() {
-        return new external_single_structure (array(
-            'current_result' => new external_single_structure (array(
-                'raw_score' => new external_value (PARAM_INT, 'current score of the student on this hvp'),
-                'max_score' => new external_value (PARAM_INT, 'maximum score you can get on this hvp'),
+        return new external_single_structure(array(
+            'current_result' => new external_single_structure(array(
+                'raw_score' => new external_value(PARAM_INT, 'current score of the student on this hvp'),
+                'max_score' => new external_value(PARAM_INT, 'maximum score you can get on this hvp'),
             ), "current result. The interactive content hvp module does not store a history of results"),
-            //'results' => new external_value (PARAM_TEXT, 'summary'),
-            'resultpage_url' => new external_value (PARAM_TEXT, 'content'),
+            //'results' => new external_value(PARAM_TEXT, 'summary'),
+            'resultpage_url' => new external_value(PARAM_TEXT, 'content'),
         ));
     }
 
@@ -10762,12 +10762,12 @@ class externallib extends base {
      * @since Moodle 2.5
      */
     public static function diggr_get_students_of_cohort_returns() {
-        return new external_single_structure (array(
-            'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
-            'cohortcode' => new external_value (PARAM_TEXT, 'code of cohort'),
-            'students' => new external_multiple_structure (new external_single_structure (array(
-                'userid' => new external_value (PARAM_INT, 'id of student'),
-                'name' => new external_value (PARAM_TEXT, 'name of student'),
+        return new external_single_structure(array(
+            'cohortid' => new external_value(PARAM_INT, 'id of cohort'),
+            'cohortcode' => new external_value(PARAM_TEXT, 'code of cohort'),
+            'students' => new external_multiple_structure(new external_single_structure(array(
+                'userid' => new external_value(PARAM_INT, 'id of student'),
+                'name' => new external_value(PARAM_TEXT, 'name of student'),
             ))),
         ));
     }
@@ -10823,11 +10823,11 @@ class externallib extends base {
      * @since Moodle 2.5
      */
     public static function diggr_get_cohorts_of_trainer_returns() {
-        return new external_single_structure (array(
-            'cohorts' => new external_multiple_structure (new external_single_structure(array(
-                'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
-                'name' => new external_value (PARAM_TEXT, 'name of user'),
-                'cohortcode' => new external_value (PARAM_TEXT, 'code of cohort'),
+        return new external_single_structure(array(
+            'cohorts' => new external_multiple_structure(new external_single_structure(array(
+                'cohortid' => new external_value(PARAM_INT, 'id of cohort'),
+                'name' => new external_value(PARAM_TEXT, 'name of user'),
+                'cohortcode' => new external_value(PARAM_TEXT, 'code of cohort'),
             )))));
     }
 
@@ -10868,18 +10868,18 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_evaluation_config_returns() {
-        return new external_single_structure (array(
-            'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
-            // 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
-            'evalniveaus' => new external_single_structure (array(
-                1 => new external_value (PARAM_TEXT, 'evaluation title for id = 1', VALUE_OPTIONAL),
-                2 => new external_value (PARAM_TEXT, 'evaluation title for id = 2', VALUE_OPTIONAL),
-                3 => new external_value (PARAM_TEXT, 'evaluation title for id = 3', VALUE_OPTIONAL))),
-            'values' => new external_single_structure (array(
-                0 => new external_value (PARAM_TEXT, 'value title for id = 0', VALUE_DEFAULT, "0"),
-                1 => new external_value (PARAM_TEXT, 'value title for id = 1', VALUE_DEFAULT, "1"),
-                2 => new external_value (PARAM_TEXT, 'value title for id = 2', VALUE_DEFAULT, "2"),
-                3 => new external_value (PARAM_TEXT, 'value title for id = 3', VALUE_DEFAULT, "3"))),
+        return new external_single_structure(array(
+            'use_evalniveau' => new external_value(PARAM_BOOL, 'use evaluation niveaus'),
+            // 			'evalniveautype' => new external_value(PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
+            'evalniveaus' => new external_single_structure(array(
+                1 => new external_value(PARAM_TEXT, 'evaluation title for id = 1', VALUE_OPTIONAL),
+                2 => new external_value(PARAM_TEXT, 'evaluation title for id = 2', VALUE_OPTIONAL),
+                3 => new external_value(PARAM_TEXT, 'evaluation title for id = 3', VALUE_OPTIONAL))),
+            'values' => new external_single_structure(array(
+                0 => new external_value(PARAM_TEXT, 'value title for id = 0', VALUE_DEFAULT, "0"),
+                1 => new external_value(PARAM_TEXT, 'value title for id = 1', VALUE_DEFAULT, "1"),
+                2 => new external_value(PARAM_TEXT, 'value title for id = 2', VALUE_DEFAULT, "2"),
+                3 => new external_value(PARAM_TEXT, 'value title for id = 3', VALUE_DEFAULT, "3"))),
         ));
     }
 
@@ -10893,34 +10893,34 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_config_returns() {
-        return new external_single_structure (array(
-            'points_limit' => new external_value (PARAM_INT, 'points_limit'),
-            'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
-            'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
-            'grade_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
-            'verbal_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
+        return new external_single_structure(array(
+            'points_limit' => new external_value(PARAM_INT, 'points_limit'),
+            'grade_limit' => new external_value(PARAM_INT, 'grade_limit'),
+            'points_negative_threshold' => new external_value(PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
+            'grade_negative_threshold' => new external_value(PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
+            'verbal_negative_threshold' => new external_value(PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
             //'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
             //'verbose_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'verbose_options'),
-            'example_scheme' => new external_value (PARAM_INT, 'example_scheme'),
-            'example_diffLevel' => new external_value (PARAM_BOOL, 'example_diffLevel'),
-            'example_SelfEval' => new external_value (PARAM_BOOL, 'example_SelfEval'),
-            'childcomp_scheme' => new external_value (PARAM_INT, 'childcomp_scheme'),
-            'childcomp_diffLevel' => new external_value (PARAM_BOOL, 'childcomp_diffLevel'),
-            'childcomp_SelfEval' => new external_value (PARAM_BOOL, 'childcomp_SelfEval'),
-            'comp_scheme' => new external_value (PARAM_INT, 'comp_scheme'),
-            'comp_diffLevel' => new external_value (PARAM_BOOL, 'comp_diffLevel'),
-            'comp_SelfEval' => new external_value (PARAM_BOOL, 'comp_SelfEval'),
-            'topic_scheme' => new external_value (PARAM_INT, 'topic_scheme'),
-            'topic_diffLevel' => new external_value (PARAM_BOOL, 'topic_diffLevel'),
-            'topic_SelfEval' => new external_value (PARAM_BOOL, 'topic_SelfEval'),
-            'subject_scheme' => new external_value (PARAM_INT, 'subject_scheme'),
-            'subject_diffLevel' => new external_value (PARAM_BOOL, 'subject_diffLevel'),
-            'subject_SelfEval' => new external_value (PARAM_BOOL, 'subject_SelfEval'),
-            'theme_scheme' => new external_value (PARAM_INT, 'theme_scheme'),
-            'theme_diffLevel' => new external_value (PARAM_BOOL, 'theme_diffLevel'),
-            'theme_SelfEval' => new external_value (PARAM_BOOL, 'theme_SelfEval'),
-            'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
-            // 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
+            'example_scheme' => new external_value(PARAM_INT, 'example_scheme'),
+            'example_diffLevel' => new external_value(PARAM_BOOL, 'example_diffLevel'),
+            'example_SelfEval' => new external_value(PARAM_BOOL, 'example_SelfEval'),
+            'childcomp_scheme' => new external_value(PARAM_INT, 'childcomp_scheme'),
+            'childcomp_diffLevel' => new external_value(PARAM_BOOL, 'childcomp_diffLevel'),
+            'childcomp_SelfEval' => new external_value(PARAM_BOOL, 'childcomp_SelfEval'),
+            'comp_scheme' => new external_value(PARAM_INT, 'comp_scheme'),
+            'comp_diffLevel' => new external_value(PARAM_BOOL, 'comp_diffLevel'),
+            'comp_SelfEval' => new external_value(PARAM_BOOL, 'comp_SelfEval'),
+            'topic_scheme' => new external_value(PARAM_INT, 'topic_scheme'),
+            'topic_diffLevel' => new external_value(PARAM_BOOL, 'topic_diffLevel'),
+            'topic_SelfEval' => new external_value(PARAM_BOOL, 'topic_SelfEval'),
+            'subject_scheme' => new external_value(PARAM_INT, 'subject_scheme'),
+            'subject_diffLevel' => new external_value(PARAM_BOOL, 'subject_diffLevel'),
+            'subject_SelfEval' => new external_value(PARAM_BOOL, 'subject_SelfEval'),
+            'theme_scheme' => new external_value(PARAM_INT, 'theme_scheme'),
+            'theme_diffLevel' => new external_value(PARAM_BOOL, 'theme_diffLevel'),
+            'theme_SelfEval' => new external_value(PARAM_BOOL, 'theme_SelfEval'),
+            'use_evalniveau' => new external_value(PARAM_BOOL, 'use evaluation niveaus'),
+            // 			'evalniveautype' => new external_value(PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
             'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
             'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
             'teacherevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
@@ -10928,31 +10928,31 @@ class externallib extends base {
             'studentevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
             'studentevalitems_examples' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
             'studentevalitems_examples_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-            'gradingperiods' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'description' => new external_value (PARAM_TEXT, 'name'),
-                'starttime' => new external_value (PARAM_INT, 'active from'),
-                'endtime' => new external_value (PARAM_INT, 'active to'),
+            'gradingperiods' => new external_multiple_structure(new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'id'),
+                'description' => new external_value(PARAM_TEXT, 'name'),
+                'starttime' => new external_value(PARAM_INT, 'active from'),
+                'endtime' => new external_value(PARAM_INT, 'active to'),
             ]), 'grading periods from exastud'),
-            'taxonomies' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'title' => new external_value (PARAM_TEXT, 'name'),
-                'source' => new external_value (PARAM_TEXT, 'source'),
+            'taxonomies' => new external_multiple_structure(new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'id'),
+                'title' => new external_value(PARAM_TEXT, 'name'),
+                'source' => new external_value(PARAM_TEXT, 'source'),
             ]), 'values'),
-            'version' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
-            'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
-            'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
-            'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
-            'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
-            'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
-            'show_overview' => new external_value (PARAM_BOOL, 'flag if "show overview" is active'),
-            'show_eportfolio' => new external_value (PARAM_BOOL, 'flag if "show ePortfolio" is active'),
-            'categories' => new external_multiple_structure (new external_single_structure ([
-                'id' => new external_value (PARAM_INT, 'id'),
-                'title' => new external_value (PARAM_TEXT, 'name'),
-                'source' => new external_value (PARAM_TEXT, 'source'),
+            'version' => new external_value(PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
+            'moodleversion' => new external_value(PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
+            'release' => new external_value(PARAM_TEXT, 'plugin release x.x.x format'),
+            'exaportactive' => new external_value(PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
+            'customlanguagefile' => new external_value(PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
+            'timeout' => new external_value(PARAM_INT, 'a timeout timer'),
+            'show_overview' => new external_value(PARAM_BOOL, 'flag if "show overview" is active'),
+            'show_eportfolio' => new external_value(PARAM_BOOL, 'flag if "show ePortfolio" is active'),
+            'categories' => new external_multiple_structure(new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'id'),
+                'title' => new external_value(PARAM_TEXT, 'name'),
+                'source' => new external_value(PARAM_TEXT, 'source'),
             ]), 'values'),
-            'assessment_verbose_lowerisbetter' => new external_value (PARAM_BOOL, 'flag if "The lower the Assessment, the better" is active'),
+            'assessment_verbose_lowerisbetter' => new external_value(PARAM_BOOL, 'flag if "The lower the Assessment, the better" is active'),
         ));
     }
 
@@ -11234,42 +11234,42 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_courseconfigs_returns() {
-        return new external_single_structure (array(
-            'courses' => new external_multiple_structure (new external_single_structure (array(
-                'courseid' => new external_value (PARAM_INT, 'id of course'),
-                'fullname' => new external_value (PARAM_TEXT, 'fullname of course'),
-                'assessment_config' => new external_value (PARAM_RAW, 'which course specific assessment_config is used'),
+        return new external_single_structure(array(
+            'courses' => new external_multiple_structure(new external_single_structure(array(
+                'courseid' => new external_value(PARAM_INT, 'id of course'),
+                'fullname' => new external_value(PARAM_TEXT, 'fullname of course'),
+                'assessment_config' => new external_value(PARAM_RAW, 'which course specific assessment_config is used'),
             ))),
-            'configs' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, ''),
-                'name' => new external_value (PARAM_TEXT, ''),
-                'points_limit' => new external_value (PARAM_INT, 'points_limit'),
-                'grade_limit' => new external_value (PARAM_INT, 'grade_limit'),
-                'points_negative_threshold' => new external_value (PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
-                'grade_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
-                'verbal_negative_threshold' => new external_value (PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
+            'configs' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, ''),
+                'name' => new external_value(PARAM_TEXT, ''),
+                'points_limit' => new external_value(PARAM_INT, 'points_limit'),
+                'grade_limit' => new external_value(PARAM_INT, 'grade_limit'),
+                'points_negative_threshold' => new external_value(PARAM_INT, 'points_negative_threshold. Values below this value are negative'),
+                'grade_negative_threshold' => new external_value(PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
+                'verbal_negative_threshold' => new external_value(PARAM_INT, 'grade_negative_threshold. Values below this value are negative'),
                 //'diffLevel_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'diffLevel_options'),
                 //'verbose_options' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'verbose_options'),
-                'example_scheme' => new external_value (PARAM_INT, 'example_scheme'),
-                'example_diffLevel' => new external_value (PARAM_BOOL, 'example_diffLevel'),
-                'example_SelfEval' => new external_value (PARAM_BOOL, 'example_SelfEval'),
-                'childcomp_scheme' => new external_value (PARAM_INT, 'childcomp_scheme'),
-                'childcomp_diffLevel' => new external_value (PARAM_BOOL, 'childcomp_diffLevel'),
-                'childcomp_SelfEval' => new external_value (PARAM_BOOL, 'childcomp_SelfEval'),
-                'comp_scheme' => new external_value (PARAM_INT, 'comp_scheme'),
-                'comp_diffLevel' => new external_value (PARAM_BOOL, 'comp_diffLevel'),
-                'comp_SelfEval' => new external_value (PARAM_BOOL, 'comp_SelfEval'),
-                'topic_scheme' => new external_value (PARAM_INT, 'topic_scheme'),
-                'topic_diffLevel' => new external_value (PARAM_BOOL, 'topic_diffLevel'),
-                'topic_SelfEval' => new external_value (PARAM_BOOL, 'topic_SelfEval'),
-                'subject_scheme' => new external_value (PARAM_INT, 'subject_scheme'),
-                'subject_diffLevel' => new external_value (PARAM_BOOL, 'subject_diffLevel'),
-                'subject_SelfEval' => new external_value (PARAM_BOOL, 'subject_SelfEval'),
-                'theme_scheme' => new external_value (PARAM_INT, 'theme_scheme'),
-                'theme_diffLevel' => new external_value (PARAM_BOOL, 'theme_diffLevel'),
-                'theme_SelfEval' => new external_value (PARAM_BOOL, 'theme_SelfEval'),
-                'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
-                // 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
+                'example_scheme' => new external_value(PARAM_INT, 'example_scheme'),
+                'example_diffLevel' => new external_value(PARAM_BOOL, 'example_diffLevel'),
+                'example_SelfEval' => new external_value(PARAM_BOOL, 'example_SelfEval'),
+                'childcomp_scheme' => new external_value(PARAM_INT, 'childcomp_scheme'),
+                'childcomp_diffLevel' => new external_value(PARAM_BOOL, 'childcomp_diffLevel'),
+                'childcomp_SelfEval' => new external_value(PARAM_BOOL, 'childcomp_SelfEval'),
+                'comp_scheme' => new external_value(PARAM_INT, 'comp_scheme'),
+                'comp_diffLevel' => new external_value(PARAM_BOOL, 'comp_diffLevel'),
+                'comp_SelfEval' => new external_value(PARAM_BOOL, 'comp_SelfEval'),
+                'topic_scheme' => new external_value(PARAM_INT, 'topic_scheme'),
+                'topic_diffLevel' => new external_value(PARAM_BOOL, 'topic_diffLevel'),
+                'topic_SelfEval' => new external_value(PARAM_BOOL, 'topic_SelfEval'),
+                'subject_scheme' => new external_value(PARAM_INT, 'subject_scheme'),
+                'subject_diffLevel' => new external_value(PARAM_BOOL, 'subject_diffLevel'),
+                'subject_SelfEval' => new external_value(PARAM_BOOL, 'subject_SelfEval'),
+                'theme_scheme' => new external_value(PARAM_INT, 'theme_scheme'),
+                'theme_diffLevel' => new external_value(PARAM_BOOL, 'theme_diffLevel'),
+                'theme_SelfEval' => new external_value(PARAM_BOOL, 'theme_SelfEval'),
+                'use_evalniveau' => new external_value(PARAM_BOOL, 'use evaluation niveaus'),
+                // 			'evalniveautype' => new external_value(PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
                 'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
                 'teacherevalitems' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
                 'teacherevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
@@ -11277,31 +11277,31 @@ class externallib extends base {
                 'studentevalitems_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
                 'studentevalitems_examples' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
                 'studentevalitems_examples_short' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
-                'gradingperiods' => new external_multiple_structure (new external_single_structure ([
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'description' => new external_value (PARAM_TEXT, 'name'),
-                    'starttime' => new external_value (PARAM_INT, 'active from'),
-                    'endtime' => new external_value (PARAM_INT, 'active to'),
+                'gradingperiods' => new external_multiple_structure(new external_single_structure([
+                    'id' => new external_value(PARAM_INT, 'id'),
+                    'description' => new external_value(PARAM_TEXT, 'name'),
+                    'starttime' => new external_value(PARAM_INT, 'active from'),
+                    'endtime' => new external_value(PARAM_INT, 'active to'),
                 ]), 'grading periods from exastud'),
-                'taxonomies' => new external_multiple_structure (new external_single_structure ([
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'title' => new external_value (PARAM_TEXT, 'name'),
-                    'source' => new external_value (PARAM_TEXT, 'source'),
+                'taxonomies' => new external_multiple_structure(new external_single_structure([
+                    'id' => new external_value(PARAM_INT, 'id'),
+                    'title' => new external_value(PARAM_TEXT, 'name'),
+                    'source' => new external_value(PARAM_TEXT, 'source'),
                 ]), 'values'),
-                'version' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
-                'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
-                'release' => new external_value (PARAM_TEXT, 'plugin release x.x.x format'),
-                'exaportactive' => new external_value (PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
-                'customlanguagefile' => new external_value (PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
-                'timeout' => new external_value (PARAM_INT, 'a timeout timer'),
-                'show_overview' => new external_value (PARAM_BOOL, 'flag if "show overview" is active'),
-                'show_eportfolio' => new external_value (PARAM_BOOL, 'flag if "show ePortfolio" is active'),
-                'categories' => new external_multiple_structure (new external_single_structure ([
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'title' => new external_value (PARAM_TEXT, 'name'),
-                    'source' => new external_value (PARAM_TEXT, 'source'),
+                'version' => new external_value(PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
+                'moodleversion' => new external_value(PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
+                'release' => new external_value(PARAM_TEXT, 'plugin release x.x.x format'),
+                'exaportactive' => new external_value(PARAM_BOOL, 'flag if exaportfolio should be active'),// Returns JSON content.
+                'customlanguagefile' => new external_value(PARAM_TEXT, 'customlanguagefiel'), // Returns JSON content.
+                'timeout' => new external_value(PARAM_INT, 'a timeout timer'),
+                'show_overview' => new external_value(PARAM_BOOL, 'flag if "show overview" is active'),
+                'show_eportfolio' => new external_value(PARAM_BOOL, 'flag if "show ePortfolio" is active'),
+                'categories' => new external_multiple_structure(new external_single_structure([
+                    'id' => new external_value(PARAM_INT, 'id'),
+                    'title' => new external_value(PARAM_TEXT, 'name'),
+                    'source' => new external_value(PARAM_TEXT, 'source'),
                 ]), 'values'),
-                'assessment_verbose_lowerisbetter' => new external_value (PARAM_BOOL, 'flag if "The lower the Assessment, the better" is active'),
+                'assessment_verbose_lowerisbetter' => new external_value(PARAM_BOOL, 'flag if "The lower the Assessment, the better" is active'),
             ))),
         ));
     }
@@ -11325,9 +11325,9 @@ class externallib extends base {
 
     public static function login_parameters() {
         return new external_function_parameters(array(
-            'app' => new external_value (PARAM_INT, 'app accessing this service (eg. dakora)'),
-            'app_version' => new external_value (PARAM_INT, 'version of the app (eg. 4.6.0)'),
-            'services' => new external_value (PARAM_INT, 'wanted webservice tokens (eg. exacomp,exaport)', VALUE_DEFAULT, 'moodle_mobile_app,exacompservices'),
+            'app' => new external_value(PARAM_INT, 'app accessing this service (eg. dakora)'),
+            'app_version' => new external_value(PARAM_INT, 'version of the app (eg. 4.6.0)'),
+            'services' => new external_value(PARAM_INT, 'wanted webservice tokens (eg. exacomp,exaport)', VALUE_DEFAULT, 'moodle_mobile_app,exacompservices'),
         ));
     }
 
@@ -11335,14 +11335,14 @@ class externallib extends base {
      * Returns description of method return values
      */
     public static function login_returns() {
-        return new external_single_structure ([
+        return new external_single_structure([
             'user' => static::dakora_get_user_information_returns(),
             'exacompcourses' => static::dakora_get_courses_returns(),
             //			'config' => static::dakora_get_config_returns(),
             'courseconfigs' => static::dakora_get_courseconfigs_returns(),
-            'tokens' => new external_multiple_structure (new external_single_structure ([
-                'service' => new external_value (PARAM_TEXT, 'name of service'),
-                'token' => new external_value (PARAM_TEXT, 'token of the service'),
+            'tokens' => new external_multiple_structure(new external_single_structure([
+                'service' => new external_value(PARAM_TEXT, 'name of service'),
+                'token' => new external_value(PARAM_TEXT, 'token of the service'),
             ]), 'requested tokens'),
         ]);
     }
@@ -11364,12 +11364,12 @@ class externallib extends base {
     }
 
     public static function dakora_set_descriptor_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for descriptor in current context'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for descriptor in current context'),
         ));
     }
 
@@ -11406,18 +11406,18 @@ class externallib extends base {
     }
 
     public static function dakora_set_descriptor_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_set_example_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for example in current context'),
         ));
     }
 
@@ -11454,19 +11454,19 @@ class externallib extends base {
     }
 
     public static function dakora_set_example_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_set_topic_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
-            'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for topic in current context'),
+            'groupid' => new external_value(PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
         ));
     }
 
@@ -11508,20 +11508,20 @@ class externallib extends base {
     }
 
     public static function dakora_set_topic_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_set_niveau_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
-            'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
-            'niveauid' => new external_value (PARAM_INT, 'id of the descriptorniveau'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for topic in current context'),
+            'groupid' => new external_value(PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
+            'niveauid' => new external_value(PARAM_INT, 'id of the descriptorniveau'),
         ));
     }
 
@@ -11564,18 +11564,18 @@ class externallib extends base {
     }
 
     public static function dakora_set_niveau_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_set_example_solution_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for example in current context'),
         ));
     }
 
@@ -11612,29 +11612,29 @@ class externallib extends base {
     }
 
     public static function dakora_set_example_solution_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_create_cross_subject_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'title' => new external_value (PARAM_TEXT, 'title of crosssubject'),
-            'description' => new external_value (PARAM_TEXT, 'description of crosssubject'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to'),
-            'draftid' => new external_value (PARAM_INT, 'id of draft', VALUE_DEFAULT, 0),
-            'groupcategory' => new external_value (PARAM_TEXT, 'name of groupcategory', VALUE_DEFAULT, ""),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'title' => new external_value(PARAM_TEXT, 'title of crosssubject'),
+            'description' => new external_value(PARAM_TEXT, 'description of crosssubject'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject crosssubject is assigned to'),
+            'draftid' => new external_value(PARAM_INT, 'id of draft', VALUE_DEFAULT, 0),
+            'groupcategory' => new external_value(PARAM_TEXT, 'name of groupcategory', VALUE_DEFAULT, ""),
         ));
     }
 
     public static function diggrplus_set_descriptor_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'ids' => new external_value (PARAM_TEXT, 'list of descriptorids, seperated by comma'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for descriptor in current context'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'ids' => new external_value(PARAM_TEXT, 'list of descriptorids, seperated by comma'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for descriptor in current context'),
         ));
     }
 
@@ -11675,18 +11675,18 @@ class externallib extends base {
     }
 
     public static function diggrplus_set_descriptor_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function diggrplus_set_example_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'ids' => new external_value (PARAM_TEXT, 'list of exampleids, seperated by comma'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'ids' => new external_value(PARAM_TEXT, 'list of exampleids, seperated by comma'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for example in current context'),
         ));
     }
 
@@ -11727,19 +11727,19 @@ class externallib extends base {
     }
 
     public static function diggrplus_set_example_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function diggrplus_set_topic_visibility_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'ids' => new external_value (PARAM_TEXT, 'list of topicids, seperated by comma'),
-            'userid' => new external_value (PARAM_INT, 'id of user, 0 for current user'),
-            'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
-            'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context'),
-            'groupid' => new external_value (PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'ids' => new external_value(PARAM_TEXT, 'list of topicids, seperated by comma'),
+            'userid' => new external_value(PARAM_INT, 'id of user, 0 for current user'),
+            'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false'),
+            'visible' => new external_value(PARAM_BOOL, 'visibility for topic in current context'),
+            'groupid' => new external_value(PARAM_INT, 'id of group', VALUE_DEFAULT, -1),
         ));
     }
 
@@ -11786,8 +11786,8 @@ class externallib extends base {
     }
 
     public static function diggrplus_set_topic_visibility_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -11830,15 +11830,15 @@ class externallib extends base {
     }
 
     public static function dakora_create_cross_subject_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_delete_cross_subject_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crosssubject'),
         ));
     }
 
@@ -11869,19 +11869,19 @@ class externallib extends base {
     }
 
     public static function dakora_delete_cross_subject_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_edit_cross_subject_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
-            'title' => new external_value (PARAM_TEXT, 'title of crosssubject'),
-            'description' => new external_value (PARAM_TEXT, 'description of crosssubject'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to'),
-            'groupcategory' => new external_value (PARAM_TEXT, 'name of groupcategory', VALUE_DEFAULT, ""),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crosssubject'),
+            'title' => new external_value(PARAM_TEXT, 'title of crosssubject'),
+            'description' => new external_value(PARAM_TEXT, 'description of crosssubject'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject crosssubject is assigned to'),
+            'groupcategory' => new external_value(PARAM_TEXT, 'name of groupcategory', VALUE_DEFAULT, ""),
         ));
     }
 
@@ -11918,14 +11918,14 @@ class externallib extends base {
     }
 
     public static function dakora_edit_cross_subject_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_get_cross_subject_drafts_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -11948,16 +11948,16 @@ class externallib extends base {
     }
 
     public static function dakora_get_cross_subject_drafts_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of crosssubjet draft'),
-            'title' => new external_value (PARAM_TEXT, 'title of draft'),
-            'description' => new external_value (PARAM_TEXT, 'description of draft'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of crosssubjet draft'),
+            'title' => new external_value(PARAM_TEXT, 'title of draft'),
+            'description' => new external_value(PARAM_TEXT, 'description of draft'),
         )));
     }
 
     public static function dakora_get_subjects_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
         ));
     }
 
@@ -11989,16 +11989,16 @@ class externallib extends base {
     }
 
     public static function dakora_get_subjects_returns() {
-        return new external_multiple_structure (new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id of subject'),
-            'title' => new external_value (PARAM_TEXT, 'title of subject'),
+        return new external_multiple_structure(new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id of subject'),
+            'title' => new external_value(PARAM_TEXT, 'title of subject'),
         )));
     }
 
     public static function dakora_get_students_for_cross_subject_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crossssubj'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crossssubj'),
         ));
     }
 
@@ -12045,24 +12045,24 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_get_students_for_cross_subject_returns() {
-        return new external_single_structure (array(
-            'students' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of student'),
-                'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-                'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-                'visible' => new external_value (PARAM_INT, 'visibility of crosssubject to student'),
+        return new external_single_structure(array(
+            'students' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of student'),
+                'firstname' => new external_value(PARAM_TEXT, 'firstname of student'),
+                'lastname' => new external_value(PARAM_TEXT, 'lastname of student'),
+                'visible' => new external_value(PARAM_INT, 'visibility of crosssubject to student'),
             ))),
-            'visible_forall' => new external_value (PARAM_INT, 'visibility of crosssubject to all students'),
+            'visible_forall' => new external_value(PARAM_INT, 'visibility of crosssubject to all students'),
         ));
     }
 
     public static function dakora_set_cross_subject_student_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
-            'userid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
-            'forall' => new external_value (PARAM_INT, '0 or 1'),
-            'value' => new external_value (PARAM_INT, 'value 0 or 1'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crosssubject'),
+            'userid' => new external_value(PARAM_TEXT, 'title of crosssubject'),
+            'forall' => new external_value(PARAM_INT, '0 or 1'),
+            'value' => new external_value(PARAM_INT, 'value 0 or 1'),
         ));
     }
 
@@ -12129,17 +12129,17 @@ class externallib extends base {
     }
 
     public static function dakora_set_cross_subject_student_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_set_cross_subject_descriptor_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
-            'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
-            'value' => new external_value (PARAM_INT, 'value 0 or 1'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'crosssubjid' => new external_value(PARAM_INT, 'id of crosssubject'),
+            'descriptorid' => new external_value(PARAM_TEXT, 'title of crosssubject'),
+            'value' => new external_value(PARAM_INT, 'value 0 or 1'),
         ));
     }
 
@@ -12181,16 +12181,16 @@ class externallib extends base {
     }
 
     public static function dakora_set_cross_subject_descriptor_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
     public static function dakora_dismiss_oldgrading_warning_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
-            'studentid' => new external_value (PARAM_INT, 'id of student'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+            'studentid' => new external_value(PARAM_INT, 'id of student'),
         ));
     }
 
@@ -12222,8 +12222,8 @@ class externallib extends base {
     }
 
     public static function dakora_dismiss_oldgrading_warning_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status of success, either true (1) or false (0)'),
         ));
     }
 
@@ -12233,10 +12233,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_send_message_parameters() {
-        return new external_function_parameters (array(
-            'messagetext' => new external_value (PARAM_TEXT, 'text of message'),
-            'userfrom' => new external_value (PARAM_INT, 'id of user that sends the message'),
-            'userto' => new external_value (PARAM_INT, 'id of user message is sent to'),
+        return new external_function_parameters(array(
+            'messagetext' => new external_value(PARAM_TEXT, 'text of message'),
+            'userfrom' => new external_value(PARAM_INT, 'id of user that sends the message'),
+            'userto' => new external_value(PARAM_INT, 'id of user message is sent to'),
         ));
     }
 
@@ -12270,8 +12270,8 @@ class externallib extends base {
      * @return external_multiple_structure
      */
     public static function dakora_send_message_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -14009,9 +14009,9 @@ class externallib extends base {
         $nameValue = 'name';
 
         return new external_multiple_structure(
-            new external_single_structure (array(
-                $nameKey => new external_value ($typeKey, $nameKey),
-                $nameValue => new external_value ($typeValue, $nameValue),
+            new external_single_structure(array(
+                $nameKey => new external_value($typeKey, $nameKey),
+                $nameValue => new external_value($typeValue, $nameValue),
             )));
     }
 
@@ -14034,12 +14034,12 @@ class externallib extends base {
      */
     protected static function comp_eval_returns() {
         return [
-            'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading'),
-            'teacherevaluation' => new external_value (PARAM_INT, 'grading of child', VALUE_OPTIONAL),
-            'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_OPTIONAL),
-            'timestampteacher' => new external_value (PARAM_INT, 'timestamp of teacher evaluation', VALUE_OPTIONAL),
-            'studentevaluation' => new external_value (PARAM_INT, 'self evaluation of child', VALUE_OPTIONAL),
-            'timestampstudent' => new external_value (PARAM_INT, 'timestamp of student evaluation', VALUE_OPTIONAL),
+            'additionalinfo' => new external_value(PARAM_FLOAT, 'additional grading'),
+            'teacherevaluation' => new external_value(PARAM_INT, 'grading of child', VALUE_OPTIONAL),
+            'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id', VALUE_OPTIONAL),
+            'timestampteacher' => new external_value(PARAM_INT, 'timestamp of teacher evaluation', VALUE_OPTIONAL),
+            'studentevaluation' => new external_value(PARAM_INT, 'self evaluation of child', VALUE_OPTIONAL),
+            'timestampstudent' => new external_value(PARAM_INT, 'timestamp of student evaluation', VALUE_OPTIONAL),
         ];
     }
 
@@ -14074,11 +14074,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function update_descriptor_category_parameters() {
-        return new external_function_parameters (array(
-            'descriptorid' => new external_value (PARAM_INT, 'id of descriptor', VALUE_REQUIRED),
-            'categories' => new external_value (PARAM_TEXT, 'list of categories', VALUE_DEFAULT, ''),
-            'newcategory' => new external_value (PARAM_RAW, 'new category title', VALUE_DEFAULT, ''),
-            'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
+        return new external_function_parameters(array(
+            'descriptorid' => new external_value(PARAM_INT, 'id of descriptor', VALUE_REQUIRED),
+            'categories' => new external_value(PARAM_TEXT, 'list of categories', VALUE_DEFAULT, ''),
+            'newcategory' => new external_value(PARAM_RAW, 'new category title', VALUE_DEFAULT, ''),
+            'courseid' => new external_value(PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -14172,12 +14172,12 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function update_descriptor_category_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if successful'),
-            'newCategory' => new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of new category'),
-                'title' => new external_value (PARAM_TEXT, 'title of new category'),
-                'source' => new external_value (PARAM_INT, 'cource of new category'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if successful'),
+            'newCategory' => new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of new category'),
+                'title' => new external_value(PARAM_TEXT, 'title of new category'),
+                'source' => new external_value(PARAM_INT, 'cource of new category'),
 
             ), 'data of new category', VALUE_OPTIONAL),
         ));
@@ -14189,8 +14189,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_url_preview_parameters() {
-        return new external_function_parameters (array(
-            'url' => new external_value (PARAM_TEXT, 'url to fetch preview', VALUE_REQUIRED),
+        return new external_function_parameters(array(
+            'url' => new external_value(PARAM_TEXT, 'url to fetch preview', VALUE_REQUIRED),
         ));
     }
 
@@ -14267,10 +14267,10 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function get_url_preview_returns() {
-        return new external_single_structure (array(
-            "title" => new external_value (PARAM_TEXT, 'true if successful'),
-            "description" => new external_value (PARAM_TEXT, 'true if successful'),
-            "imageurl" => new external_value (PARAM_TEXT, 'true if successful'),
+        return new external_single_structure(array(
+            "title" => new external_value(PARAM_TEXT, 'true if successful'),
+            "description" => new external_value(PARAM_TEXT, 'true if successful'),
+            "imageurl" => new external_value(PARAM_TEXT, 'true if successful'),
         ));
     }
 
@@ -14281,8 +14281,8 @@ class externallib extends base {
      *
      */
     public static function dakora_competencegrid_overview_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'id of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'id of course'),
             'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
             'subjectid' => new external_value(PARAM_INT, 'subject id'),
             'forall' => new external_value(PARAM_INT, 'for all?', VALUE_DEFAULT, 0),
@@ -14347,8 +14347,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_competencegrid_overview_returns() {
-        return new external_single_structure (array(
-            'overview' => new external_value (PARAM_RAW, 'result html'),
+        return new external_single_structure(array(
+            'overview' => new external_value(PARAM_RAW, 'result html'),
         ));
     }
 
@@ -14358,8 +14358,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakora_delete_custom_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
         ));
     }
 
@@ -14397,8 +14397,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakora_delete_custom_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if successful'),
         ));
     }
 
@@ -14408,8 +14408,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_delete_custom_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of example'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of example'),
         ));
     }
 
@@ -14447,14 +14447,14 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_delete_custom_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'true if successful'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'true if successful'),
         ));
     }
 
     public static function diggrplus_get_course_schooltype_tree_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT),
         ));
     }
 
@@ -14505,17 +14505,17 @@ class externallib extends base {
     }
 
     public static function diggrplus_get_course_schooltype_tree_returns() {
-        return new external_single_structure (array(
-            'schooltypes' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT),
-                'title' => new external_value (PARAM_TEXT, 'schooltype title'),
-                'subjects' => new external_multiple_structure (new external_single_structure (array(
-                    'id' => new external_value (PARAM_INT),
-                    'title' => new external_value (PARAM_TEXT, 'subject title'),
-                    'topics' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value (PARAM_INT),
-                        'title' => new external_value (PARAM_TEXT, 'topic title'),
-                        'active' => new external_value (PARAM_BOOL),
+        return new external_single_structure(array(
+            'schooltypes' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT),
+                'title' => new external_value(PARAM_TEXT, 'schooltype title'),
+                'subjects' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT),
+                    'title' => new external_value(PARAM_TEXT, 'subject title'),
+                    'topics' => new external_multiple_structure(new external_single_structure(array(
+                        'id' => new external_value(PARAM_INT),
+                        'title' => new external_value(PARAM_TEXT, 'topic title'),
+                        'active' => new external_value(PARAM_BOOL),
                     ))),
                 ))),
             ))),
@@ -14523,12 +14523,12 @@ class externallib extends base {
     }
 
     public static function diggrplus_set_active_course_topics_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT),
             'topicids' => new external_multiple_structure(
-                new external_value (PARAM_INT), 'topicid optional so it can be empty', VALUE_DEFAULT, []
+                new external_value(PARAM_INT), 'topicid optional so it can be empty', VALUE_DEFAULT, []
             ),
-            'hide_new_examples' => new external_value (PARAM_BOOL),
+            'hide_new_examples' => new external_value(PARAM_BOOL),
         ));
     }
 
@@ -14571,8 +14571,8 @@ class externallib extends base {
     }
 
     public static function diggrplus_set_active_course_topics_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -14621,16 +14621,16 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_get_config_returns() {
-        return new external_single_structure (array(
-            'exacompversion' => new external_value (PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
-            'moodleversion' => new external_value (PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
-            'msteams_import_enabled' => new external_value (PARAM_BOOL, ''),
-            'msteams_azure_app_client_id' => new external_value (PARAM_TEXT, ''),
-            'enrolcode_enabled' => new external_value (PARAM_BOOL, ''),
-            'example_upload_global' => new external_value (PARAM_BOOL, ''),
-            'plugins' => new external_multiple_structure (new external_single_structure (array(
-                'name' => new external_value (PARAM_TEXT),
-                'versiondb' => new external_value (PARAM_FLOAT, '', VALUE_OPTIONAL),
+        return new external_single_structure(array(
+            'exacompversion' => new external_value(PARAM_FLOAT, 'exacomp version number in YYYYMMDDXX format'),
+            'moodleversion' => new external_value(PARAM_FLOAT, 'moodle version number in YYYYMMDDXX format'),
+            'msteams_import_enabled' => new external_value(PARAM_BOOL, ''),
+            'msteams_azure_app_client_id' => new external_value(PARAM_TEXT, ''),
+            'enrolcode_enabled' => new external_value(PARAM_BOOL, ''),
+            'example_upload_global' => new external_value(PARAM_BOOL, ''),
+            'plugins' => new external_multiple_structure(new external_single_structure(array(
+                'name' => new external_value(PARAM_TEXT),
+                'versiondb' => new external_value(PARAM_FLOAT, '', VALUE_OPTIONAL),
             ))),
         ));
     }
@@ -14641,11 +14641,11 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_annotate_example_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, 'id of the example that is to be updated', VALUE_DEFAULT, -1),
-            'courseid' => new external_value (PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
-            'annotationtext' => new external_value (PARAM_TEXT, 'title of example', VALUE_DEFAULT, ''),
-            //            'visible' =>  new external_value (PARAM_BOOL, 'is the example visible for all or not?'),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, 'id of the example that is to be updated', VALUE_DEFAULT, -1),
+            'courseid' => new external_value(PARAM_INT, 'courseid', VALUE_DEFAULT, 0),
+            'annotationtext' => new external_value(PARAM_TEXT, 'title of example', VALUE_DEFAULT, ''),
+            //            'visible' =>  new external_value(PARAM_BOOL, 'is the example visible for all or not?'),
         ));
     }
 
@@ -14698,8 +14698,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_annotate_example_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -14709,8 +14709,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_get_student_enrolcode_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, '', VALUE_REQUIRED),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
         ));
     }
 
@@ -14745,9 +14745,9 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_get_student_enrolcode_returns() {
-        return new external_single_structure (array(
-            'code' => new external_value (PARAM_TEXT, ''),
-            'valid_until' => new external_value (PARAM_INT, ''),
+        return new external_single_structure(array(
+            'code' => new external_value(PARAM_TEXT, ''),
+            'valid_until' => new external_value(PARAM_INT, ''),
         ));
     }
 
@@ -14757,8 +14757,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_create_student_enrolcode_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, '', VALUE_REQUIRED),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, '', VALUE_REQUIRED),
         ));
     }
 
@@ -14797,9 +14797,9 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_create_student_enrolcode_returns() {
-        return new external_single_structure (array(
-            'code' => new external_value (PARAM_TEXT, ''),
-            'valid_until' => new external_value (PARAM_INT, ''),
+        return new external_single_structure(array(
+            'code' => new external_value(PARAM_TEXT, ''),
+            'valid_until' => new external_value(PARAM_INT, ''),
         ));
     }
 
@@ -14809,8 +14809,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_enrol_by_enrolcode_parameters() {
-        return new external_function_parameters (array(
-            'code' => new external_value (PARAM_TEXT, '', VALUE_REQUIRED),
+        return new external_function_parameters(array(
+            'code' => new external_value(PARAM_TEXT, '', VALUE_REQUIRED),
         ));
     }
 
@@ -14843,8 +14843,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diggrplus_enrol_by_enrolcode_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -14854,7 +14854,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function diwipass_get_sections_with_materials_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -14945,12 +14945,12 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function diwipass_get_sections_with_materials_returns() {
-        return new external_single_structure (array(
-            'courses' => new external_multiple_structure (new external_single_structure (array(
-                'name' => new external_value (PARAM_TEXT, 'course name'),
-                'sections' => new external_multiple_structure (new external_single_structure (array(
-                    'name' => new external_value (PARAM_TEXT, 'section name', VALUE_DEFAULT, "sectionname missing"),
-                    'resources' => new external_multiple_structure (new external_single_structure (array(
+        return new external_single_structure(array(
+            'courses' => new external_multiple_structure(new external_single_structure(array(
+                'name' => new external_value(PARAM_TEXT, 'course name'),
+                'sections' => new external_multiple_structure(new external_single_structure(array(
+                    'name' => new external_value(PARAM_TEXT, 'section name', VALUE_DEFAULT, "sectionname missing"),
+                    'resources' => new external_multiple_structure(new external_single_structure(array(
                         'id' => new external_value(PARAM_INT, 'Module id'),
                         'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
                         'course' => new external_value(PARAM_INT, 'Course id'),
@@ -14960,7 +14960,7 @@ class externallib extends base {
                         'introfiles' => new external_files('Files in the introduction text'),
                         'contentfiles' => new external_files('Files in the content'),
                     ))),
-                    'urls' => new external_multiple_structure (new external_single_structure (array(
+                    'urls' => new external_multiple_structure(new external_single_structure(array(
                         'id' => new external_value(PARAM_INT, 'Module id'),
                         'coursemodule' => new external_value(PARAM_INT, 'Course module id'),
                         'course' => new external_value(PARAM_INT, 'Course id'),
@@ -15008,8 +15008,8 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakoraplus_get_example_and_item_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, ''),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, ''),
             'courseid' => new external_value(PARAM_INT, ''),
         ));
     }
@@ -15096,75 +15096,75 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakoraplus_get_example_and_item_returns() {
-        return new external_single_structure (array(
-            'courseid' => new external_value (PARAM_INT, ''),
+        return new external_single_structure(array(
+            'courseid' => new external_value(PARAM_INT, ''),
             'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value(PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
 
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
 
-            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
+            'timemodified' => new external_value(PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
 
             'example' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of example'),
-                'title' => new external_value (PARAM_TEXT, 'title of example'),
-                'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'id' => new external_value(PARAM_INT, 'id of example'),
+                'title' => new external_value(PARAM_TEXT, 'title of example'),
+                'description' => new external_value(PARAM_TEXT, 'description of example'),
                 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
-                //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-                //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
-                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-                //                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
-                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                //                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
-                //                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+                //                'taskfileurl' => new external_value(PARAM_TEXT, 'task fileurl'),
+                //                'taskfilenames' => new external_value(PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value(PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value(PARAM_TEXT, 'url of associated module'),
+                //                'taskfilecount' => new external_value(PARAM_TEXT, 'number of files for the task'),
+                'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+                'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value(PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                //                'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma'),
+                //                'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma'),
 
                 'taskfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
-                    'url' => new external_value (PARAM_URL, 'file url'),
-                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                    'name' => new external_value(PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value(PARAM_URL, 'file url'),
+                    'type' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    //                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                // 'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
-                // 'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
+                // 'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
+                // 'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of item '),
-                'name' => new external_value (PARAM_TEXT, 'title of item'),
-                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
-                'type' => new external_value (PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
-                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
-                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-                //                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
-                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
-                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
-                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
-                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                'id' => new external_value(PARAM_INT, 'id of item '),
+                'name' => new external_value(PARAM_TEXT, 'title of item'),
+                'solutiondescription' => new external_value(PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value(PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value(PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value(PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                //                'status' => new external_value(PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value(PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value(PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value(PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value(PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
                 // 'owner' => new external_single_structure(array(
-                //     'userid' => new external_value (PARAM_INT, ''),
-                //     'fullname' => new external_value (PARAM_TEXT, ''),
-                //     'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                //     'userid' => new external_value(PARAM_INT, ''),
+                //     'fullname' => new external_value(PARAM_TEXT, ''),
+                //     'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 // )),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'filename' => new external_value (PARAM_TEXT, 'filename'),
-                    'file' => new external_value (PARAM_URL, 'file url'),
-                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file'),
+                    'id' => new external_value(PARAM_INT, 'id'),
+                    'filename' => new external_value(PARAM_TEXT, 'filename'),
+                    'file' => new external_value(PARAM_URL, 'file url'),
+                    'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file'),
                 )), "files of the student's submission", VALUE_OPTIONAL),
-                'collaborators' => new external_multiple_structure (new external_single_structure (array(
-                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                'collaborators' => new external_multiple_structure(new external_single_structure(array(
+                    'userid' => new external_value(PARAM_INT, 'userid of collaborator'),
+                    'fullname' => new external_value(PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_OPTIONAL),
         ));
@@ -15176,10 +15176,10 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakoraplus_get_teacher_example_and_item_parameters() {
-        return new external_function_parameters (array(
-            'exampleid' => new external_value (PARAM_INT, ''),
+        return new external_function_parameters(array(
+            'exampleid' => new external_value(PARAM_INT, ''),
             'courseid' => new external_value(PARAM_INT, ''),
-            'studentid' => new external_value (PARAM_INT, ''),
+            'studentid' => new external_value(PARAM_INT, ''),
         ));
     }
 
@@ -15285,75 +15285,75 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakoraplus_get_teacher_example_and_item_returns() {
-        return new external_single_structure (array(
-            'courseid' => new external_value (PARAM_INT, ''),
+        return new external_single_structure(array(
+            'courseid' => new external_value(PARAM_INT, ''),
             'status' => new external_value(PARAM_TEXT, 'ENUM(new, inprogress, submitted, completed)'),
-            'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-            'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-            'topicid' => new external_value (PARAM_INT, 'id of topic'),
-            'topictitle' => new external_value (PARAM_TEXT, 'title of topic'),
+            'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+            'subjecttitle' => new external_value(PARAM_TEXT, 'title of subject'),
+            'topicid' => new external_value(PARAM_INT, 'id of topic'),
+            'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
 
-            'niveautitle' => new external_value (PARAM_TEXT, 'title of niveau'),
-            'niveauid' => new external_value (PARAM_INT, 'id of niveau'),
+            'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
+            'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
 
-            'timemodified' => new external_value (PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
+            'timemodified' => new external_value(PARAM_INT, 'time the item was last modified --> not gradings, but only changes to the item (files, comments, name, collaborators)'),
 
             'example' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of example'),
-                'title' => new external_value (PARAM_TEXT, 'title of example'),
-                'description' => new external_value (PARAM_TEXT, 'description of example'),
+                'id' => new external_value(PARAM_INT, 'id of example'),
+                'title' => new external_value(PARAM_TEXT, 'title of example'),
+                'description' => new external_value(PARAM_TEXT, 'description of example'),
                 'annotation' => new external_value(PARAM_TEXT, 'annotation by the teacher for this example in this course'),
-                //                'taskfileurl' => new external_value (PARAM_TEXT, 'task fileurl'),
-                //                'taskfilenames' => new external_value (PARAM_TEXT, 'task filename'),
-                'solutionfilename' => new external_value (PARAM_TEXT, 'task filename'),
-                'externalurl' => new external_value (PARAM_TEXT, 'externalurl of example'),
-                'externaltask' => new external_value (PARAM_TEXT, 'url of associated module'),
-                //                'taskfilecount' => new external_value (PARAM_TEXT, 'number of files for the task'),
-                'solution' => new external_value (PARAM_TEXT, 'solution(url/description) of example'),
-                'timeframe' => new external_value (PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
-                'hassubmissions' => new external_value (PARAM_BOOL, 'true if example has already submissions'),
-                'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context'),
-                //                'exampletaxonomies' => new external_value (PARAM_TEXT, 'taxonomies seperated by comma'),
-                //                'exampletaxids' => new external_value (PARAM_TEXT, 'taxids seperated by comma'),
+                //                'taskfileurl' => new external_value(PARAM_TEXT, 'task fileurl'),
+                //                'taskfilenames' => new external_value(PARAM_TEXT, 'task filename'),
+                'solutionfilename' => new external_value(PARAM_TEXT, 'task filename'),
+                'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example'),
+                'externaltask' => new external_value(PARAM_TEXT, 'url of associated module'),
+                //                'taskfilecount' => new external_value(PARAM_TEXT, 'number of files for the task'),
+                'solution' => new external_value(PARAM_TEXT, 'solution(url/description) of example'),
+                'timeframe' => new external_value(PARAM_TEXT, 'timeframe as string'),  //timeframe in minutes?? not anymore, it can be "4 hours" as well for example
+                'hassubmissions' => new external_value(PARAM_BOOL, 'true if example has already submissions'),
+                'solution_visible' => new external_value(PARAM_BOOL, 'visibility for example solution in current context'),
+                //                'exampletaxonomies' => new external_value(PARAM_TEXT, 'taxonomies seperated by comma'),
+                //                'exampletaxids' => new external_value(PARAM_TEXT, 'taxids seperated by comma'),
 
                 'taskfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'name' => new external_value (PARAM_TEXT, 'title of taskfile'),
-                    'url' => new external_value (PARAM_URL, 'file url'),
-                    'type' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    //                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file')
+                    'name' => new external_value(PARAM_TEXT, 'title of taskfile'),
+                    'url' => new external_value(PARAM_URL, 'file url'),
+                    'type' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    //                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                // 'teacher_evaluation' => new external_value (PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
-                // 'student_evaluation' => new external_value (PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
+                // 'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
+                // 'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
-                'id' => new external_value (PARAM_INT, 'id of item '),
-                'name' => new external_value (PARAM_TEXT, 'title of item'),
-                'solutiondescription' => new external_value (PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
-                'type' => new external_value (PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
-                'url' => new external_value (PARAM_TEXT, 'url', VALUE_OPTIONAL),
-                'effort' => new external_value (PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
-                //                'status' => new external_value (PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
-                'teachervalue' => new external_value (PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
-                'studentvalue' => new external_value (PARAM_INT, 'student grading', VALUE_OPTIONAL),
-                'teachercomment' => new external_value (PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
-                'studentcomment' => new external_value (PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
+                'id' => new external_value(PARAM_INT, 'id of item '),
+                'name' => new external_value(PARAM_TEXT, 'title of item'),
+                'solutiondescription' => new external_value(PARAM_TEXT, 'description of item', VALUE_OPTIONAL),
+                'type' => new external_value(PARAM_TEXT, 'type of item ENUM(note,file,link)', VALUE_OPTIONAL),
+                'url' => new external_value(PARAM_TEXT, 'url', VALUE_OPTIONAL),
+                'effort' => new external_value(PARAM_RAW, 'description of the effort', VALUE_OPTIONAL),
+                //                'status' => new external_value(PARAM_INT, 'status of the submission', VALUE_OPTIONAL),
+                'teachervalue' => new external_value(PARAM_INT, 'teacher grading', VALUE_OPTIONAL),
+                'studentvalue' => new external_value(PARAM_INT, 'student grading', VALUE_OPTIONAL),
+                'teachercomment' => new external_value(PARAM_TEXT, 'teacher comment', VALUE_OPTIONAL),
+                'studentcomment' => new external_value(PARAM_TEXT, 'student comment', VALUE_OPTIONAL),
                 'owner' => new external_single_structure(array(
-                    'userid' => new external_value (PARAM_INT, ''),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                    'userid' => new external_value(PARAM_INT, ''),
+                    'fullname' => new external_value(PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 ), '', VALUE_OPTIONAL),
                 'studentfiles' => new external_multiple_structure(new external_single_structure(array(
-                    'id' => new external_value (PARAM_INT, 'id'),
-                    'filename' => new external_value (PARAM_TEXT, 'filename'),
-                    'file' => new external_value (PARAM_URL, 'file url'),
-                    'mimetype' => new external_value (PARAM_TEXT, 'mime type for file'),
-                    'fileindex' => new external_value (PARAM_TEXT, 'fileindex, used for deleting this file'),
+                    'id' => new external_value(PARAM_INT, 'id'),
+                    'filename' => new external_value(PARAM_TEXT, 'filename'),
+                    'file' => new external_value(PARAM_URL, 'file url'),
+                    'mimetype' => new external_value(PARAM_TEXT, 'mime type for file'),
+                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file'),
                 )), "files of the student's submission", VALUE_OPTIONAL),
-                'collaborators' => new external_multiple_structure (new external_single_structure (array(
-                    'userid' => new external_value (PARAM_INT, 'userid of collaborator'),
-                    'fullname' => new external_value (PARAM_TEXT, ''),
-                    'profileimageurl' => new external_value (PARAM_TEXT, ''),
+                'collaborators' => new external_multiple_structure(new external_single_structure(array(
+                    'userid' => new external_value(PARAM_INT, 'userid of collaborator'),
+                    'fullname' => new external_value(PARAM_TEXT, ''),
+                    'profileimageurl' => new external_value(PARAM_TEXT, ''),
                 )), 'collaborators', VALUE_OPTIONAL),
             ), 'item information', VALUE_OPTIONAL),
         ));
@@ -15365,9 +15365,9 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakoraplus_save_coursesettings_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, ''),
-            'assessment_config' => new external_value (PARAM_INT, '', VALUE_DEFAULT),
+            'assessment_config' => new external_value(PARAM_INT, '', VALUE_DEFAULT),
         ));
     }
 
@@ -15407,8 +15407,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakoraplus_save_coursesettings_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -15418,7 +15418,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakoraplus_get_learning_diary_parameters() {
-        return new external_function_parameters (array());
+        return new external_function_parameters(array());
     }
 
     /**
@@ -15466,7 +15466,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function dakoraplus_save_learning_diary_entry_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'id' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
             'title' => new external_value(PARAM_TEXT),
             'text' => new external_value(PARAM_TEXT),
@@ -15528,8 +15528,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function dakoraplus_save_learning_diary_entry_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -15539,7 +15539,7 @@ class externallib extends base {
      * @return external_function_parameters
      */
     public static function get_lang_parameters() {
-        return new external_function_parameters (array(
+        return new external_function_parameters(array(
             'lang' => new external_value(PARAM_TEXT),
             'app' => new external_value(PARAM_TEXT),
         ));
@@ -15585,8 +15585,8 @@ class externallib extends base {
      * @return external_single_structure
      */
     public static function get_lang_returns() {
-        return new external_single_structure (array(
-            'string_id' => new external_value (PARAM_TEXT, 'translation'),
+        return new external_single_structure(array(
+            'string_id' => new external_value(PARAM_TEXT, 'translation'),
         ));
     }
 }

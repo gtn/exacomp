@@ -34,10 +34,10 @@ class setapp extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_v_edit_course_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'courseid of course that should be edited'),
-            'fullname' => new external_value (PARAM_TEXT, 'new fullname of course'),
-            // 'shortname' => new external_value (PARAM_TEXT, 'new shortname of course'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'courseid of course that should be edited'),
+            'fullname' => new external_value(PARAM_TEXT, 'new fullname of course'),
+            // 'shortname' => new external_value(PARAM_TEXT, 'new shortname of course'),
         ));
     }
 
@@ -74,8 +74,8 @@ class setapp extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_v_edit_course_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -85,12 +85,12 @@ class setapp extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_v_create_or_update_student_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT, 'courseid of course where the student should be added'),
-            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new', VALUE_DEFAULT, 0),
-            'firstname' => new external_value (PARAM_TEXT, 'firstname of student'),
-            'lastname' => new external_value (PARAM_TEXT, 'lastname of student'),
-            'ausserordentlich' => new external_value (PARAM_TEXT),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT, 'courseid of course where the student should be added'),
+            'userid' => new external_value(PARAM_INT, 'userid of student. 0 if new', VALUE_DEFAULT, 0),
+            'firstname' => new external_value(PARAM_TEXT, 'firstname of student'),
+            'lastname' => new external_value(PARAM_TEXT, 'lastname of student'),
+            'ausserordentlich' => new external_value(PARAM_TEXT),
         ));
     }
 
@@ -173,8 +173,8 @@ class setapp extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_v_create_or_update_student_returns() {
-        return new external_single_structure (array(
-            'userid' => new external_value (PARAM_INT, 'userid of created or updated user'),
+        return new external_single_structure(array(
+            'userid' => new external_value(PARAM_INT, 'userid of created or updated user'),
         ));
     }
 
@@ -184,9 +184,9 @@ class setapp extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_v_delete_student_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT),
-            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT),
+            'userid' => new external_value(PARAM_INT, 'userid of student. 0 if new'),
         ));
     }
 
@@ -229,8 +229,8 @@ class setapp extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_v_delete_student_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
@@ -240,9 +240,9 @@ class setapp extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_v_get_student_by_id_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT),
-            'userid' => new external_value (PARAM_INT, 'userid of student. 0 if new'),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT),
+            'userid' => new external_value(PARAM_INT, 'userid of student. 0 if new'),
         ));
     }
 
@@ -278,14 +278,14 @@ class setapp extends base {
      * @return external_multiple_structure
      */
     public static function diggrplus_v_get_student_by_id_returns() {
-        return new external_single_structure (array(
-            'id' => new external_value (PARAM_INT, 'id'),
-            'username' => new external_value (PARAM_TEXT, 'username'),
-            'firstname' => new external_value (PARAM_TEXT, 'firstname'),
-            'lastname' => new external_value (PARAM_TEXT, 'lastname'),
-            'email' => new external_value (PARAM_TEXT, 'email'),
-            'suspended' => new external_value (PARAM_BOOL, 'suspended'),
-            'ausserordentlich' => new external_value (PARAM_BOOL),
+        return new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'id'),
+            'username' => new external_value(PARAM_TEXT, 'username'),
+            'firstname' => new external_value(PARAM_TEXT, 'firstname'),
+            'lastname' => new external_value(PARAM_TEXT, 'lastname'),
+            'email' => new external_value(PARAM_TEXT, 'email'),
+            'suspended' => new external_value(PARAM_BOOL, 'suspended'),
+            'ausserordentlich' => new external_value(PARAM_BOOL),
         ));
     }
 
@@ -295,9 +295,9 @@ class setapp extends base {
      * @return external_function_parameters
      */
     public static function diggrplus_v_get_student_grading_tree_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT),
-            'courseid' => new external_value (PARAM_INT),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT),
+            'courseid' => new external_value(PARAM_INT),
         ));
     }
 
@@ -405,29 +405,29 @@ class setapp extends base {
     }
 
     public static function diggrplus_v_get_student_grading_tree_returns() {
-        return new external_single_structure (array(
-            'competencetree' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT, 'id of subject'),
-                'title' => new external_value (PARAM_TEXT, 'title of subject'),
-                'class' => new external_value (PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
-                // 'mwd' => new external_value (PARAM_TEXT),
-                'personalisedtext' => new external_value (PARAM_TEXT),
-                'assess_with_grades' => new external_value (PARAM_BOOL),
-                'spf' => new external_value (PARAM_BOOL),
-                'is_religion' => new external_value (PARAM_BOOL),
-                'is_pflichtgegenstand' => new external_value (PARAM_BOOL),
-                'is_freigegenstand' => new external_value (PARAM_BOOL),
-                'topics' => new external_multiple_structure (new external_single_structure (array(
-                    'id' => new external_value (PARAM_INT, 'id of example'),
-                    'title' => new external_value (PARAM_TEXT, 'title of topic'),
-                    'descriptors' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value (PARAM_INT),
-                        'title' => new external_value (PARAM_TEXT),
-                        'niveauid' => new external_value (PARAM_INT),
-                        'niveau_title' => new external_value (PARAM_TEXT),
-                        'teacherevaluation' => new external_value (PARAM_INT, 'teacher evaluation of descriptor'),
-                        'personalisedtext' => new external_value (PARAM_TEXT),
-                        'sorting' => new external_value (PARAM_INT),
+        return new external_single_structure(array(
+            'competencetree' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of subject'),
+                'title' => new external_value(PARAM_TEXT, 'title of subject'),
+                'class' => new external_value(PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
+                // 'mwd' => new external_value(PARAM_TEXT),
+                'personalisedtext' => new external_value(PARAM_TEXT),
+                'assess_with_grades' => new external_value(PARAM_BOOL),
+                'spf' => new external_value(PARAM_BOOL),
+                'is_religion' => new external_value(PARAM_BOOL),
+                'is_pflichtgegenstand' => new external_value(PARAM_BOOL),
+                'is_freigegenstand' => new external_value(PARAM_BOOL),
+                'topics' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT, 'id of example'),
+                    'title' => new external_value(PARAM_TEXT, 'title of topic'),
+                    'descriptors' => new external_multiple_structure(new external_single_structure(array(
+                        'id' => new external_value(PARAM_INT),
+                        'title' => new external_value(PARAM_TEXT),
+                        'niveauid' => new external_value(PARAM_INT),
+                        'niveau_title' => new external_value(PARAM_TEXT),
+                        'teacherevaluation' => new external_value(PARAM_INT, 'teacher evaluation of descriptor'),
+                        'personalisedtext' => new external_value(PARAM_TEXT),
+                        'sorting' => new external_value(PARAM_INT),
                     ))),
                 ))),
             ))),
@@ -435,20 +435,20 @@ class setapp extends base {
     }
 
     public static function diggrplus_v_save_student_grading_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_INT),
-            'courseid' => new external_value (PARAM_INT),
-            'subjects' => new external_multiple_structure(new external_single_structure (array(
-                'id' => new external_value (PARAM_INT),
-                'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
-                'assess_with_grades' => new external_value (PARAM_BOOL),
-                'is_pflichtgegenstand' => new external_value (PARAM_BOOL, '', VALUE_OPTIONAL),
-                'spf' => new external_value (PARAM_BOOL),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT),
+            'courseid' => new external_value(PARAM_INT),
+            'subjects' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT),
+                'personalisedtext' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                'assess_with_grades' => new external_value(PARAM_BOOL),
+                'is_pflichtgegenstand' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+                'spf' => new external_value(PARAM_BOOL),
             )), '', VALUE_OPTIONAL),
-            'descriptors' => new external_multiple_structure(new external_single_structure (array(
-                'id' => new external_value (PARAM_INT),
-                'teacherevaluation' => new external_value (PARAM_INT, '', VALUE_OPTIONAL),
-                'personalisedtext' => new external_value (PARAM_TEXT, '', VALUE_OPTIONAL),
+            'descriptors' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT),
+                'teacherevaluation' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                'personalisedtext' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
             )), ''),
         ));
     }
@@ -524,18 +524,18 @@ class setapp extends base {
     }
 
     public static function diggrplus_v_save_student_grading_returns() {
-        return new external_single_structure (array(
-            'success' => new external_value (PARAM_BOOL, 'status'),
+        return new external_single_structure(array(
+            'success' => new external_value(PARAM_BOOL, 'status'),
         ));
     }
 
     public static function diggrplus_v_print_student_grading_report_parameters() {
-        return new external_function_parameters (array(
-            'userid' => new external_value (PARAM_TEXT, 'userid (number) or \'all\' to print all users'),
-            'courseid' => new external_value (PARAM_INT),
-            'output_format' => new external_value (PARAM_TEXT, 'pdf or html', VALUE_DEFAULT, 'pdf'),
-            'schoolname' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
-            'assessment_period_title' => new external_value (PARAM_TEXT, '', VALUE_DEFAULT, ''),
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_TEXT, 'userid (number) or \'all\' to print all users'),
+            'courseid' => new external_value(PARAM_INT),
+            'output_format' => new external_value(PARAM_TEXT, 'pdf or html', VALUE_DEFAULT, 'pdf'),
+            'schoolname' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, ''),
+            'assessment_period_title' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, ''),
         ));
     }
 
@@ -780,14 +780,14 @@ class setapp extends base {
     }
 
     public static function diggrplus_v_print_student_grading_report_returns() {
-        return new external_single_structure (array(
-            'pdf' => new external_value (PARAM_FILE),
+        return new external_single_structure(array(
+            'pdf' => new external_value(PARAM_FILE),
         ));
     }
 
     public static function diggrplus_v_get_course_edulevel_schooltype_tree_parameters() {
-        return new external_function_parameters (array(
-            'courseid' => new external_value (PARAM_INT),
+        return new external_function_parameters(array(
+            'courseid' => new external_value(PARAM_INT),
         ));
     }
 
@@ -846,21 +846,21 @@ class setapp extends base {
     }
 
     public static function diggrplus_v_get_course_edulevel_schooltype_tree_returns() {
-        return new external_single_structure (array(
-            'edulevels' => new external_multiple_structure (new external_single_structure (array(
-                'id' => new external_value (PARAM_INT),
-                'title' => new external_value (PARAM_TEXT, 'schooltype title'),
-                'schooltypes' => new external_multiple_structure (new external_single_structure (array(
-                    'id' => new external_value (PARAM_INT),
-                    'title' => new external_value (PARAM_TEXT, 'schooltype title'),
-                    'subjects' => new external_multiple_structure (new external_single_structure (array(
-                        'id' => new external_value (PARAM_INT),
-                        'class' => new external_value (PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
-                        'title' => new external_value (PARAM_TEXT, 'subject title'),
-                        'topics' => new external_multiple_structure (new external_single_structure (array(
-                            'id' => new external_value (PARAM_INT),
-                            'title' => new external_value (PARAM_TEXT, 'topic title'),
-                            'active' => new external_value (PARAM_BOOL),
+        return new external_single_structure(array(
+            'edulevels' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT),
+                'title' => new external_value(PARAM_TEXT, 'schooltype title'),
+                'schooltypes' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT),
+                    'title' => new external_value(PARAM_TEXT, 'schooltype title'),
+                    'subjects' => new external_multiple_structure(new external_single_structure(array(
+                        'id' => new external_value(PARAM_INT),
+                        'class' => new external_value(PARAM_TEXT, 'class number. E.g. "First Grade" or "1"'),
+                        'title' => new external_value(PARAM_TEXT, 'subject title'),
+                        'topics' => new external_multiple_structure(new external_single_structure(array(
+                            'id' => new external_value(PARAM_INT),
+                            'title' => new external_value(PARAM_TEXT, 'topic title'),
+                            'active' => new external_value(PARAM_BOOL),
                         ))),
                     ))),
                 ))),
@@ -869,9 +869,9 @@ class setapp extends base {
     }
 
     // public static function diggrv_create_course_parameters() {
-    //     return new external_function_parameters (array(
-    //         'coursename' => new external_value (PARAM_TEXT),
-    //         'schoolcode' => new external_value (PARAM_TEXT),
+    //     return new external_function_parameters(array(
+    //         'coursename' => new external_value(PARAM_TEXT),
+    //         'schoolcode' => new external_value(PARAM_TEXT),
     //     ));
     // }
     //
@@ -895,8 +895,8 @@ class setapp extends base {
     // }
     //
     // public static function diggrv_create_course_returns() {
-    //     return new external_single_structure (array(
-    //         'success' => new external_value (PARAM_BOOL, 'status'),
+    //     return new external_single_structure(array(
+    //         'success' => new external_value(PARAM_BOOL, 'status'),
     //     ));
     // }
 }
