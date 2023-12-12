@@ -425,8 +425,8 @@ class reports extends base {
                 }
 
                 ob_start();
-                echo '<table style="padding: 3px 0 3px ' . ($level * 10) . 'px"><tr>' .
-                    '<td style="border: 0px solid white;">' .
+                echo '<table style="padding: 3px 0 3px ' . ($level * 10) . 'px;"><tr>' .
+                    '<td style="border: 0px solid white;" class="inner-cell">' .
                     '<table style="padding: 0"><tr><td style="border: 0px solid white; width: 8px;">&#8226;</td>' .
                     '<td style="border: 0px solid white" width="77%">' .
                     $item->title .
@@ -494,7 +494,7 @@ class reports extends base {
                     echo "</td>";
 
                     foreach ($used_niveaus as $niveau) {
-                        echo "<td>";
+                        echo '<td>';
 
                         $descriptor_output = '';
                         foreach ($topic->descriptors as $descriptor) {
@@ -526,6 +526,20 @@ class reports extends base {
 
                             $descriptor_output .= $print_item($descriptor, 0, $examples_output . $child_descriptor_output);
                         }
+
+                        // chatgpt
+                        $replaceLastOccurrence = function($haystack, $needle, $replacement) {
+                            $lastPos = strrpos($haystack, $needle);
+
+                            if ($lastPos !== false) {
+                                $newString = substr_replace($haystack, $replacement, $lastPos, strlen($needle));
+                                return $newString;
+                            }
+
+                            return $haystack;
+                        };
+
+                        $descriptor_output = $replaceLastOccurrence($descriptor_output, 'inner-cell', 'inner-cell inner-cell-last');
 
                         echo $descriptor_output ?: '-';
 
@@ -567,6 +581,12 @@ class reports extends base {
 			th {
 			    font-weight: bold;
 				background-color: #e6e6e6;
+			}
+			.inner-cell {
+			    border-bottom: 0.1pt solid #111;
+			}
+			.inner-cell-last {
+			    border-bottom: 0px solid white;
 			}
             ');
 
