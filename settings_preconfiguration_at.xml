@@ -1,0 +1,92 @@
+<settingsPreconfiguration>
+    <configOption id="3">
+        <name>4.0 Skala</name>
+        <assessment_example_scheme>2</assessment_example_scheme>
+        <assessment_example_diffLevel>1</assessment_example_diffLevel>
+        <assessment_example_SelfEval>1</assessment_example_SelfEval>
+        <assessment_childcomp_scheme>2</assessment_childcomp_scheme>
+        <assessment_childcomp_diffLevel>1</assessment_childcomp_diffLevel>
+        <assessment_childcomp_SelfEval>1</assessment_childcomp_SelfEval>
+        <assessment_comp_scheme>2</assessment_comp_scheme>
+        <assessment_comp_diffLevel>1</assessment_comp_diffLevel>
+        <assessment_comp_SelfEval>1</assessment_comp_SelfEval>
+        <assessment_topic_scheme>2</assessment_topic_scheme>
+        <assessment_topic_diffLevel>1</assessment_topic_diffLevel>
+        <assessment_topic_SelfEval>1</assessment_topic_SelfEval>
+        <assessment_subject_scheme>2</assessment_subject_scheme>
+        <assessment_subject_diffLevel>1</assessment_subject_diffLevel>
+        <assessment_subject_SelfEval>1</assessment_subject_SelfEval>
+        <assessment_theme_scheme>2</assessment_theme_scheme>
+        <assessment_theme_diffLevel>1</assessment_theme_diffLevel>
+        <assessment_theme_SelfEval>1</assessment_theme_SelfEval>
+        <assessment_points_limit>10</assessment_points_limit>
+        <assessment_points_negativ>4</assessment_points_negativ>
+        <assessment_grade_limit>6</assessment_grade_limit>
+        <assessment_grade_negativ>5</assessment_grade_negativ>
+        <assessment_grade_verbose>sehr gut, gut, befriedigend, ausreichend, mangelhaft, ungenügend</assessment_grade_verbose>
+        <assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
+        <assessment_verbose_options>WESENTLICHE mit Hilfe erreicht, WESENTLICHE in Ansätzen erfüllt, WESENTLICHE teilweise erreicht, WESENTLICHE überwiegend erreicht, WESENTLICHE erreicht, WESENTLICHE übertroffen, WESENTLICHE weit übertroffen</assessment_verbose_options>
+        <assessment_verbose_negative>0</assessment_verbose_negative>
+        <assessment_verbose_options_short>mhe, iae, te, üe, e, ü, wü</assessment_verbose_options_short>
+    </configOption>
+	<configOption id="4">
+        <name>All Smileys</name>
+        <assessment_example_scheme>2</assessment_example_scheme>
+        <assessment_example_diffLevel>0</assessment_example_diffLevel>
+        <assessment_example_SelfEval>1</assessment_example_SelfEval>
+        <assessment_childcomp_scheme>2</assessment_childcomp_scheme>
+        <assessment_childcomp_diffLevel>0</assessment_childcomp_diffLevel>
+        <assessment_childcomp_SelfEval>1</assessment_childcomp_SelfEval>
+        <assessment_comp_scheme>2</assessment_comp_scheme>
+        <assessment_comp_diffLevel>0</assessment_comp_diffLevel>
+        <assessment_comp_SelfEval>1</assessment_comp_SelfEval>
+        <assessment_topic_scheme>2</assessment_topic_scheme>
+        <assessment_topic_diffLevel>0</assessment_topic_diffLevel>
+        <assessment_topic_SelfEval>1</assessment_topic_SelfEval>
+        <assessment_subject_scheme>2</assessment_subject_scheme>
+        <assessment_subject_diffLevel>0</assessment_subject_diffLevel>
+        <assessment_subject_SelfEval>1</assessment_subject_SelfEval>
+        <assessment_theme_scheme>2</assessment_theme_scheme>
+        <assessment_theme_diffLevel>0</assessment_theme_diffLevel>
+        <assessment_theme_SelfEval>1</assessment_theme_SelfEval>
+        <assessment_points_limit>10</assessment_points_limit>
+        <assessment_points_negativ>4</assessment_points_negativ>
+        <assessment_grade_limit>6</assessment_grade_limit>
+        <assessment_grade_negativ>5</assessment_grade_negativ>
+        <assessment_grade_verbose>:-),:-|,:-(</assessment_grade_verbose>
+        <assessment_diffLevel_options>G,M,E,Z</assessment_diffLevel_options>
+        <assessment_verbose_options>:-),:-|,:-(</assessment_verbose_options>
+        <assessment_verbose_negative>2</assessment_verbose_negative>
+        <assessment_verbose_options_short>:-),:-|,:-(</assessment_verbose_options_short>
+    </configOption>
+	<configOption id="5">
+        <name>Dakora +</name>
+        <assessment_example_scheme>2</assessment_example_scheme>
+        <assessment_example_diffLevel>0</assessment_example_diffLevel>
+        <assessment_example_SelfEval>1</assessment_example_SelfEval>
+        <assessment_childcomp_scheme>2</assessment_childcomp_scheme>
+        <assessment_childcomp_diffLevel>0</assessment_childcomp_diffLevel>
+        <assessment_childcomp_SelfEval>1</assessment_childcomp_SelfEval>
+        <assessment_comp_scheme>2</assessment_comp_scheme>
+        <assessment_comp_diffLevel>0</assessment_comp_diffLevel>
+        <assessment_comp_SelfEval>1</assessment_comp_SelfEval>
+        <assessment_topic_scheme>2</assessment_topic_scheme>
+        <assessment_topic_diffLevel>0</assessment_topic_diffLevel>
+        <assessment_topic_SelfEval>1</assessment_topic_SelfEval>
+        <assessment_subject_scheme>2</assessment_subject_scheme>
+        <assessment_subject_diffLevel>0</assessment_subject_diffLevel>
+        <assessment_subject_SelfEval>1</assessment_subject_SelfEval>
+        <assessment_theme_scheme>2</assessment_theme_scheme>
+        <assessment_theme_diffLevel>0</assessment_theme_diffLevel>
+        <assessment_theme_SelfEval>1</assessment_theme_SelfEval>
+        <assessment_points_limit>10</assessment_points_limit>
+        <assessment_points_negativ>4</assessment_points_negativ>
+        <assessment_grade_limit>6</assessment_grade_limit>
+        <assessment_grade_negativ>5</assessment_grade_negativ>
+        <assessment_grade_verbose>:-),:-|,:-(</assessment_grade_verbose>
+        <assessment_diffLevel_options>A,B,C</assessment_diffLevel_options>
+        <assessment_verbose_options>:-),:-|,:-(</assessment_verbose_options>
+        <assessment_verbose_negative>2</assessment_verbose_negative>
+        <assessment_verbose_options_short>:-),:-|,:-(</assessment_verbose_options_short>
+    </configOption>
+</settingsPreconfiguration>
