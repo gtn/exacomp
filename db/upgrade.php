@@ -4220,6 +4220,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023120800, 'exacomp');
     }
 
+    if ($oldversion < 2023121800) {
+
+        // Define field reattempt to be added to block_exacompitem_mm.
+        $table = new xmldb_table('block_exacompitem_mm');
+        $field = new xmldb_field('reattempt', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'status');
+
+        // Conditionally launch add field reattempt.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2023121800, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
