@@ -14759,15 +14759,22 @@ function block_exacomp_clear_exacomp_weekly_schedule() {
 
     $sql = "UPDATE {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
     JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex ON ex.id = schedule.exampleid
-    SET schedule.start = null, schedule.endtime = null, is_overdue = 0
+    SET schedule.start = null, schedule.endtime = null, is_overdue = 1
     WHERE schedule.start > :lastweek1
     AND schedule.start < :currenttime1
     AND ex.blocking_event = 0
-    AND schedule.id NOT IN (SELECT sched.id FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} sched
-    JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON sched.exampleid = item_mm.exacomp_record_id
-    JOIN {block_exaportitem} item ON item_mm.itemid = item.id
-    WHERE sched.start > :lastweek2
-    AND sched.start < :currenttime2)";
+    AND schedule.id NOT IN (
+        SELECT sched.id
+        -- select table inside a subquery, because else we get a
+        -- 'You can't specify target table 'schedule' for update in FROM clause'
+        -- error
+        FROM (SELECT id, exampleid, start FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "}) AS sched
+        JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON sched.exampleid = item_mm.exacomp_record_id
+        JOIN {block_exaportitem} item ON item_mm.itemid = item.id
+        WHERE sched.start > :lastweek2
+        AND sched.start < :currenttime2
+    )";
+
     $params = array("lastweek1" => $lastweek, "lastweek2" => $lastweek, "currenttime1" => time(), "currenttime2" => time());
     $DB->execute($sql, $params);
 
