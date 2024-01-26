@@ -1820,12 +1820,12 @@ function block_exacomp_sort_items(&$items, $sortings) {
                             return 1;
                         }
 
-                        if ($a->{$prefix . 'sorting'} != $b->{$prefix . 'sorting'}) {
-                            // move descriptors without niveau.sorting (which actually probably means they have no niveau) to the end
-                            if (!$a->{$prefix . 'sorting'}) {
+                        if ($a->{$prefix . 'sorting'} !== $b->{$prefix . 'sorting'}) {
+                            // move items without niveau.sorting (=null, which actually probably means they have no niveau) to the end
+                            if ($a->{$prefix . 'sorting'} === null) {
                                 return 1;
                             }
-                            if (!$b->{$prefix . 'sorting'}) {
+                            if ($b->{$prefix . 'sorting'} === null) {
                                 return -1;
                             }
 
@@ -2686,7 +2686,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
             $topic->used_niveaus = array();
         }
         if (!isset($topic->used_niveaus[$descriptor->niveauid])) {
-            $topic->used_niveaus[$descriptor->niveauid] = ["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title];
+            $topic->used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
         }
 
         if ($niveauid != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $calledfromoverview) {
@@ -2738,6 +2738,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
         $subject->topics[$topic->id] = $topic;
         $subjects[$subject->id] = $subject;
     }
+
     // sorting of subjects
     if (count($subjects) > 0) {
         $correctSorting = $DB->get_fieldset_sql('
@@ -2758,6 +2759,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
     // sort topics
     foreach ($subjects as $subject) {
         block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
+        block_exacomp_sort_items($subject->used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
     }
 
     return block_exacomp\subject::create_objects($subjects);
