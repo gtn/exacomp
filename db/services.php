@@ -1,14 +1,14 @@
 <?php
 
 $functions = array (
-  'diggrplus_set_item_status' =>
+  'diggrplus_set_item_status' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\competence_grid',
     'methodname' => 'diggrplus_set_item_status',
     'description' => 'set the item status',
     'type' => 'write',
   ),
-  'block_exacomp_get_courses' =>
+  'block_exacomp_get_courses' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_courses',
@@ -16,7 +16,7 @@ $functions = array (
 get courses',
     'type' => 'read',
   ),
-  'block_exacomp_get_examples_for_subject' =>
+  'block_exacomp_get_examples_for_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_examples_for_subject',
@@ -24,7 +24,7 @@ get courses',
 Get examples',
     'type' => 'read',
   ),
-  'block_exacomp_get_examples_for_subject_with_lfs_infos' =>
+  'block_exacomp_get_examples_for_subject_with_lfs_infos' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_examples_for_subject_with_lfs_infos',
@@ -32,7 +32,7 @@ Get examples',
 Get examples',
     'type' => 'read',
   ),
-  'block_exacomp_get_example_by_id' =>
+  'block_exacomp_get_example_by_id' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_example_by_id',
@@ -40,7 +40,7 @@ Get examples',
 Get example',
     'type' => 'read',
   ),
-  'block_exacomp_get_descriptors_for_example' =>
+  'block_exacomp_get_descriptors_for_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_descriptors_for_example',
@@ -48,7 +48,7 @@ Get example',
 Get descriptors for example',
     'type' => 'read',
   ),
-  'block_exacomp_get_descriptors_for_quiz' =>
+  'block_exacomp_get_descriptors_for_quiz' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_descriptors_for_quiz',
@@ -56,21 +56,21 @@ Get descriptors for example',
 Get descriptors for quiz',
     'type' => 'read',
   ),
-  'block_exacomp_get_user_role' =>
+  'block_exacomp_get_user_role' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_user_role',
     'description' => 'Get role for user: 1=trainer 2=student',
     'type' => 'read',
   ),
-  'block_exacomp_diggr_get_user_role' =>
+  'block_exacomp_diggr_get_user_role' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggr_get_user_role',
     'description' => 'Get role for user: 1=trainer 2=student',
     'type' => 'read',
   ),
-  'block_exacomp_get_external_trainer_students' =>
+  'block_exacomp_get_external_trainer_students' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_external_trainer_students',
@@ -78,7 +78,7 @@ Get descriptors for quiz',
 Get all students for an external trainer',
     'type' => 'read',
   ),
-  'block_exacomp_get_subjects_for_user' =>
+  'block_exacomp_get_subjects_for_user' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_subjects_for_user',
@@ -86,7 +86,7 @@ Get all students for an external trainer',
 get subjects from one user for all his courses',
     'type' => 'read',
   ),
-  'diggrplus_get_subjects_and_topics_for_user' =>
+  'diggrplus_get_subjects_and_topics_for_user' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_subjects_and_topics_for_user',
@@ -94,7 +94,7 @@ get subjects from one user for all his courses',
 get subjects from one user for all his courses or for one specific course.',
     'type' => 'read',
   ),
-  'diggrplus_get_niveaus_for_subject' =>
+  'diggrplus_get_niveaus_for_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_niveaus_for_subject',
@@ -102,7 +102,7 @@ get subjects from one user for all his courses or for one specific course.',
 get subjects from one user for all his courses',
     'type' => 'read',
   ),
-  'block_exacomp_delete_item' =>
+  'block_exacomp_delete_item' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'delete_item',
@@ -110,7 +110,7 @@ get subjects from one user for all his courses',
 Deletes one user item if it is not graded already',
     'type' => 'write',
   ),
-  'block_exacomp_set_competence' =>
+  'block_exacomp_set_competence' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'set_competence',
@@ -118,7 +118,7 @@ Deletes one user item if it is not graded already',
 Set student evaluation',
     'type' => 'write',
   ),
-  'block_exacomp_get_item_for_example' =>
+  'block_exacomp_get_item_for_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_item_for_example',
@@ -126,7 +126,7 @@ Set student evaluation',
 get subjects from one user for all his courses',
     'type' => 'read',
   ),
-  'block_exacomp_get_competencies_for_upload' =>
+  'block_exacomp_get_competencies_for_upload' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_competencies_for_upload',
@@ -134,7 +134,7 @@ get subjects from one user for all his courses',
 Get all available competencies',
     'type' => 'read',
   ),
-  'block_exacomp_submit_example' =>
+  'block_exacomp_submit_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'submit_example',
@@ -143,7 +143,7 @@ submit example for elove and diggr
 Add item',
     'type' => 'read',
   ),
-  'block_exacomp_create_or_update_example' =>
+  'block_exacomp_create_or_update_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'create_or_update_example',
@@ -151,7 +151,7 @@ Add item',
 create example',
     'type' => 'write',
   ),
-  'diggrplus_create_or_update_example' =>
+  'diggrplus_create_or_update_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_create_or_update_example',
@@ -159,49 +159,49 @@ create example',
 create example',
     'type' => 'write',
   ),
-  'diggrplus_grade_descriptor' =>
+  'diggrplus_grade_descriptor' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_grade_descriptor',
     'description' => 'Grade a descriptor',
     'type' => 'write',
   ),
-  'diggrplus_grade_element' =>
+  'diggrplus_grade_element' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_grade_element',
     'description' => 'Grade a element',
     'type' => 'write',
   ),
-  'diggrplus_grade_competency' =>
+  'diggrplus_grade_competency' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_grade_competency',
     'description' => 'Grade a element',
     'type' => 'write',
   ),
-  'diggrplus_get_all_competency_gradings' =>
+  'diggrplus_get_all_competency_gradings' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_all_competency_gradings',
     'description' => 'Get all gradings in all courses',
     'type' => 'write',
   ),
-  'diggrplus_msteams_import_students' =>
+  'diggrplus_msteams_import_students' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_msteams_import_students',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_msteams_get_access_token' =>
+  'diggrplus_msteams_get_access_token' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_msteams_get_access_token',
     'description' => '',
     'type' => 'write',
   ),
-  'block_exacomp_grade_item' =>
+  'block_exacomp_grade_item' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'grade_item',
@@ -209,7 +209,7 @@ create example',
 grade an item',
     'type' => 'write',
   ),
-  'block_exacomp_get_user_examples' =>
+  'block_exacomp_get_user_examples' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_user_examples',
@@ -217,21 +217,21 @@ grade an item',
 grade an item',
     'type' => 'read',
   ),
-  'block_exacomp_get_user_profile' =>
+  'block_exacomp_get_user_profile' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_user_profile',
     'description' => 'get a list of courses with their competencies',
     'type' => 'read',
   ),
-  'block_exacomp_update_example' =>
+  'block_exacomp_update_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'update_example',
     'description' => 'update an example',
     'type' => 'write',
   ),
-  'block_exacomp_delete_example' =>
+  'block_exacomp_delete_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'delete_example',
@@ -239,7 +239,7 @@ grade an item',
 delete example',
     'type' => 'write',
   ),
-  'block_exacomp_get_competencies_by_topic' =>
+  'block_exacomp_get_competencies_by_topic' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_competencies_by_topic',
@@ -247,7 +247,7 @@ delete example',
 Get all available competencies',
     'type' => 'read',
   ),
-  'dakora_set_competence' =>
+  'dakora_set_competence' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_competence',
@@ -255,7 +255,7 @@ Get all available competencies',
 Set a competence for a user',
     'type' => 'write',
   ),
-  'dakora_get_courses' =>
+  'dakora_get_courses' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_courses',
@@ -263,7 +263,7 @@ Set a competence for a user',
 get courses',
     'type' => 'read',
   ),
-  'dakora_get_topics_by_course' =>
+  'dakora_get_topics_by_course' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_topics_by_course',
@@ -271,7 +271,7 @@ get courses',
 get courses',
     'type' => 'read',
   ),
-  'dakora_get_all_topics_by_course' =>
+  'dakora_get_all_topics_by_course' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_all_topics_by_course',
@@ -279,7 +279,7 @@ get courses',
 get courses',
     'type' => 'read',
   ),
-  'dakora_get_descriptors' =>
+  'dakora_get_descriptors' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_descriptors',
@@ -287,7 +287,7 @@ get courses',
 get descriptors for one topic, considering the visibility',
     'type' => 'read',
   ),
-  'dakora_get_all_descriptors' =>
+  'dakora_get_all_descriptors' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_all_descriptors',
@@ -295,7 +295,7 @@ get descriptors for one topic, considering the visibility',
 get courses',
     'type' => 'read',
   ),
-  'dakora_get_descriptor_children' =>
+  'dakora_get_descriptor_children' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_descriptor_children',
@@ -303,49 +303,49 @@ get courses',
 get courses',
     'type' => 'read',
   ),
-  'dakora_get_examples_for_descriptor' =>
+  'dakora_get_examples_for_descriptor' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_for_descriptor',
     'description' => 'get examples for descriptor for dakora app',
     'type' => 'read',
   ),
-  'dakora_get_examples_for_descriptor_with_grading' =>
+  'dakora_get_examples_for_descriptor_with_grading' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_for_descriptor_with_grading',
     'description' => 'get examples for descriptor with additional grading information',
     'type' => 'read',
   ),
-  'dakora_get_examples_for_descriptor_for_crosssubject' =>
+  'dakora_get_examples_for_descriptor_for_crosssubject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_for_descriptor_for_crosssubject',
     'description' => 'get examples for descriptor for dakora app',
     'type' => 'read',
   ),
-  'dakora_get_examples_for_descriptor_for_crosssubject_with_grading' =>
+  'dakora_get_examples_for_descriptor_for_crosssubject_with_grading' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_for_descriptor_for_crosssubject_with_grading',
     'description' => 'get examples for descriptor with additional grading information',
     'type' => 'read',
   ),
-  'dakora_get_example_overview' =>
+  'dakora_get_example_overview' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_example_overview',
     'description' => 'get example overview for dakora app',
     'type' => 'read',
   ),
-  'diggrplus_get_example_overview' =>
+  'diggrplus_get_example_overview' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_example_overview',
     'description' => 'get example overview for dakora app',
     'type' => 'read',
   ),
-  'dakora_add_example_to_learning_calendar' =>
+  'dakora_add_example_to_learning_calendar' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_add_example_to_learning_calendar',
@@ -353,7 +353,7 @@ get courses',
 get courses',
     'type' => 'write',
   ),
-  'dakora_get_descriptors_for_example' =>
+  'dakora_get_descriptors_for_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_descriptors_for_example',
@@ -361,7 +361,7 @@ get courses',
 Get descriptors for example',
     'type' => 'read',
   ),
-  'dakora_get_example_grading' =>
+  'dakora_get_example_grading' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_example_grading',
@@ -369,7 +369,7 @@ Get descriptors for example',
 Get example grading for user',
     'type' => 'read',
   ),
-  'dakora_get_topic_grading' =>
+  'dakora_get_topic_grading' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_topic_grading',
@@ -377,7 +377,7 @@ Get example grading for user',
 Get topic grading for user',
     'type' => 'read',
   ),
-  'dakora_get_subject_grading' =>
+  'dakora_get_subject_grading' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_subject_grading',
@@ -385,7 +385,7 @@ Get topic grading for user',
 Get subject grading for user',
     'type' => 'read',
   ),
-  'dakora_get_user_role' =>
+  'dakora_get_user_role' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_user_role',
@@ -395,28 +395,28 @@ return 1 for trainer
 0 if false',
     'type' => 'read',
   ),
-  'dakora_get_students_and_groups_for_course' =>
+  'dakora_get_students_and_groups_for_course' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_students_and_groups_for_course',
     'description' => 'get list of students for course',
     'type' => 'read',
   ),
-  'dakora_get_students_for_teacher' =>
+  'dakora_get_students_for_teacher' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_students_for_teacher',
     'description' => 'get list of students that are enrolled in any course of a teacher',
     'type' => 'read',
   ),
-  'dakora_get_teachers_for_student' =>
+  'dakora_get_teachers_for_student' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_teachers_for_student',
     'description' => 'get list of teachers in any course of the student',
     'type' => 'read',
   ),
-  'dakora_get_examples_pool' =>
+  'dakora_get_examples_pool' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_pool',
@@ -424,7 +424,7 @@ return 1 for trainer
 Get examples for pool',
     'type' => 'read',
   ),
-  'dakora_get_examples_trash' =>
+  'dakora_get_examples_trash' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_trash',
@@ -432,7 +432,7 @@ Get examples for pool',
 Get examples for trash',
     'type' => 'read',
   ),
-  'dakora_set_example_time_slot' =>
+  'dakora_set_example_time_slot' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_example_time_slot',
@@ -440,7 +440,7 @@ Get examples for trash',
 set example time slot',
     'type' => 'write',
   ),
-  'dakora_remove_example_from_schedule' =>
+  'dakora_remove_example_from_schedule' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_remove_example_from_schedule',
@@ -448,7 +448,7 @@ set example time slot',
 remove example from time slot',
     'type' => 'write',
   ),
-  'dakora_add_examples_to_schedule_for_all' =>
+  'dakora_add_examples_to_schedule_for_all' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_add_examples_to_schedule_for_all',
@@ -456,7 +456,7 @@ remove example from time slot',
 remove example from time slot',
     'type' => 'write',
   ),
-  'dakora_get_examples_for_time_slot' =>
+  'dakora_get_examples_for_time_slot' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_for_time_slot',
@@ -464,7 +464,7 @@ remove example from time slot',
 Get examples for time slot',
     'type' => 'read',
   ),
-  'dakora_get_cross_subjects_by_course' =>
+  'dakora_get_cross_subjects_by_course' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_cross_subjects_by_course',
@@ -472,7 +472,7 @@ Get examples for time slot',
 Get cross subjects',
     'type' => 'read',
   ),
-  'dakora_get_descriptors_by_cross_subject' =>
+  'dakora_get_descriptors_by_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_descriptors_by_cross_subject',
@@ -480,7 +480,7 @@ Get cross subjects',
 Get cross subjects',
     'type' => 'read',
   ),
-  'dakora_get_all_descriptors_by_cross_subject' =>
+  'dakora_get_all_descriptors_by_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_all_descriptors_by_cross_subject',
@@ -488,7 +488,7 @@ Get cross subjects',
 Get cross subjects',
     'type' => 'read',
   ),
-  'dakora_get_descriptor_children_for_cross_subject' =>
+  'dakora_get_descriptor_children_for_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_descriptor_children_for_cross_subject',
@@ -496,7 +496,7 @@ Get cross subjects',
 get children for descriptor in cross subject context',
     'type' => 'read',
   ),
-  'dakora_get_all_descriptor_children_for_cross_subject' =>
+  'dakora_get_all_descriptor_children_for_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_all_descriptor_children_for_cross_subject',
@@ -504,7 +504,7 @@ get children for descriptor in cross subject context',
 get children for descriptor in cross subject context',
     'type' => 'read',
   ),
-  'dakora_get_schedule_config' =>
+  'dakora_get_schedule_config' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_schedule_config',
@@ -512,7 +512,7 @@ get children for descriptor in cross subject context',
 get children for descriptor in cross subject context',
     'type' => 'read',
   ),
-  'dakora_get_pre_planning_storage_examples' =>
+  'dakora_get_pre_planning_storage_examples' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_pre_planning_storage_examples',
@@ -520,7 +520,7 @@ get children for descriptor in cross subject context',
 get pre planning storage examples for current teacher',
     'type' => 'read',
   ),
-  'dakora_get_pre_planning_storage_students' =>
+  'dakora_get_pre_planning_storage_students' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_pre_planning_storage_students',
@@ -528,7 +528,7 @@ get pre planning storage examples for current teacher',
 get pre planning storage students for current teacher',
     'type' => 'read',
   ),
-  'dakora_get_pre_planning_storage_groups' =>
+  'dakora_get_pre_planning_storage_groups' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_pre_planning_storage_groups',
@@ -536,7 +536,7 @@ get pre planning storage students for current teacher',
 get pre planning storage students for current teacher',
     'type' => 'read',
   ),
-  'dakora_has_items_in_pre_planning_storage' =>
+  'dakora_has_items_in_pre_planning_storage' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_has_items_in_pre_planning_storage',
@@ -544,7 +544,7 @@ get pre planning storage students for current teacher',
 get pre planning storage students for current teacher',
     'type' => 'read',
   ),
-  'dakora_empty_pre_planning_storage' =>
+  'dakora_empty_pre_planning_storage' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_empty_pre_planning_storage',
@@ -552,7 +552,7 @@ get pre planning storage students for current teacher',
 empty pre planning storage for current teacher',
     'type' => 'write',
   ),
-  'dakora_add_example_to_pre_planning_storage' =>
+  'dakora_add_example_to_pre_planning_storage' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_add_example_to_pre_planning_storage',
@@ -560,7 +560,7 @@ empty pre planning storage for current teacher',
 add example to current pre planning storage',
     'type' => 'write',
   ),
-  'dakora_add_examples_to_students_schedule' =>
+  'dakora_add_examples_to_students_schedule' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_add_examples_to_students_schedule',
@@ -568,7 +568,7 @@ add example to current pre planning storage',
 add example to current pre planning storage',
     'type' => 'write',
   ),
-  'dakora_add_examples_to_selected_students_schedule' =>
+  'dakora_add_examples_to_selected_students_schedule' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_add_examples_to_selected_students_schedule',
@@ -576,7 +576,7 @@ add example to current pre planning storage',
 add example to current pre planning storage',
     'type' => 'write',
   ),
-  'dakora_delete_examples_from_schedule' =>
+  'dakora_delete_examples_from_schedule' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_delete_examples_from_schedule',
@@ -584,7 +584,7 @@ add example to current pre planning storage',
 used for \'undo\' button',
     'type' => 'write',
   ),
-  'dakora_undo_examples_from_schedule' =>
+  'dakora_undo_examples_from_schedule' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_undo_examples_from_schedule',
@@ -592,7 +592,7 @@ used for \'undo\' button',
 used for \'undo\' button',
     'type' => 'write',
   ),
-  'dakora_submit_example' =>
+  'dakora_submit_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_submit_example',
@@ -600,28 +600,28 @@ used for \'undo\' button',
 Add student submission to example.',
     'type' => 'write',
   ),
-  'diggrplus_submit_item' =>
+  'diggrplus_submit_item' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_submit_item',
     'description' => 'Add studentsubmission  (exaportitem) to topic, descriptor or example',
     'type' => 'write',
   ),
-  'diggrplus_submit_item_comment' =>
+  'diggrplus_submit_item_comment' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_submit_item_comment',
     'description' => 'Add studentsubmission  (exaportitem) to topic, descriptor or example',
     'type' => 'write',
   ),
-  'diggrplus_get_item_comments' =>
+  'diggrplus_get_item_comments' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_item_comments',
     'description' => 'Add studentsubmission  (exaportitem) to topic, descriptor or example',
     'type' => 'write',
   ),
-  'diggrplus_get_examples_and_items' =>
+  'diggrplus_get_examples_and_items' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_examples_and_items',
@@ -630,7 +630,7 @@ get all items AND examples for a competence
 they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend',
     'type' => 'read',
   ),
-  'diggrplus_get_teacher_examples_and_items' =>
+  'diggrplus_get_teacher_examples_and_items' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_teacher_examples_and_items',
@@ -639,7 +639,7 @@ get all items AND examples for a competence
 they will be returned in one array, even though their fields may vary, but it makes ordering according to filters easier for the backend',
     'type' => 'read',
   ),
-  'diggrplus_get_all_subjects_for_course_as_tree' =>
+  'diggrplus_get_all_subjects_for_course_as_tree' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_all_subjects_for_course_as_tree',
@@ -647,35 +647,35 @@ they will be returned in one array, even though their fields may vary, but it ma
 get subjects from one user for one course',
     'type' => 'read',
   ),
-  'diggrplus_get_user_info' =>
+  'diggrplus_get_user_info' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_user_info',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_request_external_file' =>
+  'diggrplus_request_external_file' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_request_external_file',
     'description' => 'Load a file from an external Domain to prevent CORS when loading directly in the App',
     'type' => 'read',
   ),
-  'diggrplus_grade_item' =>
+  'diggrplus_grade_item' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_grade_item',
     'description' => 'teacher grades and item in diggrplus',
     'type' => 'write',
   ),
-  'diggrplus_get_competence_profile_statistic' =>
+  'diggrplus_get_competence_profile_statistic' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_competence_profile_statistic',
     'description' => 'Get competence statistic for profile',
     'type' => 'read',
   ),
-  'diggrplus_get_descriptors_for_example' =>
+  'diggrplus_get_descriptors_for_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_descriptors_for_example',
@@ -683,7 +683,7 @@ get subjects from one user for one course',
 Get descriptors for example',
     'type' => 'read',
   ),
-  'dakora_grade_example' =>
+  'dakora_grade_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_grade_example',
@@ -691,21 +691,21 @@ Get descriptors for example',
 Add student submission to example.',
     'type' => 'write',
   ),
-  'dakora_get_descriptors_details' =>
+  'dakora_get_descriptors_details' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_descriptors_details',
     'description' => 'get descriptor details incl. grading and children for many descriptors',
     'type' => 'read',
   ),
-  'dakora_get_descriptor_details' =>
+  'dakora_get_descriptor_details' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_descriptor_details',
     'description' => 'get descriptor details incl. grading and children',
     'type' => 'read',
   ),
-  'dakora_get_example_information' =>
+  'dakora_get_example_information' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_example_information',
@@ -713,7 +713,7 @@ Add student submission to example.',
 get example with all submission details and gradings',
     'type' => 'read',
   ),
-  'dakora_get_user_information' =>
+  'dakora_get_user_information' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_user_information',
@@ -721,14 +721,14 @@ get example with all submission details and gradings',
 get example with all submission details and gradings',
     'type' => 'read',
   ),
-  'dakora_get_lang_information' =>
+  'dakora_get_lang_information' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_lang_information',
     'description' => 'Returns lang information from exacomp',
     'type' => 'read',
   ),
-  'dakora_create_blocking_event' =>
+  'dakora_create_blocking_event' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_create_blocking_event',
@@ -736,7 +736,7 @@ get example with all submission details and gradings',
 Create a new blocking event',
     'type' => 'write',
   ),
-  'dakora_get_examples_by_descriptor_and_grading' =>
+  'dakora_get_examples_by_descriptor_and_grading' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_examples_by_descriptor_and_grading',
@@ -744,7 +744,7 @@ Create a new blocking event',
 Create a new blocking event',
     'type' => 'read',
   ),
-  'dakora_allow_example_resubmission' =>
+  'dakora_allow_example_resubmission' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_allow_example_resubmission',
@@ -752,7 +752,7 @@ Create a new blocking event',
 Create a new blocking event',
     'type' => 'read',
   ),
-  'dakora_get_competence_grid_for_profile' =>
+  'dakora_get_competence_grid_for_profile' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_competence_grid_for_profile',
@@ -760,7 +760,7 @@ Create a new blocking event',
 Get competence grid for profile',
     'type' => 'read',
   ),
-  'dakora_get_competence_profile_statistic' =>
+  'dakora_get_competence_profile_statistic' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_competence_profile_statistic',
@@ -768,7 +768,7 @@ Get competence grid for profile',
 Get competence statistic for profile',
     'type' => 'read',
   ),
-  'dakora_get_competence_profile_comparison' =>
+  'dakora_get_competence_profile_comparison' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_competence_profile_comparison',
@@ -776,7 +776,7 @@ Get competence statistic for profile',
 Get competence comparison for profile',
     'type' => 'read',
   ),
-  'dakora_get_competence_profile_topic_statistic' =>
+  'dakora_get_competence_profile_topic_statistic' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_competence_profile_topic_statistic',
@@ -784,49 +784,49 @@ Get competence comparison for profile',
 Get competence statistic for topic in profile for 3D graph',
     'type' => 'read',
   ),
-  'block_exacomp_is_elove_student_self_assessment_enabled' =>
+  'block_exacomp_is_elove_student_self_assessment_enabled' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'is_elove_student_self_assessment_enabled',
     'description' => 'check the corresponding config setting',
     'type' => 'read',
   ),
-  'dakora_get_site_policies' =>
+  'dakora_get_site_policies' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_site_policies',
     'description' => '',
     'type' => 'read',
   ),
-  'dakora_get_example_h5p_activity_results' =>
+  'dakora_get_example_h5p_activity_results' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_example_h5p_activity_results',
     'description' => '',
     'type' => 'read',
   ),
-  'block_exacomp_diggr_create_cohort' =>
+  'block_exacomp_diggr_create_cohort' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggr_create_cohort',
     'description' => 'Create one or more cohorts',
     'type' => 'write',
   ),
-  'block_exacomp_diggr_get_students_of_cohort' =>
+  'block_exacomp_diggr_get_students_of_cohort' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggr_get_students_of_cohort',
     'description' => 'Create one or more cohorts',
     'type' => 'read',
   ),
-  'block_exacomp_diggr_get_cohorts_of_trainer' =>
+  'block_exacomp_diggr_get_cohorts_of_trainer' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggr_get_cohorts_of_trainer',
     'description' => 'Create one or more cohorts',
     'type' => 'read',
   ),
-  'dakora_get_evaluation_config' =>
+  'dakora_get_evaluation_config' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_evaluation_config',
@@ -834,210 +834,210 @@ Get competence statistic for topic in profile for 3D graph',
 get admin evaluation configurations',
     'type' => 'read',
   ),
-  'dakora_get_config' =>
+  'dakora_get_config' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_config',
     'description' => '',
     'type' => 'read',
   ),
-  'dakora_get_courseconfigs' =>
+  'dakora_get_courseconfigs' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_courseconfigs',
     'description' => '',
     'type' => 'read',
   ),
-  'block_exacomp_login' =>
+  'block_exacomp_login' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'login',
     'description' => 'webservice called through token.php',
     'type' => 'read',
   ),
-  'dakora_set_descriptor_visibility' =>
+  'dakora_set_descriptor_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_descriptor_visibility',
     'description' => 'set visibility for descriptor',
     'type' => 'write',
   ),
-  'dakora_set_example_visibility' =>
+  'dakora_set_example_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_example_visibility',
     'description' => 'set visibility for example',
     'type' => 'write',
   ),
-  'dakora_set_topic_visibility' =>
+  'dakora_set_topic_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_topic_visibility',
     'description' => 'set visibility for topic',
     'type' => 'write',
   ),
-  'dakora_set_niveau_visibility' =>
+  'dakora_set_niveau_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_niveau_visibility',
     'description' => 'set visibility for topic',
     'type' => 'write',
   ),
-  'dakora_set_example_solution_visibility' =>
+  'dakora_set_example_solution_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_example_solution_visibility',
     'description' => 'set visibility for example solutions',
     'type' => 'write',
   ),
-  'diggrplus_set_descriptor_visibility' =>
+  'diggrplus_set_descriptor_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_set_descriptor_visibility',
     'description' => 'set visibility for descriptor',
     'type' => 'write',
   ),
-  'diggrplus_set_example_visibility' =>
+  'diggrplus_set_example_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_set_example_visibility',
     'description' => 'set visibility for example',
     'type' => 'write',
   ),
-  'diggrplus_set_topic_visibility' =>
+  'diggrplus_set_topic_visibility' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_set_topic_visibility',
     'description' => 'set visibility for topic',
     'type' => 'write',
   ),
-  'dakora_create_cross_subject' =>
+  'dakora_create_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_create_cross_subject',
     'description' => 'create new crosssubject',
     'type' => 'write',
   ),
-  'dakora_delete_cross_subject' =>
+  'dakora_delete_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_delete_cross_subject',
     'description' => 'delete cross subject',
     'type' => 'write',
   ),
-  'dakora_edit_cross_subject' =>
+  'dakora_edit_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_edit_cross_subject',
     'description' => 'edit existing crosssubject',
     'type' => 'write',
   ),
-  'dakora_get_cross_subject_drafts' =>
+  'dakora_get_cross_subject_drafts' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_cross_subject_drafts',
     'description' => 'get available drafts',
     'type' => 'read',
   ),
-  'dakora_get_subjects' =>
+  'dakora_get_subjects' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_subjects',
     'description' => 'get subjects',
     'type' => 'read',
   ),
-  'dakora_get_students_for_cross_subject' =>
+  'dakora_get_students_for_cross_subject' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_get_students_for_cross_subject',
     'description' => 'get_students_for_crosssubject',
     'type' => 'read',
   ),
-  'dakora_set_cross_subject_student' =>
+  'dakora_set_cross_subject_student' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_cross_subject_student',
     'description' => 'set visibility for crosssubject and student',
     'type' => 'write',
   ),
-  'dakora_set_cross_subject_descriptor' =>
+  'dakora_set_cross_subject_descriptor' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_set_cross_subject_descriptor',
     'description' => 'set descriptor crosssubject association',
     'type' => 'write',
   ),
-  'dakora_dismiss_oldgrading_warning' =>
+  'dakora_dismiss_oldgrading_warning' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_dismiss_oldgrading_warning',
     'description' => 'set descriptor crosssubject association',
     'type' => 'write',
   ),
-  'dakora_send_message' =>
+  'dakora_send_message' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_send_message',
     'description' => 'send message',
     'type' => 'write',
   ),
-  'block_exacomp_update_descriptor_category' =>
+  'block_exacomp_update_descriptor_category' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'update_descriptor_category',
     'description' => 'update an descriptor category',
     'type' => 'write',
   ),
-  'block_exacomp_get_url_preview' =>
+  'block_exacomp_get_url_preview' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_url_preview',
     'description' => 'gets title description and image of website',
     'type' => 'read',
   ),
-  'dakora_competencegrid_overview' =>
+  'dakora_competencegrid_overview' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_competencegrid_overview',
     'description' => 'view competence overview',
     'type' => 'read',
   ),
-  'dakora_delete_custom_example' =>
+  'dakora_delete_custom_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakora_delete_custom_example',
     'description' => 'delete example',
     'type' => 'write',
   ),
-  'diggrplus_delete_custom_example' =>
+  'diggrplus_delete_custom_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_delete_custom_example',
     'description' => 'delete example',
     'type' => 'write',
   ),
-  'diggrplus_get_course_schooltype_tree' =>
+  'diggrplus_get_course_schooltype_tree' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_course_schooltype_tree',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_set_active_course_topics' =>
+  'diggrplus_set_active_course_topics' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_set_active_course_topics',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_get_config' =>
+  'diggrplus_get_config' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_config',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_annotate_example' =>
+  'diggrplus_annotate_example' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_annotate_example',
@@ -1045,147 +1045,154 @@ get admin evaluation configurations',
 create example',
     'type' => 'write',
   ),
-  'diggrplus_get_student_enrolcode' =>
+  'diggrplus_get_student_enrolcode' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_get_student_enrolcode',
     'description' => 'get active code for student enrollment',
     'type' => 'read',
   ),
-  'diggrplus_create_student_enrolcode' =>
+  'diggrplus_create_student_enrolcode' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_create_student_enrolcode',
     'description' => 'Create new enrolcode and delete old ones',
     'type' => 'write',
   ),
-  'diggrplus_enrol_by_enrolcode' =>
+  'diggrplus_enrol_by_enrolcode' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diggrplus_enrol_by_enrolcode',
     'description' => 'Use a QR-Code to enrol',
     'type' => 'write',
   ),
-  'block_exacomp_diwipass_get_sections_with_materials' =>
+  'block_exacomp_diwipass_get_sections_with_materials' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'diwipass_get_sections_with_materials',
     'description' => 'Get urls and resources per section for every course of current user',
     'type' => 'write',
   ),
-  'dakoraplus_get_example_and_item' =>
+  'dakoraplus_get_example_and_item' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakoraplus_get_example_and_item',
     'description' => '',
     'type' => 'read',
   ),
-  'dakoraplus_get_teacher_example_and_item' =>
+  'dakoraplus_get_teacher_example_and_item' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakoraplus_get_teacher_example_and_item',
     'description' => '',
     'type' => 'read',
   ),
-  'dakoraplus_save_coursesettings' =>
+  'dakoraplus_save_coursesettings' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakoraplus_save_coursesettings',
     'description' => '',
     'type' => 'write',
   ),
-  'dakoraplus_get_learning_diary' =>
+  'dakoraplus_get_learning_diary' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakoraplus_get_learning_diary',
     'description' => '',
     'type' => 'read',
   ),
-  'dakoraplus_save_learning_diary_entry' =>
+  'dakoraplus_save_learning_diary_entry' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'dakoraplus_save_learning_diary_entry',
     'description' => '',
     'type' => 'write',
   ),
-  'block_exacomp_get_lang' =>
+  'block_exacomp_get_lang' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\externallib',
     'methodname' => 'get_lang',
     'description' => 'Get language definitions in json format for diggr-plus and dakora-plus apps',
     'type' => 'read',
   ),
-  'diggrplus_learningpath_list' =>
+  'block_exacomp_get_fullcompetence_grid_for_profile' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\externallib',
+    'methodname' => 'get_fullcompetence_grid_for_profile',
+    'description' => 'get FULL grid for profile. NO crossubjects',
+    'type' => 'read',
+  ),
+  'diggrplus_learningpath_list' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_list',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_learningpath_details' =>
+  'diggrplus_learningpath_details' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_details',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_learningpath_add' =>
+  'diggrplus_learningpath_add' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_add',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_learningpath_delete' =>
+  'diggrplus_learningpath_delete' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_delete',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_learningpath_update' =>
+  'diggrplus_learningpath_update' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_update',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_learningpath_item_update' =>
+  'diggrplus_learningpath_item_update' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_item_update',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_learningpath_add_items' =>
+  'diggrplus_learningpath_add_items' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_add_items',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_learningpath_item_delete' =>
+  'diggrplus_learningpath_item_delete' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_item_delete',
     'description' => '',
     'type' => 'write',
   ),
-  'diggrplus_learningpath_item_sorting' =>
+  'diggrplus_learningpath_item_sorting' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',
     'methodname' => 'diggrplus_learningpath_item_sorting',
     'description' => '',
     'type' => 'write',
   ),
-  'dakoraplus_create_report' =>
+  'dakoraplus_create_report' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\reports',
     'methodname' => 'dakoraplus_create_report',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_v_edit_course' =>
+  'diggrplus_v_edit_course' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_edit_course',
@@ -1193,7 +1200,7 @@ create example',
 create example',
     'type' => 'write',
   ),
-  'diggrplus_v_create_or_update_student' =>
+  'diggrplus_v_create_or_update_student' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_create_or_update_student',
@@ -1201,7 +1208,7 @@ create example',
 create example',
     'type' => 'write',
   ),
-  'diggrplus_v_delete_student' =>
+  'diggrplus_v_delete_student' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_delete_student',
@@ -1209,7 +1216,7 @@ create example',
 create example',
     'type' => 'write',
   ),
-  'diggrplus_v_get_student_by_id' =>
+  'diggrplus_v_get_student_by_id' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_get_student_by_id',
@@ -1217,45 +1224,38 @@ create example',
 create example',
     'type' => 'write',
   ),
-  'diggrplus_v_get_student_grading_tree' =>
+  'diggrplus_v_get_student_grading_tree' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_get_student_grading_tree',
     'description' => 'Get competence statistic for profile',
     'type' => 'read',
   ),
-  'diggrplus_v_save_student_grading' =>
+  'diggrplus_v_save_student_grading' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_save_student_grading',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_v_print_student_grading_report' =>
+  'diggrplus_v_print_student_grading_report' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_print_student_grading_report',
     'description' => '',
     'type' => 'read',
   ),
-  'diggrplus_v_get_course_edulevel_schooltype_tree' =>
+  'diggrplus_v_get_course_edulevel_schooltype_tree' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\setapp',
     'methodname' => 'diggrplus_v_get_course_edulevel_schooltype_tree',
     'description' => '',
     'type' => 'read',
   ),
-  'block_exacomp_get_fullcompetence_grid_for_profile' =>
-  array (
-    'classname' => '\\block_exacomp\\externallib\\externallib',
-    'methodname' => 'get_fullcompetence_grid_for_profile',
-    'description' => 'Get full competence grid for profile',
-    'type' => 'read',
-  ),
 );
 
 $services = array (
-  'exacompservices' =>
+  'exacompservices' => 
   array (
     'requiredcapability' => '',
     'restrictedusers' => 0,

@@ -7625,7 +7625,7 @@ class externallib extends base {
      * @return array of items
      */
     public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type = "", $search = "", $niveauid = -1, $status = "") {
-        global $USER;
+        global $DB, $USER;
 
         static::validate_parameters(static::diggrplus_get_teacher_examples_and_items_parameters(), array(
             'courseid' => $courseid,
@@ -7674,6 +7674,21 @@ class externallib extends base {
             }
         }
 
+        $niveauid = 0;
+        $niveautitle = '';
+        if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+            // for a single example, also read the niveau information, which is used later to fill the object
+            $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
+                FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
+                JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} descr ON descr.niveauid = n.id
+                JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = descr.id
+                WHERE dex.exampid=? ORDER BY niveauid", [$compid]));
+            if ($niveau_info) {
+                $niveauid = $niveau_info->niveauid;
+                $niveautitle = $niveau_info->niveautitle;
+            }
+        }
+
         $examplesAndItems = array();
 
         foreach ($students as $student) {
@@ -7692,7 +7707,7 @@ class externallib extends base {
                     static::block_exacomp_get_item_details($item, $userid, static::wstoken());
                 }
 
-                $studentExamplesAndItems = array_merge($studentExamplesAndItems, array_map(function($item) {
+                $studentExamplesAndItems = array_merge($studentExamplesAndItems, array_map(function($item) use ($niveauid, $niveautitle) {
                     $objDeeper = new stdClass();
                     $objDeeper->courseid = $item->courseid;
                     $objDeeper->item = $item;
@@ -7700,8 +7715,8 @@ class externallib extends base {
                     $objDeeper->subjectid = $item->subjectid;
                     $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
                     $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
-                    $objDeeper->niveautitle = "";
-                    $objDeeper->niveauid = 0;
+                    $objDeeper->niveautitle = $niveautitle;
+                    $objDeeper->niveauid = $niveauid;
                     $objDeeper->timemodified = $item->timemodified;
                     return $objDeeper;
                 }, $items));
@@ -15698,4 +15713,3 @@ class externallib extends base {
     }
 
 }
-
