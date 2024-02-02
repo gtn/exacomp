@@ -7685,7 +7685,8 @@ class externallib extends base {
                 $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status, $courseid);
 
                 foreach ($items as $item) {
-                    static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
+                    // no check needed here, also doesn't work correctly with comptype=example
+                    // static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
                     //TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
                     // ==> Then the access can be checked RW
                     static::block_exacomp_get_item_details($item, $userid, static::wstoken());
