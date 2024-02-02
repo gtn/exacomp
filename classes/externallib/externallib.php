@@ -15089,8 +15089,21 @@ class externallib extends base {
             }
         }
 
-        $exampleAndItem->niveautitle = "";
-        $exampleAndItem->niveauid = 0;
+        $niveauid = 0;
+        $niveautitle = '';
+        // for a single example, also read the niveau information, which is used later to fill the object
+        $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
+            FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
+            JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} descr ON descr.niveauid = n.id
+            JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = descr.id
+            WHERE dex.exampid=? ORDER BY niveauid", [$exampleid]));
+        if ($niveau_info) {
+            $niveauid = $niveau_info->niveauid;
+            $niveautitle = $niveau_info->niveautitle;
+        }
+
+        $exampleAndItem->niveauid = $niveauid;
+        $exampleAndItem->niveautitle = $niveautitle;
         $exampleAndItem->timemodified = $item->timemodified;
 
         if ($exampleAndItem->example) {
@@ -15261,8 +15274,21 @@ class externallib extends base {
             }
         }
 
-        $exampleAndItem->niveautitle = "";
-        $exampleAndItem->niveauid = 0;
+        $niveauid = 0;
+        $niveautitle = '';
+        // for a single example, also read the niveau information, which is used later to fill the object
+        $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
+            FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
+            JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} descr ON descr.niveauid = n.id
+            JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = descr.id
+            WHERE dex.exampid=? ORDER BY niveauid", [$exampleid]));
+        if ($niveau_info) {
+            $niveauid = $niveau_info->niveauid;
+            $niveautitle = $niveau_info->niveautitle;
+        }
+
+        $exampleAndItem->niveauid = $niveauid;
+        $exampleAndItem->niveautitle = $niveautitle;
         $exampleAndItem->timemodified = $item->timemodified;
 
         if ($exampleAndItem->item) {
