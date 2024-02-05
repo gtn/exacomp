@@ -3142,6 +3142,15 @@ class data_importer extends data {
             foreach ($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
                     g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCTOPICS, array("topicid" => $topic->id, "descrid" => $descriptorid));
+                    // relate children
+                    $parent = new \stdClass();
+                    $parent->id = $descriptorid;
+                    $parent->topicid = $topic->id;
+                    if ($children = block_exacomp_get_child_descriptors($parent, null)) {
+                        foreach ($children as $child) {
+                            g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCTOPICS, array("topicid" => $topic->id, "descrid" => $child->id));
+                        }
+                    }
                 }
             }
 
