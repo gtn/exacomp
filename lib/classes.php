@@ -954,6 +954,21 @@ class subject extends db_record {
     function get_numbering() {
         return '';
     }
+
+    /**
+     * @return niveau[] this is not the whole niveau record, but only some attributes of it!
+     */
+    function get_used_niveaus(): array {
+        $used_niveaus = [];
+
+        foreach ($this->subs as $topic) {
+            foreach ($topic->subs as $descriptor) {
+                $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
+            }
+        }
+
+        return $used_niveaus;
+    }
 }
 
 /**
@@ -1009,6 +1024,19 @@ class topic extends db_record {
 
     function get_editor() {
         return $this->editor;
+    }
+
+    /**
+     * @return niveau[] this is not the whole niveau record, but only some attributes of it!
+     */
+    function get_used_niveaus(): array {
+        $used_niveaus = [];
+
+        foreach ($this->subs as $descriptor) {
+            $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
+        }
+
+        return $used_niveaus;
     }
 }
 
