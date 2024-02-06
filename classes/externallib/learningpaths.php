@@ -65,24 +65,23 @@ class learningpaths extends base {
         }
 
 
-        if ($isTeacher) {
-            if (!$studentid) {
-                $students = block_exacomp_get_students_by_course($courseid);
-                $studentids = array_column($students, 'id');
-            } else {
-                $studentids = [$studentid];
-            }
+        if (!$studentid) {
+            $students = block_exacomp_get_students_by_course($courseid);
+            $studentids = array_column($students, 'id');
+        } else {
+            $studentids = [$studentid];
+        }
 
-            // calculate counts for a whole learningpath
-            foreach ($learningpaths as $learningpath) {
-                $learningpath->count_new = 0;
-                $learningpath->count_inprogress = 0;
-                $learningpath->count_completed = 0;
-                $learningpath->count_submitted = 0;
+        // calculate counts for a whole learningpath
+        foreach ($learningpaths as $learningpath) {
+            $learningpath->count_new = 0;
+            $learningpath->count_inprogress = 0;
+            $learningpath->count_completed = 0;
+            $learningpath->count_submitted = 0;
 
-                foreach ($studentids as $studentid) {
-                    // get all visible lpItems for only this student
-                    $lpItems = $DB->get_records_sql('
+            foreach ($studentids as $studentid) {
+                // get all visible lpItems for only this student
+                $lpItems = $DB->get_records_sql('
                         SELECT item.*, item.visible AS visibleall, item_stud.visible AS visiblestudent
                         FROM {block_exacomplp_items} item
                         LEFT JOIN {block_exacomplp_item_stud} item_stud ON item.id=item_stud.itemid AND item_stud.studentid=?
@@ -90,11 +89,10 @@ class learningpaths extends base {
                             AND (item_stud.visible OR (item_stud.visible IS NULL and item.visible))
                         ORDER BY item.sorting, item.id', [$studentid, $learningpath->id]);
 
-                    foreach ($lpItems as $lpItem) {
-                        $item = block_exacomp_get_current_item_for_example($studentid, $lpItem->exampleid);
-                        $status = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
-                        $learningpath->{"count_{$status}"}++;
-                    }
+                foreach ($lpItems as $lpItem) {
+                    $item = block_exacomp_get_current_item_for_example($studentid, $lpItem->exampleid);
+                    $status = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
+                    $learningpath->{"count_{$status}"}++;
                 }
             }
         }
