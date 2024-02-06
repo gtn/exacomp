@@ -2603,7 +2603,7 @@ function block_exacomp_get_descriptors_by_niveau($courseid, $niveauid, $topicid 
  * @param int $courseid
  * @param int $subjectid
  * @param int $topicid
- * @return associative_array
+ * @return \block_exacomp\subject[]
  */
 function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES),
     $calledfromoverview = false,

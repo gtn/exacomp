@@ -177,6 +177,8 @@ class reports extends base {
                         $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
                     }
                 }
+                block_exacomp_sort_items($used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
+
 
                 block_exacomp_tree_walk($subject->subs, ['filter' => $filter], function($walk_subs, $item, $level = 0) use ($studentid, $student, $courseid, $filter, $topicids, $niveau) {
                     $eval = block_exacomp_get_comp_eval_merged($courseid, $studentid, $item);
@@ -505,6 +507,8 @@ class reports extends base {
                 }
 
                 $used_niveaus = $subject->get_used_niveaus();
+                // same result as
+                // $subject->used_niveaus
 
                 if ($output_started) {
                     echo '<br pagebreak="true"/>';

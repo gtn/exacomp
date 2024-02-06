@@ -967,6 +967,8 @@ class subject extends db_record {
             }
         }
 
+        block_exacomp_sort_items($used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
+
         return $used_niveaus;
     }
 }
@@ -1035,6 +1037,8 @@ class topic extends db_record {
         foreach ($this->subs as $descriptor) {
             $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
         }
+
+        block_exacomp_sort_items($used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
 
         return $used_niveaus;
     }
