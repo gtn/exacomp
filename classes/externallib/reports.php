@@ -35,6 +35,7 @@ class reports extends base {
             'studentids' => new external_multiple_structure(new external_value(PARAM_INT), '', VALUE_DEFAULT, []),
             'topicids' => new external_multiple_structure(new external_value(PARAM_INT)),
             'with_childdescriptors' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, false),
+            'with_examples' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, true),
             'only_achieved_competencies' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, false),
             'time_from' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
             'time_to' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
@@ -46,14 +47,13 @@ class reports extends base {
     /**
      * @ws-type-read
      */
-    public static function dakoraplus_create_report(int $courseid, array $studentids, array $topicids, bool $with_childdescriptors, bool $only_achieved_competencies, int $time_from, int $time_to, string $output_style, string $result_type) {
-        global $DB, $USER;
-
+    public static function dakoraplus_create_report(int $courseid, array $studentids, array $topicids, bool $with_childdescriptors, bool $with_examples, bool $only_achieved_competencies, int $time_from, int $time_to, string $output_style, string $result_type) {
         [
             'courseid' => $courseid,
             'studentids' => $studentids,
             'topicids' => $topicids,
             'with_childdescriptors' => $with_childdescriptors,
+            'with_examples' => $with_examples,
             'only_achieved_competencies' => $only_achieved_competencies,
             'time_from' => $time_from,
             'time_to' => $time_to,
@@ -64,6 +64,7 @@ class reports extends base {
             'studentids' => $studentids,
             'topicids' => $topicids,
             'with_childdescriptors' => $with_childdescriptors,
+            'with_examples' => $with_examples,
             'only_achieved_competencies' => $only_achieved_competencies,
             'time_from' => $time_from,
             'time_to' => $time_to,
@@ -93,9 +94,9 @@ class reports extends base {
         }
 
         if ($output_style == 'list') {
-            return self::dakoraplus_create_report_list($courseid, $students, $topicids, $with_childdescriptors, $only_achieved_competencies, $time_from, $time_to, $isPdf);
+            return self::dakoraplus_create_report_list($courseid, $students, $topicids, $with_childdescriptors, $with_examples, $only_achieved_competencies, $time_from, $time_to, $isPdf);
         } elseif ($output_style == 'grid') {
-            return self::dakoraplus_create_report_grid($courseid, $students, $topicids, $with_childdescriptors, $only_achieved_competencies, $time_from, $time_to, $isPdf);
+            return self::dakoraplus_create_report_grid($courseid, $students, $topicids, $with_childdescriptors, $with_examples, $only_achieved_competencies, $time_from, $time_to, $isPdf);
         } else {
             throw new \moodle_exception("output_style '$output_style' not supported");
         }
@@ -105,7 +106,7 @@ class reports extends base {
         return new external_value(PARAM_RAW);
     }
 
-    public static function dakoraplus_create_report_list(int $courseid, array $students, array $topicids, bool $with_childdescriptors, bool $only_achieved_competencies, int $time_from, int $time_to, bool $isPdf) {
+    public static function dakoraplus_create_report_list(int $courseid, array $students, array $topicids, bool $with_childdescriptors, bool $with_examples, bool $only_achieved_competencies, int $time_from, int $time_to, bool $isPdf) {
         $filter = [
             'type' => 'students',
         ];
@@ -115,12 +116,10 @@ class reports extends base {
         @$filter[BLOCK_EXACOMP_TYPE_TOPIC]['active'] = true;
         @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['visible'] = true;
         @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT]['active'] = true;
-        if ($with_childdescriptors) {
-            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] = true;
-            @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = true;
-        }
-        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible'] = true;
-        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = true;
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['visible'] = $with_childdescriptors;
+        @$filter[BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD]['active'] = $with_childdescriptors;
+        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['visible'] = $with_examples;
+        @$filter[BLOCK_EXACOMP_TYPE_EXAMPLE]['active'] = $with_examples;
 
 
         // if ($isTeacher) {
@@ -407,7 +406,7 @@ class reports extends base {
         }
     }
 
-    public static function dakoraplus_create_report_grid(int $courseid, array $students, array $topicids, bool $with_childdescriptors, bool $only_achieved_competencies, int $time_from, int $time_to, bool $isPdf) {
+    public static function dakoraplus_create_report_grid(int $courseid, array $students, array $topicids, bool $with_childdescriptors, bool $with_examples, bool $only_achieved_competencies, int $time_from, int $time_to, bool $isPdf) {
 
         $subjectid = 0;
         $tree = block_exacomp_get_competence_tree($courseid, $subjectid, null, true, null, true, null, false, false, false, false, false);
@@ -572,9 +571,13 @@ class reports extends base {
 
                             if ($with_childdescriptors) {
                                 foreach ($descriptor->children as $child) {
+
                                     $examples_output = '';
-                                    foreach ($child->examples as $example) {
-                                        $examples_output .= $print_item($example, 2);
+
+                                    if ($with_examples) {
+                                        foreach ($child->examples as $example) {
+                                            $examples_output .= $print_item($example, 2);
+                                        }
                                     }
 
                                     $child_descriptor_output .= $print_item($child, 1, $examples_output);
@@ -582,8 +585,10 @@ class reports extends base {
                             }
 
                             $examples_output = '';
-                            foreach ($descriptor->examples as $example) {
-                                $examples_output .= $print_item($example, 1);
+                            if ($with_examples) {
+                                foreach ($descriptor->examples as $example) {
+                                    $examples_output .= $print_item($example, 1);
+                                }
                             }
 
                             $descriptor_output .= $print_item($descriptor, 0, $examples_output . $child_descriptor_output);
