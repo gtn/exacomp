@@ -6956,12 +6956,12 @@ class externallib extends base {
         if ($removefiles) {
             $fs = get_file_storage();
             $removefiles = explode(',', $removefiles);
-            foreach ($removefiles as $removefile) {
-                $file = $fs->get_file_by_id($removefile);
-                if ($file) {
-                    if ($file->get_itemid() == $itemid) { // only delete file of current item. Protection if something goes really wrong or this webservice is used maliciously
-                        $file->delete();
-                    }
+            $context = context_user::instance($USER->id);
+            $files = $fs->get_area_files($context->id, "block_exaport", "item_file", $itemid, "", false);
+
+            foreach ($files as $file) {
+                if (in_array($file->get_id(), $removefiles)) {
+                    $file->delete();
                 }
             }
         }
@@ -7043,30 +7043,30 @@ class externallib extends base {
         }
 
         //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
-        if ($type == "file") {
+        if ($type == "file" && $fileitemids) {
             $context = context_user::instance($USER->id);
             $fs = get_file_storage();
-            try {
-                $fileitemids = explode(',', $fileitemids);
-                $filenames = explode(',', $filenames);
+            $fileitemids = explode(',', $fileitemids);
 
-                if ($fileitemids) {
-                    $i = 0; //for getting the names
-                    foreach ($fileitemids as $fileitemid) {
-                        $filename = $filenames[$i];
-                        $i++;
-                        $old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
-                        if ($old) {
-                            $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
-                                'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
-                                'timecreated' => time(), 'timemodified' => time());
-                            $fs->create_file_from_storedfile($file_record, $old->get_id());
-                            $old->delete();
+            if ($fileitemids) {
+                foreach ($fileitemids as $file_i => $fileitemid) {
+                    $old = current($fs->get_area_files($context->id, "user", "draft", $fileitemid, "", false));
+                    if ($old) {
+                        $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
+                            'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
+                            'timecreated' => time(), 'timemodified' => time());
+                        try {
+                            $fs->create_file_from_storedfile($file_record, $old);
+                        } catch (\stored_file_creation_exception $e) {
+                            // error while saving the file, maybe the name already exists?
+
+                            // try again with different name
+                            $file_record['filename'] = preg_replace('!(\.[^\.]+)$!', ' - Kopie$1', $file_record['filename']);
+                            $fs->create_file_from_storedfile($file_record, $old);
                         }
+                        $old->delete();
                     }
                 }
-            } catch (Exception $e) {
-                //some problem with the file occured
             }
         }
 
