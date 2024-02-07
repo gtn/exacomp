@@ -1115,6 +1115,13 @@ create example',
     'description' => 'Get language definitions in json format for diggr-plus and dakora-plus apps',
     'type' => 'read',
   ),
+  'block_exacomp_get_fullcompetence_grid_for_profile' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\externallib',
+    'methodname' => 'get_fullcompetence_grid_for_profile',
+    'description' => 'get FULL grid for profile. NO crossubjects',
+    'type' => 'read',
+  ),
   'diggrplus_learningpath_list' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',

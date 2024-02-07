@@ -7625,7 +7625,7 @@ class externallib extends base {
      * @return array of items
      */
     public static function diggrplus_get_teacher_examples_and_items($courseid, $studentid, $compid, $comptype, $type = "", $search = "", $niveauid = -1, $status = "") {
-        global $USER;
+        global $DB, $USER;
 
         static::validate_parameters(static::diggrplus_get_teacher_examples_and_items_parameters(), array(
             'courseid' => $courseid,
@@ -7674,6 +7674,21 @@ class externallib extends base {
             }
         }
 
+        $niveauid = 0;
+        $niveautitle = '';
+        if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+            // for a single example, also read the niveau information, which is used later to fill the object
+            $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
+                FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
+                JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} descr ON descr.niveauid = n.id
+                JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = descr.id
+                WHERE dex.exampid=? ORDER BY niveauid", [$compid]));
+            if ($niveau_info) {
+                $niveauid = $niveau_info->niveauid;
+                $niveautitle = $niveau_info->niveautitle;
+            }
+        }
+
         $examplesAndItems = array();
 
         foreach ($students as $student) {
@@ -7685,13 +7700,14 @@ class externallib extends base {
                 $items = block_exacomp_get_items_for_competence($userid, $compid, $comptype, $search, $niveauid, $status, $courseid);
 
                 foreach ($items as $item) {
-                    static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
+                    // no check needed here, also doesn't work correctly with comptype=example
+                    // static::require_can_access_comp($item->exacomp_record_id, 0, $comptype);
                     //TODO: what should be checked? I think there are no restrictions YET. But for free work that has not been assigned, there will have to be some "sumbmission" or "show to teacher" button
                     // ==> Then the access can be checked RW
                     static::block_exacomp_get_item_details($item, $userid, static::wstoken());
                 }
 
-                $studentExamplesAndItems = array_merge($studentExamplesAndItems, array_map(function($item) {
+                $studentExamplesAndItems = array_merge($studentExamplesAndItems, array_map(function($item) use ($niveauid, $niveautitle) {
                     $objDeeper = new stdClass();
                     $objDeeper->courseid = $item->courseid;
                     $objDeeper->item = $item;
@@ -7699,8 +7715,8 @@ class externallib extends base {
                     $objDeeper->subjectid = $item->subjectid;
                     $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
                     $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
-                    $objDeeper->niveautitle = "";
-                    $objDeeper->niveauid = 0;
+                    $objDeeper->niveautitle = $niveautitle;
+                    $objDeeper->niveauid = $niveauid;
                     $objDeeper->timemodified = $item->timemodified;
                     return $objDeeper;
                 }, $items));
@@ -15073,8 +15089,21 @@ class externallib extends base {
             }
         }
 
-        $exampleAndItem->niveautitle = "";
-        $exampleAndItem->niveauid = 0;
+        $niveauid = 0;
+        $niveautitle = '';
+        // for a single example, also read the niveau information, which is used later to fill the object
+        $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
+            FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
+            JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} descr ON descr.niveauid = n.id
+            JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = descr.id
+            WHERE dex.exampid=? ORDER BY niveauid", [$exampleid]));
+        if ($niveau_info) {
+            $niveauid = $niveau_info->niveauid;
+            $niveautitle = $niveau_info->niveautitle;
+        }
+
+        $exampleAndItem->niveauid = $niveauid;
+        $exampleAndItem->niveautitle = $niveautitle;
         $exampleAndItem->timemodified = $item->timemodified;
 
         if ($exampleAndItem->example) {
@@ -15245,8 +15274,21 @@ class externallib extends base {
             }
         }
 
-        $exampleAndItem->niveautitle = "";
-        $exampleAndItem->niveauid = 0;
+        $niveauid = 0;
+        $niveautitle = '';
+        // for a single example, also read the niveau information, which is used later to fill the object
+        $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
+            FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
+            JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} descr ON descr.niveauid = n.id
+            JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex ON dex.descrid = descr.id
+            WHERE dex.exampid=? ORDER BY niveauid", [$exampleid]));
+        if ($niveau_info) {
+            $niveauid = $niveau_info->niveauid;
+            $niveautitle = $niveau_info->niveautitle;
+        }
+
+        $exampleAndItem->niveauid = $niveauid;
+        $exampleAndItem->niveautitle = $niveautitle;
         $exampleAndItem->timemodified = $item->timemodified;
 
         if ($exampleAndItem->item) {
@@ -15589,5 +15631,111 @@ class externallib extends base {
             'string_id' => new external_value(PARAM_TEXT, 'translation'),
         ));
     }
-}
 
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_fullcompetence_grid_for_profile_parameters() {
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+        ));
+    }
+
+    /**
+     * get FULL grid for profile. NO crossubjects
+     *
+     * @ws-type-read
+     */
+    public static function get_fullcompetence_grid_for_profile($userid) {
+        global $USER;
+
+        static::validate_parameters(static::get_fullcompetence_grid_for_profile_parameters(), array('userid' => $userid));
+
+        if ($userid == 0) {
+            $userid = $USER->id;
+        }
+
+        $user_profile = [
+            'courses' => [],
+        ];
+
+        // Get all possible courses for the user
+        $possible_courses = block_exacomp_get_exacomp_courses($userid);
+        $user_courses = array();
+        foreach ($possible_courses as $course) {
+            $user_courses[$course->id] = $course;
+            $user_profile['courses'][$course->id] = [
+                'id' => $course->id,
+                'title' => $course->fullname,
+                'subjects' => [],
+            ];
+        }
+        // go across courses and subjects to get all statistic
+        foreach ($user_courses as $cid => $course) {
+            $competence_tree = block_exacomp_get_competence_tree($cid, null, null, false, null, true,
+                array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+
+            foreach ($competence_tree as $subject) {
+                $subjectinfo = array(
+                    'id' => $subject->id,
+                    'title' => $subject->title,
+                    'teacher' => array(
+                        'gridgradings' => array(block_exacomp_get_competence_profile_grid_for_ws($cid, $userid, $subject->id, BLOCK_EXACOMP_ROLE_TEACHER)),
+                    ),
+                    'student' => array(
+                        'gridgradings' => array(block_exacomp_get_competence_profile_grid_for_ws($cid, $userid, $subject->id, BLOCK_EXACOMP_ROLE_STUDENT)),
+                    ),
+                );
+                $user_profile['courses'][$cid]['subjects'][$subject->id] = $subjectinfo;
+            }
+        }
+
+        return $user_profile;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function get_fullcompetence_grid_for_profile_returns() {
+        $table_structure = array(
+            'title' => new external_value(PARAM_TEXT, 'title of table', VALUE_DEFAULT, ""),
+            'rows' => new external_multiple_structure(new external_single_structure(array(
+                'columns' => new external_multiple_structure(new external_single_structure(array(
+                    'text' => new external_value(PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
+                    'evaluation' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_DEFAULT, -1),
+                    //'evaluation' => new external_value(PARAM_TEXT, 'evaluation', VALUE_DEFAULT, '-1'),
+                    'evaluation_text' => new external_value(PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
+                    'evaluation_mapped' => new external_value(PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
+                    'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
+                    'show' => new external_value(PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
+                    'visible' => new external_value(PARAM_BOOL, 'cell visibility', VALUE_DEFAULT, true),
+                    'topicid' => new external_value(PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
+                    'span' => new external_value(PARAM_INT, 'colspan'),
+                    'timestamp' => new external_value(PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
+                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', false),
+                ))),
+            ))),
+        );
+        return new external_single_structure(array(
+            'courses' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of the course'),
+                'title' => new external_value(PARAM_TEXT, 'title of the course', VALUE_DEFAULT, ""),
+                'subjects' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT, 'id of the subject'),
+                    'title' => new external_value(PARAM_TEXT, 'title of the subject', VALUE_DEFAULT, ""),
+                    'teacher' => new external_single_structure(array(
+                        'gridgradings' => new external_multiple_structure(new external_single_structure($table_structure)),
+                    )),
+                    'student' => new external_single_structure(array(
+                        'gridgradings' => new external_multiple_structure(new external_single_structure($table_structure)),
+                    )),
+                ))),
+            )))),
+        );
+    }
+
+}

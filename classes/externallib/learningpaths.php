@@ -28,36 +28,76 @@ class learningpaths extends base {
     public static function diggrplus_learningpath_list_parameters() {
         return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT),
+            'studentid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
         ));
     }
 
     /**
      * @ws-type-read
      */
-    public static function diggrplus_learningpath_list(int $courseid) {
-        global $DB;
+    public static function diggrplus_learningpath_list(int $courseid, int $studentid = 0) {
+        global $DB, $USER;
 
         [
             'courseid' => $courseid,
+            'studentid' => $studentid,
         ] = static::validate_parameters(static::diggrplus_learningpath_list_parameters(), [
             'courseid' => $courseid,
+            'studentid' => $studentid,
         ]);
 
         $isTeacher = block_exacomp_is_teacher($courseid);
         if ($isTeacher) {
+            if ($studentid) {
+                static::require_can_access_user($studentid);
+            }
+
             $learningpaths = $DB->get_records('block_exacomplps', [
                 'courseid' => $courseid,
             ], 'title');
         } else {
+            $studentid = $USER->id;
+
             $learningpaths = $DB->get_records('block_exacomplps', [
                 'courseid' => $courseid,
                 'visible' => 1,
             ], 'title');
         }
 
-        return [
-            'learningpaths' => $learningpaths,
-        ];
+
+        if (!$studentid) {
+            $students = block_exacomp_get_students_by_course($courseid);
+            $studentids = array_column($students, 'id');
+        } else {
+            $studentids = [$studentid];
+        }
+
+        // calculate counts for a whole learningpath
+        foreach ($learningpaths as $learningpath) {
+            $learningpath->count_new = 0;
+            $learningpath->count_inprogress = 0;
+            $learningpath->count_completed = 0;
+            $learningpath->count_submitted = 0;
+
+            foreach ($studentids as $studentid) {
+                // get all visible lpItems for only this student
+                $lpItems = $DB->get_records_sql('
+                        SELECT item.*, item.visible AS visibleall, item_stud.visible AS visiblestudent
+                        FROM {block_exacomplp_items} item
+                        LEFT JOIN {block_exacomplp_item_stud} item_stud ON item.id=item_stud.itemid AND item_stud.studentid=?
+                        WHERE item.learningpathid=?
+                            AND (item_stud.visible OR (item_stud.visible IS NULL and item.visible))
+                        ORDER BY item.sorting, item.id', [$studentid, $learningpath->id]);
+
+                foreach ($lpItems as $lpItem) {
+                    $item = block_exacomp_get_current_item_for_example($studentid, $lpItem->exampleid);
+                    $status = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
+                    $learningpath->{"count_{$status}"}++;
+                }
+            }
+        }
+
+        return ['learningpaths' => $learningpaths,];
     }
 
     public static function diggrplus_learningpath_list_returns() {
@@ -70,6 +110,10 @@ class learningpaths extends base {
                     'title' => new external_value(PARAM_TEXT),
                     'description' => new external_value(PARAM_TEXT),
                     'visible' => new external_value(PARAM_BOOL),
+                    'count_new' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
+                    'count_inprogress' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
+                    'count_completed' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
+                    'count_submitted' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
                 ])
             ),
         ]);
@@ -105,7 +149,11 @@ class learningpaths extends base {
 
         $isTeacher = block_exacomp_is_teacher($courseid);
 
-        if (!$isTeacher) {
+        if ($isTeacher) {
+            if ($studentid) {
+                static::require_can_access_user($studentid);
+            }
+        } else {
             // security checks
             $studentid = $USER->id;
             if (!$learningpath->visible) {
@@ -114,7 +162,7 @@ class learningpaths extends base {
         }
 
         if ($isTeacher) {
-            $items = $DB->get_records_sql('
+            $lpItems = $DB->get_records_sql('
                 SELECT item.*, item.visible AS visibleall, item_stud.visible AS visiblestudent
                 FROM {block_exacomplp_items} item
                 LEFT JOIN {block_exacomplp_item_stud} item_stud ON item.id=item_stud.itemid AND item_stud.studentid=?
@@ -123,7 +171,7 @@ class learningpaths extends base {
 
             $students = block_exacomp_get_students_by_course($courseid);
         } else {
-            $items = $DB->get_records_sql('
+            $lpItems = $DB->get_records_sql('
                 SELECT item.*, item.visible AS visibleall, item_stud.visible AS visiblestudent
                 FROM {block_exacomplp_items} item
                 LEFT JOIN {block_exacomplp_item_stud} item_stud ON item.id=item_stud.itemid AND item_stud.studentid=?
@@ -134,16 +182,32 @@ class learningpaths extends base {
             $students = null;
         }
 
-        foreach ($items as $lpItem) {
-            $example_and_item = externallib::dakoraplus_get_example_and_item($lpItem->exampleid, $courseid);
+        foreach ($lpItems as $lpItem) {
+            $example = $DB->get_record('block_exacompexamples', array('id' => $lpItem->exampleid));
+
+            $example_data = current($DB->get_records_sql(
+                "SELECT DISTINCT topic.title as topictitle
+                        -- , topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid
+                        FROM {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} dex
+                        JOIN {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} det ON dex.descrid = det.descrid
+                        JOIN {" . BLOCK_EXACOMP_DB_COURSETOPICS . "} ct ON det.topicid = ct.topicid
+                        JOIN {" . BLOCK_EXACOMP_DB_TOPICS . "} topic ON ct.topicid = topic.id
+                        JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON det.descrid=d.id
+                        WHERE ct.courseid = :courseid AND dex.exampid = :exampleid", ['courseid' => $courseid, 'exampleid' => $lpItem->exampleid], 0, 1));
 
             $lpItem->visiblestudent = $lpItem->visiblestudent ?? $lpItem->visibleall;
-            $lpItem->exampletitle = $example_and_item->example->title;
-            $lpItem->topictitle = $example_and_item->topictitle;
+            $lpItem->exampletitle = $example->title;
+            $lpItem->topictitle = $example_data->topictitle ?? '';
+
+            $lpItem->count_new = 0;
+            $lpItem->count_inprogress = 0;
+            $lpItem->count_completed = 0;
+            $lpItem->count_submitted = 0;
 
             if (!$studentid) {
                 $lpItem->status = '';
 
+                $lpItem->count_new = 0;
                 $lpItem->count_inprogress = 0;
                 $lpItem->count_completed = 0;
                 $lpItem->count_submitted = 0;
@@ -156,14 +220,10 @@ class learningpaths extends base {
             } else {
                 $item = block_exacomp_get_current_item_for_example($studentid, $lpItem->exampleid);
                 $lpItem->status = block_exacomp_get_human_readable_item_status($item ? $item->status : null);
-
-                $lpItem->count_inprogress = 0;
-                $lpItem->count_completed = 0;
-                $lpItem->count_submitted = 0;
             }
         }
 
-        $learningpath->items = $items;
+        $learningpath->items = $lpItems;
 
         return $learningpath;
     }
@@ -186,6 +246,7 @@ class learningpaths extends base {
                     'sorting' => new external_value(PARAM_INT),
                     'visibleall' => new external_value(PARAM_BOOL),
                     'visiblestudent' => new external_value(PARAM_BOOL),
+                    'count_new' => new external_value(PARAM_INT),
                     'count_inprogress' => new external_value(PARAM_INT),
                     'count_completed' => new external_value(PARAM_INT),
                     'count_submitted' => new external_value(PARAM_INT),
@@ -574,12 +635,12 @@ class learningpaths extends base {
 
         block_exacomp_require_teacher($learningpath->courseid);
 
-        $items = $DB->get_records('block_exacomplp_items', [
+        $lpItems = $DB->get_records('block_exacomplp_items', [
             'learningpathid' => $learningpath->id,
         ]);
 
         foreach ($itemids as $sorting => $itemid) {
-            if (empty($items[$itemid])) {
+            if (empty($lpItems[$itemid])) {
                 // item not in this learningpath
                 continue;
             }

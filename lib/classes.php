@@ -86,8 +86,8 @@ class db_layer {
         }
 
         $sql = "
-			SELECT DISTINCT d.id, d.title, d.source, d.sourceid, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
-				n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting, d.author, d.editor, d.creatorid as descriptor_creatorid
+			SELECT DISTINCT d.id, d.title, d.source, d.sourceid, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid, d.sorting,
+				n.sorting AS niveau_sorting, n.numb AS niveau_numb, n.title AS niveau_title, dvis.visible as visible, d.author, d.editor, d.creatorid as descriptor_creatorid
 			FROM {" . BLOCK_EXACOMP_DB_DESCTOPICS . "} desctopmm
 			JOIN {" . BLOCK_EXACOMP_DB_DESCRIPTORS . "} d ON desctopmm.descrid=d.id AND d.parentid=0
 			-- left join, because courseid=0 has no descvisibility!
@@ -954,6 +954,23 @@ class subject extends db_record {
     function get_numbering() {
         return '';
     }
+
+    /**
+     * @return niveau[] this is not the whole niveau record, but only some attributes of it!
+     */
+    function get_used_niveaus(): array {
+        $used_niveaus = [];
+
+        foreach ($this->subs as $topic) {
+            foreach ($topic->subs as $descriptor) {
+                $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
+            }
+        }
+
+        block_exacomp_sort_items($used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
+
+        return $used_niveaus;
+    }
 }
 
 /**
@@ -1009,6 +1026,21 @@ class topic extends db_record {
 
     function get_editor() {
         return $this->editor;
+    }
+
+    /**
+     * @return niveau[] this is not the whole niveau record, but only some attributes of it!
+     */
+    function get_used_niveaus(): array {
+        $used_niveaus = [];
+
+        foreach ($this->subs as $descriptor) {
+            $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
+        }
+
+        block_exacomp_sort_items($used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
+
+        return $used_niveaus;
     }
 }
 
