@@ -1,3 +1,9 @@
+### v4.6.7 (2024020700) ###
+* new web-service to get competence profile overview data of all courses
+* fix sorting of niveaus, reports and others for dakora+
+* webservices for learningpath dakora+
+
+
 ### v4.6.7 (2023121201) ###
 * fix xml import issue
 * improve performance when loading examples list
