@@ -18,10 +18,6 @@ require __DIR__ . '/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
-$report = optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT);
-
-// TODO: add evaluation niveaus in report2, report3, then enable them again on this page
-//$report = BLOCK_EXACOMP_REPORT1;
 
 block_exacomp_require_login($courseid);
 
@@ -40,7 +36,6 @@ $PAGE->set_url('/blocks/exacomp/competence_grid.php', [
     'courseid' => $courseid,
     'subjectid' => $subjectid,
     'studentid' => $studentid,
-    //	'report' => $report
 ]);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));
