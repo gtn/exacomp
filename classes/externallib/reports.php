@@ -173,6 +173,7 @@ class reports extends base {
                     $topic->used_niveauids = [];
                     foreach ($topic->subs as $descriptor) {
                         $topic->used_niveauids[] = $descriptor->niveauid;
+
                         $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
                     }
                 }
@@ -249,8 +250,13 @@ class reports extends base {
                     ob_start();
                     block_exacomp_tree_walk($subject->subs, ['filter' => $filter], function($walk_subs, $item, $level = 0)
                     use ($studentid, $courseid, $filter, $html, $isPdf, $only_achieved_competencies, $time_from, $time_to, $niveau) {
+                        // topic / main-descriptor nur ausgeben, wenn dieser dem aktuellen niveau zugeordnet ist
                         if ($item instanceof topic) {
-                            if (!in_array($niveau->id, $item->used_niveauids)) {
+                            if (!in_array($niveau->id, $item->used_niveauids ?? [])) {
+                                return;
+                            }
+                        } elseif ($item::TYPE == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+                            if ($item->niveauid != $niveau->id) {
                                 return;
                             }
                         }
@@ -267,11 +273,11 @@ class reports extends base {
                         $teachereval_smiley = function($id) {
                             if ($id === null) {
                                 return;
-                            } elseif ($id == 0) {
+                            } elseif ($id == BLOCK_EXACOMP_GRADING_POSTIVE) {
                                 return ':-)';
-                            } elseif ($id == 1) {
+                            } elseif ($id == BLOCK_EXACOMP_GRADING_SOSO) {
                                 return ':-|';
-                            } elseif ($id == 2) {
+                            } elseif ($id == BLOCK_EXACOMP_GRADING_NEGATIVE) {
                                 return ':-(';
                             }
                         };
@@ -320,10 +326,10 @@ class reports extends base {
 
                         ob_start();
                         $walk_subs($level + 1);
-                        $sub_output = ob_get_clean();;
+                        $sub_output = ob_get_clean();
 
                         $filtered_time = ($time_from && $item->timestamp_teacher < $time_from) || ($time_to && $item->timestamp_teacher > $time_to);
-                        $filtered_achieved = ($only_achieved_competencies && $item->teachereval === null);
+                        $filtered_achieved = ($only_achieved_competencies && ($item->teachereval === null || $item->teachereval == BLOCK_EXACOMP_GRADING_NEGATIVE));
                         if (!$sub_output && ($filtered_achieved || $filtered_time)) {
                             // ignore
                         } else {
@@ -427,11 +433,11 @@ class reports extends base {
                 $teachereval_smiley = function($id) {
                     if ($id === null) {
                         return;
-                    } elseif ($id == 0) {
+                    } elseif ($id == BLOCK_EXACOMP_GRADING_POSTIVE) {
                         return ':-)';
-                    } elseif ($id == 1) {
+                    } elseif ($id == BLOCK_EXACOMP_GRADING_SOSO) {
                         return ':-|';
-                    } elseif ($id == 2) {
+                    } elseif ($id == BLOCK_EXACOMP_GRADING_NEGATIVE) {
                         return ':-(';
                     }
                 };
@@ -463,7 +469,7 @@ class reports extends base {
                 $fill_eval($item);
 
                 $filtered_time = ($time_from && $item->timestamp_teacher < $time_from) || ($time_to && $item->timestamp_teacher > $time_to);
-                $filtered_achieved = ($only_achieved_competencies && $item->teachereval === null);
+                $filtered_achieved = ($only_achieved_competencies && ($item->teachereval === null || $item->teachereval == BLOCK_EXACOMP_GRADING_NEGATIVE));
                 if (!$sub_output && ($filtered_achieved || $filtered_time)) {
                     // ignore
                     return;

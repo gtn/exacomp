@@ -7055,6 +7055,7 @@ class externallib extends base {
                         $file_record = array('contextid' => $context->id, 'component' => 'block_exaport', 'filearea' => 'item_file',
                             'itemid' => $itemid, 'filepath' => '/', 'filename' => $old->get_filename(),
                             'timecreated' => time(), 'timemodified' => time());
+
                         try {
                             $fs->create_file_from_storedfile($file_record, $old);
                         } catch (\stored_file_creation_exception $e) {
