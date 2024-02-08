@@ -173,10 +173,6 @@ class reports extends base {
                     $topic->used_niveauids = [];
                     foreach ($topic->subs as $descriptor) {
                         $topic->used_niveauids[] = $descriptor->niveauid;
-                        if (!isset($descriptor->used_niveauids)) {
-                            $descriptor->used_niveauids = [];
-                        }
-                        $descriptor->used_niveauids[] = $descriptor->niveauid;
 
                         $used_niveaus[$descriptor->niveauid] = (object)["id" => $descriptor->niveauid, "title" => $descriptor->niveau_title, "numb" => $descriptor->niveau_numb, "sorting" => $descriptor->niveau_sorting];
                     }
@@ -255,8 +251,12 @@ class reports extends base {
                     block_exacomp_tree_walk($subject->subs, ['filter' => $filter], function($walk_subs, $item, $level = 0)
                     use ($studentid, $courseid, $filter, $html, $isPdf, $only_achieved_competencies, $time_from, $time_to, $niveau) {
                         // topic / main-descriptor nur ausgeben, wenn dieser dem aktuellen niveau zugeordnet ist
-                        if ($item instanceof topic || $item::TYPE == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
-                            if (!in_array($niveau->id, $item->used_niveauids)) {
+                        if ($item instanceof topic) {
+                            if (!in_array($niveau->id, $item->used_niveauids ?? [])) {
+                                return;
+                            }
+                        } elseif ($item::TYPE == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+                            if ($item->niveauid != $niveau->id) {
                                 return;
                             }
                         }
