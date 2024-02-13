@@ -26,6 +26,7 @@ use block_exacomp\subject;
 use block_exacomp\topic;
 use external_function_parameters;
 use external_multiple_structure;
+use external_single_structure;
 use external_value;
 
 class reports extends base {
@@ -675,5 +676,116 @@ class reports extends base {
         } else {
             return $html;
         }
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function get_fullcompetence_grid_for_profile_parameters() {
+        return new external_function_parameters(array(
+            'userid' => new external_value(PARAM_INT, 'id of user'),
+        ));
+    }
+
+    /**
+     * Returns full competence grid data for needed profile. (NO crossubjects data).
+     * Useful in next HTML generation
+     *
+     * @ws-type-read
+     */
+    public static function get_fullcompetence_grid_for_profile(int $userid) {
+        global $USER;
+
+        [
+            'userid' => $userid,
+        ] = static::validate_parameters(static::get_fullcompetence_grid_for_profile_parameters(), [
+            'userid' => $userid,
+        ]);
+
+        if ($userid == 0) {
+            $userid = $USER->id;
+        }
+
+        $user_profile = [
+            'courses' => [],
+        ];
+
+        // Get all possible courses for the user
+        $possible_courses = block_exacomp_get_exacomp_courses($userid);
+        $user_courses = array();
+        foreach ($possible_courses as $course) {
+            $user_courses[$course->id] = $course;
+            $user_profile['courses'][$course->id] = [
+                'id' => $course->id,
+                'title' => $course->fullname,
+                'subjects' => [],
+            ];
+        }
+        // go across courses and subjects to get all statistic
+        foreach ($user_courses as $cid => $course) {
+            $competence_tree = block_exacomp_get_competence_tree($cid, null, null, false, null, true,
+                array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+
+            foreach ($competence_tree as $subject) {
+                $subjectinfo = array(
+                    'id' => $subject->id,
+                    'title' => $subject->title,
+                    'teacher' => array(
+                        'gridgradings' => array(block_exacomp_get_competence_profile_grid_for_ws($cid, $userid, $subject->id, BLOCK_EXACOMP_ROLE_TEACHER)),
+                    ),
+                    'student' => array(
+                        'gridgradings' => array(block_exacomp_get_competence_profile_grid_for_ws($cid, $userid, $subject->id, BLOCK_EXACOMP_ROLE_STUDENT)),
+                    ),
+                );
+                $user_profile['courses'][$cid]['subjects'][$subject->id] = $subjectinfo;
+            }
+        }
+
+        return $user_profile;
+    }
+
+    /**
+     * Returns desription of method return values
+     *
+     * @return external_single_structure
+     */
+    public static function get_fullcompetence_grid_for_profile_returns() {
+        $table_structure = array(
+            'title' => new external_value(PARAM_TEXT, 'title of table', VALUE_DEFAULT, ""),
+            'rows' => new external_multiple_structure(new external_single_structure(array(
+                'columns' => new external_multiple_structure(new external_single_structure(array(
+                    'text' => new external_value(PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
+                    'evaluation' => new external_value(PARAM_FLOAT, 'evaluation', VALUE_DEFAULT, -1),
+                    //'evaluation' => new external_value(PARAM_TEXT, 'evaluation', VALUE_DEFAULT, '-1'),
+                    'evaluation_text' => new external_value(PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
+                    'evaluation_mapped' => new external_value(PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
+                    'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
+                    'show' => new external_value(PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
+                    'visible' => new external_value(PARAM_BOOL, 'cell visibility', VALUE_DEFAULT, true),
+                    'topicid' => new external_value(PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
+                    'span' => new external_value(PARAM_INT, 'colspan'),
+                    'timestamp' => new external_value(PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
+                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', false),
+                ))),
+            ))),
+        );
+        return new external_single_structure(array(
+            'courses' => new external_multiple_structure(new external_single_structure(array(
+                'id' => new external_value(PARAM_INT, 'id of the course'),
+                'title' => new external_value(PARAM_TEXT, 'title of the course', VALUE_DEFAULT, ""),
+                'subjects' => new external_multiple_structure(new external_single_structure(array(
+                    'id' => new external_value(PARAM_INT, 'id of the subject'),
+                    'title' => new external_value(PARAM_TEXT, 'title of the subject', VALUE_DEFAULT, ""),
+                    'teacher' => new external_single_structure(array(
+                        'gridgradings' => new external_multiple_structure(new external_single_structure($table_structure)),
+                    )),
+                    'student' => new external_single_structure(array(
+                        'gridgradings' => new external_multiple_structure(new external_single_structure($table_structure)),
+                    )),
+                ))),
+            )))),
+        );
     }
 }
