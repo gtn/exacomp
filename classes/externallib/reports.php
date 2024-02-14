@@ -692,6 +692,7 @@ class reports extends base {
     /**
      * Returns full competence grid data for needed profile. (NO crossubjects data).
      * Useful in next HTML generation
+     * Based and have similar output as in 'dakora_get_competence_grid_for_profile', but right now is used only for skillswork needs
      *
      * @ws-type-read
      */
