@@ -7598,6 +7598,9 @@ function block_exacomp_check_child_descriptors($descriptor, $associated_descript
  */
 function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus) {
 
+    if (!$niveaus) {
+        return 0;
+    }
     $colspan = count($niveaus) - 1;
 
     foreach ($niveaus as $id => $niveau) {
@@ -10100,11 +10103,14 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 
     $subject = block_exacomp\db_layer_student::create($courseid)->get_subject($subjectid);
 
-    block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
-
     if (!$subject) {
         return;
     }
+    if (!$subject->topics) {
+        $subject->topics = [];
+    }
+
+    block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
 
     $table_content = new stdClass();
     $table_content->content = array();
