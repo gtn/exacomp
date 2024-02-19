@@ -5189,6 +5189,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         // wenn different source than parent
                         ($subject->source != $schooltype->source ? ' (' . $this->source_info($subject->source) . ')' : ''));
                     $cell->attributes['class'] = 'rg2-arrow rg2-arrow-styled';
+                    $cell->attributes['data-subjectId'] = $subject->id;
+                    $cell->attributes['data-sourceId'] = $subject->sourceid;
 
                     $cell->colspan = 2;
                     $row->cells[] = $cell;

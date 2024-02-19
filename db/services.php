@@ -1190,7 +1190,8 @@ create example',
     'classname' => '\\block_exacomp\\externallib\\reports',
     'methodname' => 'get_fullcompetence_grid_for_profile',
     'description' => 'Returns full competence grid data for needed profile. (NO crossubjects data).
-Useful in next HTML generation',
+Useful in next HTML generation
+Based and have similar output as in \'dakora_get_competence_grid_for_profile\', but right now is used only for skillswork needs',
     'type' => 'read',
   ),
   'diggrplus_v_edit_course' => 
