@@ -27,6 +27,7 @@ $string['exacomp:use'] = 'Nutzung';
 $string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
 $string['exacomp:assignstudents'] = 'Externe Trailer zuordnen';
 $string['exacomp:editingteacher'] = 'Editing teacher';
+$string['exacomp:getfullcompetencegridforprofile'] = 'for WebService block_exacomp_get_fullcompetence_grid_for_profile';
 
 //Cache definition
 $string['cachedef_visibility_cache'] = 'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen';

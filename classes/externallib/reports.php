@@ -709,6 +709,11 @@ class reports extends base {
             $userid = $USER->id;
         }
 
+        $context = \context_user::instance($USER->id);
+        if (!has_capability('block/exacomp:getfullcompetencegridforprofile', $context)) {
+            return false;
+        }
+
         $user_profile = [
             'courses' => [],
         ];

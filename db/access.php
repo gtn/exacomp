@@ -86,4 +86,11 @@ $capabilities = array(
             'manager' => CAP_ALLOW,
         ),
     ),
+    'block/exacomp:getfullcompetencegridforprofile' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_USER,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+        ),
+    ),
 );

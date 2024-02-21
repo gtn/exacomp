@@ -61,6 +61,10 @@ return [
         'Editing teacher',
         'Editing teacher',
     ],
+    'exacomp:getfullcompetencegridforprofile' => [
+        'for WebService block_exacomp_get_fullcompetence_grid_for_profile',
+        'for WebService block_exacomp_get_fullcompetence_grid_for_profile',
+    ],
 
     //Cache definition
     'cachedef_visibility_cache' => [

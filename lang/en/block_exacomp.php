@@ -27,6 +27,7 @@ $string['exacomp:use'] = 'use Exabis Competence Grid';
 $string['exacomp:deleteexamples'] = 'delete examples';
 $string['exacomp:assignstudents'] = 'Assign external trainers';
 $string['exacomp:editingteacher'] = 'Editing teacher';
+$string['exacomp:getfullcompetencegridforprofile'] = 'for WebService block_exacomp_get_fullcompetence_grid_for_profile';
 
 //Cache definition
 $string['cachedef_visibility_cache'] = 'Cache to improve performance while checking visibilities';
