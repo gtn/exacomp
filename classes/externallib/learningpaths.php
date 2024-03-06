@@ -86,7 +86,7 @@ class learningpaths extends base {
                         FROM {block_exacomplp_items} item
                         LEFT JOIN {block_exacomplp_item_stud} item_stud ON item.id=item_stud.itemid AND item_stud.studentid=?
                         WHERE item.learningpathid=?
-                            AND (item_stud.visible OR (item_stud.visible IS NULL and item.visible))
+                            AND (item_stud.visible>0 OR (item_stud.visible IS NULL and item.visible>0))
                         ORDER BY item.sorting, item.id', [$studentid, $learningpath->id]);
 
                 foreach ($lpItems as $lpItem) {
