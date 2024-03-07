@@ -560,6 +560,24 @@ if (isguestuser()) {
     exit;
 }
 
+if (is_siteadmin($USER)) {
+    // moodle does not allow a login with admin accounts
+    // see external_generate_token_for_current_user()
+
+    block_exacomp_logout();
+
+    echo $OUTPUT->header();
+
+    echo '<div class="login-container" style="max-width: 600px; padding: 60px 30px; text-align: center; margin: 35px auto;">';
+    echo nl2br(block_exacomp_trans(["de:Ein Login mit einem Admin-Konto ist nicht möglich.", "en:A Login with admin-accounts is not possible."]));
+    echo '</br><br/>';
+    echo '<a href="' . $PAGE->url . '">' . block_exacomp_trans(["de:Mit anderem Benutzer einloggen", "en:Login with different User"]) . '</a>';
+    echo '</div>';
+
+    echo $OUTPUT->footer();
+    exit;
+}
+
 $moodle_redirect_token = required_param('moodle_redirect_token', PARAM_TEXT);
 
 $applogin = $DB->get_record('block_exacompapplogin', ['moodle_redirect_token' => $moodle_redirect_token]);
@@ -579,7 +597,7 @@ try {
 
     echo '<div class="login-container" style="max-width: 600px; padding: 60px 30px; text-align: center; margin: 35px auto;">';
     echo nl2br(block_exacomp_trans(["de:Der Login für externe Apps wurde vom Administrator nicht konfiguriert.\n\nTechnische Info:", "en:The Login for external Apps is not configured.\n\nTechnical Details:"]));
-    echo ' ' . $e->getMessage();
+    echo ' ' . $e->getMessage() . '<br/><br/>';
     echo 'An Administrator has to go to ' . new moodle_url('/blocks/exacomp/webservice_status.php?courseid=1') . ' and configure the Webservices';
     echo '</br><br/>';
     echo '<a href="' . $PAGE->url . '">' . block_exacomp_trans(["de:Login erneut versuchen", "en:Retry Login"]) . '</a>';
