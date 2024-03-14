@@ -18,6 +18,7 @@ namespace block_exacomp\externallib;
 
 defined('MOODLE_INTERNAL') || die();
 
+use block_exacomp\globals as g;
 use context_course;
 use Exception;
 use external_function_parameters;
@@ -496,7 +497,7 @@ class setapp extends base {
 
             block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $userid, BLOCK_EXACOMP_TYPE_SUBJECT, $subject_grading['id'], null);
 
-            $DB->insert_or_update_record('block_exacompsubjstudconfig', [
+            g::$DB->insert_or_update_record('block_exacompsubjstudconfig', [
                 'assess_with_grades' => $subject_grading['assess_with_grades'],
                 'is_pflichtgegenstand' => $subject_grading['is_pflichtgegenstand'],
                 'spf' => $subject_grading['spf'],
