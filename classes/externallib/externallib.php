@@ -2141,7 +2141,7 @@ class externallib extends base {
      *
      */
     public static function diggrplus_grade_competency($compid, $comptype, $grading, $courseid, $userid, $role) {
-        global $USER;
+        global $DB, $USER;
 
         static::validate_parameters(static::diggrplus_grade_competency_parameters(), array(
             'compid' => $compid,
@@ -2171,6 +2171,27 @@ class externallib extends base {
         block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $grading, null, -1, true, [
             'notification_customdata' => $customdata,
         ]);
+
+        if ($role == BLOCK_EXACOMP_ROLE_STUDENT && $comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+            $item = static::get_example_item($USER->id, $compid);
+            if ($item) {
+                $studentvalue = $grading;
+                $itemid = $item->id;
+
+                // example bewertung auch in item_mm speichern
+                $item_comp_mm = $DB->get_record(BLOCK_EXACOMP_DB_ITEM_MM, array('itemid' => $itemid));
+
+                if (!$item_comp_mm) {
+                    $DB->insert_record(BLOCK_EXACOMP_DB_ITEM_MM, array('exacomp_record_id' => $compid, 'itemid' => $itemid, 'timecreated' => time(), 'status' => 0, 'competence_type' => $comptype, 'studentvalue' => $studentvalue));
+                } else {
+                    $item_comp_mm->datemodified = time();
+                    $item_comp_mm->studentvalue = $studentvalue; // TODO: -1 is not good, solve it differently
+                    $DB->update_record(BLOCK_EXACOMP_DB_ITEM_MM, $item_comp_mm);
+                }
+            } else {
+                // TODO: what to do if there is no item yet?!?
+            }
+        }
 
         return array(
             "success" => true,
@@ -7089,6 +7110,15 @@ class externallib extends base {
                 $DB->insert_record('block_exaportitemcomm', array('itemid' => $itemid, 'userid' => $USER->id, 'entry' => $studentcomment, 'timemodified' => time()));
             }
         }
+
+        // also store it in BLOCK_EXACOMP_DB_COMPETENCES
+        block_exacomp_set_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $USER->id, $comptype, $compid, [
+            'value' => $studentvalue,
+            'evalniveauid' => null,
+            'reviewerid' => $USER->id,
+            'timestamp' => time(),
+        ]);
+
 
         if ($submit) {
             example_submitted::log(['objectid' => $compid, 'courseid' => $courseid]);
