@@ -92,7 +92,7 @@ class setapp extends base {
             'userid' => new external_value(PARAM_INT, 'userid of student. 0 if new', VALUE_DEFAULT, 0),
             'firstname' => new external_value(PARAM_TEXT, 'firstname of student'),
             'lastname' => new external_value(PARAM_TEXT, 'lastname of student'),
-            'ausserordentlich' => new external_value(PARAM_TEXT),
+            'ausserordentlich' => new external_value(PARAM_BOOL),
         ));
     }
 
