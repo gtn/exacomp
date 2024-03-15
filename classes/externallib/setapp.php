@@ -19,6 +19,7 @@ namespace block_exacomp\externallib;
 defined('MOODLE_INTERNAL') || die();
 
 use block_exacomp\globals as g;
+use block_exacomp\printer;
 use context_course;
 use Exception;
 use external_function_parameters;
@@ -613,6 +614,10 @@ class setapp extends base {
 
                 $subject_content_html = [];
                 foreach ($subject->topics as $topic) {
+                    $isOldCompetenceGrid = !!array_filter($topic->descriptors, function($descriptor) {
+                        return strtolower($descriptor->niveau_title) == 'mindestanforderungen';
+                    });
+
                     foreach ($topic->descriptors as $descriptor) {
                         if (!$descriptor->visible) {
                             continue;
@@ -624,15 +629,33 @@ class setapp extends base {
                             continue;
                         }
 
-                        // use sorting + id as key, so we can sort the array later
-                        $subject_content_html_entry_id = sprintf('%010d_%010d_%010d', $descriptor->niveau_numb, $descriptor->niveau_sorting, $descriptor->niveauid);
+                        if ($isOldCompetenceGrid) {
+                            // use sorting + id as key, so we can sort the array later
+                            $subject_content_html_entry_id = sprintf('%010d_%010d_%010d', $descriptor->niveau_numb, $descriptor->niveau_sorting, $descriptor->niveauid);
 
-                        if (!$subject_content_html[$subject_content_html_entry_id]) {
-                            $subject_content_html[$subject_content_html_entry_id] = '<b>' . static::custom_htmltrim($descriptor->niveau_title) . ':</b> ';
+                            if (!$subject_content_html[$subject_content_html_entry_id]) {
+                                $subject_content_html[$subject_content_html_entry_id] = '<b>' . static::custom_htmltrim($descriptor->niveau_title) . ':</b> ';
+                            }
+
+                            $title = trim($grading->personalisedtext) ? $grading->personalisedtext : $descriptor->title;
+                            $subject_content_html[$subject_content_html_entry_id] .= static::custom_htmltrim($title) . ', ';
+                        } else {
+                            // use sorting + id as key, so we can sort the array later
+                            $subject_content_html_entry_id = 'new_style_' . $grading->value;
+
+                            $grading_texts = [
+                                1 => 'Mindestanforderungen',
+                                2 => 'Wesentliche Anforderungen',
+                                3 => '(Weit) Darüber hinausgehende Anforderungen',
+                            ];
+
+                            if (!$subject_content_html[$subject_content_html_entry_id]) {
+                                $subject_content_html[$subject_content_html_entry_id] = '<b>' . $grading_texts[$grading->value] . ':</b> ';
+                            }
+
+                            $title = trim($grading->personalisedtext) ? $grading->personalisedtext : $descriptor->title;
+                            $subject_content_html[$subject_content_html_entry_id] .= static::custom_htmltrim($title) . ', ';
                         }
-
-                        $title = trim($grading->personalisedtext) ? $grading->personalisedtext : $descriptor->title;
-                        $subject_content_html[$subject_content_html_entry_id] .= static::custom_htmltrim($title) . ', ';
                     }
                 }
 
@@ -758,8 +781,7 @@ class setapp extends base {
             exit;
         } else {
             // $pdf = \block_exacomp\printer::getPdfPrinter('P');
-            printer::getPdfPrinter('P');
-            $pdf = new printer_TCPDF_student_report('P');
+            $pdf = printer::getStudentReportPrinter();
 
             $pdf->SetFont('times', '', 9);
             $pdf->setHeaderFont(['times', '', 9]);

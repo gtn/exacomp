@@ -120,6 +120,12 @@ class printer {
         return $pdf;
     }
 
+    static function getStudentReportPrinter() {
+        $pdf = new printer_TCPDF_student_report('P');
+
+        return $pdf;
+    }
+
     static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
         ob_start();
 
