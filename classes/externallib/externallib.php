@@ -15143,6 +15143,12 @@ class externallib extends base {
             if (!property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
+
+            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+                $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
+                $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
+                $example->student_evaluation = $exampleEvaluation->student_evaluation;
+            }
         }
 
         $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
@@ -15194,8 +15200,8 @@ class externallib extends base {
                     //                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                // 'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
-                // 'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
+                'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
+                'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
                 'id' => new external_value(PARAM_INT, 'id of item '),
@@ -15345,6 +15351,12 @@ class externallib extends base {
             if (!property_exists($example, "annotation")) {
                 $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
             }
+
+            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+                $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
+                $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
+                $example->student_evaluation = $exampleEvaluation->student_evaluation;
+            }
         }
 
         $exampleAndItem->status = block_exacomp_get_human_readable_item_status($exampleAndItem->item ? $exampleAndItem->item->status : null);
@@ -15396,8 +15408,8 @@ class externallib extends base {
                     //                    'fileindex' => new external_value(PARAM_TEXT, 'fileindex, used for deleting this file')
                 )), 'taskfiles of the example', VALUE_OPTIONAL),
 
-                // 'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
-                // 'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
+                'teacher_evaluation' => new external_value(PARAM_INT, 'teacher_evaluation', VALUE_OPTIONAL),
+                'student_evaluation' => new external_value(PARAM_INT, 'student_evaluation', VALUE_OPTIONAL),
             ), 'example information', VALUE_OPTIONAL),
             'item' => new external_single_structure(array(
                 'id' => new external_value(PARAM_INT, 'id of item '),
