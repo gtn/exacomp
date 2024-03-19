@@ -1,3 +1,8 @@
+### v4.6.7 (2024031500) ###
+* postgres db fix
+* small fixes for dakora+ and set
+* dakora+: example evaluation is done if item is evaluated
+
 ### v4.6.7 (2024020700) ###
 * new web-service to get competence profile overview data of all courses
 * fix sorting of niveaus, reports and others for dakora+
