@@ -7705,9 +7705,9 @@ class externallib extends base {
             }
         }
 
-        $niveauid = 0;
         $niveautitle = '';
         if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+            $niveauid = 0;
             // for a single example, also read the niveau information, which is used later to fill the object
             $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
                 FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
