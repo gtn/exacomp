@@ -7707,7 +7707,6 @@ class externallib extends base {
 
         $niveautitle = '';
         if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
-            $niveauid = 0;
             // for a single example, also read the niveau information, which is used later to fill the object
             $niveau_info = current($DB->get_records_sql("SELECT DISTINCT n.id as niveauid, n.title as niveautitle
                 FROM {" . BLOCK_EXACOMP_DB_NIVEAUS . "} n
@@ -7747,7 +7746,8 @@ class externallib extends base {
                     $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
                     $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
                     $objDeeper->niveautitle = $niveautitle;
-                    $objDeeper->niveauid = $niveauid;
+                    // in the apps no niveau should be 0, not -1
+                    $objDeeper->niveauid = $niveauid <= 0 ? 0 : $niveauid;
                     $objDeeper->timemodified = $item->timemodified;
                     return $objDeeper;
                 }, $items));
