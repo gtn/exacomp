@@ -3437,7 +3437,6 @@ class data_importer extends data {
             }
 
         }
-
         return $example;
     }
 
@@ -3551,12 +3550,33 @@ class data_importer extends data {
 
         // unpack to temp folder, related to example
         $tempActivityFolder = $CFG->tempdir . '/backup/example_activity' . $exampleId;
-        $packer = get_file_packer('application/zip');
-        $arch = $packer->extract_to_pathname($taskFile, $tempActivityFolder);
-
-        /*$filesystem = $fs->get_file_system();
-        $localpath = $filesystem->get_local_path_from_storedfile($taskFile, true);
-        $arch = extract_zip_subdir($localpath, "", $tempActivityFolder, $tempActivityFolder);*/
+        // $packer = get_file_packer('application/zip');
+        // $arch = $packer->extract_to_pathname($taskFile, $tempActivityFolder);
+        $arch = false;
+        $taskFileFullpathname = $fs->get_file_system()->get_local_path_from_storedfile($taskFile);
+        // Sometimes attached activity files (zip) contain wrong paths to subfolders. Which has problems with Unix servers
+        // Using of Moodle $packer is not working in this case
+        // So, we need to use custom code to extract content of such zip archives
+        $ziparch = new \ZipArchive;
+        if ($ziparch->open($taskFileFullpathname)) {
+            try {
+                for ($i = 0; $i < $ziparch->count(); $i++) {
+                    $filename = $ziparch->getNameIndex($i);
+                    $fixedFilename = str_replace('\\', '/', $filename);
+                    $fullPath = rtrim($tempActivityFolder, '/') . "/" . $fixedFilename;
+                    if (!is_dir(dirname($fullPath))) {
+                        mkdir(dirname($fullPath), 0755, TRUE);
+                    }
+                    if (is_dir(dirname($fullPath))) {
+                        copy("zip://" . $taskFileFullpathname . "#" . $filename, $fullPath);
+                    }
+                }
+                $ziparch->close();
+                $arch = true;
+            } catch (\Exception $e) {
+                $arch = false; // Still not extracted if we have some exception
+            }
+        }
 
         if ($arch !== false) {
             // get activity data from unpacked xml
@@ -3678,18 +3698,20 @@ function rrmdir($source, $removeOnlyChildren = false) {
 
 function directory_copy($source, $destionation) {
     $dir = @opendir($source);
-    @mkdir($destionation);
-    // Loop through the files in source directory
-    while ($file = @readdir($dir)) {
-        if (($file != '.') && ($file != '..')) {
-            if (is_dir($source . '/' . $file)) {
-                directory_copy($source . '/' . $file, $destionation . '/' . $file);
-            } else {
-                copy($source . '/' . $file, $destionation . '/' . $file);
+    if ($dir !== false) {
+        @mkdir($destionation);
+        // Loop through the files in source directory
+        while ($file = @readdir($dir)) {
+            if (($file != '.') && ($file != '..')) {
+                if (is_dir($source . '/' . $file)) {
+                    directory_copy($source . '/' . $file, $destionation . '/' . $file);
+                } else {
+                    copy($source . '/' . $file, $destionation . '/' . $file);
+                }
             }
         }
+        @closedir($dir);
     }
-    @closedir($dir);
 }
 
 class import_exception extends moodle_exception {
