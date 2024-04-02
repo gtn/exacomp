@@ -1,3 +1,6 @@
+### v4.6.7 (2024032700) ###
+* small dakora-plus fix
+
 ### v4.6.7 (2024031500) ###
 * postgres db fix
 * small fixes for dakora+ and set
