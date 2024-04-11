@@ -8017,7 +8017,7 @@ class externallib extends base {
                         foreach ($child->examples as $example) {
                             $elem_example = new stdClass ();
                             $elem_example->id = $example->id;
-                            $elem_example->title = $example->title;
+                            $elem_example->title = static::custom_htmltrim(strip_tags($example->title));
                             $elem_example->creatorid = $example->creatorid;
                             $elem_example->visible = $example->visible;
                             $elem_example->status = $getExampleStatus($example);
@@ -8033,7 +8033,7 @@ class externallib extends base {
                     foreach ($descriptor->examples as $example) {
                         $elem_example = new stdClass ();
                         $elem_example->id = $example->id;
-                        $elem_example->title = $example->title;
+                        $elem_example->title = static::custom_htmltrim(strip_tags($example->title));
                         $elem_example->creatorid = $example->creatorid;
                         $elem_example->visible = $example->visible;
                         $elem_example->status = $getExampleStatus($example);
