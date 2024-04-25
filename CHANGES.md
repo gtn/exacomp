@@ -1,3 +1,6 @@
+### v4.6.7 (2024042500) ###
+* small dakora-plus fix special chars in example title
+
 ### v4.6.7 (2024032700) ###
 * small dakora-plus fix
 
