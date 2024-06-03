@@ -98,7 +98,7 @@ function block_exacomp_turn_notifications_on() {
 
         foreach (['loggedin', 'loggedoff'] as $type) {
             $preference_name = 'message_provider_' . $provider->component . '_' . $provider->name . '_' . $type;
-            $value = @$USER->preference[$preference_name];
+            $value = $USER->preference[$preference_name] ?? '';
             if (strpos($value, 'popup') === false) {
                 // only change, if popup isn't turned on
                 if (!$value || $value == 'none') {
@@ -578,7 +578,7 @@ if (!$applogin) {
 $login_request_data = json_decode($applogin->request_data);
 
 try {
-    $tokens = block_exacomp_get_service_tokens(optional_param('services', '', PARAM_TEXT));
+    $tokens = block_exacomp_get_service_tokens(optional_param('services', $login_request_data->services ?? '', PARAM_TEXT));
     block_exacomp_login_successfull($login_request_data);
 } catch (Exception $e) {
     block_exacomp_logout();
@@ -649,10 +649,10 @@ if (@$login_request_data->usermapid) {
 }
 
 $return_uri = $login_request_data->return_uri .
-    (preg_match('!\\?!', $login_request_data->return_uri) ? '&' : '?') .
+    (str_contains($login_request_data->return_uri, '?') ? '&' : '?') .
     'moodle_token=' . $applogin->moodle_data_token;
 
-if (optional_param('withlogout', '', PARAM_BOOL)) {
+if (optional_param('withlogout', false, PARAM_BOOL)) {
 
     // came from login form
     echo $OUTPUT->header();
