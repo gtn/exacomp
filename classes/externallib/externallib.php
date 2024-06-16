@@ -4245,11 +4245,11 @@ class externallib extends base {
         // 		if ($userid == 0 && !$forall) {
         // 			$userid = $USER->id;
         // 		}
-        if (block_exacomp_is_student($courseid)) {
+        if (block_exacomp_is_teacher($courseid)) {
+            $source = 'T';
+        } else {
             $userid = $USER->id;
             $source = 'S';
-        } else {
-            $source = 'T';
         }
 
         static::require_can_access_course_user($courseid, $creatorid);
