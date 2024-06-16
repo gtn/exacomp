@@ -6016,7 +6016,7 @@ function block_exacomp_perform_question_grading() {
             FROM {question_attempts} attempts
             JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
             WHERE step.sequencenumber = 2
-            GROUP BY questionid";
+            GROUP BY attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid";
 
     $attempts = array_filter($DB->get_records_sql($sql), function($a) use ($question_array) {
         return in_array($a->questionid, $question_array);
@@ -14759,22 +14759,26 @@ function block_exacomp_clear_exacomp_weekly_schedule() {
     global $DB;
     $lastweek = time() - 7 * 24 * 60 * 60;
 
-    $sql = "UPDATE {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
-    JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex ON ex.id = schedule.exampleid
-    SET schedule.start = null, schedule.endtime = null, is_overdue = 1
-    WHERE schedule.start > :lastweek1
-    AND schedule.start < :currenttime1
-    AND ex.blocking_event = 0
-    AND schedule.id NOT IN (
-        SELECT sched.id
-        -- select table inside a subquery, because else we get a
-        -- 'You can't specify target table 'schedule' for update in FROM clause'
-        -- error
-        FROM (SELECT id, exampleid, start FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "}) AS sched
-        JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON sched.exampleid = item_mm.exacomp_record_id
-        JOIN {block_exaportitem} item ON item_mm.itemid = item.id
-        WHERE sched.start > :lastweek2
-        AND sched.start < :currenttime2
+    $sql = "UPDATE {" . BLOCK_EXACOMP_DB_SCHEDULE . "}
+    SET start = null, endtime = null, is_overdue = 1
+    WHERE id IN (
+        SELECT schedule.id
+        FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
+        JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex ON ex.id = schedule.exampleid
+        WHERE schedule.start > :lastweek1
+        AND schedule.start < :currenttime1
+        AND ex.blocking_event = 0
+        AND schedule.id NOT IN (
+            SELECT sched.id
+            -- select table inside a subquery, because else we get a
+            -- 'You can't specify target table 'schedule' for update in FROM clause'
+            -- error
+            FROM (SELECT id, exampleid, start FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "}) AS sched
+            JOIN {" . BLOCK_EXACOMP_DB_ITEM_MM . "} item_mm ON sched.exampleid = item_mm.exacomp_record_id
+            JOIN {block_exaportitem} item ON item_mm.itemid = item.id
+            WHERE sched.start > :lastweek2
+            AND sched.start < :currenttime2
+        )
     )";
 
     $params = array("lastweek1" => $lastweek, "lastweek2" => $lastweek, "currenttime1" => time(), "currenttime2" => time());
