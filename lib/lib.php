@@ -392,12 +392,7 @@ function block_exacomp_get_courses_of_student($userid) {
 function block_exacomp_is_student($context = null) {
     $context = block_exacomp_get_context_from_courseid($context);
 
-    //    echo has_capability('block/exacomp:teacher', $context);
-    //    echo has_capability('block/exacomp:student', $context);
-
-    // a teacher can not be a student in the same course   RW TODO, this leads to problems, check why
-    //	return has_capability('block/exacomp:student', $context) && !has_capability('block/exacomp:teacher', $context);
-    return has_capability('block/exacomp:student', $context);
+    return has_capability('block/exacomp:student', $context) && !has_capability('block/exacomp:teacher', $context);
 }
 
 /**
