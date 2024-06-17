@@ -768,21 +768,6 @@ namespace block_exacomp {
         class url extends common\url {
         }
     }
-
-    if (_export_function('get_string')) {
-        function get_string($identifier, $component = null, $a = null) {
-            return '';
-        }
-    }
-    if (_export_function('print_error')) {
-        function print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {
-        }
-    }
-    if (_export_function('trans')) {
-        function trans($string_or_strings, $arg_or_args = null) {
-            return '';
-        }
-    }
 }
 
 namespace {
@@ -807,10 +792,6 @@ namespace {
     if (_block_exacomp_export_function('get_string')) {
         function block_exacomp_get_string($identifier, $component = null, $a = null) {
             return '';
-        }
-    }
-    if (_block_exacomp_export_function('print_error')) {
-        function block_exacomp_print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {
         }
     }
     if (_block_exacomp_export_function('trans')) {

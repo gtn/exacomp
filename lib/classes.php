@@ -40,7 +40,7 @@ class db_layer {
 
         $args = func_get_args();
         if ($args) {
-            print_error('no args allowed in get');
+            throw new \moodle_exception('no args allowed in get');
         }
 
         if ($default === null) {
@@ -815,7 +815,7 @@ class db_record {
             } else if ($conditions instanceof \stdClass) {
                 $conditions = (array)$conditions;
                 if (!$conditions) {
-                    print_error('wrong fields');
+                    throw new \moodle_exception('wrong fields');
                 }
             } else {
                 throw new \coding_exception('Wrong class for $conditions expected "' . get_called_class() . '" got "' . get_class($conditions) . '"');
@@ -823,7 +823,7 @@ class db_record {
         } else if (is_array($conditions)) {
             // ok
         } else {
-            print_error('wrong fields');
+            throw new \moodle_exception('wrong fields');
         }
 
         $data = static::get_record($conditions, $fields, $strictness);
@@ -1231,7 +1231,7 @@ class example extends db_record {
 
         $filename = (($numbering = $this->get_numbering()) ? $numbering . '_' : '') .
             $this->title .
-            '_' . trans(['de:Aufgabe', 'en:Task']) .
+            '_' . block_exacomp_trans(['de:Aufgabe', 'en:Task']) .
             '.' . preg_replace('!^.*\.!', '', $file->get_filename());
 
         $url = \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
@@ -1249,7 +1249,7 @@ class example extends db_record {
 
         $filename = (($numbering = $this->get_numbering()) ? $numbering . '_' : '') .
             $this->title .
-            '_' . trans(['de:Lösung', 'en:Solution']) .
+            '_' . block_exacomp_trans(['de:Lösung', 'en:Solution']) .
             '.' . preg_replace('!^.*\.!', '', $file->get_filename());
 
         return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
@@ -1265,7 +1265,7 @@ class example extends db_record {
 
         $filename = (($numbering = $this->get_numbering()) ? $numbering . '_' : '') .
             $this->title .
-            '_' . trans(['de:Gesamtbeispiel', 'en:Complete file']) .
+            '_' . block_exacomp_trans(['de:Gesamtbeispiel', 'en:Complete file']) .
             '.' . preg_replace('!^.*\.!', '', $file->get_filename());
 
         return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),

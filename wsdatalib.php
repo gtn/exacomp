@@ -18,7 +18,7 @@ class block_exacomp_ws_datahandler {
     protected function checkRealToken() {
         global $DB;
         if (!$DB->record_exists('external_tokens', ['token' => $this->token])) {
-            block_exacomp_print_error('badtokenforwsdata', 'block_exacomp');
+            throw new \moodle_exception('badtokenforwsdata', 'block_exacomp');
         }
     }
 

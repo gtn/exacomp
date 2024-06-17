@@ -359,7 +359,7 @@ class printer {
             $first_day = block_exacomp_add_days($first_day, 0); // get midnight
             $day_cnt = 1;
         } else {
-            print_error('wrong interval');
+            throw new \moodle_exception('wrong interval');
         }
 
         $days = [];
