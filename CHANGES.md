@@ -1,3 +1,7 @@
+### v4.6.7 (2024061600) ###
+* fix problem in dakora+ if user has role teacher and student
+* postgres query optimization 
+
 ### v4.6.7 (2024042500) ###
 * small dakora-plus fix special chars in example title
 
