@@ -370,7 +370,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
 
                 $extra = '';
-                if ($this->is_edit_mode() && ($niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (property_exists($selectedSubject, "is_editable") && $selectedSubject->is_editable))) {
+                if ($this->is_edit_mode() && ($niveau->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM || (is_object($selectedSubject) && property_exists($selectedSubject, "is_editable") && $selectedSubject->is_editable))) {
                     $deleteUrl = html_entity_decode(new block_exacomp\url('niveau.php', ['courseid' => $COURSE->id, 'id' => $niveau->id, 'action' => 'delete', 'sesskey' => sesskey(), 'forward' => g::$PAGE->url . '&editmode=1']));
                     // Niveau delete button
                     $extra .= '&nbsp;' . html_writer::span($this->pix_icon("i/delete", block_exacomp_get_string("delete")),
