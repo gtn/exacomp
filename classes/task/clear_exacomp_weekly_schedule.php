@@ -31,9 +31,13 @@ class clear_exacomp_weekly_schedule extends scheduled_task {
 
     public function execute() {
         try {
-            mtrace("Exabis Competence Grid: clear_exacomp_weekly_schedule \"Sonntagsscript\" task is running:");
-            block_exacomp_clear_exacomp_weekly_schedule();
-            mtrace("clear_exacomp_weekly_schedule done");
+            if (block_exacomp_exaportexists()) {
+                mtrace("Exabis Competence Grid: clear_exacomp_weekly_schedule \"Sonntagsscript\" task is running:");
+                block_exacomp_clear_exacomp_weekly_schedule();
+                mtrace("clear_exacomp_weekly_schedule done");
+            } else {
+                mtrace("clear_exacomp_weekly_schedule ignored");
+            }
         } catch (moodle_exception $e) {
             mtrace("clear_exacomp_weekly_schedule tables: " . $e->getMessage());
         }
