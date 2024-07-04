@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// Version: 2024061700
+// Version: 2024070400
 
 // common namespace of current plugin
 namespace block_exacomp\common;
@@ -474,8 +474,15 @@ class SimpleXMLElement extends \SimpleXMLElement {
         }
     }
 
-    public function addChild(mixed $name, ?string $value = null, ?string $namespace = null): ?\SimpleXMLElement {
-        if ($name instanceof SimpleXMLElement) {
+    /**
+     * Info: don't add parameter types in the overridden addChild-Method, this ensures compatibility with php7.4!
+     * @param \SimpleXMLElement|string $name
+     * @param string|null $value
+     * @param string|null $namespace
+     * @return \SimpleXMLElement|null
+     */
+    public function addChild($name, $value = null, $namespace = null): ?\SimpleXMLElement {
+        if ($name instanceof \SimpleXMLElement) {
             $newNode = $name;
             $node = dom_import_simplexml($this);
             $newNode = $node->ownerDocument->importNode(dom_import_simplexml($newNode), true);
