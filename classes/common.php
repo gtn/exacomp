@@ -14,13 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// Version: 2024070400
+// Version: 2024070600.php74
 
 // common namespace of current plugin
 namespace block_exacomp\common;
 
 class db {
-    public static function update_record(string $table, array|object $data, array $where = null): ?object {
+    /**
+     * @param string $table
+     * @param array|object $data
+     * @param array|null $where
+     * @return bool
+     * @throws \moodle_exception
+     */
+    public static function update_record(string $table, $data, array $where = null): bool {
         global $DB;
 
         if ($where === null) {
@@ -36,13 +43,21 @@ class db {
                 $DB->update_record($table, (object)$data);
             }
 
-            return (object)($data + (array)$dbItem);
+            return true;
+            // return (object)($data + (array)$dbItem);
         }
 
-        return null;
+        return false;
     }
 
-    public static function insert_or_update_record(string $table, array|object $data, array|object $where = null): object {
+    /**
+     * @param string $table
+     * @param array|object $data
+     * @param array|object|null $where
+     * @return object
+     * @throws \moodle_exception
+     */
+    public static function insert_or_update_record(string $table, $data, $where = null): object {
         global $DB;
 
         $original_data = $data;
