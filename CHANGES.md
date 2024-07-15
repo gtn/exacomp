@@ -1,3 +1,6 @@
+### v4.6.7 (2024071500) ###
+* task clear_exacomp_weekly_schedule now does nothing if exaport is not installed
+
 ### v4.6.7 (2024061600) ###
 * fix problem in dakora+ if user has role teacher and student
 * postgres query optimization 
