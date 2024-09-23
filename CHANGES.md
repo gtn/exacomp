@@ -1,3 +1,6 @@
+### v4.6.7 (2024092300) ###
+* some fixes for php versions and postgres db
+
 ### v4.6.7 (2024071500) ###
 * task clear_exacomp_weekly_schedule now does nothing if exaport is not installed
 
