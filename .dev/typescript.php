@@ -118,7 +118,7 @@ foreach ($servicesFiles as $servicesFile) {
                             $parts = explode(',', $matches[1]);
 
                             $enumFields = join("", array_map(function($part) {
-                                return "  " . ucfirst(trim($part)) . " = '" . trim($part) . "',\n";
+                                return "  " . strtoupper(trim($part)) . " = '" . trim($part) . "',\n";
                             }, $parts));
                             $enumName = 'enum_' . join("_", array_map(function($part) {
                                     return trim($part);
@@ -174,7 +174,7 @@ foreach ($servicesFiles as $servicesFile) {
                             : ($paramInfo->required == VALUE_OPTIONAL ? '?' : '')
                         ) . ": {$tsType};" .
                         ($default ? " // default: $default" : "") .
-                        ($paramInfo->desc ? " // " . preg_replace("![\r\n\s]+!", ' ', $paramInfo->desc) : "") .
+                        ($paramInfo->desc ? " // " . preg_replace("![\r\n\s]+!", ' ', trim($paramInfo->desc)) : "") .
                         "\n";
                 }
 
@@ -210,7 +210,7 @@ foreach ($servicesFiles as $servicesFile) {
             $dokuInterfaces .= $recursor(false, "{$functionName}_returns", $returns);
         }
 
-        $doku .= "\n  /**\n   * " . preg_replace("![\r\n\s]+!", ' ', $function['description']) . "\n   */\n" .
+        $doku .= "\n  /**\n   * " . preg_replace("![\r\n\s]+!", ' ', trim($function['description'])) . "\n   */\n" .
             // "  public {$functionName} = async (params" .
             // // optional, weil keine parameter notwendig
             // (count($params->keys) == 0 ? '?' : '') .
