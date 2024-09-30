@@ -24,6 +24,7 @@ require_once $CFG->dirroot . '/lib/filelib.php';
 
 use block_enrolcode_lib;
 use block_exacomp\cross_subject;
+use block_exacomp\db;
 use block_exacomp\db_record;
 use block_exacomp\descriptor;
 use block_exacomp\event\example_commented;
@@ -77,9 +78,11 @@ class externallib extends base {
         global $CFG, $DB, $USER;
         require_once("$CFG->dirroot/lib/enrollib.php");
 
-        static::validate_parameters(static::get_courses_parameters(), array(
+        [
             'userid' => $userid,
-        ));
+        ] = static::validate_parameters(static::get_courses_parameters(), [
+            'userid' => $userid,
+        ]);
 
         if (!$userid) {
             $userid = $USER->id;
@@ -113,24 +116,21 @@ class externallib extends base {
                     $teachercanedit = false;
                 }
 
-                // $cache = \cache::make('block_exacomp', 'course_topics_configured');
-                //
-                // if ($val = $cache->get($mycourse->id)) {
-                //     $course_topics_configured = $val == 'set';
-                // } else {
                 $course_topics_configured = !!block_exacomp_get_topics_by_subject($mycourse->id, null, true);
-                //     $cache->set($mycourse->id, $course_topics_configured ? 'set' : 'notset');
-                // }
+
+                $course_settings = $DB->get_record('block_exacompsettings', ['courseid' => $mycourse->id]);
 
                 $course = array(
                     "courseid" => $mycourse->id,
                     "fullname" => $mycourse->fullname,
                     "shortname" => $mycourse->shortname,
-                    "assessment_config" => $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $mycourse->id]),
                     "exarole" => $exarole,
-                    'course_topics_configured' => $course_topics_configured,
                     "teachercanedit" => $teachercanedit,
+                    'course_topics_configured' => $course_topics_configured,
+                    "assessment_config" => $course_settings->assessmentconfiguration ?? 0,
+                    "experience_level" => $course_settings->experience_level ?? null,
                 );
+
                 $courses[] = $course;
             }
         }
@@ -147,11 +147,12 @@ class externallib extends base {
         return new external_multiple_structure(new external_single_structure(array(
             'courseid' => new external_value(PARAM_INT, 'id of course'),
             'fullname' => new external_value(PARAM_TEXT, 'fullname of course'),
-            'shortname' => new external_value(PARAM_RAW, 'shortname of course'),
+            'shortname' => new external_value(PARAM_TEXT, 'shortname of course'),
             'exarole' => new external_value(PARAM_INT, '1=trainer, 2=student'),
             'teachercanedit' => new external_value(PARAM_BOOL),
             'course_topics_configured' => new external_value(PARAM_BOOL, 'only available for teachers (used in diggr+)', VALUE_OPTIONAL),
-            'assessment_config' => new external_value(PARAM_RAW, 'which course specific assessment_config is used'),
+            'assessment_config' => new external_value(PARAM_INT, 'which course specific assessment_config is used'),
+            'experience_level' => new external_value(PARAM_TEXT, 'ENUM(basic, advanced)', VALUE_OPTIONAL),
         )));
     }
 
@@ -11082,7 +11083,7 @@ class externallib extends base {
      * @return array
      */
     public static function dakora_get_courseconfigs() {
-        global $CFG, $USER, $DB;
+        global $CFG, $USER;
         static::validate_parameters(static::dakora_get_courseconfigs_parameters(), array());
 
         $info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
@@ -11098,15 +11099,6 @@ class externallib extends base {
         // Get which configuration is used for which course
 
         $courses = static::get_courses($USER->id);
-        //        $courses_assoc = array();
-        foreach ($courses as $key => $course) {
-            //            $courses_assoc[$course["courseid"]] = $course;
-            //            $courses_assoc[$course["courseid"]]["assessment_config"] = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $course["courseid"]]);
-            //            $courses[$key]["assessment_config"] = $DB->get_field('block_exacompsettings', 'assessmentconfiguration', ['courseid' => $course["courseid"]]); // already done in get_courses
-            if ($courses[$key]["assessment_config"] == null) {
-                $courses[$key]["assessment_config"] = 0;
-            }
-        }
 
         $assessment_configurations = block_exacomp_get_assessment_configurations();
 
@@ -11285,7 +11277,10 @@ class externallib extends base {
             'courses' => new external_multiple_structure(new external_single_structure(array(
                 'courseid' => new external_value(PARAM_INT, 'id of course'),
                 'fullname' => new external_value(PARAM_TEXT, 'fullname of course'),
-                'assessment_config' => new external_value(PARAM_RAW, 'which course specific assessment_config is used'),
+                'shortname' => new external_value(PARAM_TEXT, 'shortname of course'),
+                'exarole' => new external_value(PARAM_INT, '1=trainer, 2=student'),
+                'assessment_config' => new external_value(PARAM_INT, 'which course specific assessment_config is used'),
+                'experience_level' => new external_value(PARAM_TEXT, 'ENUM(basic, advanced)', VALUE_OPTIONAL),
             ))),
             'configs' => new external_multiple_structure(new external_single_structure(array(
                 'id' => new external_value(PARAM_INT, ''),
@@ -15452,7 +15447,7 @@ class externallib extends base {
     public static function dakoraplus_save_coursesettings_parameters() {
         return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT, ''),
-            'assessment_config' => new external_value(PARAM_INT, '', VALUE_DEFAULT),
+            'experience_level' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, null),
         ));
     }
 
@@ -15460,30 +15455,40 @@ class externallib extends base {
      * @ws-type-write
      * @return success
      */
-    public static function dakoraplus_save_coursesettings($courseid, $assessment_config = null) {
-        static::validate_parameters(static::dakoraplus_save_coursesettings_parameters(), array(
+    public static function dakoraplus_save_coursesettings(int $courseid, string $experience_level = null) {
+        global $DB;
+
+        [
             'courseid' => $courseid,
-            'assessment_config' => $assessment_config,
-        ));
+            'experience_level' => $experience_level,
+        ] = static::validate_parameters(static::dakoraplus_save_coursesettings_parameters(), [
+            'courseid' => $courseid,
+            'experience_level' => $experience_level,
+        ]);
 
         block_exacomp_require_teacher($courseid);
 
-        if ($assessment_config !== null) {
-            if ($assessment_config) {
-                // check if is available
-                $assessment_configurations = block_exacomp_get_assessment_configurations();
-                if (empty($assessment_configurations[$assessment_config])) {
-                    throw new invalid_parameter_exception ("assessment config with id '{$assessment_config}' not found");
-                }
-            }
-
-            $settings = block_exacomp_get_settings_by_course($courseid);
-            $settings->assessmentconfiguration = $assessment_config;
-            $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies); // TODO: why like this? Is this done at every location? Then why not in the function.. copied from edit_course.php
-            block_exacomp_save_coursesettings($courseid, $settings);
+        if ($experience_level !== null) {
+            db::insert_or_update_record('block_exacompsettings', ['experience_level' => $experience_level], ["courseid" => $courseid]);
         }
 
-        return array("success" => true);
+        // TODO: remove?
+        /*
+        if ($assessment_config) {
+            // check if is available
+            $assessment_configurations = block_exacomp_get_assessment_configurations();
+            if (empty($assessment_configurations[$assessment_config])) {
+                throw new invalid_parameter_exception ("assessment config with id '{$assessment_config}' not found");
+            }
+        }
+
+        $settings = block_exacomp_get_settings_by_course($courseid);
+        $settings->assessmentconfiguration = $assessment_config;
+        $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies); // TODO: why like this? Is this done at every location? Then why not in the function.. copied from edit_course.php
+        block_exacomp_save_coursesettings($courseid, $settings);
+        */
+
+        return ["success" => true];
     }
 
     /**

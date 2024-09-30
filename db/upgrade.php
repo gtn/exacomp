@@ -4220,6 +4220,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2023120800, 'exacomp');
     }
 
+    if ($oldversion < 2024092700) {
+
+        // Define field experience_level to be added to block_exacompsettings.
+        $table = new xmldb_table('block_exacompsettings');
+        $field = new xmldb_field('experience_level', XMLDB_TYPE_CHAR, '20', null, null, null, null, 'assessmentconfiguration');
+
+        // Conditionally launch add field experience_level.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2024092700, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
