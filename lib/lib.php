@@ -14763,7 +14763,7 @@ function block_exacomp_clear_exacomp_weekly_schedule() {
     SET start = null, endtime = null, is_overdue = 1
     WHERE id IN (
         SELECT schedule.id
-        FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "} schedule
+        FROM (SELECT * FROM {" . BLOCK_EXACOMP_DB_SCHEDULE . "}) AS schedule
         JOIN {" . BLOCK_EXACOMP_DB_EXAMPLES . "} ex ON ex.id = schedule.exampleid
         WHERE schedule.start > :lastweek1
         AND schedule.start < :currenttime1
