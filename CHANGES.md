@@ -1,3 +1,8 @@
+### v4.6.7 (2024101700) ###
+* mysql query optimization
+* typescript generator fix
+* new webservices for Dakora+
+
 ### v4.6.7 (2024092300) ###
 * some fixes for php versions and postgres db
 
