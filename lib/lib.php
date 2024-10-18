@@ -6001,50 +6001,51 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
     }
 }
 
-function block_exacomp_perform_question_grading() {
-    global $DB;
-
-    $question_array = array();
-    $descquests = $DB->get_records("block_exacompdescrquest_mm");
-    foreach ($descquests as $descquest) {
-        if (!in_array($descquest->questid, $question_array)) {
-            $question_array[] = $descquest->questid;
-        }
-    }
-
-    $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid, max(attempts.timemodified) as timemodified
-            FROM {question_attempts} attempts
-            JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
-            WHERE step.sequencenumber = 2
-            GROUP BY attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid";
-
-    $attempts = array_filter($DB->get_records_sql($sql), function($a) use ($question_array) {
-        return in_array($a->questionid, $question_array);
-    });
-
-    foreach ($attempts as $attempt) {
-        foreach ($descquests as $descquest) {
-            if ($attempt->timemodified > $descquest->timemodified) {
-                if ($attempt->questionid == $descquest->questid) {
-                    if ($descquest->courseid != -1) {
-                        $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
-
-                        if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid)) {
-                            block_exacomp_save_additional_grading_for_comp($descquest->courseid, $descquest->descrid, $attempt->userid,
-                                block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR);
-                        }
-
-                        block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
-                            block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
-                        $descquest->timemodified = $attempt->timemodified;
-                        $DB->update_record("block_exacompdescrquest_mm", $descquest);
-                    }
-                }
-            }
-        }
-    }
-
-}
+// deprecated. This is not performant. Instead, the same result is achieved with the attempt_submitted event observer
+// TODO: if the question-descriptor relation is done AFTER the quiz has been submitted, the grades are now NOT recalculated. Implement, if needed.
+// function block_exacomp_perform_question_grading() {
+//     global $DB;
+//
+//     $question_array = array();
+//     $descquests = $DB->get_records("block_exacompdescrquest_mm");
+//     foreach ($descquests as $descquest) {
+//         if (!in_array($descquest->questid, $question_array)) {
+//             $question_array[] = $descquest->questid;
+//         }
+//     }
+//
+//     $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid, max(attempts.timemodified) as timemodified
+//             FROM {question_attempts} attempts
+//             JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
+//             WHERE step.sequencenumber = 2
+//             GROUP BY attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid";
+//
+//     $attempts = array_filter($DB->get_records_sql($sql), function($a) use ($question_array) {
+//         return in_array($a->questionid, $question_array);
+//     });
+//
+//     foreach ($attempts as $attempt) {
+//         foreach ($descquests as $descquest) {
+//             if ($attempt->timemodified > $descquest->timemodified) {
+//                 if ($attempt->questionid == $descquest->questid) {
+//                     if ($descquest->courseid != -1) {
+//                         $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
+//
+//                         if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid)) {
+//                             block_exacomp_save_additional_grading_for_comp($descquest->courseid, $descquest->descrid, $attempt->userid,
+//                                 block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+//                         }
+//
+//                         block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
+//                             block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
+//                         $descquest->timemodified = $attempt->timemodified;
+//                         $DB->update_record("block_exacompdescrquest_mm", $descquest);
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 function block_exacomp_get_gained_competences($course, $student, $subject = null, $crosssubj = null) {
 
@@ -9636,7 +9637,11 @@ function block_exacomp_save_additional_grading_for_comp($courseid, $descriptorid
             break;
     }
     $context = context_course::instance($courseid);
-    $role = block_exacomp_is_teacher($context) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT;
+    if ($admingrading) {
+        $role = BLOCK_EXACOMP_ROLE_TEACHER;
+    } else {
+        $role = block_exacomp_is_teacher($context) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT;
+    }
     $value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
     $record = block_exacomp_get_comp_eval($courseid, $role, $studentid, $comptype, $descriptorid);
 

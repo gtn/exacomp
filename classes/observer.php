@@ -184,4 +184,149 @@ class block_exacomp_observer {
     }
     // this is has been done in block_exacomp_pre_course_module_delete() before.
 
+
+    //
+    /**
+     * Observer for \mod_quiz\event\attempt_submitted event.
+     *
+     * this can be used to update the competences of a student after a quiz has been submitted
+     * it captures the automatically graded questions
+     *
+     * @param \mod_quiz\event\attempt_submitted $event
+     * @return void
+     */
+    public static function attempt_submitted(\mod_quiz\event\attempt_submitted $event) {
+        global $DB, $USER;
+
+        if (block_exacomp_is_teacher($event->courseid, $USER->id)) {
+            $admingrading = false;
+        } else {
+            $admingrading = true; // if the student triggers this event, the grading should be done by the admin
+        }
+
+        // Get the quiz attempt ID from the event data.
+        $attemptid = $event->objectid;
+
+        // Fetch the quiz attempt record to get the 'uniqueid'.
+        $quizattempt = $DB->get_record('quiz_attempts', array('id' => $attemptid), 'uniqueid, userid');
+
+        if (!$quizattempt) {
+            // If the quiz attempt is not found, return early.
+            return;
+        }
+
+        // The uniqueid corresponds to the question usage id in question_attempts.
+        $questionusageid = $quizattempt->uniqueid;
+
+        // Fetch all question attempts related to this quiz attempt using the uniqueid.
+        // $questionattempts = $DB->get_records('question_attempts', array('questionusageid' => $questionusageid));
+
+        $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, attempts.timemodified as timemodified
+            FROM {question_attempts} attempts
+            JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
+            WHERE (step.state = 'gradedright' OR step.state = 'gradedwrong')
+            AND questionusageid = :questionusageid";
+        $questionattempts = $DB->get_records_sql($sql, array('questionusageid' => $questionusageid));
+
+
+        // Loop through each question attempt.
+        foreach ($questionattempts as $questionattempt) {
+            $questionid = $questionattempt->questionid;
+
+            // For each question, fetch related descriptors from block_exacompdescrquest_mm.
+            $descriptors = $DB->get_records('block_exacompdescrquest_mm', array('questid' => $questionid));
+
+            // Process the descriptors as needed for grading or other purposes.
+            foreach ($descriptors as $descriptor) {
+                $grading_scheme = block_exacomp_get_assessment_comp_scheme($descriptor->courseid);
+
+                if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid)) {
+                    block_exacomp_save_additional_grading_for_comp($descriptor->courseid, $descriptor->descrid, $quizattempt->userid,
+                        block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, -1, $admingrading);
+                }
+
+                block_exacomp_set_user_competence($quizattempt->userid, $descriptor->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
+                    block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid), null, -1, true, [], $admingrading);
+                $descriptor->timemodified = $questionattempt->timemodified;
+                $DB->update_record("block_exacompdescrquest_mm", $descriptor);
+            }
+        }
+
+        return true;
+    }
+
+    // TODO: manually graded questions did not work with the cron, were not needed. This code below does also not work yet, but almost. ==> Finish if needed
+    // // this can be used to update the competences of a student after a quiz has been submitted
+    // // it captures the manually graded questions.
+    // public static function question_manually_graded(\mod_quiz\event\question_manually_graded $event) {
+    //     global $DB, $USER;
+    //
+    //     if (block_exacomp_is_teacher($event->courseid, $USER->id)) {
+    //         $admingrading = false;
+    //     } else {
+    //         $admingrading = true; // if the student triggers this event, the grading should be done by the admin
+    //     }
+    //
+    //     // Get the quiz attempt ID from the event data.
+    //     $attemptid = $event->get_data()["other"]["attemptid"];
+    //
+    //     // Fetch the quiz attempt record to get the 'uniqueid'.
+    //     $quizattempt = $DB->get_record('quiz_attempts', array('id' => $attemptid), 'uniqueid, userid');
+    //
+    //     // the teacher could grade an old attempt AFTER the newest attempt has been graded ==> get the newest attempt
+    //     $sql = "SELECT *
+    //     FROM {quiz_attempts}
+    //     WHERE userid = :userid
+    //     AND quiz = :quizid
+    //     ORDER BY attempt DESC
+    //     LIMIT 1";
+    //     $params = array('userid' => $quizattempt->userid, 'quizid' => $event->get_data()["other"]["quizid"]);
+    //     $quizattempt = $DB->get_record_sql($sql, $params);
+    //
+    //     if (!$quizattempt) {
+    //         // If the quiz attempt is not found, return early.
+    //         return;
+    //     }
+    //
+    //     // The uniqueid corresponds to the question usage id in question_attempts.
+    //     $questionusageid = $quizattempt->uniqueid;
+    //
+    //     // Fetch all question attempts related to this quiz attempt using the uniqueid.
+    //     // $questionattempts = $DB->get_records('question_attempts', array('questionusageid' => $questionusageid));
+    //
+    //     // get the attempt and step information with the join, but only for this specific question
+    //     $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, attempts.timemodified as timemodified
+    //         FROM {question_attempts} attempts
+    //         JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
+    //         WHERE (step.state = 'mangrright' OR step.state = 'mangrwrong')
+    //         AND questionusageid = :questionusageid // TODO: this does not work. The questionusageid is likely not the way to find the steps information
+    //         AND attempts.questionid = :questionid";
+    //     $questionattempts = $DB->get_records_sql($sql, array('questionusageid' => $questionusageid, 'questionid' => $event->get_data()["objectid"]));
+    //
+    //     // Loop through each question attempt... this will only be ONE question attempt, since the event is triggered for one question only.
+    //     foreach ($questionattempts as $questionattempt) {
+    //         $questionid = $questionattempt->questionid;
+    //
+    //         // For each question, fetch related descriptors from block_exacompdescrquest_mm.
+    //         $descriptors = $DB->get_records('block_exacompdescrquest_mm', array('questid' => $questionid));
+    //
+    //         // Process the descriptors as needed for grading or other purposes.
+    //         foreach ($descriptors as $descriptor) {
+    //             $grading_scheme = block_exacomp_get_assessment_comp_scheme($descriptor->courseid);
+    //
+    //             if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid)) {
+    //                 block_exacomp_save_additional_grading_for_comp($descriptor->courseid, $descriptor->descrid, $quizattempt->userid,
+    //                     block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR, -1, $admingrading);
+    //             }
+    //
+    //             block_exacomp_set_user_competence($quizattempt->userid, $descriptor->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
+    //                 block_exacomp_get_assessment_max_good_value($grading_scheme, true, $questionattempt->maxmark, $questionattempt->fraction, $descriptor->courseid),null, -1, true, [], $admingrading);
+    //             $descriptor->timemodified = $questionattempt->timemodified;
+    //             $DB->update_record("block_exacompdescrquest_mm", $descriptor);
+    //         }
+    //     }
+    //     return true;
+    // }
+
+
 }
