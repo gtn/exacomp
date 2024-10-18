@@ -9,6 +9,7 @@ require_admin();
 $servicesGroups = [
     'default' => [
         __DIR__ . '/../db/services.php',
+        __DIR__ . '/../../exaport/db/services.php',
         $CFG->dirroot . '/mod/quiz/db/services.php',
         $CFG->dirroot . '/lib/db/services.php',
         $CFG->dirroot . '/message/output/popup/db/services.php',
@@ -45,10 +46,13 @@ if ($group == 'exapdf') {
     $assignfeedback_exapdf_info = core_plugin_manager::instance()->get_plugin_info('assignfeedback_exapdf');
     $dokuHeader = "// assignfeedback_exapdf version: " . $assignfeedback_exapdf_info->versiondisk . "\n";
 } else {
-    $block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
-
     $dokuHeader .= "// moodle release: " . $CFG->release . "\n";
+
+    $block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
     $dokuHeader .= "// block_exacomp version: " . $block_exacomp_info->versiondisk . "\n";
+
+    $block_exaport_info = core_plugin_manager::instance()->get_plugin_info('block_exaport');
+    $dokuHeader .= "// block_exaport version: " . $block_exaport_info->versiondisk . "\n";
 }
 
 $dokuHeader .= "
@@ -67,7 +71,7 @@ $doku = '';
 
 $dokuInterfaces = '';
 
-$definedEnumsByDefenition = [];
+$definedEnumsByDefinition = [];
 
 foreach ($servicesFiles as $servicesFile) {
     require $servicesFile;
@@ -90,7 +94,48 @@ foreach ($servicesFiles as $servicesFile) {
             continue;
         }
 
-        $recursor = function($isParameters, $namePrefix, $o) use (&$recursor, &$definedEnumsByDefenition) {
+        $get_external_value_type = function($isParameters, $namePrefix, $paramInfo, $paramName, &$dokuInterface) use (&$definedEnumsByDefinition) {
+            if (preg_match('!ENUM\(([^)]+)\)!', $paramInfo->desc, $matches)) {
+                $tsType = moodle_type_to_typescript_type($isParameters, $paramInfo->type);
+                if ($tsType != 'string') {
+                    if ($isParameters) {
+                        die('enum IN PARAMETERS not allowed in: ' . $namePrefix);
+                    } else {
+                        die('enum not allowed in: ' . $namePrefix);
+                    }
+                }
+
+                $parts = explode(',', $matches[1]);
+
+                $enumFields = join("", array_map(function($part) {
+                    return "  " . strtoupper(trim($part)) . " = '" . trim($part) . "',\n";
+                }, $parts));
+                $enumName = 'enum_' . join("_", array_map(function($part) {
+                        return trim($part);
+                    }, $parts));
+
+                // enums with same defenition have the same type
+                $tsType = $namePrefix . '_' . $paramName;
+                $dokuInterface = "export { $enumName as $tsType };\n\n" .
+                    $dokuInterface;
+
+                if (empty($definedEnumsByDefinition[$enumFields])) {
+                    $dokuInterface = "export enum {$enumName} {\n" . $enumFields . "}\n\n" .
+                        $dokuInterface;
+
+                    // save enum defenition for later
+                    $definedEnumsByDefinition[$enumFields] = $tsType;
+                }
+
+                $tsType = $enumName;
+            } else {
+                $tsType = moodle_type_to_typescript_type($isParameters, $paramInfo->type);
+            }
+
+            return $tsType;
+        };
+
+        $recursor = function($isParameters, $namePrefix, $o) use (&$recursor, &$definedEnumsByDefinition, $get_external_value_type) {
             if ($o instanceof external_multiple_structure) {
                 $dokuInterface = $recursor($isParameters, $namePrefix . '_item', $o->content);
                 $dokuInterface .= "export type {$namePrefix} = {$namePrefix}_item[];\n\n";
@@ -105,48 +150,17 @@ foreach ($servicesFiles as $servicesFile) {
 
                 foreach ($o->keys as $paramName => $paramInfo) {
                     if ($paramInfo instanceof external_value) {
-                        if (preg_match('!ENUM\(([^)]+)\)!', $paramInfo->desc, $matches)) {
-                            $tsType = moodle_type_to_typescript_type($isParameters, $paramInfo->type);
-                            if ($tsType != 'string') {
-                                if ($isParameters) {
-                                    die('enum IN PARAMETERS not allowed in: ' . $namePrefix);
-                                } else {
-                                    die('enum not allowed in: ' . $namePrefix);
-                                }
-                            }
-
-                            $parts = explode(',', $matches[1]);
-
-                            $enumFields = join("", array_map(function($part) {
-                                return "  " . strtoupper(trim($part)) . " = '" . trim($part) . "',\n";
-                            }, $parts));
-                            $enumName = 'enum_' . join("_", array_map(function($part) {
-                                    return trim($part);
-                                }, $parts));
-
-                            // enums with same defenition have the same type
-                            $tsType = $namePrefix . '_' . $paramName;
-                            $dokuInterface = "export { $enumName as $tsType };\n\n" .
-                                $dokuInterface;
-
-                            if (empty($definedEnumsByDefenition[$enumFields])) {
-                                $dokuInterface = "export enum {$enumName} {\n" . $enumFields . "}\n\n" .
-                                    $dokuInterface;
-
-                                // save enum defenition for later
-                                $definedEnumsByDefenition[$enumFields] = $tsType;
-                            }
-
-                            $tsType = $enumName;
-                        } else {
-                            $tsType = moodle_type_to_typescript_type($isParameters, $paramInfo->type);
-                        }
+                        $tsType = $get_external_value_type($isParameters, $namePrefix, $paramInfo, $paramName, $dokuInterface);
                     } elseif ($paramInfo instanceof external_single_structure) {
                         $dokuInterface = $recursor($isParameters, $namePrefix . '_' . $paramName, $paramInfo) . $dokuInterface;
                         $tsType = $namePrefix . '_' . $paramName;
                     } elseif ($paramInfo instanceof external_multiple_structure) {
-                        $dokuInterface = $recursor($isParameters, $namePrefix . '_' . $paramName, $paramInfo->content) . $dokuInterface;
-                        $tsType = $namePrefix . '_' . $paramName . '[]';
+                        if ($paramInfo->content instanceof external_value) {
+                            $tsType = $get_external_value_type($isParameters, $namePrefix, $paramInfo->content, $paramName, $dokuInterface) . '[]';
+                        } else {
+                            $dokuInterface = $recursor($isParameters, $namePrefix . '_' . $paramName, $paramInfo->content) . $dokuInterface;
+                            $tsType = $namePrefix . '_' . $paramName . '[]';
+                        }
                     } else {
                         die('error #fsjkjlerw234');
                     }
