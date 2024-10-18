@@ -9,6 +9,7 @@ require_admin();
 $servicesGroups = [
     'default' => [
         __DIR__ . '/../db/services.php',
+        __DIR__ . '/../../exaport/db/services.php',
         $CFG->dirroot . '/mod/quiz/db/services.php',
         $CFG->dirroot . '/lib/db/services.php',
         $CFG->dirroot . '/message/output/popup/db/services.php',
@@ -45,10 +46,13 @@ if ($group == 'exapdf') {
     $assignfeedback_exapdf_info = core_plugin_manager::instance()->get_plugin_info('assignfeedback_exapdf');
     $dokuHeader = "// assignfeedback_exapdf version: " . $assignfeedback_exapdf_info->versiondisk . "\n";
 } else {
-    $block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
-
     $dokuHeader .= "// moodle release: " . $CFG->release . "\n";
+
+    $block_exacomp_info = core_plugin_manager::instance()->get_plugin_info('block_exacomp');
     $dokuHeader .= "// block_exacomp version: " . $block_exacomp_info->versiondisk . "\n";
+
+    $block_exaport_info = core_plugin_manager::instance()->get_plugin_info('block_exaport');
+    $dokuHeader .= "// block_exaport version: " . $block_exaport_info->versiondisk . "\n";
 }
 
 $dokuHeader .= "

@@ -255,7 +255,6 @@ class learningpaths extends base {
         ]);
     }
 
-
     public static function diggrplus_learningpath_add_parameters() {
         return new external_function_parameters(array(
             'courseid' => new external_value(PARAM_INT),
