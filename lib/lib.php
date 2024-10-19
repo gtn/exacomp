@@ -14795,3 +14795,27 @@ function block_exacomp_clear_exacomp_weekly_schedule() {
     $DB->execute($sql);
 }
 
+
+// todo: this is cleaner than is_block_active_in_course(). check if a change would be better
+function block_exacomp_is_block_active_in_course($courseid) {
+    global $DB;
+
+    // Get the context of the course.
+    $context = context_course::instance($courseid);
+
+    // Query the block_instances table to check if the block is present in the course.
+    $sql = "SELECT bi.*
+              FROM {block_instances} bi
+              JOIN {context} ctx ON bi.parentcontextid = ctx.id
+             WHERE bi.blockname = :blockname
+               AND ctx.contextlevel = :contextlevel
+               AND ctx.instanceid = :courseid";
+
+    $params = [
+        'blockname' => 'exacomp',
+        'contextlevel' => CONTEXT_COURSE,
+        'courseid' => $courseid
+    ];
+
+    return $DB->record_exists_sql($sql, $params);
+}
