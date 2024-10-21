@@ -8484,15 +8484,24 @@ class externallib extends base {
                 }
             }
         } else {//get only this specific course
-            $courses = array($courses[$courseid]); //make array, so the rest of the code continues to work the same way as for multiple courses
+            // the course may not exist in the array (in case the user was unenrolled!)
+            $courses = isset($courses[$courseid]) ? [$courses[$courseid]] : []; //make array, so the rest of the code continues to work the same way as for multiple courses
         }
 
-        $courseCondition = "(";
-        foreach ($courses as $course) {
-            $courseCondition .= $course->id . ", ";
+        if (empty($courses)) {
+            // no courses -> return with empty set
+            $statistics_return = [
+                'items_and_examples_total' => 0,
+                'items_and_examples_completed' => 0,
+                'competencies_total' => 0,
+                'competencies_gained' => 0,
+                'competencetree' => [],
+            ];
+
+            return $statistics_return;
         }
-        $courseCondition = substr($courseCondition, 0, -2); //remove last ", "
-        $courseCondition .= " )";
+
+        $courseCondition = $DB->get_in_or_equal(array_map(fn($course) => $course->id, $courses), onemptyitems: '-1');
 
         //get all items: for now all items of topics, since other free_items do not exist in diggrplus
         $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue, i.courseid
@@ -8501,8 +8510,8 @@ class externallib extends base {
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = ?
                 AND ie.competence_type = ' . BLOCK_EXACOMP_TYPE_TOPIC . '
-                AND i.courseid IN ' . $courseCondition;
-        $own_items = $DB->get_records_sql($sql, array($userid));
+                AND i.courseid ' . $courseCondition[0];
+        $own_items = $DB->get_records_sql($sql, array($userid, ...$courseCondition[1]));
 
         $completed_items = 0;
 
