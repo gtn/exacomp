@@ -31,8 +31,10 @@ class api {
     const BLOCK_EXACOMP_ASSESSMENT_TYPE_YESNO = 4;
 
     static function active() {
+        global $DB;
+
         // check if block is active
-        if (!g::$DB->get_record('block', array('name' => 'exacomp', 'visible' => 1))) {
+        if (!$DB->get_record('block', array('name' => 'exacomp', 'visible' => 1))) {
             return false;
         }
 
