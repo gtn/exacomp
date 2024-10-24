@@ -3212,7 +3212,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid) {
     // Subject selection submenu
     $settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_selection"), null, true);
     // Activities submenu
-    if (block_exacomp_is_activated($courseid)) {
+    if (block_exacomp_has_topics_assigned($courseid)) {
         if ($courseSettings->uses_activities) {
             if (block_exacomp_use_old_activities_method()) {
                 $settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', $linkParams), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
@@ -3328,7 +3328,7 @@ function block_exacomp_build_navigation_tabs($context, $courseid) {
     $isTeacherOrStudent = $isTeacher || $isStudent;
 
     if ($checkConfig && $has_data) {    //Modul wurde konfiguriert
-        if ($isTeacherOrStudent && block_exacomp_is_activated($courseid)) {
+        if ($isTeacherOrStudent && block_exacomp_has_topics_assigned($courseid)) {
             $rows[] = new tabobject('tab_competence_gridoverview', new moodle_url('/blocks/exacomp/competence_grid.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_gridoverview'), null, true);
         }
         if ($isTeacherOrStudent && $ready_for_use) {
@@ -3662,15 +3662,15 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 }
 
 /**
- *
  * Check if there are already topics assigned to a course
- *
  * @param int $courseid
+ * @return bool
+ * @throws dml_exception
  */
-function block_exacomp_is_activated($courseid) {
+function block_exacomp_has_topics_assigned(int $courseid): bool {
     global $DB;
-
-    return $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid));
+    // $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid));
+    return $DB->record_exists(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid));
 }
 
 /**
@@ -3685,7 +3685,7 @@ function block_exacomp_is_ready_for_use($courseid) {
 
     global $DB;
     $course_settings = block_exacomp_get_settings_by_course($courseid);
-    $is_activated = block_exacomp_is_activated($courseid);
+    $is_activated = block_exacomp_has_topics_assigned($courseid);
 
     //no topics selected
     if (!$is_activated) {
@@ -6002,50 +6002,54 @@ function block_exacomp_assign_competences($courseid, $studentid, $topics, $descr
 }
 
 // deprecated. This is not performant. Instead, the same result is achieved with the attempt_submitted event observer
-// TODO: if the question-descriptor relation is done AFTER the quiz has been submitted, the grades are now NOT recalculated. Implement, if needed.
-// function block_exacomp_perform_question_grading() {
-//     global $DB;
-//
-//     $question_array = array();
-//     $descquests = $DB->get_records("block_exacompdescrquest_mm");
-//     foreach ($descquests as $descquest) {
-//         if (!in_array($descquest->questid, $question_array)) {
-//             $question_array[] = $descquest->questid;
-//         }
-//     }
-//
-//     $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid, max(attempts.timemodified) as timemodified
-//             FROM {question_attempts} attempts
-//             JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
-//             WHERE step.sequencenumber = 2
-//             GROUP BY attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid";
-//
-//     $attempts = array_filter($DB->get_records_sql($sql), function($a) use ($question_array) {
-//         return in_array($a->questionid, $question_array);
-//     });
-//
-//     foreach ($attempts as $attempt) {
-//         foreach ($descquests as $descquest) {
-//             if ($attempt->timemodified > $descquest->timemodified) {
-//                 if ($attempt->questionid == $descquest->questid) {
-//                     if ($descquest->courseid != -1) {
-//                         $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
-//
-//                         if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid)) {
-//                             block_exacomp_save_additional_grading_for_comp($descquest->courseid, $descquest->descrid, $attempt->userid,
-//                                 block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR);
-//                         }
-//
-//                         block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
-//                             block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
-//                         $descquest->timemodified = $attempt->timemodified;
-//                         $DB->update_record("block_exacompdescrquest_mm", $descquest);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+// instead, this task can be manually started to regrade everything from the 01.09.2024
+function block_exacomp_perform_question_grading() {
+    global $DB;
+
+    $question_array = array();
+    $descquests = $DB->get_records("block_exacompdescrquest_mm");
+    foreach ($descquests as $descquest) {
+        if (!in_array($descquest->questid, $question_array)) {
+            $question_array[] = $descquest->questid;
+        }
+    }
+
+    $filterdate = 1725148800; // timestamp to consider only attempts after 01.09.2024
+
+    $sql = "SELECT attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid, max(attempts.timemodified) as timemodified
+            FROM {question_attempts} attempts
+            JOIN {question_attempt_steps} AS step ON attempts.id=step.questionattemptid
+            WHERE (step.state = 'gradedright' OR step.state = 'gradedwrong')
+            AND attempts.timemodified >= :filterdate
+            GROUP BY attempts.id, attempts.questionid, attempts.maxmark, step.fraction, step.userid";
+
+
+    $attempts = array_filter($DB->get_records_sql($sql, array('filterdate' => $filterdate)), function($a) use ($question_array) {
+        return in_array($a->questionid, $question_array);
+    });
+
+    foreach ($attempts as $attempt) {
+        foreach ($descquests as $descquest) {
+            if ($attempt->timemodified > $descquest->timemodified) {
+                if ($attempt->questionid == $descquest->questid) {
+                    if ($descquest->courseid != -1) {
+                        $grading_scheme = block_exacomp_get_assessment_comp_scheme($descquest->courseid);
+
+                        if (block_exacomp_additional_grading(BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid)) {
+                            block_exacomp_save_additional_grading_for_comp($descquest->courseid, $descquest->descrid, $attempt->userid,
+                                block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid), $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR);
+                        }
+
+                        block_exacomp_set_user_competence($attempt->userid, $descquest->descrid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descquest->courseid, BLOCK_EXACOMP_ROLE_TEACHER,
+                            block_exacomp_get_assessment_max_good_value($grading_scheme, true, $attempt->maxmark, $attempt->fraction, $descquest->courseid));
+                        $descquest->timemodified = $attempt->timemodified;
+                        $DB->update_record("block_exacompdescrquest_mm", $descquest);
+                    }
+                }
+            }
+        }
+    }
+}
 
 function block_exacomp_get_gained_competences($course, $student, $subject = null, $crosssubj = null) {
 
@@ -14424,7 +14428,7 @@ function block_exacomp_relate_komettranslator_to_exacomp() {
     // discard those where exacomp is not even active, since then they are not needed for sure
     // TODO: is this a good filter? Should this be the limiting factor? Or should it be more: e.g. the topic of the descriptors has to be activated?
     $modules = array_filter($modules, function($mod) {
-        return !empty(block_exacomp_is_activated($mod->courseid));
+        return !empty(block_exacomp_has_topics_assigned($mod->courseid));
     });
 
 

@@ -19,7 +19,7 @@ use core\event\course_module_completion_updated;
 use core\event\course_module_updated;
 
 defined('MOODLE_INTERNAL') || die();
-require_once __DIR__ . './../inc.php'; // otherwise the course_module_completion_updated does not have access to the exacomp functions in some cases
+require_once __DIR__ . '/../inc.php'; // otherwise the course_module_completion_updated does not have access to the exacomp functions in some cases
 
 /**
  * Event observer for block_exacomp.
@@ -191,13 +191,14 @@ class block_exacomp_observer {
      *
      * this can be used to update the competences of a student after a quiz has been submitted
      * it captures the automatically graded questions
+     * if the question-descriptor relation is done AFTER the quiz has been submitted, the grades are not recalculated.
      *
      * @param \mod_quiz\event\attempt_submitted $event
      * @return void
      */
     public static function attempt_submitted(\mod_quiz\event\attempt_submitted $event) {
         global $DB, $USER;
-        if (block_exacomp_is_block_active_in_course($event->courseid)) {
+        if (block_exacomp_has_topics_assigned($event->courseid)) {
             if (block_exacomp_is_teacher($event->courseid, $USER->id)) {
                 $admingrading = false;
             } else {
