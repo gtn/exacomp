@@ -125,6 +125,16 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
         \block_exacomp\api::send_stored_file_as_pdf($file, $forcedownload, $options);
     }
 
+    // Change mimetype if it is an html file
+    $file_extension = pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+    if (in_array($file_extension, ['html', 'htm']) && $file->get_mimetype() != 'text/html') {
+        // Some hack. We can not change mimetype of existing file directly,
+        // so: change the 'stored_file' filename twice. First to change the mimetype; second - to return original filename.
+        $original_name = $file->get_filename();
+        $file->rename($file->get_filepath(), 'temp_html.'.$file_extension);
+        $file->rename($file->get_filepath(), $original_name);
+    }
+
     // $as_image = optional_param('as_image', false, PARAM_TEXT);
     // if ($as_image) {
     //     send_stored_file_as_image($file, $forcedownload, $options);
