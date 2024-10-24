@@ -125,6 +125,48 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
         \block_exacomp\api::send_stored_file_as_pdf($file, $forcedownload, $options);
     }
 
+    // Change mimetype if it is an html file
+    $file_extension = pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+    if (in_array($file_extension, ['html', 'htm']) && $file->get_mimetype() != 'text/html') {
+        // Some hack. We can not change mimetype of existing file directly,
+        // so: change the 'stored_file' filename twice. First to change the mimetype; second - to return original filename.
+        $original_name = $file->get_filename();
+        $file->rename($file->get_filepath(), 'temp_html.'.$file_extension);
+        $file->rename($file->get_filepath(), $original_name);
+
+        // Clean the content of HTML and replace the file with new content
+        $htmlContent = $file->get_content();
+        $newHtmlContent = format_text($htmlContent, FORMAT_HTML);
+        if ($htmlContent != $newHtmlContent) {
+            $fs = get_file_storage();
+            $contextid = $file->get_contextid();
+            $component = $file->get_component();
+            $filearea = $file->get_filearea();
+            $itemid = $file->get_itemid();
+            $filepath = $file->get_filepath();
+            $filename = $file->get_filename();
+            $mimetype = $file->get_mimetype();
+            $userid = $file->get_userid();
+
+            $file->delete();
+
+            // The new file create
+            $file = $fs->create_file_from_string(
+                (object) [
+                    'contextid' => $contextid,
+                    'component' => $component,
+                    'filearea' => $filearea,
+                    'itemid' => $itemid,
+                    'filepath' => $filepath,
+                    'filename' => $filename,
+                    'mimetype' => $mimetype,
+                    'userid' => $userid,
+                ],
+                $newHtmlContent
+            );
+        }
+    }
+
     // $as_image = optional_param('as_image', false, PARAM_TEXT);
     // if ($as_image) {
     //     send_stored_file_as_image($file, $forcedownload, $options);
