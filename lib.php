@@ -133,6 +133,38 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
         $original_name = $file->get_filename();
         $file->rename($file->get_filepath(), 'temp_html.'.$file_extension);
         $file->rename($file->get_filepath(), $original_name);
+
+        // Clean the content of HTML and replace the file with new content
+        $htmlContent = $file->get_content();
+        $newHtmlContent = format_text($htmlContent, FORMAT_HTML);
+        if ($htmlContent != $newHtmlContent) {
+            $fs = get_file_storage();
+            $contextid = $file->get_contextid();
+            $component = $file->get_component();
+            $filearea = $file->get_filearea();
+            $itemid = $file->get_itemid();
+            $filepath = $file->get_filepath();
+            $filename = $file->get_filename();
+            $mimetype = $file->get_mimetype();
+            $userid = $file->get_userid();
+
+            $file->delete();
+
+            // The new file create
+            $file = $fs->create_file_from_string(
+                (object) [
+                    'contextid' => $contextid,
+                    'component' => $component,
+                    'filearea' => $filearea,
+                    'itemid' => $itemid,
+                    'filepath' => $filepath,
+                    'filename' => $filename,
+                    'mimetype' => $mimetype,
+                    'userid' => $userid,
+                ],
+                $newHtmlContent
+            );
+        }
     }
 
     // $as_image = optional_param('as_image', false, PARAM_TEXT);
