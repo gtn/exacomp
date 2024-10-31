@@ -103,10 +103,12 @@ class descriptor_link_column extends column_base {
                     $tree.find(":checkbox").remove();
 
                     $("#comptitles").empty().append($tree);
-                    ddtreemenu.createTree("comptree<?php echo $question->id; ?>-selected", false);
+                    if ($('#comptree<?php echo $question->id; ?>-selected').length) {
+                        ddtreemenu.createTree("comptree<?php echo $question->id; ?>-selected", false);
 
-                    // Open all.
-                    ddtreemenu.flatten("comptree<?php echo $question->id; ?>-selected", "expand");
+                        // Open all.
+                        ddtreemenu.flatten("comptree<?php echo $question->id; ?>-selected", "expand");
+                    }
                 }
 
                 build_competence_output();

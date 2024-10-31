@@ -22,6 +22,7 @@ $PAGE->requires->js('/blocks/exacomp/javascript/simpletreemenu/simpletreemenu.js
 $PAGE->requires->css('/blocks/exacomp/javascript/simpletreemenu/simpletree.css');
 $PAGE->requires->css('/blocks/exacomp/css/colorbox.css');
 $PAGE->requires->js('/blocks/exacomp/javascript/jquery.colorbox.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/question_to_descriptors.js', false);
 
 //require_once(__DIR__ . '/../config.php');
 require_once($CFG->dirroot . '/question/editlib.php');
@@ -86,11 +87,15 @@ $result = $cache->set('comptree', block_exacomp_build_comp_tree());
 
 $cat = question_make_default_categories($contexts->all());
 
-$questionbank = new core_question\local\bank\exacomp_view($contexts, $url, $COURSE, $cm);
+$questionbank = new core_question\local\bank\exacomp_view($contexts, $url, $COURSE, $cm, $pagevars);
 ob_start();
 
 $PAGE->set_url($url);
 $PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+
+// moodle version (branch) for JS
+echo html_writer::script('var moodleBranch = '.$CFG->branch.';');
+
 //$streditingquestions = get_string('editquestions', 'question');
 //$PAGE->set_title(block_exacomp_get_string($streditingquestions));
 $PAGE->set_title(block_exacomp_get_string($page_identifier));

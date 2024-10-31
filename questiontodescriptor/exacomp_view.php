@@ -18,8 +18,8 @@ require_once('plugin_feature.php');
 class exacomp_view extends view {
 
 
-    public function __construct($contexts, $pageurl, $course, $cm = null) {
-        parent::__construct($contexts, $pageurl, $course, $cm);
+    public function __construct($contexts, $pageurl, $course, $cm = null, $params = []) {
+        parent::__construct($contexts, $pageurl, $course, $cm, $params);
     }
 
 

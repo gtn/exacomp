@@ -1115,6 +1115,17 @@ create example',
     'description' => 'Get language definitions in json format for diggr-plus and dakora-plus apps',
     'type' => 'read',
   ),
+  'block_exacomp_fakecore_get_fragment' => 
+  array (
+    'classname' => '\\block_exacomp\\externallib\\externallib',
+    'methodname' => 'fakecore_get_fragment',
+    'description' => 'This function is used to start core_get_fragment. But for some reason we need to include our custom code
+Some ajax requests do not give us to add custom code (questionnaires bank), but we need to have that
+So, we need this fake \'core_get_fragment\' external function
+(also look question_to_descriptors.js with related ajax code)',
+    'type' => 'read',
+    'ajax' => true,
+  ),
   'diggrplus_learningpath_list' => 
   array (
     'classname' => '\\block_exacomp\\externallib\\learningpaths',

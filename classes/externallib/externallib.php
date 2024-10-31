@@ -15688,4 +15688,56 @@ class externallib extends base {
             'string_id' => new external_value(PARAM_TEXT, 'translation'),
         ));
     }
+
+
+    /*
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+    public static function fakecore_get_fragment_parameters() {
+        global $CFG;
+        require_once $CFG->dirroot . '/lib/external/classes/external_api.php';
+        require_once $CFG->dirroot . '/lib/external/externallib.php';
+        return \core_external::get_fragment_parameters();
+    }
+
+    /**
+     *
+     * This function is used to start core_get_fragment. But for some reason we need to include our custom code
+     * Some ajax requests do not give us to add custom code (questionnaires bank), but we need to have that
+     * So, we need this fake 'core_get_fragment' external function
+     * (also look question_to_descriptors.js with related ajax code)
+     *
+     * @param string $component Name of the component.
+     * @param string $callback Function callback name.
+     * @param int $contextid Context ID this fragment is in.
+     * @param array $args optional arguments for the callback.
+     * @return array HTML and JavaScript fragments for insertion into stuff.
+     * @ws-type-read
+     * @ajax-true
+     * @since Moodle 3.1
+     */
+    public static function fakecore_get_fragment($component, $callback, $contextid, $args = null) {
+        global $CFG;
+        // Main thing what we need this fake external function
+        require_once $CFG->dirroot . '/blocks/exacomp/questiontodescriptor/exacomp_view.php';
+
+        require_once $CFG->dirroot . '/lib/external/classes/external_api.php';
+        require_once $CFG->dirroot . '/lib/external/externallib.php';
+        return \core_external::get_fragment($component, $callback, $contextid, $args);
+    }
+
+    /**
+     * Returns description of get_fragment() result value
+     *
+     * @return \core_external\external_description
+     * @since Moodle 3.1
+     */
+    public static function fakecore_get_fragment_returns() {
+        global $CFG;
+        require_once $CFG->dirroot . '/lib/external/classes/external_api.php';
+        require_once $CFG->dirroot . '/lib/external/externallib.php';
+        return \core_external::get_fragment_returns();
+    }
+
 }
