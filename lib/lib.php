@@ -3658,6 +3658,10 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
     $settings->courseid = $courseid;
     $settings->tstamp = time();
 
+    if (isset($settings->filteredtaxonomies) && is_array($settings->filteredtaxonomies)) {
+        $settings->filteredtaxonomies = json_encode($settings->filteredtaxonomies);
+    }
+
     $DB->insert_record(BLOCK_EXACOMP_DB_SETTINGS, $settings);
 }
 
@@ -14818,7 +14822,7 @@ function block_exacomp_is_block_active_in_course($courseid) {
     $params = [
         'blockname' => 'exacomp',
         'contextlevel' => CONTEXT_COURSE,
-        'courseid' => $courseid
+        'courseid' => $courseid,
     ];
 
     return $DB->record_exists_sql($sql, $params);
