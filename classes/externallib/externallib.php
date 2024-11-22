@@ -3751,9 +3751,9 @@ class externallib extends base {
             'niveaudescription' => new external_value(PARAM_TEXT, 'description of niveau'),
             'visible' => new external_value(PARAM_INT, 'visibility of topic in current context'),
             'used' => new external_value(PARAM_INT, 'used in current context'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'niveauvisible' => new external_value(PARAM_BOOL, 'if niveau is visible'),
-            'niveausort' => new external_value(PARAM_INT, 'sorting for ids', false),
+            'niveausort' => new external_value(PARAM_INT, 'sorting for ids', VALUE_OPTIONAL),
         )));
     }
 
@@ -4564,7 +4564,7 @@ class externallib extends base {
             'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
             'child' => new external_value(PARAM_BOOL, 'true: child, false: parent'),
             'parentid' => new external_value(PARAM_INT, 'parentid if child, 0 otherwise'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
             'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
         )));
@@ -8841,7 +8841,7 @@ class externallib extends base {
             'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
             'child' => new external_value(PARAM_BOOL, 'true: child, false: parent'),
             'parentid' => new external_value(PARAM_INT, 'parentid if child, 0 otherwise'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
             'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
         )));
@@ -9038,7 +9038,7 @@ class externallib extends base {
             'categories' => new external_value(PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
             'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
             'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'globalgradings' => new external_value(PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
             'gradinghistory' => new external_value(PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
             'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
@@ -9198,7 +9198,7 @@ class externallib extends base {
             'categories' => new external_value(PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
             'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
             'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
             'children' => new external_multiple_structure(new external_single_structure(array(
                 'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
@@ -9939,7 +9939,7 @@ class externallib extends base {
                     'topicid' => new external_value(PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
                     'span' => new external_value(PARAM_INT, 'colspan'),
                     'timestamp' => new external_value(PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
-                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', false),
+                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', VALUE_OPTIONAL),
                 ))),
             ))),
         );
@@ -15007,7 +15007,7 @@ class externallib extends base {
                         'course' => new external_value(PARAM_INT, 'Course id'),
                         'name' => new external_value(PARAM_RAW, 'Page name'),
                         'intro' => new external_value(PARAM_RAW, 'Summary'),
-                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introformat' => new external_format_value('intro'),
                         'introfiles' => new external_files('Files in the introduction text'),
                         'contentfiles' => new external_files('Files in the content'),
                     ))),
@@ -15017,7 +15017,7 @@ class externallib extends base {
                         'course' => new external_value(PARAM_INT, 'Course id'),
                         'name' => new external_value(PARAM_RAW, 'URL name'),
                         'intro' => new external_value(PARAM_RAW, 'Summary'),
-                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introformat' => new external_format_value('intro'),
                         'introfiles' => new external_files('Files in the introduction text'),
                         'externalurl' => new external_value(PARAM_RAW_TRIMMED, 'External URL'),
                         'display' => new external_value(PARAM_INT, 'How to display the url'),

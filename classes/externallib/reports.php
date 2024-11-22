@@ -773,7 +773,7 @@ class reports extends base {
                     'topicid' => new external_value(PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
                     'span' => new external_value(PARAM_INT, 'colspan'),
                     'timestamp' => new external_value(PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
-                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', false),
+                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', VALUE_OPTIONAL),
                 ))),
             ))),
         );
