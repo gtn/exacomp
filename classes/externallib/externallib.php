@@ -14644,7 +14644,7 @@ class externallib extends base {
         $info_block_enrolcode = core_plugin_manager::instance()->get_plugin_info('block_enrolcode');
         $msteams_client_id = get_config("exacomp", 'msteams_client_id');
 
-        $plugin_names = ['block_exacomp', 'mod_hvp'];
+        $plugin_names = ['block_exacomp', 'block_exaport', 'mod_hvp'];
         $plugins = [];
         foreach ($plugin_names as $plugin_name) {
             $info = core_plugin_manager::instance()->get_plugin_info($plugin_name);
