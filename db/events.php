@@ -42,4 +42,18 @@ $observers = array(
         'callback' => 'block_exacomp_observer::course_module_deleted',
     ),
 
+    // question graded testes
+    // array(
+    //     'eventname' => '\mod_quiz\event\attempt_regraded',
+    //     'callback' => 'block_exacomp_observer::attempt_regraded',
+    // ),
+    array(
+        'eventname' => '\mod_quiz\event\attempt_submitted',
+        'callback' => 'block_exacomp_observer::attempt_submitted',
+    ),
+    // array(
+    //     'eventname' => '\mod_quiz\event\question_manually_graded',
+    //     'callback' => 'block_exacomp_observer::question_manually_graded',
+    // ),
+
 );

@@ -79,7 +79,7 @@ if ($action == 'save') {
     } else {
         $course_settings = block_exacomp_get_settings_by_course($courseid);
         if ($course_settings->uses_activities) {
-            if (block_exacomp_is_activated($courseid)) {
+            if (block_exacomp_has_topics_assigned($courseid)) {
                 if (block_exacomp_use_old_activities_method()) {
                     $linkTo = html_writer::link(new moodle_url('edit_activities.php', array('courseid' => $courseid)), block_exacomp_get_string('next_step'));
                 } else {

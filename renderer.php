@@ -419,8 +419,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 );
             } else {
                 $content .= html_writer::tag('li',
-                    html_writer::link('javascript:void(0)',
-                        $addNiveauContent, array('onclick' => 'alert(' . block_exacomp_get_string('please_select_topic_first') . ')'))
+                    html_writer::link('javascript:void(0);',
+                        $addNiveauContent, array('onclick' => 'alert(\'' . block_exacomp_get_string('please_select_topic_first') . '\');'))
                 );
             }
         }

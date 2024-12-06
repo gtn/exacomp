@@ -102,6 +102,9 @@ class developer {
                     'description' => $description,                   // human readable description of the web service function
                     'type' => $matches[1],                   // database rights of the web service function (read, write)
                 ];
+                if (preg_match('!@ajax-(true|false)!', $method->getDocComment(), $matches)) {
+                    $functions[$func]['ajax'] = ($matches[1] == 'true' ? true : false);
+                }
             }
         }
 

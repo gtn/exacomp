@@ -52,6 +52,7 @@ $tasks = array(
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*',
+        'disabled' => true,
     ),
     array(
         'classname' => 'block_exacomp\task\normalize_exacomp_tables',

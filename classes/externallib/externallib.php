@@ -3751,9 +3751,9 @@ class externallib extends base {
             'niveaudescription' => new external_value(PARAM_TEXT, 'description of niveau'),
             'visible' => new external_value(PARAM_INT, 'visibility of topic in current context'),
             'used' => new external_value(PARAM_INT, 'used in current context'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'niveauvisible' => new external_value(PARAM_BOOL, 'if niveau is visible'),
-            'niveausort' => new external_value(PARAM_INT, 'sorting for ids', false),
+            'niveausort' => new external_value(PARAM_INT, 'sorting for ids', VALUE_OPTIONAL),
         )));
     }
 
@@ -4564,7 +4564,7 @@ class externallib extends base {
             'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
             'child' => new external_value(PARAM_BOOL, 'true: child, false: parent'),
             'parentid' => new external_value(PARAM_INT, 'parentid if child, 0 otherwise'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
             'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
         )));
@@ -8484,15 +8484,24 @@ class externallib extends base {
                 }
             }
         } else {//get only this specific course
-            $courses = array($courses[$courseid]); //make array, so the rest of the code continues to work the same way as for multiple courses
+            // the course may not exist in the array (in case the user was unenrolled!)
+            $courses = isset($courses[$courseid]) ? [$courses[$courseid]] : []; //make array, so the rest of the code continues to work the same way as for multiple courses
         }
 
-        $courseCondition = "(";
-        foreach ($courses as $course) {
-            $courseCondition .= $course->id . ", ";
+        if (empty($courses)) {
+            // no courses -> return with empty set
+            $statistics_return = [
+                'items_and_examples_total' => 0,
+                'items_and_examples_completed' => 0,
+                'competencies_total' => 0,
+                'competencies_gained' => 0,
+                'competencetree' => [],
+            ];
+
+            return $statistics_return;
         }
-        $courseCondition = substr($courseCondition, 0, -2); //remove last ", "
-        $courseCondition .= " )";
+
+        $courseCondition = $DB->get_in_or_equal(array_map(fn($course) => $course->id, $courses), onemptyitems: '-1');
 
         //get all items: for now all items of topics, since other free_items do not exist in diggrplus
         $sql = 'SELECT i.id, i.name, ie.status, ie.teachervalue, ie.studentvalue, i.courseid
@@ -8501,8 +8510,8 @@ class externallib extends base {
                 JOIN {block_exaportitem} i ON ie.itemid = i.id
               WHERE i.userid = ?
                 AND ie.competence_type = ' . BLOCK_EXACOMP_TYPE_TOPIC . '
-                AND i.courseid IN ' . $courseCondition;
-        $own_items = $DB->get_records_sql($sql, array($userid));
+                AND i.courseid ' . $courseCondition[0];
+        $own_items = $DB->get_records_sql($sql, array($userid, ...$courseCondition[1]));
 
         $completed_items = 0;
 
@@ -8832,7 +8841,7 @@ class externallib extends base {
             'numbering' => new external_value(PARAM_TEXT, 'descriptor numbering'),
             'child' => new external_value(PARAM_BOOL, 'true: child, false: parent'),
             'parentid' => new external_value(PARAM_INT, 'parentid if child, 0 otherwise'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
             'reviewername' => new external_value(PARAM_TEXT, 'name of reviewer'),
         )));
@@ -9029,7 +9038,7 @@ class externallib extends base {
             'categories' => new external_value(PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
             'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
             'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'globalgradings' => new external_value(PARAM_RAW, 'Globalgradings as text', VALUE_OPTIONAL),
             'gradinghistory' => new external_value(PARAM_RAW, 'Gradinghistory as text', VALUE_OPTIONAL),
             'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
@@ -9189,7 +9198,7 @@ class externallib extends base {
             'categories' => new external_value(PARAM_TEXT, 'descriptor categories seperated by comma', VALUE_OPTIONAL),
             'niveauid' => new external_value(PARAM_INT, 'id of niveau'),
             'niveautitle' => new external_value(PARAM_TEXT, 'title of niveau'),
-            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', false),
+            'gradingisold' => new external_value(PARAM_BOOL, 'true when there are newer gradings in the childcompetences', VALUE_OPTIONAL),
             'hasmaterial' => new external_value(PARAM_BOOL, 'true or false if descriptor has material'),
             'children' => new external_multiple_structure(new external_single_structure(array(
                 'reviewerid' => new external_value(PARAM_INT, 'id of reviewer'),
@@ -9930,7 +9939,7 @@ class externallib extends base {
                     'topicid' => new external_value(PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
                     'span' => new external_value(PARAM_INT, 'colspan'),
                     'timestamp' => new external_value(PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0),
-                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', false),
+                    'gradingisold' => new external_value(PARAM_BOOL, 'true when there are childdescriptors with newer gradings than the parentdescriptor', VALUE_OPTIONAL),
                 ))),
             ))),
         );
@@ -14635,7 +14644,7 @@ class externallib extends base {
         $info_block_enrolcode = core_plugin_manager::instance()->get_plugin_info('block_enrolcode');
         $msteams_client_id = get_config("exacomp", 'msteams_client_id');
 
-        $plugin_names = ['block_exacomp', 'mod_hvp'];
+        $plugin_names = ['block_exacomp', 'block_exaport', 'mod_hvp'];
         $plugins = [];
         foreach ($plugin_names as $plugin_name) {
             $info = core_plugin_manager::instance()->get_plugin_info($plugin_name);
@@ -14998,7 +15007,7 @@ class externallib extends base {
                         'course' => new external_value(PARAM_INT, 'Course id'),
                         'name' => new external_value(PARAM_RAW, 'Page name'),
                         'intro' => new external_value(PARAM_RAW, 'Summary'),
-                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introformat' => new external_format_value('intro'),
                         'introfiles' => new external_files('Files in the introduction text'),
                         'contentfiles' => new external_files('Files in the content'),
                     ))),
@@ -15008,7 +15017,7 @@ class externallib extends base {
                         'course' => new external_value(PARAM_INT, 'Course id'),
                         'name' => new external_value(PARAM_RAW, 'URL name'),
                         'intro' => new external_value(PARAM_RAW, 'Summary'),
-                        'introformat' => new external_format_value('intro', 'Summary format'),
+                        'introformat' => new external_format_value('intro'),
                         'introfiles' => new external_files('Files in the introduction text'),
                         'externalurl' => new external_value(PARAM_RAW_TRIMMED, 'External URL'),
                         'display' => new external_value(PARAM_INT, 'How to display the url'),
@@ -15679,4 +15688,56 @@ class externallib extends base {
             'string_id' => new external_value(PARAM_TEXT, 'translation'),
         ));
     }
+
+
+    /*
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+    public static function fakecore_get_fragment_parameters() {
+        global $CFG;
+        require_once $CFG->dirroot . '/lib/external/classes/external_api.php';
+        require_once $CFG->dirroot . '/lib/external/externallib.php';
+        return \core_external::get_fragment_parameters();
+    }
+
+    /**
+     *
+     * This function is used to start core_get_fragment. But for some reason we need to include our custom code
+     * Some ajax requests do not give us to add custom code (questionnaires bank), but we need to have that
+     * So, we need this fake 'core_get_fragment' external function
+     * (also look question_to_descriptors.js with related ajax code)
+     *
+     * @param string $component Name of the component.
+     * @param string $callback Function callback name.
+     * @param int $contextid Context ID this fragment is in.
+     * @param array $args optional arguments for the callback.
+     * @return array HTML and JavaScript fragments for insertion into stuff.
+     * @ws-type-read
+     * @ajax-true
+     * @since Moodle 3.1
+     */
+    public static function fakecore_get_fragment($component, $callback, $contextid, $args = null) {
+        global $CFG;
+        // Main thing what we need this fake external function
+        require_once $CFG->dirroot . '/blocks/exacomp/questiontodescriptor/exacomp_view.php';
+
+        require_once $CFG->dirroot . '/lib/external/classes/external_api.php';
+        require_once $CFG->dirroot . '/lib/external/externallib.php';
+        return \core_external::get_fragment($component, $callback, $contextid, $args);
+    }
+
+    /**
+     * Returns description of get_fragment() result value
+     *
+     * @return \core_external\external_description
+     * @since Moodle 3.1
+     */
+    public static function fakecore_get_fragment_returns() {
+        global $CFG;
+        require_once $CFG->dirroot . '/lib/external/classes/external_api.php';
+        require_once $CFG->dirroot . '/lib/external/externallib.php';
+        return \core_external::get_fragment_returns();
+    }
+
 }
