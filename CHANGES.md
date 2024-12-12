@@ -1,3 +1,10 @@
+### v4.6.7 (2024121200) ###
+* typescript fixes
+* question grading changes for new moodle version
+* html files changes for new moodle version, clean content
+* fix saving taxonomies
+* refactor block_exacomp_is_activated to block_exacomp_has_topics_assigned
+
 ### v4.6.7 (2024101700) ###
 * mysql query optimization
 * typescript generator fix
