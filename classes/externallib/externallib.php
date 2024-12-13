@@ -5322,12 +5322,15 @@ class externallib extends base {
             'id' => $entry->exampleid,
         ));
 
-        //1h30 or 01h30 or 1:30 or 01:30 is allowed format
-        if (strpos($example->timeframe, 'h')) {
-            $time = explode('h', $example->timeframe);
-        } else if (strpos($example->timeframe, ':')) {
-            $time = explode(':', $example->timeframe);
+        // allowed format: 1h30 or 01h30 or 1:30 or 01:30
+        // beware: the timeframe field can contain any text by the user!
+        if (preg_match('!^([0-9]{1,2})[h:]([0-9]{1,2})$!', trim($example->timeframe), $matches)) {
+            $timeSeconds = $matches[1] * 60 * 60 + $matches[2] * 60;
         } else {
+            $timeSeconds = 0;
+        }
+
+        if (!$timeSeconds) {
             return array(
                 "timeremaining" => '0',
                 'timeplanned' => '0',
@@ -5336,7 +5339,6 @@ class externallib extends base {
             );
         }
 
-        $timeSeconds = $time[0] * 60 * 60 + $time[1] * 60;
         $remainingtime = $timeSeconds;
         $timeplanned = 0;
         //Get the other scheduled instances of this example
