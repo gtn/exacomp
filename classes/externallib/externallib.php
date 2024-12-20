@@ -14033,6 +14033,8 @@ class externallib extends base {
     }
 
     private static function format_url($url) {
+        // the autologin logic is moved to the app in exacomp 2024122000
+        /*
         $url_no_protocol = preg_replace('!^.*://!', '', $url);
         $www_root_no_protocol = preg_replace('!^.*://!', '', g::$CFG->wwwroot);
 
@@ -14050,8 +14052,12 @@ class externallib extends base {
                 'wstoken' => static::wstoken(),
                 'url' => $url,
             ]))->out(false);
-        } else if (!preg_replace('!^.*://!', '', $url)) {
-            $url = 'http://' . $url;
+        } else
+        */
+
+        // add url-scheme, if not present
+        if (!preg_replace('!^.*://!', '', $url)) {
+            $url = 'https://' . $url;
         }
 
         return $url;
