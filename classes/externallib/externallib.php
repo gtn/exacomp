@@ -14019,6 +14019,8 @@ class externallib extends base {
     private static function get_webservice_url_for_file($file, $context = null, $position = -1) {
         $context = block_exacomp_get_context_from_courseid($context);
 
+        // use make_pluginfile_url() with $includetoken=true, this uses a user specific file token to access the files
+        // don't use make_webservice_pluginfile_url(), which uses the webservice token, which is also allowed to call all webservices
         $url = moodle_url::make_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
             $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false, true);
 
