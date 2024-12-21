@@ -14019,14 +14019,11 @@ class externallib extends base {
     private static function get_webservice_url_for_file($file, $context = null, $position = -1) {
         $context = block_exacomp_get_context_from_courseid($context);
 
-        $url = moodle_url::make_webservice_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
-            $file->get_itemid(), $file->get_filepath(), $file->get_filename());
-
-        $url->param('token', static::wstoken());
+        $url = moodle_url::make_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
+            $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false, true);
 
         if ($position != -1) {
             $url->param('position', $position);
-            //            $url = $url."&position=".$position;
         }
 
         return $url;
