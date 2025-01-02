@@ -4235,6 +4235,71 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2024092700, 'exacomp');
     }
 
+    if ($oldversion < 2024122000) {
+        // Remove http://localhost/moodle/blocks/exacomp/login.php?wstoken=1234&url=%2Fmy%2F" links from database
+        $fields = [
+            'externalurl',
+            'externalsolution',
+            'externaltask',
+        ];
+
+        $wstokens = [];
+
+        $reconstruct_original_url = function($link) use (&$wstokens) {
+            try {
+                $url = parse_url($link);
+                if (!$url || !isset($url['path'])) {
+                    return $link;
+                }
+
+                // Match the URL's pathname
+                if (preg_match('/(.*)\/blocks\/exacomp\/login.php$/', $url['path'], $matches)) {
+                    // Link like "http://localhost/moodle/blocks/exacomp/login.php?wstoken=1234&url=%2Fmy%2F"
+                    parse_str($url['query'] ?? '', $queryParams);
+                    $subUrl = $queryParams['url'] ?? '';
+
+                    if ($queryParams['wstoken']) {
+                        $wstokens[] = $queryParams['wstoken'];
+                    }
+
+                    // Reconstruct the URL
+                    $baseUrl = ($url['scheme'] ?? '') . '://' . ($url['host'] ?? '') . ($matches[1] ?? '');
+                    // Append the subUrl directly to the base URL
+                    return $baseUrl . $subUrl;
+                }
+
+                return $link;
+            } catch (Exception $e) {
+                return $link;
+            }
+        };
+
+        foreach ($fields as $field) {
+            $items = $DB->get_records_sql_menu("SELECT id, $field FROM {block_exacompexamples} WHERE $field LIKE '%blocks/exacomp/login.php%'");
+
+            foreach ($items as $id => $link) {
+
+                do {
+                    $oldLink = $link;
+                    $link = $reconstruct_original_url($link);
+                } while ($oldLink != $link);
+
+                $DB->update_record('block_exacompexamples', (object)[
+                    'id' => $id,
+                    $field => $link,
+                ]);
+            }
+        }
+
+        // invalidate tokens, which were stored in the links
+        $wstokens = array_unique($wstokens);
+        foreach ($wstokens as $wstoken) {
+            $DB->delete_records('external_tokens', ['token' => $wstoken]);
+        }
+
+        upgrade_block_savepoint(true, 2024122000, 'exacomp');
+    }
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

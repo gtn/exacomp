@@ -5322,12 +5322,15 @@ class externallib extends base {
             'id' => $entry->exampleid,
         ));
 
-        //1h30 or 01h30 or 1:30 or 01:30 is allowed format
-        if (strpos($example->timeframe, 'h')) {
-            $time = explode('h', $example->timeframe);
-        } else if (strpos($example->timeframe, ':')) {
-            $time = explode(':', $example->timeframe);
+        // allowed format: 1h30 or 01h30 or 1:30 or 01:30
+        // beware: the timeframe field can contain any text by the user!
+        if (preg_match('!^([0-9]{1,2})[h:]([0-9]{1,2})$!', trim($example->timeframe), $matches)) {
+            $timeSeconds = $matches[1] * 60 * 60 + $matches[2] * 60;
         } else {
+            $timeSeconds = 0;
+        }
+
+        if (!$timeSeconds) {
             return array(
                 "timeremaining" => '0',
                 'timeplanned' => '0',
@@ -5336,7 +5339,6 @@ class externallib extends base {
             );
         }
 
-        $timeSeconds = $time[0] * 60 * 60 + $time[1] * 60;
         $remainingtime = $timeSeconds;
         $timeplanned = 0;
         //Get the other scheduled instances of this example
@@ -14017,20 +14019,21 @@ class externallib extends base {
     private static function get_webservice_url_for_file($file, $context = null, $position = -1) {
         $context = block_exacomp_get_context_from_courseid($context);
 
-        $url = moodle_url::make_webservice_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
-            $file->get_itemid(), $file->get_filepath(), $file->get_filename());
-
-        $url->param('token', static::wstoken());
+        // use make_pluginfile_url() with $includetoken=true, this uses a user specific file token to access the files
+        // don't use make_webservice_pluginfile_url(), which uses the webservice token, which is also allowed to call all webservices
+        $url = moodle_url::make_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
+            $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false, true);
 
         if ($position != -1) {
             $url->param('position', $position);
-            //            $url = $url."&position=".$position;
         }
 
         return $url;
     }
 
     private static function format_url($url) {
+        // the autologin logic is moved to the app in exacomp 2024122000
+        /*
         $url_no_protocol = preg_replace('!^.*://!', '', $url);
         $www_root_no_protocol = preg_replace('!^.*://!', '', g::$CFG->wwwroot);
 
@@ -14048,8 +14051,12 @@ class externallib extends base {
                 'wstoken' => static::wstoken(),
                 'url' => $url,
             ]))->out(false);
-        } else if (!preg_replace('!^.*://!', '', $url)) {
-            $url = 'http://' . $url;
+        } else
+        */
+
+        // add url-scheme, if not present
+        if (!preg_replace('!^.*://!', '', $url)) {
+            $url = 'https://' . $url;
         }
 
         return $url;
