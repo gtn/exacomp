@@ -196,7 +196,7 @@ class learningpaths extends base {
                         WHERE ct.courseid = :courseid AND dex.exampid = :exampleid", ['courseid' => $courseid, 'exampleid' => $lpItem->exampleid], 0, 1));
 
             $lpItem->visiblestudent = $lpItem->visiblestudent ?? $lpItem->visibleall;
-            $lpItem->exampletitle = $example->title;
+            $lpItem->exampletitle = static::custom_htmltrim(strip_tags($example->title));
             $lpItem->topictitle = $example_data->topictitle ?? '';
 
             $lpItem->count_new = 0;
