@@ -15675,11 +15675,19 @@ class externallib extends base {
         } else {
             $langFile = __DIR__ . "/lang/{$lang}/{$app}.json";
             if (!file_exists($langFile)) {
-                $data = ['info' => 'no lang data found'];
+                $data = [];
             } else {
-                $data = json_decode(file_get_contents($langFile));
+                $data = json_decode(file_get_contents($langFile), true) ?? ['error' => "couldn't parse lang file"];
             }
         }
+
+        $data['role'] = $data['role'] ?: [];
+        $data['role']['teacher'] = get_string('app:teacher', 'block_exacomp');
+        $data['role']['teachers'] = get_string('app:teachers', 'block_exacomp');
+        $data['role']['student'] = get_string('app:student', 'block_exacomp');
+        $data['role']['students'] = get_string('app:students', 'block_exacomp');
+        // remove empty values (no translation set)
+        $data['role'] = array_filter($data['role']);
 
         echo json_encode($data);
         exit;

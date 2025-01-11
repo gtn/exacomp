@@ -2616,6 +2616,24 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Schüler/in',
         'Student',
     ],
+
+    'app:teacher' => [
+        '',
+        '',
+    ],
+    'app:teachers' => [
+        '',
+        '',
+    ],
+    'app:student' => [
+        '',
+        '',
+    ],
+    'app:students' => [
+        '',
+        '',
+    ],
+
     'timeline_available' => [
         'Verfügbare',
         'Available',

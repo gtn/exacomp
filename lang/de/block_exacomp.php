@@ -718,6 +718,10 @@ $string['no_external_trainer'] = 'Keine externen Trainer zugeteilt';
 $string['periodselect'] = 'Auswahl des Eingabezeitraums';
 $string['teacher'] = 'Lehrer';
 $string['student'] = 'Schüler/in';
+$string['app:teacher'] = '';
+$string['app:teachers'] = '';
+$string['app:student'] = '';
+$string['app:students'] = '';
 $string['timeline_available'] = 'Verfügbare';
 // === Group Reports ===
 $string['result'] = 'Ergebnis';
