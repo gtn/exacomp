@@ -15682,10 +15682,10 @@ class externallib extends base {
         }
 
         $data['role'] = $data['role'] ?: [];
-        $data['role']['teacher'] = get_string('app:teacher', 'block_exacomp');
-        $data['role']['teachers'] = get_string('app:teachers', 'block_exacomp');
-        $data['role']['student'] = get_string('app:student', 'block_exacomp');
-        $data['role']['students'] = get_string('app:students', 'block_exacomp');
+        $data['role']['teacher'] = get_string('role:teacher', 'block_exacomp');
+        $data['role']['teachers'] = get_string('role:teachers', 'block_exacomp');
+        $data['role']['student'] = get_string('role:student', 'block_exacomp');
+        $data['role']['students'] = get_string('role:students', 'block_exacomp');
         // remove empty values (no translation set)
         $data['role'] = array_filter($data['role']);
 

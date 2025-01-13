@@ -712,10 +712,10 @@ $string['no_external_trainer'] = 'No external trainers assigned';
 $string['periodselect'] = 'Select Period';
 $string['teacher'] = 'Teacher';
 $string['student'] = 'Student';
-$string['app:teacher'] = '';
-$string['app:teachers'] = '';
-$string['app:student'] = '';
-$string['app:students'] = '';
+$string['role:teacher'] = '';
+$string['role:teachers'] = '';
+$string['role:student'] = '';
+$string['role:students'] = '';
 $string['timeline_available'] = 'Available';
 // === Group Reports ===
 $string['result'] = 'result';
