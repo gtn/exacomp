@@ -3611,4 +3611,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Kann keinen Kurs finden, der als Vorlage verwendet werden kann',
         'Can not find any course to use as a template',
     ],
+    'preselect_delete_subject_because_it_is_disabled' => [
+        'Vorausgewählt für Löschung, da dieses Fach in Komet deaktiviert ist',
+        'Preselected for deletion because this subject is disabled in Komet',
+    ],
 ];

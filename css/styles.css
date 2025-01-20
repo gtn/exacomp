@@ -1343,7 +1343,14 @@ table.exacomp_source_delete td {
     text-decoration: none !important;
 }
 
-#block_exacomp .exacomp-another-source {
+#block_exacomp td span.exacomp-has-another-source {
+    font-weight: normal;
+    color: #FF7F6E;
+    font-size: 0.75em;
+    text-decoration: none !important;
+}
+
+#block_exacomp .exacomp-subject-preselected-for-deletion {
     font-weight: normal;
     color: #FF7F6E;
     font-size: 0.75em;

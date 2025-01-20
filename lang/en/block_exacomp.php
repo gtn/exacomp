@@ -961,3 +961,4 @@ $string['edulevel_without_assignment_title'] = 'without a specific assignment';
 $string['schooltype_without_assignment_title'] = 'without a specific assignment';
 $string['please_select_topic_first'] = 'Please first select a topic of competence in the left bar';
 $string['no_course_templates'] = 'Can not find any course to use as a template';
+$string['preselect_delete_subject_because_it_is_disabled'] = 'Preselected for deletion because this subject is disabled in Komet';

@@ -5629,13 +5629,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $cell = new html_table_cell();
 
+            $preselect_because_disabled = '';
+            if ($subject->disabled) {
+                $preselect_because_disabled = '<span class="exacomp-subject-preselected-for-deletion">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_is_disabled') . '</span>';
+            }
+
             $cell->text = html_writer::div('<input type="checkbox"
 			                                        exa-name="subjects"
 			                                        sourceid="' . $subject->sourceid . '"
                                                     id="subject_' . $subject->id . '"
 			                                        value="' . $subject->id . '"' .
+                (!empty($preselect_because_disabled) ? ' checked' : '') .
                 ' />' .
-                html_writer::tag('b', $subject->title));
+                html_writer::tag('b', $subject->title)
+                . $preselect_because_disabled);
             $cell->attributes['class'] = 'rg2-arrow';
             $row->cells[] = $cell;
             $rows[] = $row;
