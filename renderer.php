@@ -5634,7 +5634,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $preselect_because_disabled = '<span class="exacomp-subject-preselected-for-deletion">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_is_disabled') . '</span>';
             }
 
-            $preselect_because_not_imported = '';
+            $preselect_because_missing_from_import = '';
             if ($subject->missing_from_import != 1) {
                 $preselect_because_missing_from_import = '<span class="exacomp-subject-preselected-for-deletion">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_was_not_imported_in_last_import') . '</span>';
             }
