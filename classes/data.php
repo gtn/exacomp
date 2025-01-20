@@ -1888,7 +1888,7 @@ class data_importer extends data {
      * @param int $schedulerId 0 - not from scheduler; > 0 - scheduler task id, -1 - from main scheduler task '\block_exacomp\task\import'
      * @return bool
      */
-    public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0, $manualImport = false) {
+    public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0, $manualImport = false, $set_missing_from_import_flag = false) {
         global $CFG;
 
         if (!$url) {
@@ -1896,7 +1896,7 @@ class data_importer extends data {
         }
         if (file_exists($url)) {
             // it's a file
-            return self::do_import_file($url, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
+            return self::do_import_file($url, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport, $set_missing_from_import_flag);
         }
 
         $file = tempnam($CFG->tempdir, "zip");
@@ -1906,7 +1906,7 @@ class data_importer extends data {
         }
 
         file_put_contents($file, $content);
-        $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
+        $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport, $set_missing_from_import_flag);
 
         @unlink($file);
 
