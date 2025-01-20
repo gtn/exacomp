@@ -1924,7 +1924,7 @@ class data_importer extends data {
      * @param int $schedulerId if it is for scheduler task - id of task; -1 if it is main scheduler task: \block_exacomp\task\import
      * @return bool
      */
-    public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $simulate = false, $schedulerId = 0, $manualImport = false) {
+    public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $simulate = false, $schedulerId = 0, $manualImport = false, $set_missing_from_import_flag = false) {
         global $USER, $CFG, $DB;
 
         if (!$file) {
@@ -2038,6 +2038,12 @@ class data_importer extends data {
                 'id' => self::$import_source_local_id,
             ));
         }
+
+        // set all missing_from_import fields of the subjects of this source to 1
+        if ($set_missing_from_import_flag) {
+            g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', 1, array('source' => self::$import_source_local_id));
+        }
+
 
         // update scripts for new source format
         if (self::has_old_data(BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
@@ -3220,6 +3226,8 @@ class data_importer extends data {
         if ($xmlItem->disabled) {
             $subject->disabled = 1;
         }
+
+        $subject->missing_from_import = 0;
 
         self::insert_or_update_item(BLOCK_EXACOMP_DB_SUBJECTS, $subject);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_SUBJECTS, $subject);

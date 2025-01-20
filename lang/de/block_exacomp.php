@@ -972,3 +972,4 @@ $string['schooltype_without_assignment_title'] = 'ohne feste Zuordnung';
 $string['please_select_topic_first'] = 'Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus';
 $string['no_course_templates'] = 'Kann keinen Kurs finden, der als Vorlage verwendet werden kann';
 $string['preselect_delete_subject_because_it_is_disabled'] = 'Vorausgewählt für Löschung, da dieses Fach in Komet deaktiviert ist';
+$string['preselect_delete_subject_because_it_was_not_imported_in_last_import'] = 'Vorausgewählt für Löschung, da dieses Fach im letzten Import nicht vorhanden war.';
