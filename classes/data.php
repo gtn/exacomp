@@ -2039,12 +2039,6 @@ class data_importer extends data {
             ));
         }
 
-        // set all missing_from_import fields of the subjects of this source to 1
-        if ($set_missing_from_import_flag) {
-            g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', 1, array('source' => self::$import_source_local_id));
-        }
-
-
         // update scripts for new source format
         if (self::has_old_data(BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
             if (self::$import_source_type != BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
@@ -2277,11 +2271,23 @@ class data_importer extends data {
             }
         }
 
+        // set all missing_from_import fields of the subjects of this source to 2
+        if ($set_missing_from_import_flag) {
+            g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', 2, array('source' => self::$import_source_local_id));
+        }
+
         // TODO: Here the topics for example are updated... if they are missing: Delete
         if (isset($xml->edulevels)) {
             foreach ($xml->edulevels->edulevel as $edulevel) {
                 self::insert_edulevel($edulevel, $source_local_id, $schedulerId);
             }
+        }
+
+        // set all missing_from_import fields of the subjects of this source to 1, if they are still set to 2.
+        // in the insert_edulevel function, the subjects are inserted and missing_from_import is set to 0 if the subject is in the xml
+        // this leaves only the actually missing subjects set to 1, and during this process they are set to 2, so there never is a wrong marking on the deletion page
+        if ($set_missing_from_import_flag) {
+            g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', 1, array('source' => self::$import_source_local_id, 'missing_from_import' => 2));
         }
 
         if (isset($xml->crosssubjects)) {
