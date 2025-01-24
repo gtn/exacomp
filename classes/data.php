@@ -1888,7 +1888,7 @@ class data_importer extends data {
      * @param int $schedulerId 0 - not from scheduler; > 0 - scheduler task id, -1 - from main scheduler task '\block_exacomp\task\import'
      * @return bool
      */
-    public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0, $manualImport = false, $set_missing_from_import_flag = false) {
+    public static function do_import_url($url = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $simulate = false, $schedulerId = 0, $manualImport = false) {
         global $CFG;
 
         if (!$url) {
@@ -1896,7 +1896,7 @@ class data_importer extends data {
         }
         if (file_exists($url)) {
             // it's a file
-            return self::do_import_file($url, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport, $set_missing_from_import_flag);
+            return self::do_import_file($url, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
         }
 
         $file = tempnam($CFG->tempdir, "zip");
@@ -1906,7 +1906,7 @@ class data_importer extends data {
         }
 
         file_put_contents($file, $content);
-        $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport, $set_missing_from_import_flag);
+        $ret = self::do_import_file($file, $course_template, $par_source, null, $simulate, $schedulerId, $manualImport);
 
         @unlink($file);
 
@@ -1924,7 +1924,7 @@ class data_importer extends data {
      * @param int $schedulerId if it is for scheduler task - id of task; -1 if it is main scheduler task: \block_exacomp\task\import
      * @return bool
      */
-    public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $simulate = false, $schedulerId = 0, $manualImport = false, $set_missing_from_import_flag = false) {
+    public static function do_import_file($file = null, $course_template = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, $password = null, $simulate = false, $schedulerId = 0, $manualImport = false) {
         global $USER, $CFG, $DB;
 
         if (!$file) {
@@ -2272,7 +2272,8 @@ class data_importer extends data {
         }
 
         // set all missing_from_import fields of the subjects of this source to 2
-        if ($set_missing_from_import_flag) {
+        $sync_all_grids_with_komet = get_config('exacomp', 'sync_all_grids_with_komet');
+        if ($sync_all_grids_with_komet) {
             g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', 2, array('source' => self::$import_source_local_id));
         }
 
@@ -2286,7 +2287,7 @@ class data_importer extends data {
         // set all missing_from_import fields of the subjects of this source to 1, if they are still set to 2.
         // in the insert_edulevel function, the subjects are inserted and missing_from_import is set to 0 if the subject is in the xml
         // this leaves only the actually missing subjects set to 1, and during this process they are set to 2, so there never is a wrong marking on the deletion page
-        if ($set_missing_from_import_flag) {
+        if ($sync_all_grids_with_komet) {
             g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', 1, array('source' => self::$import_source_local_id, 'missing_from_import' => 2));
         }
 
