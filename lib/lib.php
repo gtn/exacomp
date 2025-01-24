@@ -14827,3 +14827,49 @@ function block_exacomp_is_block_active_in_course($courseid) {
 
     return $DB->record_exists_sql($sql, $params);
 }
+
+function block_exacomp_delete_grids_missing_from_komet_import(){
+    global $DB;
+
+    // check the setting
+    if (!get_config('exacomp', 'sync_all_grids_with_komet')){
+        return false;
+    }
+
+
+    //$subjects =  \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source(101, -1); // TODO: this will be very time intensive
+    //$subjects =  \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source(101, [2 => 2]);
+
+    // get all the subjects, and just like in the source_delete manual grading page, check if the subjects are allowed to be deleted
+    // only delete the grids that have the missing_from_import field set to 1, which means that in the last import from their specific source, they were not found
+
+
+    // TODO: so a lot of grids will NOT be deleted with this logic. e.g. manually created ones ==> discuss how this is to be solved
+    // for example with $xmlserverurl = get_config('exacomp', 'xmlserverurl'); we could get the source and delete anything that is not from the source, and unused
+    // $xmlserverurl = get_config('exacomp', 'xmlserverurl');
+
+    // get all sources from exacompdatasources BLOCK_EXACOMP_DB_DATASOURCES
+    $sources = $DB->get_records_sql('SELECT * FROM {' . BLOCK_EXACOMP_DB_DATASOURCES . '}');
+    // for each source, get all subjects
+    foreach ($sources as $source){
+        $subjects =  \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source->id, -1);
+        // for each subject check if the 'missing_from_import' flag is 1
+        foreach ($subjects as $subject){
+            // TODO: the one that is used in the automatic import needs to be handled differently.
+            // TODO: For this one only missing subjects should be deleted. For all other sources: all that are not used should be deleted. discuss
+            // for now: this code will delete all subjects that are missing from the import
+            if ($subject->missing_from_import == 1){
+                // now check, if the subject is allowed to be deleted
+                // maybe like in descriptor_selection_source_delete in renderer.php
+                // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
+                if( $subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source){
+                    // delete the subject
+                    // $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
+                    // TODO: delete topics and descriptors? Or will they be cleaned up by the normalization task anyways?
+                }
+            }
+        }
+    }
+    return true;
+}
+
