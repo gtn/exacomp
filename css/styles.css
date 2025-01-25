@@ -1448,3 +1448,24 @@ input[type=checkbox].be-sure {
 .no-br {
     white-space: nowrap !important;
 }
+
+#edit-activities .topic-activity-cell,
+#edit-activities .cell {
+    position: relative;
+}
+
+#edit-activities .topic-activity-cell .select-allsub,
+#edit-activities .cell .select-allsub
+{
+    position: absolute;
+    top: 1px;
+    right: 3px;
+    opacity: 0.2;
+    cursor: pointer;
+}
+
+#edit-activities .topic-activity-cell .select-allsub[data-allSelected="1"],
+#edit-activities .cell .select-allsub[data-allSelected="1"]
+{
+    opacity: 0.4;
+}

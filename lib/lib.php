@@ -5073,6 +5073,11 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
         if (!empty($relatedDescriptors)) { // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
             block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
         }
+        // for unrelate we need to get inverse of related
+        $unrelatedDescriptors = array_keys($descriptors, 0);
+        if (!empty($unrelatedDescriptors)) {
+            block_exacomp_unrelate_examples_from_activity($courseid, $activityid, $unrelatedDescriptors);
+        }
     }
 }
 
@@ -5184,7 +5189,40 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
 
 }
 
-;
+
+function block_exacomp_unrelate_examples_from_activity($courseid, $activityid, $descriptors = array(), $komettranslator = false) {
+    global $DB, $CFG, $USER;
+    static $mod_info = null;
+    if ($mod_info === null) {
+        $mod_info = get_fast_modinfo($courseid);
+    }
+
+    $descriptors = array_filter($descriptors, function ($value) {
+        return is_int($value);
+    });
+    if (empty($descriptors)) {
+        $descriptors[] = -876543421;
+    }
+
+    $existsRelatedExamples =
+        $DB->get_records_sql('
+            SELECT DISTINCT e.*
+                FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
+                    JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} demm ON demm.exampid = e.id
+                WHERE
+                    e.courseid = ?
+                    AND e.activityid = ?
+                    AND demm.descrid IN ('.implode(',', $descriptors).')
+        ', [$courseid, $activityid]);
+    if ($existsRelatedExamples) {
+        // remove related examples
+        $idsToRemove = array_keys($existsRelatedExamples);
+        $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} WHERE id IN ('.implode(',', $idsToRemove).') ');
+        $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} WHERE exampid IN ('.implode(',', $idsToRemove).') ');
+    } else {
+        // nothing to do. (may be some checking needed?: planning storage and weekly schedule or visibility?
+    }
+}
 
 /**
  * init data for competencegrid, shown in tab "Overview"
