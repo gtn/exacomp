@@ -15098,12 +15098,13 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
                 // maybe like in descriptor_selection_source_delete in renderer.php
                 // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
                 if ($subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
+                    // TODO: tested: giving a niveau for a student for a topic, then removing the subject from the course, then running this autodelete ==> deleted... It should show "has_gradings, right?
                     // delete the subject
                     $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
                     mtrace("Deleted subject with id " . $subject->id . " and title " . $subject->title);
                     // TODO: delete topics and descriptors? They should be cleaned up by the normalization task anyways. If topics or descriptors get removed from a subject that still exists, they get removed during the import already anyways.
                 } else {
-                    mtrace("Marked subject with id " . $subject->id . " and title " . $subject->title ." This subject is not deleted, since it is being used, but it is missing from import.");
+                    mtrace("Marked subject with id " . $subject->id . " and title " . $subject->title . ". This subject was not deleted, since it is being used, but it is missing from import.");
                     // TODO: somehow "mark" them. They would have been deleted, if they were not being used
                 }
             }
