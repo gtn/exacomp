@@ -18,6 +18,7 @@ namespace block_exacomp\task;
 
 use block_exacomp\data;
 use block_exacomp\data_importer;
+use block_exacomp\globals as g;
 use block_exacomp\moodle_exception;
 use core\task\scheduled_task;
 
@@ -33,14 +34,11 @@ class import extends scheduled_task {
 
     public function execute() {
         $xmlserverurl = get_config('exacomp', 'xmlserverurl');
-
-        mtrace('Exabis Competence Grid: import task is running.');
-
+        mtrace('Exabis Competence Grid: standard import task is running.');
         //import xml with provided server url
         if (!$xmlserverurl) {
-            mtrace('nothing to import');
+            mtrace('nothing to import from the standard import url');
         }
-
         try {
             data::prepare();
             if (data_importer::do_import_url($xmlserverurl, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, -1, false)) {
@@ -51,6 +49,29 @@ class import extends scheduled_task {
             }
         } catch (moodle_exception $e) {
             mtrace("import failed: " . $e->getMessage());
+        }
+
+        // The additional import task
+        $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('disabled' => 0));
+        foreach ($tasks as $task) {
+            mtrace('Exabis Competence Grid: import additional task is running.');
+            //import xml with provided server url
+            if (!$task->link) {
+                mtrace('nothing to import from this task');
+            }
+            try {
+                data::prepare();
+                if (data_importer::do_import_url($task->link, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, $task->id)) {
+                    mtrace("import done");
+                    block_exacomp_settstamp();
+                } else {
+                    mtrace("import failed: unknown error");
+                }
+            } catch (moodle_exception $e) {
+                mtrace("import failed: " . $e->getMessage());
+            }
+        }
+
         }
         return true;
     }
