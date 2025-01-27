@@ -2726,7 +2726,7 @@ class data_importer extends data {
 
     public static function get_selectedallgrids_for_source($sourceId = null, $forSchedulerTask = false) {
         if ($forSchedulerTask > 0) {
-            $where = array('id' => $sourceId);
+            $where = array('id' => $forSchedulerTask);
             $result = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "all_grids", $where);
         } else {
             $where = array('id' => $sourceId);
