@@ -5070,12 +5070,12 @@ function block_exacomp_update_example_activity_relations($descriptorsData = arra
     foreach ($descriptorsData as $activityid => $descriptors) {
         $relatedDescriptors = array_filter($descriptors);
         $relatedDescriptors = array_keys($relatedDescriptors);
-        if (!empty($relatedDescriptors)) { // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
+        if ($relatedDescriptors) { // if empty --> example would be created but not assigned to any descriptor ==> don't create the example
             block_exacomp_relate_example_to_activity($courseid, $activityid, $relatedDescriptors);
         }
         // for unrelate we need to get inverse of related
         $unrelatedDescriptors = array_keys($descriptors, 0);
-        if (!empty($unrelatedDescriptors)) {
+        if ($unrelatedDescriptors) {
             block_exacomp_unrelate_examples_from_activity($courseid, $activityid, $unrelatedDescriptors);
         }
     }
@@ -5189,20 +5189,21 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
 
 }
 
-
-function block_exacomp_unrelate_examples_from_activity($courseid, $activityid, $descriptors = array(), $komettranslator = false) {
-    global $DB, $CFG, $USER;
-    static $mod_info = null;
-    if ($mod_info === null) {
-        $mod_info = get_fast_modinfo($courseid);
-    }
-
-    $descriptors = array_filter($descriptors, function ($value) {
-        return is_int($value);
-    });
+/**
+ * @param int $courseid
+ * @param int $activityid
+ * @param array $descriptors
+ * @return void
+ */
+function block_exacomp_unrelate_examples_from_activity(int $courseid, int $activityid, array $descriptors) {
+    global $DB;
     if (empty($descriptors)) {
-        $descriptors[] = -876543421;
+        return ;
     }
+
+    list($dsqlin, $params) = $DB->get_in_or_equal($descriptors, SQL_PARAMS_NAMED, 'edmm');
+    $params['courseid'] = $courseid;
+    $params['activityid'] = $activityid;
 
     $existsRelatedExamples =
         $DB->get_records_sql('
@@ -5210,14 +5211,14 @@ function block_exacomp_unrelate_examples_from_activity($courseid, $activityid, $
                 FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
                     JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} demm ON demm.exampid = e.id
                 WHERE
-                    e.courseid = ?
-                    AND e.activityid = ?
-                    AND demm.descrid IN ('.implode(',', $descriptors).')
-        ', [$courseid, $activityid]);
+                    e.courseid = :courseid
+                    AND e.activityid = :activityid
+                    AND demm.descrid '.$dsqlin.'
+        ', $params);
     if ($existsRelatedExamples) {
         // remove related examples
         $idsToRemove = array_keys($existsRelatedExamples);
-        $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} WHERE id IN ('.implode(',', $idsToRemove).') ');
+        // $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} WHERE id IN ('.implode(',', $idsToRemove).') '); // Lets keep example records. ?
         $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} WHERE exampid IN ('.implode(',', $idsToRemove).') ');
     } else {
         // nothing to do. (may be some checking needed?: planning storage and weekly schedule or visibility?

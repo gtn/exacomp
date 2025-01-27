@@ -63,8 +63,12 @@ $(function () {
   });
 });
 
+// open already selected branches
+exabis_rg2.options.reopen_checked = true;
+
 $(function () {
 
+  // check on all selected
   function checkOnAllSelected() {
     $('.topic-activity-cell .select-allsub, .cell .select-allsub').each(function () {
       var target = $(this).attr('data-target');
@@ -74,8 +78,6 @@ $(function () {
       $(this).attr('data-allSelected', allSelected ? 1 : 0);
     });
   }
-  // check on all selected
-
   checkOnAllSelected();
 
   $('body').on('click', '.topic-activity-cell .select-allsub, .cell .select-allsub' , function(e) {
