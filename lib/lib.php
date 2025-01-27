@@ -17,7 +17,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 use block_exacomp\globals as g;
+use block_exacomp\import_exception;
+use block_exacomp\ZipArchive;
 use Super\Cache;
+use Super\Fs;
 
 require_once __DIR__ . '/common.php';
 require_once __DIR__ . '/classes.php';
@@ -14867,48 +14870,197 @@ function block_exacomp_is_block_active_in_course($courseid) {
     return $DB->record_exists_sql($sql, $params);
 }
 
-function block_exacomp_delete_grids_missing_from_komet_import(){
-    global $DB;
+/**
+ * @param $password
+ * @return false
+ * @throws \block_exacomp\moodle_exception
+ * @throws dml_exception
+ * @throws import_exception
+ * @throws moodle_exception
+ */
+function block_exacomp_delete_grids_missing_from_komet_import($password = null) {
+    global $DB, $CFG;
+
+    // TODO: check if this works when there is a new importtask that has not yet run, but this task is running before it
 
     // check the setting
-    if (!get_config('exacomp', 'sync_all_grids_with_komet')){
+    if (!get_config('exacomp', 'sync_all_grids_with_komet')) {
         return false;
     }
-
-
-    //$subjects =  \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source(101, -1); // TODO: this will be very time intensive
-    //$subjects =  \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source(101, [2 => 2]);
 
     // get all the subjects, and just like in the source_delete manual grading page, check if the subjects are allowed to be deleted
     // only delete the grids that have the missing_from_import field set to 1, which means that in the last import from their specific source, they were not found
 
-
     // TODO: so a lot of grids will NOT be deleted with this logic. e.g. manually created ones ==> discuss how this is to be solved
     // for example with $xmlserverurl = get_config('exacomp', 'xmlserverurl'); we could get the source and delete anything that is not from the source, and unused
-    // $xmlserverurl = get_config('exacomp', 'xmlserverurl');
+    // TODO: there can be multiple importsources ==> then NOT only one should remain I would say, but from all of them.
+    // get the urls from which imports are done.
+    $serverurls = [];
+    $serverurls[0] = get_config('exacomp', 'xmlserverurl'); // this gets the one from the exacomp settings
+
+
+    // TODO: handle the imports from import_additonal as well. For now: don't handle them. They are treated just like any manual import ==> Everything that is not used and not in get_config('exacomp', 'xmlserverurl') gets deleted.
+    // $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS); // this gets the urls from the additional importtasks
+    // foreach ($tasks as $key => $task) {
+    //     // check if the $key for some reason is 0, which would overwrite the $serverurls[0] from the exacomp settings
+    //     if ($key == 0) {
+    //         throw new \moodle_exception("key 0 in importtasks, this is not allowed");
+    //     }
+    //     $serverurls[$key] = $task->link;
+    // }
+
+    // copied from data.php do_import_url and do_import_file:
+    if (empty($serverurls)) {
+        // no import url ==> nothing to do? // TODO: exception?
+        return false;
+    }
+
+    // for each url, get the xml
+    $xmls = [];
+    foreach ($serverurls as $key => $xmlserverurl){
+        if (file_exists($xmlserverurl)) {
+            return false; // TODO: exception?
+        }
+
+        if (file_exists($xmlserverurl)) {
+            $file = $xmlserverurl;
+        } else {
+            $file = tempnam($CFG->tempdir, "zip");
+            $content = download_file_content($xmlserverurl);
+            if (!$content) {
+                throw new  \moodle_exception("could not open url '$xmlserverurl'");
+            }
+            file_put_contents($file, $content);
+        }
+
+        // from do_import_file
+        @set_time_limit(0);
+        raise_memory_limit(MEMORY_HUGE);
+
+        // lock import, so only one import is running at the same time
+        // $lock = Fs::getLock(g::$CFG->tempdir . '/exacomp_import.lock', 0);
+        // $lock->lock(); // TODO unlock... locking in the loop, does that work? Should we use lock?
+
+        // guess it's a zip file
+        $zip = new \ZipArchive();
+        $ret = $zip->open($file, \ZipArchive::CHECKCONS);
+        // TODO: if it is not zip? - possible?
+        if ($ret === true) {
+            // a zip file
+            $firstFile = $zip->statIndex(0);
+            if (!$firstFile) {
+                throw new \moodle_exception('wrong zip file format');
+            }
+
+            $zipIsEncrypted = !!@$firstFile['encryption_method'];
+            if ($password) {
+                $zip->setPassword($password);
+            }
+            $xml = $zip->getFromName('data.xml');
+            if (!$xml) {
+                $xml = $zip->getFromName('/data.xml'); // TODO: some .zip has slash before filename. why?
+            }
+            if (!$xml) {
+                $xml = $zip->getFromName('\\data.xml'); // and again the slash!
+            }
+            if (!$xml) {
+                if ($zipIsEncrypted) {
+                    if ($password) {
+                        throw new \moodle_exception(block_exacomp_trans([
+                            'de:Falsches Passwort',
+                            'en:Wrong password',
+                        ]));
+                    } else {
+                        throw new \moodle_exception(block_exacomp_trans([
+                            'de:Diese Datei ist Passwort geschützt',
+                            'en:This file is password protected',
+                        ]));
+                    }
+                } else {
+                    throw new \moodle_exception('wrong zip file format');
+                }
+            }
+            /*
+             * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
+             * immediate useage
+             */
+            $xml = simplexml_load_string($xml, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
+            if (!$xml) {
+                throw new \moodle_exception('wrong zip data.xml content');
+            }
+        } else if ($ret == \ZipArchive::ER_NOZIP) {
+            // on error -> try as xml
+            /*
+             * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
+             * immediate useage
+             */
+            $xml = @simplexml_load_file($file, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
+            if (!$xml) {
+                throw new \moodle_exception('wrong file not a zipfile and not a data.xml file');
+            }
+        }
+        $xmls[$key] = $xml;
+    }
+
+    // now we have the xml, either from the xmlserverurl or from any other url in the additionalimports
+    $xml_sources = [];
+    foreach ($xmls as $key => $xml) {
+        $xml_sources[$key]["globalid"] = (string)$xml['source'];
+        $xml_sources[$key]["localid"] =  $DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, 'id', ['source' => $xml_sources[$key]["globalid"]]); // TODO: exceptions?
+    }
+    // TODO: these importtasks could refer to the same source. What to do then? I would say: as soon as the source is found in one importtask, the deletion should only be done if 'missing_from_import' is set to 1
+    // TODO: the 'missing_from_import' will be set to 1 if e.g. 2 importtasks import different subjects from the same source. E.g. the first imports 3 subjects, the second imports 2 other subjects ==> the first 3 will be marked for deletion...
 
     // get all sources from exacompdatasources BLOCK_EXACOMP_DB_DATASOURCES
     $sources = $DB->get_records_sql('SELECT * FROM {' . BLOCK_EXACOMP_DB_DATASOURCES . '}');
+
+    // Now we have xml_sources: the ones where imports are happening, and $sources, all sources in this exacomp installation
+    // delete everything that is unused from sources that do NOT exist in xml_sources. Delete everything that is unused and missing from the imports, for every source that DOES exist in xml_sources
+
     // for each source, get all subjects
-    foreach ($sources as $source){
-        $subjects =  \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source->id, -1);
-        // for each subject check if the 'missing_from_import' flag is 1
-        foreach ($subjects as $subject){
-            // TODO: the one that is used in the automatic import needs to be handled differently.
-            // TODO: For this one only missing subjects should be deleted. For all other sources: all that are not used should be deleted. discuss
-            // for now: this code will delete all subjects that are missing from the import
-            if ($subject->missing_from_import == 1){
-                // now check, if the subject is allowed to be deleted
-                // maybe like in descriptor_selection_source_delete in renderer.php
-                // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
-                if( $subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source){
+    foreach ($sources as $source) {
+        // check if it is in the xml_sources
+        $xml_source = null;
+        foreach ($xml_sources as $xml_s) {
+            if ($xml_source["localid"] == $source->id) {
+                $xml_source = $xml_s; // found the source ==> do not delete all unused, but only all unused that are marked because of the 'missing_from_import' flag
+                break;
+            }
+        }
+
+        $subjects = \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source->id, -1);
+        // if it is not in the xml_sources, delete all subjects that are not used
+        if ($xml_source == null) {
+            // this source is not in the imports ==> delete everything that is not used
+            // for each subject check if the subject is allowed to be deleted
+            foreach ($subjects as $subject) {
+                if ($subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
                     // delete the subject
                     // $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
-                    // TODO: delete topics and descriptors? Or will they be cleaned up by the normalization task anyways?
+                    // TODO: delete topics and descriptors? They should be cleaned up by the normalization task anyways
+                }
+            }
+        } else{
+            // this source is in the imports: delete everything where the 'missing_From_import' flag is 1
+            foreach ($subjects as $subject) {
+                // for now: this code will delete all subjects that are missing from the import
+                if ($subject->missing_from_import == 1) {
+                    // now check, if the subject is allowed to be deleted
+                    // maybe like in descriptor_selection_source_delete in renderer.php
+                    // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
+                    if ($subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
+                        // delete the subject
+                        // $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
+                        // TODO: delete topics and descriptors? They should be cleaned up by the normalization task anyways
+                    }
                 }
             }
         }
     }
+
+    // in the end: normalize, so that topics and descriptors are also removed:
+    // \block_exacomp\data::normalize_database();
+
     return true;
 }
 
