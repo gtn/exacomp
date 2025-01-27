@@ -37,17 +37,18 @@ class db_layer {
      */
     static function get() {
         static $default = null;
-
         $args = func_get_args();
         if ($args) {
             throw new \moodle_exception('no args allowed in get');
         }
-
         if ($default === null) {
-            $default = new static();
+            $default = [];
         }
-
-        return $default;
+        $className = get_called_class(); // for child classes
+        if (!array_key_exists($className, $default)) {
+            $default[$className] = new static();
+        }
+        return $default[$className];
     }
 
     /**
