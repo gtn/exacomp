@@ -34,6 +34,14 @@ class import extends scheduled_task {
 
     public function execute() {
         global $DB;
+
+        // set all missing_from_import fields of the subjects of ALL sources to BLOCK_EXACOMP_SUBJECT_IMPORTING, meaning, it is currently importing and therefore in an unsure state
+        $sync_all_grids_with_komet = get_config('exacomp', 'sync_all_grids_with_komet');
+        if ($sync_all_grids_with_komet) {
+            g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', BLOCK_EXACOMP_SUBJECT_IMPORTING);
+        }
+
+        // // The original import tasks
         $xmlserverurl = get_config('exacomp', 'xmlserverurl');
         mtrace('Exabis Competence Grid: standard import task is running.');
         //import xml with provided server url
@@ -70,6 +78,25 @@ class import extends scheduled_task {
                 }
             } catch (moodle_exception $e) {
                 mtrace("import failed: " . $e->getMessage());
+            }
+        }
+
+        // The deletion task
+        if ($sync_all_grids_with_komet) {
+            // set all missing_from_import fields of the subjects of ALL SOURCES to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT, if they are still set to BLOCK_EXACOMP_SUBJECT_IMPORTING after the imports are done
+            // in the insert_edulevel function, the subjects are inserted and missing_from_import is set to BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT if the subject is in the xml
+            // this leaves only the actually missing subjects set to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT
+            g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'missing_from_import', BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT, array('missing_from_import' => BLOCK_EXACOMP_SUBJECT_IMPORTING));
+            // now: delete what needs to be deleted
+            mtrace('Exabis Competence Grid: sync_all_grids_with_komet  is running.');
+            try {
+                if (block_exacomp_delete_grids_missing_from_komet_import()) {
+                    mtrace("Synchronize done");
+                } else {
+                    mtrace("Synchronize failed: unknown error");
+                }
+            } catch (moodle_exception $e) {
+                mtrace("Synchronize failed: " . $e->getMessage());
             }
         }
         return true;

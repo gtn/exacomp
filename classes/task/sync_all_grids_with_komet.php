@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
+/*
 namespace block_exacomp\task;
 
 use block_exacomp\data;
@@ -39,7 +39,6 @@ class sync_all_grids_with_komet extends scheduled_task {
             if(get_config('exacomp', 'sync_all_grids_with_komet')){
                 if (block_exacomp_delete_grids_missing_from_komet_import()) {
                     mtrace("Synchronize done");
-                    block_exacomp_settstamp();
                 } else {
                     mtrace("Synchronize failed: unknown error");
                 }
@@ -53,3 +52,4 @@ class sync_all_grids_with_komet extends scheduled_task {
         return true;
     }
 }
+*/
