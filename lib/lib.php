@@ -161,6 +161,12 @@ $block_exacomp_example_used_values = array();
 // course specific assessment configuration
 $block_exacomp_assessment_configurations = array();
 
+// missing_from_import flag for the sync_with_komet function
+const BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT = 0;
+const BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT = 1;
+const BLOCK_EXACOMP_SUBJECT_IMPORTING = 2;
+
+
 /**
  * get the assessemnt preconfigurations from the xml, but only load it once (global)
  *
@@ -5201,7 +5207,7 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
 function block_exacomp_unrelate_examples_from_activity(int $courseid, int $activityid, array $descriptors) {
     global $DB;
     if (empty($descriptors)) {
-        return ;
+        return;
     }
 
     list($dsqlin, $params) = $DB->get_in_or_equal($descriptors, SQL_PARAMS_NAMED, 'edmm');
@@ -5211,18 +5217,18 @@ function block_exacomp_unrelate_examples_from_activity(int $courseid, int $activ
     $existsRelatedExamples =
         $DB->get_records_sql('
             SELECT DISTINCT e.*
-                FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
-                    JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} demm ON demm.exampid = e.id
+                FROM {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e
+                    JOIN {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} demm ON demm.exampid = e.id
                 WHERE
                     e.courseid = :courseid
                     AND e.activityid = :activityid
-                    AND demm.descrid '.$dsqlin.'
+                    AND demm.descrid ' . $dsqlin . '
         ', $params);
     if ($existsRelatedExamples) {
         // remove related examples
         $idsToRemove = array_keys($existsRelatedExamples);
         // $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} WHERE id IN ('.implode(',', $idsToRemove).') '); // Lets keep example records. ?
-        $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} WHERE exampid IN ('.implode(',', $idsToRemove).') ');
+        $DB->execute('DELETE FROM {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} WHERE exampid IN (' . implode(',', $idsToRemove) . ') ');
     } else {
         // nothing to do. (may be some checking needed?: planning storage and weekly schedule or visibility?
     }
@@ -14878,7 +14884,8 @@ function block_exacomp_is_block_active_in_course($courseid) {
  * @throws import_exception
  * @throws moodle_exception
  */
-function block_exacomp_delete_grids_missing_from_komet_import($password = null) {
+// @deprecated
+function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($password = null) {
     global $DB, $CFG;
 
     // TODO: check if this works when there is a new importtask that has not yet run, but this task is running before it
@@ -14917,7 +14924,7 @@ function block_exacomp_delete_grids_missing_from_komet_import($password = null) 
 
     // for each url, get the xml
     $xmls = [];
-    foreach ($serverurls as $key => $xmlserverurl){
+    foreach ($serverurls as $key => $xmlserverurl) {
         if (file_exists($xmlserverurl)) {
             return false; // TODO: exception?
         }
@@ -15006,7 +15013,7 @@ function block_exacomp_delete_grids_missing_from_komet_import($password = null) 
     $xml_sources = [];
     foreach ($xmls as $key => $xml) {
         $xml_sources[$key]["globalid"] = (string)$xml['source'];
-        $xml_sources[$key]["localid"] =  $DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, 'id', ['source' => $xml_sources[$key]["globalid"]]); // TODO: exceptions?
+        $xml_sources[$key]["localid"] = $DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, 'id', ['source' => $xml_sources[$key]["globalid"]]); // TODO: exceptions?
     }
     // TODO: these importtasks could refer to the same source. What to do then? I would say: as soon as the source is found in one importtask, the deletion should only be done if 'missing_from_import' is set to 1
     // TODO: the 'missing_from_import' will be set to 1 if e.g. 2 importtasks import different subjects from the same source. E.g. the first imports 3 subjects, the second imports 2 other subjects ==> the first 3 will be marked for deletion...
@@ -15040,7 +15047,7 @@ function block_exacomp_delete_grids_missing_from_komet_import($password = null) 
                     // TODO: delete topics and descriptors? They should be cleaned up by the normalization task anyways
                 }
             }
-        } else{
+        } else {
             // this source is in the imports: delete everything where the 'missing_From_import' flag is 1
             foreach ($subjects as $subject) {
                 // for now: this code will delete all subjects that are missing from the import
@@ -15061,6 +15068,49 @@ function block_exacomp_delete_grids_missing_from_komet_import($password = null) 
     // in the end: normalize, so that topics and descriptors are also removed:
     // \block_exacomp\data::normalize_database();
 
+    return true;
+}
+
+function block_exacomp_delete_grids_missing_from_komet_import() {
+    // TODO: What to do if an import fails. Then it would delete everything that is unused from that failed import. Should be no problem?
+    // TODO: what to do if an import task is just disabled.
+
+    global $DB, $CFG;
+    // check the setting again, before deleting
+    if (!get_config('exacomp', 'sync_all_grids_with_komet')) {
+        return false;
+    }
+
+    // get all sources from exacompdatasources BLOCK_EXACOMP_DB_DATASOURCES
+    $sources = $DB->get_records_sql('SELECT * FROM {' . BLOCK_EXACOMP_DB_DATASOURCES . '}');
+    // TODO: this does not get source: self. Discuss how we should deal with that? Keep completely selfmade ones? Or delete them as well?
+
+    // for each source, get all subjects
+    foreach ($sources as $source) {
+        // get all the subjects of this source, and just like in the source_delete manual grading page, check if the subjects are allowed to be deleted
+        // only delete the grids that have the missing_from_import field set to 1 (BLOCK_EXACOMP_MISSING_FROM_IMPORT_MISSING), which means that in the last import, they were not imported.
+        // they were either created manually, or they were missing from the xmls used in the last import.
+        $subjects = \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source->id, -1);
+        // this source is in the imports: delete everything where the 'missing_From_import' flag is 1
+        foreach ($subjects as $subject) {
+            if ($subject->missing_from_import == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT) {
+                // now check, if the subject is allowed to be deleted
+                // maybe like in descriptor_selection_source_delete in renderer.php
+                // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
+                if ($subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
+                    // delete the subject
+                    $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
+                    mtrace("Deleted subject with id " . $subject->id . " and title " . $subject->title);
+                    // TODO: delete topics and descriptors? They should be cleaned up by the normalization task anyways. If topics or descriptors get removed from a subject that still exists, they get removed during the import already anyways.
+                } else {
+                    mtrace("Marked subject with id " . $subject->id . " and title " . $subject->title ." This subject is not deleted, since it is being used, but it is missing from import.");
+                    // TODO: somehow "mark" them. They would have been deleted, if they were not being used
+                }
+            }
+        }
+    }
+    // in the end: normalize, so that topics and descriptors are also removed:
+    // \block_exacomp\data::normalize_database(); // TODO: run it here? Or wait for that task to run independantly?
     return true;
 }
 
