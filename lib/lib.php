@@ -165,6 +165,7 @@ $block_exacomp_assessment_configurations = array();
 const BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT = 0;
 const BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT = 1;
 const BLOCK_EXACOMP_SUBJECT_IMPORT_TASK_RUNNING = 2;
+const BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED = 3;
 
 
 /**
@@ -15072,8 +15073,8 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
 }
 
 function block_exacomp_delete_grids_missing_from_komet_import() {
-    // TODO: What to do if an import fails. Then it would delete everything that is unused from that failed import. Should be no problem?
-    // TODO: what to do if an import task is just disabled.
+    // What to do if an import fails? Then it would still only delete what is unused. Also, it will not run until here, if one of the import tasks fail, as they run before this function.
+    // if an import task is just disabled, it will be handled as if it were removed.
 
     global $DB, $CFG;
     // check the setting again, before deleting
@@ -15083,7 +15084,7 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
 
     // get all sources from exacompdatasources BLOCK_EXACOMP_DB_DATASOURCES
     $sources = $DB->get_records_sql('SELECT * FROM {' . BLOCK_EXACOMP_DB_DATASOURCES . '}');
-    // TODO: this does not get source: self. Discuss how we should deal with that? Keep completely selfmade ones? Or delete them as well?
+    // TODO: this does not get source: self, as it is not in the DATASOURCES table. Discuss how we should deal with that? Keep completely selfmade ones? Or delete them as well?
 
     // for each source, get all subjects
     foreach ($sources as $source) {
@@ -15095,17 +15096,19 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
         foreach ($subjects as $subject) {
             if ($subject->importstate == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT) {
                 // now check, if the subject is allowed to be deleted
-                // maybe like in descriptor_selection_source_delete in renderer.php
-                // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
-                if ($subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
-                    // TODO: tested: giving a niveau for a student for a topic, then removing the subject from the course, then running this autodelete ==> deleted... It should show "has_gradings, right? Maybe niveau != grading?
+                // check in descriptor_selection_source_delete in renderer.php
+                // TODO: what should be checked? can_delete must be true, that should suffice. For safety check: gradings must be empty has_gradings must be false, used_in_courses must be empty, what about has_another_source??
+                if ($subject->can_delete && !$subject->has_gradings && !$subject->gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
                     // delete the subject
                     $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
                     mtrace("Deleted subject with id " . $subject->id . " and title " . $subject->title);
-                    // TODO: delete topics and descriptors? They should be cleaned up by the normalization task anyways. If topics or descriptors get removed from a subject that still exists, they get removed during the import already anyways.
+                    // Topic and descriptors should be cleaned up by the normalization task anyways. If topics or descriptors get removed from a subject that still exists, they get removed during the import already.
                 } else {
                     mtrace("Marked subject with id " . $subject->id . " and title " . $subject->title . ". This subject was not deleted, since it is being used, but it is missing from import.");
                     // TODO: somehow "mark" them. They would have been deleted, if they were not being used
+                    // set the importstate to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED, to mark that it is missing BUT not deleted because it is used
+                    $subject->importstate = BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED;
+                    $DB->update_record(BLOCK_EXACOMP_DB_SUBJECTS, $subject);
                 }
             }
         }

@@ -78,7 +78,7 @@
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom subject"/>
         <FIELD NAME="class" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" COMMENT="class"/>
         <FIELD NAME="is_editable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="can teacher edit grid from komet or not"/>
-        <FIELD NAME="importstate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0... for example when imported manually just recently or when it existed in the latest import task. 1... marked for deletion / did not exist in the latest import task. 2... import in progress. At the beginning of the import task it is set to 2 for all subjects."/>
+        <FIELD NAME="importstate" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0... for example when imported manually just recently or when it existed in the latest import task. 1... marked for deletion / did not exist in the latest import task. 2... import in progress. At the beginning of the import task it is set to 2 for all subjects. 3... missing from import but used."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
