@@ -5207,29 +5207,31 @@ function block_exacomp_relate_example_to_activity($courseid, $activityid, $descr
  */
 function block_exacomp_unrelate_examples_from_activity(int $courseid, int $activityid, array $descriptors) {
     global $DB;
-    if (empty($descriptors)) {
-        return;
+    if (!$descriptors) {
+        return ;
     }
 
-    list($dsqlin, $params) = $DB->get_in_or_equal($descriptors, SQL_PARAMS_NAMED, 'edmm');
+    list($dsqlin, $params) = $DB->get_in_or_equal($descriptors, SQL_PARAMS_NAMED);
+
     $params['courseid'] = $courseid;
     $params['activityid'] = $activityid;
 
     $existsRelatedExamples =
         $DB->get_records_sql('
             SELECT DISTINCT e.*
-                FROM {' . BLOCK_EXACOMP_DB_EXAMPLES . '} e
-                    JOIN {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} demm ON demm.exampid = e.id
+                FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e
+                    JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} demm ON demm.exampid = e.id
                 WHERE
                     e.courseid = :courseid
                     AND e.activityid = :activityid
-                    AND demm.descrid ' . $dsqlin . '
+                    AND demm.descrid '.$dsqlin.'
         ', $params);
     if ($existsRelatedExamples) {
         // remove related examples
         $idsToRemove = array_keys($existsRelatedExamples);
-        // $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} WHERE id IN ('.implode(',', $idsToRemove).') '); // Lets keep example records. ?
-        $DB->execute('DELETE FROM {' . BLOCK_EXACOMP_DB_DESCEXAMP . '} WHERE exampid IN (' . implode(',', $idsToRemove) . ') ');
+        list($esqlin, $eparams) = $DB->get_in_or_equal($idsToRemove, SQL_PARAMS_NAMED);
+        // $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} WHERE id '.$esqlin, $eparams); // Lets keep example records. ?
+        $DB->execute('DELETE FROM {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} WHERE exampid '.$esqlin, $eparams);
     } else {
         // nothing to do. (may be some checking needed?: planning storage and weekly schedule or visibility?
     }
