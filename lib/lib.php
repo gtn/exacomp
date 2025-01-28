@@ -161,10 +161,10 @@ $block_exacomp_example_used_values = array();
 // course specific assessment configuration
 $block_exacomp_assessment_configurations = array();
 
-// missing_from_import flag for the sync_with_komet function
+// importstate flag for the sync_with_komet function
 const BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT = 0;
 const BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT = 1;
-const BLOCK_EXACOMP_SUBJECT_IMPORTING = 2;
+const BLOCK_EXACOMP_SUBJECT_IMPORT_TASK_RUNNING = 2;
 
 
 /**
@@ -14896,7 +14896,7 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
     }
 
     // get all the subjects, and just like in the source_delete manual grading page, check if the subjects are allowed to be deleted
-    // only delete the grids that have the missing_from_import field set to 1, which means that in the last import from their specific source, they were not found
+    // only delete the grids that have the importstate field set to 1, which means that in the last import from their specific source, they were not found
 
     // TODO: so a lot of grids will NOT be deleted with this logic. e.g. manually created ones ==> discuss how this is to be solved
     // for example with $xmlserverurl = get_config('exacomp', 'xmlserverurl'); we could get the source and delete anything that is not from the source, and unused
@@ -15015,8 +15015,8 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
         $xml_sources[$key]["globalid"] = (string)$xml['source'];
         $xml_sources[$key]["localid"] = $DB->get_field(BLOCK_EXACOMP_DB_DATASOURCES, 'id', ['source' => $xml_sources[$key]["globalid"]]); // TODO: exceptions?
     }
-    // TODO: these importtasks could refer to the same source. What to do then? I would say: as soon as the source is found in one importtask, the deletion should only be done if 'missing_from_import' is set to 1
-    // TODO: the 'missing_from_import' will be set to 1 if e.g. 2 importtasks import different subjects from the same source. E.g. the first imports 3 subjects, the second imports 2 other subjects ==> the first 3 will be marked for deletion...
+    // TODO: these importtasks could refer to the same source. What to do then? I would say: as soon as the source is found in one importtask, the deletion should only be done if 'importstate' is set to 1
+    // TODO: the 'importstate' will be set to 1 if e.g. 2 importtasks import different subjects from the same source. E.g. the first imports 3 subjects, the second imports 2 other subjects ==> the first 3 will be marked for deletion...
 
     // get all sources from exacompdatasources BLOCK_EXACOMP_DB_DATASOURCES
     $sources = $DB->get_records_sql('SELECT * FROM {' . BLOCK_EXACOMP_DB_DATASOURCES . '}');
@@ -15030,7 +15030,7 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
         $xml_source = null;
         foreach ($xml_sources as $xml_s) {
             if ($xml_source["localid"] == $source->id) {
-                $xml_source = $xml_s; // found the source ==> do not delete all unused, but only all unused that are marked because of the 'missing_from_import' flag
+                $xml_source = $xml_s; // found the source ==> do not delete all unused, but only all unused that are marked because of the 'importstate' flag
                 break;
             }
         }
@@ -15051,7 +15051,7 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
             // this source is in the imports: delete everything where the 'missing_From_import' flag is 1
             foreach ($subjects as $subject) {
                 // for now: this code will delete all subjects that are missing from the import
-                if ($subject->missing_from_import == 1) {
+                if ($subject->importstate == 1) {
                     // now check, if the subject is allowed to be deleted
                     // maybe like in descriptor_selection_source_delete in renderer.php
                     // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
@@ -15088,17 +15088,17 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
     // for each source, get all subjects
     foreach ($sources as $source) {
         // get all the subjects of this source, and just like in the source_delete manual grading page, check if the subjects are allowed to be deleted
-        // only delete the grids that have the missing_from_import field set to 1 (BLOCK_EXACOMP_MISSING_FROM_IMPORT_MISSING), which means that in the last import, they were not imported.
+        // only delete the grids that have the importstate field set to 1 (BLOCK_EXACOMP_MISSING_FROM_IMPORT_MISSING), which means that in the last import, they were not imported.
         // they were either created manually, or they were missing from the xmls used in the last import.
         $subjects = \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source->id, -1);
         // this source is in the imports: delete everything where the 'missing_From_import' flag is 1
         foreach ($subjects as $subject) {
-            if ($subject->missing_from_import == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT) {
+            if ($subject->importstate == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT) {
                 // now check, if the subject is allowed to be deleted
                 // maybe like in descriptor_selection_source_delete in renderer.php
                 // TODO: what should be checked? can_delete must be true, has_gradings must be false, used_in_courses must be empty, what about has_another_source??
                 if ($subject->can_delete && !$subject->has_gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
-                    // TODO: tested: giving a niveau for a student for a topic, then removing the subject from the course, then running this autodelete ==> deleted... It should show "has_gradings, right?
+                    // TODO: tested: giving a niveau for a student for a topic, then removing the subject from the course, then running this autodelete ==> deleted... It should show "has_gradings, right? Maybe niveau != grading?
                     // delete the subject
                     $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
                     mtrace("Deleted subject with id " . $subject->id . " and title " . $subject->title);
@@ -15111,7 +15111,7 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
         }
     }
     // in the end: normalize, so that topics and descriptors are also removed:
-    // \block_exacomp\data::normalize_database(); // TODO: run it here? Or wait for that task to run independantly?
+    \block_exacomp\data::normalize_database(); // TODO: run it here? Or wait for that task to run independantly?
     return true;
 }
 

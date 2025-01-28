@@ -4318,6 +4318,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025012000, 'exacomp');
     }
 
+    if ($oldversion < 2025012801) {
+        // rename the field "missing_from_import" to "importstate"
+        $table = new xmldb_table('block_exacompsubjects');
+        $field = new xmldb_field('missing_from_import', XMLDB_TYPE_INTEGER, '1', null, null, null, 0, 'is_editable');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'importstate');
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2025012801, 'exacomp');
+    }
 
 
     /*

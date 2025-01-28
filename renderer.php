@@ -5635,7 +5635,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
             $preselect_because_missing_from_import = '';
-            if ($subject->missing_from_import == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT) {
+            if ($subject->importstate == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT) {
                 $preselect_because_missing_from_import = '<span class="exacomp-subject-preselected-for-deletion-because-missing-from-import">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_was_not_imported_in_last_import') . '</span>';
             }
 
