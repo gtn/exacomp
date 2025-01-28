@@ -15086,7 +15086,7 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
 
     // get all sources from exacompdatasources BLOCK_EXACOMP_DB_DATASOURCES
     $sources = $DB->get_records_sql('SELECT * FROM {' . BLOCK_EXACOMP_DB_DATASOURCES . '}');
-    // TODO: this does not get source: self, as it is not in the DATASOURCES table. Discuss how we should deal with that? Keep completely selfmade ones? Or delete them as well?
+    // TODO: this does not get source: self, as it is not in the DATASOURCES table. Discuss how we should deal with that? Keep completely selfmade ones? Or delete them as well? For now they are kept.
 
     // for each source, get all subjects
     foreach ($sources as $source) {
