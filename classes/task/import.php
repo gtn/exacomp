@@ -37,14 +37,14 @@ class import extends scheduled_task {
 
         // set all importstate fields of the subjects of ALL sources to BLOCK_EXACOMP_SUBJECT_IMPORTING, meaning, it is currently importing and therefore in an unsure state
         $xmlserverurl = get_config('exacomp', 'xmlserverurl');
-        $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('disabled' => 0));
+        $tasks = $DB->get_records(BLOCK_EXACOMP_DB_IMPORTTASKS, array('disabled' => 0)); // if an import task is just disabled, it will be handled as if it were removed.
 
 
         $sync_all_grids_with_komet = get_config('exacomp', 'sync_all_grids_with_komet') && ($xmlserverurl || !empty($tasks));
         if ($sync_all_grids_with_komet) {
             g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', BLOCK_EXACOMP_SUBJECT_IMPORT_TASK_RUNNING);
         }
-        $has_anything_been_imported = false;
+        $any_import_failed = false;
 
         // The original import tasks
         mtrace('Exabis Competence Grid: standard import task is running.');
@@ -57,12 +57,13 @@ class import extends scheduled_task {
             if (data_importer::do_import_url($xmlserverurl, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, -1, false)) {
                 mtrace("import done");
                 block_exacomp_settstamp();
-                $has_anything_been_imported = true;
             } else {
                 mtrace("import failed: unknown error");
+                $any_import_failed = true;
             }
         } catch (moodle_exception $e) {
             mtrace("import failed: " . $e->getMessage());
+            $any_import_failed = true;
         }
 
         // The additional import task
@@ -77,32 +78,37 @@ class import extends scheduled_task {
                 if (data_importer::do_import_url($task->link, null, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, false, $task->id)) {
                     mtrace("import done");
                     block_exacomp_settstamp();
-                    $has_anything_been_imported = true;
                 } else {
                     mtrace("import failed: unknown error");
+                    $any_import_failed = true;
                 }
             } catch (moodle_exception $e) {
                 mtrace("import failed: " . $e->getMessage());
+                $any_import_failed = true;
             }
         }
 
         // The deletion task
         // check if sync_all_grids_with_komet is set AND (if any url is in the xmlserverurl field, OR if $tasks is not empty)
-        if ($sync_all_grids_with_komet && $has_anything_been_imported) {
-            // set all importstate fields of the subjects of ALL SOURCES to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT, if they are still set to BLOCK_EXACOMP_SUBJECT_IMPORTING after the imports are done
-            // in the insert_edulevel function, the subjects are inserted and importstate is set to BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT if the subject is in the xml
-            // this leaves only the actually missing subjects set to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT
-            g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT, array('importstate' => BLOCK_EXACOMP_SUBJECT_IMPORT_TASK_RUNNING));
-            // now: delete what needs to be deleted
+        if ($sync_all_grids_with_komet) {
             mtrace('Exabis Competence Grid: sync_all_grids_with_komet  is running.');
-            try {
-                if (block_exacomp_delete_grids_missing_from_komet_import()) {
-                    mtrace("Synchronize done");
-                } else {
-                    mtrace("Synchronize failed: unknown error");
+            if ($any_import_failed) {
+                mtrace("Synchronize did not run because an import failed");
+            } else {
+                // set all importstate fields of the subjects of ALL SOURCES to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT, if they are still set to BLOCK_EXACOMP_SUBJECT_IMPORTING after the imports are done
+                // in the insert_edulevel function, the subjects are inserted and importstate is set to BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT if the subject is in the xml
+                // this leaves only the actually missing subjects set to BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT
+                g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT, array('importstate' => BLOCK_EXACOMP_SUBJECT_IMPORT_TASK_RUNNING));
+                // now: delete what needs to be deleted
+                try {
+                    if (block_exacomp_delete_grids_missing_from_komet_import()) {
+                        mtrace("Synchronize done");
+                    } else {
+                        mtrace("Synchronize failed: unknown error");
+                    }
+                } catch (moodle_exception $e) {
+                    mtrace("Synchronize failed: " . $e->getMessage());
                 }
-            } catch (moodle_exception $e) {
-                mtrace("Synchronize failed: " . $e->getMessage());
             }
         }
         return true;

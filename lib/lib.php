@@ -15075,9 +15075,6 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
 }
 
 function block_exacomp_delete_grids_missing_from_komet_import() {
-    // What to do if an import fails? Then it would still only delete what is unused. Also, it will not run until here, if one of the import tasks fail, as they run before this function.
-    // if an import task is just disabled, it will be handled as if it were removed.
-
     global $DB, $CFG;
     // check the setting again, before deleting
     if (!get_config('exacomp', 'sync_all_grids_with_komet')) {
