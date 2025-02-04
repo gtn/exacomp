@@ -3616,8 +3616,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Preselected for deletion because this subject is disabled in Komet',
     ],
     'preselect_delete_subject_because_it_was_not_imported_in_last_import' => [
-        'Vorausgewählt für Löschung, da dieses Fach im letzten Import nicht vorhanden war.',
-        'Preselected for deletion because this subject did not exist in the previous import.',
+        'Vorausgewählt für Löschung, da dieses Fach im letzten Import nicht vorhanden war ABER in Verwendung ist.',
+        'Preselected for deletion because this subject did not exist in the previous import BUT is being used.',
     ],
     'sync_all_grids_with_komet' => [
         'Synchronisiere alle Raster mit Komet',

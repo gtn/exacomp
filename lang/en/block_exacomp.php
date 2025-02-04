@@ -962,6 +962,6 @@ $string['schooltype_without_assignment_title'] = 'without a specific assignment'
 $string['please_select_topic_first'] = 'Please first select a topic of competence in the left bar';
 $string['no_course_templates'] = 'Can not find any course to use as a template';
 $string['preselect_delete_subject_because_it_is_disabled'] = 'Preselected for deletion because this subject is disabled in Komet';
-$string['preselect_delete_subject_because_it_was_not_imported_in_last_import'] = 'Preselected for deletion because this subject did not exist in the previous import.';
+$string['preselect_delete_subject_because_it_was_not_imported_in_last_import'] = 'Preselected for deletion because this subject did not exist in the previous import BUT is being used.';
 $string['sync_all_grids_with_komet'] = 'Sync all grids with Komet';
 $string['sync_all_grids_with_komet_description'] = 'Keep only the Komet grids and competencies. Delete everything else unless a grid or competency is already in use';
