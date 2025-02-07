@@ -1991,7 +1991,9 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
         }
         //        block_exacomp_update_gradinghistory_text($compid,$userid,$courseid,$comptype);
     } else if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
-        block_exacomp_notify_all_teachers_about_self_assessment($courseid, $compid, $comptype, $options['notification_customdata']);
+        // generell stellt sich die Frage, ob Selbsteinschätzungen überhaupt per Mittwilung kommuniziert werden sollen => Zuviele Mitteilungen bei der Selbsteinschätzung
+        // https://zsl-bw.openproject.eu/projects/dakora-plus/work_packages/465/activity
+        // block_exacomp_notify_all_teachers_about_self_assessment($courseid, $compid, $comptype, $options['notification_customdata']);
     }
     $objecttable = '';
     switch ($comptype) {
