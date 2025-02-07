@@ -8643,6 +8643,7 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
         $studentid = 0;
     }
 
+    // TODO: this should just get all courses, which the user is enrolled, and not iterate over all courses in moodle?!?
     $courses = block_exacomp_get_courseids();
     $examples = array();
 
