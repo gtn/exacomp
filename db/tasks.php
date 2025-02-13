@@ -26,15 +26,6 @@ $tasks = array(
         'month' => '*',
         'dayofweek' => '*',
     ),
-    // array(
-    //     'classname' => 'block_exacomp\task\import_additional',
-    //     'blocking' => 0,
-    //     'minute' => '30',
-    //     'hour' => '1',
-    //     'day' => '*',
-    //     'month' => '*',
-    //     'dayofweek' => '*',
-    // ),
     array(
         'classname' => 'block_exacomp\task\komettranslator_to_exacomp',
         'blocking' => 0,
@@ -72,13 +63,4 @@ $tasks = array(
         'month' => '*',
         'dayofweek' => '0',
     ),
-    // array(
-    //     'classname' => 'block_exacomp\task\sync_all_grids_with_komet',
-    //     'blocking' => 0,
-    //     'minute' => '30',
-    //     'hour' => '2',
-    //     'day' => '*',
-    //     'month' => '*',
-    //     'dayofweek' => '*',
-    // ),
 );
