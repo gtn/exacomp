@@ -62,3 +62,42 @@ $(function () {
     request.send(urlparams);
   });
 });
+
+// open already selected branches
+exabis_rg2.options.reopen_checked = true;
+
+$(function () {
+
+  // check on all selected
+  function checkOnAllSelected() {
+    $('.topic-activity-cell .select-allsub, .cell .select-allsub').each(function () {
+      var target = $(this).attr('data-target');
+      var toSelect = $('.exabis_comp_comp td.cell[data-subOf*="'+target+'"]');
+      var allSelected = toSelect.find('input[type="checkbox"]').length > 0 &&
+        toSelect.find('input[type="checkbox"]:not(:checked)').length === 0;
+      $(this).attr('data-allSelected', allSelected ? 1 : 0);
+    });
+  }
+  checkOnAllSelected();
+
+  $('body').on('click', '.topic-activity-cell .select-allsub, .cell .select-allsub' , function(e) {
+    e.preventDefault();
+    var target = $(this).attr('data-target');
+    var toSelect = $('.exabis_comp_comp td.cell[data-subOf*="'+target+'"]');
+    if ($(this).attr('data-allSelected') == 1) {
+      toSelect.find('input[type="checkbox"]').prop('checked', false);
+      $(this).attr('data-allSelected', 0);
+    } else {
+      toSelect.find('input[type="checkbox"]').prop('checked', true);
+      $(this).attr('data-allSelected', 1);
+    }
+
+    checkOnAllSelected(); // useful for check topics selector if subdescriptors are not all selected
+    // open table tree if it is not opened yet
+    var mainTr = $(this).closest('.rg2-header');
+    if (!mainTr.hasClass('open')) {
+      mainTr.find('.rg2-arrow').trigger('click');
+    }
+  });
+
+});

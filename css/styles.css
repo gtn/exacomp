@@ -1343,9 +1343,23 @@ table.exacomp_source_delete td {
     text-decoration: none !important;
 }
 
-#block_exacomp .exacomp-another-source {
+#block_exacomp td span.exacomp-has-another-source {
     font-weight: normal;
     color: #FF7F6E;
+    font-size: 0.75em;
+    text-decoration: none !important;
+}
+
+#block_exacomp .exacomp-subject-preselected-for-deletion-because-disabled {
+    font-weight: normal;
+    color: #AA7F6E;
+    font-size: 0.75em;
+    text-decoration-line: none !important;
+}
+
+#block_exacomp .exacomp-subject-preselected-for-deletion-because-missing-from-import {
+    font-weight: normal;
+    color: #FF3333;
     font-size: 0.75em;
     text-decoration-line: none !important;
 }
@@ -1433,4 +1447,25 @@ input[type=checkbox].be-sure {
 
 .no-br {
     white-space: nowrap !important;
+}
+
+#edit-activities .topic-activity-cell,
+#edit-activities .cell {
+    position: relative;
+}
+
+#edit-activities .topic-activity-cell .select-allsub,
+#edit-activities .cell .select-allsub
+{
+    position: absolute;
+    top: 1px;
+    right: 3px;
+    opacity: 0.2;
+    cursor: pointer;
+}
+
+#edit-activities .topic-activity-cell .select-allsub[data-allSelected="1"],
+#edit-activities .cell .select-allsub[data-allSelected="1"]
+{
+    opacity: 0.4;
 }

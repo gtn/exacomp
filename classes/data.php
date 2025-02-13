@@ -2271,12 +2271,25 @@ class data_importer extends data {
             }
         }
 
+        // // set all importstate fields of the subjects of this source to 2
+        // $sync_all_grids_with_komet = get_config('exacomp', 'sync_all_grids_with_komet');
+        // if ($sync_all_grids_with_komet) {
+        //     g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', 2, array('source' => self::$import_source_local_id));
+        // }
+
         // TODO: Here the topics for example are updated... if they are missing: Delete
         if (isset($xml->edulevels)) {
             foreach ($xml->edulevels->edulevel as $edulevel) {
                 self::insert_edulevel($edulevel, $source_local_id, $schedulerId);
             }
         }
+
+        // // set all importstate fields of the subjects of this source to 1, if they are still set to 2.
+        // // in the insert_edulevel function, the subjects are inserted and importstate is set to 0 if the subject is in the xml
+        // // this leaves only the actually missing subjects set to 1, and during this process they are set to 2, so there never is a wrong marking on the deletion page
+        // if ($sync_all_grids_with_komet) {
+        //     g::$DB->set_field(BLOCK_EXACOMP_DB_SUBJECTS, 'importstate', 1, array('source' => self::$import_source_local_id, 'importstate' => 2));
+        // }
 
         if (isset($xml->crosssubjects)) {
             foreach ($xml->crosssubjects->crosssubject as $crosssubject) {
@@ -2713,7 +2726,7 @@ class data_importer extends data {
 
     public static function get_selectedallgrids_for_source($sourceId = null, $forSchedulerTask = false) {
         if ($forSchedulerTask > 0) {
-            $where = array('id' => $sourceId);
+            $where = array('id' => $forSchedulerTask);
             $result = g::$DB->get_field(BLOCK_EXACOMP_DB_IMPORTTASKS, "all_grids", $where);
         } else {
             $where = array('id' => $sourceId);
@@ -3220,6 +3233,8 @@ class data_importer extends data {
         if ($xmlItem->disabled) {
             $subject->disabled = 1;
         }
+
+        $subject->importstate = BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT; // since the subject is being imported, it is NOT missing from import
 
         self::insert_or_update_item(BLOCK_EXACOMP_DB_SUBJECTS, $subject);
         self::kompetenzraster_mark_item_used(BLOCK_EXACOMP_DB_SUBJECTS, $subject);

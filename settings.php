@@ -171,6 +171,13 @@ $settings->add(new block_exacomp_admin_setting_source('exacomp/mysource',
 $settings->add(new block_exacomp_admin_setting_extraconfigtext('exacomp/xmlserverurl',
     block_exacomp_get_string('settings_xmlserverurl'),
     block_exacomp_get_string('settings_configxmlserverurl'), "", PARAM_URL));
+
+
+$settings->add(new admin_setting_configcheckbox('exacomp/sync_all_grids_with_komet',
+    block_exacomp_get_string('sync_all_grids_with_komet'),
+    block_exacomp_get_string('sync_all_grids_with_komet_description'), 0));
+
+
 $options = array('' => block_exacomp_get_string('settings_addblock_to_newcourse_option_no'),
     //BLOCK_POS_LEFT  => block_exacomp_get_string('settings_addblock_to_newcourse_option_left'),
     //BLOCK_POS_RIGHT => block_exacomp_get_string('settings_addblock_to_newcourse_option_right'),

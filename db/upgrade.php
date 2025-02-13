@@ -4300,6 +4300,36 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2024122000, 'exacomp');
     }
 
+
+
+    if ($oldversion < 2025012000) {
+        // <FIELD NAME="exists_in_import" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="During import, this field is set to 0. If the subject is imported, it is set to 1. Used for easier deletion of deprecated unused subjects."/>
+
+        // Define field exists_in_import to be added to block_exacompsubjects.
+        $table = new xmldb_table('block_exacompsubjects');
+        $field = new xmldb_field('missing_from_import', XMLDB_TYPE_INTEGER, '1', null, null, null, 0, 'is_editable');
+
+        // Conditionally launch add field experience_level.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2025012000, 'exacomp');
+    }
+
+    if ($oldversion < 2025012801) {
+        // rename the field "missing_from_import" to "importstate"
+        $table = new xmldb_table('block_exacompsubjects');
+        $field = new xmldb_field('missing_from_import', XMLDB_TYPE_INTEGER, '1', null, null, null, 0, 'is_editable');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'importstate');
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2025012801, 'exacomp');
+    }
+
+
     /*
      * insert new upgrade scripts before this comment section
      * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

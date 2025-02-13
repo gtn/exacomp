@@ -315,7 +315,7 @@ var formunsaved = false;
 
           $table.find('tr').each(function () {
             var rowColSpan = 0;
-            $(this).find('th,tr').each(function (i, col) {
+            $(this).find('th,td').each(function (i, col) {
               if (rowColSpan < options.title_colspan) {
                 // nothing, always show title
               } else if (groupid === 'all') {

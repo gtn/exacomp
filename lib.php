@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once __DIR__ . '/inc.php';
 
 function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $CFG;
 
     //  Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
     if ($context->contextlevel != CONTEXT_COURSE) {
@@ -119,6 +120,12 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
     // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     // From Moodle 2.3, use send_stored_file instead.
+
+    if (basename($_SERVER['PHP_SELF']) == 'tokenpluginfile.php' && version_compare($CFG->release, '4.4.0') < 0) {
+        // moodle 4.3 and lower versions didn't have an Access-Control-Allow-Origin header in tokenpluginfile.php
+        // missing the header prevents dakora+ to load the file into the pdf annotation tool (because of cors)
+        header('Access-Control-Allow-Origin: *');
+    }
 
     $as_pdf = optional_param('as_pdf', false, PARAM_BOOL);
     if ($as_pdf) {

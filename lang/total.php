@@ -2616,6 +2616,24 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Schüler/in',
         'Student',
     ],
+
+    'role:teacher' => [
+        '',
+        '',
+    ],
+    'role:teachers' => [
+        '',
+        '',
+    ],
+    'role:student' => [
+        '',
+        '',
+    ],
+    'role:students' => [
+        '',
+        '',
+    ],
+
     'timeline_available' => [
         'Verfügbare',
         'Available',
@@ -3592,5 +3610,21 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
     'no_course_templates' => [
         'Kann keinen Kurs finden, der als Vorlage verwendet werden kann',
         'Can not find any course to use as a template',
+    ],
+    'preselect_delete_subject_because_it_is_disabled' => [
+        'Vorausgewählt für Löschung, da dieses Fach in Komet deaktiviert ist',
+        'Preselected for deletion because this subject is disabled in Komet',
+    ],
+    'preselect_delete_subject_because_it_was_not_imported_in_last_import' => [
+        'Vorausgewählt für Löschung, da dieses Fach auf Komet nicht mehr vorhanden ist.',
+        'Preselected for deletion because this subject did not exist in the previous import task BUT is being used.',
+    ],
+    'sync_all_grids_with_komet' => [
+        'Synchronisiere alle Raster mit Komet',
+        'Sync all grids with Komet',
+    ],
+    'sync_all_grids_with_komet_description' => [
+        'Synchronisiere alle Raster mit Komet. Alle Raster, die in Komet nicht mehr vorhanden sind, werden gelöscht, es sei denn, sie sind bereits in Verwendung.',
+        'Keep only the Komet grids and competencies. Delete everything else unless a grid or competency is already in use',
     ],
 ];

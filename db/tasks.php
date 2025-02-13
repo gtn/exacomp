@@ -27,15 +27,6 @@ $tasks = array(
         'dayofweek' => '*',
     ),
     array(
-        'classname' => 'block_exacomp\task\import_additional',
-        'blocking' => 0,
-        'minute' => '30',
-        'hour' => '1',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-    ),
-    array(
         'classname' => 'block_exacomp\task\komettranslator_to_exacomp',
         'blocking' => 0,
         'minute' => '0',

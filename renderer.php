@@ -5629,13 +5629,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $cell = new html_table_cell();
 
+            $preselect_because_disabled = '';
+            if ($subject->disabled) {
+                $preselect_because_disabled = '<span class="exacomp-subject-preselected-for-deletion-because-disabled">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_is_disabled') . '</span>';
+            }
+
+            $preselect_because_missing_from_import = '';
+            if ($subject->importstate == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED) {
+                $preselect_because_missing_from_import = '<span class="exacomp-subject-preselected-for-deletion-because-missing-from-import">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_was_not_imported_in_last_import') . '</span>';
+            }
+
+            $checked = !empty($preselect_because_disabled) || !empty($preselect_because_missing_from_import);
+
+
             $cell->text = html_writer::div('<input type="checkbox"
 			                                        exa-name="subjects"
 			                                        sourceid="' . $subject->sourceid . '"
                                                     id="subject_' . $subject->id . '"
 			                                        value="' . $subject->id . '"' .
+                ($checked ? ' checked' : '') .
                 ' />' .
-                html_writer::tag('b', $subject->title));
+                html_writer::tag('b', $subject->title)
+                . $preselect_because_disabled
+                . $preselect_because_missing_from_import);
             $cell->attributes['class'] = 'rg2-arrow';
             $row->cells[] = $cell;
             $rows[] = $row;
@@ -5791,7 +5807,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $table->data = $rows;
 
         $table_html = html_writer::div(html_writer::table($table), 'grade-report-grader floating-header');
-        $div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis acitivities_list")), array("id" => "exabis_competences_block"));
+        $div = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+        $div .= html_writer::tag("div", html_writer::tag("div", $table_html, array("class" => "exabis_competencies_lis acitivities_list")), array("id" => "exabis_competences_block"));
         $div .= html_writer::div(html_writer::empty_tag('input', array(
             'type' => 'submit',
             'class' => 'btn btn-primary',
@@ -5808,7 +5825,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         } else {
             $js = '';
         }
-        $formurl = new moodle_url($PAGE->url, array('sesskey' => sesskey()));
+        $formurl = new moodle_url($PAGE->url);
         return $js . html_writer::tag('form',
                 $div,
                 array('id' => 'edit-activities',
@@ -5820,6 +5837,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     public function topics_activities(&$rows, $level, $topics, $modules, $courseid = 0) {
+        $selectSubIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M342.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0l160-160zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 402.7 54.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/></svg>';
         foreach ($topics as $topic) {
             list($outputid, $outputname) = block_exacomp_get_output_fields($topic, true);
 
@@ -5838,6 +5856,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             foreach ($modules as $module) {
                 $moduleCell = new html_table_cell();
                 $moduleCell->attributes['module-type='] = $module->modname;
+                $moduleCell->attributes['class'] = 'topic-activity-cell';
                 if (block_exacomp_is_topicgrading_enabled($courseid)) {
                     $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'topicdata[' . $module->id . '][' . $topic->id . ']', 'value' => 0]);
                     $moduleCell->text .= html_writer::checkbox('topicdata[' . $module->id . '][' . $topic->id . ']',
@@ -5848,6 +5867,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             'data-topicId' => $topic->id,
                             'data-activityId' => $module->id));
                 }
+                // add 'select all' button
+                $moduleCell->text .= '<span class="select-allsub" data-target="subOfModuleTopic_'.$module->id.'_'.$topic->id.'" title="'.block_exacomp_get_string('select_all').'">'.$selectSubIcon.'</span>';
                 $topicRow->cells[] = $moduleCell;
             }
 
@@ -5859,8 +5880,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
     }
 
-    public function descriptors_activities(&$rows, $level, $descriptors, $modules, $topicid) {
-
+    public function descriptors_activities(&$rows, $level, $descriptors, $modules, $topicid, $parentdescriptorid = 0) {
+        $selectSubIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M342.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0l160-160zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 402.7 54.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/></svg>';
         foreach ($descriptors as $descriptor) {
             list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, false);
 
@@ -5879,6 +5900,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             foreach ($modules as $module) {
                 $moduleCell = new html_table_cell();
+                $moduleCell->attributes['data-subOf'] = 'subOfModuleTopic_'.$module->id.'_'.$topicid;
+                if ($parentdescriptorid) {
+                    $moduleCell->attributes['data-subOf'] .= ' subOfModuleDescriptor_'.$module->id.'_'.$parentdescriptorid;
+                }
                 $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'data[' . $module->id . '][' . $descriptor->id . ']', 'value' => 0]);
                 $moduleCell->text .= html_writer::checkbox('data[' . $module->id . '][' . $descriptor->id . ']',
                     '1',
@@ -5889,6 +5914,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         'data-descriptorId' => $descriptor->id,
                         'data-activityId' => $module->id,
                     ));
+                if ($descriptor->children) {
+                    // add 'select all' button
+                    $moduleCell->text .= '<span class="select-allsub" data-target="subOfModuleDescriptor_'.$module->id.'_'.$descriptor->id.'" title="'.block_exacomp_get_string('select_all').'">'.$selectSubIcon.'</span>';
+                }
                 $descriptorRow->cells[] = $moduleCell;
             }
 
@@ -5896,7 +5925,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             // Child descriptors
             if ($descriptor->children) {
-                $this->descriptors_activities($rows, $level + 1, $descriptor->children, $modules, $topicid);
+                $this->descriptors_activities($rows, $level + 1, $descriptor->children, $modules, $topicid, $descriptor->id);
             }
         }
     }
