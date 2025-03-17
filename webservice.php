@@ -69,7 +69,7 @@ class block_exacomp_simple_service {
 
         /* CONTENT REGION */
         if ($isTeacher) {
-            $coursestudents = block_exacomp_get_students_by_course($course->id);
+            $coursestudents = \block_exacomp\permissions::get_course_students($course->id);
             if ($studentid <= 0) {
                 $student = null;
             } else {
@@ -270,7 +270,7 @@ class block_exacomp_simple_service {
         $output = block_exacomp_get_renderer();
 
         // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
-        $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
+        $students = $allCourseStudents = ($isTeacher) ? \block_exacomp\permissions::get_course_students($courseid) : array($USER->id => $USER);
         if ($course_settings->nostudents) {
             $allCourseStudents = array();
         }

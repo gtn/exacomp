@@ -146,7 +146,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
     static function get_evaluations($courseid) {
         global $DB;
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         $tree = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
         $dataSources = $DB->get_records_menu(BLOCK_EXACOMP_DB_DATASOURCES, null, null, 'id,source');

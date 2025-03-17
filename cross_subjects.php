@@ -92,7 +92,7 @@ if ($action == 'share') {
     $output = block_exacomp_get_renderer();
     echo $output->header_v2();
 
-    $students = block_exacomp_get_students_by_course($courseid);
+    $students = \block_exacomp\permissions::get_course_students($courseid);
     if (!$students) {
         echo block_exacomp_get_string('nostudents');
         echo $output->footer();

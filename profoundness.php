@@ -51,7 +51,7 @@ if ($course_settings->uses_activities && !$activities && !$course_settings->show
 }
 
 if ($isTeacher) {
-    $coursestudents = block_exacomp_get_students_by_course($courseid);
+    $coursestudents = \block_exacomp\permissions::get_course_students($courseid);
     if (!empty($coursestudents[$studentid])) {
         $student = $coursestudents[$studentid];
     } else {

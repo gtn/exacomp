@@ -97,7 +97,7 @@ if ($action == "save") {
         $headertext .= html_writer::empty_tag('img', array('src' => $img, 'alt' => '', 'width' => '60px', 'height' => '60px'))
             . block_exacomp_get_string('completed_config');
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         if (empty($students)) {
             $headertext .= html_writer::empty_tag('br')
                 . html_writer::link(new moodle_url('/user/index.php', array('id' => $courseid)),

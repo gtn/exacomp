@@ -106,7 +106,7 @@ if (!$isTeacher) {
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
 } else {
 
-    $coursestudents = block_exacomp_get_students_by_course($courseid);
+    $coursestudents = \block_exacomp\permissions::get_course_students($courseid);
 
     echo '<div style="padding-bottom: 15px;">';
     if ($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {

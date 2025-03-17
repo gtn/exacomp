@@ -111,16 +111,9 @@ list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic,
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 if ($isTeacher) {
-    //if ($slicestudentlist) {
-    //    $limitfrom = $slicestartposition + 1; // sql from
-    //    $limitnum = BLOCK_EXACOMP_STUDENTS_PER_COLUMN;
-    //} else {
-    $limitfrom = '';
-    $limitnum = '';
-    //}
-    $students = $allCourseStudents = block_exacomp_get_students_by_course($courseid, $limitfrom, $limitnum);
+    $students = $allCourseStudents = \block_exacomp\permissions::get_course_students($courseid);
 } else {
-    $students = $allCourseStudents = array($USER->id => $USER);
+    $students = $allCourseStudents = [$USER->id => $USER];
 }
 
 //Add the local groups

@@ -4262,7 +4262,7 @@ class externallib extends base {
         $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'add_example_to_learning_calendar', 'exampleid' => $exampleid];
         if ($forall) {
             $source = 'C';
-            $students = block_exacomp_get_students_by_course($courseid);
+            $students = \block_exacomp\permissions::get_course_students($courseid);
             //Add to all the students
             foreach ($students as $student) {
                 if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
@@ -4944,7 +4944,7 @@ class externallib extends base {
 
         }
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
 
         foreach ($students as $student) {
             $student->studentid = $student->id;
@@ -5006,7 +5006,7 @@ class externallib extends base {
         $courses = block_exacomp_get_exacomp_courses($userid);
 
         foreach ($courses as $course) {
-            $students = ($students + block_exacomp_get_students_by_course($course->id));
+            $students = ($students + \block_exacomp\permissions::get_course_students($course->id));
         }
 
         return $students;
@@ -5054,7 +5054,7 @@ class externallib extends base {
         $courses = block_exacomp_get_exacomp_courses($userid);
 
         foreach ($courses as $course) {
-            $teachers = ($teachers + block_exacomp_get_teachers_by_course($course->id));
+            $teachers = ($teachers + \block_exacomp\permissions::get_course_teachers($course->id));
         }
 
         return $teachers;
@@ -5680,7 +5680,7 @@ class externallib extends base {
             $students = [];
             if ($courseid > 0) {
                 // get students for selected course. If we have $allcrossubjects - list of students will be changed to list of crossubject course in foreach
-                $students = block_exacomp_get_students_by_course($courseid);
+                $students = \block_exacomp\permissions::get_course_students($courseid);
             }
             foreach ($cross_subjects as $cross_subject) {
                 if ($cross_subject->shared == 1) {
@@ -5692,7 +5692,7 @@ class externallib extends base {
                         $students = [];
                         // use courseid from crosssubject
                         if ($cross_subject->courseid) { // TODO: if cross_subject has not courseid - is this shared for all?
-                            $students = block_exacomp_get_students_by_course($cross_subject->courseid);
+                            $students = \block_exacomp\permissions::get_course_students($cross_subject->courseid);
                         }
                     }
                     foreach ($students as $student) {
@@ -6216,7 +6216,7 @@ class externallib extends base {
             }
         }
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         $students = block_exacomp_get_student_pool_examples($students, $courseid);
 
         foreach ($students as $student) {
@@ -7141,7 +7141,7 @@ class externallib extends base {
             }
             $notificationContext = block_exacomp_get_string('notification_submission_context');
 
-            $teachers = block_exacomp_get_teachers_by_course($courseid);
+            $teachers = \block_exacomp\permissions::get_course_teachers($courseid);
             foreach ($teachers as $teacher) {
                 block_exacomp_send_notification("submission", $USER, $teacher, $subject, '', $notificationContext, '', false, 0, $customdata);
             }
@@ -7217,7 +7217,7 @@ class externallib extends base {
         $item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
 
         // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
-        $teachers = block_exacomp_get_teachers_by_course($item->courseid);
+        $teachers = \block_exacomp\permissions::get_course_teachers($item->courseid);
         $teacherIds = array_map(function($teacher) {
             return $teacher->id;
         }, $teachers);
@@ -7316,7 +7316,7 @@ class externallib extends base {
         $item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
 
         // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
-        $teachers = block_exacomp_get_teachers_by_course($item->courseid);
+        $teachers = \block_exacomp\permissions::get_course_teachers($item->courseid);
         $teacherIds = array_map(function($teacher) {
             return $teacher->id;
         }, $teachers);
@@ -7698,7 +7698,7 @@ class externallib extends base {
         $students = [];
         foreach ($courses as $course) {
             $course = (object)$course;
-            $courseStudents = block_exacomp_get_students_by_course($course->courseid);
+            $courseStudents = \block_exacomp\permissions::get_course_students($course->courseid);
             foreach ($courseStudents as $student) {
                 if ($studentid && $student->id != $studentid) {
                     // don't add to students array
@@ -8533,7 +8533,7 @@ class externallib extends base {
         foreach ($courses as $course) {
             //showallexamples filters out those, who have not creatorid => those who were imported
             $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
-            $students = block_exacomp_get_students_by_course($course->id);
+            $students = \block_exacomp\permissions::get_course_students($course->id);
             $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
             block_exacomp_get_user_information_by_course($student, $course->id);
             foreach ($tree as $subject) {
@@ -10224,7 +10224,7 @@ class externallib extends base {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         $student = $students[$userid];
 
         $student = block_exacomp_get_user_information_by_course($student, $courseid);
@@ -13765,7 +13765,7 @@ class externallib extends base {
 
         if ($forall) {
             static::require_can_access_course($courseid);
-            $students = block_exacomp_get_students_by_course($courseid);
+            $students = \block_exacomp\permissions::get_course_students($courseid);
             $number_students = count($students);
         } else {
             static::require_can_access_course_user($courseid, $userid);
@@ -13913,7 +13913,7 @@ class externallib extends base {
                 // ok: created by this student / teacher
                 return;
             } else if (block_exacomp_is_teacher($courseid)) {
-                $students = block_exacomp_get_students_by_course($courseid);
+                $students = \block_exacomp\permissions::get_course_students($courseid);
                 if (isset($students[$schedule->studentid])) {
                     // blocking event from a student in course
                     return;

@@ -18,9 +18,8 @@ defined('MOODLE_INTERNAL') || die();
 
 use block_exacomp\globals as g;
 use block_exacomp\import_exception;
-use block_exacomp\ZipArchive;
+use block_exacomp\permissions;
 use Super\Cache;
-use Super\Fs;
 
 require_once __DIR__ . '/common.php';
 require_once __DIR__ . '/classes.php';
@@ -2912,36 +2911,6 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 
 /**
  *
- * Returns all students enroled to a particular course
- *
- * @param unknown_type $courseid
- * @param unknown_type $limitfrom
- * @param unknown_type $limitnum
- */
-function block_exacomp_get_students_by_course($courseid, $limitfrom = '', $limitnum = '') {
-    $context = context_course::instance($courseid);
-
-    $students = get_users_by_capability($context, 'block/exacomp:student', '', 'lastname,firstname', $limitfrom, $limitnum);
-
-    // TODO ggf user mit exacomp:teacher hier filtern?
-    return $students;
-}
-
-/**
- *
- * Returns all groups created in a particular course    actually not usefull, could use the moodle function directly RW
- *
- * @param unknown_type $courseid
- */
-// function block_exacomp_get_groups_by_course($courseid) {
-
-//     $groups = groups_get_all_groups($courseid);
-
-//     return $groups;
-// }
-
-/**
- *
  * Returns all STUDENTS of this group... needed because teachers can also be in groups, but often you only need the students
  *
  * @param unknown_type $courseid
@@ -2955,18 +2924,6 @@ function block_exacomp_groups_get_members($courseid, $groupid) {
         }
     }
     return $students;
-}
-
-/**
- *
- * Returns all teacher enroled to a course
- *
- * @param unknown_type $courseid
- */
-function block_exacomp_get_teachers_by_course($courseid) {
-    $context = context_course::instance($courseid);
-
-    return get_enrolled_users($context, 'block/exacomp:teacher');
 }
 
 /**
@@ -4185,7 +4142,7 @@ function block_exacomp_get_allowed_course_modules_for_course_for_select($coursei
 
 function block_exacomp_get_eportfolioitem_association($students) {
     global $DB, $COURSE, $USER;
-    //$teachers = block_exacomp_get_teachers_by_course($COURSE->id);
+    //$teachers = \block_exacomp\permissions::get_course_teachers($COURSE->id);
     $result = array();
     foreach ($students as $student) {
         $eportfolioitems = $DB->get_records_sql('
@@ -5838,7 +5795,7 @@ function block_exacomp_perform_auto_test() {
         // tests associated with competences
         // get all tests/quizes that are associated with competences
         $tests = block_exacomp_get_active_tests_by_course($courseid);
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
 
         $cms = block_exacomp_get_related_activities($courseid, ['availability' => true]);
         // get "related" activities gets the assigned ones? depends on the setting  ==> TODO: it depends on a GLOBAL setting and that could be a problem
@@ -6164,7 +6121,7 @@ function block_exacomp_get_gained_competences($course, $student, $subject = null
  * @param unknown_type $courseid
  */
 function block_exacomp_check_user_evaluation_exists($courseid) {
-    $students = block_exacomp_get_students_by_course($courseid);
+    $students = \block_exacomp\permissions::get_course_students($courseid);
     foreach ($students as $student) {
         $info = block_exacomp_get_user_competences_by_course($student, $courseid);
 
@@ -7116,7 +7073,7 @@ function block_exacomp_example_used($courseid, $example, $studentid) {
  */
 function block_exacomp_get_students_for_crosssubject($courseid, $crosssub) {
     global $DB;
-    $course_students = block_exacomp_get_students_by_course($courseid);
+    $course_students = \block_exacomp\permissions::get_course_students($courseid);
     if ($crosssub->shared) {
         return $course_students;
     }
@@ -7464,7 +7421,7 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
     $examples = g::$DB->get_records_select(BLOCK_EXACOMP_DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND endtime IS NOT NULL AND deleted = 0", array($courseid));
 
     // Get all students for the given course
-    $students = block_exacomp_get_students_by_course($courseid);
+    $students = \block_exacomp\permissions::get_course_students($courseid);
     // Add examples for all users
     foreach ($examples as $example) {
         foreach ($students as $student) {
@@ -8207,7 +8164,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
     }
 
     if ($studentid > 0) {
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         $student = $students[$studentid];
         $student = block_exacomp_get_user_information_by_course($student, $courseid);
     }
@@ -9477,7 +9434,7 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated, $studentcomment = ' ', $customdata = '') {
     global $USER, $DB;
 
-    $teachers = block_exacomp_get_teachers_by_course($courseid);
+    $teachers = \block_exacomp\permissions::get_course_teachers($courseid);
     if ($teachers) {
         foreach ($teachers as $teacher) {
             block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid)),
@@ -9524,7 +9481,7 @@ function block_exacomp_send_self_assessment_notification($userfrom, $userto, $co
 function block_exacomp_notify_all_teachers_about_self_assessment($courseid, $compid, $comptype, $customdata) {
     global $USER, $DB;
 
-    $teachers = block_exacomp_get_teachers_by_course($courseid);
+    $teachers = \block_exacomp\permissions::get_course_teachers($courseid);
     if ($teachers) {
         foreach ($teachers as $teacher) {
             block_exacomp_send_self_assessment_notification($USER, $teacher, $courseid, $compid, $comptype, $customdata);
@@ -9931,7 +9888,7 @@ function block_exacomp_send_message_to_course($courseid, $message) {
     require_capability('moodle/site:sendmessage', context_system::instance());
     block_exacomp_require_teacher($courseid);
 
-    $students = block_exacomp_get_students_by_course($courseid);
+    $students = \block_exacomp\permissions::get_course_students($courseid);
 
     foreach ($students as $student) {
         if (empty($student->id) || isguestuser($student->id) || $student->id == $USER->id) {
@@ -12385,7 +12342,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher) 
     global $USER;
     $courseid = g::$COURSE->id;
 
-    $coursestudents = block_exacomp_get_students_by_course($courseid);
+    $coursestudents = \block_exacomp\permissions::get_course_students($courseid);
     $students = array();
 
     if ($isTeacher) {
@@ -12750,7 +12707,7 @@ function block_exacomp_group_reports_annex_result_filter_rules($item_type, $item
 
 function block_exacomp_group_reports_annex_result($filter) {
     $courseid = g::$COURSE->id;
-    $students = block_exacomp_get_students_by_course($courseid);
+    $students = \block_exacomp\permissions::get_course_students($courseid);
 
     //print_r($filter);
     $has_output = false;
@@ -12982,7 +12939,7 @@ function block_exacomp_group_reports_annex_result($filter) {
 
 function block_exacomp_group_reports_profoundness_result($filter) {
     $courseid = g::$COURSE->id;
-    $students = block_exacomp_get_students_by_course($courseid);
+    $students = \block_exacomp\permissions::get_course_students($courseid);
     foreach ($students as $student) {
         $student = block_exacomp_get_user_information_by_course($student, $courseid);
     }

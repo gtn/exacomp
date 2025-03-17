@@ -220,7 +220,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
         } else {
-            foreach (block_exacomp_get_teachers_by_course($COURSE->id) as $teacher) {
+            foreach (\block_exacomp\permissions::get_course_teachers($COURSE->id) as $teacher) {
                 $right_content .= block_exacomp_get_message_icon($teacher->id);
 
             }
@@ -8559,7 +8559,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             <?php echo block_exacomp_get_string('students_competences'); ?></label>&nbsp;&nbsp;&nbsp;
                         <?php
                         $studentsAssociativeArray = array();
-                        $students = block_exacomp_get_students_by_course($courseid);
+                        $students = \block_exacomp\permissions::get_course_students($courseid);
                         if ($isTeacher) {
                             $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
                             //add local groups:
@@ -8652,7 +8652,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     <div>
                         <?php
                         $studentsAssociativeArray = array();
-                        $students = block_exacomp_get_students_by_course($courseid);
+                        $students = \block_exacomp\permissions::get_course_students($courseid);
                         if ($isTeacher) {
                             $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
                             $groups = groups_get_all_groups($courseid);
@@ -8711,7 +8711,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     <div>
                         <?php
                         $studentsAssociativeArray = array();
-                        $students = block_exacomp_get_students_by_course($courseid);
+                        $students = \block_exacomp\permissions::get_course_students($courseid);
                         $studentsAssociativeArray[0] = block_exacomp_get_string('all_students');
                         $groups = groups_get_all_groups($courseid);
                         foreach ($groups as $group) {

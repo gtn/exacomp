@@ -324,7 +324,7 @@ class setapp extends base {
 
         //showallexamples filters out those, who have not creatorid => those who were imported
         $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
-        // $students = block_exacomp_get_students_by_course($course->id);
+        // $students = \block_exacomp\permissions::get_course_students($course->id);
         // $student = $students[$userid];
         // block_exacomp_get_user_information_by_course($student, $course->id);
 
@@ -473,7 +473,7 @@ class setapp extends base {
         $course = $courses[$courseid];
 
         $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
-        // $students = block_exacomp_get_students_by_course($course->id);
+        // $students = \block_exacomp\permissions::get_course_students($course->id);
         // $student = $students[$userid];
         // block_exacomp_get_user_information_by_course($student, $course->id);
 
@@ -569,7 +569,7 @@ class setapp extends base {
 
             $course = $DB->get_record('course', array('id' => $courseid));
 
-            $students = block_exacomp_get_students_by_course($courseid);
+            $students = \block_exacomp\permissions::get_course_students($courseid);
         } else {
             $allusres = false;
             // keep userid

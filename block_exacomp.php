@@ -77,7 +77,7 @@ class block_exacomp extends block_list {
             // get all students from these courses
             $coursestudents = [];
             foreach ($teacherCourses as $cId) {
-                $coursestudents = array_merge($coursestudents, block_exacomp_get_students_by_course($cId));
+                $coursestudents = array_merge($coursestudents, \block_exacomp\permissions::get_course_students($cId));
             }
             // sort by last name + first name
             usort($coursestudents, function($a, $b) {

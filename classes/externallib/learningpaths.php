@@ -66,7 +66,7 @@ class learningpaths extends base {
 
 
         if (!$studentid) {
-            $students = block_exacomp_get_students_by_course($courseid);
+            $students = \block_exacomp\permissions::get_course_students($courseid);
             $studentids = array_column($students, 'id');
         } else {
             $studentids = [$studentid];
@@ -169,7 +169,7 @@ class learningpaths extends base {
                 WHERE item.learningpathid=?
                 ORDER BY item.sorting, item.id', [$studentid, $learningpath->id]);
 
-            $students = block_exacomp_get_students_by_course($courseid);
+            $students = \block_exacomp\permissions::get_course_students($courseid);
         } else {
             $lpItems = $DB->get_records_sql('
                 SELECT item.*, item.visible AS visibleall, item_stud.visible AS visiblestudent
