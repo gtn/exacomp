@@ -7643,7 +7643,7 @@ class externallib extends base {
             'studentid' => new external_value(PARAM_INT, ''),
             'compid' => new external_value(PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
             'comptype' => new external_value(PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
-            'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
+            'type' => new external_value(PARAM_TEXT, 'ENUM("", examples, own_items)', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ''),
             'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
