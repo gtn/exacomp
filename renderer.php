@@ -7322,7 +7322,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				data: ' . json_encode($y_values_student) . '
 			},
 			{
-				"' . block_exacomp_get_string("timeline_available") . '",
+				label: "' . block_exacomp_get_string("timeline_available") . '",
 				fillColor: "rgba(220,220,220,0.2)",
 				strokeColor: "rgba(220,220,220,1)",
 				pointColor: "rgba(220,220,220,1)",

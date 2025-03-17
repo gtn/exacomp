@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED)); // Deprecations broke pictures
 
 /* pChart library inclusions */
 $pathToPChart = __DIR__ . '/../../vendor/pChart/';
@@ -236,6 +237,9 @@ for ($i = 0; $i < $raysCount; $i++) {
         }
     } else {
         if ($evalMax > 0) {
+            if ($evalValue === '-') {
+                $evalValue = 0;
+            }
             if ($i >= ($evalValue * 100 / $evalMax) / (100 / $raysCount)) {
                 $MyData->Palette[$i]['Alpha'] = 0;
             }

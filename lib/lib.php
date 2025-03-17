@@ -12530,7 +12530,7 @@ function block_exacomp_group_reports_return_result($filter, $isPdf, $isTeacher) 
                 //                 echo $output;
                 // 				echo '</table>';
 
-                $html .= '<th width="40%" colspan="' . (@$filter['time']['active'] ? 5 : 4) . '">' . block_exacomp_get_string('output_current_assessments') . '</th>';
+                $html .= '<th width="40%" colspan="3' /*. (@$filter['time']['active'] ? 5 : 4)*/ . '">' . block_exacomp_get_string('output_current_assessments') . '</th>';
                 $html .= '</tr>';
                 $html .= '<tr>';
                 $html .= '<th class="heading"></th>';
