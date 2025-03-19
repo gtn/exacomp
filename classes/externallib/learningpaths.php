@@ -444,16 +444,10 @@ class learningpaths extends base {
                 throw new invalid_parameter_exception ('studentid missing');
             }
 
-            static::learningpath_item_visibility($learningpath_item, [$studentid], $visiblestudent);
+            static::set_item_student_visibility($learningpath_item, [$studentid], $visiblestudent);
         }
         if ($visibleall !== null) {
-            $learningpath_item->visible = $visibleall;
-            $DB->update_record('block_exacomplp_items', $learningpath_item);
-
-            // alle alten visibilities löschen
-            $DB->execute('UPDATE {block_exacomplp_item_stud} SET visible=null WHERE itemid=?', [
-                $learningpath_item->id,
-            ]);
+            static::set_item_visibleall($learningpath_item->id, $visibleall);
         }
 
         return [
@@ -504,23 +498,38 @@ class learningpaths extends base {
         block_exacomp_require_teacher($learningpath->courseid);
 
         $maxSort = $DB->get_field_select('block_exacomplp_items', 'MAX(sorting)', 'learningpathid=?', [$learningpathid]);
+        $lpItems = $DB->get_records('block_exacomplp_items', [
+            'learningpathid' => $learningpath->id,
+        ]);
 
         $visibleall = !$studentids;
         $visiblestudent = !!$studentids;
 
         foreach ($exampleids as $exampleid) {
-            $id = $DB->insert_record('block_exacomplp_items', [
-                'learningpathid' => $learningpath->id,
-                'exampleid' => $exampleid,
-                'sorting' => $maxSort + 1,
-                'visible' => $visibleall,
-            ]);
+            $learningpath_item = current(array_filter($lpItems, fn($item) => $item->exampleid == $exampleid));
+            if ($learningpath_item) {
+                // already added
 
-            $learningpath_item = $DB->get_record('block_exacomplp_items', [
-                'id' => $id,
-            ], '*', MUST_EXIST);
+                if ($visibleall) {
+                    $learningpath_item->visible = $visibleall;
+                    static::set_item_visibleall($learningpath_item->id, $visibleall);
+                }
+            } else {
+                // not yet added
+                $id = $DB->insert_record('block_exacomplp_items', [
+                    'learningpathid' => $learningpath->id,
+                    'exampleid' => $exampleid,
+                    'sorting' => ++$maxSort,
+                    'visible' => $visibleall,
+                ]);
 
-            static::learningpath_item_visibility($learningpath_item, $studentids, $visiblestudent);
+                $learningpath_item = $DB->get_record('block_exacomplp_items', [
+                    'id' => $id,
+                ], '*', MUST_EXIST);
+            }
+
+            // for specific students
+            static::set_item_student_visibility($learningpath_item, $studentids, $visiblestudent);
         }
 
         return [
@@ -532,31 +541,6 @@ class learningpaths extends base {
         return new external_single_structure(array(
             'success' => new external_value(PARAM_BOOL, 'status'),
         ));
-    }
-
-    private static function learningpath_item_visibility(object $learningpath_item, array $studentids, bool $visiblestudent) {
-        global $DB;
-
-        foreach ($studentids as $studentid) {
-            $item_stud = $DB->get_record('block_exacomplp_item_stud', [
-                'itemid' => $learningpath_item->id,
-                'studentid' => $studentid,
-            ]);
-            if ($item_stud) {
-                if ($learningpath_item->visible === $visiblestudent) {
-                    $item_stud->visible = null;
-                } else {
-                    $item_stud->visible = $visiblestudent;
-                }
-                $DB->update_record('block_exacomplp_item_stud', $item_stud);
-            } else {
-                $DB->insert_record('block_exacomplp_item_stud', [
-                    'itemid' => $learningpath_item->id,
-                    'studentid' => $studentid,
-                    'visible' => $visiblestudent,
-                ]);
-            }
-        }
     }
 
     public static function diggrplus_learningpath_item_delete_parameters() {
@@ -659,5 +643,44 @@ class learningpaths extends base {
         return new external_single_structure(array(
             'success' => new external_value(PARAM_BOOL, 'status'),
         ));
+    }
+
+    private static function set_item_visibleall(int $learningpath_item_id, bool $visibleall): void {
+        global $DB;
+
+        $DB->update_record('block_exacomplp_items', [
+            'id' => $learningpath_item_id,
+            'visible' => $visibleall,
+        ]);
+
+        // beim Ändern der item visibility, alle Student visibilities löschen
+        $DB->execute('UPDATE {block_exacomplp_item_stud} SET visible=null WHERE itemid=?', [
+            $learningpath_item_id,
+        ]);
+    }
+
+    private static function set_item_student_visibility(object $learningpath_item, array $studentids, bool $visiblestudent) {
+        global $DB;
+
+        foreach ($studentids as $studentid) {
+            $item_stud = $DB->get_record('block_exacomplp_item_stud', [
+                'itemid' => $learningpath_item->id,
+                'studentid' => $studentid,
+            ]);
+            if ($item_stud) {
+                if ($learningpath_item->visible == $visiblestudent) {
+                    $item_stud->visible = null;
+                } else {
+                    $item_stud->visible = $visiblestudent;
+                }
+                $DB->update_record('block_exacomplp_item_stud', $item_stud);
+            } else {
+                $DB->insert_record('block_exacomplp_item_stud', [
+                    'itemid' => $learningpath_item->id,
+                    'studentid' => $studentid,
+                    'visible' => $visiblestudent,
+                ]);
+            }
+        }
     }
 }
