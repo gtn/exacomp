@@ -7535,7 +7535,7 @@ class externallib extends base {
                     ];
                 }
 
-                $exampleAndItem->item->solutiondescription = $exampleAndItem->item->intro;
+                $exampleAndItem->item->solutiondescription = strip_tags($exampleAndItem->item->intro);
             }
         }
 
@@ -7840,7 +7840,7 @@ class externallib extends base {
                         'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
                     ];
 
-                    $studentExampleAndItem->item->solutiondescription = $studentExampleAndItem->item->intro;
+                    $studentExampleAndItem->item->solutiondescription = strip_tags($studentExampleAndItem->item->intro);
                 }
             }
 
