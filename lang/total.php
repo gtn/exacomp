@@ -3511,6 +3511,10 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Löschen...',
         'Delete...',
     ],
+    'display' => [
+        'anzeigen',
+        'display',
+    ],
     'data_imported_title' => [
         'Daten jetzt importieren',
         'Import data immediately',
@@ -3616,7 +3620,7 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Preselected for deletion because this subject is disabled in Komet',
     ],
     'preselect_delete_subject_because_it_was_not_imported_in_last_import' => [
-        'Vorausgewählt für Löschung, da dieses Fach auf Komet nicht mehr vorhanden ist.',
+        'Vorausgewählt für Löschung, da dieses Fach auf Komet nicht mehr vorhanden ist, aber in dieser Moodle-Installation noch verwendet wird.',
         'Preselected for deletion because this subject did not exist in the previous import task BUT is being used.',
     ],
     'sync_all_grids_with_komet' => [
