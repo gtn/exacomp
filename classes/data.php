@@ -3232,6 +3232,8 @@ class data_importer extends data {
 
         if ($xmlItem->disabled) {
             $subject->disabled = 1;
+        } else {
+            $subject->disabled = 0;
         }
 
         $subject->importstate = BLOCK_EXACOMP_SUBJECT_NOT_MISSING_FROM_IMPORT; // since the subject is being imported, it is NOT missing from import
