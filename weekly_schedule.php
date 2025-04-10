@@ -58,7 +58,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 /* CONTENT REGION */
 if ($isTeacher) {
-    $coursestudents = block_exacomp_get_students_by_course($courseid);
+    $coursestudents = \block_exacomp\permissions::get_course_students($courseid);
     if ($studentid <= 0) {
         $student = null;
         if ($studentid <= -1) {

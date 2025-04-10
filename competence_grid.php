@@ -68,7 +68,7 @@ echo $output->subject_dropdown(block_exacomp_get_schooltypetree_by_topics($dropd
 if ($data) {
     if ($isTeacher && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
         echo ' ' . block_exacomp_get_string("choosestudent") . ' ';
-        echo $output->studentselector(block_exacomp_get_students_by_course($courseid), $studentid, $output::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+        echo $output->studentselector(\block_exacomp\permissions::get_course_students($courseid), $studentid, $output::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
     }
 
     //if($course_settings->nostudents != 1)

@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace core_h5p\external;
 
 use core_h5p\external;
@@ -27,5 +27,5 @@ $url = \moodle_url::make_pluginfile_url(
 $result = external::get_trusted_h5p_file($url->out(false), 0, 0, 1, 0);
 $result = \external_api::clean_returnvalue(external::get_trusted_h5p_file_returns(), $result);
 var_dump($result);
-
+*/
 

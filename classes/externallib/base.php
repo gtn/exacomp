@@ -156,7 +156,16 @@ class base extends \external_api {
         return false;
     }
 
-    public static function custom_htmltrim($string) {
+    /**
+     * @param string $string
+     * @return string
+     */
+    public static function custom_htmltrim($string): string {
+        if (!$string) {
+            // no trimming needed
+            return '';
+        }
+
         //$string = strip_tags($string);
         $string = nl2br($string);
         $remove = array("\n", "\r\n", "\r", "<p>", "</p>", "<h1>", "</h1>", "<br>", "<br />", "<br/>", "<sup>", "</sup>");

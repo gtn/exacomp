@@ -83,7 +83,7 @@ class reports extends base {
             throw new \moodle_exception("unknown result type '$result_type'");
         }
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         if ($studentids) {
             $students = array_filter($students, function($student) use ($studentids) {
                 return in_array($student->id, $studentids);

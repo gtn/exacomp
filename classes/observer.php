@@ -139,7 +139,7 @@ class block_exacomp_observer {
     //     */
     //    public static function course_module_created(\core\event\course_module_created $event)
     //    {
-    //        $students = block_exacomp_get_students_by_course($event->courseid);
+    //        $students = \block_exacomp\permissions::get_course_students($event->courseid);
     //        $activities = block_exacomp_get_all_associated_activities_by_course($event->courseid);
     //        foreach($students as $student){
     //            block_exacomp_update_related_examples_visibilities($activities, $event->courseid, $student->id);
@@ -160,7 +160,7 @@ class block_exacomp_observer {
         block_exacomp_check_relatedactivitydata($event->objectid, $event->other['name']);
         // this was done in block_exacomp_coursemodule_edit_post_actions() and  block_exacomp_override_webservice_execution before
 
-        $students = block_exacomp_get_students_by_course($event->courseid);
+        $students = \block_exacomp\permissions::get_course_students($event->courseid);
         $activity = $event->get_record_snapshot('course_modules', $event->objectid);
         $activity->activityid = $activity->id;
         // get the examples.. the assigned descriptors and topics do not matter for the visibility update

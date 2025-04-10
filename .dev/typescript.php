@@ -105,13 +105,17 @@ foreach ($servicesFiles as $servicesFile) {
                     }
                 }
 
-                $parts = explode(',', $matches[1]);
+                $parts = preg_split('!\s*,\s*!', $matches[1]);
 
                 $enumFields = join("", array_map(function($part) {
-                    return "  " . strtoupper(trim($part)) . " = '" . trim($part) . "',\n";
+                    if ($part == '""') {
+                        return "  " . 'EMPTY' . " = '',\n";
+                    } else {
+                        return "  " . strtoupper($part) . " = '" . $part . "',\n";
+                    }
                 }, $parts));
                 $enumName = 'enum_' . join("_", array_map(function($part) {
-                        return trim($part);
+                        return $part == '""' ? 'emtpy' : $part;
                     }, $parts));
 
                 // enums with same defenition have the same type

@@ -41,7 +41,7 @@ block_exacomp_init_js_weekly_schedule();
 $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
-$students = block_exacomp_get_students_by_course($courseid);
+$students = \block_exacomp\permissions::get_course_students($courseid);
 $groups = groups_get_all_groups($courseid);
 
 if (!$students) {

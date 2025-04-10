@@ -4262,7 +4262,7 @@ class externallib extends base {
         $customdata = ['block' => 'exacomp', 'app' => 'dakora', 'type' => 'add_example_to_learning_calendar', 'exampleid' => $exampleid];
         if ($forall) {
             $source = 'C';
-            $students = block_exacomp_get_students_by_course($courseid);
+            $students = \block_exacomp\permissions::get_course_students($courseid);
             //Add to all the students
             foreach ($students as $student) {
                 if (block_exacomp_is_example_visible($courseid, $exampleid, $student->id)) {
@@ -4944,7 +4944,7 @@ class externallib extends base {
 
         }
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
 
         foreach ($students as $student) {
             $student->studentid = $student->id;
@@ -5006,7 +5006,7 @@ class externallib extends base {
         $courses = block_exacomp_get_exacomp_courses($userid);
 
         foreach ($courses as $course) {
-            $students = ($students + block_exacomp_get_students_by_course($course->id));
+            $students = ($students + \block_exacomp\permissions::get_course_students($course->id));
         }
 
         return $students;
@@ -5054,7 +5054,7 @@ class externallib extends base {
         $courses = block_exacomp_get_exacomp_courses($userid);
 
         foreach ($courses as $course) {
-            $teachers = ($teachers + block_exacomp_get_teachers_by_course($course->id));
+            $teachers = ($teachers + \block_exacomp\permissions::get_course_teachers($course->id));
         }
 
         return $teachers;
@@ -5313,7 +5313,7 @@ class externallib extends base {
             'deleted' => $deleted,
         ));
 
-        // TODO: check example
+        // this also checks, if user is allowed to set the time for this example is done in this function:
         $entry = block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
 
         //Get the example in order to get the suggested timeframe
@@ -5680,7 +5680,7 @@ class externallib extends base {
             $students = [];
             if ($courseid > 0) {
                 // get students for selected course. If we have $allcrossubjects - list of students will be changed to list of crossubject course in foreach
-                $students = block_exacomp_get_students_by_course($courseid);
+                $students = \block_exacomp\permissions::get_course_students($courseid);
             }
             foreach ($cross_subjects as $cross_subject) {
                 if ($cross_subject->shared == 1) {
@@ -5692,7 +5692,7 @@ class externallib extends base {
                         $students = [];
                         // use courseid from crosssubject
                         if ($cross_subject->courseid) { // TODO: if cross_subject has not courseid - is this shared for all?
-                            $students = block_exacomp_get_students_by_course($cross_subject->courseid);
+                            $students = \block_exacomp\permissions::get_course_students($cross_subject->courseid);
                         }
                     }
                     foreach ($students as $student) {
@@ -6216,7 +6216,7 @@ class externallib extends base {
             }
         }
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         $students = block_exacomp_get_student_pool_examples($students, $courseid);
 
         foreach ($students as $student) {
@@ -7141,7 +7141,7 @@ class externallib extends base {
             }
             $notificationContext = block_exacomp_get_string('notification_submission_context');
 
-            $teachers = block_exacomp_get_teachers_by_course($courseid);
+            $teachers = \block_exacomp\permissions::get_course_teachers($courseid);
             foreach ($teachers as $teacher) {
                 block_exacomp_send_notification("submission", $USER, $teacher, $subject, '', $notificationContext, '', false, 0, $customdata);
             }
@@ -7217,7 +7217,7 @@ class externallib extends base {
         $item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
 
         // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
-        $teachers = block_exacomp_get_teachers_by_course($item->courseid);
+        $teachers = \block_exacomp\permissions::get_course_teachers($item->courseid);
         $teacherIds = array_map(function($teacher) {
             return $teacher->id;
         }, $teachers);
@@ -7316,7 +7316,7 @@ class externallib extends base {
         $item = $DB->get_record('block_exaportitem', array('id' => $itemid), '*', MUST_EXIST);
 
         // Prüfung, ob schüler/lehrer/collaborators auch auf diesen item kommentieren dürfen
-        $teachers = block_exacomp_get_teachers_by_course($item->courseid);
+        $teachers = \block_exacomp\permissions::get_course_teachers($item->courseid);
         $teacherIds = array_map(function($teacher) {
             return $teacher->id;
         }, $teachers);
@@ -7471,13 +7471,18 @@ class externallib extends base {
                 $objDeeper->item = $item;
                 $objDeeper->subjecttitle = $item->subjecttitle;
                 $objDeeper->subjectid = $item->subjectid;
-                $objDeeper->topictitle = $item->topictitle ? static::custom_htmltrim($item->topictitle) : "";
-                $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
+                $objDeeper->topictitle = static::custom_htmltrim($item->topictitle);
+                $objDeeper->topicid = $item->topicid ?: 0;
                 $objDeeper->niveautitle = "";
                 $objDeeper->niveauid = 0;
                 $objDeeper->timemodified = $item->timemodified;
                 return $objDeeper;
             }, $items));
+        }
+
+        if (($type == "own_items" || $type == "") && $compid == -1 && $comptype == -1) {
+            // freie materialien unter own_items anzeigen
+            $examplesAndItems = array_merge($examplesAndItems, static::get_freie_materialien($userid, $courseid));
         }
 
         if ($type == "examples" || $type == "") {
@@ -7488,28 +7493,27 @@ class externallib extends base {
                 $examples = static::block_exacomp_get_examples_for_competence_and_user($userid, $compid, $comptype, static::wstoken(), $search, $niveauid, $status, $courseid);
                 $examplesAndItems = array_merge($examplesAndItems, $examples);
             }
+        }
 
-            if ($status == "new") {
-                // if filtered by "new" then only examples without items should be shown
-                // with an item it is "in Arbeit", "Abgegeben" or "Abgeschlossen"
-                foreach ($examplesAndItems as $key => $exampleAndItem) {
-                    if ($exampleAndItem->item) {
-                        unset($examplesAndItems[$key]);
-                    }
+        if ($status == "new") {
+            // if filtered by "new" then only examples without items should be shown
+            // with an item it is "in Arbeit", "Abgegeben" or "Abgeschlossen"
+            foreach ($examplesAndItems as $key => $exampleAndItem) {
+                if ($exampleAndItem->item) {
+                    unset($examplesAndItems[$key]);
                 }
+            }
 
-                // Filter ob die Aufgabe dem Schüler schon einmal zugeteilt wurden. (d.h. bereits im Schüler Planungsspeicher oder wurde vom Lehrer in den Wochenplan gelegt), bzw. er selbst in den Planungsspeicher/Wochenplan gelegt hat.
-                // filter only examples, which are in the calendar
-                $sql = "SELECT DISTINCT exampleid, exampleid AS tmp FROM {block_exacompschedule} WHERE deleted=0 AND studentid=?";
-                $visibleExamples = $DB->get_records_sql_menu($sql, [$userid]);
-                foreach ($examplesAndItems as $key => $exampleAndItem) {
-                    if (empty($visibleExamples[$exampleAndItem->example->id])) {
-                        unset($examplesAndItems[$key]);
-                    }
+            // Filter ob die Aufgabe dem Schüler schon einmal zugeteilt wurden. (d.h. bereits im Schüler Planungsspeicher oder wurde vom Lehrer in den Wochenplan gelegt), bzw. er selbst in den Planungsspeicher/Wochenplan gelegt hat.
+            // filter only examples, which are in the calendar
+            $sql = "SELECT DISTINCT exampleid, exampleid AS tmp FROM {block_exacompschedule} WHERE deleted=0 AND studentid=?";
+            $visibleExamples = $DB->get_records_sql_menu($sql, [$userid]);
+            foreach ($examplesAndItems as $key => $exampleAndItem) {
+                if (empty($visibleExamples[$exampleAndItem->example->id])) {
+                    unset($examplesAndItems[$key]);
                 }
             }
         }
-
 
         // TODO: we can actually forget about examplegradings, right?
         foreach ($examplesAndItems as $exampleAndItem) {
@@ -7531,7 +7535,7 @@ class externallib extends base {
                     ];
                 }
 
-                $exampleAndItem->item->solutiondescription = $exampleAndItem->item->intro;
+                $exampleAndItem->item->solutiondescription = strip_tags($exampleAndItem->item->intro);
             }
         }
 
@@ -7632,6 +7636,61 @@ class externallib extends base {
         )));
     }
 
+    private static function get_freie_materialien(int $userid, int $courseid): array {
+        global $DB;
+
+        $examples = $DB->get_records_sql("
+                SELECT example.*
+                FROM {block_exacompexamples} example
+                JOIN {block_exacompschedule} schedule ON example.id=schedule.exampleid
+                WHERE example.creatorid=?
+                    AND example.source=?
+                    AND schedule.studentid=example.creatorid
+                    AND schedule.courseid=?
+                ", [$userid, BLOCK_EXACOMP_EXAMPLE_SOURCE_USER_FREE_ELEMENT, $courseid]);
+
+        return array_map(function($example) use ($userid, $courseid) {
+            global $DB;
+
+            $studentid = $userid;
+
+            static::block_excomp_get_example_details($example, $courseid, false);
+
+            if (!property_exists($example, "annotation")) {
+                $example->annotation = $DB->get_field(BLOCK_EXACOMP_DB_EXAMPLE_ANNOTATION, 'annotationtext', array('exampleid' => $example->id, 'courseid' => $courseid));
+            }
+
+            if (!(property_exists($example, "teacher_evaluation") || property_exists($example, "student_evaluation"))) {
+                $exampleEvaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $studentid, "courseid" => $courseid, "exampleid" => $example->id), "teacher_evaluation, student_evaluation");
+                $example->teacher_evaluation = $exampleEvaluation->teacher_evaluation;
+                $example->student_evaluation = $exampleEvaluation->student_evaluation;
+            }
+
+            $item = static::get_example_item($studentid, $example->id);
+
+            $exampleAndItem = new stdClass();
+            $exampleAndItem->example = $example;
+            $exampleAndItem->courseid = $example->courseid ?: $courseid; // freie materialien haben kein example, $courseid vom schedule.courseid verwenden
+            $exampleAndItem->subjecttitle = '';
+            $exampleAndItem->subjectid = 0;
+            $exampleAndItem->topictitle = '';
+            $exampleAndItem->topicid = 0;
+            $exampleAndItem->niveautitle = '';
+            $exampleAndItem->niveauid = 0;
+            $exampleAndItem->timemodified = 0;// TODO $item->timemodified;
+
+            if ($item) {
+                $item = static::block_exacomp_get_item_details($item, $studentid, static::wstoken()); // TODO: is this needed? much information is already there
+                $exampleAndItem->item = $item;
+                $exampleAndItem->timemodified = $item->timemodified;
+            } else {
+                $exampleAndItem->timemodified = "0"; // timemodified set to a very long time ago, for sorting
+            }
+
+            return $exampleAndItem;
+        }, $examples);
+    }
+
     /**
      * Returns description of method parameters
      *
@@ -7643,7 +7702,7 @@ class externallib extends base {
             'studentid' => new external_value(PARAM_INT, ''),
             'compid' => new external_value(PARAM_INT, 'id of topic/descriptor/example   if <= 0 then show all items for user'),
             'comptype' => new external_value(PARAM_INT, 'Type of competence: topic/descriptor/example      if <= 0 then show all items for user'),
-            'type' => new external_value(PARAM_TEXT, 'examples, own_items or empty', VALUE_DEFAULT, ""),
+            'type' => new external_value(PARAM_TEXT, 'ENUM("", examples, own_items)', VALUE_DEFAULT, ""),
             'search' => new external_value(PARAM_TEXT, 'search string', VALUE_DEFAULT, ''),
             'niveauid' => new external_value(PARAM_INT, 'niveauid normally stands for LFS1, LFS2, etc.', VALUE_DEFAULT, -1),
             'status' => new external_value(PARAM_TEXT, 'new, inprogress, submitted, completed.  acts as a filter', VALUE_DEFAULT, ""),
@@ -7698,7 +7757,7 @@ class externallib extends base {
         $students = [];
         foreach ($courses as $course) {
             $course = (object)$course;
-            $courseStudents = block_exacomp_get_students_by_course($course->courseid);
+            $courseStudents = \block_exacomp\permissions::get_course_students($course->courseid);
             foreach ($courseStudents as $student) {
                 if ($studentid && $student->id != $studentid) {
                     // don't add to students array
@@ -7746,14 +7805,18 @@ class externallib extends base {
                     $objDeeper->item = $item;
                     $objDeeper->subjecttitle = $item->subjecttitle;
                     $objDeeper->subjectid = $item->subjectid;
-                    $objDeeper->topictitle = $item->topictitle ? $item->topictitle : "";
-                    $objDeeper->topicid = $item->topicid ? $item->topicid : 0;
+                    $objDeeper->topictitle = static::custom_htmltrim($item->topictitle);
+                    $objDeeper->topicid = $item->topicid ?: 0;
                     $objDeeper->niveautitle = $niveautitle;
                     // in the apps no niveau should be 0, not -1
                     $objDeeper->niveauid = $niveauid <= 0 ? 0 : $niveauid;
                     $objDeeper->timemodified = $item->timemodified;
                     return $objDeeper;
                 }, $items));
+            }
+
+            if (($type == "own_items" || $type == "") && $compid == -1 && $comptype == -1) {
+                $studentExamplesAndItems = array_merge($studentExamplesAndItems, static::get_freie_materialien($userid, $courseid));
             }
 
             if ($type == "examples" || $type == "") {
@@ -7777,7 +7840,7 @@ class externallib extends base {
                         'profileimageurl' => $userpicture->get_url(g::$PAGE)->out(false),
                     ];
 
-                    $studentExampleAndItem->item->solutiondescription = $studentExampleAndItem->item->intro;
+                    $studentExampleAndItem->item->solutiondescription = strip_tags($studentExampleAndItem->item->intro);
                 }
             }
 
@@ -8533,7 +8596,7 @@ class externallib extends base {
         foreach ($courses as $course) {
             //showallexamples filters out those, who have not creatorid => those who were imported
             $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
-            $students = block_exacomp_get_students_by_course($course->id);
+            $students = \block_exacomp\permissions::get_course_students($course->id);
             $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
             block_exacomp_get_user_information_by_course($student, $course->id);
             foreach ($tree as $subject) {
@@ -10224,7 +10287,7 @@ class externallib extends base {
 
         static::require_can_access_course_user($courseid, $userid);
 
-        $students = block_exacomp_get_students_by_course($courseid);
+        $students = \block_exacomp\permissions::get_course_students($courseid);
         $student = $students[$userid];
 
         $student = block_exacomp_get_user_information_by_course($student, $courseid);
@@ -13765,7 +13828,7 @@ class externallib extends base {
 
         if ($forall) {
             static::require_can_access_course($courseid);
-            $students = block_exacomp_get_students_by_course($courseid);
+            $students = \block_exacomp\permissions::get_course_students($courseid);
             $number_students = count($students);
         } else {
             static::require_can_access_course_user($courseid, $userid);
@@ -13913,7 +13976,7 @@ class externallib extends base {
                 // ok: created by this student / teacher
                 return;
             } else if (block_exacomp_is_teacher($courseid)) {
-                $students = block_exacomp_get_students_by_course($courseid);
+                $students = \block_exacomp\permissions::get_course_students($courseid);
                 if (isset($students[$schedule->studentid])) {
                     // blocking event from a student in course
                     return;
@@ -15105,8 +15168,8 @@ class externallib extends base {
             $exampleAndItem->item = $item;
             $exampleAndItem->subjecttitle = $item->subjecttitle;
             $exampleAndItem->subjectid = $item->subjectid;
-            $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
-            $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+            $exampleAndItem->topictitle = static::custom_htmltrim($item->topictitle);
+            $exampleAndItem->topicid = $item->topicid ?: 0;
         } else {
             // get info from example-descriptor-topic-subject-relationship
             $result = current($DB->get_records_sql("SELECT DISTINCT topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid
@@ -15296,8 +15359,8 @@ class externallib extends base {
             $exampleAndItem->item = $item;
             $exampleAndItem->subjecttitle = $item->subjecttitle;
             $exampleAndItem->subjectid = $item->subjectid;
-            $exampleAndItem->topictitle = $item->topictitle ? $item->topictitle : "";
-            $exampleAndItem->topicid = $item->topicid ? $item->topicid : 0;
+            $exampleAndItem->topictitle = static::custom_htmltrim($item->topictitle);
+            $exampleAndItem->topicid = $item->topicid ?: 0;
         } else {
             // get info from example-descriptor-topic-subject-relationship
             $result = current($DB->get_records_sql("SELECT DISTINCT topic.title as topictitle, topic.id as topicid, subj.title as subjecttitle, subj.id as subjectid

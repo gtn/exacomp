@@ -145,7 +145,7 @@ switch ($action) {
             }
         } else { //add for student
             if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-                $course_students = block_exacomp_get_students_by_course($courseid);
+                $course_students = \block_exacomp\permissions::get_course_students($courseid);
                 foreach ($course_students as $student) {
                     block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
                 }
@@ -531,7 +531,7 @@ switch ($action) {
                 $relatedDescriptors
             );
             $students = explode(',', $students);
-            $allStudents = block_exacomp_get_students_by_course($courseid);
+            $allStudents = \block_exacomp\permissions::get_course_students($courseid);
             // filter students
             $studentsArr = array();
             foreach ($students as $stId) {
