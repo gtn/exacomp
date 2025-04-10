@@ -1,3 +1,8 @@
+### v4.6.7 (2025041000) ###
+* some fixes in Webservices for Dakora+
+* Graph fix
+* wording 
+
 ### v4.6.7 (2025021300) ###
 * app login security fix
 * dakora+, diggr+ app, wording for roles teacher/student changeable in settings_preconfiguration
