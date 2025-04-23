@@ -292,7 +292,7 @@ class db_layer_whole_moodle extends db_layer {
                 }
 
                 $topic->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $topic->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC));
-                $topic->can_delete = ($topic->source == $source) && !$topic->gradings && empty($topic->used_in_courses);
+                $topic->can_delete = ($topic->source == $source) && !$topic->gradings && empty($topic->used_in_courses); // TODO: add warning text to the topics since the can_delete is now more strict. Right now the warning text is only at the subjects
                 $topic->another_source = (!($topic->source == $source));
                 $topic->has_another_source = false;
                 $topic->has_gradings = false;
