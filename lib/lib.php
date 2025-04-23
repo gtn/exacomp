@@ -15056,7 +15056,7 @@ function block_exacomp_delete_grids_missing_from_komet_import() {
             if ($subject->importstate == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT) {
                 // now check, if the subject is allowed to be deleted
                 // check in descriptor_selection_source_delete in renderer.php
-                // TODO: what should be checked? can_delete must be true, that should suffice. For safety check: gradings must be empty has_gradings must be false, used_in_courses must be empty, what about has_another_source??
+                // TODO: what should be checked? can_delete must be true, that should suffice? For safety check: gradings must be false (record_exists returns false if none exist), has_gradings must be false, used_in_courses must be empty, has_another_source must be false
                 if ($subject->can_delete && !$subject->has_gradings && !$subject->gradings && empty($subject->used_in_courses) && !$subject->has_another_source) {
                     // delete the subject
                     $DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS, ['id' => $subject->id]);
