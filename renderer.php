@@ -5462,6 +5462,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 } else if ($topic->has_gradings) {
                     $notes .= $has_gradings_message;
                 }
+                if ($topic->used_in_courses) {
+                    $notes .= $used_in_courses_message;
+                    foreach ($topic->used_in_courses as $used_in_course) { // append the courseids of the courses this topic is used in
+                        $notes .= $used_in_course . ", ";
+                    }
+                }
                 $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                 $cell->text = html_writer::div('<input type="checkbox"
 				                                        exa-name="topics"

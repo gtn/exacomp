@@ -14848,6 +14848,7 @@ function block_exacomp_is_block_active_in_course($courseid) {
  * @throws moodle_exception
  */
 // @deprecated
+/*
 function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($password = null) {
     global $DB, $CFG;
 
@@ -14950,20 +14951,24 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
                     throw new \moodle_exception('wrong zip file format');
                 }
             }
+*/
             /*
              * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
              * immediate useage
              */
+/*
             $xml = simplexml_load_string($xml, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
             if (!$xml) {
                 throw new \moodle_exception('wrong zip data.xml content');
             }
         } else if ($ret == \ZipArchive::ER_NOZIP) {
             // on error -> try as xml
+*/
             /*
              * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
              * immediate useage
              */
+/*
             $xml = @simplexml_load_file($file, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
             if (!$xml) {
                 throw new \moodle_exception('wrong file not a zipfile and not a data.xml file');
@@ -15033,6 +15038,7 @@ function block_exacomp_delete_grids_missing_from_komet_import_DEPRECATED($passwo
 
     return true;
 }
+*/
 
 function block_exacomp_delete_grids_missing_from_komet_import() {
     global $DB, $CFG;
