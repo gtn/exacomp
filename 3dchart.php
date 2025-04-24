@@ -113,6 +113,18 @@ $graph_options->yColors = [
     ],
 ];
 
+// to have a useful z value (height) we want the maximum of the teacher evaluation and the maximum of the student evaluation to both result in the same height
+// if a teacher can evaluate with e.g. 10 different values, and the student only with 3, the 10th and the 3rd should result in the same height
+// the height = (z-max / number of values) * the value. Teacher and student values are not necessarily counted the same way (e.g. the teacher can have 3 values, the max being 2, the student can have 3 values, the max being 3)
+// ==> count the possible values. This is already done with $graph_options->zLabels = array_fill(0, count($value_titles), '');
+// ==> the only problem that remains is that the student values are taken as is, and not scaled. The z-values are based on get_teacher_eval_items
+// the student values are based on get_student_eval_items
+// find the $scalefactor for the student values using count($value_titles_self_assessment);
+$scalefactor = (count($graph_options->zLabels)-1) / (count($value_titles_self_assessment)-1); // -1 because we start counting at 0, and therefore the highest value is then e.g. 6, not 7, even though there are 7 values
+
+// student values are from 1, to x. 0 meaning no value.
+// teacher values are, depending on the setting, sometimes from 0 to x. -1 stands for no value.
+
 $x = 1;
 foreach ($evaluation as $e) {
 
@@ -120,13 +132,14 @@ foreach ($evaluation as $e) {
         $data_value = (object)[
             'x' => $x,
             'y' => $student_value_index,
-            'z' => $e->studentvalue,
+            'z' => $e->studentvalue * $scalefactor,
             'label' => $xlabels_long[$x] . ' / ' . block_exacomp_get_string('selfevaluation') . ': <b>' . $value_titles_self_assessment[$e->studentvalue] . '</b>',
         ];
         $graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
     }
     if ($e->teachervalues) {
         foreach ($e->teachervalues as $evkey => $tvalue) {
+            // $e->teachervalues is an array with key = evaniveauid and value is the teacher evaluation
             if ($tvalue >= 0 && isset($y_id_to_index[$evkey])) {
                 $data_value = (object)[
                     'x' => $x,

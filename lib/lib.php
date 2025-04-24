@@ -11122,8 +11122,8 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
             $avgsum[$niveau->title][$evalniveauindex][] = (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? $teacher_evaluation->additionalinfo : 0);
         } else {
             if ($teacher_evaluation) {
-                $descriptorgradings[$niveau->title]->teachervalue = ($teacher_evaluation->value ? $scheme_items[$teacher_evaluation->value] : -1);
-                $avgsum[$niveau->title][$evalniveauindex][] = ($teacher_evaluation->value ? $teacher_evaluation->value : 0);
+                $descriptorgradings[$niveau->title]->teachervalue = (($teacher_evaluation->value != null) ? $scheme_items[$teacher_evaluation->value] : -1); // -1 and 0 are DIFFERENT! In Verbose setting it makes a difference. null = nothing selected. 0 = lowest value selected. Different
+                $avgsum[$niveau->title][$evalniveauindex][] = (($teacher_evaluation->value != null) ? $teacher_evaluation->value : 0); // null will become 0, 0 will stay 0 ==> here there is no difference. Not grading is the same as grading the lowest value. This is ONLY the case when the teacher gives a niveau, but not a value
             } else {
                 $descriptorgradings[$niveau->title]->teachervalue = -1;
             }
