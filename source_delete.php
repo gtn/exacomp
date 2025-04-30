@@ -207,6 +207,7 @@ if ($action == 'delete_selected') {
     // if it is different, echo a warning since something went wrong.
     if (count($subjects) != $numberOfSubjects) {
         echo $output->notification("Debuginfo: Error: Some Subjects went missing during the Edulevel and Schooltype display: Different number of subjects: " . count($subjects) . " != " . $numberOfSubjects);
+        echo "Debuginfo: Error: Some Subjects went missing during the Edulevel and Schooltype display: Different number of subjects: " . count($subjects) . " != " . $numberOfSubjects;
     }
 
     echo $output->subject_preselection_source_delete($source, $edulevels, $courseid);
