@@ -5618,7 +5618,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return html_writer::tag("form", $header . $table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'delete_selected', 'sesskey' => sesskey())), "id" => "exa-selector"));
     }
 
-    public function subject_preselection_source_delete($source, $subjects, $courseid) {
+    public function subject_preselection_source_delete($source, $edulevels, $courseid) {
         global $PAGE;
 
         $headertext = block_exacomp_get_string('please_choose_preselection');
@@ -5629,39 +5629,60 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $table->attributes['class'] = 'exabis_comp_comp rg2 exacomp_source_delete';
         $rows = array();
 
-        foreach ($subjects as $subject) {
+        // iterate over the edulevels, then schooltyped, then subjects
+        foreach ($edulevels as $edulevel) {
+            // from edit_config START:
             $row = new html_table_row();
-            $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
-
+            $row->attributes['class'] = 'exahighlight deletion-table-level-0';
             $cell = new html_table_cell();
+            $cell->text = html_writer::tag('b', $edulevel->title) . ' (' . $this->source_info($edulevel->source) . ')';
+            $row->cells[] = $cell;
+            $rows[] = $row;
+            foreach ($edulevel->schooltypes as $schooltype) {
+                $row = new html_table_row();
+                $row->attributes['class'] = 'deletion-table-level-1';
+                $cell = new html_table_cell();
+                $cell->text = $schooltype->title;
+                $row->cells[] = $cell;
+                $rows[] = $row;
+                // from edit_config END
+                // iterate over the subjects
+                foreach ($schooltype->subjects as $subject) {
+                    $row = new html_table_row();
+                    $row->attributes['class'] = 'deletion-table-level-2';
 
-            $preselect_because_disabled = '';
-            if ($subject->disabled) {
-                $preselect_because_disabled = '<span class="exacomp-subject-preselected-for-deletion-because-disabled">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_is_disabled') . '</span>';
-            }
+                    $cell = new html_table_cell();
 
-            $preselect_because_missing_from_import = '';
-            if ($subject->importstate == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED) {
-                $preselect_because_missing_from_import = '<span class="exacomp-subject-preselected-for-deletion-because-missing-from-import">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_was_not_imported_in_last_import') . '</span>';
-            }
+                    $preselect_because_disabled = '';
+                    if ($subject->disabled) {
+                        $preselect_because_disabled = '<span class="exacomp-subject-preselected-for-deletion-because-disabled">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_is_disabled') . '</span>';
+                    }
 
-            $checked = !empty($preselect_because_disabled) || !empty($preselect_because_missing_from_import);
+                    $preselect_because_missing_from_import = '';
+                    if ($subject->importstate == BLOCK_EXACOMP_SUBJECT_MISSING_FROM_IMPORT_BUT_USED) {
+                        $preselect_because_missing_from_import = '<span class="exacomp-subject-preselected-for-deletion-because-missing-from-import">&nbsp; ' . block_exacomp_get_string('preselect_delete_subject_because_it_was_not_imported_in_last_import') . '</span>';
+                    }
+
+                    $checked = !empty($preselect_because_disabled) || !empty($preselect_because_missing_from_import);
 
 
-            $cell->text = html_writer::div('<input type="checkbox"
+                    $cell->text = html_writer::div('<input type="checkbox"
 			                                        exa-name="subjects"
 			                                        sourceid="' . $subject->sourceid . '"
                                                     id="subject_' . $subject->id . '"
 			                                        value="' . $subject->id . '"' .
-                ($checked ? ' checked' : '') .
-                ' />' .
-                html_writer::tag('b', $subject->title)
-                . $preselect_because_disabled
-                . $preselect_because_missing_from_import);
-            $cell->attributes['class'] = 'rg2-arrow';
-            $row->cells[] = $cell;
-            $rows[] = $row;
+                        ($checked ? ' checked' : '') .
+                        ' /> ' .
+                        html_writer::tag('span', $subject->title)
+                        . $preselect_because_disabled
+                        . $preselect_because_missing_from_import);
+                    $cell->attributes['class'] = 'rg2-arrow';
+                    $row->cells[] = $cell;
+                    $rows[] = $row;
+                }
+            }
         }
+
 
         $table->data = $rows;
 
@@ -5874,7 +5895,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                             'data-activityId' => $module->id));
                 }
                 // add 'select all' button
-                $moduleCell->text .= '<span class="select-allsub" data-target="subOfModuleTopic_'.$module->id.'_'.$topic->id.'" title="'.block_exacomp_get_string('select_all').'">'.$selectSubIcon.'</span>';
+                $moduleCell->text .= '<span class="select-allsub" data-target="subOfModuleTopic_' . $module->id . '_' . $topic->id . '" title="' . block_exacomp_get_string('select_all') . '">' . $selectSubIcon . '</span>';
                 $topicRow->cells[] = $moduleCell;
             }
 
@@ -5906,9 +5927,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             foreach ($modules as $module) {
                 $moduleCell = new html_table_cell();
-                $moduleCell->attributes['data-subOf'] = 'subOfModuleTopic_'.$module->id.'_'.$topicid;
+                $moduleCell->attributes['data-subOf'] = 'subOfModuleTopic_' . $module->id . '_' . $topicid;
                 if ($parentdescriptorid) {
-                    $moduleCell->attributes['data-subOf'] .= ' subOfModuleDescriptor_'.$module->id.'_'.$parentdescriptorid;
+                    $moduleCell->attributes['data-subOf'] .= ' subOfModuleDescriptor_' . $module->id . '_' . $parentdescriptorid;
                 }
                 $moduleCell->text = html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'data[' . $module->id . '][' . $descriptor->id . ']', 'value' => 0]);
                 $moduleCell->text .= html_writer::checkbox('data[' . $module->id . '][' . $descriptor->id . ']',
@@ -5922,7 +5943,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     ));
                 if ($descriptor->children) {
                     // add 'select all' button
-                    $moduleCell->text .= '<span class="select-allsub" data-target="subOfModuleDescriptor_'.$module->id.'_'.$descriptor->id.'" title="'.block_exacomp_get_string('select_all').'">'.$selectSubIcon.'</span>';
+                    $moduleCell->text .= '<span class="select-allsub" data-target="subOfModuleDescriptor_' . $module->id . '_' . $descriptor->id . '" title="' . block_exacomp_get_string('select_all') . '">' . $selectSubIcon . '</span>';
                 }
                 $descriptorRow->cells[] = $moduleCell;
             }
