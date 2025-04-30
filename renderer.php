@@ -5393,7 +5393,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return html_writer::tag("form", $header . $table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action' => 'export_selected')), "id" => "course-selection"));
     }
 
-    public function descriptor_selection_source_delete($source, $subjects) {
+    public function descriptor_selection_source_delete($source, $edulevels) {
         global $PAGE;
 
         $headertext = block_exacomp_get_string('please_choose');
@@ -5411,195 +5411,215 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $has_gradings_message = '<span class="exacomp-has-another-source">&nbsp;  !!!  ' . block_exacomp_get_string('delete_competency_that_has_children_with_gradings') . '</span>';
         $used_in_courses_message = '<span class="exacomp-has-another-source">&nbsp;  !!!  ' . block_exacomp_get_string('delete_competency_that_is_used_in_course') . '</span>';
 
-        foreach ($subjects as $subject) {
+        // iterate over the edulevels, then schooltyped, then subjects
+        foreach ($edulevels as $edulevel) {
+            // from edit_config START:
             $row = new html_table_row();
-            $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
-
+            $row->attributes['class'] = 'exahighlight deletion-table-level-0';
             $cell = new html_table_cell();
-            $notes = '';
-            if ($subject->has_another_source) {
-                $notes .= $another_childern_source_message;
-            }
-            if ($subject->gradings) {
-                $notes .= $gradings_message;
-            }
-            if ($subject->has_gradings) {
-                $notes .= $has_gradings_message;
-            }
-            if ($subject->used_in_courses) {
-                $notes .= $used_in_courses_message;
-                foreach ($subject->used_in_courses as $used_in_course) { // append the courseids of the courses this grid is used in
-                    $notes .= $used_in_course . ", ";
-                }
-            }
-
-            $cell->text = html_writer::div('<input type="checkbox"
-			                                        exa-name="subjects"
-                                                    id="subject_' . $subject->id . '"
-			                                        value="' . $subject->id . '"' .
-                (!$subject->can_delete ? ' class="be-sure"' : '') .
-                //(!$subject->can_delete ? ' disabled="disabled"' : '').
-                ' />' .
-                html_writer::tag('b', $subject->title) . $notes);
-            $cell->attributes['class'] = 'rg2-arrow';
+            $cell->text = html_writer::tag('b', $edulevel->title) . ' (' . $this->source_info($edulevel->source) . ')';
             $row->cells[] = $cell;
             $rows[] = $row;
-
-            foreach ($subject->topics as $topic) {
+            foreach ($edulevel->schooltypes as $schooltype) {
                 $row = new html_table_row();
-                $row->attributes['class'] = 'exabis_comp_teilcomp rg2-level-1';
-
+                $row->attributes['class'] = 'deletion-table-level-1';
                 $cell = new html_table_cell();
-                $notes = '';
-                if ($topic->another_source) {
-                    $notes .= $another_source_message;
-                }
-                if (!$topic->another_source && $topic->has_another_source) {
-                    $notes .= $another_childern_source_message;
-                }
-                if ($topic->gradings) {
-                    $notes .= $gradings_message;
-                } else if ($topic->has_gradings) {
-                    $notes .= $has_gradings_message;
-                }
-                if ($topic->used_in_courses) {
-                    $notes .= $used_in_courses_message;
-                    foreach ($topic->used_in_courses as $used_in_course) { // append the courseids of the courses this topic is used in
-                        $notes .= $used_in_course . ", ";
-                    }
-                }
-                $cell->attributes['class'] = 'rg2-arrow rg2-indent';
-                $cell->text = html_writer::div('<input type="checkbox"
-				                                        exa-name="topics"
-				                                        id="topic_' . $topic->id . '"
-				                                        value="' . $topic->id . '"' .
-                    (!$topic->can_delete ? ' class="be-sure"' : '') .
-                    //(!$topic->can_delete ? ' disabled="disabled"' : '').
-                    ' />' .
-                    $topic->numbering . ' ' . $topic->title . $notes,
-                    "desctitle");
+                $cell->text = $schooltype->title;
                 $row->cells[] = $cell;
-
                 $rows[] = $row;
-
-                foreach ($topic->descriptors as $descriptor) {
+                // from edit_config END
+                // iterate over the subjects
+                foreach ($schooltype->subjects as $subject) {
                     $row = new html_table_row();
-                    $row->attributes['class'] = 'rg2-level-2';
+                    $row->attributes['class'] = 'exabis_comp_teilcomp exahighlight rg2-level-0';
 
                     $cell = new html_table_cell();
                     $notes = '';
-                    if ($descriptor->another_source) {
-                        $notes .= $another_source_message;
-                    }
-                    if (!$descriptor->another_source && $descriptor->has_another_source) {
+                    if ($subject->has_another_source) {
                         $notes .= $another_childern_source_message;
                     }
-                    if ($descriptor->gradings) {
+                    if ($subject->gradings) {
                         $notes .= $gradings_message;
-                    } else if ($descriptor->has_gradings) {
+                    }
+                    if ($subject->has_gradings) {
                         $notes .= $has_gradings_message;
                     }
-                    $cell->attributes['class'] = 'rg2-arrow rg2-indent';
-                    $cell->text = html_writer::div('<input type="checkbox"
-					                                        exa-name="descriptors"
-					                                        id="descriptor_' . $descriptor->id . '"
-					                                        value="' . $descriptor->id . '"' .
-                        (!$descriptor->can_delete ? ' class="be-sure"' : '') .
-                        //(!$descriptor->can_delete ? ' disabled="disabled"' : '').
-                        ' />' .
-                        $descriptor->numbering . ' ' . $descriptor->title . $notes,
-                        "desctitle");
-                    $row->cells[] = $cell;
+                    if ($subject->used_in_courses) {
+                        $notes .= $used_in_courses_message;
+                        foreach ($subject->used_in_courses as $used_in_course) { // append the courseids of the courses this grid is used in
+                            $notes .= $used_in_course . ", ";
+                        }
+                    }
 
+                    $cell->text = html_writer::div('<input type="checkbox"
+                                                            exa-name="subjects"
+                                                            id="subject_' . $subject->id . '"
+                                                            value="' . $subject->id . '"' .
+                        (!$subject->can_delete ? ' class="be-sure"' : '') .
+                        //(!$subject->can_delete ? ' disabled="disabled"' : '').
+                        ' />' .
+                        html_writer::tag('b', $subject->title) . $notes);
+                    $cell->attributes['class'] = 'rg2-arrow';
+                    $row->cells[] = $cell;
                     $rows[] = $row;
 
-                    // child descriptors
-                    foreach ($descriptor->children as $child_descriptor) {
+                    foreach ($subject->topics as $topic) {
                         $row = new html_table_row();
-                        $row->attributes['class'] = 'rg2-level-3';
+                        $row->attributes['class'] = 'exabis_comp_teilcomp rg2-level-1';
 
                         $cell = new html_table_cell();
                         $notes = '';
-                        if ($child_descriptor->another_source) {
+                        if ($topic->another_source) {
                             $notes .= $another_source_message;
                         }
-                        if (!$child_descriptor->another_source && $child_descriptor->has_another_source) {
+                        if (!$topic->another_source && $topic->has_another_source) {
                             $notes .= $another_childern_source_message;
                         }
-                        if ($child_descriptor->gradings) {
+                        if ($topic->gradings) {
                             $notes .= $gradings_message;
-                        } else if ($child_descriptor->has_gradings) {
+                        } else if ($topic->has_gradings) {
                             $notes .= $has_gradings_message;
+                        }
+                        if ($topic->used_in_courses) {
+                            $notes .= $used_in_courses_message;
+                            foreach ($topic->used_in_courses as $used_in_course) { // append the courseids of the courses this topic is used in
+                                $notes .= $used_in_course . ", ";
+                            }
                         }
                         $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                         $cell->text = html_writer::div('<input type="checkbox"
-						                                        exa-name="descriptors"
-						                                        id="descriptor_' . $child_descriptor->id . '"
-						                                        value="' . $child_descriptor->id . '"' .
-                            (!$child_descriptor->can_delete ? ' class="be-sure"' : '') .
-                            //(!$child_descriptor->can_delete ? ' disabled="disabled"' : '').
+                                                                exa-name="topics"
+                                                                id="topic_' . $topic->id . '"
+                                                                value="' . $topic->id . '"' .
+                            (!$topic->can_delete ? ' class="be-sure"' : '') .
+                            //(!$topic->can_delete ? ' disabled="disabled"' : '').
                             ' />' .
-                            $child_descriptor->numbering . ' ' . $child_descriptor->title . $notes,
+                            $topic->numbering . ' ' . $topic->title . $notes,
                             "desctitle");
                         $row->cells[] = $cell;
 
                         $rows[] = $row;
 
-                        // examples
-                        foreach ($child_descriptor->examples as $example) {
+                        foreach ($topic->descriptors as $descriptor) {
                             $row = new html_table_row();
-                            $row->attributes['class'] = 'rg2-level-4';
+                            $row->attributes['class'] = 'rg2-level-2';
 
                             $cell = new html_table_cell();
                             $notes = '';
-                            if ($example->another_source) {
+                            if ($descriptor->another_source) {
                                 $notes .= $another_source_message;
                             }
-                            if ($example->gradings) {
+                            if (!$descriptor->another_source && $descriptor->has_another_source) {
+                                $notes .= $another_childern_source_message;
+                            }
+                            if ($descriptor->gradings) {
                                 $notes .= $gradings_message;
+                            } else if ($descriptor->has_gradings) {
+                                $notes .= $has_gradings_message;
                             }
                             $cell->attributes['class'] = 'rg2-arrow rg2-indent';
                             $cell->text = html_writer::div('<input type="checkbox"
-							                                        exa-name="examples"
-							                                        id="example_' . $example->id . '"
-                                                                    value="' . $example->id . '"' .
-                                (!$example->can_delete ? ' class="be-sure"' : '') .
-                                //(!$example->can_delete ? ' disabled="disabled"' : '').
+                                                                    exa-name="descriptors"
+                                                                    id="descriptor_' . $descriptor->id . '"
+                                                                    value="' . $descriptor->id . '"' .
+                                (!$descriptor->can_delete ? ' class="be-sure"' : '') .
+                                //(!$descriptor->can_delete ? ' disabled="disabled"' : '').
                                 ' />' .
-                                $example->numbering . ' ' . $example->title . $notes,
+                                $descriptor->numbering . ' ' . $descriptor->title . $notes,
                                 "desctitle");
                             $row->cells[] = $cell;
 
                             $rows[] = $row;
-                        }
-                    }
 
-                    // examples
-                    foreach ($descriptor->examples as $example) {
-                        $row = new html_table_row();
-                        $row->attributes['class'] = 'rg2-level-3';
+                            // child descriptors
+                            foreach ($descriptor->children as $child_descriptor) {
+                                $row = new html_table_row();
+                                $row->attributes['class'] = 'rg2-level-3';
 
-                        $cell = new html_table_cell();
-                        $notes = '';
-                        if ($example->another_source) {
-                            $notes .= $another_source_message;
-                        }
-                        if ($example->gradings) {
-                            $notes .= $gradings_message;
-                        }
-                        $cell->attributes['class'] = 'rg2-arrow rg2-indent';
-                        $cell->text = html_writer::div('<input type="checkbox"
-						                                        exa-name="examples"
-						                                        id="example_' . $example->id . '"
-                                                                value="' . $example->id . '"' .
-                            (!$example->can_delete ? ' class="be-sure"' : '') .
-                            //(!$example->can_delete ? ' disabled="disabled"' : '').
-                            ' />' .
-                            $example->numbering . ' ' . $example->title . $notes,
-                            "desctitle");
-                        $row->cells[] = $cell;
+                                $cell = new html_table_cell();
+                                $notes = '';
+                                if ($child_descriptor->another_source) {
+                                    $notes .= $another_source_message;
+                                }
+                                if (!$child_descriptor->another_source && $child_descriptor->has_another_source) {
+                                    $notes .= $another_childern_source_message;
+                                }
+                                if ($child_descriptor->gradings) {
+                                    $notes .= $gradings_message;
+                                } else if ($child_descriptor->has_gradings) {
+                                    $notes .= $has_gradings_message;
+                                }
+                                $cell->attributes['class'] = 'rg2-arrow rg2-indent';
+                                $cell->text = html_writer::div('<input type="checkbox"
+                                                                        exa-name="descriptors"
+                                                                        id="descriptor_' . $child_descriptor->id . '"
+                                                                        value="' . $child_descriptor->id . '"' .
+                                    (!$child_descriptor->can_delete ? ' class="be-sure"' : '') .
+                                    //(!$child_descriptor->can_delete ? ' disabled="disabled"' : '').
+                                    ' />' .
+                                    $child_descriptor->numbering . ' ' . $child_descriptor->title . $notes,
+                                    "desctitle");
+                                $row->cells[] = $cell;
 
-                        $rows[] = $row;
+                                $rows[] = $row;
+
+                                // examples
+                                foreach ($child_descriptor->examples as $example) {
+                                    $row = new html_table_row();
+                                    $row->attributes['class'] = 'rg2-level-4';
+
+                                    $cell = new html_table_cell();
+                                    $notes = '';
+                                    if ($example->another_source) {
+                                        $notes .= $another_source_message;
+                                    }
+                                    if ($example->gradings) {
+                                        $notes .= $gradings_message;
+                                    }
+                                    $cell->attributes['class'] = 'rg2-arrow rg2-indent';
+                                    $cell->text = html_writer::div('<input type="checkbox"
+                                                                            exa-name="examples"
+                                                                            id="example_' . $example->id . '"
+                                                                            value="' . $example->id . '"' .
+                                        (!$example->can_delete ? ' class="be-sure"' : '') .
+                                        //(!$example->can_delete ? ' disabled="disabled"' : '').
+                                        ' />' .
+                                        $example->numbering . ' ' . $example->title . $notes,
+                                        "desctitle");
+                                    $row->cells[] = $cell;
+
+                                    $rows[] = $row;
+                                }
+                            }
+
+                            // examples
+                            foreach ($descriptor->examples as $example) {
+                                $row = new html_table_row();
+                                $row->attributes['class'] = 'rg2-level-3';
+
+                                $cell = new html_table_cell();
+                                $notes = '';
+                                if ($example->another_source) {
+                                    $notes .= $another_source_message;
+                                }
+                                if ($example->gradings) {
+                                    $notes .= $gradings_message;
+                                }
+                                $cell->attributes['class'] = 'rg2-arrow rg2-indent';
+                                $cell->text = html_writer::div('<input type="checkbox"
+                                                                        exa-name="examples"
+                                                                        id="example_' . $example->id . '"
+                                                                        value="' . $example->id . '"' .
+                                    (!$example->can_delete ? ' class="be-sure"' : '') .
+                                    //(!$example->can_delete ? ' disabled="disabled"' : '').
+                                    ' />' .
+                                    $example->numbering . ' ' . $example->title . $notes,
+                                    "desctitle");
+                                $row->cells[] = $cell;
+
+                                $rows[] = $row;
+                            }
+                        }
                     }
                 }
             }
