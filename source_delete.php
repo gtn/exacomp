@@ -55,6 +55,58 @@ function block_exacomp_source_delete_get_subjects_for_preselection($source) {
     return $subjects;
 }
 
+function block_exacomp_source_delete_get_edulevel_and_schooltype_for_subjects($subjects, $source, $output) {
+    // get the edulevel and schooltype of the subjects
+    // each subject has a stid for the schooltype, and each schooltype has an elid for the edulevel
+    // first, index the subjects by their stid. This way we can assign them to the schooltypes later in a performant way
+    $indexedSubjects = array();
+    foreach ($subjects as $subject) {
+        if (!isset($indexedSubjects[$subject->stid])) {
+            $indexedSubjects[$subject->stid] = array();
+        }
+        $indexedSubjects[$subject->stid][$subject->id] = $subject;
+    }
+
+    // get all $edulevels from this source
+    $edulevels = block_exacomp_get_edulevels($source);
+    // iterate over the edulevels and get the schooltypes
+    foreach ($edulevels as $edulevel) {
+        $schooltypes = block_exacomp_get_schooltypes($edulevel->id); // there is no way a schooltype can be from a different source thant he edulevel, right?
+        // Iterate over the schooltypes and add the subjects
+        foreach ($schooltypes as $schooltype) {
+            // Check if there are subjects for this schooltype
+            if (isset($indexedSubjects[$schooltype->id])) {
+                $schooltype->subjects = $indexedSubjects[$schooltype->id];
+            } else {
+                // if there are no subjects, then remove the schooltype from the edulevel
+                unset($schooltypes[$schooltype->id]);
+            }
+        }
+        // Add the schooltypes to the edulevel
+        $edulevel->schooltypes = $schooltypes;
+        // check if there are no schooltypes for this edulevel
+        if (empty($schooltypes)) {
+            // if there are no schooltypes, remove the edulevel
+            unset($edulevels[$edulevel->id]);
+        }
+    }
+
+    // check if the number of $subjects is the same as the number of subjects when iterating over the edulevels
+    $numberOfSubjects = 0;
+    foreach ($edulevels as $edulevel) {
+        foreach ($edulevel->schooltypes as $schooltype) {
+            $numberOfSubjects += count($schooltype->subjects);
+        }
+    }
+    // if it is different, echo a warning since something went wrong.
+    if (count($subjects) != $numberOfSubjects) {
+        echo $output->notification("Debuginfo: Error: Some Subjects went missing during the Edulevel and Schooltype display: Different number of subjects: " . count($subjects) . " != " . $numberOfSubjects);
+        echo "Debuginfo: Error: Some Subjects went missing during the Edulevel and Schooltype display: Different number of subjects: " . count($subjects) . " != " . $numberOfSubjects;
+    }
+
+    return $edulevels;
+}
+
 if ($action == 'delete_selected') {
     require_sesskey();
     $json_data = block_exacomp\param::required_json('json_data', (object)array(
@@ -70,6 +122,9 @@ if ($action == 'delete_selected') {
     $post_subjects = array_combine($json_data->subjects, $json_data->subjects);
 
     // 2022.01.20 RW this is not needed anymore. The warnings are displayed before anyways, but deletion is still allowed and will never be stopped here.
+    // 2025.04.30 RW: looked at it again: Earlier, the can_delete check was done. But it was then commented out.
+    // the check was then only !empty($post_subjects[$subject->id]) and !empty($post_topics[$topic->id]) etc. Instead, use the posted data directly.
+    // ==> therefore the whole block was not needed anymore and for performance reasons it was removed
 
     // rechte hier nochmal pruefen!
     //    $delete_examples = array();
@@ -165,7 +220,9 @@ if ($action == 'delete_selected') {
     echo $output->header($course_context, $courseid, 'tab_admin_settings');
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
 
-    echo $output->subject_preselection_source_delete($source, $subjects, $courseid);
+    $edulevels = block_exacomp_source_delete_get_edulevel_and_schooltype_for_subjects($subjects, $source, $output);
+
+    echo $output->subject_preselection_source_delete($source, $edulevels, $courseid);
 
     echo $output->footer();
 } else if ($action == 'select_from_preselection') {
@@ -185,7 +242,9 @@ if ($action == 'delete_selected') {
     echo $output->header($course_context, $courseid, 'tab_admin_settings');
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
 
-    echo $output->descriptor_selection_source_delete($source, $subjects, $preselected_subjects);
+    $edulevels = block_exacomp_source_delete_get_edulevel_and_schooltype_for_subjects($subjects, $source, $output);
+
+    echo $output->descriptor_selection_source_delete($source, $edulevels);
 
     echo $output->footer();
 

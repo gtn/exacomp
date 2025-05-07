@@ -284,12 +284,6 @@ class db_layer_whole_moodle extends db_layer {
 
 
             foreach ($subject->topics as $topic) {
-                $topic->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $topic->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC));
-                $topic->can_delete = ($topic->source == $source) && !$topic->gradings;
-                $topic->another_source = (!($topic->source == $source));
-                $topic->has_another_source = false;
-                $topic->has_gradings = false;
-
                 // find out in which courses this topic is used ==> add this info to the subject to make a warning
                 $topic->used_in_courses = [];
                 $used_in_courses = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('topicid' => $topic->id));
@@ -297,6 +291,11 @@ class db_layer_whole_moodle extends db_layer {
                     $topic->used_in_courses[] = $used_in_course->courseid;
                 }
 
+                $topic->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $topic->id, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC));
+                $topic->can_delete = ($topic->source == $source) && !$topic->gradings && empty($topic->used_in_courses);
+                $topic->another_source = (!($topic->source == $source));
+                $topic->has_another_source = false;
+                $topic->has_gradings = false;
 
                 foreach ($topic->descriptors as $descriptor) {
                     $descriptor->gradings = $DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $descriptor->id, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
@@ -1327,12 +1326,17 @@ class global_config {
                     break;
                 case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
                     $result = array(-1 => '');
+                    // $result = array(0 => ''); // just experimenting something
                     // Options from plugin settings: assessment_grade_verbose.
                     if ($short) {
                         $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options_short(null, $courseid)));
                     } else {
                         $options = array_map('trim', explode(',', block_exacomp_get_assessment_verbose_options(null, $courseid)));
                     }
+                    // shift the key to increase it by 1 in $options, just exerimenting something
+                    // $options[3] = $options[2];
+                    // $options[2] = $options[1];
+                    // $options[1] = $options[0];
                     //$options = array_reverse($options);
                     $result = $result + $options;
                     break;

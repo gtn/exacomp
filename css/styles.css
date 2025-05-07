@@ -1469,3 +1469,19 @@ input[type=checkbox].be-sure {
 {
     opacity: 0.4;
 }
+
+
+
+#exabis_competences_block tr.deletion-table-level-0 .cell{
+    font-weight: bolder;
+}
+
+/* Indent levels based on their class */
+#exabis_competences_block tr.deletion-table-level-1 .cell {
+    font-weight: bold;
+    padding-left: 20px; /* Adjust the value as needed */
+}
+
+#exabis_competences_block tr.deletion-table-level-2 .cell {
+    padding-left: 40px; /* Adjust the value as needed */
+}
