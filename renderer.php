@@ -1023,7 +1023,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 if ($crosssubjid) {
                     $title->text = html_writer::tag("b", block_exacomp_get_string('comps_and_material'));
                 } else {
-                    $title->rowspan = 2;
+                    if ($showevaluation) {
+                        $title->rowspan = 2;
+                    }
                     // $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", $subject->title); // Do not show double subject title.
                 }
 
@@ -1032,7 +1034,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
 
             $nivCell = new html_table_cell();
-            if (!$crosssubjid) {
+            if (!$crosssubjid && $showevaluation) {
                 $nivCell->rowspan = 2;
             }
             $nivCell->text = block_exacomp_get_string('competence_grid_niveau');
