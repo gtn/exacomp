@@ -11112,7 +11112,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
         } else {
             $evalniveauindex = 0;
         }
-        if ($teacher_evaluation) {
+        if ($teacher_evaluation && $teacher_evaluation->value !== null) {
             //if (!array_key_exists($teacher_evaluation->evalniveauid, $averagedescriptorgradings[$niveau->title]->evalniveaus)) {
             //    $averagedescriptorgradings[$niveau->title]->evalniveaus[$teacher_evaluation->evalniveauid] = array();
             //}
@@ -11127,13 +11127,21 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
         } else {
             if ($teacher_evaluation) {
                 $descriptorgradings[$niveau->title]->teachervalue = (($teacher_evaluation->value != null) ? $scheme_items[$teacher_evaluation->value] : -1); // -1 and 0 are DIFFERENT! In Verbose setting it makes a difference. null = nothing selected. 0 = lowest value selected. Different
-                $avgsum[$niveau->title][$evalniveauindex][] = (($teacher_evaluation->value != null) ? $teacher_evaluation->value : 0); // null will become 0, 0 will stay 0 ==> here there is no difference. Not grading is the same as grading the lowest value. This is ONLY the case when the teacher gives a niveau, but not a value
+                // $avgsum[$niveau->title][$evalniveauindex][] = (($teacher_evaluation->value != null) ? $teacher_evaluation->value : 0); // null will become 0, 0 will stay 0 ==> here there is no difference. Not grading is the same as grading the lowest value. This is ONLY the case when the teacher gives a niveau, but not a value
+                // $avgsum[$niveau->title][$evalniveauindex][] = (($teacher_evaluation->value != null) ? $teacher_evaluation->value : -1); // -1 is different from 0! This is needed so it does not simply show the lowest value, but NO value if there is none.
+                // for $avgsum: ignore null values
+                if ($teacher_evaluation->value != null) {
+                    $avgsum[$niveau->title][$evalniveauindex][] = $teacher_evaluation->value;
+                }
             } else {
                 $descriptorgradings[$niveau->title]->teachervalue = -1;
             }
         }
         if ($student_evaluation && $student_eval_within_timeframe) {
-            $avgsumstudent[$niveau->title][] = ($student_evaluation->value ? $student_evaluation->value : -1);
+            // for avgsumstudent: ignore null values
+            if ($student_evaluation->value != null) {
+                $avgsumstudent[$niveau->title][] = $student_evaluation->value;
+            }
         }
         $descriptorgradings[$niveau->title]->teachervaluetitle = $descriptorgradings[$niveau->title]->teachervalue;
         /*$descriptorgradings[$niveau->title]->teachervalue =

@@ -1,7 +1,11 @@
+### v4.6.7 (2025051300) ###
+* fixed scaling in 3dchart to better reflect the data and to handle null values
+* added edulevel and schooltype to the deletion overview page
+
 ### v4.6.7 (2025041000) ###
 * some fixes in Webservices for Dakora+
 * Graph fix
-* wording 
+* wording
 
 ### v4.6.7 (2025021300) ###
 * app login security fix
@@ -30,7 +34,7 @@
 
 ### v4.6.7 (2024061600) ###
 * fix problem in dakora+ if user has role teacher and student
-* postgres query optimization 
+* postgres query optimization
 
 ### v4.6.7 (2024042500) ###
 * small dakora-plus fix special chars in example title

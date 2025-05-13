@@ -194,6 +194,7 @@ if ($action == 'delete_selected') {
     exit;
 } else if ($action == 'select') {
     // deprecated... this shows ALL subjects at once... Would be useful for small sources. For sources with a huge amount of subjects, preselection is needed.
+    /*
     $subjects = block_exacomp_source_delete_get_subjects($source);
     // build breadcrumbs navigation
     $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
@@ -207,6 +208,8 @@ if ($action == 'delete_selected') {
     echo $output->descriptor_selection_source_delete($source, $subjects);
 
     echo $output->footer();
+    */
+    print_error("Deprecated action '$action'");
 } else if ($action == 'preselect_subjects') {
     // The user can select from which subject they want to delete. This can be only one subject, or several, or all.
     // If the user chooses all in a huge setting, this could lead to performance issues.
