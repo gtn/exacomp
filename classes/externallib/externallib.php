@@ -2012,7 +2012,9 @@ class externallib extends base {
     public static function diggrplus_grade_descriptor($descriptorid, $grading, $courseid, $userid, $role, $subjectid) {
         global $DB, $USER;
 
-        if (empty ($descriptorid) || empty ($grading)) {
+        // Info: grading can be -1 (unset) or 0 (= positive), 1 or 2
+
+        if (empty($descriptorid)) {
             throw new invalid_parameter_exception ('Parameter can not be empty');
         }
 
