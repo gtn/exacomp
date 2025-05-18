@@ -7194,7 +7194,7 @@ class externallib extends base {
         return new external_function_parameters(array(
             'itemid' => new external_value(PARAM_INT, 'id of item'),
             'comment' => new external_value(PARAM_TEXT, 'comment text'),
-            'fileitemid' => new external_value(PARAM_TEXT, '', VALUE_DEFAULT, ''),
+            'fileitemid' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
         ));
     }
 
@@ -7237,7 +7237,7 @@ class externallib extends base {
         if ($fileitemid) {
             $context = context_user::instance($USER->id);
             $fs = get_file_storage();
-            $file = reset($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
+            $file = current($fs->get_area_files($context->id, 'user', 'draft', $fileitemid, null, false));
             if (!$file) {
                 throw new moodle_exception('file not found');
             }
@@ -8597,7 +8597,12 @@ class externallib extends base {
             //showallexamples filters out those, who have not creatorid => those who were imported
             $tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, null, false, false, true, false, true);
             $students = \block_exacomp\permissions::get_course_students($course->id);
-            $student = $students[$userid]; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
+            $student = $students[$userid] ?? null; // TODO: check if you are allowed to get this information. Student1 should not see results for student2
+            // bugfix: student is null here sometimes (daniel localhost)?!?
+            if (!$student) {
+                continue;
+            }
+
             block_exacomp_get_user_information_by_course($student, $course->id);
             foreach ($tree as $subject) {
                 $elem_sub = new stdClass ();
