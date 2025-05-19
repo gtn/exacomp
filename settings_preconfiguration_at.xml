@@ -28,6 +28,7 @@
         <assessment_verbose_options>WESENTLICHE mit Hilfe erreicht, WESENTLICHE in Ansätzen erfüllt, WESENTLICHE teilweise erreicht, WESENTLICHE überwiegend erreicht, WESENTLICHE erreicht, WESENTLICHE übertroffen, WESENTLICHE weit übertroffen</assessment_verbose_options>
         <assessment_verbose_negative>0</assessment_verbose_negative>
         <assessment_verbose_options_short>mhe, iae, te, üe, e, ü, wü</assessment_verbose_options_short>
+        <assessment_verbose_lowerisbetter>0</assessment_verbose_lowerisbetter>
     </configOption>
 	<configOption id="4">
         <name>All Smileys</name>
@@ -58,6 +59,7 @@
         <assessment_verbose_options>:-),:-|,:-(</assessment_verbose_options>
         <assessment_verbose_negative>2</assessment_verbose_negative>
         <assessment_verbose_options_short>:-),:-|,:-(</assessment_verbose_options_short>
+        <assessment_verbose_lowerisbetter>1</assessment_verbose_lowerisbetter>
     </configOption>
 	<configOption id="5">
         <name>Dakora +</name>
@@ -88,5 +90,6 @@
         <assessment_verbose_options>:-),:-|,:-(</assessment_verbose_options>
         <assessment_verbose_negative>2</assessment_verbose_negative>
         <assessment_verbose_options_short>:-),:-|,:-(</assessment_verbose_options_short>
+        <assessment_verbose_lowerisbetter>1</assessment_verbose_lowerisbetter>
     </configOption>
 </settingsPreconfiguration>

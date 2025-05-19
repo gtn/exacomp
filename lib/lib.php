@@ -565,6 +565,7 @@ function block_exacomp_get_assessment_grade_verbose($getforlanguage = null, $cou
 function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqual = true, $courseid = 0) {
     $limit = block_exacomp_get_assessment_negative_threshold($level, $courseid);
     $scheme = block_exacomp_additional_grading($level, $courseid);
+    $verboselowerisbetter = block_exacomp_get_config_assessment_verbose_lowerisbetter(); // This means that the lowest value of the verbose settings is the best (e.g. ":-)" which could be 0 )
     switch ($scheme) {
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_NONE:
             return true; // TODO: always negative?
@@ -581,6 +582,28 @@ function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqua
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
+            if($verboselowerisbetter){
+                if ($withEqual) {
+                    if ($value >= $limit) {
+                        return true;
+                    }
+                } else {
+                    if ($value > $limit) {
+                        return true;
+                    }
+                }
+            } else {
+                if ($withEqual) {
+                    if ($value <= $limit) {
+                        return true;
+                    }
+                } else {
+                    if ($value < $limit) {
+                        return true;
+                    }
+                }
+            }
+            break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_POINTS:
             if ($withEqual) {
                 if ($value <= $limit) {
