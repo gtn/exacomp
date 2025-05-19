@@ -8654,7 +8654,7 @@ class externallib extends base {
                             $elem_desc->childdescriptors[] = $elem_child;
 
                             //check all examples of this descriptor. If every example has a solved item ==> mark competence as gained in the bar graph. Or if there is a specific positive grading.
-                            if ($elem_child->teacherevaluation != null) {
+                            if ($elem_child->teacherevaluation !== null) {
                                 if (!block_exacomp_value_is_negative_by_assessment($elem_child->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_CHILD)) {
                                     $competencies_gained++;
                                 }
@@ -8691,7 +8691,7 @@ class externallib extends base {
                         $elem_topic->descriptors[] = $elem_desc;
 
                         //Check if there is a positive grading.
-                        if ($elem_desc->teacherevaluation != null) {
+                        if ($elem_desc->teacherevaluation !== null) {
                             if (!block_exacomp_value_is_negative_by_assessment($elem_desc->teacherevaluation, BLOCK_EXACOMP_TYPE_DESCRIPTOR_PARENT)) {
                                 $competencies_gained++;
                             }
