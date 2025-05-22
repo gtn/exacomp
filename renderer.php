@@ -7507,7 +7507,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     public function cross_subject_buttons($cross_subject, $students, $selectedStudent, $nostudents = false) {
         global $PAGE, $COURSE, $USER;
 
-        $left_content = html_writer::start_tag("p");
+        $left_content = html_writer::start_tag("span");
         $right_content = '';
 
         if (!$cross_subject && $this->is_edit_mode()) {
@@ -7544,7 +7544,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     'title' => block_exacomp_get_string('examp_based'))) . ' ' . block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
                 "onclick" => "document.location.href='" . $page_url . "&style=1';"));
         }
-        $left_content .= html_writer::end_tag("p");
+        $left_content .= html_writer::end_tag("span");
 
         // html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>block_exacomp_get_string("delete_crosssub"), 'message'=>block_exacomp_get_string('confirm_delete')), array('id'=>'exabis_save_button'));
         if (!$this->is_edit_mode() && block_exacomp_is_teacher() && $students) {
