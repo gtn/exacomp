@@ -7982,13 +7982,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
 
     public function view_example_header($courseSettings, $style = 0) {
-        global $PAGE, $DB;
+        global $PAGE, $DB, $OUTPUT;
         $page_url = html_entity_decode($PAGE->url);
         // remove existing 'style' parameter from GET
         $page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
         // sort by competencies
+        // TODO: this leads to a problem on moodle installations where there are no .png, but only .svg files
         $buttoncontent = html_writer::empty_tag('img',
             array('src' => new moodle_url('/pix/i/withsubcat.png'), 'title' => block_exacomp_get_string('comp_based')));
+
+        // Idea: use pix instead of this link. TODO: this normally gets the font-awesome css. On some machines the images do not fit at all though. Different images for different machines
+        // $buttoncontent = $this->pix_icon('i/withsubcat', block_exacomp_get_string('comp_based'));
+
+        // Idea: Use $OUTPUT->image_url. TODO: This leads to the problem that the images have different sizes on the different machines (also depending on svg or png probably)
+        // $buttoncontent = html_writer::empty_tag('img',
+        //     array('src' => $OUTPUT->image_url('i/withsubcat'), 'title' => block_exacomp_get_string('comp_based')));
+
         $buttoncontent .= ' ' . block_exacomp_get_string('comp_based');
         $content = html_writer::tag('button', $buttoncontent,
             array('type' => 'button',
@@ -7999,6 +8008,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         // sort by examples
         $buttoncontent = html_writer::empty_tag('img',
             array('src' => new moodle_url('/pix/e/bullet_list.png'), 'title' => block_exacomp_get_string('examp_based')));
+        // $buttoncontent = $this->pix_icon('e/bullet_list', block_exacomp_get_string('examp_based'));
         $buttoncontent .= ' ' . block_exacomp_get_string('examp_based');
         $content .= html_writer::tag('button', $buttoncontent,
             array('type' => 'button',
@@ -8009,6 +8019,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         // For interdisciplinary subjects
         $buttoncontent = html_writer::empty_tag('img',
             array('src' => new moodle_url('/pix/e/find_replace.png'), 'title' => block_exacomp_get_string('cross_based')));
+        // $buttoncontent = $this->pix_icon('e/find_replace', block_exacomp_get_string('cross_based'));
         $buttoncontent .= ' ' . block_exacomp_get_string('cross_based');
         $content .= html_writer::tag('button', $buttoncontent,
             array('type' => 'button',
