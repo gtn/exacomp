@@ -7536,13 +7536,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $page_url = html_entity_decode($PAGE->url);
             // remove existing 'style' parameter from GET
             $page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
+
+            $left_content .= html_writer::tag('button', $this->pix_icon('i/withsubcat', block_exacomp_get_string('comp_based')) . ' ' . block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
+                "onclick" => "document.location.href='" . $page_url . "&style=0';"));
+            /*
             $left_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/i/withsubcat.png'),
                     'title' => block_exacomp_get_string('comp_based'))) . ' ' . block_exacomp_get_string('comp_based'), array('type' => 'button', 'id' => 'comp_based', 'name' => 'comp_based', 'class' => 'view_examples_icon',
                 "onclick" => "document.location.href='" . $page_url . "&style=0';"));
+            */
 
+            $left_content .= html_writer::tag('button', $this->pix_icon('e/bullet_list', block_exacomp_get_string('examp_based')) . ' ' . block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
+                "onclick" => "document.location.href='" . $page_url . "&style=1';"));
+            /*
             $left_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src' => new moodle_url('/pix/e/bullet_list.png'),
                     'title' => block_exacomp_get_string('examp_based'))) . ' ' . block_exacomp_get_string('examp_based'), array('type' => 'button', 'id' => 'examp_based', 'name' => 'examp_based', 'class' => 'view_examples_icon',
                 "onclick" => "document.location.href='" . $page_url . "&style=1';"));
+            */
         }
         $left_content .= html_writer::end_tag("span");
 
@@ -7987,16 +7996,26 @@ class block_exacomp_renderer extends plugin_renderer_base {
         // remove existing 'style' parameter from GET
         $page_url = preg_replace('/([?&])style=[^&]+(&|$)/', '', $page_url);
         // sort by competencies
-        // TODO: this leads to a problem on moodle installations where there are no .png, but only .svg files
-        $buttoncontent = html_writer::empty_tag('img',
-            array('src' => new moodle_url('/pix/i/withsubcat.png'), 'title' => block_exacomp_get_string('comp_based')));
+        // Using the path to the .png leads to a problem on moodle installations where there are no .png, but only .svg files
+        // the .png files have been removed in newer versions of moodle: https://github.com/moodle/moodle/commit/088cba3844db1e9ce07d0bd2ed46a102bff526be#diff-9840c68c43db62985db2dec09eae4850614e5fb2900e952872fad80cf8fce04a
+        // only svg remains.
+        // $buttoncontent = html_writer::empty_tag('img',
+        //     array('src' => new moodle_url('/pix/i/withsubcat.png'), 'title' => block_exacomp_get_string('comp_based')));
 
-        // Idea: use pix instead of this link. TODO: this normally gets the font-awesome css. On some machines the images do not fit at all though. Different images for different machines
-        // $buttoncontent = $this->pix_icon('i/withsubcat', block_exacomp_get_string('comp_based'));
-
-        // Idea: Use $OUTPUT->image_url. TODO: This leads to the problem that the images have different sizes on the different machines (also depending on svg or png probably)
+        // using svg or $OUTPUT-image_url leads to problems with different sizes of the images on different machines
+        // $buttoncontent = html_writer::empty_tag('img',
+        //     array('src' => new moodle_url('/pix/i/withsubcat.svg'), 'title' => block_exacomp_get_string('comp_based')));
+        // Idea: Use $OUTPUT->image_url.
         // $buttoncontent = html_writer::empty_tag('img',
         //     array('src' => $OUTPUT->image_url('i/withsubcat'), 'title' => block_exacomp_get_string('comp_based')));
+
+        // Idea: use pix instead of this link.
+        // TODO: this normally gets the font-awesome css. On some machines the images do not fit at all though. Different images for different machines
+        // why are there different images on different machines? TODO: test.
+        // most likely, this is still the way to go.
+        $buttoncontent = $this->pix_icon('i/withsubcat', block_exacomp_get_string('comp_based'));
+
+
 
         $buttoncontent .= ' ' . block_exacomp_get_string('comp_based');
         $content = html_writer::tag('button', $buttoncontent,
@@ -8006,9 +8025,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 'class' => 'view_examples_icon btn btn-default',
                 "onclick" => "document.location.href='" . $page_url . "&style=0';"));
         // sort by examples
-        $buttoncontent = html_writer::empty_tag('img',
-            array('src' => new moodle_url('/pix/e/bullet_list.png'), 'title' => block_exacomp_get_string('examp_based')));
-        // $buttoncontent = $this->pix_icon('e/bullet_list', block_exacomp_get_string('examp_based'));
+        // $buttoncontent = html_writer::empty_tag('img',
+        //     array('src' => new moodle_url('/pix/e/bullet_list.png'), 'title' => block_exacomp_get_string('examp_based')));
+        $buttoncontent = $this->pix_icon('e/bullet_list', block_exacomp_get_string('examp_based'));
         $buttoncontent .= ' ' . block_exacomp_get_string('examp_based');
         $content .= html_writer::tag('button', $buttoncontent,
             array('type' => 'button',
@@ -8017,9 +8036,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 'class' => 'view_examples_icon btn btn-default',
                 "onclick" => "document.location.href='" . $page_url . "&style=1';"));
         // For interdisciplinary subjects
-        $buttoncontent = html_writer::empty_tag('img',
-            array('src' => new moodle_url('/pix/e/find_replace.png'), 'title' => block_exacomp_get_string('cross_based')));
-        // $buttoncontent = $this->pix_icon('e/find_replace', block_exacomp_get_string('cross_based'));
+        // $buttoncontent = html_writer::empty_tag('img',
+        //     array('src' => new moodle_url('/pix/e/find_replace.png'), 'title' => block_exacomp_get_string('cross_based')));
+        $buttoncontent = $this->pix_icon('e/find_replace', block_exacomp_get_string('cross_based'));
         $buttoncontent .= ' ' . block_exacomp_get_string('cross_based');
         $content .= html_writer::tag('button', $buttoncontent,
             array('type' => 'button',
