@@ -8016,7 +8016,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $buttoncontent = $this->pix_icon('i/withsubcat', block_exacomp_get_string('comp_based'));
 
 
-
         $buttoncontent .= ' ' . block_exacomp_get_string('comp_based');
         $content = html_writer::tag('button', $buttoncontent,
             array('type' => 'button',

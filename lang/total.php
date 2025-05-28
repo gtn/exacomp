@@ -3631,4 +3631,8 @@ Ein anderer Begriff für Niveaustufen ist Taxonomien - z.B. kann die Bloomsche T
         'Synchronisiere alle Raster mit Komet. Alle Raster, die in Komet nicht mehr vorhanden sind, werden gelöscht, es sei denn, sie sind bereits in Verwendung.',
         'Keep only the Komet grids and competencies. Delete everything else unless a grid or competency is already in use',
     ],
+    'no_examples_in_this_grid' => [
+        'In diesem Raster gibt es keine Lernmaterialien',
+        'There are no examples in this grid',
+    ],
 ];
