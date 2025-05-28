@@ -734,7 +734,7 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
     }
 
     public function output_html($data, $query = '') {
-        global $CFG;
+        global $CFG, $OUTPUT;
         // get errors for marking
         $errors = admin_get_root()->errors;
         $inputerrors = array();
@@ -756,8 +756,18 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
         // if we have an error - disply the table
         if (!(count($inputerrors) > 0)) {
             @$table->attributes['style'] .= ' display: none; ';
-            $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" />';
-            $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" style="display:none;"/>';
+            // $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" />';
+            // $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" style="display:none;"/>';
+
+            // use pix instead of the img tags as the hardcoded url to png does not work with newer moodles (png are removed)
+            //  $extra .= ' ' . html_writer::span($this->pix_icon("i/edit", block_exacomp_get_string("edit")), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid=' . $COURSE->id . '&id=' . $subject->id]);
+            // $icon = new pix_icon($pix, $alt, $component, $attributes);
+            // the attributes in pix_icon don't always work as intended... only title and class are used, but I want to have an id for the onlick event
+            // $return .= $OUTPUT->pix_icon('t/collapsed', '', 'moodle', ['id' => 'editSelfEvalVerbosesIconOpen']);
+            // $return .= $OUTPUT->pix_icon('t/dropdown', '', 'moodle', ['id' => 'editSelfEvalVerbosesIconClose', 'style' => 'display:none;']);
+
+            $return .= '<div id="editSelfEvalVerbosesIconOpen" border="0" style="display:inline-block;">' . $OUTPUT->pix_icon('t/collapsed', '', 'moodle') . '</div>';
+            $return .= '<div id="editSelfEvalVerbosesIconClose" border="0" style="display:none;">' . $OUTPUT->pix_icon('t/dropdown', '', 'moodle') . '</div>';
         } else {
             $return .= '<img src="' . $CFG->wwwroot . '/pix/t/collapsed.png" id="editSelfEvalVerbosesIconOpen" border="0" style="display:none;"/>';
             $return .= '<img src="' . $CFG->wwwroot . '/pix/t/dropdown.png" id="editSelfEvalVerbosesIconClose" border="0" />';
