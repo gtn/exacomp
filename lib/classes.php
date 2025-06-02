@@ -934,6 +934,44 @@ class subject extends db_record {
     const TYPE = BLOCK_EXACOMP_TYPE_SUBJECT;
     const SUBS = 'topics';
 
+    // simple fields. They are initialized as null, and can be set by e.g. $subject->title = 'My Subject'; later
+    // no __set and __get is called, as the fields already exist
+    // TODO: all fields that WERE set by functions like fill_xxxx need to be handled correctly.
+    // otherwise, the __get will not be called --> the field will not be set but just be null
+    public ?int $sorting = null;
+    public ?int $disabled = null;
+    public ?string $title = null;
+    public ?int $stid = null;
+    public ?int $sourceid;
+    public ?int $source = 1;
+    public ?string $titleshort = null;
+    public ?int $catid = null;
+    public ?string $description = null;
+    public ?string $infolink = null;
+    public ?int $epop = 0;
+    public ?string $author = null;
+    public ?string $editor = null;
+    public ?int $isglobal = 0;
+    public ?string $version = null;
+    public ?int $creatorid = null;
+    public ?string $class = null;
+    public ?int $is_editable = 0;
+    public ?int $importstate = 0;
+
+    // Lazy-loaded field
+    protected ?array $topics = null; // https://www.php.net/manual/en/language.oop5.visibility.php.
+    // Public would NOT work, as it would then not be lazy-loaded anymore, but just be null.
+    // private would not work, as the property would not be accessible in db_record e.g. in the __get $this->$name = $this->$method();
+
+
+    // Accessor for topics. This should be used instead of directly accessing $this->topics which invokes the __get method which in turn invokes fill_topics which in turn invokes the __set which uses deprecated dynamic properties.
+    // public function get_topics(): array {
+    //     if ($this->topics === null) {
+    //         $this->topics = $this->dbLayer->get_topics_for_subject($this);
+    //     }
+    //     return $this->topics;
+    // }
+
     protected function fill_topics() {
         return $this->dbLayer->get_topics_for_subject($this);
     }
@@ -982,6 +1020,23 @@ class topic extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_TOPICS;
     const TYPE = BLOCK_EXACOMP_TYPE_TOPIC;
     const SUBS = 'descriptors';
+
+    public ?int $sorting = null;
+    public ?string $title = null;
+    public ?int $subjid = null;
+    public ?int $sourceid = null;
+    public ?int $source = 1;
+    public ?string $description = null;
+    public ?string $titleshort = null;
+    public ?string $numb = null;
+    public ?int $parentid = null;
+    public ?int $epop = 0;
+    public ?int $span = 0;
+    public ?int $creatorid = null;
+    public ?string $author = null;
+    public ?string $editor = null;
+
+    public ?subject $subject = null;
 
     // why not using lib.php block_exacomp_get_topic_numbering??
     // because it is faster this way (especially for export etc where whole competence tree is read)
