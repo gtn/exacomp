@@ -108,7 +108,8 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
             $ispreconfig = get_config('exacomp', 'assessment_preconfiguration');
             // Add needed element attributes for work with preconfiguration.
             $doc = new DOMDocument();
-            $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+            // $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+            $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
             //                $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             $selector = new DOMXPath($doc);
@@ -133,7 +134,8 @@ class block_exacomp_admin_setting_extraconfigtext extends admin_setting_configte
                 case 'assessment_grade_verbose':
                 case 'assessment_verbose_options':
                     $doc = new DOMDocument();
-                    $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+                    // $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+                    $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
                     //                        $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                     $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
                     $selector = new DOMXPath($doc);
@@ -294,7 +296,10 @@ class block_exacomp_link_to extends admin_setting {
             $this->description, true, '', '', $query);
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
-        $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8'); // throws deprecation error
+        // https://aruljohn.com/blog/php-deprecated-mbstring-htmlentities/
+        $template = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($template, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
+
         //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
@@ -415,7 +420,8 @@ class block_exacomp_admin_setting_preconfiguration extends admin_setting_configs
         $output = parent::output_html($data, $query);
         // Add onChange on input element.
         $doc = new DOMDocument();
-        $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+        // $output = mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8');
+        $output = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($output, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
         //            $doc->loadHTML(utf8_decode($output), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($output, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
@@ -843,7 +849,8 @@ class block_exacomp_selfevaluation_configtable extends admin_setting { // admin_
 
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
-        $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        $template = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($template, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
         //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
@@ -1011,7 +1018,8 @@ class block_exacomp_assessment_configtable extends admin_setting {
             $this->description, true, '', '', $query);
         // Hide some html for better view of this settings.
         $doc = new DOMDocument();
-        $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        // $template = mb_convert_encoding($template, 'HTML-ENTITIES', 'UTF-8');
+        $template = htmlspecialchars_decode(iconv('UTF-8', 'ISO-8859-1', htmlentities($template, ENT_COMPAT, 'UTF-8')), ENT_QUOTES);
         //            $doc->loadHTML(utf8_decode($template), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $doc->loadHTML($template, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $selector = new DOMXPath($doc);
