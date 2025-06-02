@@ -32,6 +32,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
     protected $reviewers = array();
     protected $exaportExists = false;
 
+    public $editmode = false;
+
     const STUDENT_SELECTOR_OPTION_EDITMODE = 1;
     const STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN = 2;
     const STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN = 3;

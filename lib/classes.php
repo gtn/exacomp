@@ -963,6 +963,10 @@ class subject extends db_record {
     // Public would NOT work, as it would then not be lazy-loaded anymore, but just be null.
     // private would not work, as the property would not be accessible in db_record e.g. in the __get $this->$name = $this->$method();
 
+    // not in the DB, but still used and calculated e.g. during rendering
+    public ?array $used_niveaus = null; // TODO array?
+
+
 
     // Accessor for topics. This should be used instead of directly accessing $this->topics which invokes the __get method which in turn invokes fill_topics which in turn invokes the __set which uses deprecated dynamic properties.
     // public function get_topics(): array {
@@ -1038,6 +1042,17 @@ class topic extends db_record {
 
     public ?subject $subject = null;
 
+    // not in the DB, but still used and calculated e.g. during rendering
+    // subj_source subj_sorting subj_title used_niveaus
+    public ?int $subj_source = null;
+    public ?int $subj_sorting = null;
+    public ?string $subj_title = null;
+    public ?array $used_niveaus = null;
+
+
+    // Lazy-loaded field
+    protected ?array $descriptors = null;
+
     // why not using lib.php block_exacomp_get_topic_numbering??
     // because it is faster this way (especially for export etc where whole competence tree is read)
     function get_numbering() {
@@ -1109,6 +1124,35 @@ class descriptor extends db_record {
 
     var $parent;
     var $topicid;
+
+    public string $title;
+    public ?int $crdate = null;
+    public ?int $skillid = null;
+    public ?int $niveauid = null;
+    public ?int $sorting = null;
+    public ?int $sourceid = null;
+    public ?int $source = 1;
+    public ?string $exampletext = null;
+    public ?string $additionalinfo = null;
+    public int $profoundness = 0;
+    public ?int $parentid = 0;
+    public ?int $epop = 0;
+    public ?string $requirement = null;
+    public ?string $benefit = null;
+    public ?string $knowledgecheck = null;
+    public ?int $catid = null;
+    public ?int $creatorid = null;
+    public ?string $author = null;
+    public ?string $editor = null;
+
+    // not in the DB, but still used and calculated e.g. during rendering
+    public ?int $u_id = null;
+    public ?int $niveau_sorting = null;
+    public ?string $niveau_numb = null;
+    public ?string $niveau_title = null;
+    public ?int $visible = null; // used for descriptor visibility in course
+    public ?int $descriptor_creatorid = null; // used for descriptor creator id in course
+
 
     function init() {
         if (!isset($this->parent)) {
@@ -1330,6 +1374,18 @@ class example extends db_record {
 
 class niveau extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_NIVEAUS;
+
+    public ?int $sorting = null; // Sorting order
+    public string $title; // Title of the niveau
+    public ?int $parentid = 0; // ID of the parent niveau
+    public ?int $sourceid = null; // Source ID
+    public int $source = 1; // Source type, default is 1
+    public ?int $span = 0; // Span indicator, default is 0
+    public ?int $numb = 1; // Numbering, default is 1
+
+    // not in the DB, but still used and calculated e.g. during rendering
+    public ?int $visible = null; // Visibility of the niveau, default is null TODO: bool?
+
 
     function get_subtitle($subjectid) {
         return g::$DB->get_field(BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
