@@ -943,20 +943,20 @@ class subject extends db_record {
     public ?string $title = null;
     public ?int $stid = null;
     public ?int $sourceid;
-    public ?int $source = 1;
+    public ?int $source = null; // default 1 from databse... but lets put it to null, so that we do not just set it without looking into the database
     public ?string $titleshort = null;
     public ?int $catid = null;
     public ?string $description = null;
     public ?string $infolink = null;
-    public ?int $epop = 0;
+    public ?int $epop = null;
     public ?string $author = null;
     public ?string $editor = null;
-    public ?int $isglobal = 0;
+    public ?int $isglobal = null;
     public ?string $version = null;
     public ?int $creatorid = null;
     public ?string $class = null;
-    public ?int $is_editable = 0;
-    public ?int $importstate = 0;
+    public ?int $is_editable = null;
+    public ?int $importstate = null;
 
     // Lazy-loaded field
     protected ?array $topics = null; // https://www.php.net/manual/en/language.oop5.visibility.php.
@@ -1029,13 +1029,13 @@ class topic extends db_record {
     public ?string $title = null;
     public ?int $subjid = null;
     public ?int $sourceid = null;
-    public ?int $source = 1;
+    public ?int $source = null;
     public ?string $description = null;
     public ?string $titleshort = null;
     public ?string $numb = null;
     public ?int $parentid = null;
-    public ?int $epop = 0;
-    public ?int $span = 0;
+    public ?int $epop = null;
+    public ?int $span = null;
     public ?int $creatorid = null;
     public ?string $author = null;
     public ?string $editor = null;
@@ -1048,7 +1048,7 @@ class topic extends db_record {
     public ?int $subj_sorting = null;
     public ?string $subj_title = null;
     public ?array $used_niveaus = null;
-    public ?int $visible = null; // TODO: bool?
+    public ?int $visible = 1; // TODO: bool? and which default value?
 
     // Lazy-loaded field
     protected ?array $descriptors = null;
@@ -1131,12 +1131,12 @@ class descriptor extends db_record {
     public ?int $niveauid = null;
     public ?int $sorting = null;
     public ?int $sourceid = null;
-    public ?int $source = 1;
+    public ?int $source = null;
     public ?string $exampletext = null;
     public ?string $additionalinfo = null;
-    public int $profoundness = 0;
-    public ?int $parentid = 0;
-    public ?int $epop = 0;
+    public ?int $profoundness = null;
+    public ?int $parentid = null;
+    public ?int $epop = null;
     public ?string $requirement = null;
     public ?string $benefit = null;
     public ?string $knowledgecheck = null;
@@ -1150,7 +1150,7 @@ class descriptor extends db_record {
     public ?int $niveau_sorting = null;
     public ?string $niveau_numb = null;
     public ?string $niveau_title = null;
-    public ?int $visible = null; // used for descriptor visibility in course
+    public ?int $visible = 1; // used for descriptor visibility in course
     public ?int $descriptor_creatorid = null; // used for descriptor creator id in course
 
     public ?topic $topic = null;
@@ -1383,15 +1383,15 @@ class niveau extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_NIVEAUS;
 
     public ?int $sorting = null;
-    public string $title;
-    public ?int $parentid = 0;
+    public ?string $title = null;
+    public ?int $parentid = null;
     public ?int $sourceid = null;
-    public int $source = 1;
-    public ?int $span = 0;
-    public ?int $numb = 1;
+    public ?int $source = null;
+    public ?int $span = null;
+    public ?int $numb = null;
 
     // not in the DB, but still used and calculated e.g. during rendering
-    public ?int $visible = null; // TODO: bool?
+    public ?int $visible = 1; // TODO: bool?
 
 
     function get_subtitle($subjectid) {
