@@ -1031,7 +1031,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     // $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", $subject->title); // Do not show double subject title.
                 }
 
-                $title->print_width = 5 + 25;
+                // $title->print_width = 5 + 25;
+                $title->attributes['print_width'] = 5 + 25;
                 $subjectRow->cells[] = $title;
             }
 
@@ -1040,7 +1041,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $nivCell->rowspan = 2;
             }
             $nivCell->text = block_exacomp_get_string('competence_grid_niveau');
-            $nivCell->print_width = 5;
+            // $nivCell->print_width = 5;
+            $nivCell->attributes['print_width'] = 5;
 
             if ($first) {
                 $subjectRow->cells[] = $nivCell;
@@ -1054,7 +1056,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
                 $studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
                 $studentCell->attributes['data-studentid'] = $student->id;
-                $studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
+                // $studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
+                $studentCell->attributes['print_width'] = (100 - (5 + 25 + 5)) / count($students);
                 $studentCell->colspan = $studentsColspan;
                 $studentCell->text = fullname($student);
                 if (!$this->is_print_mode() && block_exacomp_is_exastud_installed() && ($info = api::get_student_review_link_info_for_teacher($student->id))) {
@@ -1703,14 +1706,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 //subject-title
                 $title = new html_table_cell();
                 $title->colspan = 2;
-                $title->print_width = 5 + 25;
+                // $title->print_width = 5 + 25;
+                $title->attributes['print_width'] = 5 + 25;
 
                 $title->text = html_writer::tag("b", $subject->title);
 
                 $subjectRow->cells[] = $title;
 
                 $nivCell = new html_table_cell();
-                $nivCell->print_width = 5;
+                // $nivCell->print_width = 5;
+                $nivCell->attributes['print_width'] = 5;
                 $subjectRow->cells[] = $nivCell;
 
                 $checkboxname = 'datasubjects';
@@ -2050,7 +2055,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $cnt = count($subjectRow->cells);
 
                     for ($i = 2; $i < $cnt; $i++) {
-                        $subjectRow->cells[$i]->print_width = (100 - (5 + 25 + 5)) / ($cnt - 2);
+                        // $subjectRow->cells[$i]->print_width = (100 - (5 + 25 + 5)) / ($cnt - 2);
+                        $subjectRow->cells[$i]->attributes['print_width'] = (100 - (5 + 25 + 5)) / ($cnt - 2);
                     }
                 }
 
@@ -2085,13 +2091,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             if ($this->is_print_mode()) {
                 $row = $rows[$row_cnt];
-                $row->cells[0]->print_width = 5;
-                $row->cells[1]->print_width = 25;
-                $row->cells[2]->print_width = 5;
+                // $row->cells[0]->print_width = 5;
+                // $row->cells[1]->print_width = 25;
+                // $row->cells[2]->print_width = 5;
+                $row->cells[0]->attributes['print_width'] = 5;
+                $row->cells[1]->attributes['print_width'] = 25;
+                $row->cells[2]->attributes['print_width'] = 5;
                 $cnt = count($row->cells);
 
                 for ($i = 3; $i < $cnt; $i++) {
-                    $row->cells[$i]->print_width = (100 - (5 + 25 + 5)) / ($cnt - 3);
+                    // $row->cells[$i]->print_width = (100 - (5 + 25 + 5)) / ($cnt - 3);
+                    $row->cells[$i]->attributes['print_width'] = (100 - (5 + 25 + 5)) / ($cnt - 3);
                 }
             }
             if ($second) {
@@ -2109,8 +2119,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             // set cell print width
             foreach ($rows as $row) {
                 foreach ($row->cells as $cell) {
-                    if (!empty($cell->print_width)) {
-                        $cell->attributes['width'] = $cell->print_width . '%';
+                    if (!empty($cell->attributes['print_width'])) {
+                        // $cell->attributes['width'] = $cell->print_width . '%';
+                        $cell->attributes['width'] = $cell->attributes['print_width'] . '%';
                         // testing:
                         // $cell->text = $cell->print_width.' '.$cell->text;
                     }
@@ -3514,13 +3525,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     $title->text = ($usesubjectgrading) ? '' : html_writer::tag("b", $subject->title);
                 }
 
-                $title->print_width = 5 + 25;
+                // $title->print_width = 5 + 25;
+                $title->attributes['print_width'] = 5 + 25;
                 $subjectRow->cells[] = $title;
             }
 
             $nivCell = new html_table_cell();
             $nivCell->text = block_exacomp_get_string('competence_grid_niveau');
-            $nivCell->print_width = 5;
+            // $nivCell->print_width = 5;
+            $nivCell->attributes['print_width'] = 5;
 
             if ($first) {
                 $subjectRow->cells[] = $nivCell;
@@ -3533,7 +3546,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $columnGroup = floor($studentsCount++ / BLOCK_EXACOMP_STUDENTS_PER_COLUMN);
 
                 $studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
-                $studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
+                // $studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
+                $studentCell->attributes['print_width'] = (100 - (5 + 25 + 5)) / count($students);
                 $studentCell->colspan = $studentsColspan;
                 $studentCell->text = fullname($student);
                 if (!$this->is_print_mode() && block_exacomp_is_exastud_installed() && ($info = api::get_student_review_link_info_for_teacher($student->id))) {
@@ -4116,8 +4130,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
             // set cell print width
             foreach ($rows as $row) {
                 foreach ($row->cells as $cell) {
-                    if (!empty($cell->print_width)) {
-                        $cell->attributes['width'] = $cell->print_width . '%';
+                    if (!empty($cell->attributes['print_width'])) {
+                        // $cell->attributes['width'] = $cell->print_width . '%';
+                        $cell->attributes['width'] = $cell->attributes['print_width'] . '%';
                         // testing:
                         // $cell->text = $cell->print_width.' '.$cell->text;
                     }

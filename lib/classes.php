@@ -1048,7 +1048,7 @@ class topic extends db_record {
     public ?int $subj_sorting = null;
     public ?string $subj_title = null;
     public ?array $used_niveaus = null;
-
+    public ?int $visible = null; // TODO: bool?
 
     // Lazy-loaded field
     protected ?array $descriptors = null;
@@ -1152,6 +1152,13 @@ class descriptor extends db_record {
     public ?string $niveau_title = null;
     public ?int $visible = null; // used for descriptor visibility in course
     public ?int $descriptor_creatorid = null; // used for descriptor creator id in course
+
+    public ?topic $topic = null;
+
+    // Lazy-loaded field
+    protected ?array $children = null;
+    protected ?array $examples = null;
+    protected ?array $categories = null;
 
 
     function init() {
@@ -1375,16 +1382,16 @@ class example extends db_record {
 class niveau extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_NIVEAUS;
 
-    public ?int $sorting = null; // Sorting order
-    public string $title; // Title of the niveau
-    public ?int $parentid = 0; // ID of the parent niveau
-    public ?int $sourceid = null; // Source ID
-    public int $source = 1; // Source type, default is 1
-    public ?int $span = 0; // Span indicator, default is 0
-    public ?int $numb = 1; // Numbering, default is 1
+    public ?int $sorting = null;
+    public string $title;
+    public ?int $parentid = 0;
+    public ?int $sourceid = null;
+    public int $source = 1;
+    public ?int $span = 0;
+    public ?int $numb = 1;
 
     // not in the DB, but still used and calculated e.g. during rendering
-    public ?int $visible = null; // Visibility of the niveau, default is null TODO: bool?
+    public ?int $visible = null; // TODO: bool?
 
 
     function get_subtitle($subjectid) {
