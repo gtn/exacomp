@@ -1316,7 +1316,7 @@ class example extends db_record {
     const TYPE = BLOCK_EXACOMP_TYPE_EXAMPLE;
     const SUBS = false;
 
-    public ?int $sorting = 0;
+    public ?int $sorting = null;
     public ?string $title = null;
     public ?string $task = null;
     public ?string $solution = null;
@@ -1329,28 +1329,28 @@ class example extends db_record {
     public ?string $externalsolution = null;
     public ?string $externaltask = null;
     public ?int $sourceid = null;
-    public ?int $source = 1;
+    public ?int $source = null;
     public ?string $titleshort = null;
-    public ?int $iseditable = 0;
+    public ?int $iseditable = null;
     public ?int $creatorid = null;
     public ?int $timestamp = null;
     public ?int $parentid = null;
     public ?string $restorelink = null;
     public ?string $metalink = null;
     public ?string $packagelink = null;
-    public ?int $epop = 0;
-    public ?int $blocking_event = 0;
+    public ?int $epop = null;
+    public ?int $blocking_event = null;
     public ?string $author = null;
     public ?string $editor = null;
-    public ?int $ethema_ismain = 0;
-    public ?int $ethema_issubcategory = 0;
-    public ?int $ethema_parent = 0;
-    public ?int $ethema_important = 0;
+    public ?int $ethema_ismain = null;
+    public ?int $ethema_issubcategory = null;
+    public ?int $ethema_parent = null;
+    public ?int $ethema_important = null;
     public ?string $example_icon = null;
-    public ?int $is_teacherexample = 0;
+    public ?int $is_teacherexample = null;
     public ?string $schedule_marker = null;
-    public ?int $activityid = 0;
-    public ?int $courseid = 0;
+    public ?int $activityid = null;
+    public ?int $courseid = null;
     public ?string $activitylink = null;
     public ?string $activitytitle = null;
     public ?string $author_origin = null;
@@ -1358,7 +1358,7 @@ class example extends db_record {
     // not in the DB, but still used and calculated e.g. during rendering
     // deid, visible , solution_visible , taxonomies , tax ,
     public ?int $deid = null;
-    public ?int $visible = 1;
+    public ?int $visible = 1; // TODO: default 1?
     public ?int $solution_visible = 1;
     public ?array $taxonomies = null;
     public ?string $tax = null; // TODO alwys csv string?
@@ -1469,6 +1469,21 @@ class cross_subject extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_CROSSSUBJECTS;
     const TYPE = BLOCK_EXACOMP_TYPE_CROSSSUB;
     const SUBS = false;
+
+    public ?string $title = null;
+    public ?int $sorting = null;
+    public ?int $sourceid = null;
+    public ?int $source = null;
+    public ?string $description = null;
+    public ?int $courseid = null;
+    public ?int $creatorid = null;
+    public ?int $shared = null;
+    public ?int $subjectid = null;
+    public ?string $groupcategory = null;
+
+    // cross_subject_drafts
+    public ?array $cross_subject_drafts = null; // should be fine as public... there is not fill_ function, it is not lazy-loaded
+
 
     function is_draft() {
         return !$this->courseid;
