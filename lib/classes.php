@@ -621,7 +621,7 @@ class db_record {
         static::check_property_name($name);
 
         if (($method = 'get_' . $name) && method_exists($this, $method)) {
-            @$ret =& $this->$method();
+            $ret =& $this->$method();
 
             // check if __get is recursively called at the same property
             /*
@@ -967,14 +967,16 @@ class subject extends db_record {
     public ?array $used_niveaus = null; // TODO array?
 
 
-
-    // Accessor for topics. This should be used instead of directly accessing $this->topics which invokes the __get method which in turn invokes fill_topics which in turn invokes the __set which uses deprecated dynamic properties.
-    // public function get_topics(): array {
-    //     if ($this->topics === null) {
-    //         $this->topics = $this->dbLayer->get_topics_for_subject($this);
-    //     }
-    //     return $this->topics;
-    // }
+    // getter for topics
+    public function &get_topics() {
+        // if they already exist and is not null, just return them
+        if (isset($this->topics)) {
+            return $this->topics;
+        }
+        // lazy loading
+        $this->topics = $this->fill_topics();
+        return $this->topics;
+    }
 
     protected function fill_topics() {
         return $this->dbLayer->get_topics_for_subject($this);
@@ -1076,6 +1078,17 @@ class topic extends db_record {
 
         return $numbering;
         */
+    }
+
+    // getter for topics
+    public function &get_descriptors() {
+        // if they already exist and is not null, just return them
+        if (isset($this->descriptors)) {
+            return $this->descriptors;
+        }
+        // lazy loading
+        $this->descriptors = $this->fill_descriptors();
+        return $this->descriptors;
     }
 
     protected function fill_descriptors() {

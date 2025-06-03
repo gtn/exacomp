@@ -2786,6 +2786,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
     // sort topics
     foreach ($subjects as $subject) {
+        //TODO this removes a lot of info... it goes into the magic __get method of the subject... even though topics already exists...
+        // this is because it is protected ==> here we do not know ==> it is fine to call the __get method. It is NOT fine that it then uses the fill_ method however ==> change the __get method
         block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
         block_exacomp_sort_items($subject->used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
     }
@@ -2919,9 +2921,12 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
     }
 
     // add topics to subjects
+    /*
+     * why would we add the empty array?
     foreach ($courseSubjects as $subject) {
         $subject->topics = [];
     }
+    */
 
     foreach ($courseTopics as $topic) {
         if (!empty($courseSubjects) && array_key_exists($topic->subjid, $courseSubjects)) { //check if this subject is not removed already
