@@ -964,7 +964,7 @@ class subject extends db_record {
     // private would not work, as the property would not be accessible in db_record e.g. in the __get $this->$name = $this->$method();
 
     // not in the DB, but still used and calculated e.g. during rendering
-    public ?array $used_niveaus = null; // TODO array?
+    public ?array $used_niveaus = null;
 
 
     // getter for topics
@@ -1315,6 +1315,56 @@ class example extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_EXAMPLES;
     const TYPE = BLOCK_EXACOMP_TYPE_EXAMPLE;
     const SUBS = false;
+
+    public ?int $sorting = 0;
+    public ?string $title = null;
+    public ?string $task = null;
+    public ?string $solution = null;
+    public ?string $completefile = null;
+    public ?string $description = null;
+    public ?int $taxid = null;
+    public ?string $timeframe = null;
+    public ?string $tips = null;
+    public ?string $externalurl = null;
+    public ?string $externalsolution = null;
+    public ?string $externaltask = null;
+    public ?int $sourceid = null;
+    public ?int $source = 1;
+    public ?string $titleshort = null;
+    public ?int $iseditable = 0;
+    public ?int $creatorid = null;
+    public ?int $timestamp = null;
+    public ?int $parentid = null;
+    public ?string $restorelink = null;
+    public ?string $metalink = null;
+    public ?string $packagelink = null;
+    public ?int $epop = 0;
+    public ?int $blocking_event = 0;
+    public ?string $author = null;
+    public ?string $editor = null;
+    public ?int $ethema_ismain = 0;
+    public ?int $ethema_issubcategory = 0;
+    public ?int $ethema_parent = 0;
+    public ?int $ethema_important = 0;
+    public ?string $example_icon = null;
+    public ?int $is_teacherexample = 0;
+    public ?string $schedule_marker = null;
+    public ?int $activityid = 0;
+    public ?int $courseid = 0;
+    public ?string $activitylink = null;
+    public ?string $activitytitle = null;
+    public ?string $author_origin = null;
+
+    // not in the DB, but still used and calculated e.g. during rendering
+    // deid, visible , solution_visible , taxonomies , tax ,
+    public ?int $deid = null;
+    public ?int $visible = 1;
+    public ?int $solution_visible = 1;
+    public ?array $taxonomies = null;
+    public ?string $tax = null; // TODO alwys csv string?
+    public $descriptor = null; // sometimes stdClass, sometimes descriptor object
+
+
 
     function get_numbering() {
         if (!isset($this->descriptor)) {

@@ -3046,13 +3046,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         if ($editor = $example->get_editor()) {
                             $title[] = block_exacomp_get_string('editor') . ": " . $editor;
                         }
-                        if (trim(strip_tags($example->description))) {
+                        // check if null first, to avoid warnings
+                        if ($example->description !== null && trim(strip_tags($example->description))) {
                             $title[] = $example->description;
                         }
-                        if (trim($example->timeframe)) {
+                        if ($example->timeframe !== null && trim($example->timeframe)) {
                             $title[] = $example->timeframe;
                         }
-                        if (trim($example->tips)) {
+                        if ($example->tips !== null && trim($example->tips)) {
                             $title[] = $example->tips;
                         }
 
