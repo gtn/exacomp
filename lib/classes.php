@@ -1166,7 +1166,10 @@ class descriptor extends db_record {
     public ?int $visible = 1; // used for descriptor visibility in course
     public ?int $descriptor_creatorid = null; // used for descriptor creator id in course
 
-    public ?topic $topic = null;
+    public $topic = null; // NO type on purpose --->
+    // $descriptors = descriptor::create_objects($descriptors, array( in line 156 uses topicid.
+    // descriptor::create_objects($descriptors, ['topic' => $topic], $this); in line 69 uses topic class.
+    // todo: this is unclear in the code. you don't know if it is a topic or a string... refactor to using topicid?
 
     // Lazy-loaded field
     protected ?array $children = null;
