@@ -1080,7 +1080,6 @@ class topic extends db_record {
         */
     }
 
-    // getter for topics
     public function &get_descriptors() {
         // if they already exist and is not null, just return them
         if (isset($this->descriptors)) {
@@ -1175,6 +1174,7 @@ class descriptor extends db_record {
     protected ?array $children = null;
     protected ?array $examples = null;
     protected ?array $categories = null;
+    // TODO: there are more
 
 
     function init() {
@@ -1283,6 +1283,18 @@ class descriptor extends db_record {
         global $DB;
 
         return $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
+    }
+
+
+    public function &get_children() {
+        // if they already exist and is not null, just return them
+        // in the very first call, it is null and it will be filled. if there are no children, it will be an empty array, and return that empty array
+        if (isset($this->children)) {
+            return $this->children;
+        }
+        // lazy loading
+        $this->children = $this->fill_children();
+        return $this->children;
     }
 
     protected function fill_children() {
