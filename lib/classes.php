@@ -974,12 +974,13 @@ class subject extends db_record {
             return $this->topics;
         }
         // lazy loading
-        $this->topics = $this->fill_topics();
+        $this->fill_topics();
         return $this->topics;
     }
 
     protected function fill_topics() {
-        return $this->dbLayer->get_topics_for_subject($this);
+        $this->topics = $this->dbLayer->get_topics_for_subject($this);
+        return $this->topics;
     }
 
     /**
@@ -1086,12 +1087,13 @@ class topic extends db_record {
             return $this->descriptors;
         }
         // lazy loading
-        $this->descriptors = $this->fill_descriptors();
+        $this->fill_descriptors();
         return $this->descriptors;
     }
 
     protected function fill_descriptors() {
-        return $this->dbLayer->get_descriptors_for_topic($this);
+        $this->descriptors = $this->dbLayer->get_descriptors_for_topic($this);
+        return $this->descriptors;
     }
 
     function get_subject() {
@@ -1284,14 +1286,14 @@ class descriptor extends db_record {
             return $this->category_ids;
         }
         // lazy loading
-        $this->category_ids = $this->fill_category_ids();
+        $this->fill_category_ids();
         return $this->category_ids;
     }
 
     protected function fill_category_ids() {
         global $DB;
-
-        return $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
+        $this->category_ids = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
+        return $this->category_ids;
     }
 
 
@@ -1302,17 +1304,18 @@ class descriptor extends db_record {
             return $this->children;
         }
         // lazy loading
-        $this->children = $this->fill_children();
+        $this->fill_children();
         return $this->children;
     }
 
     protected function fill_children() {
         if ($this->parentid) {
             // already is child
-            return [];
+            $this->children = [];
         } else {
-            return $this->dbLayer->get_child_descriptors($this);
+            $this->children = $this->dbLayer->get_child_descriptors($this);
         }
+        return $this->children;
     }
 
     public function &get_examples() {
@@ -1321,12 +1324,13 @@ class descriptor extends db_record {
             return $this->examples;
         }
         // lazy loading
-        $this->examples = $this->fill_examples();
+        $this->fill_examples();
         return $this->examples;
     }
 
     protected function fill_examples() {
-        return $this->dbLayer->get_examples($this);
+        $this->examples = $this->dbLayer->get_examples($this);
+        return $this->examples;
     }
 
     public function &get_categories() {
@@ -1335,12 +1339,13 @@ class descriptor extends db_record {
             return $this->categories;
         }
         // lazy loading
-        $this->categories = $this->fill_categories();
+        $this->fill_categories();
         return $this->categories;
     }
 
     protected function fill_categories() {
-        return block_exacomp_get_categories_for_descriptor($this);
+        $this->categories = block_exacomp_get_categories_for_descriptor($this);
+        return $this->categories;
     }
 
     function get_author() {
