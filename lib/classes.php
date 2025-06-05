@@ -1174,8 +1174,7 @@ class descriptor extends db_record {
     protected ?array $children = null;
     protected ?array $examples = null;
     protected ?array $categories = null;
-    // TODO: there are more
-
+    protected ?array $category_ids = null;
 
     function init() {
         if (!isset($this->parent)) {
@@ -1279,6 +1278,16 @@ class descriptor extends db_record {
         $DB->delete_records_list(BLOCK_EXACOMP_DB_DESCCAT, 'id', $to_delete);
     }
 
+    public function &get_category_ids() {
+        // if they already exist and is not null, just return them
+        if (isset($this->category_ids)) {
+            return $this->category_ids;
+        }
+        // lazy loading
+        $this->category_ids = $this->fill_category_ids();
+        return $this->category_ids;
+    }
+
     protected function fill_category_ids() {
         global $DB;
 
@@ -1306,8 +1315,28 @@ class descriptor extends db_record {
         }
     }
 
+    public function &get_examples() {
+        // if they already exist and is not null, just return them
+        if (isset($this->examples)) {
+            return $this->examples;
+        }
+        // lazy loading
+        $this->examples = $this->fill_examples();
+        return $this->examples;
+    }
+
     protected function fill_examples() {
         return $this->dbLayer->get_examples($this);
+    }
+
+    public function &get_categories() {
+        // if they already exist and is not null, just return them
+        if (isset($this->categories)) {
+            return $this->categories;
+        }
+        // lazy loading
+        $this->categories = $this->fill_categories();
+        return $this->categories;
     }
 
     protected function fill_categories() {
@@ -1375,7 +1404,6 @@ class example extends db_record {
     public ?array $taxonomies = null;
     public ?string $tax = null; // TODO alwys csv string?
     public $descriptor = null; // sometimes stdClass, sometimes descriptor object
-
 
 
     function get_numbering() {
