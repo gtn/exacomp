@@ -2786,8 +2786,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
     // sort topics
     foreach ($subjects as $subject) {
-        //TODO this removes a lot of info... it goes into the magic __get method of the subject... even though topics already exists...
+        // it goes into the magic __get method of the subject... even though topics already exists...
         // this is because it is protected ==> here we do not know ==> it is fine to call the __get method. It is NOT fine that it then uses the fill_ method however ==> change the __get method
+        // __get now gets the topics if they have been filled before. --> sovled
         block_exacomp_sort_items($subject->topics, BLOCK_EXACOMP_DB_TOPICS);
         block_exacomp_sort_items($subject->used_niveaus, BLOCK_EXACOMP_DB_NIVEAUS);
     }

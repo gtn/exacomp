@@ -622,7 +622,7 @@ class db_record {
 
         // if there is a getter, the getter will be called. This getter calls the fill_function if the property is not set yet ==> actually the else branch is never called
         if (($method = 'get_' . $name) && method_exists($this, $method)) {
-            $ret =& $this->$method();
+            $ret =& $this->$method(); // TODO: check out and understand... we get "Only variables should be assigned by reference". We pass a reference, but the reference is to the result of the method, so it should be fine.
 
             // check if __get is recursively called at the same property
             /*
@@ -980,7 +980,7 @@ class subject extends db_record {
 
 
     // getter for topics
-    public function &get_topics() {
+    public function &get_topics() { // TODO: understand the & operator in more detail. Without this, e.g. assign_competencies does not work at all.
         // if they already exist and is not null, just return them
         if (isset($this->topics)) {
             return $this->topics;
@@ -1204,6 +1204,7 @@ class descriptor extends db_record {
     protected ?array $examples = null;
     protected ?array $categories = null;
     protected ?array $category_ids = null;
+    // protected ?string $numbering = null;
 
     function init() {
         if (!isset($this->parent)) {
@@ -1214,6 +1215,19 @@ class descriptor extends db_record {
     function get_numbering($reloadTopic = false) {
         return block_exacomp_get_descriptor_numbering($this, $reloadTopic);
     }
+
+    /*
+    // TODO: check if this is still working as inteded for every case
+    function &get_numbering($reloadTopic = false) {
+        // return block_exacomp_get_descriptor_numbering($this, $reloadTopic);
+        if (isset($this->numbering) && !$reloadTopic) {
+            return $this->numbering;
+        } else {
+            $this->numbering = block_exacomp_get_descriptor_numbering($this, $reloadTopic);
+        }
+        return $this->numbering;
+    }
+    */
 
     function get_niveau() {
         return \block_exacomp\niveau::get($this->niveauid);
