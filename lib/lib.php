@@ -582,7 +582,7 @@ function block_exacomp_value_is_negative_by_assessment($value, $level, $withEqua
             }
             break;
         case BLOCK_EXACOMP_ASSESSMENT_TYPE_VERBOSE:
-            if($verboselowerisbetter){
+            if ($verboselowerisbetter) {
                 if ($withEqual) {
                     if ($value >= $limit) {
                         return true;
@@ -8006,7 +8006,13 @@ function block_exacomp_get_descriptor_numbering($descriptor, $reloadTopic = fals
             $niveaus = g::$DB->get_records(BLOCK_EXACOMP_DB_NIVEAUS);
             foreach ($topic->descriptors as $descriptor) {
                 if (isset($niveaus[$descriptor->niveauid])) {
-                    @$niveaus[$descriptor->niveauid]->descriptor_cnt++;
+                    // @$niveaus[$descriptor->niveauid]->descriptor_cnt++;
+                    // this would work, as it takes null, which is basically 0 and increases it by 1 the first time. To mitigate the warning: initialize it if it does not exist
+                    if (!isset($niveaus[$descriptor->niveauid]->descriptor_cnt)) {
+                        $niveaus[$descriptor->niveauid]->descriptor_cnt = 1;
+                    } else {
+                        $niveaus[$descriptor->niveauid]->descriptor_cnt++;
+                    }
                 }
             }
 
@@ -8019,7 +8025,12 @@ function block_exacomp_get_descriptor_numbering($descriptor, $reloadTopic = fals
                 } else if ($niveaus[$descriptor->niveauid]->descriptor_cnt > 1) {
                     // make niveaus with multiple descriptors in the format of "{$niveau->numb}-{$i}"
                     $descriptorMainNumber = $niveaus[$descriptor->niveauid]->numb;
-                    @$niveaus[$descriptor->niveauid]->descriptor_i++;
+                    // @$niveaus[$descriptor->niveauid]->descriptor_i++;
+                    if (!isset($niveaus[$descriptor->niveauid]->descriptor_i)) {
+                        $niveaus[$descriptor->niveauid]->descriptor_i = 1;
+                    } else {
+                        $niveaus[$descriptor->niveauid]->descriptor_i++;
+                    }
                     $descriptorNumber = $niveaus[$descriptor->niveauid]->numb . '-' . $niveaus[$descriptor->niveauid]->descriptor_i;
                 } else {
                     $descriptorMainNumber = $niveaus[$descriptor->niveauid]->numb;

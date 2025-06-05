@@ -620,6 +620,7 @@ class db_record {
     public function &__get($name) {
         static::check_property_name($name);
 
+        // if there is a getter, the getter will be called. This getter calls the fill_function if the property is not set yet ==> actually the else branch is never called
         if (($method = 'get_' . $name) && method_exists($this, $method)) {
             $ret =& $this->$method();
 
@@ -684,6 +685,9 @@ class db_record {
             }
 
             $this->$name = $value;
+            // if ($name == 'niveau') {
+            //     $debugcode = 1;
+            // }
         }
     }
 
@@ -936,7 +940,7 @@ class subject extends db_record {
 
     // simple fields. They are initialized as null, and can be set by e.g. $subject->title = 'My Subject'; later
     // no __set and __get is called, as the fields already exist
-    // TODO: all fields that WERE set by functions like fill_xxxx need to be handled correctly.
+    // all fields that are set by functions like fill_xxxx need to be handled correctly.
     // otherwise, the __get will not be called --> the field will not be set but just be null
     public ?int $sorting = null;
     public ?int $disabled = null;
@@ -958,6 +962,7 @@ class subject extends db_record {
     public ?int $is_editable = null;
     public ?int $importstate = null;
 
+
     // Lazy-loaded field
     protected ?array $topics = null; // https://www.php.net/manual/en/language.oop5.visibility.php.
     // Public would NOT work, as it would then not be lazy-loaded anymore, but just be null.
@@ -965,6 +970,13 @@ class subject extends db_record {
 
     // not in the DB, but still used and calculated e.g. during rendering
     public ?array $used_niveaus = null;
+    public ?int $associated = null;
+    public ?int $gradings = null;
+    public ?int $can_delete = null;
+    public ?int $has_another_source = null;
+    public ?int $has_gradings = null;
+    public ?array $used_in_courses = null;
+
 
 
     // getter for topics
@@ -1052,6 +1064,13 @@ class topic extends db_record {
     public ?string $subj_title = null;
     public ?array $used_niveaus = null;
     public ?int $visible = 1; // TODO: bool? and which default value?
+    public ?int $associated = null;
+    public ?int $gradings = null;
+    public ?int $can_delete = null;
+    public ?int $another_source = null;
+    public ?int $has_another_source = null;
+    public ?int $has_gradings = null;
+    public ?array $used_in_courses = null;
 
     // Lazy-loaded field
     protected ?array $descriptors = null;
@@ -1166,6 +1185,14 @@ class descriptor extends db_record {
     public ?string $niveau_title = null;
     public ?int $visible = 1; // used for descriptor visibility in course
     public ?int $descriptor_creatorid = null; // used for descriptor creator id in course
+    public ?int $associated = null;
+    public ?int $direct_associated = null;
+    public ?int $niveau = null;
+    public ?int $gradings = null;
+    public ?int $can_delete = null;
+    public ?int $another_source = null;
+    public ?int $has_another_source = null;
+    public ?int $has_gradings = null;
 
     public $topic = null; // NO type on purpose --->
     // $descriptors = descriptor::create_objects($descriptors, array( in line 156 uses topicid.
@@ -1409,6 +1436,13 @@ class example extends db_record {
     public ?array $taxonomies = null;
     public ?string $tax = null; // TODO alwys csv string?
     public $descriptor = null; // sometimes stdClass, sometimes descriptor object
+    public ?int $associated = null;
+    public ?array $descriptors = null;
+    public $files = null; // unsure if it is int or array? TODO
+    public ?int $assignment = null;
+    public ?int $gradings = null;
+    public ?int $can_delete = null;
+    public ?int $another_source = null;
 
 
     function get_numbering() {
@@ -1527,7 +1561,7 @@ class cross_subject extends db_record {
     public ?string $groupcategory = null;
 
     // cross_subject_drafts
-    public ?array $cross_subject_drafts = null; // should be fine as public... there is not fill_ function, it is not lazy-loaded
+    public ?array $cross_subject_drafts = null; // should be fine as public... there is no fill_ function, it is not lazy-loaded
 
 
     function is_draft() {
