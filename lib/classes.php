@@ -622,7 +622,7 @@ class db_record {
 
         // if there is a getter, the getter will be called. This getter calls the fill_function if the property is not set yet ==> actually the else branch is never called
         if (($method = 'get_' . $name) && method_exists($this, $method)) {
-            $ret =& $this->$method(); // TODO: check out and understand... we get "Only variables should be assigned by reference". We pass a reference, but the reference is to the result of the method, so it should be fine.
+            @$ret =& $this->$method(); // TODO: check out and understand... we get "Only variables should be assigned by reference". We pass a reference, but the reference is to the result of the method, so it should be fine.
 
             // check if __get is recursively called at the same property
             /*
