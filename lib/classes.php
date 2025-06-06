@@ -604,7 +604,7 @@ class db_record {
     public function init() {
     }
 
-    public function get_data() {
+    public function get_data() { // TODO: the data array must be thought of!
         $data = (object)[];
         foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
             $data->{$prop->getName()} = $prop->getValue($this);
@@ -684,7 +684,7 @@ class db_record {
                 throw new \coding_exception("set '$name' not allowed, because there is a get_$name function! ");
             }
 
-            $this->$name = $value;
+            $this->$name = $value; // TODO: write into a data array
             // if ($name == 'niveau') {
             //     $debugcode = 1;
             // }
@@ -962,21 +962,7 @@ class subject extends db_record {
     public ?int $is_editable = null;
     public ?int $importstate = null;
 
-
-    // Lazy-loaded field
-    protected ?array $topics = null; // https://www.php.net/manual/en/language.oop5.visibility.php.
-    // Public would NOT work, as it would then not be lazy-loaded anymore, but just be null.
-    // private would not work, as the property would not be accessible in db_record e.g. in the __get $this->$name = $this->$method();
-
-    // not in the DB, but still used and calculated e.g. during rendering
-    public ?array $used_niveaus = null;
-    public ?int $associated = null;
-    public ?int $gradings = null;
-    public ?int $can_delete = null;
-    public ?int $has_another_source = null;
-    public ?int $has_gradings = null;
-    public ?array $used_in_courses = null;
-
+    // Properties that are not in the DB, but still used and calculated e.g. during rendering, will be added dynamically to an associative array
 
 
     // getter for topics
@@ -1055,26 +1041,6 @@ class topic extends db_record {
     public ?string $author = null;
     public ?string $editor = null;
 
-    public ?subject $subject = null;
-
-    // not in the DB, but still used and calculated e.g. during rendering
-    // subj_source subj_sorting subj_title used_niveaus
-    public ?int $subj_source = null;
-    public ?int $subj_sorting = null;
-    public ?string $subj_title = null;
-    public ?array $used_niveaus = null;
-    public ?int $visible = 1; // TODO: bool? and which default value?
-    public ?int $associated = null;
-    public ?int $gradings = null;
-    public ?int $can_delete = null;
-    public ?int $another_source = null;
-    public ?int $has_another_source = null;
-    public ?int $has_gradings = null;
-    public ?array $used_in_courses = null;
-
-    // Lazy-loaded field
-    protected ?array $descriptors = null;
-
     // why not using lib.php block_exacomp_get_topic_numbering??
     // because it is faster this way (especially for export etc where whole competence tree is read)
     function get_numbering() {
@@ -1149,6 +1115,9 @@ class topic extends db_record {
 
 /**
  * @property example[] $examples
+ * @property children[] $children
+ * @property categories[] $categories
+ * @property category_ids[] $category_ids
  */
 class descriptor extends db_record {
     const TABLE = BLOCK_EXACOMP_DB_DESCRIPTORS;
@@ -1178,33 +1147,11 @@ class descriptor extends db_record {
     public ?string $author = null;
     public ?string $editor = null;
 
-    // not in the DB, but still used and calculated e.g. during rendering
-    public ?int $u_id = null;
-    public ?int $niveau_sorting = null;
-    public ?string $niveau_numb = null;
-    public ?string $niveau_title = null;
-    public ?int $visible = 1; // used for descriptor visibility in course
-    public ?int $descriptor_creatorid = null; // used for descriptor creator id in course
-    public ?int $associated = null;
-    public ?int $direct_associated = null;
-    public ?int $niveau = null;
-    public ?int $gradings = null;
-    public ?int $can_delete = null;
-    public ?int $another_source = null;
-    public ?int $has_another_source = null;
-    public ?int $has_gradings = null;
-
-    public $topic = null; // NO type on purpose --->
+    // topic will be loaded into the dynamic data array. Interesting observation:
     // $descriptors = descriptor::create_objects($descriptors, array( in line 156 uses topicid.
     // descriptor::create_objects($descriptors, ['topic' => $topic], $this); in line 69 uses topic class.
     // todo: this is unclear in the code. you don't know if it is a topic or a string... refactor to using topicid?
 
-    // Lazy-loaded field
-    protected ?array $children = null;
-    protected ?array $examples = null;
-    protected ?array $categories = null;
-    protected ?array $category_ids = null;
-    // protected ?string $numbering = null;
 
     function init() {
         if (!isset($this->parent)) {
@@ -1442,22 +1389,7 @@ class example extends db_record {
     public ?string $activitytitle = null;
     public ?string $author_origin = null;
 
-    // not in the DB, but still used and calculated e.g. during rendering
-    // deid, visible , solution_visible , taxonomies , tax ,
-    public ?int $deid = null;
-    public ?int $visible = 1; // TODO: default 1?
-    public ?int $solution_visible = 1;
-    public ?array $taxonomies = null;
-    public ?string $tax = null; // TODO alwys csv string?
-    public $descriptor = null; // sometimes stdClass, sometimes descriptor object
-    public ?int $associated = null;
-    public ?array $descriptors = null;
-    public $files = null; // unsure if it is int or array? TODO
-    public ?int $assignment = null;
-    public ?int $gradings = null;
-    public ?int $can_delete = null;
-    public ?int $another_source = null;
-
+    // observation: ->descriptor, which will be loaded into the dynamic data array is sometimes stdClass, sometimes descriptor object
 
     function get_numbering() {
         if (!isset($this->descriptor)) {
@@ -1549,10 +1481,6 @@ class niveau extends db_record {
     public ?int $span = null;
     public ?int $numb = null;
 
-    // not in the DB, but still used and calculated e.g. during rendering
-    public ?int $visible = 1; // TODO: bool?
-
-
     function get_subtitle($subjectid) {
         return g::$DB->get_field(BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
     }
@@ -1573,10 +1501,6 @@ class cross_subject extends db_record {
     public ?int $shared = null;
     public ?int $subjectid = null;
     public ?string $groupcategory = null;
-
-    // cross_subject_drafts
-    public ?array $cross_subject_drafts = null; // should be fine as public... there is no fill_ function, it is not lazy-loaded
-
 
     function is_draft() {
         return !$this->courseid;
